@@ -2,7 +2,7 @@
 // SPEX_Util/spex_check_solution: check solution to Ax=b
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX/License for the license.
 
@@ -108,7 +108,7 @@ SPEX_info SPEX_check_solution
     {
         // This can never happen.
         SPEX_PR1 ("ERROR! Solution is wrong. This is a bug; please "
-                  "contact the authors of SPEX LU.\n") ;
+                  "contact the authors of SPEX.\n") ;
     }
 
     //--------------------------------------------------------------------------

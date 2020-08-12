@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/spex_matrix_mul: multiplies a matrix by a scalar
+// SPEX_Util/SPEX_matrix_mul: multiplies a matrix by a scalar
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX_LU/License for the license.
 

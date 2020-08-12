@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // This file is not intended to be #include'd in user applications.  Use
-// SPEX_LU.h instead.
+// SPEX_Util.h instead.
 
 #ifndef SPEX_UTIL_INTERNAL_H
 #define SPEX_UTIL_INTERNAL_H
@@ -109,7 +109,7 @@
 // printing control
 //------------------------------------------------------------------------------
 
-// SPEX_LU uses SuiteSparse_config.printf_func instead of a mere call to printf
+// SPEX uses SuiteSparse_config.printf_func instead of a mere call to printf
 // (the default function is printf, or mexPrintf when in MATLAB).  If this
 // function pointer is NULL, no printing is done.
 
@@ -324,10 +324,6 @@ void spex_gmp_failure (int status) ;
 // ============================================================================
 
 
-
-
-
-
 //------------------------------------------------------------------------------
 // mpfr_vector: a 1D mpfr_t array
 //------------------------------------------------------------------------------
@@ -365,9 +361,6 @@ mpz_t* spex_create_mpz_array
 (
     int64_t n              // Size of x
 );
-
-
-
 
 
 /* Purpose: This function converts a double array of size n to an appropriate

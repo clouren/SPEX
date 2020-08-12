@@ -2,7 +2,7 @@
 // SPEX_Util/SPEX_initialize_expert: intialize SPEX memory functions for GMP
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX/License for the license.
 

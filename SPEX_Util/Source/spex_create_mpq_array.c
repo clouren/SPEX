@@ -2,7 +2,7 @@
 // SPEX_Util/spex_create_mpq_array: create a dense mpq array
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX/License for the license.
 

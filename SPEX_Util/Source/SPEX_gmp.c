@@ -2,9 +2,9 @@
 // SPEX_Util/SPEX_gmp.c: interface to the gmp library
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX_LU/License for the license.
+// SPEX/License for the license.
 
 //------------------------------------------------------------------------------
 

@@ -16,26 +16,26 @@ include ../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 # CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O
-I = -I../Include -I../Source -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include
+I = -I../Include -I../../include -I../Source -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../Lib
 
 # LDFLAGS = -L../../lib
 
-LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lspexlu
+LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspexutil
 CS = $(LDLIBS)
 
 
-all: lib example 
-	- ./example
+all: lib demo
+	- ./demo
 
 lib:
 	( cd ../Lib ; $(MAKE) )
 
-example: lib example.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example example.c $(CS)
+demo: lib demo.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o demo demo.c $(CS)
 clean:
 	- $(RM) *.o
 
 purge: distclean
 
 distclean: clean
-	- $(RM) -r example example2 example3 example4 example5 SPEXLU *.a *.dSYM *.obj *.dll
+	- $(RM) -r demo

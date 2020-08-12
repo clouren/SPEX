@@ -1,23 +1,27 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_malloc: wrapper for malloc
+// SPEX_Util/Demo/demo.c: Demo of functions in SPEX_Util
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX_LU/License for the license.
+// SPEX/License for the license.
 
 //------------------------------------------------------------------------------
 
-// Allocate memory space for SPEX functions.
 
-#include "spex_util_internal.h"
 
-void *SPEX_malloc
-(
-    size_t size        // size of memory space to allocate
-)
+// TODO: Do we need a demo in SPEX_Util??
+//
+
+#include "../Include/SPEX_Util.h"
+
+// usage:
+// example > out
+    
+int main (void)
 {
-    if (!spex_initialized ( )) return (NULL) ;
-    return (SuiteSparse_malloc (1, size)) ;
+
+    printf("\n\nHello\n\n");
+    return 0;
 }
 

@@ -19,6 +19,7 @@ go:
 #	( cd CAMD && $(MAKE) )
 #	( cd CCOLAMD && $(MAKE) )
 	( cd COLAMD && $(MAKE) )
+	( cd SPEX_Util && $(MAKE) )
 	( cd SPEX_Left_LU && $(MAKE) )
 #	( cd CHOLMOD && $(MAKE) )
 #	( cd CSparse && $(MAKE) )
@@ -46,6 +47,7 @@ install:
 #	( cd CAMD && $(MAKE) install )
 #	( cd CCOLAMD && $(MAKE) install )
 	( cd COLAMD && $(MAKE) install )
+	( cd SPEX_Util && $(MAKE)  install )
 	( cd SPEX_Left_LU && $(MAKE) install )
 #	( cd CHOLMOD && $(MAKE) install )
 #	( cd CXSparse && $(MAKE) install )
@@ -91,6 +93,7 @@ uninstall:
 	( cd AMD && $(MAKE) uninstall )
 #	( cd CAMD && $(MAKE) uninstall )
 	( cd COLAMD && $(MAKE) uninstall )
+	( cd SPEX_Util && $(MAKE) uninstall )
 	( cd SPEX_Left_LU && $(MAKE) uninstall )
 #	( cd BTF && $(MAKE) uninstall )
 #	( cd KLU && $(MAKE) uninstall )
@@ -224,7 +227,7 @@ docs:
 #	( cd GraphBLAS && $(MAKE) docs )
 #	( cd Mongoose  && $(MAKE) docs )
 	( cd AMD && $(MAKE) docs )
-	( cd SLIP_LU && $(MAKE) docs )
+#	( cd SLIP_LU && $(MAKE) docs )
 #	( cd CAMD && $(MAKE) docs )
 #	( cd KLU && $(MAKE) docs )
 #	( cd LDL && $(MAKE) docs )
@@ -259,7 +262,7 @@ cov:
 #	( cd UMFPACK && $(MAKE) cov )
 #	( cd PIRO_BAND && $(MAKE) cov )
 #	( cd SKYLINE_SVD && $(MAKE) cov )
-	( cd SLIP_LU && $(MAKE) cov )
+#	( cd SLIP_LU && $(MAKE) cov )
 
 # configure and compile METIS, placing the libmetis.* library in
 # SuiteSparse/lib and the metis.h include file in SuiteSparse/include.

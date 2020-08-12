@@ -5,7 +5,7 @@ Centeno, and Timothy A. Davis.
 
 Available at:
 
-    https://github.com/clouren/SLIP_LU
+    https://github.com/clouren/SPEX
     http://suitesparse.com
 
 Contact Chris Lourenco, chrisjlourenco@gmail.com, or Tim Davis
@@ -30,7 +30,7 @@ or
 or both in parallel, as here.  Each distributor and end-user of SLIP LU may
 select either license, at their option.
 
-SLIP LU is distributed in the hope that it will be useful, but
+SPEX is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.

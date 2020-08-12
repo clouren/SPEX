@@ -6,6 +6,7 @@ Files and folders in this distribution:
     SPEX_Left_LU    Sparse left-looking integer-preserving
                     LU factorization for exactly solve 
                     sparse linear systems
+    SPEX_UTIL   Utility functions for all SPEX components
     Makefile    compiles SPEX and its dependencies
 
 Dependencies (all part of SuiteSparse):

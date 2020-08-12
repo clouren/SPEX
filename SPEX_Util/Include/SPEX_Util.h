@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Include/SPEX_UTIL.h: Utility functions for SPEX
+// SPEX_Util/Include/SPEX_Util.h: Include file for utility functions for SPEX
 //------------------------------------------------------------------------------
 
-// SPEX_UTIL: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX/License for the license.
 
@@ -106,7 +106,7 @@
 // Error codes
 //------------------------------------------------------------------------------
 
-// Most SPEX_LU functions return a code that indicates if it was successful
+// Most SPEX functions return a code that indicates if it was successful
 // or not. Otherwise the code returns a pointer to the object that was created
 // or it returns void (in the case that an object was deleted)
 
@@ -117,7 +117,7 @@ typedef enum
     SPEX_SINGULAR = -2,         // the input matrix A is singular
     SPEX_INCORRECT_INPUT = -3,  // one or more input arguments are incorrect
     SPEX_INCORRECT = -4,        // The solution is incorrect
-    SPEX_PANIC = -5             // SPEX_LU used without proper initialization
+    SPEX_PANIC = -5             // SPEX used without proper initialization
 }
 SPEX_info ;
 
@@ -125,7 +125,7 @@ SPEX_info ;
 // Pivot scheme codes
 //------------------------------------------------------------------------------
 
-// A code in SPEX_options to tell SPEX LU what type of pivoting to use for pivoting
+// A code in SPEX_options to tell SPEX what type of pivoting to use for pivoting
 // in unsymmetric LU factorization.
 
 typedef enum
@@ -175,12 +175,12 @@ typedef struct SPEX_options
     int32_t prec ;         // Precision used to output file if MPFR is chosen
     mpfr_rnd_t round ;     // Type of MPFR rounding used
     bool check ;           // Set true if the solution to the system should be
-                           // checked.  Intended for debugging only; SPEX_LU is
+                           // checked.  Intended for debugging only; SPEX is
                            // guaranteed to return the exact solution.
 } SPEX_options ;
 
 // Purpose: Create and return SPEX_options object with default parameters
-// upon successful allocation, which are defined in SPEX_LU_internal.h
+// upon successful allocation, which are defined in SPEX_util_nternal.h
 // To free it, simply use SPEX_FREE (option).
 SPEX_options* SPEX_create_default_options (void) ;
 
@@ -192,7 +192,7 @@ void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix
 //------------------------------------------------------------------------------
 
-// SPEX LU uses a single matrix data type, SPEX_matrix, which can be held in
+// SPEX uses a single matrix data type, SPEX_matrix, which can be held in
 // one of three kinds of formats:  sparse CSC (compressed sparse column),
 // sparse triplet, and dense:
 
@@ -372,18 +372,18 @@ SPEX_info SPEX_matrix_copy
 // Memory management
 //------------------------------------------------------------------------------
 
-// SPEX_LU relies on the SuiteSparse memory management functions,
+// SPEX relies on the SuiteSparse memory management functions,
 // SuiteSparse_malloc, SuiteSparse_calloc, SuiteSparse_realloc, and
 // SuiteSparse_free.
 
-// Allocate and initialize memory space for SPEX_LU.
+// Allocate and initialize memory space for SPEX
 void *SPEX_calloc
 (
     size_t nitems,      // number of items to allocate
     size_t size         // size of each item
 ) ;
 
-// Allocate memory space for SPEX_LU.
+// Allocate memory space for SPEX
 void *SPEX_malloc
 (
     size_t size        // size of memory space to allocate
@@ -437,15 +437,15 @@ void *SPEX_realloc      // pointer to reallocated block, or original block
 ) ;
 
 //------------------------------------------------------------------------------
-// SPEX LU memory environment routines
+// SPEX memory environment routines
 //------------------------------------------------------------------------------
 
-// SPEX_initialize: initializes the working evironment for SPEX LU library.
+// SPEX_initialize: initializes the working evironment for SPEX library.
 // It must be called prior to calling any other SPEX_* function.
 SPEX_info SPEX_initialize (void) ;
 
 // SPEX_initialize_expert is the same as SPEX_initialize, except that it allows
-// for a redefinition of custom memory functions that are used for SPEX_LU and
+// for a redefinition of custom memory functions that are used for SPEX and
 // GMP.  The four inputs to this function are pointers to four functions with
 // the same signatures as the ANSI C malloc, calloc, realloc, and free.
 SPEX_info SPEX_initialize_expert
@@ -456,14 +456,14 @@ SPEX_info SPEX_initialize_expert
     void  (*MyFree) (void *)                // user-defined free
 ) ;
 
-// SPEX_finalize: This function finalizes the working evironment for SPEX LU
-// library, and frees any internal workspace created by SPEX_LU.  It must be
+// SPEX_finalize: This function finalizes the working evironment for SPEX
+// library, and frees any internal workspace created by SPEX.  It must be
 // called as the last SPEX_* function called.
 SPEX_info SPEX_finalize (void) ;
 
 
 // SPEX_matrix_check: check and print a SPEX_sparse matrix
-SPEX_info SPEX_matrix_check     // returns a SPEX_LU status code
+SPEX_info SPEX_matrix_check     // returns a SPEX status code
 (
     const SPEX_matrix *A,       // matrix to check
     const SPEX_options* option  // defines the print level
@@ -472,8 +472,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX_LU status code
 
 /* Purpose: This function takes as input a mpz_t SPEX_matrix and divides
  * it by an mpz_t constant storing the solution in a mpq_t dense SPEX_matrix
- * array. This is used internally to divide the solution vector by the
- * determinant of the matrix.
+ * array. 
  */
 SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
 (
@@ -515,7 +514,7 @@ SPEX_info SPEX_cumsum
 
 /* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
  * size of x and i. so that they only take up the number of elements in the
- * matrix. For example if A->nzmax = 1000 but nnz(A) = 500, r and x are of size
+ * matrix. For example if A->nzmax = 1000 but nnz(A) = 500, i and x are of size
  * 1000, so this function shrinks them to size 500.
  */
 SPEX_info SPEX_sparse_collapse
@@ -523,7 +522,7 @@ SPEX_info SPEX_sparse_collapse
     SPEX_matrix* A // matrix to be shrunk
 );
 
-/* Purpose: This function expands a SPEX LU matrix by doubling its size. It
+/* Purpose: This function expands a SPEX matrix by doubling its size. It
  * merely expands x and i and does not initialize/allocate the values.
  */
 SPEX_info SPEX_sparse_realloc
@@ -535,7 +534,7 @@ SPEX_info SPEX_sparse_realloc
 //---------------------------SPEX GMP/MPFR Functions----------------------------
 //------------------------------------------------------------------------------
 
-// The following functions are the SPEX LU interface to the GMP/MPFR libary.
+// The following functions are the SPEX interface to the GMP/MPFR libary.
 // Each corresponding GMP/MPFR function is given a wrapper to ensure that no
 // memory leaks or crashes occur. All covered GMP functions can be found in
 // SPEX_gmp.c

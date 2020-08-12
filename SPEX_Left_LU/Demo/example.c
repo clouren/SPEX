@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/example.c: example main program for SPEX_LU
+// SPEX_Left_LU/Demo/example.c: example main program for SPEX_Left_LU
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Left_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX_LU/License for the license.
+// SPEX_Left_LU/License for the license.
 
 //------------------------------------------------------------------------------
 
@@ -12,7 +12,7 @@
 #include "demos.h"
 
 
-/* This example shows how to use SPEX LU with a given input matrix and a double
+/* This example shows how to use SPEX Left LU with a given input matrix and a double
    output. The input is a randomly generate dense matrix */
 
 // usage:
@@ -34,7 +34,7 @@ int main (void)
 {
 
     //--------------------------------------------------------------------------
-    // Prior to using SPEX LU, its environment must be initialized. This is done
+    // Prior to using SPEX Left LU, its environment must be initialized. This is done
     // by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
 

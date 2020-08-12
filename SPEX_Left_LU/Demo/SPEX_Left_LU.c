@@ -1,35 +1,35 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/SPEXLU.c: example main program for SPEX_LU
+// SPEX_Left_LU/Demo/SPEX_Left_LU.c: example main program for SPEX
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Left_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX_LU/License for the license.
+// SPEX_Left_LU/License for the license.
 
 //------------------------------------------------------------------------------
 
 #include "demos.h"
 
 /* This program will exactly solve the sparse linear system Ax = b by
- * performing the SPEX LU factorization. This is intended to be a demonstration
- * of the "advanced interface" of SPEX LU. Refer to README.txt for
+ * performing the SPEX Left LU factorization. This is intended to be a demonstration
+ * of the "advanced interface" of SPEX Left LU. Refer to README.txt for
  * information on how to properly use this code
  */
 
 // usage:
-// SPEXLU Followed by the listed args:
+// SPEX_Left_LU Followed by the listed args:
 //
-// help. e.g., SPEXLU help, which indicates SPEXLU to print to guideline
+// help. e.g., SPEX_Left_LU help, which indicates SPEX_Left_LU to print to guideline
 // for using this function.
 //
-// f (or file) Filename. e.g., SPEXLU f MATRIX_NAME RHS_NAME, which indicates
-// SPEXLU will read matrix from MATRIX_NAME and right hand side from RHS_NAME.
+// f (or file) Filename. e.g., SPEX_Left_LU f MATRIX_NAME RHS_NAME, which indicates
+// SPEX_Left_LU will read matrix from MATRIX_NAME and right hand side from RHS_NAME.
 // The matrix must be stored in Matrix Market format. Refer to
 // http://math.nist.gov/MatrixMarket/formats.html for information on
 // Matrix Market format.
 // The right hand side vector must be stored as a dense vector.
 //
-// p (or piv) Pivot_param. e.g., SPEXLU p 0, which inidcates SPEXLU will use
+// p (or piv) Pivot_param. e.g., SPEX_Left_LU p 0, which inidcates SPEX_Left_LU will use
 // smallest pivot for pivot scheme. Other available options are listed
 // as follows:
 //        0: Smallest pivot: Default and recommended
@@ -39,17 +39,17 @@
 //        4: Diagonal pivoting with tolerance for largest pivot
 //        5: Largest pivot
 //
-// q (or col) Column_order_param. e.g., SPEXLU q 1, which indicates SPEXLU
+// q (or col) Column_order_param. e.g., SPEX_Left_LU q 1, which indicates SPEX_Left_LU
 // will use COLAMD for column ordering. Other available options are:
 //        0: None: Not recommended for sparse matrices
 //        1: COLAMD: Default
 //        2: AMD
 //
-// t (or tol) tolerance_param. e.g., SPEXLU t 1e-10, which indicates SPEXLU
+// t (or tol) tolerance_param. e.g., SPEX_Left_LU t 1e-10, which indicates SPEX_Left_LU
 // will use 1e-10 as the tolerance for pivot scheme 3 and 4 mentioned above.
 // Therefore, it is only necessary if pivot scheme 3 or 4 is used.
 //
-// o (or out). e.g., SPEXLU o 1, which indicates SPEXLU will output the
+// o (or out). e.g., SPEX_Left_LU o 1, which indicates SPEX_Left_LU will output the
 // errors and warnings during the process. Other available options are:
 //        0: print nothing
 //        1: just errors and warnings: Default
@@ -81,7 +81,7 @@ int main (int argc, char* argv[])
 {
 
     //--------------------------------------------------------------------------
-    // Prior to using SPEX LU, its environment must be initialized. This is done
+    // Prior to using SPEX Left LU, its environment must be initialized. This is done
     // by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
 

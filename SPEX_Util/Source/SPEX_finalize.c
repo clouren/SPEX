@@ -2,13 +2,13 @@
 // SPEX_Util/SPEX_finalize: finalize SPEX_LU
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX/License for the license.
 
 //------------------------------------------------------------------------------
 
-// SPEX_finalize frees the working environment for SPEX LU library.
+// SPEX_finalize frees the working environment for SPEX library.
 
 #include "spex_util_internal.h"
 

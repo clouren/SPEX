@@ -1,16 +1,16 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/example2.c: example main program for SPEX_LU
+// SPEX_Left_LU/Demo/example2.c: example main program for SPEX_Left_LU
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Left_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX_LU/License for the license.
+// SPEX_Left_LU/License for the license.
 
 //------------------------------------------------------------------------------
 
 #include "demos.h"
 
-// This example shows how to use SPEX LU within your code 
+// This example shows how to use SPEX Left LU within your code 
 // Unlike example1, the input matrix here is directly read in from the 
 // triplet formmat. Also, differs from example1 in that the output solution
 // is given in mpq_t precision
@@ -34,7 +34,7 @@
 int main (int argc, char **argv)
 {
     //--------------------------------------------------------------------------
-    // Prior to using SPEX LU, its environment must be initialized. This is
+    // Prior to using SPEX Left LU, its environment must be initialized. This is
     // done by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
     SPEX_initialize();

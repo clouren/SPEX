@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/demos.c: support functions for the demo programs
+// SPEX_Left_LU/Demo/demos.c: support functions for the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Left_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX_LU/License for the license.
+// SPEX_Left_LU/License for the license.
 
 //------------------------------------------------------------------------------
 
