@@ -1,19 +1,19 @@
-//------------------------------------------------------------------------------
-// SLIP_LU/MATLAB/slip_mex_check_for_inf: Check A and b for inf
+// //------------------------------------------------------------------------------
+// SPEX_Left_LU/MATLAB/spex_left_lu_mex_check_for_inf: Check A and b for inf
 //------------------------------------------------------------------------------
 
-// SLIP_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Left_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SLIP_LU/License for the license.
+// SPEX_LU/License for the license.
 
 //------------------------------------------------------------------------------
 
 // Purpose: This function checks if the array x contains Inf's, NaN's, or
 // if its values can be represented as int64_t values, useful for input arguments.
 
-#include "SLIP_LU_mex.h"
+#include "SPEX_Left_LU_mex.h"
 
-bool slip_mex_check_for_inf     // true if x can be represented as int64_t
+bool spex_left_lu_mex_check_for_inf     // true if x can be represented as int64_t
 (
     double* x, // The array of numeric values
     mwSize n   // size of array
@@ -28,12 +28,12 @@ bool slip_mex_check_for_inf     // true if x can be represented as int64_t
 
         if (mxIsInf (xk))
         {
-            slip_mex_error (1, "A must not have any Inf values") ;
+            spex_left_lu_mex_error (1, "A must not have any Inf values") ;
         }
 
         if (mxIsNaN (xk))
         {
-            slip_mex_error (1, "A must not have any NaN values") ;
+            spex_left_lu_mex_error (1, "A must not have any NaN values") ;
         }
 
         if (x_is_int64)

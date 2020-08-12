@@ -1,18 +1,18 @@
 //------------------------------------------------------------------------------
-// SLIP_LU/MATLAB/SLIP_mex_soln: Use SLIP LU within MATLAB
+// SPEX_Left_LU_/MATLAB/SPEX_Left_LU_mex_soln: Use SPEX LU within MATLAB
 //------------------------------------------------------------------------------
 
-// SLIP_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SLIP_LU/License for the license.
+// SPEX_LU/License for the license.
 
 //------------------------------------------------------------------------------
 
-/* Purpose: The .c file defining the SLIP LU MATLAB interfacee
- * This function defines: x = SLIP_mex_soln (A, b, option)
+/* Purpose: The .c file defining the SPEX LU MATLAB interfacee
+ * This function defines: x = SPEX_mex_soln (A, b, option)
  */
 
-#include "SLIP_LU_mex.h"
+#include "SPEX_Left_LU_mex.h"
 
 void mexFunction
 (
@@ -23,13 +23,13 @@ void mexFunction
 )
 {
     //--------------------------------------------------------------------------
-    // Initialize SLIP LU library environment
+    // Initialize SPEX LU library environment
     //--------------------------------------------------------------------------
 
-    SLIP_info status ;
-    if (!slip_initialized ( ))
+    SPEX_info status ;
+    if (!spex_initialized ( ))
     {
-        SLIP_MEX_OK (SLIP_initialize_expert
+        SPEX_MEX_OK (SPEX_initialize_expert
             (mxMalloc, mxCalloc, mxRealloc, mxFree)) ;
     }
     SuiteSparse_config.printf_func = mexPrintf ;
@@ -40,7 +40,7 @@ void mexFunction
 
     if (nargout > 1 || nargin < 2 || nargin > 3)
     {
-        slip_mex_error (1, "Usage: x = SLIP_mex_soln (A,b,option)") ;
+        spex_left_lu_mex_error (1, "Usage: x = SPEX_mex_soln (A,b,option)") ;
     }
 
     //--------------------------------------------------------------------------
@@ -49,56 +49,56 @@ void mexFunction
 
     if (mxIsComplex (pargin [0]) || mxIsComplex (pargin [1]))
     {
-        slip_mex_error (1, "inputs must be real") ;
+        spex_left_lu_mex_error (1, "inputs must be real") ;
     }
     if (!mxIsSparse (pargin [0]))     // Is the matrix sparse?
     {
-        slip_mex_error (1, "first input must be sparse") ;
+        spex_left_lu_mex_error (1, "first input must be sparse") ;
     }
     if (mxIsSparse (pargin [1]))         // Is b sparse?
     {
-        slip_mex_error (1, "second input must be full") ;
+        spex_left_lu_mex_error (1, "second input must be full") ;
     }
 
     //--------------------------------------------------------------------------
     // get the input options
     //--------------------------------------------------------------------------
 
-    SLIP_options *option = SLIP_create_default_options();
+    SPEX_options *option = SPEX_create_default_options();
     if (option == NULL)
     {
-        slip_mex_error (SLIP_OUT_OF_MEMORY, "") ;
+        spex_left_lu_mex_error (SPEX_OUT_OF_MEMORY, "") ;
     }
 
-    slip_mex_options mexoptions ;
-    if (nargin > 2) slip_get_matlab_options (option, &mexoptions, pargin [2]) ;
+    spex_mex_options mexoptions ;
+    if (nargin > 2) spex_left_lu_get_matlab_options (option, &mexoptions, pargin [2]) ;
 
     //--------------------------------------------------------------------------
     // get A and b
     //--------------------------------------------------------------------------
 
-    SLIP_matrix *A = NULL ;
-    SLIP_matrix *b = NULL ;
-    slip_mex_get_A_and_b (&A, &b, pargin, option) ;
+    SPEX_matrix *A = NULL ;
+    SPEX_matrix *b = NULL ;
+    spex_left_lu_mex_get_A_and_b (&A, &b, pargin, option) ;
 
     if (option->print_level > 0)
     {
         printf ("\nScaled integer input matrix A:\n") ;
-        SLIP_matrix_check (A, option) ;
+        SPEX_matrix_check (A, option) ;
     }
 
     if (option->print_level > 0)
     {
         printf ("\nScaled integer right-hand-side b:\n") ;
-        SLIP_matrix_check (b, option) ;
+        SPEX_matrix_check (b, option) ;
     }
 
     //--------------------------------------------------------------------------
-    // x = A\b via SLIP_LU, returning result as SLIP_MPQ
+    // x = A\b via SPEX_LU, returning result as SPEX_MPQ
     //--------------------------------------------------------------------------
 
-    SLIP_matrix *x = NULL ;
-    SLIP_MEX_OK (SLIP_backslash (&x, SLIP_MPQ, A, b, option)) ;
+    SPEX_matrix *x = NULL ;
+    SPEX_MEX_OK (SPEX_Left_LU_backslash (&x, SPEX_MPQ, A, b, option)) ;
 
     //--------------------------------------------------------------------------
     // print the result, if requested
@@ -107,14 +107,14 @@ void mexFunction
     if (option->print_level > 0)
     {
         printf ("\nSolution x:\n") ;
-        SLIP_matrix_check (x, option) ;
+        SPEX_matrix_check (x, option) ;
     }
 
     //--------------------------------------------------------------------------
     // return x to MATLAB
     //--------------------------------------------------------------------------
 
-    if (mexoptions.solution == SLIP_SOLUTION_DOUBLE)
+    if (mexoptions.solution == SPEX_SOLUTION_DOUBLE)
     {
 
         //----------------------------------------------------------------------
@@ -122,9 +122,9 @@ void mexFunction
         //----------------------------------------------------------------------
 
         // convert x to double
-        SLIP_matrix* t = NULL ;
-        SLIP_MEX_OK (SLIP_matrix_copy (&t, SLIP_DENSE, SLIP_FP64, x, option)) ;
-        SLIP_matrix_free (&x, NULL) ;
+        SPEX_matrix* t = NULL ;
+        SPEX_MEX_OK (SPEX_matrix_copy (&t, SPEX_DENSE, SPEX_FP64, x, option)) ;
+        SPEX_matrix_free (&x, NULL) ;
         x = t ;
         t = NULL ;
 
@@ -136,7 +136,7 @@ void mexFunction
         mxSetDoubles (pargout [0], x->x.fp64) ;
         mxSetM (pargout [0], x->m) ;
         mxSetN (pargout [0], x->n) ;
-        x->x.fp64 = NULL ;  // set to NULL so it is not freed by SLIP_matrix_free
+        x->x.fp64 = NULL ;  // set to NULL so it is not freed by SPEX_matrix_free
 
     }
     else
@@ -152,15 +152,15 @@ void mexFunction
         {
             // convert x (i,j) into a C string
             char *s ;
-            status = SLIP_mpfr_asprintf (&s, "%Qd", x->x.mpq [p]) ;
+            status = SPEX_mpfr_asprintf (&s, "%Qd", x->x.mpq [p]) ;
             if (status < 0)
             {
-                slip_mex_error (1, "error converting x to string") ;
+                spex_left_lu_mex_error (1, "error converting x to string") ;
             }
             // convert the string into a MATLAB string and store in x {i,j}
             mxSetCell (pargout [0], p, mxCreateString (s)) ;
             // free the C string
-            SLIP_mpfr_free_str (s) ;
+            SPEX_mpfr_free_str (s) ;
         }
     }
 
@@ -168,10 +168,10 @@ void mexFunction
     // free workspace
     //--------------------------------------------------------------------------
 
-    SLIP_matrix_free (&x, option) ;
-    SLIP_matrix_free (&b, option) ;
-    SLIP_matrix_free (&A, option) ;
-    SLIP_FREE (option) ;
-    SLIP_finalize ( ) ;
+    SPEX_matrix_free (&x, option) ;
+    SPEX_matrix_free (&b, option) ;
+    SPEX_matrix_free (&A, option) ;
+    SPEX_FREE (option) ;
+    SPEX_finalize ( ) ;
 }
 

@@ -1,6 +1,6 @@
-function x = SLIP_backslash (A,b,option)
-%SLIP_BACKSLASH: solve Ax=b via sparse left-looking integer-preserving LU
-% SLIP_backslash: computes the exact solution to the sparse linear system Ax =
+function x = SPEX_Left_LU_backslash (A,b,option)
+%SPEX_Left_LU_BACKSLASH: solve Ax=b via sparse left-looking integer-preserving LU
+% SPEX_Left_LU_backslash: computes the exact solution to the sparse linear system Ax =
 % b where A and b are stored as doubles. A must be stored as a sparse matrix. b
 % must be stored as a dense set of right hand side vectors. b can be either 1
 % or multiple vector(s).  The result x is computed exactly, represented in
@@ -15,9 +15,9 @@ function x = SLIP_backslash (A,b,option)
 %
 % Usage:
 %
-% x = SLIP_backslash (A,b) returns the solution to Ax=b using default settings.
+% x = SPEX_Left_LU_backslash (A,b) returns the solution to Ax=b using default settings.
 %
-% x = SLIP_backslash (A,b,options) returns the solution to Ax=b with user
+% x = SPEX_Left_LU_backslash (A,b,options) returns the solution to Ax=b with user
 %   defined settings in an options struct.  Entries not present are treated as
 %   defaults.
 %
@@ -60,9 +60,9 @@ function x = SLIP_backslash (A,b,option)
 %
 % Example:
 %
-%   % In this first example, x = SLIP_backslash (A,b) returns an approximate
-%   % solution, not because it was computed incorrectly in SLIP_backslash.  It
-%   % is computed exactly as a rational result in SLIP_backslash with arbitrary
+%   % In this first example, x = SPEX_backslash (A,b) returns an approximate
+%   % solution, not because it was computed incorrectly in SPEX_backslash.  It
+%   % is computed exactly as a rational result in SPEX_backslash with arbitrary
 %   % precision, but then converted to double precision on output.
 %
 %   load west0479
@@ -70,12 +70,12 @@ function x = SLIP_backslash (A,b,option)
 %   n = size (A, 1) ;
 %   xtrue = rand (n,1) ;
 %   b = A*xtrue ;
-%   x = SLIP_backslash (A, b) ;
+%   x = SPEX_Left_LU_backslash (A, b) ;
 %   err = norm (x-xtrue)
 %   x = A\b ;
 %   err = norm (x-xtrue)
 %
-%   % In this example, x = SLIP_backslash (A,b) is returned exactly in the
+%   % In this example, x = SPEX_backslash (A,b) is returned exactly in the
 %   % MATLAB vector x, because x contains only integers representable exactly
 %   % in double precision.  x = A\b results in floating-point roundoff error.
 %
@@ -83,7 +83,7 @@ function x = SLIP_backslash (A,b,option)
 %   A = floor (2^20 * (A / amax)) + n * speye (n) ;
 %   xtrue = floor (64 * xtrue) ;
 %   b = A*xtrue ;
-%   x = SLIP_backslash (A, b) ;
+%   x = SPEX_backslash (A, b) ;
 %   % error and residual will be exactly zero:
 %   err = norm (x-xtrue)
 %   resid = norm (A*x-b)
@@ -92,11 +92,11 @@ function x = SLIP_backslash (A,b,option)
 %   err = norm (x-xtrue)
 %   resid = norm (A*x-b)
 %
-% See also vpa, SLIP_install, SLIP_test, SLIP_demo.
+% See also vpa, SPEX_install, SPEX_test, SPEX_demo.
 
-% SLIP_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+% SPEX_Left_LU_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 % Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-% SLIP_LU/License for the license.
+% SPEX_LU/License for the license.
 
 if (nargin < 3)
     option = [ ] ;   % use default options
@@ -106,14 +106,14 @@ if (~isnumeric (A) || ~isnumeric (b))
     error ('inputs must be numeric') ;
 end
 
-% Check if the input matrix is stored as sparse. If not, SLIP LU expects
+% Check if the input matrix is stored as sparse. If not, SPEX LU expects
 % sparse input, so convert to sparse.
 if (~issparse (A))
     A = sparse (A) ;
 end
 
-% Preprocessing complete. Now use SLIP LU to solve A*x=b.
-x = SLIP_mex_soln (A, b, option) ;
+% Preprocessing complete. Now use SPEX LU to solve A*x=b.
+x = SPEX_Left_LU_mex_soln (A, b, option) ;
 
 % convert to vpa, if requested
 if (isfield (option, 'solution') && isequal (option.solution, 'vpa'))
