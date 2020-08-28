@@ -122,7 +122,7 @@ SPEX_info SPEX_Left_LU_analyze
         if (!A2)
         {
             // out of memory
-            SPEX_Left_LU_analysis_free (&S, option) ;
+            SPEX_LU_analysis_free (&S, option) ;
             return (SPEX_OUT_OF_MEMORY) ;
         }
         // Initialize S->q as per COLAMD documentation

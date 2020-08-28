@@ -73,7 +73,7 @@
     SPEX_matrix_free(&b, option);                \
     SPEX_matrix_free(&rhos, option);             \
     SPEX_FREE(pinv);                             \
-    SPEX_Left_LU_analysis_free(&S, option);           \
+    SPEX_LU_analysis_free(&S, option);           \
     SPEX_FREE(option);                           \
     SPEX_finalize( ) ;
 

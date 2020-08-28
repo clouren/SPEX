@@ -36,7 +36,7 @@
     SPEX_matrix_free(&U, NULL);     \
     SPEX_FREE(pinv);                \
     SPEX_matrix_free(&rhos, NULL);  \
-    SPEX_Left_LU_analysis_free (&S, NULL);
+    SPEX_LU_analysis_free (&S, NULL);
 
 # define SPEX_FREE_ALL              \
     SPEX_FREE_WORK                  \

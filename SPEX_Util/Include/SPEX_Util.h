@@ -90,6 +90,11 @@
 #include <string.h>
 #include <gmp.h>
 #include <mpfr.h>
+#include <math.h>
+#include <time.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <assert.h>
 #include "SuiteSparse_config.h"
 
 //------------------------------------------------------------------------------
@@ -367,6 +372,36 @@ SPEX_info SPEX_matrix_copy
 
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
+
+
+//------------------------------------------------------------------------------
+// SPEX_LU_analysis: symbolic pre-analysis
+//------------------------------------------------------------------------------
+
+// This struct stores the column permutation for LU and the estimate of the
+// number of nonzeros in L and U.
+
+typedef struct
+{
+    int64_t *q ;    // Column permutation for LU factorization, representing
+                    // the permutation matrix Q.   The matrix A*Q is factorized.
+                    // If the kth column of L, U, and A*Q is column j of the
+                    // unpermuted matrix A, then j = S->q [k].
+    int64_t lnz ;   // Approximate number of nonzeros in L.
+    int64_t unz ;   // Approximate number of nonzeros in U.
+                    // lnz and unz are used to allocate the initial space for
+                    // L and U; the space is reallocated as needed.
+} SPEX_LU_analysis ;
+
+// The symbolic analysis object is created by SPEX_LU_analyze.
+
+// SPEX_LU_analysis_free frees the SPEX_LU_analysis object.
+SPEX_info SPEX_LU_analysis_free        
+(
+    SPEX_LU_analysis **S, // Structure to be deleted
+    const SPEX_options *option
+) ;
+
 
 //------------------------------------------------------------------------------
 // Memory management

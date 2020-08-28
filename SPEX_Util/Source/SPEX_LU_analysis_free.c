@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/SPEX_Left_LU_analysis_free: Free memory from symbolic analysis struct
+// SPEX_Util/SPEX_LU_analysis_free: Free memory from symbolic analysis struct
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX_LU/License for the license.
 
@@ -14,9 +14,9 @@
  * termination.
  */
 
-#include "spex_left_lu_internal.h"
+#include "spex_util_internal.h"
 
-SPEX_info SPEX_Left_LU_analysis_free
+SPEX_info SPEX_LU_analysis_free
 (
     SPEX_LU_analysis **S, // Structure to be deleted
     const SPEX_options *option

@@ -62,7 +62,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    SPEX LU is free software; you can redistribute it and/or modify
+//    SPEX Left LU is free software; you can redistribute it and/or modify
 //     it under the terms of either:
 //
 //        * the GNU Lesser General Public License as published by the
@@ -164,35 +164,6 @@
 #define SPEX_LU_VERSION_MAJOR 1
 #define SPEX_LU_VERSION_MINOR 0
 #define SPEX_LU_VERSION_SUB   1
-
-//------------------------------------------------------------------------------
-// SPEX_LU_analysis: symbolic pre-analysis
-//------------------------------------------------------------------------------
-
-// This struct stores the column permutation for LU and the estimate of the
-// number of nonzeros in L and U.
-
-typedef struct
-{
-    int64_t *q ;    // Column permutation for LU factorization, representing
-                    // the permutation matrix Q.   The matrix A*Q is factorized.
-                    // If the kth column of L, U, and A*Q is column j of the
-                    // unpermuted matrix A, then j = S->q [k].
-    int64_t lnz ;   // Approximate number of nonzeros in L.
-    int64_t unz ;   // Approximate number of nonzeros in U.
-                    // lnz and unz are used to allocate the initial space for
-                    // L and U; the space is reallocated as needed.
-} SPEX_LU_analysis ;
-
-// The symbolic analysis object is created by SPEX_LU_analyze.
-
-// SPEX_LU_analysis_free frees the SPEX_LU_analysis object.
-SPEX_info SPEX_Left_LU_analysis_free        
-(
-    SPEX_LU_analysis **S, // Structure to be deleted
-    const SPEX_options *option
-) ;
-
 
 
 //------------------------------------------------------------------------------

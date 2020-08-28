@@ -33,6 +33,7 @@ OBJ = \
     spex_expand_double_array.o SPEX_gmp.o SPEX_matrix_copy.o SPEX_matrix_check.o spex_cast_matrix.o \
     spex_expand_mpfr_array.o SPEX_initialize.o SPEX_matrix_free.o SPEX_check_solution.o SPEX_finalize.o  \
     spex_expand_mpq_array.o SPEX_initialize_expert.o SPEX_matrix_nnz.o SPEX_create_default_options.o  \
+    SPEX_LU_analysis_free.o
 
 $(OBJ): ../Include/SPEX_Util.h ../Source/spex_util_internal.h Makefile
 

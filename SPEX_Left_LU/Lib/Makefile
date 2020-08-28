@@ -27,7 +27,7 @@ C = $(CC) $(CF) -I../Include -I../../COLAMD/Include -I../../AMD/Include -I../../
 all: install
 
 OBJ = \
-     SPEX_Left_LU_analysis_free.o spex_left_lu_back_sub.o spex_left_lu_forward_sub.o spex_left_lu_get_pivot.o \
+     spex_left_lu_back_sub.o spex_left_lu_forward_sub.o spex_left_lu_get_pivot.o \
      spex_left_lu_permute_b.o spex_left_lu_ref_triangular_solve.o SPEX_Left_LU_analyze.o spex_left_lu_dfs.o \
      spex_left_lu_get_largest_pivot.o  spex_left_lu_get_smallest_pivot.o  spex_left_lu_permute_x.o \
      SPEX_Left_LU_solve.o SPEX_Left_LU_backslash.o SPEX_Left_LU_factorize.o spex_left_lu_get_nonzero_pivot.o \
