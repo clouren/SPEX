@@ -3,8 +3,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M University.  All Rights Reserved.  
-// See SPEX_Cholesky/License for the license.
+// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
+// All Rights Reserved.  See SPEX_Cholesky/License for the license.
 
 //------------------------------------------------------------------------------
 

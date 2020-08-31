@@ -3,8 +3,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M University.  All Rights Reserved.  
-// See SPEX_Cholesky/License for the license.
+// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
+// All Rights Reserved.  See SPEX_Cholesky/License for the license.
 
 //------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    Christopher Lourenco, Erick Moreno-Centeno, and Timothy Davis
+//    Christopher Lourenco, Erick Moreno-Centeno, Timothy Davis, Jinhao Chen
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -87,7 +87,7 @@
 //    See license.txt for license info.
 //
 // This software is copyright by Christopher Lourenco, Erick
-// Moreno-Centeno and Timothy A. Davis. All Rights Reserved.
+// Moreno-Centeno, Timothy A. Davis and Jinhao Chen. All Rights Reserved.
 //
 
 //------------------------------------------------------------------------------
@@ -146,7 +146,7 @@
 // TODO: Tcov
 // TODO: Change outputs to SPEX_info
 // TODO: Make internal functions and SPEX_Chol_internal
-// TODO: Write SPEX_Chol_backslash
+// TODO: Put const where appropriate
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

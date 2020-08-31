@@ -1,8 +1,8 @@
-IP-Chol: Integer-Preserving Cholesky Factorization
+SPEX_Chol: Integer-Preserving Cholesky Factorization
 
 Copyright (c) 2020, Christopher Lourenco, Erick Moreno-Centeno, 
-and Tim Davis
-https://github.com/clouren/SLIP_LU
+Tim Davis, Jinhao Chen
+https://github.com/clouren/SPEX/SPEX_Cholesky
 http://suitesparse.com
 
 Contact Chris Lourenco, chrisjlourenco@gmail.com, or Tim Davis
@@ -11,7 +11,7 @@ license.
 
 --------------------------------------------------------------------------------
 
-IP-Chol is free software; you can redistribute it and/or modify
+SPEX_Chol is free software; you can redistribute it and/or modify
 it under the terms of either:
 
   * the GNU Lesser General Public License as published by the Free
@@ -26,7 +26,7 @@ or
 
 or both in parallel, as here.
 
-IP-Chol is distributed in the hope that it will be useful, but
+SPEX_Chol is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
