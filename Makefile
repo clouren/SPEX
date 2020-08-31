@@ -1,5 +1,11 @@
 #-------------------------------------------------------------------------------
 # Makefile for all SuiteSparse packages
+#
+# Makefile for SPEX: SParse EXact linear algebra
+#
+# SPEX (c) 2019-2020 Christopher Lourenco, Timothy Davis, Erick Moreno-Centeno
+#                    Jinhao Chen, All rights reserved.
+#
 #-------------------------------------------------------------------------------
 
 SUITESPARSE = $(CURDIR)
@@ -21,6 +27,7 @@ go:
 	( cd COLAMD && $(MAKE) )
 	( cd SPEX_Util && $(MAKE) )
 	( cd SPEX_Left_LU && $(MAKE) )
+	( cd SPEX_Cholesky && $(MAKE) )
 #	( cd CHOLMOD && $(MAKE) )
 #	( cd CSparse && $(MAKE) )
 #	( cd CXSparse && $(MAKE) )
@@ -49,6 +56,7 @@ install:
 	( cd COLAMD && $(MAKE) install )
 	( cd SPEX_Util && $(MAKE)  install )
 	( cd SPEX_Left_LU && $(MAKE) install )
+	( cd SPEX_Cholesky && $(MAKE) install )
 #	( cd CHOLMOD && $(MAKE) install )
 #	( cd CXSparse && $(MAKE) install )
 #	( cd LDL && $(MAKE) install )
@@ -95,6 +103,7 @@ uninstall:
 	( cd COLAMD && $(MAKE) uninstall )
 	( cd SPEX_Util && $(MAKE) uninstall )
 	( cd SPEX_Left_LU && $(MAKE) uninstall )
+	( cd SPEX_Cholesky && $(MAKE) uninstall )
 #	( cd BTF && $(MAKE) uninstall )
 #	( cd KLU && $(MAKE) uninstall )
 #	( cd LDL && $(MAKE) uninstall )
