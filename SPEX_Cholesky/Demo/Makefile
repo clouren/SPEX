@@ -23,7 +23,8 @@ LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -L../../SPEX_Util/
 CS = ../Lib/libspexchol.a $(LDLIBS)
 
 
-all: lib SPEX_Chol SPEX_Chol_debug
+all: lib SPEX_Chol SPEX_Chol_debug example
+	- ./example
 	- ./SPEX_Chol
 
 lib:
@@ -34,6 +35,9 @@ SPEX_Chol: lib SPEX_Chol.c Makefile
 
 SPEX_Chol_debug: lib SPEX_Chol.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -g -o SPEX_Chol_debug SPEX_Chol.c $(CS)
+
+example: lib example.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o example example.c $(CS)
 
 clean:
 	- $(RM) *.o

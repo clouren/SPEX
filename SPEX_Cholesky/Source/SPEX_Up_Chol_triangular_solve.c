@@ -104,15 +104,6 @@ SPEX_info SPEX_Up_Chol_triangular_solve // performs the sparse REF triangular so
         }
     }
     
-    if (k == n-1)
-    {
-        printf("\nxi at n-1 is:\n");
-        for (p = top; p < n; p++)
-        {
-            printf(" %ld", xi[p]);
-        }
-    }
-    
     //--------------------------------------------------------------------------
     // Iterate accross nonzeros in x
     //--------------------------------------------------------------------------
