@@ -1,10 +1,6 @@
-TODO: Create a general SPEX matlab function.
+This is the first draft of a general SPEX_backslash function
 
-x = SPEX_backslash(A,b)
-
-if (unsymmetric): x = SPEX_Left_LU_backslash (A, b)
-
-if (SPD): x = SPEX_Chol(A,b)
-
-... more to come
-
+SPEX_backslash_install installs each SPEX_* MATLAB interface and temporarily
+adds them to the path. Then x = SPEX_backslash(A,b) will analyze A and provide
+the appropriate function. Currently, if A appears to be symmetric, Cholesky is tried,
+otherwise LU is done.
