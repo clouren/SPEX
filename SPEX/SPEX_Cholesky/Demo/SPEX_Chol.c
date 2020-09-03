@@ -40,7 +40,7 @@
 }
 
 
-# include "SPEX_Chol.h"
+# include "demos.h"
 
 
 int main( int argc, char* argv[] )
@@ -127,8 +127,13 @@ int main( int argc, char* argv[] )
     bool test;
     //test = SPEX_determine_symmetry(A, 0);    // Determine symmetry just with nonzero pattern
     test = SPEX_determine_symmetry(A, 1);    // Determine symmetry with nonzero pattern and values
-        
-    if (test == false) return 0;
+    
+    // Input is unsymmetric
+    if (test == false)
+    {
+        SPEX_Chol_determine_error(SPEX_UNSYMMETRIC);
+        return 0;
+    }
     
     clock_t end_sym = clock();
     //--------------------------------------------------------------------------

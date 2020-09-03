@@ -1,10 +1,10 @@
 ///------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_determine_symmetry: This function determines if the input matrix is symmetric.
+// SPEX_Util/SPEX_determine_symmetry: This function determines if the input matrix is symmetric.
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, United States Naval Academy, 
 // Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// All Rights Reserved.  See SPEX/License for the license.
 
 //------------------------------------------------------------------------------
 
@@ -22,8 +22,8 @@
  * returned.
  * 
  */
-//TODO: MOVE TO SPEX_UTIL
-#include "SPEX_Chol.h"
+
+#include "spex_util_internal.h"
 
 bool SPEX_determine_symmetry
 (
@@ -43,7 +43,7 @@ bool SPEX_determine_symmetry
     {
         if (T->i[j] != A->i[j])
         {
-            printf("\nError, matrix is not symmetric\n");
+            //printf("\nError, matrix is not symmetric\n");
             SPEX_matrix_free(&T,NULL);
             return false;
         }
@@ -54,7 +54,7 @@ bool SPEX_determine_symmetry
     {
         if (T->p[j] != A->p[j])
         {
-            printf("\nError, matrix is not symmetric\n");
+            //printf("\nError, matrix is not symmetric\n");
             SPEX_matrix_free(&T,NULL);
             return false;
         }
@@ -70,7 +70,7 @@ bool SPEX_determine_symmetry
             SPEX_mpz_cmp(&r, A->x.mpz[j], T->x.mpz[j]);
             if ( r != 0)
             {
-                printf("\nError, pattern is symmetric, values are not\n");
+                //printf("\nError, pattern is symmetric, values are not\n");
                 SPEX_matrix_free(&T,NULL);
                 return false;
             }

@@ -24,7 +24,7 @@
     SPEX_matrix_free(&x, option);   \
     SPEX_finalize();
 
-#include "SPEX_Chol.h"   
+#include "demos.h"   
     
 int main (int argc, char **argv)
 {

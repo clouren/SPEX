@@ -122,7 +122,8 @@ typedef enum
     SPEX_SINGULAR = -2,         // the input matrix A is singular
     SPEX_INCORRECT_INPUT = -3,  // one or more input arguments are incorrect
     SPEX_INCORRECT = -4,        // The solution is incorrect
-    SPEX_PANIC = -5             // SPEX used without proper initialization
+    SPEX_UNSYMMETRIC = -5,      // The input matrix is unsymmetric (for Cholesky)
+    SPEX_PANIC = -6             // SPEX used without proper initialization
 }
 SPEX_info ;
 
@@ -373,7 +374,6 @@ SPEX_info SPEX_matrix_copy
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
-
 //------------------------------------------------------------------------------
 // SPEX_LU_analysis: symbolic pre-analysis
 //------------------------------------------------------------------------------
@@ -563,6 +563,33 @@ SPEX_info SPEX_sparse_collapse
 SPEX_info SPEX_sparse_realloc
 (
     SPEX_matrix* A // the matrix to be expanded
+);
+
+/* Purpose: This function sets C = A' */
+SPEX_info SPEX_transpose
+(
+    SPEX_matrix **C_handle,     // C = A'
+    SPEX_matrix *A              // Matrix to be transposed
+);
+
+/* Purpose: Determine if the input A is indeed symmetric prior to factorization.
+ * There are two options as to how to determine the symmetry. 
+ * By setting the input exhaustive = 1, both the nonzero pattern and the values
+ * of the nonzero entries are checked for symmetry. If A passes both of these tests,
+ * then we can be sure it is indeed fully symmetric.
+ * 
+ * If exhaustive is set to any other value, only the nonzero pattern of A is checked,
+ * thus we cannot gauranteee that the matrix is indeed fully symmetric as the values
+ * of the entries is not checked.
+ * 
+ * On success, 0 is returned. If the matrix is not symmetric, 1 is returned.
+ * 
+ */
+
+bool SPEX_determine_symmetry
+(
+    SPEX_matrix* A,
+    bool exhaustive
 );
 
 //------------------------------------------------------------------------------

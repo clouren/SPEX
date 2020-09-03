@@ -519,23 +519,13 @@ int64_t SPEX_Chol_leaf
     int64_t* jleaf
 );
 
-///* Purpose: Something*/
-//static void init_ata 
-//(
-    //SPEX_matrix *AT, 
-    //int64_t* post, 
-    //int64_t *w, 
-    //int64_t **head, 
-    //int64_t **next
-//);
-
 /* Purpose: Something*/
 int64_t *SPEX_Chol_counts 
 (
     SPEX_matrix *A, 
     int64_t *parent, 
     int64_t *post, 
-    int64_t ata // Parameter if we are doing A or A^T A. Setit as 0
+    int64_t ata // Parameter if we are doing A or A^T A. Set it as 0 TODO Remove?
 );
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve. for uplooking
@@ -578,25 +568,6 @@ SPEX_info SPEX_Chol_Solve               //solves the linear system LD^(-1)L' x =
     SPEX_LU_analysis* S,
     SPEX_options* option        // command options
 );
-
-/* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1] into c 
-   From Tim Davis SuiteSparse */
-//TODO: Replace SPEX_cumsum
-//int64_t IP_cumsum_chol 
-//(
-    //int64_t *p, 
-    //int64_t *c, 
-    //int64_t n
-//);
-
-/* Purpose: This function sets C = A' */
-// TODO: Move to SPEX_Util/SPEX_transpose
-SPEX_info SPEX_transpose
-(
-    SPEX_matrix **C_handle,     // C = A'
-    SPEX_matrix *A              // Matrix to be transposed
-);
-
 
 //----------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------
@@ -653,19 +624,6 @@ SPEX_info SPEX_Chol_forward_sub
     SPEX_matrix *rhos      // sequence of pivots used in factorization
 );
 
-/* Purpose: This processes the command line for user specified options */
-// TODO: Already exist?
-SPEX_info SPEX_Chol_process_command_line //processes the command line
-(
-    int64_t argc,           // number of command line arguments
-    char* argv[],           // set of command line arguments
-    SPEX_options* option,   // struct containing the command options
-    char** mat_name,        // Name of the matrix to be read in
-    char** rhs_name,        // Name of the RHS vector to be read in
-    int64_t *rat            // data type of output solution.
-                            // 1: mpz, 2: double, 3: mpfr
-);
-
 /* Purpose: This function reads in a double matrix stored in a triplet format
  * This format used can be seen in any of the example mat files. 
  * 
@@ -706,36 +664,6 @@ SPEX_info SPEX_Chol_backslash
 );
 
 
-/* Purpose: Determine if the input A is indeed symmetric prior to factorization.
- * There are two options as to how to determine the symmetry. 
- * By setting the input exhaustive = 1, both the nonzero pattern and the values
- * of the nonzero entries are checked for symmetry. If A passes both of these tests,
- * then we can be sure it is indeed fully symmetric.
- * 
- * If exhaustive is set to any other value, only the nonzero pattern of A is checked,
- * thus we cannot gauranteee that the matrix is indeed fully symmetric as the values
- * of the entries is not checked.
- * 
- * On success, 0 is returned. If the matrix is not symmetric, 1 is returned.
- * 
- */
-
-// TODO: Put in SPEX_Util, make bool output
-bool SPEX_determine_symmetry
-(
-    SPEX_matrix* A,
-    bool exhaustive
-);
-
-
-// TODO: Isn't this in SPEX_util?
-//SPEX_info IP_check_solution
-//(
-    //const SPEX_matrix *A,         // Input matrix
-//    const SPEX_matrix *x,         // Solution vectors
-//    const SPEX_matrix *b,         // Right hand side vectors
-//    const SPEX_options* option    // Command options
-//);
 
 
 #endif
