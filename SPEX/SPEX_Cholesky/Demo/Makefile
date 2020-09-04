@@ -31,13 +31,13 @@ lib:
 	( cd ../Lib ; $(MAKE) )
 
 SPEX_Chol: lib SPEX_Chol.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o SPEX_Chol SPEX_Chol.c $(CS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -o SPEX_Chol SPEX_Chol.c demos.c $(CS)
 
 SPEX_Chol_debug: lib SPEX_Chol.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o SPEX_Chol_debug SPEX_Chol.c $(CS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o SPEX_Chol_debug SPEX_Chol.c demos.c $(CS)
 
 example: lib example.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example example.c $(CS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -o example example.c demos.c $(CS)
 
 clean:
 	- $(RM) *.o

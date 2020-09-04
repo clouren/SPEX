@@ -119,7 +119,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
     post = SPEX_Chol_post(S->parent, n);    // Postorder the tree
     
     // Get the column counts of A
-    c = SPEX_Chol_counts(A, S->parent, post, 0);
+    c = SPEX_Chol_counts(A, S->parent, post);
     
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
     SPEX_CHECK( SPEX_cumsum(S->cp, c, n));    // Get column pointers for L

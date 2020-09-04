@@ -524,8 +524,7 @@ int64_t *SPEX_Chol_counts
 (
     SPEX_matrix *A, 
     int64_t *parent, 
-    int64_t *post, 
-    int64_t ata // Parameter if we are doing A or A^T A. Set it as 0 TODO Remove?
+    int64_t *post
 );
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve. for uplooking
@@ -622,26 +621,6 @@ SPEX_info SPEX_Chol_forward_sub
     SPEX_matrix *L,   // lower triangular matrix
     SPEX_matrix *x,        // right hand side matrix of size n*numRHS
     SPEX_matrix *rhos      // sequence of pivots used in factorization
-);
-
-/* Purpose: This function reads in a double matrix stored in a triplet format
- * This format used can be seen in any of the example mat files. 
- * 
- * This is only used for Demo purposes
- */
-//TODO Move to demo
-SPEX_info SPEX_tripread_double
-(
-    SPEX_matrix **A_handle,     // Matrix to be populated
-    FILE* file,                 // file to read from (must already be open)
-    SPEX_options* option
-);
-
-/* Purpose: Determine error in IP Chol, demo only */
-//TODO MOVE TO DEMO
-void SPEX_Chol_determine_error
-(
-    SPEX_info ok
 );
 
 SPEX_info SPEX_Chol_analyze
