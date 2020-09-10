@@ -135,7 +135,7 @@ SPEX_info SPEX_Chol_backslash
 
     S2 = (SPEX_Chol_analysis*) SPEX_malloc(1* sizeof(SPEX_Chol_analysis));    
     
-    SPEX_CHECK(SPEX_Chol_Factor( A2, &L, S2, &rhos, 
+    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, A2, S2,
                                  false,     // True = left, false = up
                                  (SPEX_options*) option));
 

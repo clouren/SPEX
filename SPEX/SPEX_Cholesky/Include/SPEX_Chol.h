@@ -141,8 +141,6 @@
 
 
 // Here are the things to do
-// TODO: Documentation
-// TODO: Tcov
 // TODO: Change outputs to SPEX_info
 // TODO: Put const where appropriate
 

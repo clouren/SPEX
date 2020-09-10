@@ -13,8 +13,9 @@
 
 /* Purpose: Compute the elimination tree of A */
 
-int64_t* spex_Chol_etree 
+SPEX_info spex_Chol_etree 
 (
+    int64_t** tree,
     SPEX_matrix* A // Input matrix (must be SPD)
 )
 {
@@ -28,6 +29,8 @@ int64_t* spex_Chol_etree
     parent = (int64_t*) SPEX_malloc(n * sizeof(int64_t));
     // Allocate workspace
     w = (int64_t*) SPEX_malloc( (n+m) * sizeof(int64_t));
+    if (!parent || !w)
+        return SPEX_OUT_OF_MEMORY;
     ancestor = w ; prev = w + n ;
     for (k = 0 ; k < n ; k++)
     {
@@ -45,5 +48,6 @@ int64_t* spex_Chol_etree
         }
     }
     SPEX_FREE(w);
-    return parent;
+    (*tree) = parent;
+    return SPEX_OK;
 }

@@ -21,11 +21,7 @@
 
 #define SPEX_FREE_WORKSPACE            \
 {                                      \
-    for (i = 0; i < n; i++)            \
-    {                                  \
-        SPEX_FREE(h[i]);               \
-    }                                  \
-    SPEX_FREE(h);                      \
+SPEX_matrix_free(&h, NULL);             \
 }
 
 #include "spex_chol_internal.h"
@@ -104,7 +100,7 @@ SPEX_info spex_Chol_forward_sub
                 // m > i
                 if (mnew > i)
                 {
-                    p = h[mnew][k];
+                    p = SPEX_2D(h, mnew, k, int64);
                     // x[mnew] is zero
                     OK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, mnew, k, mpz)));
                     if (sgn == 0)

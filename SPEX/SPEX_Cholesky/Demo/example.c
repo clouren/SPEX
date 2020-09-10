@@ -51,8 +51,8 @@ int main (int argc, char **argv)
     // Get matrix and right hand side file names
     //--------------------------------------------------------------------------
     char *mat_name, *rhs_name;
-    mat_name = "../ExampleMats/2.mat";
-    rhs_name = "../ExampleMats/2.mat.soln";
+    mat_name = "../ExampleMats/872.mat";
+    rhs_name = "../ExampleMats/872.mat.soln";
     if (argc > 2)
     {
         mat_name = argv[1];
@@ -125,6 +125,7 @@ int main (int argc, char **argv)
     // SPEX LU has an optional check, to enable it, one can set the following
     // parameter to be true.
     option->check = true;
+    //option->print_level = 2;
    
     // Solve the system and give MPQ solution
     DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));

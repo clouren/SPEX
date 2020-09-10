@@ -72,8 +72,8 @@ int main( int argc, char* argv[] )
     // Default options. May be changed in SLIP_LU_config.h
     SPEX_options *option = SPEX_create_default_options();
     
-    char* mat_name = "../ExampleMats/872.mat";// Set demo matrix and RHS name
-    char* rhs_name = "../ExampleMats/872.mat.soln";
+    char* mat_name = "../ExampleMats/2.mat";// Set demo matrix and RHS name
+    char* rhs_name = "../ExampleMats/2.mat.soln";
     int64_t rat = 1;
     
     // Process the command line
@@ -167,7 +167,7 @@ int main( int argc, char* argv[] )
     bool left = true;  // Set true if want left-looking
     
     
-    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, A, S2, left, option));
+    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, A2, S2, left, option));
     
 //    SPEX_matrix_check(L, option);
 //     

@@ -324,8 +324,9 @@ static inline int compare (const void * a, const void * b)
 // ============================================================================
 
 /* Purpose: Compute the elimination tree of A */
-int64_t* spex_Chol_etree 
+SPEX_info spex_Chol_etree 
 (
+    int64_t** tree,
     SPEX_matrix* A // Input matrix (must be SPD)
 );
 
