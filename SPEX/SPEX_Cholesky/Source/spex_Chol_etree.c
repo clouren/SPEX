@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_etree: Compute the elimination tree of a matrix A
+// SPEX_Chol/spex_Chol_etree: Compute the elimination tree of a matrix A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -8,12 +8,12 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 
 /* Purpose: Compute the elimination tree of A */
 
-int64_t* SPEX_Chol_etree 
+int64_t* spex_Chol_etree 
 (
     SPEX_matrix* A // Input matrix (must be SPD)
 )

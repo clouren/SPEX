@@ -14,7 +14,7 @@
     SPEX_MPQ_CLEAR(scale);                  \
     SPEX_MPQ_CLEAR(det2);                   \
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
     
 /* Purpose: This function solves the linear system LD^(-1)L' x = b.*
  *
@@ -87,7 +87,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     }
     
     // b2 = L \ b2    
-    OK(SPEX_Chol_forward_sub(L, b2, rhos));
+    OK(spex_Chol_forward_sub(L, b2, rhos));
     
     // b2 = b2 * det 
     nz = SPEX_matrix_nnz(b, NULL);
@@ -98,7 +98,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     
     SPEX_CHECK(SPEX_mpq_init(det2));
     // b2 = L' \ b2
-    OK(SPEX_Chol_ltsolve(L, b2));
+    OK(spex_Chol_ltsolve(L, b2));
     
     // x = b2/det 
     mpq_set_num(det2, rhos->x.mpz[L->n-1]);

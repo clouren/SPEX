@@ -16,7 +16,7 @@
     SPEX_FREE(post);                \
 
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
     
 /* Purpose: This function performs the integer preserving Cholesky factorization.
  * It allows either the left-looking or up-looking integer-preserving Cholesky factorization.
@@ -115,11 +115,11 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
 
         
     // Obtain the elimination tree of A
-    S->parent = SPEX_Chol_etree(A);         // Obtain the elim tree
-    post = SPEX_Chol_post(S->parent, n);    // Postorder the tree
+    S->parent = spex_Chol_etree(A);         // Obtain the elim tree
+    post = spex_Chol_post(S->parent, n);    // Postorder the tree
     
     // Get the column counts of A
-    c = SPEX_Chol_counts(A, S->parent, post);
+    c = spex_Chol_counts(A, S->parent, post);
     
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
     SPEX_CHECK( SPEX_cumsum(S->cp, c, n));    // Get column pointers for L
@@ -180,7 +180,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
     
     if (left)
     {
-        OK(SPEX_Chol_Pre_Left_Factor(A, &L, xi, S->parent, S, c));
+        OK(spex_Chol_Pre_Left_Factor(A, &L, xi, S->parent, S, c));
     }
     else
     {
@@ -203,7 +203,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
         for (k = 0; k < n; k++)
         {
             // LDx = A(:,k)
-            OK (SPEX_Left_Chol_triangular_solve(&top, L, A, k, xi, rhos, h, x, S->parent, c));
+            OK (spex_Left_Chol_triangular_solve(&top, L, A, k, xi, rhos, h, x, S->parent, c));
 
             // Set the pivot element
             if (mpz_sgn(x->x.mpz[k]) != 0)
@@ -244,7 +244,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
         for (k = 0; k < n; k++)
         {
             // LDx = A(:,k)
-            SPEX_CHECK ( SPEX_Up_Chol_triangular_solve(&top, L, A, k, xi, S->parent, c, rhos, h, x));
+            SPEX_CHECK ( spex_Up_Chol_triangular_solve(&top, L, A, k, xi, S->parent, c, rhos, h, x));
         
             // If x[k] is nonzero that is the pivot. if x[k] == 0 then matrix is singular.
             if (mpz_sgn(x->x.mpz[k]) != 0)

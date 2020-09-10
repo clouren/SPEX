@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_post: Postorder a forest
+// SPEX_Chol/spex_Chol_post: Postorder a forest
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -8,10 +8,10 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 /* Purpose: post order a forest */
-int64_t* SPEX_Chol_post 
+int64_t* spex_Chol_post 
 (
     int64_t* parent,    // Parent[j] is parent of node j int64_t* forest
     int64_t n           // Number of nodes int64_t* the forest
@@ -33,7 +33,7 @@ int64_t* SPEX_Chol_post
     for (j = 0 ; j < n ; j++)
     {
         if (parent [j] != -1) continue ;    // skip j if it is not a root 
-        k = SPEX_Chol_tdfs (j, k, head, next, post, stack) ;
+        k = spex_Chol_tdfs (j, k, head, next, post, stack) ;
     }
     SPEX_free(w);
     return (post) ;  // success; free w, return post 

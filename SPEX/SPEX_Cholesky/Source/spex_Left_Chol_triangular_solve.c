@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve for
  * the left looking Cholesky factorization. i.e., LD x = A(:,k). At the end of this function,
@@ -40,7 +40,7 @@
  * c:               Column pointers of L
  * 
  */
-SPEX_info SPEX_Left_Chol_triangular_solve // performs the sparse REF triangular solve
+SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular solve
 (
     int64_t *top_output,        // Output the beginning of nonzero pattern
     SPEX_matrix* L,              // partial L matrix
@@ -75,7 +75,7 @@ SPEX_info SPEX_Left_Chol_triangular_solve // performs the sparse REF triangular 
      * the vector xi contains the indices of the first k-1 nonzeros in column
      * k of L 
      */
-    top = SPEX_Chol_ereach(A, k, parent, xi, c);
+    top = spex_Chol_ereach(A, k, parent, xi, c);
     
     j = top; // Store where the first k-1 nonzeros end
     

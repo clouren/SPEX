@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 /* Purpose: Free the SPEX_Chol_analysis Structure*/
 void SPEX_Chol_analysis_free
 (

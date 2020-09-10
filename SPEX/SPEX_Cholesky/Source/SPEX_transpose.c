@@ -11,7 +11,7 @@
 #define FREE_WORKSPACE  \
     SPEX_FREE(w);       \
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
     
 //TODO: Move to SPEX_Util
 /* Purpose: This function sets C = A' 

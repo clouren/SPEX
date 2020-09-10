@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_leaf: Subroutine for column counts of Cholesky
+// SPEX_Chol/spex_Chol_leaf: Subroutine for column counts of Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -8,11 +8,11 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j) 
    Used to determine Column counts of Cholesky factor*/
-int64_t SPEX_Chol_leaf 
+int64_t spex_Chol_leaf 
 (
     int64_t i, 
     int64_t j, 

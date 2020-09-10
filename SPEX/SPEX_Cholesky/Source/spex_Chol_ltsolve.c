@@ -10,13 +10,13 @@
 #define FREE_WORKSPACE          \
 return SPEX_OUT_OF_MEMORY;      \
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 /* Purpose: This solves the system L'x = b for Cholesky factorization 
  * On input, L contains the lower triangular matrix. x has the solution
  * to the linear system from forward substitution
  */
-SPEX_info SPEX_Chol_ltsolve 
+SPEX_info spex_Chol_ltsolve 
 (
     SPEX_matrix *L,     // The lower triangular matrix
     SPEX_matrix *x      // Solution vector

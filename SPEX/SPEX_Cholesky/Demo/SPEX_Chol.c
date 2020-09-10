@@ -101,7 +101,7 @@ int main( int argc, char* argv[] )
     pinv = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
     // Create RHS
     for (int64_t k = 0; k < n; k++)
-        OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
+        DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
     
     //--------------------------------------------------------------------------
     // Perform Ordering of A

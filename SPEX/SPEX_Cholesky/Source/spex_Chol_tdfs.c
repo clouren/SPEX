@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_tdfs: DFS of a tree rooted at a node
+// SPEX_Chol/spex_Chol_tdfs: DFS of a tree rooted at a node
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -7,12 +7,12 @@
 // All Rights Reserved.  See SPEX_Cholesky/License for the license.
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
 
-int64_t SPEX_Chol_tdfs 
+int64_t spex_Chol_tdfs 
 (
     int64_t j,      // Root node
     int64_t k,      

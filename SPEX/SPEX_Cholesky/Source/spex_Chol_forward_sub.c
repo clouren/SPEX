@@ -28,9 +28,9 @@
     SPEX_FREE(h);                      \
 }
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
-SPEX_info SPEX_Chol_forward_sub
+SPEX_info spex_Chol_forward_sub
 (
     SPEX_matrix *L,         // lower triangular matrix
     SPEX_matrix *x,         // right hand side matrix of size n*numRHS

@@ -27,7 +27,7 @@
 // This function is a slightly modified version of SPEX_Left_LU's 
 // LU analysis function
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 SPEX_info SPEX_Chol_analyze
 (

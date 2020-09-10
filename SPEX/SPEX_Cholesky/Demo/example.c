@@ -25,6 +25,18 @@
     SPEX_finalize();
 
 #include "demos.h"   
+
+#define DEMO_OK(method)                 \
+{                                       \
+    ok = method ;                       \
+    if (ok != SPEX_OK)                  \
+    {                                   \
+        SPEX_Chol_determine_error(ok);  \
+        FREE_WORKSPACE ;                \
+        return 0 ;                      \
+    }                                   \
+}
+
     
 int main (int argc, char **argv)
 {
@@ -76,7 +88,7 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-    OK(SPEX_tripread_double(&A, mat_file, option));
+    DEMO_OK(SPEX_tripread_double(&A, mat_file, option));
     fclose(mat_file);
 
     // Read in b. The output of this demo function is b in dense format with
@@ -93,7 +105,7 @@ int main (int argc, char **argv)
     SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
     // Create RHS
     for (int64_t k = 0; k < n; k++)
-        OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
+        DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
 
     // Check if the size of A matches b
     if (A->n != b->m)
@@ -115,7 +127,7 @@ int main (int argc, char **argv)
     option->check = true;
    
     // Solve the system and give MPQ solution
-    OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
+    DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
     
     clock_t end_s = clock();
 

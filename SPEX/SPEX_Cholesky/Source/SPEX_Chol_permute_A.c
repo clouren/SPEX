@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 /* Purpose: Permute the matrix A and return A2 = PAP */
 SPEX_info SPEX_Chol_permute_A

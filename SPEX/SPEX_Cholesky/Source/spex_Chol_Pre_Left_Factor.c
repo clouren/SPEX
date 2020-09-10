@@ -9,12 +9,13 @@
 //------------------------------------------------------------------------------
 
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
+
 /* Purpose: This function performs a symbolic left-looking factorization
  * It allocates the memory for the L matrix and allocates the individual
  * entries in the matrix.
  */
-SPEX_info SPEX_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol factor
+SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol factor
 (
     SPEX_matrix* A,                 // Input matrix
     SPEX_matrix** L_handle,         // partial L matrix
@@ -48,7 +49,7 @@ SPEX_info SPEX_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol facto
     //--------------------------------------------------------------------------
     for (k = 1; k < n; k++)
     {
-        top = SPEX_Chol_ereach(A, k, parent, xi, c);  // Obtain nonzero pattern in xi[top..n]
+        top = spex_Chol_ereach(A, k, parent, xi, c);  // Obtain nonzero pattern in xi[top..n]
      
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x

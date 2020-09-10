@@ -29,12 +29,12 @@ C = $(CC) $(CF) -I../Include -I../../COLAMD/Include -I../../AMD/Include -I../../
 all: install
 
 OBJ = \
-     SPEX_Chol_analysis_free.o SPEX_Chol_post.o SPEX_Chol_counts.o SPEX_Chol_Pre_Left_Factor.o \
-     SPEX_Chol_ereach.o \
-     SPEX_Chol_Solve.o SPEX_Chol_etree.o SPEX_Chol_tdfs.o SPEX_Chol_Factor.o \
-     SPEX_Chol_forward_sub.o SPEX_Left_Chol_triangular_solve.o \
-     SPEX_Chol_leaf.o SPEX_Chol_ltsolve.o SPEX_Chol_permute_A.o \
-     SPEX_Up_Chol_triangular_solve.o SPEX_Chol_analyze.o SPEX_Chol_backslash.o
+     SPEX_Chol_analysis_free.o spex_Chol_post.o spex_Chol_counts.o spex_Chol_Pre_Left_Factor.o \
+     spex_Chol_ereach.o \
+     SPEX_Chol_Solve.o spex_Chol_etree.o spex_Chol_tdfs.o SPEX_Chol_Factor.o \
+     spex_Chol_forward_sub.o spex_Left_Chol_triangular_solve.o \
+     spex_Chol_leaf.o spex_Chol_ltsolve.o SPEX_Chol_permute_A.o \
+     spex_Up_Chol_triangular_solve.o SPEX_Chol_analyze.o SPEX_Chol_backslash.o
 
 $(OBJ): ../Include/SPEX_Chol.h Makefile
 

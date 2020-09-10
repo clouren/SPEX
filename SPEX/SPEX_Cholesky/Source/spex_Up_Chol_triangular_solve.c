@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve for
@@ -44,7 +44,7 @@
 
 
 
-SPEX_info SPEX_Up_Chol_triangular_solve // performs the sparse REF triangular solve
+SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular solve
 (
     int64_t *top_output,            // Output the beginng of nonzero pattern
     SPEX_matrix* L,                 // partial L matrix
@@ -73,7 +73,7 @@ SPEX_info SPEX_Up_Chol_triangular_solve // performs the sparse REF triangular so
     //--------------------------------------------------------------------------
     // Initialize REF TS by getting nonzero patern of x && obtaining A(:,k)
     //--------------------------------------------------------------------------
-    top = SPEX_Chol_ereach(A, k, parent, xi, c);  // Obtaint nonzero pattern in xi[top..n]
+    top = spex_Chol_ereach(A, k, parent, xi, c);  // Obtaint nonzero pattern in xi[top..n]
     qsort(&xi[top], n-top, sizeof(int64_t*), compare); 
     
     

@@ -47,7 +47,7 @@
     SPEX_FREE_WORK                  \
     SPEX_matrix_free(&x, NULL);     \
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 SPEX_info SPEX_Chol_backslash
 (

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_Counts: Column counts for Cholesky factorization
+// SPEX_Chol/spex_Chol_Counts: Column counts for Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
+#include "spex_chol_internal.h"
 
 //#define HEAD(k,j) (ata ? head [k] : j)
 //#define NEXT(J)   (ata ? next [J] : -1)
@@ -17,7 +17,7 @@
 
 
 /* Purpose: Obtaint the column counts of an SPD matrix for Cholesky factorization */
-int64_t* SPEX_Chol_counts 
+int64_t* spex_Chol_counts 
 (
     SPEX_matrix *A, 
     int64_t *parent, 
@@ -49,7 +49,7 @@ int64_t* SPEX_Chol_counts
             for (p = A->p [J] ; p < A->p [J+1] ; p++)
             {
                 i = A->i [p] ;
-                q = SPEX_Chol_leaf (i, j, first, maxfirst, prevleaf, ancestor, &jleaf);
+                q = spex_Chol_leaf (i, j, first, maxfirst, prevleaf, ancestor, &jleaf);
                 if (jleaf >= 1) delta [j]++ ;   /* A(i,j) is in skeleton */
                 if (jleaf == 2) delta [q]-- ;   /* account for overlap in q */
             }
