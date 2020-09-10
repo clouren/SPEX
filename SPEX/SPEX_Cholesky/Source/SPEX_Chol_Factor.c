@@ -118,10 +118,10 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
         
     // Obtain the elimination tree of A
     SPEX_CHECK(spex_Chol_etree(&S->parent, A));         // Obtain the elim tree
-    post = spex_Chol_post(S->parent, n);    // Postorder the tree
+    SPEX_CHECK( spex_Chol_post(&post, S->parent, n));    // Postorder the tree
     
     // Get the column counts of A
-    c = spex_Chol_counts(A, S->parent, post);
+    SPEX_CHECK( spex_Chol_counts(&c, A, S->parent, post));
     
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
     SPEX_CHECK( SPEX_cumsum(S->cp, c, n));    // Get column pointers for L

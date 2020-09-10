@@ -16,16 +16,18 @@
 /* Purpose: Obtain the column counts of an SPD matrix for Cholesky factorization*
  * This is a modified version of Csparse's cs_chol_counts function
  */
-int64_t* spex_Chol_counts 
+SPEX_info spex_Chol_counts 
 (
+    int64_t** c_handle,
     SPEX_matrix *A, 
     int64_t *parent, 
     int64_t *post
 )
 {
+    SPEX_info ok;
     int64_t i, j, k, n, m, J, s, p, q, jleaf, *maxfirst, *prevleaf,
         *ancestor, *head = NULL, *next = NULL, *colcount, *w, *first, *delta ;
-    if (!A || !parent || !post) return (NULL) ;    /* check inputs */
+    if (!A || !parent || !post) return (SPEX_INCORRECT_INPUT) ;    /* check inputs */
     m = A->m ; n = A->n ;
     // Can not have negative m or n
     ASSERT(n >= 0);
@@ -69,7 +71,7 @@ int64_t* spex_Chol_counts
             for (p = A->p [J] ; p < A->p [J+1] ; p++)
             {
                 i = A->i [p] ;
-                q = spex_Chol_leaf (i, j, first, maxfirst, prevleaf, ancestor, &jleaf);
+                SPEX_CHECK(spex_Chol_leaf (&q, i, j, first, maxfirst, prevleaf, ancestor, &jleaf));
                 if (jleaf >= 1)
                 {
                     delta [j]++ ;   /* A(i,j) is in skeleton */
@@ -93,5 +95,6 @@ int64_t* spex_Chol_counts
         }
     }
     SPEX_FREE(w);
-    return colcount;    
+    (*c_handle) = colcount;
+    return SPEX_OK;    
 } 

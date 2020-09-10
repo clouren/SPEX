@@ -141,7 +141,6 @@
 
 
 // Here are the things to do
-// TODO: Change outputs to SPEX_info
 // TODO: Put const where appropriate
 
 //------------------------------------------------------------------------------

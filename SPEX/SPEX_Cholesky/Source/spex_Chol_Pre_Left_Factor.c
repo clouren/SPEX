@@ -26,6 +26,7 @@ SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol facto
 )
 {
     // Input check/
+    SPEX_info ok;
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     if (!L_handle || !xi || !parent || !S || !c)
         return SPEX_INCORRECT_INPUT;
@@ -49,7 +50,7 @@ SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol facto
     //--------------------------------------------------------------------------
     for (k = 1; k < n; k++)
     {
-        top = spex_Chol_ereach(A, k, parent, xi, c);  // Obtain nonzero pattern in xi[top..n]
+        SPEX_CHECK(spex_Chol_ereach(&top, A, k, parent, xi, c));  // Obtain nonzero pattern in xi[top..n]
      
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x

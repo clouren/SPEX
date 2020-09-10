@@ -334,8 +334,9 @@ SPEX_info spex_Chol_etree
    elimination tree. This is more efficient than the SPEX_reach function 
    It finds the nonzero pattern of row k of L and uses the upper triangular 
    part of A(:,k) */
-int64_t spex_Chol_ereach 
+SPEX_info spex_Chol_ereach 
 (
+    int64_t* top_handle,
     SPEX_matrix *A,    // Matrix to be analyzed
     int64_t k,          // Node to start at
     int64_t* parent,    // ELimination Tree
@@ -355,8 +356,9 @@ int64_t spex_Chol_tdfs
 );
 
 /* Purpose: post order a forest */
-int64_t *spex_Chol_post 
+SPEX_info spex_Chol_post 
 (
+    int64_t** post_handle,
     int64_t* parent,    // Parent[j] is parent of node j in forest
     int64_t n           // Number of nodes in the forest
 );
@@ -364,8 +366,9 @@ int64_t *spex_Chol_post
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j) 
    Used to determine Column counts of cholesky factor*/
-int64_t spex_Chol_leaf 
+SPEX_info spex_Chol_leaf 
 (
+    int64_t* lca_handle,
     int64_t i, 
     int64_t j, 
     int64_t* first, 
@@ -376,8 +379,9 @@ int64_t spex_Chol_leaf
 );
 
 /* Purpose: Something*/
-int64_t *spex_Chol_counts 
+SPEX_info spex_Chol_counts 
 (
+    int64_t** c_handle,
     SPEX_matrix *A, 
     int64_t *parent, 
     int64_t *post

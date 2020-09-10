@@ -12,8 +12,9 @@
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j) 
    Used to determine Column counts of Cholesky factor*/
-int64_t spex_Chol_leaf 
+SPEX_info spex_Chol_leaf 
 (
+    int64_t* lca_handle,
     int64_t i, 
     int64_t j, 
     int64_t* first, 
@@ -25,20 +26,29 @@ int64_t spex_Chol_leaf
 {
     int64_t q, s, sparent, jprev ;
     // Check inputs
-    if (!first || !maxfirst || !prevleaf || !ancestor || !jleaf) return (-1) ;
+    if (!first || !maxfirst || !prevleaf || !ancestor || !jleaf) return (SPEX_INCORRECT_INPUT) ;
     
     *jleaf = 0 ;
-    if (i <= j || first [j] <= maxfirst [i]) return (-1) ;  // j not a leaf 
+    if (i <= j || first [j] <= maxfirst [i])
+    {
+        (*lca_handle) = -1;
+        return (SPEX_OK) ;  // j not a leaf 
+    }
     maxfirst [i] = first [j] ;      // update max first[j] seen so far 
     jprev = prevleaf [i] ;          // jprev = previous leaf of ith subtree 
     prevleaf [i] = j ;
     *jleaf = (jprev == -1) ? 1: 2 ; // j is first or subsequent leaf 
-    if (*jleaf == 1) return (i) ;   // if 1st leaf, q = root of ith subtree 
+    if (*jleaf == 1)
+    {
+        (*lca_handle) = i;
+        return SPEX_OK ;   // if 1st leaf, q = root of ith subtree 
+    }
     for (q = jprev ; q != ancestor [q] ; q = ancestor [q]) ;
     for (s = jprev ; s != q ; s = sparent)
     {
         sparent = ancestor [s] ;    // path compression 
         ancestor [s] = q ;
     }
-    return (q) ;                    // q = least common ancester (jprev,j) 
+    (*lca_handle) = q;
+    return SPEX_OK ;                    // q = least common ancester (jprev,j) 
 }

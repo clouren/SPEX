@@ -76,7 +76,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
      * the vector xi contains the indices of the first k-1 nonzeros in column
      * k of L 
      */
-    top = spex_Chol_ereach(A, k, parent, xi, c);
+    OK( spex_Chol_ereach(&top, A, k, parent, xi, c));
     
     j = top; // Store where the first k-1 nonzeros end
     

@@ -76,7 +76,7 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     // Initialize REF TS by getting nonzero patern of x && obtaining A(:,k)
     //--------------------------------------------------------------------------
     // Obtain the nonzero patter in xi[top..n]
-    top = spex_Chol_ereach(A, k, parent, xi, c);
+    SPEX_CHECK(spex_Chol_ereach(&top, A, k, parent, xi, c));
     // Sort the nonzero pattern using quicksort
     qsort(&xi[top], n-top, sizeof(int64_t*), compare); 
         

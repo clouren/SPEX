@@ -14,8 +14,9 @@
    elimination tree. It finds the nonzero pattern of row k of L and uses the upper triangular 
    part of A(:,k) */
    
-int64_t spex_Chol_ereach 
+SPEX_info spex_Chol_ereach 
 (
+    int64_t* top_handle,
     SPEX_matrix *A,      // Matrix to be analyzed
     int64_t k,           // Node to start at
     int64_t*  parent,    // ELimination Tree
@@ -26,7 +27,7 @@ int64_t spex_Chol_ereach
     int64_t i, p, n, len, top ;
     // Check inputs
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
-    if (!parent || !s || !w) return (-1) ;
+    if (!parent || !s || !w) return (SPEX_INCORRECT_INPUT) ;
     ASSERT(A->n >= 0);
     top = n = A->n ; 
     // Mark node k as visited
@@ -49,5 +50,6 @@ int64_t spex_Chol_ereach
     }
     for (p = top ; p < n ; p++) SPEX_MARK (w, s [p]) ;    // unmark all nodes 
     SPEX_MARK (w, k) ;                // unmark node k 
-    return (top) ;                    // s [top..n-1] containt64_t*s pattern of L(k,:)
+    (*top_handle) = top;
+    return SPEX_OK ;                    // s [top..n-1] contains pattern of L(k,:)
 }
