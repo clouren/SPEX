@@ -167,7 +167,7 @@ int main( int argc, char* argv[] )
     bool left = true;  // Set true if want left-looking
     
     
-    DEMO_OK( SPEX_Chol_Factor( A2, &L, S2, &rhos, left, option));
+    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, A, S2, left, option));
     
 //    SPEX_matrix_check(L, option);
 //     

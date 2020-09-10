@@ -27,6 +27,7 @@ int64_t spex_Chol_ereach
     // Check inputs
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     if (!parent || !s || !w) return (-1) ;
+    ASSERT(A->n >= 0);
     top = n = A->n ; 
     // Mark node k as visited
     SPEX_MARK (w, k) ;
@@ -35,7 +36,10 @@ int64_t spex_Chol_ereach
     {
         // A(i,k) is nonzero
         i = A->i [p] ;
-        if (i > k) continue ;  // only use upper triangular part of A 
+        if (i > k) 
+        {
+            continue ;  // only use upper triangular part of A 
+        }
         for (len = 0 ; !SPEX_MARKED (w,i) ; i = parent [i]) // traverse up etree
         {
             s [len++] = i ;           // L(k,i) is nonzero 

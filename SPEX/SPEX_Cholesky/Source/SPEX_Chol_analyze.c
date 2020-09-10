@@ -8,8 +8,9 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs the symbolic ordering for SPEX LU.
+/* Purpose: This function performs the symbolic ordering for SPEX Cholesky.
  * Currently, there are three options: user-defined order, COLAMD, or AMD.
+ * It is *highly* recommended that AMD is used for Cholesky factorization.
  *
  * Input/output arguments:
  *
@@ -46,6 +47,9 @@ SPEX_info SPEX_Chol_analyze
     // A can have any data type, but must be in sparse CSC format
     SPEX_REQUIRE_KIND (A, SPEX_CSC) ;
 
+    // m = n for Cholesky factorization
+    ASSERT( A->n == A->m);
+    
     if (!S_handle || A->n != A->m)
     {
         return SPEX_INCORRECT_INPUT;
@@ -57,8 +61,11 @@ SPEX_info SPEX_Chol_analyze
     //--------------------------------------------------------------------------
 
     SPEX_LU_analysis *S = NULL ;
-    int64_t i, n = A->n, anz = SPEX_matrix_nnz(A, option);
-    // ALlocate memory for S
+    int64_t i, n = A->n;
+    ASSERT( n >= 0); // Dimension can't be negative
+    int64_t anz = SPEX_matrix_nnz(A, option);   // Number of nonzeros in A
+    
+    // Allocate memory for S
     S = (SPEX_LU_analysis*) SPEX_malloc(sizeof(SPEX_LU_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
 
@@ -86,13 +93,14 @@ SPEX_info SPEX_Chol_analyze
             S->q[i] = i;
         }
         // estimates for number of L and U nonzeros
-        S->lnz = S->unz = 10*anz;
+        S->lnz = 10*anz;
     }
 
     //--------------------------------------------------------------------------
     // The AMD ordering is used. S->q is set to AMD's column ordering on
-    // A+A'. The number of nonzeros in L and U is given as AMD's computed
-    // number of nonzeros in the Cholesky factor L of A+A'
+    // A. The number of nonzeros in L is given as AMD's computed
+    // number of nonzeros in the Cholesky factor L of A which is the exact
+    // nnz(L) for Cholesky factorization (barring numeric cancellation)
     //--------------------------------------------------------------------------
     else if (order == SPEX_AMD)
     {
@@ -102,7 +110,7 @@ SPEX_info SPEX_Chol_analyze
         // Perform AMD
         amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
             (SuiteSparse_long *) S->q, Control, Info) ;
-        S->lnz = S->unz = Info[AMD_LNZ];        // estimate for unz and lnz
+        S->lnz = Info[AMD_LNZ];        // estimate for unz and lnz
         if (pr > 0)   // Output AMD info if desired
         {
             SPEX_PRINTF ("\n****Column Ordering Information****\n") ;
@@ -113,7 +121,7 @@ SPEX_info SPEX_Chol_analyze
 
     //--------------------------------------------------------------------------
     // The COLAMD ordering is used. S->q is set as COLAMD's column ordering.
-    // The number of nonzeros in L and U is set as 10 times the number of
+    // The number of nonzeros in L is set as 10 times the number of
     // nonzeros in A. This is a crude estimate.
     //--------------------------------------------------------------------------
     else
@@ -142,7 +150,7 @@ SPEX_info SPEX_Chol_analyze
             (SuiteSparse_long *) S->q, (double *) NULL,
             (SuiteSparse_long *) stats) ;
         // estimate for lnz and unz
-        S->lnz = S->unz = 10*anz;
+        S->lnz = 10*anz;
 
         // Print stats if desired
         if (pr > 0)
@@ -166,7 +174,7 @@ SPEX_info SPEX_Chol_analyze
         int64_t nnz = ceil(0.5*n*n);
         S->lnz = S->unz = nnz;
     }
-    // If estimate < n, first column of triangular solve may fail
+    // If estimate < n, first iteration of left-looking TS may fail
     if (S->lnz < n)
     {
         S->lnz = S->lnz + n;

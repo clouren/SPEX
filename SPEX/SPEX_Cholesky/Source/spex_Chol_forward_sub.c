@@ -38,31 +38,26 @@ SPEX_info spex_Chol_forward_sub
 )
 {
     SPEX_info ok;
-    int64_t  i, j, p, k, n, m, mnew, **h;
+    int64_t  i, j, p, k, n, m, mnew;
     // Size of x vector
     n = L->n;
 
+    ASSERT(n >=0)
+    
     int sgn;
     // calloc is used, so that h is initialized for SPEX_FREE_WORKSPACE
-    h = (int64_t**) SPEX_calloc(n, sizeof(int64_t*));
-    if (!h)
-    {
-        return SPEX_OUT_OF_MEMORY;
-    }
-    for (i = 0; i < n; i++)
-    {
-        h[i] = (int64_t*) SPEX_malloc(x->n* sizeof(int64_t));
-        if (!h[i])
-        {
-            SPEX_FREE_WORKSPACE;
-            return SPEX_OUT_OF_MEMORY;
-        }
-        for (j = 0; j < x->n; j++)
-        {
-            h[i][j] = -1;
-        }
-    }
+    
+    // Build the history matrix
+    SPEX_matrix *h;
+    SPEX_CHECK (SPEX_matrix_allocate(&h, SPEX_DENSE, SPEX_INT64, x->m, x->n,
+        x->nzmax, false, true, NULL));
 
+    // initialize entries of history matrix to be -1
+    for (i = 0; i < x->nzmax; i++)
+    {
+        h->x.int64[i] = -1;
+    }
+            
     //--------------------------------------------------------------------------
     // Iterate across each RHS vector
     //--------------------------------------------------------------------------
@@ -74,7 +69,7 @@ SPEX_info spex_Chol_forward_sub
         //----------------------------------------------------------------------
         for (i = 0; i < n; i++)
         {
-            p = h[i][k];
+            p = SPEX_2D(h, i, k, int64);
             // If x[i][k] = 0, can skip operations and continue to next i
             OK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, i, k, mpz)));
             if (sgn == 0) {continue;}
@@ -150,7 +145,7 @@ SPEX_info spex_Chol_forward_sub
                                                   rhos->x.mpz[i-1]));
                         }
                     }
-                    h[mnew][k] = i;
+                    SPEX_2D(h, mnew, k, int64) = i;
                 }
             }
         }

@@ -61,19 +61,22 @@ SPEX_info SPEX_Chol_backslash
     const SPEX_options* option    // Command options
 )
 {
-     //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     // check inputs
     //-------------------------------------------------------------------------
 
     SPEX_info ok ;
+    // SPEX must be initialized
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
+    // X can't be NULL
     if (X_handle == NULL)
     {
         return SPEX_INCORRECT_INPUT;
     }
     (*X_handle) = NULL;
 
+    // type must be acceptable
     if (type != SPEX_MPQ && type != SPEX_FP64 && type != SPEX_MPFR)
     {
         return SPEX_INCORRECT_INPUT;
@@ -92,6 +95,9 @@ SPEX_info SPEX_Chol_backslash
     SPEX_LU_analysis *S = NULL;
     int64_t k, n = A->n, index;
 
+    // n must be at least 0
+    ASSERT(n >= 0);
+    
     //--------------------------------------------------------------------------
     // Symbolic Analysis
     //--------------------------------------------------------------------------
@@ -100,11 +106,10 @@ SPEX_info SPEX_Chol_backslash
     
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky
-    // uncomment the one desired.
     // --------------------------------------------------------------------------
     
+    //TODO fix
     bool test;
-    //test = SPEX_determine_symmetry(A, 0);    // Determine symmetry just with nonzero pattern
     test = SPEX_determine_symmetry( (SPEX_matrix*) A, 1);    // Determine symmetry with nonzero pattern and values
         
     if (test == false) 
@@ -122,9 +127,6 @@ SPEX_info SPEX_Chol_backslash
         index = S->q[k];
         pinv2[index] = k;
     }
-    
-    
-    
     SPEX_CHECK( SPEX_Chol_permute_A(&A2, (SPEX_matrix*) A, pinv2, S));
 
     //--------------------------------------------------------------------------
@@ -132,6 +134,7 @@ SPEX_info SPEX_Chol_backslash
     //--------------------------------------------------------------------------
 
     S2 = (SPEX_Chol_analysis*) SPEX_malloc(1* sizeof(SPEX_Chol_analysis));    
+    
     SPEX_CHECK(SPEX_Chol_Factor( A2, &L, S2, &rhos, 
                                  false,     // True = left, false = up
                                  (SPEX_options*) option));

@@ -24,7 +24,9 @@ int64_t* spex_Chol_etree
     
     int64_t i, k, p, m, n, inext, *w, *parent, *ancestor, *prev ;
     m = A->m ; n = A->n ;
+    // Allocate parent
     parent = (int64_t*) SPEX_malloc(n * sizeof(int64_t));
+    // Allocate workspace
     w = (int64_t*) SPEX_malloc( (n+m) * sizeof(int64_t));
     ancestor = w ; prev = w + n ;
     for (k = 0 ; k < n ; k++)

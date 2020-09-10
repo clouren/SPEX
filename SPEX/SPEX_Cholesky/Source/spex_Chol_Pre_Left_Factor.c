@@ -21,17 +21,17 @@ SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol facto
     SPEX_matrix** L_handle,         // partial L matrix
     int64_t*  xi,                   // nonzero pattern vector
     int64_t*  parent,               // Elimination tree
-    SPEX_Chol_analysis * S,                   // stores nnz and elimination tree
-    int64_t * c                     // Column point64_t*ers
+    SPEX_Chol_analysis * S,         // stores nnz and elimination tree
+    int64_t * c                     // Column pointers
 )
 {
-    //SPEX_info ok;
     // Input check/
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     if (!L_handle || !xi || !parent || !S || !c)
         return SPEX_INCORRECT_INPUT;
     
     int64_t  top, k, j, jnew, n = A->n;
+    ASSERT(n >= 0);
     //--------------------------------------------------------------------------
     // Declare memory for L 
     //--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol facto
     c[0]++;
 
     //--------------------------------------------------------------------------
-    // Iterations 1:n-1 (2:n int64_t* standard)
+    // Iterations 1:n-1 
     //--------------------------------------------------------------------------
     for (k = 1; k < n; k++)
     {

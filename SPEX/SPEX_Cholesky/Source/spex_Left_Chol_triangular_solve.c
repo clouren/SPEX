@@ -35,7 +35,7 @@
  * x:               Solution of linear system. Undefined on input, on output
  *                  contains the kth row of L.
  * 
- * parent:          Elimintaation tree
+ * parent:          Elimination tree
  * 
  * c:               Column pointers of L
  * 
@@ -70,6 +70,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     // Initialize REF TS by getting nonzero patern of x && obtaining A(:,k)
     //--------------------------------------------------------------------------
     n = A->n;                                // Size of matrix and the dense vectors
+    ASSERT(n >= 0);
     
     /* Chol_ereach gives the nonzeros located in L(k,:) upon completion
      * the vector xi contains the indices of the first k-1 nonzeros in column
@@ -98,10 +99,10 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     {
         m = xi[i];
         p = c[m]++;
-        p+=1;
+        p += 1;
         mpz_set(x->x.mpz[m], L->x.mpz[p]);
     }
-
+    // Now we get the rest of column of L directly from A
     for (i = A->p[k]; i < A->p[k+1]; i++)
     {
         if ( A->i[i] >= k)
@@ -109,6 +110,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
             OK(SPEX_mpz_set(x->x.mpz[A->i[i]], A->x.mpz[i]));
         }
     }
+    // Sort the nonzero pattern
     qsort(&xi[top], n-top, sizeof(int64_t), compare);
     
     // Reset h[i] = -1 for all i in nonzero pattern

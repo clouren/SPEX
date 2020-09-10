@@ -141,11 +141,9 @@
 
 
 // Here are the things to do
-// TODO: Replace all prints with SPEX_print
 // TODO: Documentation
 // TODO: Tcov
 // TODO: Change outputs to SPEX_info
-// TODO: Make internal functions and SPEX_Chol_internal
 // TODO: Put const where appropriate
 
 //------------------------------------------------------------------------------
@@ -197,22 +195,26 @@ typedef struct SPEX_Chol_analysis
 } SPEX_Chol_analysis;
     
     
-/* Purpose: Free the Sym_chol data structure */
+/* Purpose: Free the SPEX_Chol_analysis data structure */
 void SPEX_Chol_analysis_free
 (
     SPEX_Chol_analysis* S
 );
    
-/* Purpose: Permute the matrix A and return A2 = PAP */
+/* Purpose: Permute the matrix A and return A2 = PAP' */
 SPEX_info SPEX_Chol_permute_A
 (
-    SPEX_matrix **A2_handle,// Output permuted matrix
-    SPEX_matrix* A,        // Initial input matrix
-    int64_t* pinv,             // Row permutation
-    SPEX_LU_analysis* S    // Column permutation
+    SPEX_matrix **A2_handle,    // Output permuted matrix
+    SPEX_matrix* A,             // Initial input matrix
+    int64_t* pinv,              // Row permutation
+    SPEX_LU_analysis* S         // Column permutation
 );
 
-SPEX_info SPEX_Chol_Solve               //solves the linear system LD^(-1)L' x = b
+/* Purpose: After computing the Cholesky factor A = LDL',
+ * this function solves the associated linear system 
+ * LDL' x = b
+ */
+SPEX_info SPEX_Chol_Solve
 (
     // Output
     SPEX_matrix** x_handle,     // rational solution to the system
@@ -222,29 +224,44 @@ SPEX_info SPEX_Chol_Solve               //solves the linear system LD^(-1)L' x =
     SPEX_matrix* b,             // right hand side vector
     SPEX_matrix* rhos,          // sequence of pivots
     SPEX_matrix* L,             // lower triangular matrix
-    int64_t* pinv,                  // row permutation
-    SPEX_LU_analysis* S,
+    int64_t* pinv,              // row permutation
+    SPEX_LU_analysis* S,        // Symbolic analysis struct
     SPEX_options* option        // command options
 );
 
-SPEX_info SPEX_Chol_Factor           // performs the Up lookint64_t*g Cholesky factorization
+/* Purpose: Compute the integer-preserving factorization A = LDL'
+ * only appropriate if A is SPD. On output, L contains the 
+ * lower triangular matrix and rhos contains the sequence of pivots
+ * used in the factorization 
+ */
+SPEX_info SPEX_Chol_Factor
 (
-    SPEX_matrix* A,             // matrix to be factored
+    // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
-    SPEX_Chol_analysis * S,               // stores guess on nnz and column permutation
     SPEX_matrix ** rhos_handle, // sequence of pivots
+    // Input
+    SPEX_matrix* A,             // matrix to be factored
+    SPEX_Chol_analysis * S,     // stores guess on nnz and column permutation
     bool left,                  // Set true if performing a left-looking factorization
     SPEX_options* option        // command options
 );
 
 
+/* Purpose: Symbolic analysis for integer-preserving Cholesky factorization.
+ * On output, S contains the row/column permutation of A
+ */
 SPEX_info SPEX_Chol_analyze
 (
-    SPEX_LU_analysis** S_handle, // symbolic analysis (row/column perm. and nnz L,U)
+    // Output
+    SPEX_LU_analysis** S_handle, // symbolic analysis 
+    // Input
     const SPEX_matrix *A,        // Input matrix
     const SPEX_options *option   // Control parameters, if NULL, use default
 );
 
+/* Purpose: Compute the exact solution of Ax = b. A must be SPD
+ * on output, x contains the solution of the linear system
+ */
 SPEX_info SPEX_Chol_backslash
 (
     // Output
@@ -256,8 +273,5 @@ SPEX_info SPEX_Chol_backslash
     const SPEX_matrix *b,         // Right hand side vector(s)
     const SPEX_options* option    // Command options
 );
-
-
-
 
 #endif

@@ -45,10 +45,12 @@
  */
 SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky factorization
 (
-    SPEX_matrix* A,             // matrix to be factored
+    // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
-    SPEX_Chol_analysis * S,               // stores guess on nnz and column permutation
     SPEX_matrix ** rhos_handle, // sequence of pivots
+    // Input
+    SPEX_matrix* A,             // matrix to be factored
+    SPEX_Chol_analysis * S,     // stores guess on nnz and column permutation
     bool left,                  // Set true if performing a left-looking factorization
     SPEX_options* option        // command options
 )

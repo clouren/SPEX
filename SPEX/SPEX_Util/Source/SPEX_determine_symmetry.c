@@ -24,7 +24,7 @@
  */
 
 #include "spex_util_internal.h"
-
+//TODO fix me
 bool SPEX_determine_symmetry
 (
     SPEX_matrix* A,

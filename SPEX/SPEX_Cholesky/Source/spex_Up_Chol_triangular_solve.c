@@ -70,13 +70,16 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     
     int64_t j, i, inew, p, m, top, n = A->n, col;
     
+    ASSERT(n >= 0);
+    
     //--------------------------------------------------------------------------
     // Initialize REF TS by getting nonzero patern of x && obtaining A(:,k)
     //--------------------------------------------------------------------------
-    top = spex_Chol_ereach(A, k, parent, xi, c);  // Obtaint nonzero pattern in xi[top..n]
+    // Obtain the nonzero patter in xi[top..n]
+    top = spex_Chol_ereach(A, k, parent, xi, c);
+    // Sort the nonzero pattern using quicksort
     qsort(&xi[top], n-top, sizeof(int64_t*), compare); 
-    
-    
+        
     // Reset x[i] = 0 for all i in nonzero pattern xi [top..n-1]
     for (i = top; i < n; i++)
     {
@@ -111,7 +114,6 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     {   
         /* Finalize x[j] */
         j = xi[p];                                  // First nonzero term
-        //if (j == k) continue;                     // Do not operate on x[k] int64_t* TS
         if (mpz_sgn(x->x.mpz[j]) == 0) continue;    // If x[j] == 0 no work must be done
                 
         // History update x[j]

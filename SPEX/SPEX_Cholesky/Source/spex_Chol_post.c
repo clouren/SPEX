@@ -10,7 +10,7 @@
 
 #include "spex_chol_internal.h"
 
-/* Purpose: post order a forest */
+/* Purpose: post order a forest. Modified from csparse */
 int64_t* spex_Chol_post 
 (
     int64_t* parent,    // Parent[j] is parent of node j int64_t* forest
@@ -18,12 +18,18 @@ int64_t* spex_Chol_post
 )
 {
     int64_t j, k = 0, *post, *w, *head, *next, *stack ;
-    if (!parent) return (NULL) ;                                // check int64_t*puts 
-    post = (int64_t*) SPEX_malloc(n* sizeof(int64_t));          // allocate result 
-    w = (int64_t*) SPEX_malloc (3*n* sizeof (int64_t)) ;        // get workspace 
+    if (!parent) return (NULL) ;                                // check inputs 
+    // Allocate the postordering result
+    post = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
+    // Create a workspace
+    w = (int64_t*) SPEX_malloc (3*n* sizeof (int64_t)) ;
     if (!w || !post) return (NULL) ;
     head = w ; next = w + n ; stack = w + 2*n ;
-    for (j = 0 ; j < n ; j++) head [j] = -1 ;           // empty linked lists 
+    // Empty linked lists
+    for (j = 0 ; j < n ; j++)
+    {
+        head [j] = -1 ;
+    }
     for (j = n-1 ; j >= 0 ; j--)            // traverse nodes in reverse order
     {
         if (parent [j] == -1) continue ;    // j is a root 

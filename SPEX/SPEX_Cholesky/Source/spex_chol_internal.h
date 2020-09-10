@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // This file is not intended to be #include'd in user applications.  Use
-// SPEX_LU.h instead.
+// SPEX_Chol.h instead.
 
 #ifndef SPEX_CHOL_INTERNAL_H
 #define SPEX_CHOL_INTERNAL_H
@@ -324,7 +324,6 @@ static inline int compare (const void * a, const void * b)
 // ============================================================================
 
 /* Purpose: Compute the elimination tree of A */
-
 int64_t* spex_Chol_etree 
 (
     SPEX_matrix* A // Input matrix (must be SPD)
@@ -334,7 +333,6 @@ int64_t* spex_Chol_etree
    elimination tree. This is more efficient than the SPEX_reach function 
    It finds the nonzero pattern of row k of L and uses the upper triangular 
    part of A(:,k) */
-   
 int64_t spex_Chol_ereach 
 (
     SPEX_matrix *A,    // Matrix to be analyzed
@@ -345,7 +343,6 @@ int64_t spex_Chol_ereach
 );
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
-
 int64_t spex_Chol_tdfs 
 (
     int64_t j,      // Root node
