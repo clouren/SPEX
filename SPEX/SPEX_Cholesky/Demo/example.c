@@ -51,8 +51,8 @@ int main (int argc, char **argv)
     // Get matrix and right hand side file names
     //--------------------------------------------------------------------------
     char *mat_name, *rhs_name;
-    mat_name = "../ExampleMats/872.mat";
-    rhs_name = "../ExampleMats/872.mat.soln";
+    mat_name = "../ExampleMats/872.mat.txt";
+    rhs_name = "../ExampleMats/872.mat.soln.txt";
     if (argc > 2)
     {
         mat_name = argv[1];
