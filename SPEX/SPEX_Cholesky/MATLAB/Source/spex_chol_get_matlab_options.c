@@ -15,6 +15,8 @@
 // struct for MATLAB.
 
 #define MATCH(s,t) (strcmp (s,t) == 0)
+#define SPEX_MIN(a,b) ( a < b ? a : b)
+#define SPEX_MAX(a,b) (a > b ? a : b)
 
 void spex_chol_get_matlab_options
 (

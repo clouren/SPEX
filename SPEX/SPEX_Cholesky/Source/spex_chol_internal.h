@@ -303,7 +303,7 @@ static inline int compare (const void * a, const void * b)
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
-// SPEX_LU uses SuiteSparse_config.printf_func instead of a mere call to printf
+// SPEX uses SuiteSparse_config.printf_func instead of a mere call to printf
 // (the default function is printf, or mexPrintf when in MATLAB).  If this
 // function pointer is NULL, no printing is done.
 
@@ -378,7 +378,9 @@ SPEX_info spex_Chol_leaf
     int64_t* jleaf
 );
 
-/* Purpose: Something*/
+/*Purpose: Obtain the column counts of an SPD matrix for Cholesky factorization
+ * This is a modified version of Csparse's cs_chol_counts function
+ */
 SPEX_info spex_Chol_counts 
 (
     int64_t** c_handle,
@@ -393,16 +395,16 @@ SPEX_info spex_Chol_counts
  */
 SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular solve
 (
-    int64_t *top_output,        // Output the beginning of nonzero pattern
-    SPEX_matrix* L,              // partial L matrix
-    SPEX_matrix* A,              // input matrix
-    int64_t k,                    // iteration of algorithm
-    int64_t* xi,                  // nonzero pattern vector
-    int64_t* parent,              // Elimination tree
-    int64_t* c,                   // Column pointers
-    SPEX_matrix* rhos,              // sequence of pivots
-    int64_t* h,                   // history vector
-    SPEX_matrix* x                  // solution of system ==> kth column of L and U
+    int64_t *top_output,               // Output the beginning of nonzero pattern
+    SPEX_matrix* L,                    // partial L matrix
+    SPEX_matrix* A,                    // input matrix
+    int64_t k,                         // iteration of algorithm
+    int64_t* xi,                       // nonzero pattern vector
+    int64_t* parent,                   // Elimination tree
+    int64_t* c,                        // Column pointers
+    SPEX_matrix* rhos,                 // sequence of pivots
+    int64_t* h,                        // history vector
+    SPEX_matrix* x                     // solution of system ==> kth row of L
 );
 
 

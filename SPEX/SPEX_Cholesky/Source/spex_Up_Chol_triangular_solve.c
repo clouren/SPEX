@@ -13,7 +13,7 @@
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve for
  * the up-looking Cholesky factorization. i,e, LD x = A(1:k-1, k). At the end of
- * this function, the vector x contains the values of the kth row of the intger-
+ * this function, the vector x contains the values of the kth row of the integer-
  * preserving matrix L. 
  * 
  * Command input:
@@ -52,10 +52,10 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     int64_t k,                      // iteration of algorithm
     int64_t*  xi,                   // nonzero pattern vector
     int64_t*  parent,               // Elimintaation tree
-    int64_t* c,                     // Column point64_t*ers
+    int64_t* c,                     // Column pointers
     SPEX_matrix* rhos,              // sequence of pivots
     int64_t * h,                    // history vector
-    SPEX_matrix* x                  // solution of system ==> kth column of L and U
+    SPEX_matrix* x                  // solution of system ==> kth row of L
 )
 {
     SPEX_info ok;

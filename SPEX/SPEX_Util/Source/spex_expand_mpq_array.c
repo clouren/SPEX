@@ -34,23 +34,28 @@ SPEX_info spex_expand_mpq_array
     // check inputs
     //--------------------------------------------------------------------------
     // inputs have checked in the only caller spex_cast_array
-
+    ASSERT(n >= 0);    
     SPEX_info info ;
 
     //--------------------------------------------------------------------------
 
+    // Define temporary matrices
     mpz_t temp;
     SPEX_matrix *x3 = NULL;
     SPEX_matrix *x4 = NULL;;
     SPEX_MPZ_SET_NULL(temp);
     SPEX_CHECK (SPEX_mpz_init(temp)) ;
 
+    // Allocate memory
     SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
     SPEX_CHECK (SPEX_matrix_allocate(&x4, SPEX_DENSE, SPEX_MPQ, n, 1, n,
         false, true, option));
 
-    for (int64_t i = 0; i < n; i++)                  // x3 = denominators of x
+    ASSERT( x3 != NULL);
+    ASSERT( x4 != NULL);
+    // x3 = denominators of (mpq_t) x
+    for (int64_t i = 0; i < n; i++)
     {
         SPEX_CHECK(SPEX_mpq_get_den(x3->x.mpz[i], x[i]));
     }

@@ -320,7 +320,8 @@ SPEX_info SPEX_matrix_allocate
                             // mpfr, the entries are initialized (using the
                             // appropriate SPEX_mp*_init function). If false,
                             // the mpz, mpq, and mpfr arrays are allocated but
-                            // not initialized.
+                            // not initialized. Meaningless for data types 
+                            // FP64 or INT64
     const SPEX_options *option
 ) ;
 
@@ -565,7 +566,9 @@ SPEX_info SPEX_sparse_realloc
     SPEX_matrix* A // the matrix to be expanded
 );
 
-/* Purpose: This function sets C = A' */
+/* Purpose: This function sets C = A'. C is null on input. On output
+ * C contans A'
+ */
 SPEX_info SPEX_transpose
 (
     SPEX_matrix **C_handle,     // C = A'
@@ -582,11 +585,12 @@ SPEX_info SPEX_transpose
  * thus we cannot gauranteee that the matrix is indeed fully symmetric as the values
  * of the entries is not checked.
  * 
- * On success, 0 is returned. If the matrix is not symmetric, 1 is returned.
+ * On success, SPEX_OK is returned. If the matrix is not symmetric, SPEX_UNSYMMETRIC 
+ * is returned.
  * 
  */
 
-bool SPEX_determine_symmetry
+SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
     bool exhaustive

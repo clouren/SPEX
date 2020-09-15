@@ -108,16 +108,8 @@ SPEX_info SPEX_Chol_backslash
     // Determine if A is indeed symmetric. If so, we try Cholesky
     // --------------------------------------------------------------------------
     
-    //TODO fix
-    bool test;
-    test = SPEX_determine_symmetry( (SPEX_matrix*) A, 1);    // Determine symmetry with nonzero pattern and values
-        
-    if (test == false) 
-    {
-        printf("\nMatrix is not symmetric, please try SPEX_Left_LU_backslash");
-        return 0;
-    }
-    
+    SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1));    // Determine symmetry with nonzero pattern and values
+
     //--------------------------------------------------------------------------
     // Permute matrix A, that is set A2 = PAP'
     //--------------------------------------------------------------------------

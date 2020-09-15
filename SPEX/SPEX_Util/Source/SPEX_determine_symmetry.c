@@ -18,34 +18,33 @@
  * thus we cannot gauranteee that the matrix is indeed fully symmetric as the values
  * of the entries is not checked.
  * 
- * If the matrix is determined to be symmetric, true is returned; otherwise, false is
- * returned.
+ * If the matrix is determined to be symmetric, SPEX_OK is returned; otherwise, 
+ * SPEX_UNSYMMETRIC is returned.
  * 
  */
 
 #include "spex_util_internal.h"
-//TODO fix me
-bool SPEX_determine_symmetry
+SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
     bool exhaustive
 )
 {
     int64_t j;
-    
+    SPEX_info info;
     // Declare matrix T
     SPEX_matrix *T = NULL;    
     // T = A'
-    SPEX_transpose(&T, A);
+    SPEX_CHECK( SPEX_transpose(&T, A));
     
     // Check if i values are the same
     for (j = 0; j < A->nz; j++)
     {
         if (T->i[j] != A->i[j])
         {
-            //printf("\nError, matrix is not symmetric\n");
+            // A[i][j] != A[j][i], unsymmetric
             SPEX_matrix_free(&T,NULL);
-            return false;
+            return SPEX_UNSYMMETRIC;
         }
     }
     
@@ -54,9 +53,11 @@ bool SPEX_determine_symmetry
     {
         if (T->p[j] != A->p[j])
         {
-            //printf("\nError, matrix is not symmetric\n");
+            // Question: Is it possible to pass the above
+            // block and fail here? I would think not
+            // nnz( A(:,k)) != nnz( A'(:,k))
             SPEX_matrix_free(&T,NULL);
-            return false;
+            return SPEX_UNSYMMETRIC;
         }
     }
 
@@ -67,16 +68,15 @@ bool SPEX_determine_symmetry
         int r;
         for (j = 0; j < A->nz; j++)
         {
-            SPEX_mpz_cmp(&r, A->x.mpz[j], T->x.mpz[j]);
+            SPEX_CHECK(SPEX_mpz_cmp(&r, A->x.mpz[j], T->x.mpz[j]));
             if ( r != 0)
             {
-                //printf("\nError, pattern is symmetric, values are not\n");
+                // Pattern is symmetric, values are not
                 SPEX_matrix_free(&T,NULL);
-                return false;
+                return SPEX_UNSYMMETRIC;
             }
         }
     }
     SPEX_matrix_free(&T,NULL);
-    return true;
-        
+    return SPEX_OK;        
 }

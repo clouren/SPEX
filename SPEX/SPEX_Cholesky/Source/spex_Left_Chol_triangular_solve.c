@@ -33,7 +33,7 @@
  * h:               History vector
  * 
  * x:               Solution of linear system. Undefined on input, on output
- *                  contains the kth row of L.
+ *                  contains the kth column of L.
  * 
  * parent:          Elimination tree
  * 
@@ -42,16 +42,16 @@
  */
 SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular solve
 (
-    int64_t *top_output,        // Output the beginning of nonzero pattern
+    int64_t *top_output,         // Output the beginning of nonzero pattern
     SPEX_matrix* L,              // partial L matrix
     SPEX_matrix* A,              // input matrix
-    int64_t k,                    // iteration of algorithm
-    int64_t* xi,                  // nonzero pattern vector
-    SPEX_matrix* rhos,              // sequence of pivots
-    int64_t* h,                   // history vector
-    SPEX_matrix* x,                  // solution of system ==> kth column of L and U
-    int64_t* parent,
-    int64_t* c
+    int64_t k,                   // iteration of algorithm
+    int64_t* xi,                 // nonzero pattern vector
+    SPEX_matrix* rhos,           // sequence of pivots
+    int64_t* h,                  // history vector
+    SPEX_matrix* x,              // solution of system ==> kth column of L
+    int64_t* parent,             // Elimination tree
+    int64_t* c                   // Column pointers
 )
 {
     SPEX_info ok;
@@ -125,9 +125,9 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     for ( p = top; p < n; p++)
     {   
         /* Finalize x[j] */
-        j = xi[p];                        // First nonzero term
+        j = xi[p];                              // First nonzero term
         if (mpz_sgn(x->x.mpz[j]) == 0) continue;// If x[j] == 0 no work must be done
-        if (j < k)                    // jnew < k implies entries in U
+        if (j < k)                              // j < k implies already computed entries
         {
             //------------------------------------------------------------------
             // IPGE updates

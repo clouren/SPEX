@@ -11,7 +11,8 @@
 #include "spex_chol_internal.h"
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j) 
-   Used to determine Column counts of Cholesky factor*/
+ * Used to determine Column counts of Cholesky factor
+ */
 SPEX_info spex_Chol_leaf 
 (
     int64_t* lca_handle,

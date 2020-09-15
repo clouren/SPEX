@@ -46,6 +46,7 @@ SPEX_info SPEX_matrix_copy
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     int64_t nz = SPEX_matrix_nnz (A, option) ;
+    ASSERT( nz >= 0);
     if (C_handle == NULL || nz < 0 ||
       //checked in SPEX_matrix_nnz
       //A == NULL || A->kind < SPEX_CSC || A->kind > SPEX_DENSE ||

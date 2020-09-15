@@ -125,16 +125,9 @@ int main( int argc, char* argv[] )
     
     clock_t start_sym = clock();
     bool test;
-    //test = SPEX_determine_symmetry(A, 0);    // Determine symmetry just with nonzero pattern
-    test = SPEX_determine_symmetry(A, 1);    // Determine symmetry with nonzero pattern and values
-    
-    // Input is unsymmetric
-    if (test == false)
-    {
-        SPEX_Chol_determine_error(SPEX_UNSYMMETRIC);
-        return 0;
-    }
-    
+    //DEMO_OK(SPEX_determine_symmetry(A, 0));    // Determine symmetry just with nonzero pattern
+    DEMO_OK( SPEX_determine_symmetry(A, 1));    // Determine symmetry with nonzero pattern and values
+   
     clock_t end_sym = clock();
     //--------------------------------------------------------------------------
     // Permute matrix A, that is set A2 = PAP'

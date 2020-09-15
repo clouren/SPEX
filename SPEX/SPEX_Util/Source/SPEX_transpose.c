@@ -34,15 +34,21 @@ SPEX_info SPEX_transpose
     SPEX_CHECK(SPEX_matrix_allocate(&C, SPEX_CSC, SPEX_MPZ, A->n, A->m, A->p[A->n], false, true, NULL));
     int64_t p, q, j, n, m;
     m = A->m ; n = A->n ; 
-    w = (int64_t*) SPEX_malloc(m* sizeof(int64_t));
+    
+    ASSERT( m >= 0);
+    ASSERT( n >= 0);
+    // Declare workspace
+    w = (int64_t*) SPEX_calloc(m, sizeof(int64_t));
     if (!w)
     {
         SPEX_matrix_free(&C, NULL);
         return SPEX_OUT_OF_MEMORY;
     }
-    for (p = 0; p < m; p++) w[p] = 0;
-    for (p = 0 ; p < A->p [n] ; p++) w [A->i [p]]++ ;       // row counts 
-    SPEX_cumsum (C->p, w, m) ;                           // row pointers
+    // Compute row counts
+    for (p = 0 ; p < A->p [n] ; p++) w [A->i [p]]++ ;
+    // Compute row pointers
+    SPEX_cumsum (C->p, w, m) ;
+    // Populate C
     for (j = 0 ; j < n ; j++)
     {
         for (p = A->p [j] ; p < A->p [j+1] ; p++)

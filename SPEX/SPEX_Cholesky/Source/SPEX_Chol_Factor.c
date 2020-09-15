@@ -85,7 +85,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
     int64_t *h = NULL ;
     SPEX_matrix *x = NULL ;
 
-    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, pivot, jnew, k;
+    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
     size_t size;
 
     int64_t* post = NULL;
@@ -117,7 +117,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
 
         
     // Obtain the elimination tree of A
-    SPEX_CHECK(spex_Chol_etree(&S->parent, A));         // Obtain the elim tree
+    SPEX_CHECK(spex_Chol_etree(&S->parent, A));          // Obtain the elim tree
     SPEX_CHECK( spex_Chol_post(&post, S->parent, n));    // Postorder the tree
     
     // Get the column counts of A
@@ -126,13 +126,13 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
     SPEX_CHECK( SPEX_cumsum(S->cp, c, n));    // Get column pointers for L
    
-    S->lnz = S->cp[n]; // Must add 1 because of cumsum not using diagonal
+    S->lnz = S->cp[n];
    
     //--------------------------------------------------------------------------
     // allocate and initialize the workspace x
     //--------------------------------------------------------------------------
 
-    // SPEX LU utilizes arbitrary sized integers which can grow beyond the
+    // SPEX utilizes arbitrary sized integers which can grow beyond the
     // default 64 bits allocated by GMP. If the integers frequently grow, GMP
     // can get bogged down by performing intermediate reallocations. Instead,
     // we utilize a larger estimate on the workspace x vector so that computing
@@ -175,7 +175,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
     // by performing a symbolic version of the factorization and obtaining the 
     // exact nonzero pattern of L.
     // Conversely, if we are performing an up-looking factorization, we allocate
-    // L without initializing eah entry.
+    // L without initializing each entry.
     // In both cases, the inidividual (x) values of L are not allocated. Instead,
     // a more efficient method to allocate these values is done inside the 
     // factorization to reduce memory usage.
@@ -210,7 +210,6 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
             // Set the pivot element
             if (mpz_sgn(x->x.mpz[k]) != 0)
             {
-                pivot = k;
                 OK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
             }
             else
@@ -219,7 +218,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
                 return SPEX_SINGULAR;
             }
             //----------------------------------------------------------------------
-            // Iterate accross the nonzeros in x
+            // Add the nonzeros to the L matrix
             //----------------------------------------------------------------------
             for (j = top; j < n; j++)
             {
@@ -232,12 +231,13 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
                     OK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
                     // Place the x value of the L->nz nonzero
                     OK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew]));
-                    // Increment L->nz
+                    // Increment lnz
                     lnz += 1;
                 }
             }
         }
     }
+    // Up-looking factorization
     else
     {
         //--------------------------------------------------------------------------
@@ -251,7 +251,6 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
             // If x[k] is nonzero that is the pivot. if x[k] == 0 then matrix is singular.
             if (mpz_sgn(x->x.mpz[k]) != 0)
             {
-                pivot = k;
                 OK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
             }
             else
@@ -261,7 +260,7 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
             }
             
             //----------------------------------------------------------------------
-            // Iterate accross the nonzeros in x
+            // Add the nonzeros to L
             //----------------------------------------------------------------------
             int64_t p = 0;
             for (j = top; j < n; j++)

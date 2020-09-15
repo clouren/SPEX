@@ -8,8 +8,10 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: Check the solution of the linear system by performing a quick
- * rational arithmetic A*x = b.
+/* Purpose: Given a solution vector x, check the solution of the linear system
+ * Ax = b. This is done by computing a rational-arthmetic A*x == b. This function
+ * is only used for debugging purposes, as the routines within SPEX are gauranteed
+ * to be exact.
  */
 
 #define SPEX_FREE_ALL                       \
@@ -49,7 +51,7 @@ SPEX_info SPEX_check_solution
         b->nzmax, false, true, option));
 
     //--------------------------------------------------------------------------
-    // perform SPEX_mpq_addmul in loops
+    // perform SPEX_mpq_addmul in loops to compute b2 = A*x
     //--------------------------------------------------------------------------
 
     for (j = 0; j < b->n; j++)
@@ -58,7 +60,8 @@ SPEX_info SPEX_check_solution
         {
             for (p = A->p[i]; p < A->p[i + 1]; p++)
             {
-                // temp = A[p][i]
+                // temp = A[p][i] (note this must be done seperately since A is
+                // mpz and temp is mpq)
                 SPEX_CHECK(SPEX_mpq_set_z(temp, A->x.mpz[p]));
 
                 // temp = temp*x[i]
@@ -80,7 +83,7 @@ SPEX_info SPEX_check_solution
     {
         for (i = 0; i < b->m; i++)
         {
-            // z = b[i] (correct b)
+            // temp = b[i] (correct b)
             SPEX_CHECK(SPEX_mpq_set_z(temp, SPEX_2D(b, i, j, mpz)));
 
             // set check false if b!=b2

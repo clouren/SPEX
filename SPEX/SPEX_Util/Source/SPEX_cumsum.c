@@ -23,7 +23,7 @@ SPEX_info SPEX_cumsum
 {
 
     if (!p || !c) return SPEX_INCORRECT_INPUT;
-
+    ASSERT(n >= 0);    
     int64_t i, nz = 0 ;
     for (i = 0 ; i < n ; i++)
     {
