@@ -115,6 +115,7 @@ if (~issparse (A))
     A = sparse (A) ;
 end
 
+% TODO: Improve?
 % Test if input appears to be symmetric
 if ( normest(A-A') < 1e-6)
     try 

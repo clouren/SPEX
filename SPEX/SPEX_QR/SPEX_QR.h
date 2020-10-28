@@ -140,8 +140,6 @@ void SPEX_dot
     }
 }
 
-
-// Stop for now...
-
+// Much more to come
 
 #endif

@@ -12,6 +12,8 @@
  * This function defines: x = SPEX_Chol_mex_soln (A, b, option)
  */
 
+//TODO mimic SPEX_Left_LU matlab
+
 #include "SPEX_Chol_mex.h"
 
 void mexFunction

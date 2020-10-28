@@ -338,7 +338,8 @@ SPEX_info SPEX_read_dense
     return (info) ;
 }
 
-
+/* Purpose: Determine why a SPEX_Chol function failed
+ */
 void SPEX_Chol_determine_error
 (
     SPEX_info ok

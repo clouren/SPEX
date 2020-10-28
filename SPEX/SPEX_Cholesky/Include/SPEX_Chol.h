@@ -26,13 +26,13 @@
 //     to Arithmetic Work", C. Lourenco, E. Moreno-Centeno, under submission, SIMAX.
 
 //    If you use this code, you must first download and install the GMP, 
-//    MPFR, SPEX_Left_LU, AMD, and COLAMD libraries. 
+//    MPFR, SPEX_Util, AMD, and COLAMD libraries. 
 //   
 //   GMP and MPFR can be found at:
 //              https://gmplib.org/
 //              http://www.mpfr.org/
 //
-//   SPEX_Left_LU, AMD, and COLAMD are distributed along with SPEX_Cholesky. The easiest
+//   SPEX_Util, AMD, and COLAMD are distributed along with SPEX_Cholesky. The easiest
 //   way ensure these dependencies are met is to only access this package through 
 //   the SPEX repository.
 //
@@ -142,7 +142,8 @@
 
 // Here are the things to do
 // TODO: Put const where appropriate
-
+// TODO: Check all comments
+// TODO: Make sure this looks identical to stuff in SPEX_LEFT_LU
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //---------------------Include files required by SPEX Cholesly------------------
@@ -170,10 +171,10 @@
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_CHOL_VERSION "1.0.0"
-#define SPEX_CHOL_VERSION_MAJOR 1
+#define SPEX_CHOL_VERSION "0.0.1"
+#define SPEX_CHOL_VERSION_MAJOR 0
 #define SPEX_CHOL_VERSION_MINOR 0
-#define SPEX_CHOL_VERSION_SUB   0
+#define SPEX_CHOL_VERSION_SUB   1
 
 
 

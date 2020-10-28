@@ -69,6 +69,8 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     //--------------------------------------------------------------------------
     // Initialize REF TS by getting nonzero patern of x && obtaining A(:,k)
     //--------------------------------------------------------------------------
+    // TODO IS there a way to optimize this process? Maybe even during the preallocation
+    // in SPEX_Chol_Factor
     n = A->n;                                // Size of matrix and the dense vectors
     ASSERT(n >= 0);
     
