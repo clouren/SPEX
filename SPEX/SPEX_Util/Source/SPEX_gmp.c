@@ -796,9 +796,6 @@ SPEX_info SPEX_mpz_mul
 
 /* Purpose: Safely compute a = b+c */
 
-#if 0
-/* This function is currently unused, but kept here for future reference. */
-
 SPEX_info SPEX_mpz_add
 (
     mpz_t a,
@@ -811,7 +808,6 @@ SPEX_info SPEX_mpz_add
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
-#endif
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_addmul
@@ -820,8 +816,6 @@ SPEX_info SPEX_mpz_add
 /* Purpose: Safely set an mpz number += product of two mpz numbers,
  * i.e., x = x + y*z */
 
-#if 0
-/* This function is currently unused, but kept here for future reference. */
 SPEX_info SPEX_mpz_addmul
 (
     mpz_t x,
@@ -834,7 +828,6 @@ SPEX_info SPEX_mpz_addmul
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
-#endif
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_submul
