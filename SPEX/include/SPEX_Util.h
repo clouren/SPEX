@@ -733,6 +733,8 @@ SPEX_info SPEX_mpfr_free_cache (void) ;
 
 SPEX_info SPEX_mpfr_free_str (char *str) ;
 
+SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
+
 #if 0
 // These functions are currently unused, but kept here for future reference.
 SPEX_info SPEX_gmp_asprintf (char **str, const char *format, ... ) ;
@@ -742,7 +744,7 @@ SPEX_info SPEX_gmp_fprintf (FILE *fp, const char *format, ... ) ;
 SPEX_info SPEX_mpfr_fprintf (FILE *fp, const char *format, ... ) ;
 SPEX_info SPEX_mpz_set_d (mpz_t x, const double y) ;
 SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
-SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
+
 SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 #endif
 

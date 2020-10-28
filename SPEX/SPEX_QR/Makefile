@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX_Chol/Demo/Makefile: compile and run the demos
+# SPEX_QR/Makefile: compile and run the demos
 #-------------------------------------------------------------------------------
 
 # SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -10,37 +10,26 @@
 
 default: all
 
-include ../../../SuiteSparse_config/SuiteSparse_config.mk
+include ../../SuiteSparse_config/SuiteSparse_config.mk
 
 # uncomment for extra error checking:
 #CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
-PATH_TO_SPEX_UTIL=-Wl,-rpath,"../../SPEX_Util/Lib/"
+PATH_TO_SPEX_UTIL=-Wl,-rpath,"../SPEX_Util/Lib/"
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -O
-I = -I../Include -I../Source -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Util/Lib
+I = -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Util/Include -I../SPEX_Util/Source -I../SPEX_Util/Lib -I./
 
-LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -L../../SPEX_Util/Lib/ -lspexutil 
-CS = ../Lib/libspexchol.a $(LDLIBS)
+LDLIBS += -lm  -lcolamd -lamd -L../SPEX_Util/Lib/ -lspexutil -lgmp -lmpfr -lsuitesparseconfig
+CS = $(LDLIBS)
 
 
-all: lib SPEX_Chol SPEX_Chol_debug example
-	- ./example
-	- ./SPEX_Chol
+all: SPEX_QR_dense 
 
-lib:
-	( cd ../Lib ; $(MAKE) )
-
-SPEX_Chol: lib SPEX_Chol.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o SPEX_Chol SPEX_Chol.c demos.c $(CS)
-
-SPEX_Chol_debug: lib SPEX_Chol.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o SPEX_Chol_debug SPEX_Chol.c demos.c $(CS)
-
-example: lib example.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example example.c demos.c $(CS)
+SPEX_QR_dense: SPEX_QR_dense.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o SPEX_QR_dense SPEX_QR_dense.c $(CS)
 
 clean:
-	- $(RM) *.o
+	- $(RM) *.o SPEX_QR_dense
 
 purge: distclean
 
