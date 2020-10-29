@@ -16,17 +16,21 @@ include ../../SuiteSparse_config/SuiteSparse_config.mk
 #CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 PATH_TO_SPEX_UTIL=-Wl,-rpath,"../SPEX_Util/Lib/"
-CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -O
+CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -O2
+CF_DEBUG = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -g
 I = -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Util/Include -I../SPEX_Util/Source -I../SPEX_Util/Lib -I./
 
 LDLIBS += -lm  -lcolamd -lamd -L../SPEX_Util/Lib/ -lspexutil -lgmp -lmpfr -lsuitesparseconfig
 CS = $(LDLIBS)
 
 
-all: SPEX_QR_dense 
+all: SPEX_QR_dense SPEX_QR_dense_debug
 
 SPEX_QR_dense: SPEX_QR_dense.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o SPEX_QR_dense SPEX_QR_dense.c $(CS)
+
+SPEX_QR_dense_debug: SPEX_QR_dense.c Makefile
+	$(CC) $(LDFLAGS) $(CF_DEBUG) $(I) -o debug_SPEX_QR_dense SPEX_QR_dense.c $(CS)
 
 clean:
 	- $(RM) *.o SPEX_QR_dense

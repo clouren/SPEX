@@ -141,6 +141,26 @@ void SPEX_dot
     }
 }
 
+/* Purpose: Given a matrix A in m*n and B in m*n, compute the dot product of
+ * A(:,i) and B(:,j). Assumed to be dense. prod = A(:,i) dot B(:,j)
+ */
+void SPEX_dense_mat_dot
+(
+    SPEX_matrix* A,
+    int64_t i,
+    SPEX_matrix* B,
+    int64_t j,
+    mpz_t prod
+)
+{
+    ASSERT(A->m == B->m);
+    for (int64_t k = 0; k < A->m; k++)
+    {
+        SPEX_mpz_addmul(prod, SPEX_2D(A, k, i, mpz),
+                        SPEX_2D(B, k, j, mpz));
+    }
+}
+    
 /* Perform the IPGE version of SPEX QR (aka Algorithm 1 from workpage)
  */
 void SPEX_QR_IPGE
@@ -176,13 +196,9 @@ void SPEX_QR_IPGE
         // Compute row k of R
         for (j = k; j < n; j++)
         {
-            // R(k,j = Q(:,k) dot A(:,j)
-            for (i = 0; i < m; i++)
-            {
-                SPEX_mpz_addmul( SPEX_2D(R, k, j, mpz),
-                                 SPEX_2D(Q, i, k, mpz),
-                                 SPEX_2D(A, i, j, mpz));
-            }
+            // R(k,j) = Q(:,k) dot A(:,j)
+            // This is very easily parallelized
+            SPEX_dense_mat_dot(Q, k, A, j, SPEX_2D(R,k,j,mpz));
         }
         
         // IPGE update Q
@@ -190,14 +206,17 @@ void SPEX_QR_IPGE
         {
             for ( j = 0; j < m; j++)
             {
+                // Q(j,i) = Q(j,i)*R(k,k)
                 SPEX_mpz_mul( SPEX_2D(Q, j, i, mpz),
                               SPEX_2D(Q, j, i, mpz),
                               SPEX_2D(R, k, k, mpz));
+                // Q(j,i) = Q(j,i) - R(k,i)*Q(j,k)
                 SPEX_mpz_submul( SPEX_2D(Q, j, i, mpz),
                                  SPEX_2D(R, k, i, mpz),
                                  SPEX_2D(Q, j, k, mpz));
                 if (k > 0)
                 {
+                    // Q(j,i) = Q(j,i)/R(k-1,k-1)
                     SPEX_mpz_divexact( SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(R, k-1, k-1, mpz));
@@ -215,8 +234,135 @@ void SPEX_QR_IPGE
     
 /* Perform the IPGE version of SPEX QR using Pursell method
  */
-// TODO Make more efficient
 void SPEX_QR_PURSELL
+(
+    SPEX_matrix *A,            // Matrix to be factored
+    SPEX_matrix **R_handle,    // upper triangular matrix
+    SPEX_matrix **Q_handle     // orthogonal triangular matrix
+)
+{
+    
+    int64_t m = A->m, n = A->n;
+    ASSERT( m >= n); // A should be transposed if not true
+    ASSERT( A != NULL);
+    // Only dense for now
+    ASSERT( A->type == SPEX_MPZ);
+    ASSERT( A->kind == SPEX_DENSE);
+    
+    // Indices
+    int64_t i, j, k;
+    
+    // A_transpose, will be overwritten with Q
+    SPEX_matrix *A_T;
+    // A2 = A_T A // Will be overwritten with R
+    SPEX_matrix *A2;
+    
+    // Allocate A_T
+    SPEX_matrix_allocate(&A_T, SPEX_DENSE, SPEX_MPZ, n, m, n*m,
+        false, true, NULL);
+    
+    // Allocate A2
+    SPEX_matrix_allocate(&A2, SPEX_DENSE, SPEX_MPZ, n, n, n*n,
+        false, true, NULL);
+    
+    // Compute A_T
+    
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            // A'(i,j) = A(j,i)
+            SPEX_mpz_set( SPEX_2D(A_T, i, j, mpz),
+                          SPEX_2D(A,   j, i, mpz));
+        }
+    }
+    
+    // Compute A2 = A'*A
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            // Compute A2(i,j) = A_T(i,:) dot A(:,j)
+            for (k = 0; k < m; k++)
+            {
+                SPEX_mpz_addmul( SPEX_2D(A2,  i, j, mpz),
+                                 SPEX_2D(A_T, i, k, mpz),
+                                 SPEX_2D(A,   k, j, mpz));
+            }
+        }
+    }
+    
+    // Now, the factorization is computed by performing IPGE on [A2 AT]
+    // We can either construct this matrix directly or do it more efficiently
+    
+    // Compute R and Q directly
+    // A2 = A'*A will be overwriten with R (dimension n*n)
+    // A' will be overwritten with Q (dimension n*m)
+    
+    // Perform IPGE on A2
+    for (k = 0; k < n; k++)
+    {
+        for (i = k+1; i < n; i++)
+        {
+            for (j = k+1; j < n; j++)
+            {
+                if (i > j)
+                {
+                    // i > j -> entries in lower triangular portion, set them to 0
+                    SPEX_mpz_set_ui( SPEX_2D(A2, i, j, mpz), 0);
+                }
+                else
+                {
+                    // A2(i,j) = A2(i,j)*A2(k,k)
+                    SPEX_mpz_mul ( SPEX_2D(A2, i, j, mpz),
+                                   SPEX_2D(A2, i, j, mpz),
+                                   SPEX_2D(A2, k, k, mpz));
+                    // A2(i,j) = A2(i,j) - A2(i,k)*A2(i,k)
+                    SPEX_mpz_submul( SPEX_2D(A2, i, j, mpz),
+                                     SPEX_2D(A2, k, i, mpz),
+                                     SPEX_2D(A2, k, j, mpz));
+                    if (k > 0)
+                    {
+                        SPEX_mpz_divexact( SPEX_2D(A2, i, j, mpz),
+                                           SPEX_2D(A2, i, j, mpz),
+                                           SPEX_2D(A2, k-1, k-1, mpz));
+                    }
+                }
+            }
+        }
+        // Now that we have A2, we can compute Q
+        for (i = k+1; i < n; i++)
+        {
+            for (j = 0; j < m; j++)
+            {
+                SPEX_mpz_mul( SPEX_2D(A_T, i, j, mpz),
+                              SPEX_2D(A2,  k, k, mpz),
+                              SPEX_2D(A_T, i, j, mpz));
+                SPEX_mpz_submul( SPEX_2D(A_T, i, j, mpz),
+                                 SPEX_2D(A2,  k, i, mpz),
+                                 SPEX_2D(A_T, k, j, mpz));
+                if (k > 0)
+                {
+                    SPEX_mpz_divexact( SPEX_2D(A_T, i, j, mpz),
+                                       SPEX_2D(A_T, i, j, mpz),
+                                       SPEX_2D(A2, k-1, k-1, mpz));
+                }
+            }
+        }
+    }
+    
+    for (k = 1; k < n; k++)
+        SPEX_mpz_set_ui( SPEX_2D(A2, k, 0, mpz), 0);
+                                    
+    (*Q_handle) = A_T;
+    (*R_handle) = A2;
+    
+}
+ 
+ 
+/* Perform the IPGE version of SPEX QR using Pursell method
+ */
+void SPEX_QR_PURSELL2
 (
     SPEX_matrix *A,            // Matrix to be factored
     SPEX_matrix **R_handle,    // upper triangular matrix
@@ -286,6 +432,8 @@ void SPEX_QR_PURSELL
     
     // Now, the factorization is computed by performing IPGE on [A2 AT]
     // We can either construct this matrix directly or do it more efficiently
+    
+    // This is the A3 version
     SPEX_matrix *A3;
     // Allocate A3
     SPEX_matrix_allocate(&A3, SPEX_DENSE, SPEX_MPZ, n, n+m, n*(n+m),
@@ -337,8 +485,13 @@ void SPEX_QR_PURSELL
     {
         for (j = 0; j < n; j++)
         {
+            if (i <= j)
+            {
             SPEX_mpz_set( SPEX_2D(R, i, j, mpz),
                           SPEX_2D(A3, i, j, mpz));
+            }
+            else
+                SPEX_mpz_set_ui( SPEX_2D(R,i,j,mpz), 0);
         }
     }
     
@@ -355,7 +508,6 @@ void SPEX_QR_PURSELL
     (*Q_handle) = Q;
     (*R_handle) = R;
 }
-    
     
     
 
