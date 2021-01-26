@@ -28,15 +28,13 @@
 \newcommand{\Z}{\mathbf{Z}}
 \newcommand{\import}{\textcolor{red}{\textbf{**IMPORTANT**}}}
 
-%TODO FIX ME!
 \begin{document}
 
 \begin{center}
 \begin{large}
-\textbf{User Guide for SLIP LU, A Sparse Left-Looking Integer
-Preserving LU Factorization} \\
+\textbf{User Guide for SPEX Left LU, A Sparse Exact Left-Looking LU Factorization} \\
 \vspace{5mm}
-Version 1.0.1, July 2020 % VERSION
+Version 1.0.1, January 2021 % VERSION
 \vspace{20mm}
 
 Christopher Lourenco, Jinhao Chen, \\ Erick Moreno-Centeno, Timothy A. Davis \\
@@ -62,7 +60,7 @@ Contact Information: Contact Chris Lourenco, \href{mailto:chrisjlourenco@gmail.c
 \label{s:intro}
 %-------------------------------------------------------------------------------
 
-SLIP LU is a software package designed to exactly solve unsymmetric sparse
+SPEX Left LU is a software package designed to exactly solve unsymmetric sparse
 linear systems, $ A x = b$, where $A \in \mathbb{Q}^{n \times
 n}$, $b \in \mathbb{Q}^{n \times r}$, and $x \in \mathbb{Q}^{n \times
 r}$. This package performs a left-looking, roundoff-error-free (REF) LU
@@ -75,12 +73,12 @@ is the Sparse Left-looking Integer-Preserving (SLIP) LU factorization
 solving sparse linear systems exactly, one of the key goals of this package is
 to provide a framework for other solvers to benchmark the reliability and
 stability of their linear solvers, as our final solution vector $x$ is
-guaranteed to be exact. In addition, SLIP LU provides a wrapper class for the
-GNU Multiple Precision Arithmetic (GMP) \cite{granlund2015gnu} and GNU Multiple
-Precision Floating Point Reliable (MPFR) \cite{fousse2007mpfr} libraries in
-order to prevent memory leaks and improve the overall stability of these
-external libraries. SLIP LU is written in ANSI C and is accompanied by a MATLAB
-interface.
+guaranteed to be exact. In addition, SPEX Left LU provides a wrapper class for
+the GNU Multiple Precision Arithmetic (GMP) \cite{granlund2015gnu} and GNU
+Multiple Precision Floating Point Reliable (MPFR) \cite{fousse2007mpfr}
+libraries in order to prevent memory leaks and improve the overall stability of
+these external libraries. SPEX Left LU is written in ANSI C and is accompanied
+by a MATLAB interface.
 
 For all primary computational routines in Section \ref{s:primary}, the input
 argument $A$ must be stored in a compressed sparse column (CSC) matrix with
@@ -128,7 +126,7 @@ backward substitution routines, the final solution vector(s) $x$
 are guaranteed to be exact.  The solution $x$ is returned as a dense
 \verb|mpq_t| matrix.
 
-Using the SLIP matrix copy function, any matrix in any of the 15 combinations
+Using the SPEX matrix copy function, any matrix in any of the 15 combinations
 of the set (CSC, triplet, dense) $\times$ (\verb|mpz_t|, \verb|mpq_t| ,
 \verb|mpfr_t|, \verb|int64_t|, or \verb|double|), can be copied and converted
 into any one of the 15 combinations.
