@@ -14,6 +14,8 @@
  * termination.
  */
 
+// TODO: move this to SPEX_Left_LU
+
 #include "spex_util_internal.h"
 
 SPEX_info SPEX_LU_analysis_free

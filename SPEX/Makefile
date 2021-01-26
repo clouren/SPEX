@@ -8,6 +8,8 @@
 #
 #-------------------------------------------------------------------------------
 
+# FIXME: clean include/* lib/* doc/*
+
 SUITESPARSE = $(CURDIR)
 export SUITESPARSE
 
