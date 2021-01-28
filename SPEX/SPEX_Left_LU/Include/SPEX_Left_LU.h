@@ -166,6 +166,7 @@
 #define SPEX_LU_VERSION_SUB   1
 
 
+
 //------------------------------------------------------------------------------
 // Primary factorization & solve routines
 //------------------------------------------------------------------------------
@@ -185,15 +186,6 @@ SPEX_info SPEX_Left_LU_backslash
     const SPEX_matrix *A,         // Input matrix
     const SPEX_matrix *b,         // Right hand side vector(s)
     const SPEX_options* option
-) ;
-
-// SPEX_LU_analyze performs the symbolic ordering and analysis for SPEX LU.
-// Currently, there are three options: no ordering, COLAMD, and AMD.
-SPEX_info SPEX_Left_LU_analyze
-(
-    SPEX_LU_analysis **S, // symbolic analysis (column permutation and nnz L,U)
-    const SPEX_matrix *A, // Input matrix
-    const SPEX_options *option  // Control parameters
 ) ;
 
 // SPEX_LU_factorize performs the SPEX LU factorization. This factorization is

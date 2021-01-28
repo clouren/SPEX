@@ -50,7 +50,6 @@ CS = \
     SPEX_gmp.o \
     SPEX_initialize.o \
     SPEX_initialize_expert.o \
-    SPEX_LU_analysis_free.o \
     SPEX_malloc.o \
     SPEX_matrix_allocate.o \
     SPEX_matrix_check.o \
@@ -61,8 +60,9 @@ CS = \
     SPEX_realloc.o \
     SPEX_sparse_collapse.o \
     SPEX_sparse_realloc.o \
+    SPEX_LU_analysis_free.o \
+    SPEX_LU_analyze.o \
     tcov_malloc_test.o \
-    SPEX_Left_LU_analyze.o \
     SPEX_Left_LU_backslash.o \
     spex_left_lu_back_sub.o \
     spex_left_lu_dfs.o \
@@ -80,7 +80,7 @@ CS = \
 
 $(CS): ../Include/SPEX_Left_LU.h ../../SPEX_Util/Include/SPEX_Util.h ../Source/spex_left_lu_internal.h ../../SPEX_Util/Source/spex_util_internal.h tcov_malloc_test.h ../Demo/demos.h
 
-.PRECIOUS: SPEX_Left_LU_%.c spex_left_lu_%.c SPEX_Left_LU.c demos.c SPEX_%.c spex_%.c
+.PRECIOUS: SPEX_Left_LU_%.c spex_left_lu_%.c spexlu_demo.c demos.c SPEX_%.c spex_%.c
 
 SPEX_Left_LU_%.c:
 	- ln -s ../Source/$@
@@ -88,7 +88,7 @@ SPEX_Left_LU_%.c:
 spex_left_lu_%.c:
 	- ln -s ../Source/$@
 
-SPEX_Left_LU.c:
+spexlu_demo.c:
 	- ln -s ../Demo/$@
 
 demos.c:
@@ -103,15 +103,15 @@ spex_%.c:
 test: $(CS) tcov_test.c demos.c
 	$(CC) $(LDFLAGS) tcov_test.c demos.c $(CFLAGS) -o tcov_test $(CS) $(LDLIBS)
 
-SPEXLLU: $(CS) SPEX_Left_LU.c demos.c
-	$(CC) $(LDFLAGS) SPEX_Left_LU.c demos.c $(CFLAGS) -o SPEX_Left_LU $(CS) $(LDLIBS)
+SPEXLLU: $(CS) spexlu_demo.c demos.c
+	$(CC) $(LDFLAGS) spexlu_demo.c demos.c $(CFLAGS) -o spexlu_demo $(CS) $(LDLIBS)
 
 # run all statement coverage tests
 runtests: all
-	- ./SPEX_Left_LU p 2 q 0
-	- ./SPEX_Left_LU p 3 q 1 o 1
-	- ./SPEX_Left_LU p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt
-	- ./SPEX_Left_LU p 5
+	- ./spexlu_demo p 2 q 0
+	- ./spexlu_demo p 3 q 1 o 1
+	- ./spexlu_demo p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt
+	- ./spexlu_demo p 5
 	- ./tcov_test
 	- ./tcov_test 0 1 1
 
@@ -120,18 +120,18 @@ V = valgrind #--leak-check=full
 
 # run all statement coverage tests but with valgrind
 vtests: all
-	- $(V) ./SPEX_Left_LU p 2 q 0
-	- $(V) ./SPEX_Left_LU p 3 q 1 o 1
-	- $(V) ./SPEX_Left_LU p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt
-	- $(V) ./SPEX_Left_LU p 5
+	- $(V) ./spexlu_demo p 2 q 0
+	- $(V) ./spexlu_demo p 3 q 1 o 1
+	- $(V) ./spexlu_demo p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt
+	- $(V) ./spexlu_demo p 5
 	- $(V) ./tcov_test
 	- $(V) ./tcov_test 0 1 1
 
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_test SPEX_Left_LU *.out *.a cov.sort out
-	- $(RM) -r SPEX_*.c spex_*.c *.dSYM SPEX_Left_LU.c demos.c
+	- $(RM) tcov_test spexlu_demo *.out *.a cov.sort out
+	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c demos.c
 
 purge: distclean
 

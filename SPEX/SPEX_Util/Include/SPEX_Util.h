@@ -403,6 +403,15 @@ SPEX_info SPEX_LU_analysis_free
     const SPEX_options *option
 ) ;
 
+// SPEX_LU_analyze performs the symbolic ordering and analysis for SPEX LU.
+// Currently, there are three options: no ordering, COLAMD, and AMD.
+SPEX_info SPEX_LU_analyze
+(
+    SPEX_LU_analysis **S, // symbolic analysis (column permutation and nnz L,U)
+    const SPEX_matrix *A, // Input matrix
+    const SPEX_options *option  // Control parameters
+) ;
+
 
 //------------------------------------------------------------------------------
 // Memory management
@@ -638,9 +647,11 @@ SPEX_info SPEX_mpz_set_q (mpz_t x, const mpq_t y) ;
 
 SPEX_info SPEX_mpz_mul (mpz_t a, const mpz_t b, const mpz_t c) ;
 
+#if 0
 SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
 
 SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
+#endif
 
 SPEX_info SPEX_mpz_submul (mpz_t x, const mpz_t y, const mpz_t z) ;
 

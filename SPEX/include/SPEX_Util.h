@@ -375,34 +375,6 @@ SPEX_info SPEX_matrix_copy
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
-//------------------------------------------------------------------------------
-// SPEX_LU_analysis: symbolic pre-analysis
-//------------------------------------------------------------------------------
-
-// This struct stores the column permutation for LU and the estimate of the
-// number of nonzeros in L and U.
-
-typedef struct
-{
-    int64_t *q ;    // Column permutation for LU factorization, representing
-                    // the permutation matrix Q.   The matrix A*Q is factorized.
-                    // If the kth column of L, U, and A*Q is column j of the
-                    // unpermuted matrix A, then j = S->q [k].
-    int64_t lnz ;   // Approximate number of nonzeros in L.
-    int64_t unz ;   // Approximate number of nonzeros in U.
-                    // lnz and unz are used to allocate the initial space for
-                    // L and U; the space is reallocated as needed.
-} SPEX_LU_analysis ;
-
-// The symbolic analysis object is created by SPEX_LU_analyze.
-
-// SPEX_LU_analysis_free frees the SPEX_LU_analysis object.
-SPEX_info SPEX_LU_analysis_free        
-(
-    SPEX_LU_analysis **S, // Structure to be deleted
-    const SPEX_options *option
-) ;
-
 
 //------------------------------------------------------------------------------
 // Memory management
@@ -638,6 +610,10 @@ SPEX_info SPEX_mpz_set_q (mpz_t x, const mpq_t y) ;
 
 SPEX_info SPEX_mpz_mul (mpz_t a, const mpz_t b, const mpz_t c) ;
 
+SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
+
+SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
+
 SPEX_info SPEX_mpz_submul (mpz_t x, const mpz_t y, const mpz_t z) ;
 
 SPEX_info SPEX_mpz_divexact (mpz_t x, const mpz_t y, const mpz_t z) ;
@@ -733,8 +709,6 @@ SPEX_info SPEX_mpfr_free_cache (void) ;
 
 SPEX_info SPEX_mpfr_free_str (char *str) ;
 
-SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
-
 #if 0
 // These functions are currently unused, but kept here for future reference.
 SPEX_info SPEX_gmp_asprintf (char **str, const char *format, ... ) ;
@@ -743,7 +717,6 @@ SPEX_info SPEX_mpfr_printf ( const char *format, ... ) ;
 SPEX_info SPEX_gmp_fprintf (FILE *fp, const char *format, ... ) ;
 SPEX_info SPEX_mpfr_fprintf (FILE *fp, const char *format, ... ) ;
 SPEX_info SPEX_mpz_set_d (mpz_t x, const double y) ;
-SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
 
 SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 #endif

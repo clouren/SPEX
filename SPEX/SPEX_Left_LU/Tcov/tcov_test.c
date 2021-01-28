@@ -43,6 +43,9 @@
 
 #define SPEX_FREE_ALL                            \
 {                                                \
+    SPEX_MPZ_CLEAR(mpz1);                        \
+    SPEX_MPZ_CLEAR(mpz2);                        \
+    SPEX_MPZ_CLEAR(mpz3);                        \
     SPEX_matrix_free(&A,option);                 \
     SPEX_matrix_free(&b, option);                \
     SPEX_matrix_free(&B, option);                \
@@ -208,6 +211,7 @@ int main( int argc, char* argv[])
     SPEX_FREE (p4) ;
     info = SPEX_finalize ( ) ;                         assert (info == SPEX_OK) ;
 
+
     //--------------------------------------------------------------------------
     // run all trials
     //--------------------------------------------------------------------------
@@ -216,7 +220,7 @@ int main( int argc, char* argv[])
     // from list1 (input for tcov_test) and inner loop interates for
     // malloc_count initialized from list2 (input for tcov_test).
     //
-    // For non SIMPLE_TEST, outer loop iterates for Ab_type from 0 to 5, and
+    // For non SIMPLE_TEST, outer loop iterates for Ab_type from 0 to 20, and
     // inner loop iterates for malloc_count initialized from 0 to
     // MAX_MALLOC_COUNT, break when malloc_count>0 at the end of inner loop.
 
@@ -283,6 +287,11 @@ int main( int argc, char* argv[])
             SPEX_matrix *b = NULL ;
             SPEX_matrix *sol = NULL;
 
+            mpz_t mpz1, mpz2, mpz3;
+            SPEX_MPZ_SET_NULL(mpz1);
+            SPEX_MPZ_SET_NULL(mpz2);
+            SPEX_MPZ_SET_NULL(mpz3);
+
             if (Ab_type >= 0 && Ab_type <= 4)
             {
 
@@ -317,14 +326,14 @@ int main( int argc, char* argv[])
                     TEST_CHECK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, B,
                         option));
                     // to trigger SPEX_SINGULAR 
-                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A, b,
-                        option));
+                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A,
+                        b, option));
                     option->pivot = SPEX_LARGEST;
-                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A, b,
-                        option));
+                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A,
+                        b, option));
                     option->pivot = SPEX_FIRST_NONZERO;
-                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A, b,
-                       option));
+                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A,
+                       b, option));
 
                     //free the memory alloc'd
                     SPEX_matrix_free (&A, option) ;
@@ -435,6 +444,17 @@ int main( int argc, char* argv[])
             }
             else // 5 =< Ab_type < 20
             {
+                //--------------------------------------------------------------
+                // test gmp functions that are not used in SPEX Left LU
+                //--------------------------------------------------------------
+                /*TEST_CHECK(SPEX_mpz_init(mpz1));
+                TEST_CHECK(SPEX_mpz_init(mpz2));
+                TEST_CHECK(SPEX_mpz_init(mpz3));
+                TEST_CHECK(SPEX_mpz_set_ui(mpz1, 2));
+                TEST_CHECK(SPEX_mpz_set_ui(mpz2, 3));
+
+                TEST_CHECK(SPEX_mpz_add(mpz3, mpz2, mpz1));
+                TEST_CHECK(SPEX_mpz_addmul(mpz3, mpz2, mpz1));*/
 
                 //--------------------------------------------------------------
                 // Test SPEX_matrix_copy and SPEX_matrix_check brutally
@@ -467,7 +487,7 @@ int main( int argc, char* argv[])
                     n1 = 1;
                     nz1 = nz1;
                 }
-                TEST_CHECK(SPEX_matrix_allocate(&Ax, (SPEX_type) kind,
+                TEST_CHECK(SPEX_matrix_allocate(&Ax, (SPEX_kind) kind,
                     (SPEX_type)type, m1, n1, nz1, false, true, option));
                 if (kind == 1){Ax->nz = nz1;}
 
@@ -526,6 +546,11 @@ int main( int argc, char* argv[])
                     }
                 }
                 TEST_CHECK (SPEX_matrix_check (Ax, option));
+
+                /*if (kind == 0) // CSC
+                {
+                    TEST_CHECK (SPEX_determine_symmetry(Ax, true));
+                }*/
 
                 // convert to all different type of matrix
                 for (int tk1 = 0; tk1 < 15 && info == SPEX_OK; tk1++)
@@ -587,7 +612,7 @@ int main( int argc, char* argv[])
                         TEST_CHECK_FAILURE(SPEX_matrix_check(NULL, option));
 
                         // Incorrect calling with NULL pointer(s)
-                        TEST_CHECK_FAILURE(SPEX_Left_LU_analyze(NULL,A,NULL));
+                        TEST_CHECK_FAILURE(SPEX_LU_analyze(NULL,A,NULL));
 
                         // test SPEX_matrix_copy with scale
                         SPEX_matrix_free (&A, option) ;

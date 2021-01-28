@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/SPEX_Left_LU_analyze: symbolic ordering and analysis for sparse LU
+// SPEX_Util/SPEX_LU_analyze: symbolic ordering and analysis for sparse LU
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX_LU/License for the license.
 
@@ -23,11 +23,11 @@
  */
 
 // SPEX_LU_analyze creates the SPEX_LU_analysis object S.  Use
-// SPEX_delete_LU_analysis to delete it.
+// SPEX_LU_analysis_free to delete it.
 
-#include "spex_left_lu_internal.h"
+#include "spex_util_internal.h"
 
-SPEX_info SPEX_Left_LU_analyze
+SPEX_info SPEX_LU_analyze
 (
     SPEX_LU_analysis** S_handle, // symbolic analysis (column perm. and nnz L,U)
     const SPEX_matrix *A,        // Input matrix

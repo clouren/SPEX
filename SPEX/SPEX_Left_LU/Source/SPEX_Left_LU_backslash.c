@@ -89,7 +89,7 @@ SPEX_info SPEX_Left_LU_backslash
     // Symbolic Analysis
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_Left_LU_analyze(&S, A, option));
+    SPEX_CHECK(SPEX_LU_analyze(&S, A, option));
 
     //--------------------------------------------------------------------------
     // LU Factorization

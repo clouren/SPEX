@@ -31,10 +31,10 @@ LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -L../../SPEX_Util/
 CS = ../Lib/libspexleftlu.a $(LDLIBS)
 
 
-all: lib example example2 SPEX_Left_LU
+all: lib example example2 spexlu_demo
 	- ./example
 	- ./example2
-	- ./SPEX_Left_LU
+	- ./spexlu_demo
 
 lib:
 	( cd ../Lib ; $(MAKE) )
@@ -45,12 +45,12 @@ example: lib example.c Makefile
 example2: lib example2.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o example2 example2.c demos.c $(CS)
 
-SPEX_Left_LU: lib SPEX_Left_LU.c demos.h demos.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o SPEX_Left_LU SPEX_Left_LU.c demos.c $(CS)
+spexlu_demo: lib spexlu_demo.c demos.h demos.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o spexlu_demo spexlu_demo.c demos.c $(CS)
 clean:
 	- $(RM) *.o
 
 purge: distclean
 
 distclean: clean
-	- $(RM) -r example example2 example3 example4 example5 SPEXLU *.a *.dSYM *.obj *.dll
+	- $(RM) -r example example2 example3 example4 example5 spexlu_demo *.a *.dSYM *.obj *.dll

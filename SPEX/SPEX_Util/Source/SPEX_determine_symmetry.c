@@ -37,7 +37,7 @@
 SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
-    bool check_if_numerically_symmetric,
+    bool check_if_numerically_symmetric
             // if true, check A=A' (pattern & values). if false,
             // only check if the pattern of A is symmetric, not
             // the values

@@ -208,7 +208,7 @@ int main (int argc, char* argv[])
     clock_t start_col = clock();
 
     // Column ordering using either AMD, COLAMD or nothing
-    OK(SPEX_Left_LU_analyze(&S, A, option));
+    OK(SPEX_LU_analyze(&S, A, option));
     if (option->print_level > 0)
     {
         SPEX_print_options(option);
