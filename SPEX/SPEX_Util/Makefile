@@ -1,10 +1,10 @@
 #------------------------------------------------------------------------------
-# SLIP_LU/Makefile: compile, install, and run SLIP_LU demo and tests
+# SPEX_Util/Makefile: compile, install, and run SPEX_Util demo and tests
 #------------------------------------------------------------------------------
 
-# SLIP_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+# SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 # Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-# SLIP_LU/License for the license.
+# SPEX_Util/License for the license.
 
 #------------------------------------------------------------------------------
 
@@ -37,25 +37,25 @@ static:
 
 # statement coverage test
 cov:
-	( cd Tcov ; $(MAKE) )
+	- ( cd Tcov ; $(MAKE) )
 
 # remove files not in the distribution, but keep compiled libraries
 clean:
 	( cd Lib ; $(MAKE) clean )
 	( cd Demo ; $(MAKE) clean )
-	( cd Tcov ; $(MAKE) clean )
-	- ( cd MATLAB/Source ; $(RM) *.o )
-	- ( cd MATLAB    ; $(RM) *.o )
-	( cd Doc ; $(MAKE) clean )
+	- #( cd Tcov ; $(MAKE) clean )
+	- #( cd MATLAB/Source ; $(RM) *.o )
+	- #( cd MATLAB    ; $(RM) *.o )
+	#( cd Doc ; $(MAKE) clean )
 
 # remove all files not in the distribution
 purge:
 	( cd Lib ; $(MAKE) purge )
 	( cd Demo ; $(MAKE) purge )
-	( cd Tcov ; $(MAKE) purge )
-	- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
-	- ( cd MATLAB    ; $(RM) *.o *.mex* )
-	( cd Doc ; $(MAKE) clean )
+	- #( cd Tcov ; $(MAKE) purge )
+	- #( cd MATLAB/Source ; $(RM) *.o *.mex* )
+	- #( cd MATLAB    ; $(RM) *.o *.mex* )
+	#( cd Doc ; $(MAKE) clean )
 
 distclean: purge
 

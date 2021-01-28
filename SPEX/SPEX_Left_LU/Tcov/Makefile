@@ -19,8 +19,8 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wredundant-decls -Wnested-externs -Wdisabled-optimization -std=c99 \
         -Wno-unused-parameter -I../Include -I../Source -I../Demo \
 	-I../../SPEX_Util/Include/ -I../../SPEX_Util/Source/ \
-        -I../../../SuiteSparse_config -I../../COLAMD/Include \
-	-I../../AMD/Include \
+        -I../../../SuiteSparse_config -I../../../COLAMD/Include \
+	-I../../../AMD/Include \
         -DSPEX_GMP_LIST_INIT=2
 
 LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig

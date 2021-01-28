@@ -22,13 +22,13 @@ CFLAGS += -Wall -Wextra -Wpedantic -Werror
 # SPEX_LU depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
 
-C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SLIP_Util/Include -I../../SLIP_Util/Source
+C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
 
 all: install
 
 OBJ = \
      spex_left_lu_back_sub.o spex_left_lu_forward_sub.o spex_left_lu_get_pivot.o \
-     spex_left_lu_permute_b.o spex_left_lu_ref_triangular_solve.o SPEX_Left_LU_analyze.o spex_left_lu_dfs.o \
+     spex_left_lu_permute_b.o spex_left_lu_ref_triangular_solve.o spex_left_lu_dfs.o \
      spex_left_lu_get_largest_pivot.o  spex_left_lu_get_smallest_pivot.o  spex_left_lu_permute_x.o \
      SPEX_Left_LU_solve.o SPEX_Left_LU_backslash.o SPEX_Left_LU_factorize.o spex_left_lu_get_nonzero_pivot.o \
      spex_left_lu_reach.o

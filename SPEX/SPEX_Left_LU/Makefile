@@ -1,10 +1,10 @@
 #------------------------------------------------------------------------------
-# SLIP_LU/Makefile: compile, install, and run SLIP_LU demo and tests
+# SPEX_Left_LU/Makefile: compile, install, and run SPEX_Left_LU demo and tests
 #------------------------------------------------------------------------------
 
-# SLIP_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-# Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-# SLIP_LU/License for the license.
+# SPEX_Left_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick
+# Moreno-Centeno, Timothy A. Davis, Texas A&M University.  All Rights Reserved.
+# See SPEX_Left_LU/License for the license.
 
 #------------------------------------------------------------------------------
 
