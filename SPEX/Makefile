@@ -8,6 +8,8 @@
 #
 #-------------------------------------------------------------------------------
 
+# FIXME: clean include/* lib/* doc/*
+
 SUITESPARSE = $(CURDIR)
 export SUITESPARSE
 
@@ -203,6 +205,9 @@ purge:
 #	- ( cd SPQR && $(MAKE) purge )
 #	- ( cd PIRO_BAND && $(MAKE) purge )
 #	- ( cd SKYLINE_SVD && $(MAKE) purge )
+	- ( cd SPEX_Cholesky && $(MAKE) purge )
+	- ( cd SPEX_Left_LU && $(MAKE) purge )
+	- ( cd SPEX_Util && $(MAKE) purge )
 #	- $(RM) MATLAB_Tools/*/*.mex* MATLAB_Tools/spok/private/*.mex*
 	- $(RM) -r ../include/* ../bin/* ../lib/* ../share/*
 
@@ -228,6 +233,9 @@ clean:
 #	- ( cd SPQR && $(MAKE) clean )
 #	- ( cd PIRO_BAND && $(MAKE) clean )
 #	- ( cd SKYLINE_SVD && $(MAKE) clean )
+	- ( cd ../SPEX_Cholesky && $(MAKE) clean )
+	- ( cd ../SPEX_Left_LU && $(MAKE) clean )
+	- ( cd ../SPEX_Util && $(MAKE) clean )
 
 # Create the PDF documentation
 docs:

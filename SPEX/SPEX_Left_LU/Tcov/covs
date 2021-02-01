@@ -1,6 +1,6 @@
 #!/bin/csh
 echo '================================================================='
-foreach file (SLIP_*.?cov slip_*.?cov)
+foreach file (SPEX_*.?cov spex_*.?cov)
         echo $file
         grep "#####" $file
         echo '================================================================='

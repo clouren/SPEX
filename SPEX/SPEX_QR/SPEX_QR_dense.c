@@ -16,7 +16,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
 
     SPEX_info ok;
-    int64_t n = 200, nz = n*n, num=0;
+    int64_t n = 300, nz = n*n, num=0;
     SPEX_matrix *A = NULL ;                     // input matrix
     SPEX_matrix *A2 = NULL ;                    // input matrix (to be generated)
     SPEX_matrix *R = NULL;                      // Upper triangular matrix

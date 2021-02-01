@@ -1,18 +1,19 @@
 //------------------------------------------------------------------------------
-// SLIP_LU/Tcov/tcov_malloc_test.h
+// SPEX/SPEX/SPEX_Left_LU/Tcov/tcov_malloc_test.h
 //------------------------------------------------------------------------------
 
-// SLIP_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
+// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SLIP_LU/License for the license.
+// SPEX/License for the license.
 
 //------------------------------------------------------------------------------
 
-#ifndef TCOV_SLIP_MALLOC_TEST_H
-#define TCOV_SLIP_MALLOC_TEST_H
+#ifndef TCOV_SPEX_MALLOC_TEST_H
+#define TCOV_SPEX_MALLOC_TEST_H
 
-#include "slip_internal.h"
-#include "SLIP_gmp.h"
+#include "spex_left_lu_internal.h"
+#include "spex_util_internal.h"
+#include "SPEX_gmp.h"
 
 extern int64_t malloc_count ;
 
@@ -20,31 +21,31 @@ extern int64_t malloc_count ;
     printf ("%s, line %d, slip_gmp_ntrials = %ld, malloc_count = %ld\n", \
     __FILE__, __LINE__, slip_gmp_ntrials, malloc_count);
 
-#define SLIP_PRINT_INFO(info)                                               \
+#define SPEX_PRINT_INFO(info)                                               \
 {                                                                           \
     printf ("file %s line %d: ", __FILE__, __LINE__) ;                      \
     switch(info)                                                            \
     {                                                                       \
-        case SLIP_OK:              printf("SLIP_OK\n");            break;   \
-        case SLIP_OUT_OF_MEMORY:   printf("OUT OF MEMORY\n");      break;   \
-        case SLIP_SINGULAR:        printf("Matrix is SINGULAR\n"); break;   \
-        case SLIP_INCORRECT_INPUT: printf("INCORRECT INPUT\n");    break;   \
-        case SLIP_INCORRECT:       printf("SLIP_INCORRECT\n");     break;   \
+        case SPEX_OK:              printf("SPEX_OK\n");            break;   \
+        case SPEX_OUT_OF_MEMORY:   printf("OUT OF MEMORY\n");      break;   \
+        case SPEX_SINGULAR:        printf("Matrix is SINGULAR\n"); break;   \
+        case SPEX_INCORRECT_INPUT: printf("INCORRECT INPUT\n");    break;   \
+        case SPEX_INCORRECT:       printf("SPEX_INCORRECT\n");     break;   \
         default:                   printf("unknown!\n");                    \
     }                                                                       \
 }
 
-#ifdef SLIP_CHECK
-#undef SLIP_CHECK
+#ifdef SPEX_CHECK
+#undef SPEX_CHECK
 #endif
 
-#define SLIP_CHECK(method)          \
+#define SPEX_CHECK(method)          \
 {                                   \
     info = (method) ;               \
-    if (info != SLIP_OK)            \
+    if (info != SPEX_OK)            \
     {                               \
-        SLIP_PRINT_INFO (info)      \
-        SLIP_FREE_ALL ;             \
+        SPEX_PRINT_INFO (info)      \
+        SPEX_FREE_ALL ;             \
         return (info) ;             \
     }                               \
 }
@@ -75,8 +76,8 @@ void tcov_free
     void *p            // Pointer to be free
 ) ;
 
-// used to test slip_gmp_reallocate
-int slip_gmp_realloc_test
+// used to test spex_gmp_reallocate
+int spex_gmp_realloc_test
 (
     void **p_new,
     void * p_old,

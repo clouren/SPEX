@@ -24,14 +24,15 @@ SPEX_info SPEX_transpose
 {
     SPEX_info info;
     // Check input
-    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
+    ASSERT(A->kind == SPEX_CSC);
     if (!C_handle) 
         return SPEX_INCORRECT_INPUT;
     
     // Declare workspace and C
     int64_t* w = NULL;
     SPEX_matrix* C = NULL;
-    SPEX_CHECK(SPEX_matrix_allocate(&C, SPEX_CSC, SPEX_MPZ, A->n, A->m, A->p[A->n], false, true, NULL));
+    // C is also CSC and its type is the same as A
+    SPEX_CHECK(SPEX_matrix_allocate(&C, SPEX_CSC, A->type, A->n, A->m, A->p[A->n], false, true, NULL));
     int64_t p, q, j, n, m;
     m = A->m ; n = A->n ; 
     
@@ -55,7 +56,26 @@ SPEX_info SPEX_transpose
         {
             q = w [A->i [p]]++;
             C->i [q] = j ;                 // place A(i,j) as entry C(j,i) 
-            SPEX_CHECK(SPEX_mpz_set(C->x.mpz[q], A->x.mpz[p]));
+            // Place the values. The way values are set are based on the type of A
+            // TODO is there a better way to do this?
+            if (A->type == SPEX_MPZ)
+            {
+                SPEX_CHECK(SPEX_mpz_set(C->x.mpz[q], A->x.mpz[p]));
+            }
+            else if (A->type == SPEX_MPQ)
+            {
+                SPEX_CHECK(SPEX_mpq_set(C->x.mpq[q], A->x.mpq[p]));
+            }
+            else if (A->type == SPEX_MPFR)
+            {
+                SPEX_CHECK(SPEX_mpfr_set(C->x.mpfr[q], A->x.mpfr[p], SPEX_DEFAULT_MPFR_ROUND));
+            }
+            else if (A->type == SPEX_INT64)
+            {
+                C->x.int64[q] = A->x.int64[p];
+            }
+            else
+                C->x.fp64[q] = A->x.fp64[p];
         }
     }
     C->p[m] = A->p[n];

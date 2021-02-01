@@ -6,7 +6,11 @@
 // Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
 // SPEX_LU/License for the license.
 
+// SPDX-License-Identifier: TODO
+
 //------------------------------------------------------------------------------
+
+// TODO: decided if the matrix must have sorted row indices in each column
 
 #define SPEX_FREE_ALL    \
     SPEX_FREE (work) ;
