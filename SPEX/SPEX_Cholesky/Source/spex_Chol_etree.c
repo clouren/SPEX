@@ -16,7 +16,7 @@
 SPEX_info spex_Chol_etree 
 (
     int64_t** tree,
-    SPEX_matrix* A // Input matrix (must be SPD)
+    const SPEX_matrix* A // Input matrix (must be SPD)
 )
 {
     // Check input

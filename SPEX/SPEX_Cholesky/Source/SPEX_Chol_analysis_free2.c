@@ -11,9 +11,9 @@
 #include "spex_chol_internal.h"
 
 /* Purpose: Free the SPEX_Chol_analysis structure*/
-void SPEX_Chol_analysis_free
+void SPEX_Chol_analysis_free2
 (
-    SPEX_Chol_analysis** S
+    SPEX_Chol_analysis2** S
 )
 {
   if ((S != NULL) && (*S != NULL))

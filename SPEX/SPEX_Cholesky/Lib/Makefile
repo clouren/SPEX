@@ -34,7 +34,8 @@ OBJ = \
      SPEX_Chol_Solve.o spex_Chol_etree.o spex_Chol_tdfs.o SPEX_Chol_Factor.o \
      spex_Chol_forward_sub.o spex_Left_Chol_triangular_solve.o \
      spex_Chol_leaf.o spex_Chol_ltsolve.o SPEX_Chol_permute_A.o \
-     spex_Up_Chol_triangular_solve.o SPEX_Chol_analyze.o SPEX_Chol_backslash.o
+     spex_Up_Chol_triangular_solve.o  SPEX_Chol_backslash.o \
+     SPEX_Chol_preorder.o 
 
 $(OBJ): ../Include/SPEX_Chol.h Makefile
 

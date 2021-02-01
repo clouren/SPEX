@@ -17,11 +17,11 @@
  */
 SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol factor
 (
-    SPEX_matrix* A,                 // Input matrix
+    const SPEX_matrix* A,                 // Input matrix
     SPEX_matrix** L_handle,         // partial L matrix
     int64_t*  xi,                   // nonzero pattern vector
     int64_t*  parent,               // Elimination tree
-    SPEX_Chol_analysis * S,         // stores nnz and elimination tree
+    SPEX_Chol_analysis* S,         // stores nnz and elimination tree
     int64_t * c                     // Column pointers
 )
 {

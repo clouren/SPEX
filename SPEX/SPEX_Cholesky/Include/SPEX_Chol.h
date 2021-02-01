@@ -12,32 +12,31 @@
 #define SPEX_CHOLESKY_H
 
 
-// This software package exactly solves a sparse symmetric positive definite (SPD)
-// system of linear equations using one of two Integer-Preserving Cholesky factorizations. 
-// This code accompanies the paper (to be submitted to ACM TOMs)
+// This software package exactly solves a sparse symmetric positive definite 
+// (SPD) system of linear equations using one of two Integer-Preserving Cholesky  
+// factorizations. This code accompanies the paper (to be submitted to ACM TOMs)
 
-//    "Algorithm 1XXX: Exactly Solving Sparse Symmetric Positive Definite Linear Systems
-//     via SPEX Cholesky factorization," C. Lourenco, E. Moreno-Centeno, T. Davis,
-//     to be submitted ACM TOMS.
+//    "Algorithm 1xxx: Exactly Solving Sparse Symmetric Positive Definite Linear 
+//     Systems via SPEX Cholesky factorization," C. Lourenco, E. Moreno-Centeno, 
+//     T. Davis, to be submitted ACM TOMS.
 
-//   The theory associated with this paper is found at:
+//     The theory associated with this paper is found at:
 
-//    "A Sparse Integer-Preserving Cholesky Factorization Computed in Time Proportional
-//     to Arithmetic Work", C. Lourenco, E. Moreno-Centeno, under submission, SIMAX.
+//    "A Sparse Integer-Preserving Cholesky Factorization Computed in Time 
+//     Proportional to Arithmetic Work", C. Lourenco, E. Moreno-Centeno, 
+//     under submission, SIMAX.    
 
 //    If you use this code, you must first download and install the GMP, 
-//    MPFR, SPEX_Util, AMD, and COLAMD libraries. 
-//   
-//   GMP and MPFR can be found at:
+//    MPFR, SPEX_Util, AMD, and COLAMD libraries. GMP and MPFR can be found at:
 //              https://gmplib.org/
 //              http://www.mpfr.org/
 //
-//   SPEX_Util, AMD, and COLAMD are distributed along with SPEX_Cholesky. The easiest
-//   way ensure these dependencies are met is to only access this package through 
-//   the SPEX repository.
+//   SPEX_Util, AMD, and COLAMD are distributed along with SPEX_Cholesky. 
+//   The easiest way ensure these dependencies are met is to only access this 
+//   package through the SPEX repository.
 //
-//   All of these codes are components of the SPEX software library. This code may
-//   be found at:
+//   All of these codes are components of the SPEX software library. This code 
+//   may be found at:
 //              https://github.com/clouren/spex
 //              www.suitesparse.com
 //  
@@ -109,24 +108,24 @@
 
 //    This software package solves the SPD linear system Ax = b exactly. The key
 //    property of this package is that it can exactly solve ALL SPD input systems. 
-//    The input matrix and right hand side vectors are stored as either integers, double
-//    precision numbers, multiple precision floating points (through the mpfr
-//    library) or as rational numbers (as a collection of numerators and
+//    The input matrix and right hand side vectors are stored as either integers,
+//    double precision numbers, multiple precision floating points (through the 
+//    mpfr library) or as rational numbers (as a collection of numerators and
 //    denominators using the GMP mpq_t data structure). Appropriate routines
 //    within the code transform the input into an integral matrix in compressed
 //    column form.
 
-//    This package computes the factorization PAP' = LDL'. Note that we store the
-//    "functional" form of the factorization by only storing the matrix L. The user
-//    is given some freedom to select the permutation matrix P. The
+//    This package computes the factorization PAP' = LDL'. Note that we store
+//    the "functional" form of the factorization by only storing the matrix L. 
+//    The user is given some freedom to select the permutation matrix P. The
 //    recommended default settings select P using the AMD ordering.
 //    Alternative strategies allowed to select P include the COLAMD 
 //    ordering or no column permutation (P=I).  
 
 //    The factor L is computed via integer preserving operations via
 //    integer-preserving Gaussian elimination. The key part of this algorithm
-//    is a REF Sparse triangular solve function which exploits sparsity and symmetry to
-//    reduce the number of operations that must be performed.
+//    is a REF Sparse triangular solve function which exploits sparsity and 
+//    symmetry to reduce the number of operations that must be performed.
 
 //    Once L is computed, a simplified version of the triangular solve
 //    is performed which assumes the vector b is dense. The final solution
@@ -179,14 +178,19 @@
 
 
 //------------------------------------------------------------------------------
-// SPEX_Chol_analysis is the data structure for symbolic analysis in the SPEX_Cholesky 
-// factorizations. It includes row permutation, elimination tree, and column
-// pointers.
+// SPEX_Chol_analysis is the data structure for symbolic analysis in the 
+// SPEX_Cholesky factorizations. It includes row permutation, elimination tree, 
+// and column pointers.
 //------------------------------------------------------------------------------
+
 
 typedef struct SPEX_Chol_analysis
 {
     int64_t* pinv;      // Row permutation
+    int64_t *q ;        // Column permutation, representing
+                        // the permutation matrix Q.   The matrix A*Q is factorized.
+                        // If the kth column of L, and A*Q is column j of the
+                        // unpermuted matrix A, then j = S->q [k].
     int64_t* parent;    // Elimination tree for Cholesky
     int64_t* cp;        // Column pointers for Cholesky
     int64_t lnz;        // Number of nonzeros in Cholesky L
@@ -196,16 +200,17 @@ typedef struct SPEX_Chol_analysis
 /* Purpose: Free the SPEX_Chol_analysis data structure */
 void SPEX_Chol_analysis_free
 (
-    SPEX_Chol_analysis* S
+    SPEX_Chol_analysis** S
 );
+
    
 /* Purpose: Permute the matrix A and return A2 = PAP' */
 SPEX_info SPEX_Chol_permute_A
 (
     SPEX_matrix **A2_handle,    // Output permuted matrix
     SPEX_matrix* A,             // Initial input matrix
-    int64_t* pinv,              // Row permutation
-    SPEX_LU_analysis* S         // Column permutation
+    SPEX_Chol_analysis* S      //Symbolic analysis struct that contains column 
+                             //and inverse row permutations
 );
 
 /* Purpose: After computing the Cholesky factor A = LDL',
@@ -217,14 +222,13 @@ SPEX_info SPEX_Chol_Solve
     // Output
     SPEX_matrix** x_handle,     // rational solution to the system
     // Input
-    SPEX_matrix *A,             // Input matrix (permuted)
-    SPEX_matrix* A_orig,        // Input matrix (unpermuted)
-    SPEX_matrix* b,             // right hand side vector
-    SPEX_matrix* rhos,          // sequence of pivots
-    SPEX_matrix* L,             // lower triangular matrix
-    int64_t* pinv,              // row permutation
-    SPEX_LU_analysis* S,        // Symbolic analysis struct
-    SPEX_options* option        // command options
+    const SPEX_matrix *A,             // Input matrix (permuted)
+    const SPEX_matrix* A_orig,        // Input matrix (unpermuted)
+    const SPEX_matrix* b,             // right hand side vector
+    const SPEX_matrix* rhos,          // sequence of pivots
+    const SPEX_matrix* L,             // lower triangular matrix
+    const SPEX_Chol_analysis* S,        // Symbolic analysis struct
+    const SPEX_options* option        // command options
 );
 
 /* Purpose: Compute the integer-preserving factorization A = LDL'
@@ -232,26 +236,27 @@ SPEX_info SPEX_Chol_Solve
  * lower triangular matrix and rhos contains the sequence of pivots
  * used in the factorization 
  */
-SPEX_info SPEX_Chol_Factor
+SPEX_info SPEX_Chol_Factor     
 (
     // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
     SPEX_matrix ** rhos_handle, // sequence of pivots
     // Input
-    SPEX_matrix* A,             // matrix to be factored
-    SPEX_Chol_analysis * S,     // stores guess on nnz and column permutation
-    bool left,                  // Set true if performing a left-looking factorization
-    SPEX_options* option        // command options
+    const SPEX_matrix* A,      // matrix to be factored
+    SPEX_Chol_analysis* S,     // stores guess on nnz and column permutation
+    bool left,                 //set to true if performing a left-looking factorization; 
+                               //otherwise perform an up-looking factorization.
+    const SPEX_options* option // command options
 );
 
 
 /* Purpose: Symbolic analysis for integer-preserving Cholesky factorization.
  * On output, S contains the row/column permutation of A
  */
-SPEX_info SPEX_Chol_analyze
+SPEX_info SPEX_Chol_preorder
 (
     // Output
-    SPEX_LU_analysis** S_handle, // symbolic analysis 
+    SPEX_Chol_analysis** S_handle, // symbolic analysis 
     // Input
     const SPEX_matrix *A,        // Input matrix
     const SPEX_options *option   // Control parameters, if NULL, use default

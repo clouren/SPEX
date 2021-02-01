@@ -23,8 +23,8 @@
  *
  */
 
-// SPEX_Chol_analyze creates the SPEX_LU_analysis object S.  Use
-// SPEX_LU_analysis_free to delete it.
+// SPEX_Chol_analyze creates the SPEX_Chol_analysis object S_Chol.  Use
+// SPEX_Chol_analysis_free to delete it.
 // This function is a slightly modified version of SPEX_Left_LU's 
 // LU analysis function
 
@@ -32,7 +32,7 @@
 
 SPEX_info SPEX_Chol_preorder
 (
-    SPEX_Chol_analysis2** S_handle, // symbolic analysis (row/column perm. and nnz L,U)
+    SPEX_Chol_analysis** S_handle, // symbolic analysis (row/column perm. and nnz L,U)
     const SPEX_matrix *A,        // Input matrix
     const SPEX_options *option   // Control parameters, if NULL, use default
 )
@@ -60,13 +60,13 @@ SPEX_info SPEX_Chol_preorder
     // allocate symbolic analysis object
     //--------------------------------------------------------------------------
 
-    SPEX_Chol_analysis2 *S = NULL ;
+    SPEX_Chol_analysis *S = NULL ;
     int64_t i, n = A->n;
     ASSERT( n >= 0); // Dimension can't be negative
     int64_t anz = SPEX_matrix_nnz(A, option);   // Number of nonzeros in A
     
     // Allocate memory for S
-    S = (SPEX_Chol_analysis2*) SPEX_malloc(sizeof(SPEX_Chol_analysis2));
+    S = (SPEX_Chol_analysis*) SPEX_malloc(sizeof(SPEX_Chol_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
 
     // Allocate memory for column permutation
@@ -97,34 +97,11 @@ SPEX_info SPEX_Chol_preorder
     }
 
     //--------------------------------------------------------------------------
-    // The AMD ordering is used. S->q is set to AMD's column ordering on
-    // A. The number of nonzeros in L is given as AMD's computed
-    // number of nonzeros in the Cholesky factor L of A which is the exact
-    // nnz(L) for Cholesky factorization (barring numeric cancellation)
-    //--------------------------------------------------------------------------
-    else if (order == SPEX_AMD)
-    {
-        double Control [AMD_CONTROL];           // Declare AMD control
-        amd_l_defaults (Control) ;              // Set AMD defaults
-        double Info [AMD_INFO];
-        // Perform AMD
-        amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-            (SuiteSparse_long *) S->q, Control, Info) ;
-        S->lnz = Info[AMD_LNZ];        // estimate for unz and lnz
-        if (pr > 0)   // Output AMD info if desired
-        {
-            SPEX_PRINTF ("\n****Column Ordering Information****\n") ;
-            amd_l_control (Control) ;
-            amd_l_info (Info) ;
-        }
-    }
-
-    //--------------------------------------------------------------------------
     // The COLAMD ordering is used. S->q is set as COLAMD's column ordering.
     // The number of nonzeros in L is set as 10 times the number of
     // nonzeros in A. This is a crude estimate.
     //--------------------------------------------------------------------------
-    else
+    else if (order == SPEX_AMD)
     {
         // Declared as per COLAMD documentation
         int64_t Alen = 2*anz + 6 *(n+1) + 6*(n+1) + n;
@@ -132,7 +109,7 @@ SPEX_info SPEX_Chol_preorder
         if (!A2)
         {
             // out of memory
-            SPEX_LU_analysis_free (&S, option) ;
+            SPEX_Chol_analysis_free2 (&S) ;
             return (SPEX_OUT_OF_MEMORY) ;
         }
         // Initialize S->q as per COLAMD documentation
@@ -163,6 +140,29 @@ SPEX_info SPEX_Chol_preorder
     }
 
     //--------------------------------------------------------------------------
+    // The AMD ordering is used. S->q is set to AMD's column ordering on
+    // A. The number of nonzeros in L is given as AMD's computed
+    // number of nonzeros in the Cholesky factor L of A which is the exact
+    // nnz(L) for Cholesky factorization (barring numeric cancellation)
+    //--------------------------------------------------------------------------
+    else
+    {
+        double Control [AMD_CONTROL];           // Declare AMD control
+        amd_l_defaults (Control) ;              // Set AMD defaults
+        double Info [AMD_INFO];
+        // Perform AMD
+        amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
+            (SuiteSparse_long *) S->q, Control, Info) ;
+        S->lnz = Info[AMD_LNZ];        // estimate for unz and lnz
+        if (pr > 0)   // Output AMD info if desired
+        {
+            SPEX_PRINTF ("\n****Column Ordering Information****\n") ;
+            amd_l_control (Control) ;
+            amd_l_info (Info) ;
+        }
+    }
+
+    //--------------------------------------------------------------------------
     // Make sure appropriate space is allocated. It's possible to return
     // estimates which exceed the dimension of L and U or estimates which are
     // too small for L U. In this case, this block of code ensures that the
@@ -172,7 +172,7 @@ SPEX_info SPEX_Chol_preorder
     if (S->lnz > (double) n*n)
     {
         int64_t nnz = ceil(0.5*n*n);
-        S->lnz = S->unz = nnz;
+        S->lnz =  nnz;
     }
     // If estimate < n, first iteration of left-looking TS may fail
     if (S->lnz < n)

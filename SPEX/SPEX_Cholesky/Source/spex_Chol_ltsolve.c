@@ -18,8 +18,8 @@ return SPEX_OUT_OF_MEMORY;      \
  */
 SPEX_info spex_Chol_ltsolve 
 (
-    SPEX_matrix *L,     // The lower triangular matrix
-    SPEX_matrix *x      // Solution vector
+    const SPEX_matrix *L,     // The lower triangular matrix
+    SPEX_matrix *x            // Solution vector
 )
 {
     SPEX_info ok;

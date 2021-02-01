@@ -327,7 +327,7 @@ static inline int compare (const void * a, const void * b)
 SPEX_info spex_Chol_etree 
 (
     int64_t** tree,
-    SPEX_matrix* A // Input matrix (must be SPD)
+    const SPEX_matrix* A // Input matrix (must be SPD)
 );
 
 /* Purpose: This function computes the reach of the kth row of A onto the graph of L using the 
@@ -397,7 +397,7 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
 (
     int64_t *top_output,               // Output the beginning of nonzero pattern
     SPEX_matrix* L,                    // partial L matrix
-    SPEX_matrix* A,                    // input matrix
+    const SPEX_matrix* A,              // input matrix
     int64_t k,                         // iteration of algorithm
     int64_t* xi,                       // nonzero pattern vector
     int64_t* parent,                   // Elimination tree
@@ -411,8 +411,8 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
 /* Purpose: This solves the system L'x = b for Cholesky factorization */
 SPEX_info spex_Chol_ltsolve 
 (
-    SPEX_matrix *L,    // The lower triangular matrix
-    SPEX_matrix *x      // Solution vector
+    const SPEX_matrix *L,    // The lower triangular matrix
+    SPEX_matrix *x           // Solution vector
 );
 
 /* Purpose: This function performs the SLIP Cholesky factorization. This factorization
@@ -421,11 +421,11 @@ SPEX_info spex_Chol_ltsolve
  */
 SPEX_info spex_Chol_Pre_Left_Factor         // performs the Up looking Cholesky factorization
 (
-    SPEX_matrix* A,
+    const SPEX_matrix* A,
     SPEX_matrix** L_handle,              // partial L matrix
     int64_t* xi,                  // nonzero pattern vector
     int64_t* parent,              // Elimination tree
-    SPEX_Chol_analysis * S,           // stores guess on nnz and column permutation
+    SPEX_Chol_analysis* S,           // stores guess on nnz and column permutation
     int64_t* c                   // Column pointers
 );
 
@@ -436,7 +436,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
 (
     int64_t *top_output,        // Output the beginning of nonzero pattern
     SPEX_matrix* L,              // partial L matrix
-    SPEX_matrix* A,              // input matrix
+    const SPEX_matrix* A,              // input matrix
     int64_t k,                    // iteration of algorithm
     int64_t* xi,                  // nonzero pattern vector
     SPEX_matrix* rhos,              // sequence of pivots
@@ -448,9 +448,9 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
 
 SPEX_info spex_Chol_forward_sub
 (
-    SPEX_matrix *L,   // lower triangular matrix
-    SPEX_matrix *x,        // right hand side matrix of size n*numRHS
-    SPEX_matrix *rhos      // sequence of pivots used in factorization
+    const SPEX_matrix *L,        // lower triangular matrix
+    SPEX_matrix *x,              // right hand side matrix of size n*numRHS
+    const SPEX_matrix *rhos      // sequence of pivots used in factorization
 );
 
 #endif

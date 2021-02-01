@@ -33,26 +33,23 @@
  * 
  * L:               Lower triangular matrix
  * 
- * pinv:            Inverse row permutation
- * 
- * S:               Column permutation struct
+ * S:               Symbolic analysis struct that contains column and inverse row permutations
  * 
  * option:          Command options
  * 
  */
-SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
+SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
 (
     // Output
     SPEX_matrix** x_handle,     // rational solution to the system
     // Input
-    SPEX_matrix* A,             // Input matrix (permuted)
-    SPEX_matrix* A_orig,        // Nonpermuted input matrix
-    SPEX_matrix* b,             // right hand side vector
-    SPEX_matrix* rhos,          // sequence of pivots
-    SPEX_matrix* L,             // lower triangular matrix
-    int64_t* pinv,              // row permutation
-    SPEX_LU_analysis *S,        // Column permutation
-    SPEX_options* option        // command options
+    const SPEX_matrix *A,             // Input matrix (permuted)
+    const SPEX_matrix* A_orig,        // Input matrix (unpermuted)
+    const SPEX_matrix* b,             // right hand side vector
+    const SPEX_matrix* rhos,          // sequence of pivots
+    const SPEX_matrix* L,             // lower triangular matrix
+    const SPEX_Chol_analysis* S,        // Symbolic analysis struct
+    const SPEX_options* option        // command options
 )
 {
     SPEX_info ok;
@@ -62,8 +59,10 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);
     SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
+
+    ASSERT(*x_handle==NULL);
     
-    if (!x_handle || !pinv || !S) return SPEX_INCORRECT_INPUT;
+    if (!x_handle || !S) return SPEX_INCORRECT_INPUT;
     
     int64_t i, j, k, n = L->n, nz;
     
@@ -74,6 +73,9 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     SPEX_matrix *x = NULL;   // unpermuted solution
     SPEX_matrix *x2 = NULL;  // permuted final solution
     SPEX_matrix *b2 = NULL;  // permuted b
+    int64_t* pinv = NULL;   // row permutation
+
+    pinv=S->pinv; //TOASK asi o dentro del for ??
     
     // Permute b and place it in b2
     SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, b->m, b->n, b->m*b->n, false, true, option);
