@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/spex_internal: include file for internal use in SPEX_LU
+// SPEX_Left_LU/Source/spex_left_lu_internal: include file for internal use in
+// SPEX_Left_LU
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
@@ -9,10 +10,10 @@
 //------------------------------------------------------------------------------
 
 // This file is not intended to be #include'd in user applications.  Use
-// SPEX_LU.h instead.
+// SPEX_Left_LU.h instead.
 
-#ifndef SPEX_LU_INTERNAL_H
-#define SPEX_LU_INTERNAL_H
+#ifndef SPEX_LEFT_LU_INTERNAL_H
+#define SPEX_LEFT_LU_INTERNAL_H
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-value"
