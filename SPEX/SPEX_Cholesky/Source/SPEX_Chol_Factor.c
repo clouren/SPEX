@@ -17,7 +17,8 @@
 
 
 #include "spex_chol_internal.h"
-    
+ //TODO: S has estimate/guess or exact? Change all coments to be consistent   
+
 /* Purpose: This function performs the integer preserving Cholesky factorization.
  * It allows either the left-looking or up-looking integer-preserving Cholesky factorization.
  * In order to compute the L matrix, it performs n iterations of a sparse REF symmetric
@@ -31,7 +32,7 @@
  *              L matrix
  * 
  * S:           Symbolic analysis struct for Cholesky factorization. NULL on input. On output,
- *              contains the elimination tree and number of nonzeros in L.
+ *              contains the elimination tree and estimate number of nonzeros in L.
  * 
  * rhos_handle: A handle to the sequence of pivots. NULL on input. On output, contains a pointer
  *              to the pivots matrix.
@@ -43,16 +44,18 @@
  * option:      Command options
  * 
  */
-SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky factorization
+SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky factorization
 (
     // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
     SPEX_matrix ** rhos_handle, // sequence of pivots
+    SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
+                                //exact number of nonzeros of L and permutation used
     // Input
-    SPEX_matrix* A,             // matrix to be factored
-    SPEX_Chol_analysis * S,     // stores guess on nnz and column permutation
-    bool left,                  // Set true if performing a left-looking factorization
-    SPEX_options* option        // command options
+    const SPEX_matrix* A,      // matrix to be factored
+    bool left,                 //set to true if performing a left-looking factorization; 
+                               //otherwise perform an up-looking factorization.
+    const SPEX_options* option 
 )
 {
     SPEX_info ok;
@@ -64,7 +67,9 @@ SPEX_info SPEX_Chol_Factor        // performs an integer-preserving Cholesky fac
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+    ASSERT(*L_handle==NULL);
+    ASSERT(*rhos_handle==NULL);
+
     int64_t anz = SPEX_matrix_nnz (A, option) ;
     
     if (anz < 0)

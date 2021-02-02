@@ -15,16 +15,11 @@
     SPEX_matrix_free(&A,NULL);          \
     SPEX_matrix_free(&L,NULL);          \
     SPEX_matrix_free(&A2,NULL);         \
-    SPEX_FREE(pinv2);                   \
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&rhos,NULL);       \
     SPEX_matrix_free(&x,NULL);          \
     SPEX_FREE(option);                  \
-    SPEX_FREE(pinv);                    \
-    SPEX_LU_analysis_free(&S, NULL);    \
-    SPEX_FREE(S2->parent);              \
-    SPEX_FREE(S2->cp);                  \
-    SPEX_FREE(S2);                      \
+    SPEX_Chol_analysis_free(&S);       \
     SPEX_finalize();                    \
 }                                       \
 
@@ -58,15 +53,12 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     int64_t n = 0, check, ok, j, index, k, nz = 0;
    
-    SPEX_LU_analysis* S = NULL;
+    SPEX_Chol_analysis* S = NULL;
     SPEX_matrix *A = NULL;
     SPEX_matrix *L = NULL;
     SPEX_matrix *b = NULL;
     SPEX_matrix *rhos = NULL;
-    int64_t* pinv = NULL;
-    int64_t* pinv2 = NULL;
     SPEX_matrix* A2 = NULL;
-    SPEX_Chol_analysis* S2 = NULL;
     SPEX_matrix* x = NULL;
     
     // Default options. May be changed in SLIP_LU_config.h
@@ -98,7 +90,6 @@ int main( int argc, char* argv[] )
     n = A->n;
     // For this code, we utilize a vector of all ones as the RHS vector    
     SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
-    pinv = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
     // Create RHS
     for (int64_t k = 0; k < n; k++)
         DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
@@ -113,7 +104,7 @@ int main( int argc, char* argv[] )
     option->order = SPEX_AMD;  // AMD
     //option->order = SPEX_COLAMD; // COLAMD
         
-    DEMO_OK(SPEX_Chol_analyze(&S, A, option));    
+    DEMO_OK(SPEX_Chol_preorder(&S, A, option));    
     clock_t end_col = clock();
     
     
@@ -132,16 +123,17 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Permute matrix A, that is set A2 = PAP'
     //--------------------------------------------------------------------------
-    pinv2 = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
+    /*
+    pinv = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
     for (k = 0; k < n; k++)
     {
         index = S->q[k];
-        pinv2[index] = k;
+        pinv[index] = k;
     }
+    */
     
     
-    
-    DEMO_OK( SPEX_Chol_permute_A(&A2, A, pinv2, S));
+    DEMO_OK( SPEX_Chol_permute_A(&A2, A, S));
     option->print_level = 3;
     option->check = true;
     
@@ -152,7 +144,6 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     clock_t start_factor = clock();
     
-    S2 = (SPEX_Chol_analysis*) SPEX_malloc(1* sizeof(SPEX_Chol_analysis));
     
     SPEX_matrix* L2 = NULL;
     SPEX_matrix* rhos2 = NULL;
@@ -160,7 +151,7 @@ int main( int argc, char* argv[] )
     bool left = true;  // Set true if want left-looking
     
     
-    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, A2, S2, left, option));
+    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, A2, S, left, option));
     
 //    SPEX_matrix_check(L, option);
 //     
@@ -175,7 +166,7 @@ int main( int argc, char* argv[] )
     clock_t start_solve = clock();
     option->check = true;
     
-    DEMO_OK( SPEX_Chol_Solve( &x, A2, A, b, rhos, L, pinv2, S, option));
+    DEMO_OK( SPEX_Chol_Solve( &x, A2, A, b, rhos, L, S, option));
     
     
     clock_t end_solve = clock();

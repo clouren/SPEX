@@ -15,20 +15,35 @@ SPEX_info SPEX_Chol_permute_A
 (
     SPEX_matrix **A2_handle, // Output permuted matrix
     SPEX_matrix* A,          // Initial input matrix
-    int64_t* pinv,           // Inverse row permutation
-    SPEX_LU_analysis* S      // Column permutation
+    SPEX_Chol_analysis* S    //Symbolic analysis struct that contains column 
+                            //and inverse row permutations
 )
 {
     SPEX_info ok;
     // Check inputs
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
-    if (!A2_handle || !pinv || !S)
+    if (!A2_handle || !S)
         return SPEX_INCORRECT_INPUT;
-    
+
+    //Create pinv, the inverse row permutation
+    int k, index;
+    int n = A->n;
+    int64_t* pinv = NULL;
+
+    pinv = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
+    for (k = 0; k < n; k++)
+    {
+        index = S->q[k];
+        pinv[index] = k;
+    }
+    S->pinv=pinv;
+   
+
     // Allocate memory for A2 which is a permuted copy of A
-    int64_t nz = 0, j, n = A->n;
+    int64_t nz = 0, j;
     SPEX_matrix* A2 = NULL;
     SPEX_matrix_allocate(&A2, SPEX_CSC, SPEX_MPZ, n, n, A->p[A->n], false, true, NULL);
+
 
     // Set A2 scale
     OK(SPEX_mpq_set(A2->scale, A->scale));

@@ -48,7 +48,7 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
 (
     int64_t *top_output,            // Output the beginng of nonzero pattern
     SPEX_matrix* L,                 // partial L matrix
-    SPEX_matrix* A,                 // input matrix
+    const SPEX_matrix* A,           // input matrix
     int64_t k,                      // iteration of algorithm
     int64_t*  xi,                   // nonzero pattern vector
     int64_t*  parent,               // Elimintaation tree

@@ -35,13 +35,8 @@
 # define SPEX_FREE_WORK                 \
     SPEX_matrix_free(&L, NULL);         \
     SPEX_matrix_free(&A2,NULL);         \
-    SPEX_FREE(pinv);                    \
-    SPEX_FREE(pinv2);                   \
     SPEX_matrix_free(&rhos, NULL);      \
-    SPEX_LU_analysis_free (&S, NULL);   \
-    SPEX_FREE(S2->parent);              \
-    SPEX_FREE(S2->cp);                  \
-    SPEX_FREE(S2);                      \
+    SPEX_Chol_analysis_free (&S);   \
 
 # define SPEX_FREE_ALL              \
     SPEX_FREE_WORK                  \
@@ -64,10 +59,13 @@ SPEX_info SPEX_Chol_backslash
     //-------------------------------------------------------------------------
     // check inputs
     //-------------------------------------------------------------------------
+    printf("chcek input\n");
 
     SPEX_info ok ;
     // SPEX must be initialized
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
+
+    ASSERT(*X_handle==NULL);
 
     // X can't be NULL
     if (X_handle == NULL)
@@ -87,12 +85,9 @@ SPEX_info SPEX_Chol_backslash
 
     SPEX_matrix *L = NULL ;
     SPEX_matrix *x = NULL;
-    int64_t *pinv = NULL ;
-    int64_t* pinv2 = NULL;
     SPEX_matrix* A2 = NULL;
-    SPEX_Chol_analysis* S2 = NULL;
     SPEX_matrix *rhos = NULL ;
-    SPEX_LU_analysis *S = NULL;
+    SPEX_Chol_analysis *S = NULL;
     int64_t k, n = A->n, index;
 
     // n must be at least 0
@@ -102,7 +97,7 @@ SPEX_info SPEX_Chol_backslash
     // Symbolic Analysis
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_Chol_analyze(&S, (SPEX_matrix*) A, option));
+    SPEX_CHECK(SPEX_Chol_preorder(&S, (SPEX_matrix*) A, option));
     
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky
@@ -113,21 +108,14 @@ SPEX_info SPEX_Chol_backslash
     //--------------------------------------------------------------------------
     // Permute matrix A, that is set A2 = PAP'
     //--------------------------------------------------------------------------
-    pinv2 = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
-    for (k = 0; k < n; k++)
-    {
-        index = S->q[k];
-        pinv2[index] = k;
-    }
-    SPEX_CHECK( SPEX_Chol_permute_A(&A2, (SPEX_matrix*) A, pinv2, S));
+
+    SPEX_CHECK( SPEX_Chol_permute_A(&A2, (SPEX_matrix*) A, S));
 
     //--------------------------------------------------------------------------
     // SPEX Chol Factorization
-    //--------------------------------------------------------------------------
-
-    S2 = (SPEX_Chol_analysis*) SPEX_malloc(1* sizeof(SPEX_Chol_analysis));    
+    //-------------------------------------------------------------------------- 
     
-    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, A2, S2,
+    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, A2, S,
                                  false,     // True = left, false = up
                                  (SPEX_options*) option));
 
@@ -138,7 +126,6 @@ SPEX_info SPEX_Chol_backslash
     SPEX_CHECK (SPEX_Chol_Solve (&x, A2, (SPEX_matrix*) A, (SPEX_matrix*) b,
                                     rhos,
                                     L,
-                                    pinv2,
                                     S,
                                     (SPEX_options*) option));
 

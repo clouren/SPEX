@@ -65,66 +65,6 @@ void spex_chol_get_matlab_options
         }
     }
 
-    //--------------------------------------------------------------------------
-    // Get the row pivoting scheme
-    //--------------------------------------------------------------------------
-
-    option->pivot = SPEX_TOL_SMALLEST ;     // default: diag pivoting with tol
-    field = present ? mxGetField (input, 0, "pivot") : NULL ;
-    if (field != NULL)
-    {
-        if (!mxIsChar (field)) spex_chol_mex_error (1, "option.pivot must be a string") ;
-        mxGetString (field, string, LEN) ;
-        if (MATCH (string, "smallest"))
-        {
-            option->pivot = SPEX_SMALLEST ;         // Smallest pivot
-        }
-        else if (MATCH (string, "diagonal"))
-        {
-            option->pivot = SPEX_DIAGONAL ;         // Diagonal pivoting
-        }
-        else if (MATCH (string, "first"))
-        {
-            option->pivot = SPEX_FIRST_NONZERO ;    // First nonzero in column
-        }
-        else if (MATCH (string, "tol smallest"))
-        {
-            option->pivot = SPEX_TOL_SMALLEST ;     // diag pivoting with tol
-                                                    // for smallest pivot
-        }
-        else if (MATCH (string, "tol largest"))
-        {
-            option->pivot = SPEX_TOL_LARGEST ;      // diag pivoting with tol
-                                                    // for largest pivot.
-        }
-        else if (MATCH (string, "largest"))
-        {
-            option->pivot = SPEX_LARGEST ;          // Largest pivot
-        }
-        else
-        {
-            spex_chol_mex_error (1, "unknown option.pivot") ;
-        }
-    }
-
-    //--------------------------------------------------------------------------
-    // tolerance for row partial pivoting
-    //--------------------------------------------------------------------------
-
-    option->tol = 0.1 ;     // default tolerance is 0.1
-    if (option->pivot == SPEX_TOL_SMALLEST || option->pivot == SPEX_TOL_LARGEST)
-    {
-        field = present ? mxGetField (input, 0, "tol") : NULL ;
-        if (field != NULL)
-        {
-            option->tol = mxGetScalar (field) ;
-            if (option->tol > 1 || option->tol <= 0)
-            {
-                spex_chol_mex_error (1, "invalid option.tol, "
-                    "must be > 0 and <= 1") ;
-            }
-        }
-    }
 
     //--------------------------------------------------------------------------
     // Get the solution option

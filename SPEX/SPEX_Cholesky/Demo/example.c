@@ -17,7 +17,7 @@
 // out is file for output calculated result
 
 #define FREE_WORKSPACE              \
-    SPEX_LU_analysis_free(&S, option);\
+    SPEX_Chol_analysis_free(&S);\
     SPEX_matrix_free(&A, option);   \
     SPEX_FREE(option);              \
     SPEX_matrix_free(&b, option);   \
@@ -66,7 +66,7 @@ int main (int argc, char **argv)
     SPEX_matrix *A = NULL ;                     // input matrix
     SPEX_matrix *b = NULL ;                     // Right hand side vector
     SPEX_matrix *x = NULL ;                     // Solution vectors
-    SPEX_LU_analysis *S = NULL ;                // Column permutation
+    SPEX_Chol_analysis *S = NULL ;                // Column permutation
     SPEX_options *option = SPEX_create_default_options();
     if (option == NULL)
     {
@@ -119,10 +119,9 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
     // solve
     //--------------------------------------------------------------------------
-
     clock_t start_s = clock();
     
-    // SPEX LU has an optional check, to enable it, one can set the following
+    // SPEX Cholesky has an optional check, to enable it, one can set the following
     // parameter to be true.
     option->check = true;
     //option->print_level = 2;
@@ -139,7 +138,6 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------
-
     FREE_WORKSPACE;
 
     printf ("\n%s: all tests passed\n\n", __FILE__) ;
