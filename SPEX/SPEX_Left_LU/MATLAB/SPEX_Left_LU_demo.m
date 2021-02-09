@@ -1,13 +1,13 @@
-%% SPEX_Left_LU_DEMO a demo of SPEX_Left_LU_backslash
+% SPEX_Left_LU_DEMO a demo of SPEX_Left_LU_backslash
 % SPEX_Left_LU_LU is a package for solving sparse linear systems of equations
 % with a roundoff-free integer-preserving method.  The result is
 % always exact, unless the matrix A is perfectly singular.
 %
 % See also vpa, SPEX_Left_LU_backslash, SPEX_Left_LU_install, SPEX_Left_LU_test.
 %
-% SPEX_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-% Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-% SPEX_LU/License for the license.
+% SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+% Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+% SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 format compact
 

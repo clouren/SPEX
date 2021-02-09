@@ -2,10 +2,9 @@
 # SPEX_Util/Makefile: compile, install, and run SPEX_Util demo and tests
 #------------------------------------------------------------------------------
 
-# SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-# Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-# SPEX_Util/License for the license.
-
+# SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 #------------------------------------------------------------------------------
 
 SUITESPARSE ?= $(realpath $(CURDIR)/..)
@@ -22,7 +21,7 @@ demos: all
 # compile the dynamic library only, and then run the demos
 C:
 	( cd Lib ; $(MAKE) )
-	( cd Demo ; $(MAKE) )
+	#( cd Demo ; $(MAKE) )
 
 # compile the dynamic library, and then run the demos and statement coverage
 all: C cov
@@ -42,7 +41,7 @@ cov:
 # remove files not in the distribution, but keep compiled libraries
 clean:
 	( cd Lib ; $(MAKE) clean )
-	( cd Demo ; $(MAKE) clean )
+	#( cd Demo ; $(MAKE) clean )
 	- #( cd Tcov ; $(MAKE) clean )
 	- #( cd MATLAB/Source ; $(RM) *.o )
 	- #( cd MATLAB    ; $(RM) *.o )
@@ -51,7 +50,7 @@ clean:
 # remove all files not in the distribution
 purge:
 	( cd Lib ; $(MAKE) purge )
-	( cd Demo ; $(MAKE) purge )
+	#( cd Demo ; $(MAKE) purge )
 	- #( cd Tcov ; $(MAKE) purge )
 	- #( cd MATLAB/Source ; $(RM) *.o *.mex* )
 	- #( cd MATLAB    ; $(RM) *.o *.mex* )

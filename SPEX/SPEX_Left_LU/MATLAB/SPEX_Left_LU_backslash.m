@@ -1,5 +1,5 @@
 function x = SPEX_Left_LU_backslash (A,b,option)
-%SPEX_Left_LU_BACKSLASH: solve Ax=b via sparse left-looking integer-preserving LU
+% SPEX_Left_LU_BACKSLASH: solve Ax=b via sparse left-looking integer-preserving LU
 % SPEX_Left_LU_backslash: computes the exact solution to the sparse linear system Ax =
 % b where A and b are stored as doubles. A must be stored as a sparse matrix. b
 % must be stored as a dense set of right hand side vectors. b can be either 1
@@ -112,7 +112,7 @@ if (~issparse (A))
     A = sparse (A) ;
 end
 
-% Preprocessing complete. Now use SPEX LU to solve A*x=b.
+% Preprocessing complete. Now use SPEX Left LU to solve A*x=b.
 x = SPEX_Left_LU_mex_soln (A, b, option) ;
 
 % convert to vpa, if requested

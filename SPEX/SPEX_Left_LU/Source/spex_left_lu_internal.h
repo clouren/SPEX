@@ -3,8 +3,6 @@
 // SPEX_Left_LU
 //------------------------------------------------------------------------------
 
-// TODO: use this throughout:
-
 // SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
@@ -17,7 +15,6 @@
 #ifndef SPEX_LEFT_LU_INTERNAL_H
 #define SPEX_LEFT_LU_INTERNAL_H
 
-// TODO test this:
 #include "spex_util_internal.h"
 #include "SPEX_Left_LU.h"
 

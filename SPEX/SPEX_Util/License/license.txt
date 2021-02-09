@@ -1,6 +1,6 @@
 SPEX_Util: Utility functions for SParse EXact package
 
-Copyright (c) 2019-2020, Christopher Lourenco, JinHao Chen, Erick Moreno-
+Copyright (c) 2019-2021, Christopher Lourenco, JinHao Chen, Erick Moreno-
 Centeno, and Timothy A. Davis.
 
 Available at:
@@ -27,7 +27,7 @@ or
     Foundation; either version 2 of the License, or (at your option) any
     later version.
 
-or both in parallel, as here.  Each distributor and end-user of SLIP LU may
+or both in parallel, as here.  Each distributor and end-user of SPEX may
 select either license, at their option.
 
 SPEX is distributed in the hope that it will be useful, but

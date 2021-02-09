@@ -2,9 +2,9 @@
 // SPEX_Util/SPEX_gmp.h: definitions for SPEX_gmp.c
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-// Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX/License for the license.
+// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 

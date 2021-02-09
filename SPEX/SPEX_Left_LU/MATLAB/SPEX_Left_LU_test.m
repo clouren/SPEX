@@ -3,11 +3,11 @@ function SPEX_Left_LU_test
 %
 % Usage:  SPEX_Left_LU_test
 %
-% See also SPEX_install, SPEX_backslash, SPEX_demo.
+% See also SPEX_install, SPEX_demo.
 
-% SPEX_Left_LU_ (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-% Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-% SPEX_LU/License for the license.
+% SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+% Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+% SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 maxerr = 0 ;
 rng ('default') ;

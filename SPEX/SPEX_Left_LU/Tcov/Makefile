@@ -2,9 +2,9 @@
 # SPEX/SPEX/SPEX_Left_LU/Tcov/Makefile: compile and run SLIP_LU test coverage
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-# Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-# SPEX/License for the license.
+# SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 #-------------------------------------------------------------------------------
 

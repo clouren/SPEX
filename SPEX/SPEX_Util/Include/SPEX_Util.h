@@ -2,15 +2,16 @@
 // SPEX_Util/Include/SPEX_Util.h: Include file for utility functions for SPEX
 //------------------------------------------------------------------------------
 
-// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-// Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX/License for the license.
+// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
 #ifndef SPEX_UTIL_H
 #define SPEX_UTIL_H
 
+// TODO include version info
 // SPEX_Util is a collection of utility functions for the SParse EXact package.
 // Included are several routines for memory management, matrix operations, and 
 // wrappers to the GMP library.

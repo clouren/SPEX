@@ -1,11 +1,11 @@
-SLIP LU: a Sparse Left-looking Integer-Preserving LU Factorization
+SPEX_Left_LU: a Sparse Left-looking Integer-Preserving LU Factorization
 
-Copyright (c) 2019-2020, Christopher Lourenco, JinHao Chen, Erick Moreno-
+Copyright (c) 2019-2021, Christopher Lourenco, JinHao Chen, Erick Moreno-
 Centeno, and Timothy A. Davis.
 
 Available at:
 
-    https://github.com/clouren/SLIP_LU
+    https://github.com/clouren/SPEX
     http://suitesparse.com
 
 Contact Chris Lourenco, chrisjlourenco@gmail.com, or Tim Davis
@@ -14,7 +14,7 @@ license.
 
 --------------------------------------------------------------------------------
 
-SLIP LU is free software; you can redistribute it and/or modify
+SPEX Left LU is free software; you can redistribute it and/or modify
 it under the terms of either:
 
   * the GNU Lesser General Public License as published by the Free
@@ -27,10 +27,10 @@ or
     Foundation; either version 2 of the License, or (at your option) any
     later version.
 
-or both in parallel, as here.  Each distributor and end-user of SLIP LU may
-select either license, at their option.
+or both in parallel, as here.  Each distributor and end-user of SPEX Left LU
+may select either license, at their option.
 
-SLIP LU is distributed in the hope that it will be useful, but
+SPEX Left LU is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.

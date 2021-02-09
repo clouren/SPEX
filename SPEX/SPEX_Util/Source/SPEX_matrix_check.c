@@ -2,15 +2,11 @@
 // SPEX_Util/SPEX_matrix_check: check if a matrix is OK
 //------------------------------------------------------------------------------
 
-// SPEX_Util: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
-// Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-// SPEX_LU/License for the license.
-
-// SPDX-License-Identifier: TODO
+// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
-
-// TODO: decided if the matrix must have sorted row indices in each column
 
 #define SPEX_FREE_ALL    \
     SPEX_FREE (work) ;
