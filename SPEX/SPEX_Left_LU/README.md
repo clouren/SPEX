@@ -1,4 +1,3 @@
-TODO: Fix documentation and tcov
 
 SPEX_Left_LU is software package used to solve a sparse systems of linear equations
 exactly using the Sparse Left-looking Integer-Preserving LU factorization.

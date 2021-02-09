@@ -19,6 +19,7 @@ if (nargin < 1)
     run_demo = true ;
 end
 
+here = pwd ;
 fprintf ('Compiling the SPEX mexFunction for use in SPEX_backslash:\n') ;
 fprintf ( 'This may take a few minutes, please wait\n');
 
@@ -27,25 +28,29 @@ cd ../SPEX_Left_LU/MATLAB/ ;
 SPEX_Left_LU_install;
 
 % Temporarily add SPEX_Left_LU to path
-s = pwd;
-addpath(s);
+s1 = pwd;
+addpath(s1);
+s2 = '' ;
 
 % Install SPEX_Chol
-cd ../../SPEX_Cholesky/MATLAB ;
-SPEX_Chol_install ;
-
-% Temporarily add SPEX_Chol to path
-s = pwd;
-addpath(s);
+try
+    cd ../../SPEX_Cholesky/MATLAB ;
+    SPEX_Chol_install ;
+    % Temporarily add SPEX_Chol to path
+    s2 = pwd;
+    addpath(s2);
+catch
+end
 
 % Return to this folder
-cd ../../MATLAB ;
-
+cd (here) ;
 
 fprintf ('To use SPEX_backslash in future MATLAB sessions, add the following\n') ;
-%TODO FIXME
 fprintf ('line to your startup.m file:\n') ;
-fprintf ('   addpath (''%s'') ;\n', pwd) ;
+fprintf ('   addpath (''%s'') ;\n', s1) ;
+if (~isempty (s2))
+    fprintf ('   addpath (''%s'') ;\n', s2) ;
+end
 fprintf ('Type ''doc startup'' for more info on how to use startup.m\n') ;
 fprintf ('To run a demo, type:\n') ;
 fprintf ('   echodemo SPEX_backslash_demo ;\n') ;
