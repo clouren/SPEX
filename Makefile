@@ -13,20 +13,20 @@ export SUITESPARSE
 
 default: go
 
-include ../SuiteSparse_config/SuiteSparse_config.mk
+include SuiteSparse_config/SuiteSparse_config.mk
 
 # Compile the default rules for each package
 # go: metis
 go:
-	( cd ../SuiteSparse_config && $(MAKE) )
+	( cd SuiteSparse_config && $(MAKE) )
 #	( cd Mongoose  && $(MAKE) CMAKE_OPTIONS='$(CMAKE_OPTIONS)' )
-	( cd ../AMD && $(MAKE) )
+	( cd AMD && $(MAKE) )
 #	( cd BTF && $(MAKE) )
 #	( cd CAMD && $(MAKE) )
 #	( cd CCOLAMD && $(MAKE) )
-	( cd ../COLAMD && $(MAKE) )
-	( cd SPEX_Util && $(MAKE) )
-	( cd SPEX_Left_LU && $(MAKE) )
+	( cd COLAMD && $(MAKE) )
+	( cd SPEX/SPEX_Util && $(MAKE) )
+	( cd SPEX/SPEX_Left_LU && $(MAKE) )
 #	( cd CHOLMOD && $(MAKE) )
 #	( cd CSparse && $(MAKE) )
 #	( cd CXSparse && $(MAKE) )
@@ -46,15 +46,15 @@ go:
 # (note that CSparse is not installed; CXSparse is installed instead)
 # install: metisinstall
 install:
-	( cd ../SuiteSparse_config && $(MAKE) install )
+	( cd SuiteSparse_config && $(MAKE) install )
 #	( cd Mongoose  && $(MAKE) CMAKE_OPTIONS='$(CMAKE_OPTIONS)' install )
-	( cd ../AMD && $(MAKE) install )
+	( cd AMD && $(MAKE) install )
 #	( cd BTF && $(MAKE) install )
 #	( cd CAMD && $(MAKE) install )
 #	( cd CCOLAMD && $(MAKE) install )
-	( cd ../COLAMD && $(MAKE) install )
-	( cd SPEX_Util && $(MAKE)  install )
-	( cd SPEX_Left_LU && $(MAKE) install )
+	( cd COLAMD && $(MAKE) install )
+	( cd SPEX/SPEX_Util && $(MAKE)  install )
+	( cd SPEX/SPEX_Left_LU && $(MAKE) install )
 #	( cd CHOLMOD && $(MAKE) install )
 #	( cd CXSparse && $(MAKE) install )
 #	( cd LDL && $(MAKE) install )
@@ -92,15 +92,15 @@ metisinstall: metis
 # uninstall all packages
 uninstall:
 #	$(RM) $(INSTALL_DOC)/SuiteSparse_README.txt
-	( cd ../SuiteSparse_config && $(MAKE) uninstall )
+	( cd SuiteSparse_config && $(MAKE) uninstall )
 #	- ( cd metis-5.1.0 && $(MAKE) uninstall )
 #	- ( cd GraphBLAS && $(MAKE) uninstall )
 #	- ( cd Mongoose  && $(MAKE) uninstall )
-	( cd ../AMD && $(MAKE) uninstall )
+	( cd AMD && $(MAKE) uninstall )
 #	( cd CAMD && $(MAKE) uninstall )
-	( cd ../COLAMD && $(MAKE) uninstall )
-	( cd SPEX_Util && $(MAKE) uninstall )
-	( cd SPEX_Left_LU && $(MAKE) uninstall )
+	( cd COLAMD && $(MAKE) uninstall )
+	( cd SPEX/SPEX_Util && $(MAKE) uninstall )
+	( cd SPEX/SPEX_Left_LU && $(MAKE) uninstall )
 #	( cd BTF && $(MAKE) uninstall )
 #	( cd KLU && $(MAKE) uninstall )
 #	( cd LDL && $(MAKE) uninstall )
@@ -127,13 +127,13 @@ uninstall:
 # the static library
 # library:
 library: metis
-	( cd ../SuiteSparse_config && $(MAKE) )
+	( cd SuiteSparse_config && $(MAKE) )
 #	( cd Mongoose  && $(MAKE) CMAKE_OPTIONS='$(CMAKE_OPTIONS)' library )
-	( cd ../AMD && $(MAKE) library )
+	( cd AMD && $(MAKE) library )
 #	( cd BTF && $(MAKE) library )
 #	( cd CAMD && $(MAKE) library )
 #	( cd CCOLAMD && $(MAKE) library )
-	( cd ../COLAMD && $(MAKE) library )
+	( cd COLAMD && $(MAKE) library )
 #	( cd CHOLMOD && $(MAKE) library )
 #	( cd KLU && $(MAKE) library )
 #	( cd LDL && $(MAKE) library )
@@ -154,13 +154,13 @@ library: metis
 # both the dynamic and static libraries.
 # static:
 static: metis
-	( cd ../SuiteSparse_config && $(MAKE) static )
+	( cd SuiteSparse_config && $(MAKE) static )
 #	( cd Mongoose  && $(MAKE) CMAKE_OPTIONS='$(CMAKE_OPTIONS)' static )
-	( cd ../AMD && $(MAKE) static )
+	( cd AMD && $(MAKE) static )
 #	( cd BTF && $(MAKE) static )
 #	( cd CAMD && $(MAKE) static )
 #	( cd CCOLAMD && $(MAKE) static )
-	( cd ../COLAMD && $(MAKE) static )
+	( cd COLAMD && $(MAKE) static )
 #	( cd CHOLMOD && $(MAKE) static )
 #	( cd KLU && $(MAKE) static )
 #	( cd LDL && $(MAKE) static )
@@ -178,13 +178,13 @@ static: metis
 
 # Remove all files not in the original distribution
 purge:
-	- ( cd ../SuiteSparse_config && $(MAKE) purge )
+	- ( cd SuiteSparse_config && $(MAKE) purge )
 #	- ( cd metis-5.1.0 && $(MAKE) distclean )
-	- ( cd ../AMD && $(MAKE) purge )
+	- ( cd AMD && $(MAKE) purge )
 # 	- ( cd GraphBLAS && $(MAKE) purge )
 #	- ( cd Mongoose  && $(MAKE) purge )
 #	- ( cd CAMD && $(MAKE) purge )
-	- ( cd ../COLAMD && $(MAKE) purge )
+	- ( cd COLAMD && $(MAKE) purge )
 #	- ( cd BTF && $(MAKE) purge )
 #	- ( cd KLU && $(MAKE) purge )
 #	- ( cd LDL && $(MAKE) purge )
@@ -200,20 +200,20 @@ purge:
 #	- ( cd SPQR && $(MAKE) purge )
 #	- ( cd PIRO_BAND && $(MAKE) purge )
 #	- ( cd SKYLINE_SVD && $(MAKE) purge )
-	- ( cd SPEX_Left_LU && $(MAKE) purge )
-	- ( cd SPEX_Util && $(MAKE) purge )
+	- ( cd SPEX/SPEX_Left_LU && $(MAKE) purge )
+	- ( cd SPEX/SPEX_Util && $(MAKE) purge )
 #	- $(RM) MATLAB_Tools/*/*.mex* MATLAB_Tools/spok/private/*.mex*
-	- $(RM) -r ../include/* ../bin/* ../lib/* ../share/*
+	- $(RM) -r include/* bin/* lib/* share/*
 
 # Remove all files not in the original distribution, but keep the libraries
 clean:
-	- ( cd ../SuiteSparse_config && $(MAKE) clean )
+	- ( cd SuiteSparse_config && $(MAKE) clean )
 #	- ( cd metis-5.1.0 && $(MAKE) clean )
 #	- ( cd GraphBLAS && $(MAKE) clean )
 #	- ( cd Mongoose  && $(MAKE) clean )
-	- ( cd ../AMD && $(MAKE) clean )
+	- ( cd AMD && $(MAKE) clean )
 #	- ( cd CAMD && $(MAKE) clean )
-	- ( cd ../COLAMD && $(MAKE) clean )
+	- ( cd COLAMD && $(MAKE) clean )
 #	- ( cd BTF && $(MAKE) clean )
 #	- ( cd KLU && $(MAKE) clean )
 #	- ( cd LDL && $(MAKE) clean )
@@ -227,15 +227,15 @@ clean:
 #	- ( cd SPQR && $(MAKE) clean )
 #	- ( cd PIRO_BAND && $(MAKE) clean )
 #	- ( cd SKYLINE_SVD && $(MAKE) clean )
-	- ( cd ../SPEX_Left_LU && $(MAKE) clean )
-	- ( cd ../SPEX_Util && $(MAKE) clean )
+	- ( cd SPEX/SPEX_Left_LU && $(MAKE) clean )
+	- ( cd SPEX/SPEX_Util && $(MAKE) clean )
 
 # Create the PDF documentation
 docs:
 #	( cd GraphBLAS && $(MAKE) docs )
 #	( cd Mongoose  && $(MAKE) docs )
-	( cd ../AMD && $(MAKE) docs )
-	( cd Doc && $(MAKE) docs )
+	( cd AMD && $(MAKE) docs )
+	( cd SPEX/Doc && $(MAKE) docs )
 #	( cd CAMD && $(MAKE) docs )
 #	( cd KLU && $(MAKE) docs )
 #	( cd LDL && $(MAKE) docs )

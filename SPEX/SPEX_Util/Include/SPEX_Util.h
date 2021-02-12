@@ -575,36 +575,6 @@ SPEX_info SPEX_sparse_realloc
     SPEX_matrix* A // the matrix to be expanded
 );
 
-/* Purpose: This function sets C = A'. C is null on input. On output
- * C contans A'
- */
-SPEX_info SPEX_transpose
-(
-    SPEX_matrix **C_handle,     // C = A'
-    SPEX_matrix *A              // Matrix to be transposed
-);
-
-/* Purpose: Determine if the input A is indeed symmetric prior to factorization.
- * There are two options as to how to determine the symmetry. 
- * By setting the input exhaustive = 1, both the nonzero pattern and the values
- * of the nonzero entries are checked for symmetry. If A passes both of these tests,
- * then we can be sure it is indeed fully symmetric.
- * 
- * If exhaustive is set to any other value, only the nonzero pattern of A is checked,
- * thus we cannot gauranteee that the matrix is indeed fully symmetric as the values
- * of the entries is not checked.
- * 
- * On success, SPEX_OK is returned. If the matrix is not symmetric, SPEX_UNSYMMETRIC 
- * is returned.
- * 
- */
-
-SPEX_info SPEX_determine_symmetry
-(
-    SPEX_matrix* A,
-    bool exhaustive
-);
-
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------
 //------------------------------------------------------------------------------

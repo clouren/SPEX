@@ -4,20 +4,14 @@ Files and folders in this distribution:
 
     README.md       this file
     
-    SPEX_Cholesky   Sparse integer-preserving SPEX_Cholesky
-                    factorization for exactly solving SPD
-                    linear systems (Developmental)
                     
     SPEX_Left_LU    Sparse left-looking integer-preserving
                     LU factorization for exactly solve 
                     sparse linear systems (Release)
-                    
-    SPEX_QR         Sparse integer-preserving QR factorization
-                    (Developmental)
+   
+    SPEX_UTIL       Utility functions for all SPEX components
     
-    SPEX_UTIL   Utility functions for all SPEX components
-    
-    Makefile    compiles SPEX and its dependencies
+    Makefile        compiles SPEX and its dependencies
 
 Dependencies:
 
@@ -51,6 +45,5 @@ Coauthors (alphabetical order):
 
     Jinhao Chen
     Tim Davis    
-    Lorena Mejia Domenzain
     Erick Moreno-Centeno
 
