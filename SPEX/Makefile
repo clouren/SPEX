@@ -3,12 +3,10 @@
 #
 # Makefile for SPEX: SParse EXact linear algebra
 #
-# SPEX (c) 2019-2020 Christopher Lourenco, Timothy Davis, Erick Moreno-Centeno
+# SPEX (c) 2019-2021 Christopher Lourenco, Timothy Davis, Erick Moreno-Centeno
 #                    Jinhao Chen, All rights reserved.
 #
 #-------------------------------------------------------------------------------
-
-# FIXME: clean include/* lib/* doc/*
 
 SUITESPARSE = $(CURDIR)
 export SUITESPARSE
