@@ -11,7 +11,6 @@
 #ifndef SPEX_UTIL_H
 #define SPEX_UTIL_H
 
-// TODO include version info
 // SPEX_Util is a collection of utility functions for the SParse EXact package.
 // Included are several routines for memory management, matrix operations, and 
 // wrappers to the GMP library.
@@ -103,10 +102,10 @@
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_UTIL_VERSION "1.0.1"
+#define SPEX_UTIL_VERSION "1.1.0"
 #define SPEX_UTIL_VERSION_MAJOR 1
-#define SPEX_UTIL_VERSION_MINOR 0
-#define SPEX_UTIL_VERSION_SUB   1
+#define SPEX_UTIL_VERSION_MINOR 1
+#define SPEX_UTIL_VERSION_SUB   0
 
 //------------------------------------------------------------------------------
 // Error codes

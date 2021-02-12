@@ -11,7 +11,7 @@
 /* Purpose: This function converts a double array of size n to an appropriate
  * mpz array of size n. To do this, the number is multiplied by an appropriate
  * power, then, the GCD is found. This function allows the use of matrices in
- * double precision to work with SPEX LU.
+ * double precision to work with SPEX.
  *
  */
 

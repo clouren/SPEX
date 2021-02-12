@@ -1049,7 +1049,7 @@ For details regarding how the number of entries is obtained for different kinds
 of matrices, refer to Section \ref{ss:SPEX_matrix}.
 For any matrix with invalid dimension(s), this function returns -1.
 If default settings are desired, \verb|option| can be input as \verb|NULL|.
-Returns -1 if SPEX LU has not been initialized.
+Returns -1 if SPEX has not been initialized.
 
 %-------------------------------------------------------------------------------
 \cprotect\subsection{\verb|SPEX_matrix_check|: check and print a \verb|SPEX_matrix|}
@@ -1910,7 +1910,7 @@ shows how to get \verb|A| and \verb|b| in a required format.
     \end{verbatim} }
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{Simple SPEX LU routines for solving linear systems}
+\cprotect\subsection{Simple SPEX Left LU routines for solving linear systems}
 \label{s:Using:simple}
 %-------------------------------------------------------------------------------
 
@@ -1931,11 +1931,11 @@ On successful return, this function returns \verb|SPEX_OK| (see Section
 \ref{ss:SPEX_info}).
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{Expert SPEX LU routines}
+\cprotect\subsection{Expert SPEX Left LU routines}
 \label{s:Using:expert}
 %-------------------------------------------------------------------------------
 
-If the $L$ and $U$ factors from the SPEX LU factorization of the matrix $A$
+If the $L$ and $U$ factors from the SPEX Left LU factorization of the matrix $A$
 are required, the steps performed by \verb|SPEX_Left_LU_backslash| can be done with
 a sequence of calls to SPEX functions:
 
@@ -1973,10 +1973,10 @@ detailed list.
      \end{verbatim} }
 
 %-------------------------------------------------------------------------------
-\subsubsection{SPEX LU symbolic analysis}
+\subsubsection{SPEX Left LU symbolic analysis}
 %-------------------------------------------------------------------------------
 
-The symbolic analysis phase of SPEX LU computes the column permutation and
+The symbolic analysis phase of SPEX Left LU computes the column permutation and
 estimates of the number of nonzeros in $L$ and $U$. This function is called as:
 
 {\small
@@ -2060,7 +2060,7 @@ must be called (Section \ref{ss:SPEX_finalize}) to finalize usage of the
 library.
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{Examples of using SPEX LU in a C program}
+\cprotect\subsection{Examples of using SPEX Left LU in a C program}
 \label{s:Using:Examples}
 %-------------------------------------------------------------------------------
 
@@ -2094,7 +2094,7 @@ to replicate the results from \cite{lourenco2019exact}.
 %-------------------------------------------------------------------------------
 
 After following the installation steps discussed in Section \ref{s:install},
-using the SPEX LU factorization within MATLAB can be done via the
+using the SPEX Left LU factorization within MATLAB can be done via the
 \verb|SPEX_Left_LU_backslash.m| function. First, this section describes the
 \verb|option| struct in Section \ref{s:Use:MATLAB:setup}.
 The use of the factorization is discussed in Section \ref{s:Use:MATLAB:factor}.
@@ -2105,7 +2105,7 @@ The \verb|SPEX/SPEX/SPEX_Left_LU/MATLAB| folder must be in your MATLAB path.
 \label{s:Use:MATLAB:setup}
 %-------------------------------------------------------------------------------
 
-The SPEX LU MATLAB interface includes an \verb|option| struct as in optional
+The SPEX Left LU MATLAB interface includes an \verb|option| struct as in optional
 input parameter that modifies behavior.  If this parameter is not provided,
 default parameter settings are used.  The elements of the \verb'option' struct
 are listed below.  Any fields not present in the struct are treated as their
@@ -2185,7 +2185,7 @@ $A \in \mathtt{R}^{n \times n}$, $x \in \mathtt{R}^{n \times m}$ and $b \in
 \mathtt{R}^{n \times m}$. The final solution vector(s) obtained via this
 function are exact prior to their conversion to double precision.
 
-The SPEX LU function expects as input a sparse matrix $A$ and dense set of
+The SPEX Left LU function expects as input a sparse matrix $A$ and dense set of
 right hand side vectors $b$. Optionally, \verb|option| struct can be passed in.
 Currently, there are 2 ways to use this function outlined below:
 

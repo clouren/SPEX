@@ -15,8 +15,8 @@
 // using the SPEX LU factorization. This code accompanies the paper (submitted
 // to ACM Transactions on Mathematical Software):
 
-//    "Algorithm 1xxx: SPEX LU: A Sparse Left-Looking Integer-Preserving LU
-//    Factorization for Exactly Solving Sparse Linear Systems",
+//    "Algorithm 1xxx: SPEX Left LU: Exactly Solving Sparse Linear Systems via
+//    A Sparse Left-Looking Integer-Preserving LU Factorization",
 //    C. Lourenco, J. Chen, E. Moreno-Centeno, T. Davis, under submission,
 //    ACM Trans. Mathematical Software.
 
@@ -34,7 +34,7 @@
 //              https://gmplib.org/
 //              http://www.mpfr.org/
 
-//    If you use SPEX LU for a publication, we request that you please cite
+//    If you use SPEX Left LU for a publication, we request that you please cite
 //    the above two papers.
 
 //------------------------------------------------------------------------------
@@ -89,7 +89,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// SPEX LU is distributed in the hope that it will be useful, but
+// SPEX Left LU is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 // or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 // for more details.
@@ -188,10 +188,10 @@ SPEX_info SPEX_Left_LU_backslash
     const SPEX_options* option
 ) ;
 
-// SPEX_LU_factorize performs the SPEX LU factorization. This factorization is
-// done via n iterations of the sparse REF triangular solve function. The
-// overall factorization is PAQ = LDU.  The determinant can be obtained as
-// rhos->x.mpz[n-1].
+// SPEX_Left_LU_factorize performs the SPEX Left LU factorization. 
+// This factorization is done via n iterations of the sparse REF 
+// triangular solve function. The overall factorization is 
+// PAQ = LDU.  The determinant can be obtained as rhos->x.mpz[n-1].
 // 
 //  L: undefined on input, created on output
 //  U: undefined on input, created on output
@@ -215,7 +215,7 @@ SPEX_info SPEX_Left_LU_factorize
     const SPEX_options* option
 ) ;
 
-// SPEX_LU_solve solves the linear system LD^(-1)U x = b.
+// SPEX_Left_LU_solve solves the linear system LD^(-1)U x = b.
 SPEX_info SPEX_Left_LU_solve         // solves the linear system LD^(-1)U x = b
 (
     // Output

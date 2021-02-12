@@ -11,7 +11,7 @@
 /* Purpose: This function converts a mpfr array of size n and precision prec to
  * an appropriate mpz array of size n. To do this, the number is multiplied by
  * the appropriate power of 10 then the gcd is found. This function allows mpfr
- * arrays to be used within SPEX LU.
+ * arrays to be used within SPEX.
  */
 
 #define SPEX_FREE_ALL               \

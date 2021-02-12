@@ -13,7 +13,7 @@
 #       cd ../Demo ; make
 
 LIBRARY = libspexutil
-VERSION = 1.0.1
+VERSION = 1.1.0
 SO_VERSION = 1
 
 default: library

@@ -93,8 +93,8 @@ SPEX_info spex_left_lu_get_pivot
 
 /* Purpose: This function selects the pivot element as the largest in the
  * column. This is activated if the user sets option->pivot = SPEX_LARGEST.
- * NOTE: This pivoting scheme is NOT recommended for SPEX LU.  On output, the
- * index of the largest pivot is returned.
+ * NOTE: This pivoting scheme is NOT recommended for SPEX Left LU.  On output
+ * the index of the largest pivot is returned.
  */
 SPEX_info spex_left_lu_get_largest_pivot
 (

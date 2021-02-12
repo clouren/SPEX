@@ -205,7 +205,7 @@ void spex_gmp_failure (int status) ;
 //  MPFR_RNDA: round away from zero.
 //  MPFR_RNDF: faithful rounding. This is not stable
 //
-// SPEX LU utilizes MPFR_RNDN by default.
+// SPEX utilizes MPFR_RNDN by default.
 
 #define SPEX_DEFAULT_MPFR_ROUND MPFR_RNDN
 
@@ -366,7 +366,7 @@ mpz_t* spex_create_mpz_array
 /* Purpose: This function converts a double array of size n to an appropriate
  * mpz array of size n. To do this, the number is multiplied by 10^17 then, the
  * GCD is found. This function allows the use of matrices in double precision
- * to work with SPEX LU.
+ * to work with SPEX.
  */
 SPEX_info spex_expand_double_array
 (
@@ -380,7 +380,7 @@ SPEX_info spex_expand_double_array
 /* Purpose: This function converts a mpfr array of size n and precision prec to
  * an appropriate mpz array of size n. To do this, the number is multiplied by
  * the appropriate power of 10 then the gcd is found. This function allows mpfr
- * arrays to be used within SPEX LU.
+ * arrays to be used within SPEX.
  */
 SPEX_info spex_expand_mpfr_array
 (
@@ -393,7 +393,7 @@ SPEX_info spex_expand_mpfr_array
 
 /* Purpose: This function converts a mpq array of size n into an appropriate mpz
  * array of size n. To do this, the lcm of the denominators is found as a
- * scaling factor. This function allows mpq arrays to be used in SPEX LU
+ * scaling factor. This function allows mpq arrays to be used in SPEX
  */
 SPEX_info spex_expand_mpq_array
 (
@@ -406,7 +406,7 @@ SPEX_info spex_expand_mpq_array
 
 /* Purpose: This function converts a mpq matrix of size m*n into an appropriate
  * mpz matrix of size m*n. To do this, the lcm of the denominators is found as a
- * scaling factor. This function allows mpq matrix to be used in SPEX LU.
+ * scaling factor. This function allows mpq matrix to be used in SPEX.
  * on output, x2 is modified.
  */
 SPEX_info spex_expand_mpq_mat
@@ -419,7 +419,7 @@ SPEX_info spex_expand_mpq_mat
 );
 
 
-/* Purpose: This function prints the basic info about SPEX_LU library */
+/* Purpose: This function prints the basic info about SPEX library */
 void spex_lu_info(void);
 
 
