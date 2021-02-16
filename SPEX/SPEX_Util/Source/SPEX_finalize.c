@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_finalize: finalize SPEX_LU
+// SPEX_Util/SPEX_finalize: finalize SPEX
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,

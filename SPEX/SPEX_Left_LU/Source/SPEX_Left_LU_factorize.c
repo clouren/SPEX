@@ -8,9 +8,9 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs the SPEX LU factorization. This factorization
- * is done via n iterations of the sparse REF triangular solve function. The
- * overall factorization is PAQ = LDU
+/* Purpose: This function performs the SPEX Left LU factorization. This 
+ * factorization is done via n iterations of the sparse REF triangular solve 
+ * function. The overall factorization is PAQ = LDU
  * The determinant of A can be obtained as determinant = rhos[n-1]
  *
  *  L: undefined on input, created on output
@@ -157,7 +157,7 @@ SPEX_info SPEX_Left_LU_factorize
     // allocate and initialize the workspace x
     //--------------------------------------------------------------------------
 
-    // SPEX LU utilizes arbitrary sized integers which can grow beyond the
+    // SPEX Left LU utilizes arbitrary sized integers which can grow beyond the
     // default 64 bits allocated by GMP. If the integers frequently grow, GMP
     // can get bogged down by performing intermediate reallocations. Instead,
     // we utilize a larger estimate on the workspace x vector so that computing

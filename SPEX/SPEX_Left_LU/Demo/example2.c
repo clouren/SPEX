@@ -110,7 +110,7 @@ int main (int argc, char **argv)
 
     clock_t start_s = clock();
     
-    // SPEX LU has an optional check, to enable it, one can set the following
+    // SPEX Left LU has an optional check, to enable it, one can set the following
     // parameter to be true.
     option->check = true;
    
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
 
     double t_s = (double) (end_s - start_s) / CLOCKS_PER_SEC;
 
-    printf("\nSPEX LU Factor & Solve time: %lf\n", t_s);
+    printf("\nSPEX Left LU Factor & Solve time: %lf\n", t_s);
 
     //--------------------------------------------------------------------------
     // Free memory

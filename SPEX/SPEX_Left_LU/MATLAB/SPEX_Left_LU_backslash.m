@@ -96,7 +96,7 @@ function x = SPEX_Left_LU_backslash (A,b,option)
 
 % SPEX_Left_LU_LU: (c) 2019-2020, Chris Lourenco, Jinhao Chen, Erick Moreno-Centeno,
 % Timothy A. Davis, Texas A&M University.  All Rights Reserved.  See
-% SPEX_LU/License for the license.
+% SPEX_Left_LU/License for the license.
 
 if (nargin < 3)
     option = [ ] ;   % use default options
@@ -106,7 +106,7 @@ if (~isnumeric (A) || ~isnumeric (b))
     error ('inputs must be numeric') ;
 end
 
-% Check if the input matrix is stored as sparse. If not, SPEX LU expects
+% Check if the input matrix is stored as sparse. If not, SPEX Left LU expects
 % sparse input, so convert to sparse.
 if (~issparse (A))
     A = sparse (A) ;

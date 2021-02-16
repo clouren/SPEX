@@ -40,7 +40,7 @@ void spex_left_lu_mex_error
             SPEX_finalize ( ) ;
             mexErrMsgTxt ("result invalid") ;
 
-        case SPEX_PANIC :                // SPEX_LU used without proper initialization
+        case SPEX_PANIC :                // SPEX_Left_LU used without proper initialization
             SPEX_finalize ( ) ;
             mexErrMsgTxt ("panic") ;
 

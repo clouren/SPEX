@@ -9,17 +9,17 @@
 //------------------------------------------------------------------------------
 
 // Purpose: This file (SPEX_gmp.c) provides a wrapper for all functions in the
-// GMP library used by SPEX_LU.  The wrappers enable memory failures to be
+// GMP library used by SPEX.  The wrappers enable memory failures to be
 // caught and handled properly.  GMP, by default, aborts the user's application
 // if any internal malloc fails.  This is not acceptable in a robust end-user
-// application.  Fortunately, GMP allows the user package (SPEX_LU in this
+// application.  Fortunately, GMP allows the user package (SPEX in this
 // case) to pass in function pointers for malloc, calloc, realloc, and free.
 // These functions are defined below.  If they fail, they do not return to GMP.
 // Instead, they use the ANSI C longjmp feature to trap the error, and return
 // the error condition to the caller.
 
 // Note that not all functions in the GMP library are wrapped by these
-// functions, but just the ones used by SPEX_LU.  However, most of the wrapper
+// functions, but just the ones used by SPEX.  However, most of the wrapper
 // functions follow the same structure, and this method would easily extend to
 // all GMP functions.  To that end, the wrapper mechanism (here, and in
 // SPEX_gmp.h) is described below.
@@ -556,7 +556,7 @@ SPEX_info SPEX_mpfr_fprintf
     int n = mpfr_vfprintf (fp, format, args) ;
     va_end (args) ;
     // Free cache from mpfr_vfprintf. Even though mpfr_free_cache is
-    // called in SPEX_LU_final ( ), it has to be called here to
+    // called in SPEX_finalize ( ), it has to be called here to
     // prevent memory leak in some rare situations.
     mpfr_free_cache ( ) ;
 
@@ -592,7 +592,7 @@ SPEX_info SPEX_mpfr_printf
     int n = mpfr_vprintf (format, args) ; 
     va_end (args) ;
     // Free cache from mpfr_vprintf. Even though mpfr_free_cache is
-    // called in SPEX_LU_final ( ), it has to be called here to
+    // called in SPEX_finalize ( ), it has to be called here to
     // prevent memory leak in some rare situations.
     mpfr_free_cache ( ) ;
 

@@ -113,7 +113,7 @@ int main (int argc, char* argv[])
     //
     //  option: Command options for the factorization. In general, this can be 
     //          set to default values and is almost always the last input argument
-    //          for SPEX LU functions (except SPEX_malloc and such)
+    //          for SPEX Left LU functions (except SPEX_malloc and such)
     //--------------------------------------------------------------------------
     SPEX_matrix *A = NULL;
     SPEX_matrix *L = NULL;
@@ -212,7 +212,7 @@ int main (int argc, char* argv[])
     clock_t end_col = clock();
 
     //--------------------------------------------------------------------------
-    // Now we perform the SPEX LU factorization to obtain matrices L and U and a
+    // Now we perform the SPEX Left LU factorization to obtain matrices L and U and a
     // row permutation P such that PAQ = LDU. Note that the D matrix is never
     // explicitly constructed or used.
     //--------------------------------------------------------------------------
@@ -229,12 +229,12 @@ int main (int argc, char* argv[])
 
     clock_t start_solve = clock();
 
-    // SPEX LU has an optional check step which can verify that the solution
+    // SPEX Left LU has an optional check step which can verify that the solution
     // vector x satisfies Ax=b in perfect precision intended for debugging.
     //
     // Note that this is entirely optional and not necessary. The solution
     // returned is guaranteed to be exact.   It appears here just as a
-    // verification that SPEX LU is computing its expected result.  This test
+    // verification that SPEX Left LU is computing its expected result.  This test
     // can fail only if it runs out of memory, or if there is a bug in the
     // code.  Also, note that this function can be quite time consuming; thus
     // it is not recommended to be used in general.
@@ -277,7 +277,7 @@ int main (int argc, char* argv[])
     printf("\nNumber of L+U nonzeros: \t\t%"PRId64,
         (L->p[L->n]) + (U->p[U->n]) - (L->m));
     printf("\nSymbolic analysis time: \t\t%lf", t_sym);
-    printf("\nSPEX LU Factorization time: \t\t%lf", t_factor);
+    printf("\nSPEX Left LU Factorization time: \t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);
 
     //--------------------------------------------------------------------------

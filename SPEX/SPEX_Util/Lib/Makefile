@@ -24,7 +24,7 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 # uncomment for extra error checking:
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
-# SPEX_LU depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
+# SPEX_Util depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
 
 C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config
@@ -75,7 +75,7 @@ $(INSTALL_LIB)/$(SO_TARGET): $(OBJ)
 	$(CP) ../Include/SPEX_Util.h $(INSTALL_INCLUDE)
 	chmod 644 $(INSTALL_INCLUDE)/SPEX_Util.h
 
-# uninstall SPEX_LU
+# uninstall SPEX_Util
 uninstall:
 	$(RM) $(INSTALL_LIB)/$(SO_TARGET)
 	$(RM) $(INSTALL_LIB)/$(SO_PLAIN)

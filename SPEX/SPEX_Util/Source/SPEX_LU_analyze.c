@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs the symbolic ordering for SPEX LU.
+/* Purpose: This function performs the symbolic ordering for unsymmetric matrices.
  * Currently, there are three options: user-defined order, COLAMD, or AMD.
  *
  * Input/output arguments:

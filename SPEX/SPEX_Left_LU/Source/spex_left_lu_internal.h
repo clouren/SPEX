@@ -64,7 +64,7 @@ void spex_left_lu_dfs // performs a dfs of the graph of the matrix starting at n
 );
 
 
-/* This function performs the pivoting for the SPEX LU factorization.
+/* This function performs the pivoting for the SPEX Left LU factorization.
  * The optional Order is:
  *     0: Smallest pivot
  *     1: Natural/Diagonal pivoting
@@ -122,7 +122,7 @@ SPEX_info spex_left_lu_get_nonzero_pivot // find the first eligible nonzero pivo
 
 /* Purpose: This function selects the pivot element as the smallest in the
  * column. This is activated by default or if the user sets option->pivot =
- * SPEX_SMALLEST.  NOTE: This is the recommended pivoting scheme for SPEX LU.
+ * SPEX_SMALLEST.  This is a recommended pivoting scheme for SPEX Left LU.
  * On output, the index of kth pivot is returned.
  */
 SPEX_info spex_left_lu_get_smallest_pivot
@@ -156,7 +156,7 @@ SPEX_info spex_left_lu_permute_x
     SPEX_matrix *x2,           // unpermuted Solution vector (not modified)
     SPEX_LU_analysis *S,  // symbolic analysis with the column ordering Q
     const SPEX_options* option  // Command options
-                          // has been checked in the only caller SPEX_LU_solve
+                          // has been checked in the only caller SPEX_Left_LU_solve
 ) ;
 
 /* Purpose: This function computes the reach of column k of A on the graph of L

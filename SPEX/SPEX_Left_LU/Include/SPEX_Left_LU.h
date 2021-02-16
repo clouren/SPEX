@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/Include/SPEX_LU.h: user #include file for SPEX_Left_LU.
+// SPEX_Left_LU/Include/SPEX_Left_LU.h: user #include file for SPEX_Left_LU.
 //------------------------------------------------------------------------------
 
 // SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -12,7 +12,7 @@
 #define SPEX_LEFT_LU_H
 
 // This software package exactly solves a sparse system of linear equations
-// using the SPEX LU factorization. This code accompanies the paper (submitted
+// using the SPEX Left LU factorization. This code accompanies the paper (submitted
 // to ACM Transactions on Mathematical Software):
 
 //    "Algorithm 1xxx: SPEX Left LU: Exactly Solving Sparse Linear Systems via
@@ -141,7 +141,7 @@
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//---------------------Include files required by SPEX LU------------------------
+//---------------------Include files required by SPEX Left LU-------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@
 //------------------------------------------------------------------------------
 
 // SPEX_backslash solves the linear system Ax = b. This is the simplest way to
-// use the SPEX LU package. This function encompasses both factorization and
+// use the SPEX Left LU package. This function encompasses both factorization and
 // solve and returns the solution vector in the user desired type.  It can be
 // thought of as an exact version of MATLAB sparse backslash.
 SPEX_info SPEX_Left_LU_backslash

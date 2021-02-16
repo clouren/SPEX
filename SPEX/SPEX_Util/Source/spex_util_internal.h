@@ -141,8 +141,8 @@ extern int64_t spex_gmp_ntrials ;
 
 #ifndef SPEX_GMP_LIST_INIT
 // A size of 32 ensures that the list never needs to be increased in size.
-// The test coverage suite in SPEX_LU/Tcov reduces this initial size to
-// exercise the code, in SPEX_LU/Tcov/Makefile.
+// The test coverage suite in SPEX_Left_LU/Tcov reduces this initial size to
+// exercise the code, in SPEX_Left_LU/Tcov/Makefile.
 #define SPEX_GMP_LIST_INIT 32
 #endif
 
@@ -170,7 +170,7 @@ void spex_gmp_failure (int status) ;
 // for accuracy
 #define SPEX_DEFAULT_CHECK false
 
-// Pivoting scheme used for SPEX LU.
+// Pivoting scheme used for SPEX Left LU.
 //  SPEX_SMALLEST = 0,              Smallest pivot
 //  SPEX_DIAGONAL = 1,              Diagonal pivoting
 //  SPEX_FIRST_NONZERO = 2,         First nonzero per column chosen as pivot
@@ -417,10 +417,6 @@ SPEX_info spex_expand_mpq_mat
     int64_t m,    // number of rows of x
     int64_t n     // number of columns of x
 );
-
-
-/* Purpose: This function prints the basic info about SPEX library */
-void spex_lu_info(void);
 
 
 // typecast a double value to int64, accounting for Infs and Nans

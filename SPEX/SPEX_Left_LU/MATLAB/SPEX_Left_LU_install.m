@@ -1,6 +1,6 @@
 function SPEX_Left_LU_install(run_demo)
 % SPEX_Left_LU_INSTALL: install and test the MATLAB interface to SPEX_backslash.
-% This function installs the SPEX LU mexFunction for use by the m-file
+% This function installs the SPEX Left LU mexFunction for use by the m-file
 % SPEX_Left_LU_backslash.m.
 %
 % Usage: SPEX_Left_LU_install

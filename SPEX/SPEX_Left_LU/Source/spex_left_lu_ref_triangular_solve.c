@@ -104,7 +104,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangula
     // check inputs
     //--------------------------------------------------------------------------
 
-    // inputs have been validated in SPEX_LU_factorize.c
+    // inputs have been validated in SPEX_Left_LU_factorize.c
     SPEX_info info ;
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);

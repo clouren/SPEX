@@ -260,7 +260,7 @@ int main( int argc, char* argv[])
             }
 
             //------------------------------------------------------------------
-            // Initialize SPEX LU process
+            // Initialize SPEX Left LU process
             //------------------------------------------------------------------
 
             SPEX_initialize_expert (tcov_malloc, tcov_calloc,
@@ -726,7 +726,7 @@ int main( int argc, char* argv[])
             if (Ab_type%2 == 0)
             {
                 //--------------------------------------------------------------
-                // SPEX LU backslash
+                // SPEX Left LU backslash
                 // solve Ax=b in full precision rational arithmetic
                 //--------------------------------------------------------------
 		TEST_CHECK(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A, b, option));
@@ -746,7 +746,7 @@ int main( int argc, char* argv[])
             else
             {
                 //--------------------------------------------------------------
-                // SPEX LU backslash
+                // SPEX Left LU backslash
                 // solve Ax=b in double precision
                 //--------------------------------------------------------------
                 SPEX_matrix *sol_doub;

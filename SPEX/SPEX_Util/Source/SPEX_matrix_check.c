@@ -59,7 +59,7 @@ int compar (const void *x, const void *y)
 //      2: errors and terse output
 //      3: verbose
 
-SPEX_info SPEX_matrix_check     // returns a SPEX_LU status code
+SPEX_info SPEX_matrix_check     // returns a SPEX status code
 (
     const SPEX_matrix *A,     // matrix to check
     const SPEX_options* option

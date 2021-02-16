@@ -177,7 +177,7 @@ typedef struct SPEX_options
                            // SPEX_TOL_SMALLEST and SPEX_TOL_LARGEST
     int print_level ;      // 0: print nothing, 1: just errors,
                            // 2: terse (basic stats from COLAMD/AMD and
-                           // SPEX LU), 3: all, with matrices and results
+                           // SPEX Left LU), 3: all, with matrices and results
     int32_t prec ;         // Precision used to output file if MPFR is chosen
     mpfr_rnd_t round ;     // Type of MPFR rounding used
     bool check ;           // Set true if the solution to the system should be
@@ -403,7 +403,7 @@ SPEX_info SPEX_LU_analysis_free
     const SPEX_options *option
 ) ;
 
-// SPEX_LU_analyze performs the symbolic ordering and analysis for SPEX LU.
+// SPEX_LU_analyze performs the symbolic ordering and analysis for LU factorization.
 // Currently, there are three options: no ordering, COLAMD, and AMD.
 SPEX_info SPEX_LU_analyze
 (
