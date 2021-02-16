@@ -8,7 +8,7 @@
 
 #------------------------------------------------------------------------------
 
-SUITESPARSE ?= $(realpath $(CURDIR)/..)
+SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 export SUITESPARSE
 
 # default: compile the dynamic library, and run the demos

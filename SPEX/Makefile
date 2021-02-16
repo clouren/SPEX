@@ -39,10 +39,14 @@ library: go
 
 static: go
 
+# test coverage:
+cov:
+	( cd SPEX_Left_LU && $(MAKE) cov )
+
 # Remove all files not in the original distribution
 purge:
-	- ( cd SPEX_Left_LU && $(MAKE) purge )
 	- ( cd SPEX_Util && $(MAKE) purge )
+	- ( cd SPEX_Left_LU && $(MAKE) purge )
 
 # Remove all files not in the original distribution, but keep the libraries
 clean: purge

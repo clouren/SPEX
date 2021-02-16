@@ -19,9 +19,6 @@
 // usage:
 // spex_lu_demo Followed by the listed args:
 //
-// help. e.g., spex_lu_demo help, which indicates spex_lu_demo to print to guideline
-// for using this function.
-//
 // f (or file) Filename. e.g., spex_lu_demo f MATRIX_NAME RHS_NAME, which indicates
 // spex_lu_demo will read matrix from MATRIX_NAME and right hand side from RHS_NAME.
 // The matrix must be stored in Matrix Market format. Refer to
@@ -151,10 +148,8 @@ int main (int argc, char* argv[])
     // option->order = SPEX_AMD.
     //--------------------------------------------------------------------------
 
-    bool help ;
     OK(SPEX_process_command_line(argc, argv, option,
-        &mat_name, &rhs_name, &rat, &help));
-    if (help) return (0) ;
+        &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
     // In this demo file, we now read in the A and b matrices from external

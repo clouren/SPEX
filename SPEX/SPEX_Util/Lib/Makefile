@@ -18,6 +18,7 @@ SO_VERSION = 1
 
 default: library
 
+SUITESPARSE ?= $(realpath $(CURDIR)/../../..)
 include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
 # uncomment for extra error checking:
@@ -61,7 +62,7 @@ $(AR_TARGET): $(OBJ)
 # install (shared C version only)
 #-------------------------------------------------------------------------------
 
-# install SPEX_LU
+# install SPEX_Util
 install: $(AR_TARGET) $(INSTALL_LIB)/$(SO_TARGET)
 
 $(INSTALL_LIB)/$(SO_TARGET): $(OBJ)

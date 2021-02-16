@@ -260,6 +260,7 @@ cx:
 # statement coverage (Linux only); this requires a lot of time.
 # The umfpack tcov requires a lot of disk space in /tmp
 cov:
+	( cd SPEX && $(MAKE) cov )
 #	( cd CXSparse && $(MAKE) cov )
 #	( cd CSparse && $(MAKE) cov )
 #	( cd CHOLMOD && $(MAKE) cov )

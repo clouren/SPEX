@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 #------------------------------------------------------------------------------
 
-SUITESPARSE ?= $(realpath $(CURDIR)/..)
+SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 export SUITESPARSE
 
 # default: compile the dynamic library, and run the demos

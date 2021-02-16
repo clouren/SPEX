@@ -26,6 +26,7 @@ SPEX_gmp.c
 SPEX_initialize.c
 SPEX_initialize_expert.c
 SPEX_LU_analysis_free.c
+SPEX_LU_analyze.c
 SPEX_malloc.c
 SPEX_matrix_allocate.c
 SPEX_matrix_check.c

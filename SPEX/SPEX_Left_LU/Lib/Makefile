@@ -18,13 +18,14 @@ SO_VERSION = 1
 
 default: library
 
+SUITESPARSE ?= $(realpath $(CURDIR)/../../..)
 include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
 # uncomment for extra error checking:
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 # SPEX_LU depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
-LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
+LDLIBS += -lspexutil -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
 
 C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
 
@@ -64,8 +65,8 @@ $(AR_TARGET): $(OBJ)
 # install (shared C version only)
 #-------------------------------------------------------------------------------
 
-# install SPEX_LU
-install: $(AR_TARGET) #$(INSTALL_LIB)/$(SO_TARGET)
+# install SPEX_Left_LU
+install: $(AR_TARGET) $(INSTALL_LIB)/$(SO_TARGET)
 
 $(INSTALL_LIB)/$(SO_TARGET): $(OBJ)
 	@mkdir -p $(INSTALL_LIB)

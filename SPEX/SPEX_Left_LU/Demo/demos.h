@@ -34,9 +34,8 @@ SPEX_info SPEX_process_command_line //processes the command line
     SPEX_options* option,   // struct containing the command options
     char** mat_name,        // Name of the matrix to be read in
     char** rhs_name,        // Name of the RHS vector to be read in
-    SPEX_type *rat,         // data type of output solution:
+    SPEX_type *rat          // data type of output solution:
                             // 1:SPEX_MPZ (default), 2:SPEX_FP64, 3:SPEX_MPFR
-    bool *help
 );
 
 /* Purpose: This function prints out the user specified/default options*/

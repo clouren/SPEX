@@ -10,9 +10,10 @@
 
 default: run
 
+SUITESPARSE ?= $(realpath $(CURDIR)/../../..)
 include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
-# Linux test coverage
+# Linux test coverage (gcc is required for test coverage)
 CC = gcc
 CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wall -W -Wshadow -Wmissing-prototypes -Wstrict-prototypes \
