@@ -25,8 +25,7 @@ go:
 #	( cd CAMD && $(MAKE) )
 #	( cd CCOLAMD && $(MAKE) )
 	( cd COLAMD && $(MAKE) )
-	( cd SPEX/SPEX_Util && $(MAKE) )
-	( cd SPEX/SPEX_Left_LU && $(MAKE) )
+	( cd SPEX && $(MAKE) )
 #	( cd CHOLMOD && $(MAKE) )
 #	( cd CSparse && $(MAKE) )
 #	( cd CXSparse && $(MAKE) )
@@ -53,8 +52,7 @@ install:
 #	( cd CAMD && $(MAKE) install )
 #	( cd CCOLAMD && $(MAKE) install )
 	( cd COLAMD && $(MAKE) install )
-	( cd SPEX/SPEX_Util && $(MAKE)  install )
-	( cd SPEX/SPEX_Left_LU && $(MAKE) install )
+	( cd SPEX && $(MAKE)  install )
 #	( cd CHOLMOD && $(MAKE) install )
 #	( cd CXSparse && $(MAKE) install )
 #	( cd LDL && $(MAKE) install )
@@ -91,16 +89,15 @@ metisinstall: metis
 
 # uninstall all packages
 uninstall:
-#	$(RM) $(INSTALL_DOC)/SuiteSparse_README.txt
 	( cd SuiteSparse_config && $(MAKE) uninstall )
+#	$(RM) $(INSTALL_DOC)/SuiteSparse_README.txt
 #	- ( cd metis-5.1.0 && $(MAKE) uninstall )
 #	- ( cd GraphBLAS && $(MAKE) uninstall )
 #	- ( cd Mongoose  && $(MAKE) uninstall )
 	( cd AMD && $(MAKE) uninstall )
 #	( cd CAMD && $(MAKE) uninstall )
 	( cd COLAMD && $(MAKE) uninstall )
-	( cd SPEX/SPEX_Util && $(MAKE) uninstall )
-	( cd SPEX/SPEX_Left_LU && $(MAKE) uninstall )
+	( cd SPEX && $(MAKE) uninstall )
 #	( cd BTF && $(MAKE) uninstall )
 #	( cd KLU && $(MAKE) uninstall )
 #	( cd LDL && $(MAKE) uninstall )
@@ -125,8 +122,8 @@ uninstall:
 
 # compile the dynamic libraries.  For GraphBLAS and Mongoose, this also builds
 # the static library
-# library:
-library: metis
+# library: metis
+library:
 	( cd SuiteSparse_config && $(MAKE) )
 #	( cd Mongoose  && $(MAKE) CMAKE_OPTIONS='$(CMAKE_OPTIONS)' library )
 	( cd AMD && $(MAKE) library )
@@ -134,6 +131,7 @@ library: metis
 #	( cd CAMD && $(MAKE) library )
 #	( cd CCOLAMD && $(MAKE) library )
 	( cd COLAMD && $(MAKE) library )
+	( cd SPEX && $(MAKE) library )
 #	( cd CHOLMOD && $(MAKE) library )
 #	( cd KLU && $(MAKE) library )
 #	( cd LDL && $(MAKE) library )
@@ -152,8 +150,8 @@ library: metis
 # compile the static libraries (except for metis, GraphBLAS, and Mongoose).
 # metis is only dynamic, and the 'make static' for GraphBLAS and Mongoose makes
 # both the dynamic and static libraries.
-# static:
-static: metis
+# static: metis
+static:
 	( cd SuiteSparse_config && $(MAKE) static )
 #	( cd Mongoose  && $(MAKE) CMAKE_OPTIONS='$(CMAKE_OPTIONS)' static )
 	( cd AMD && $(MAKE) static )
