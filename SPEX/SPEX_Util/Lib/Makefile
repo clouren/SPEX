@@ -72,12 +72,7 @@ $(INSTALL_LIB)/$(SO_TARGET): $(OBJ)
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_PLAIN) )
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_MAIN) )
 	$(CP) ../Include/SPEX_Util.h $(INSTALL_INCLUDE)
-	$(CP) ../Doc/SPEX_LU_UserGuide.pdf $(INSTALL_DOC)
-	$(CP) ../README.md $(INSTALL_DOC)/SPEX_LU_README.md
-	chmod 755 $(INSTALL_LIB)/$(SO_TARGET)
 	chmod 644 $(INSTALL_INCLUDE)/SPEX_Util.h
-	chmod 644 $(INSTALL_DOC)/SPEX_LU_UserGuide.pdf
-	chmod 644 $(INSTALL_DOC)/SPEX_LU_README.md
 
 # uninstall SPEX_LU
 uninstall:
@@ -85,8 +80,6 @@ uninstall:
 	$(RM) $(INSTALL_LIB)/$(SO_PLAIN)
 	$(RM) $(INSTALL_LIB)/$(SO_MAIN)
 	$(RM) $(INSTALL_INCLUDE)/SPEX_Util.h
-	$(RM) $(INSTALL_DOC)/SPEX_LU_UserGuide.pdf
-	$(RM) $(INSTALL_DOC)/SPEX_LU_README.md
 
 #-------------------------------------------------------------------------------
 # Remove all but the files in the original distribution
