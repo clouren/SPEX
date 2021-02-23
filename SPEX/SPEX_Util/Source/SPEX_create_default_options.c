@@ -14,6 +14,8 @@
 
 #include "spex_util_internal.h"
 
+// TODO redesign this API
+
 SPEX_options* SPEX_create_default_options ( void )
 {
 

@@ -61,6 +61,7 @@
 // parameter to this parameter is kept so that it can be safely freed in case
 // a memory error occurs (avoiding a double-free), in SPEX_GMP_SAFE_FREE.
 
+#define SPEX_GMP_MEMORY_DEBUG
 #include "spex_util_internal.h"
 #include "SPEX_gmp.h"
 
@@ -673,9 +674,13 @@ SPEX_info SPEX_mpz_set_ui
     const uint64_t y
 )
 {
+printf ("i am mpz set ui %d\n", __LINE__) ;;
     SPEX_GMPZ_WRAPPER_START (x) ;
+printf ("i am mpz set ui %d\n", __LINE__) ;;
     mpz_set_ui (x, (unsigned long int) y) ;
+printf ("i am mpz set ui %d\n", __LINE__) ;;
     SPEX_GMP_WRAPPER_FINISH ;
+printf ("i am mpz set ui %d\n", __LINE__) ;;
     return (SPEX_OK) ;
 }
 

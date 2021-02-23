@@ -11,6 +11,8 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include "spex_util_internal.h"
 
+// TODO: redesign this API
+
 int64_t SPEX_matrix_nnz     // return # of entries in A, or -1 on error
 (
     const SPEX_matrix *A,      // matrix to query

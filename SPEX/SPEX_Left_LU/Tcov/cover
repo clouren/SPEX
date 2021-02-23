@@ -1,4 +1,5 @@
 #!/bin/csh
+# TODO use bash
 # usage: cover files
 echo '================================================================='
 foreach file ($argv[1-])

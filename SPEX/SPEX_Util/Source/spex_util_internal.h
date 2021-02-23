@@ -241,6 +241,8 @@ void spex_gmp_failure (int status) ;
 // Field access macros for MPZ/MPQ/MPFR struct
 //------------------------------------------------------------------------------
 
+// FUTURE: make these accessible to the end user?
+
 // (similar definition in gmp-impl.h and mpfr-impl.h)
 
 #define SPEX_MPZ_SIZ(x)   ((x)->_mp_size)

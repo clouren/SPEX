@@ -1,4 +1,5 @@
 #!/bin/csh
+# TODO use bash
 echo '================================================================='
 foreach file (SPEX_*.?cov spex_*.?cov)
         echo $file
