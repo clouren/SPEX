@@ -20,6 +20,8 @@
 
 #include "spex_util_internal.h"
 
+// TODO add to user guide?
+
 SPEX_info SPEX_check_solution
 (
     const SPEX_matrix *A,         // Input matrix
@@ -28,6 +30,8 @@ SPEX_info SPEX_check_solution
     const SPEX_options* option    // Command options
 )
 {
+    // TODO check init?
+    //if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     //--------------------------------------------------------------------------
     // check inputs. Input are also checked by the two callers

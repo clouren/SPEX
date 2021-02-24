@@ -64,11 +64,8 @@ void mexFunction
     // get the input options
     //--------------------------------------------------------------------------
 
-    SPEX_options *option = SPEX_create_default_options();
-    if (option == NULL)
-    {
-        spex_left_lu_mex_error (SPEX_OUT_OF_MEMORY, "") ;
-    }
+    SPEX_options *option = NULL;
+    SPEX_MEX_OK(SPEX_create_default_options(&option));
 
     spex_mex_options mexoptions ;
     if (nargin > 2) spex_left_lu_get_matlab_options (option, &mexoptions, pargin [2]) ;

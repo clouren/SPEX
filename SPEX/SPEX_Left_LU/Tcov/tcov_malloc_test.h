@@ -18,12 +18,12 @@
 extern int64_t malloc_count ;
 
 #define GOTCHA \
-    printf ("%s, line %d, slip_gmp_ntrials = %ld, malloc_count = %ld\n", \
-    __FILE__, __LINE__, slip_gmp_ntrials, malloc_count);
+    printf ("%s, line %d, spex_gmp_ntrials = %ld, malloc_count = %ld\n", \
+    __FILE__, __LINE__, spex_gmp_ntrials, malloc_count);
 
 #define SPEX_PRINT_INFO(info)                                               \
 {                                                                           \
-    printf ("file %s line %d: ", __FILE__, __LINE__) ;                      \
+    /*printf ("file %s line %d: ", __FILE__, __LINE__) ; */                 \
     switch(info)                                                            \
     {                                                                       \
         case SPEX_OK:              printf("SPEX_OK\n");            break;   \

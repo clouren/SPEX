@@ -123,24 +123,18 @@ int main (int argc, char* argv[])
     SPEX_matrix *rhos = NULL;
     int64_t* pinv = NULL;
     SPEX_LU_analysis* S = NULL;
+    SPEX_info ok ;
     
     // Initialize option, command options for the factorization
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options *option = NULL;
+    OK(SPEX_create_default_options(&option));
     
     // Extra parameters used to obtain A, b, etc
-    SPEX_info ok ;
     char *mat_name, *rhs_name;
     SPEX_type rat;
     mat_name = "../ExampleMats/10teams_mat.txt";// Set demo matrix and RHS name
     rhs_name = "../ExampleMats/10teams_v.txt";
     
-    if (!option)
-    {
-        fprintf (stderr, "Error! OUT of MEMORY!\n");
-        SPEX_finalize();
-        return 0;
-    }
-
     //--------------------------------------------------------------------------
     // After initializing memory, we process the command line for this function.
     // Such a step is optional, a user can also manually set these parameters.

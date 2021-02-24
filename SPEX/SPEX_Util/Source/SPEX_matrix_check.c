@@ -75,11 +75,13 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     SPEX_info status = 0 ;
     char * buff = NULL ;
     int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
-    int64_t nz = SPEX_matrix_nnz(A, option);    // Number of nonzeros in A
+    int64_t nz;                            // Number of nonzeros in A
+    status = SPEX_matrix_nnz(&nz, A, option);
+    if (status != SPEX_OK) {return status;}
     if (nz < 0)
     {
-        SPEX_PR1 ("A is NULL or nz invalid\n") ;
-        return (SPEX_INCORRECT_INPUT) ;
+        SPEX_PR1 ("A is NULL\n") ;
+        return (SPEX_OK) ;// TODO is this OK?
     }
 
     int64_t m = A->m ;

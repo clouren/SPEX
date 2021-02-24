@@ -16,6 +16,8 @@
 
 #include "spex_util_internal.h"
 
+// TODO add to user guide?
+
 SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 (
     SPEX_matrix *x,         // matrix to be multiplied
@@ -23,6 +25,8 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 )
 {
 
+    // TODO check init?
+    //if (!spex_initialized ( )) return (SPEX_PANIC) ;
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
@@ -34,7 +38,10 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
     // x = x * scalar
     //--------------------------------------------------------------------------
 
-    int64_t nz = SPEX_matrix_nnz (x, NULL) ;
+    int64_t nz;
+    info = SPEX_matrix_nnz (&nz, x, NULL) ;
+    if (info != SPEX_OK) {return info;}
+
     for (int64_t i = 0; i < nz; i++)
     {
         // x[i] = x[i]*scalar

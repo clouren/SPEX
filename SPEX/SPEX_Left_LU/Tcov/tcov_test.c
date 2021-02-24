@@ -43,9 +43,9 @@
 
 #define SPEX_FREE_ALL                            \
 {                                                \
-    SPEX_MPZ_CLEAR(mpz1);                        \
-    SPEX_MPZ_CLEAR(mpz2);                        \
-    SPEX_MPZ_CLEAR(mpz3);                        \
+    /*SPEX_MPZ_CLEAR(mpz1);*/                    \
+    /*SPEX_MPZ_CLEAR(mpz2);*/                    \
+    /*SPEX_MPZ_CLEAR(mpz3);*/                    \
     TEST_OK (SPEX_matrix_free(&A,option)) ;      \
     TEST_OK (SPEX_matrix_free(&b, option));      \
     TEST_OK (SPEX_matrix_free(&B, option));      \
@@ -64,41 +64,41 @@ if (!pretend_to_fail)                               \
 }
 
 #define TEST_CHECK(method)                       \
-if (!pretend_to_fail) \
+if (!pretend_to_fail)                            \
 {                                                \
     info = (method) ;                            \
     if (info == SPEX_OUT_OF_MEMORY)              \
     {                                            \
         SPEX_FREE_ALL;                           \
         pretend_to_fail = true ;                 \
-    }                                           \
-    else if (info != SPEX_OK)                         \
+    }                                            \
+    else if (info != SPEX_OK)                    \
     {                                            \
         SPEX_PRINT_INFO (info) ;                 \
         printf ("test failure at line %d\n", __LINE__) ;         \
-        abort ( ) ;                         \
-    }                                           \
+        abort ( ) ;                              \
+    }                                            \
 }
 
 #define TEST_CHECK_FAILURE(method,expected_error)               \
-if (!pretend_to_fail) \
+if (!pretend_to_fail)                            \
 {                                                \
     info = (method) ;                            \
     if (info == SPEX_OUT_OF_MEMORY)              \
     {                                            \
         SPEX_FREE_ALL;                           \
-        pretend_to_fail = true ;                \
-    }                                           \
-    else if (info != expected_error)                   \
-    {                                           \
+        pretend_to_fail = true ;                 \
+    }                                            \
+    else if (info != expected_error)             \
+    {                                            \
         printf ("SPEX method was expected to fail, but succeeded!\n") ; \
-        printf ("this error was expected:\n") :     \
-        SPEX_PRINT_INFO (expected_error) ;                 \
-        printf ("but this error was obtained:\n") :     \
+        printf ("this error was expected:\n") ;  \
+        SPEX_PRINT_INFO (expected_error) ;       \
+        printf ("but this error was obtained:\n") ;     \
         SPEX_PRINT_INFO (info) ;                 \
-        printf ("test failure at line %d (wrong error)\n", __LINE__) ;         \
-        abort ( ) ;                         \
-    }                                           \
+        printf ("test failure at line %d (wrong error)\n", __LINE__) ;  \
+        abort ( ) ;                              \
+    }                                            \
 }
 
 #define MAX_MALLOC_COUNT 1000
@@ -244,7 +244,6 @@ int main( int argc, char* argv[])
 
     for (int64_t k=0; k<NUM_OF_TRIALS; k++)
     {
-        pretend_to_fail = false ;
         if (IS_SIMPLE_TEST)
         {
             // only the first outter loop will iterate across all list2
@@ -262,6 +261,7 @@ int main( int argc, char* argv[])
 
         for (int64_t kk=0; kk<NUM_OF_MALLOC_T; kk++)
         {
+            pretend_to_fail = false ;
             if (IS_SIMPLE_TEST)
             {
                 spex_gmp_ntrials=gmp_ntrial_list[k];
@@ -279,6 +279,26 @@ int main( int argc, char* argv[])
             }
 
             //------------------------------------------------------------------
+            // Define variables
+            //------------------------------------------------------------------
+            // used in as source in different Ab_type for A and b
+            SPEX_matrix *B   = NULL;
+            SPEX_matrix *Ax  = NULL;
+
+            // matrix A, b and solution
+            SPEX_matrix *A = NULL ;
+            SPEX_matrix *b = NULL ;
+            SPEX_matrix *sol = NULL;
+
+            /*mpz_t mpz1, mpz2, mpz3;
+            SPEX_MPZ_SET_NULL(mpz1);
+            SPEX_MPZ_SET_NULL(mpz2);
+            SPEX_MPZ_SET_NULL(mpz3);*/
+
+            int64_t n=4, numRHS=1, j, nz=11;
+            SPEX_options* option ;
+
+            //------------------------------------------------------------------
             // Initialize SPEX Left LU process
             //------------------------------------------------------------------
 
@@ -293,26 +313,9 @@ int main( int argc, char* argv[])
             // Allocate memory
             //------------------------------------------------------------------
 
-            int64_t n=4, numRHS=1, j, nz=11;
-            // FIXME:
-            SPEX_options* option ;
-            TEST_OK (SPEX_create_default_options (&option)) ;
+            TEST_CHECK (SPEX_create_default_options (&option)) ;
             if (pretend_to_fail) continue ;
             option->print_level = 3;
-
-            // used in as source in different Ab_type for A and b
-            SPEX_matrix *B   = NULL;
-            SPEX_matrix *Ax  = NULL;
-
-            // matrix A, b and solution
-            SPEX_matrix *A = NULL ;
-            SPEX_matrix *b = NULL ;
-            SPEX_matrix *sol = NULL;
-
-            mpz_t mpz1, mpz2, mpz3;
-            SPEX_MPZ_SET_NULL(mpz1);
-            SPEX_MPZ_SET_NULL(mpz2);
-            SPEX_MPZ_SET_NULL(mpz3);
 
             if (Ab_type >= 0 && Ab_type <= 4)
             {
@@ -322,11 +325,12 @@ int main( int argc, char* argv[])
                 //--------------------------------------------------------------
 
                 TEST_CHECK(SPEX_matrix_allocate(&B, SPEX_DENSE,
-                    (SPEX_type) Ab_type, n,
-                    numRHS, n*numRHS, false, true, option));
+                    (SPEX_type) Ab_type, n, numRHS, n*numRHS, false, true,
+                    option));
+                if (pretend_to_fail) continue ;
                 TEST_CHECK(SPEX_matrix_allocate(&Ax, SPEX_CSC,
-                    (SPEX_type) Ab_type, n,
-                    n, nz, false, true, option));
+                    (SPEX_type) Ab_type, n, n, nz, false, true, option));
+                if (pretend_to_fail) continue ;
 
                 // fill Ax->i and Ax->p
                 for (j = 0; j < n+1; j++)
@@ -345,34 +349,45 @@ int main( int argc, char* argv[])
                     // to trigger all-zero array condition
                     TEST_CHECK(SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, Ax,
                         option));
+                    if (pretend_to_fail) continue ;
                     TEST_CHECK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, B,
                         option));
+                    if (pretend_to_fail) continue ;
                     // to trigger SPEX_SINGULAR 
                     TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A,
                         b, option), SPEX_SINGULAR);
+                    if (pretend_to_fail) continue ;
                     option->pivot = SPEX_LARGEST;
                     TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A,
                         b, option), SPEX_SINGULAR);
+                    if (pretend_to_fail) continue ;
                     option->pivot = SPEX_FIRST_NONZERO;
                     TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A,
                        b, option), SPEX_SINGULAR);
+                    if (pretend_to_fail) continue ;
 
                     //free the memory alloc'd
                     TEST_OK (SPEX_matrix_free (&A, option)) ;
+                    if (pretend_to_fail) continue ;
                     TEST_OK (SPEX_matrix_free (&b, option)) ;
+                    if (pretend_to_fail) continue ;
 
                     // trigger gcd == 1
                     int32_t prec = option->prec;
                     option->prec = 17;
                     double pow2_17 = pow(2,17);
-                    for (j = 0; j < n; j++)                             // Get B
+                    assert (B != NULL) ;
+                    for (j = 0; j < n && !pretend_to_fail; j++)        // Get B
                     {
                         TEST_CHECK(SPEX_mpfr_set_d(SPEX_2D(B,j,0,mpfr),
                             bxnum[j]/pow2_17, MPFR_RNDN));
                     }
+                    if (pretend_to_fail) continue ;
                     TEST_CHECK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ,B,
                         option));
+                    if (pretend_to_fail) continue ;
                     TEST_OK (SPEX_matrix_free (&b, option)) ;
+                    if (pretend_to_fail) continue ;
 
                     // restore default precision
                     option->prec = prec;
@@ -384,46 +399,53 @@ int main( int argc, char* argv[])
                 {
                     // create empty A using uninitialized double mat/array
                     // to trigger all-zero array condition
+                    assert (Ax!= NULL) ;
                     TEST_CHECK(SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, Ax,
                         option));
+                    if (pretend_to_fail) continue ;
                     TEST_OK (SPEX_matrix_free (&A, option)) ;
+                    if (pretend_to_fail) continue ;
 
                     // trigger gcd == 1
+                    assert (B != NULL) ;
                     for (j = 0; j < n; j++)                           // Get b
                     {
                         SPEX_2D(B,j,0,fp64) = bxnum[j]/1e17;
                     }
                     TEST_CHECK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, B,
                         option));
+                    if (pretend_to_fail) continue ;
                     TEST_OK (SPEX_matrix_free (&b, option)) ;
+                    if (pretend_to_fail) continue ;
 
                     // use smallest entry as pivot
                     option->pivot = SPEX_SMALLEST;
                 }
 
                 // fill Ax->x and b->x
-                for (j = 0; j < n && !disable; j++)                    // Get b
+                for (j = 0; j < n && !pretend_to_fail; j++)           // Get b
                 {
                     assert (B != NULL) ;
                     if (Ab_type == 0) //MPZ
                     {
-printf ("huh? %s %d B %p\n", __FILE__, __LINE__, B) ;
-if (B == NULL) printf ("HEY!!!!\n") ;
                         TEST_CHECK(SPEX_mpz_set_ui(SPEX_2D(B, j, 0, mpz),
                             bxnum3[j]));
-printf ("huh? %s %d\n", __FILE__, __LINE__) ;
+                        if (pretend_to_fail) break ;
                     }
                     else if (Ab_type == 1)// MPQ
                     {
                         TEST_CHECK(SPEX_mpq_set_ui(SPEX_2D(B,j,0,mpq),
                             bxnum3[j], bxden3[j]));
+                        if (pretend_to_fail) break ;
                     }
                     else if (Ab_type == 2)// MPFR
                     {
                         TEST_CHECK(SPEX_mpfr_set_d(SPEX_2D(B,j,0,mpfr),bxnum[j],
                             MPFR_RNDN));
+                        if (pretend_to_fail) break ;
                         TEST_CHECK(SPEX_mpfr_div_d(SPEX_2D(B,j,0,mpfr),
                             SPEX_2D(B,j,0,mpfr), bxden[j], MPFR_RNDN));
+                        if (pretend_to_fail) break ;
                     }
                     else if (Ab_type == 3)// INT64
                     {
@@ -433,27 +455,31 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                     {
                         SPEX_2D(B,j,0,fp64) = bxnum[j];
                     }
-printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                 }
-printf ("huh? %s %d\n", __FILE__, __LINE__) ;
+                if (pretend_to_fail) continue ;
+
                 for (j = 0; j < nz; j++)                          // Get Ax
                 {
-printf ("huh? %s %d\n", __FILE__, __LINE__) ;
+                    assert (Ax!= NULL) ;
                     if (Ab_type == 0)
                     {
                         TEST_CHECK(SPEX_mpz_set_ui(Ax->x.mpz[j],Axnum3[j]));
+                        if (pretend_to_fail) break ;
                     }
                     else if (Ab_type == 1)
                     {
                         TEST_CHECK(SPEX_mpq_set_ui(Ax->x.mpq[j],Axnum3[j],
                             Axden3[j]));
+                        if (pretend_to_fail) break ;
                     }
                     else if (Ab_type == 2)
                     {
                         TEST_CHECK(SPEX_mpfr_set_d(Ax->x.mpfr[j], Axnum[j],
                             MPFR_RNDN));
+                        if (pretend_to_fail) break ;
                         TEST_CHECK(SPEX_mpfr_div_d(Ax->x.mpfr[j], Ax->x.mpfr[j],
                             Axden[j], MPFR_RNDN))
+                        if (pretend_to_fail) break ;
                     }
                     else if (Ab_type == 3)
                     {
@@ -464,12 +490,17 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                         Ax->x.fp64[j] = Axnum[j]/Axden[j];
                     }
                 }
+                if (pretend_to_fail) continue ;
 
                 // successful case
                 TEST_CHECK(SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, Ax,option));
+                if (pretend_to_fail) continue ;
                 TEST_CHECK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ,B,option));
+                if (pretend_to_fail) continue ;
                 TEST_OK (SPEX_matrix_free(&B, option));
+                if (pretend_to_fail) continue ;
                 TEST_OK (SPEX_matrix_free(&Ax, option));
+                if (pretend_to_fail) continue ;
             }
             else // 5 =< Ab_type < 20
             {
@@ -518,6 +549,7 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                 }
                 TEST_CHECK(SPEX_matrix_allocate(&Ax, (SPEX_kind) kind,
                     (SPEX_type)type, m1, n1, nz1, false, true, option));
+                if (pretend_to_fail) continue ;
                 if (kind == 1){Ax->nz = nz1;}
 
                 // fill Ax->p
@@ -532,6 +564,7 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                 // fill Ax->i and Ax->j
                 for (j = 0; j < nz && !pretend_to_fail ; j++)
                 {
+                    assert(Ax != NULL);
                     if (kind != 2) {Ax->i[j] = I[j];}
                     // triplet
                     if (kind == 1){  Ax->j[j] = J[j];}
@@ -555,8 +588,11 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                         {
                             TEST_CHECK(SPEX_mpfr_set_d(Ax->x.mpfr[j],
                                 x_doub2[j], MPFR_RNDN));
-                            TEST_CHECK(SPEX_mpfr_div_d(Ax->x.mpfr[j],
-                                Ax->x.mpfr[j], 1, MPFR_RNDN));
+                            if (!pretend_to_fail)
+                            {
+                                TEST_CHECK(SPEX_mpfr_div_d(Ax->x.mpfr[j],
+                                    Ax->x.mpfr[j], 1, MPFR_RNDN));
+                            }
                         }
                         break;
 
@@ -574,8 +610,11 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
 
                         default: break;
                     }
+                    if (pretend_to_fail) break ;
                 }
+                if (pretend_to_fail) continue;
                 TEST_CHECK (SPEX_matrix_check (Ax, option));
+                if (pretend_to_fail) continue ;
 
                 /*if (kind == 0) // CSC
                 {
@@ -612,7 +651,7 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                             SPEX_MPZ, 1, 1, 1, true, true, option));
                         if (pretend_to_fail) break ;
                         TEST_CHECK_FAILURE(SPEX_Left_LU_solve(NULL, b, A, A, A,
-                            b, NULL, NULL, option));
+                            b, NULL, NULL, option), SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         TEST_OK (SPEX_matrix_free (&b, option)) ;
                         if (pretend_to_fail) break ;
@@ -634,32 +673,42 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                     {
                         // test SPEX_matrix_check
                         A->i[0] = -1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         SPEX_FREE(A->x.int64);
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         A->p[1] = 2;
                         A->p[2] = 1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         A->p[0] = 1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         A->type = -1;// invalid type
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         A->nzmax = -1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         A->m = -1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(NULL, option));
+                        // TODO might need to update if the return flag changed
+                        TEST_CHECK(SPEX_matrix_check(NULL, option));
                         if (pretend_to_fail) break ;
 
                         // Incorrect calling with NULL pointer(s)
-                        TEST_CHECK_FAILURE(SPEX_LU_analyze(NULL,A,NULL));
+                        TEST_CHECK_FAILURE(SPEX_LU_analyze(NULL,A,NULL),
+                            SPEX_INCORRECT_INPUT);
+                        if (pretend_to_fail) break ;
 
                         // test SPEX_matrix_copy with scale
                         TEST_OK (SPEX_matrix_free (&A, option)) ;
@@ -676,46 +725,50 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                     {
                         // test SPEX_matrix_check
                         A->i[0] = -1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option), 
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         SPEX_FREE(A->x.int64);
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option), 
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         A->n = -1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option));
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option), 
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                     }
                     else if (tk == 0 && tk1 == 13)//A= dense int64
                     {
                         SPEX_FREE(A->x.int64);
                         TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
-                            SPEX_whatever);
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                     }
                     TEST_OK (SPEX_matrix_free (&A, option)) ;
                     if (pretend_to_fail) break ;
                 }
+                if (pretend_to_fail) continue;
 
                 if (tk == 3)
                 {
                     // fail SPEX_matrix_copy
                     TEST_CHECK_FAILURE(SPEX_matrix_copy(&A, 7,
-                        (SPEX_type) type, Ax, option));
+                        (SPEX_type) type, Ax, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // failure case: Ax->x = NULL
                     SPEX_FREE(Ax->x.int64);
                     TEST_CHECK_FAILURE(SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ,
-                        Ax,option));
+                        Ax,option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
 
                     // fail SPEX_matrix_allocate
                     TEST_CHECK_FAILURE(SPEX_matrix_allocate(NULL,
                         SPEX_DENSE, SPEX_MPZ, 1, 1, 1,
-                        true, true, option));
+                        true, true, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     TEST_CHECK_FAILURE(SPEX_matrix_allocate(&b,
                         SPEX_DENSE, SPEX_MPZ, -1, 1, 1,
-                        true, true, option));
+                        true, true, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
 
                     // test SPEX_matrix_allocate
@@ -744,6 +797,7 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
 
                 printf ("\n[ SPEX_matrix_check -------------------------\n") ;
                 TEST_OK (SPEX_matrix_free (&A, option)) ;
+                if (pretend_to_fail) continue ;
                 int64_t I2 [4] = { 1, 2, 1, 1 } ;
                 int64_t J2 [4] = { 1, 0, 0, 1 } ;
                 TEST_CHECK (SPEX_matrix_allocate (&A, SPEX_TRIPLET,
@@ -754,9 +808,11 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                 A->x.int64 = I2 ;
                 A->nz = 4 ;
                 printf ("invalid triplet matrix expected:\n") ;
-                TEST_CHECK_FAILURE (SPEX_matrix_check (A, option)) ;
+                TEST_CHECK_FAILURE (SPEX_matrix_check (A, option),
+                    SPEX_INCORRECT_INPUT) ;
                 if (pretend_to_fail) continue ;
                 TEST_OK (SPEX_matrix_free (&A, option)) ;
+                if (pretend_to_fail) continue ;
 
                 TEST_CHECK (SPEX_matrix_allocate (&A, SPEX_CSC,
                     SPEX_INT64, 3, 3, 4, true, false, option)) ;
@@ -767,7 +823,8 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                 A->i = I3 ;
                 A->x.int64 = I3 ;
                 printf ("invalid CSC matrix expected:\n") ;
-                TEST_CHECK_FAILURE (SPEX_matrix_check (A, option)) ;
+                TEST_CHECK_FAILURE (SPEX_matrix_check (A, option),
+                    SPEX_INCORRECT_INPUT) ;
                 if (pretend_to_fail) continue ;
                 TEST_OK (SPEX_matrix_free (&A, option)) ;
                 printf ("-----------------------------------------------]\n") ;
@@ -798,7 +855,8 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                 // SPEX Left LU backslash
                 // solve Ax=b in full precision rational arithmetic
                 //--------------------------------------------------------------
-		TEST_CHECK(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A, b, option));
+		TEST_CHECK(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A, b,option));
+                if (pretend_to_fail) continue ;
 
 		if (Ab_type == 4)
                 {
@@ -806,9 +864,9 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                     // scaled down so that sol->scale = 1. Therefore sol is
                     // solution for original unscaled Ax=b, while this is
                     // checking if x is the solution for scaled Ax=b
-                    info = SPEX_check_solution(A, sol, b, option);
-		    if (info == SPEX_INCORRECT) {;}
-                    else {TEST_CHECK(info);}
+                    TEST_CHECK_FAILURE(SPEX_check_solution(A, sol, b, option),
+                        SPEX_INCORRECT);
+                    if (pretend_to_fail) continue ;
                 }
 
             }
@@ -819,27 +877,31 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
                 // solve Ax=b in double precision
                 //--------------------------------------------------------------
                 SPEX_matrix *sol_doub;
-		TEST_CHECK(SPEX_Left_LU_backslash(&sol_doub, SPEX_FP64, A, b, option));
-                info = SPEX_matrix_free(&sol_doub, option);
-                assert (info == SPEX_OK) ;
+		TEST_CHECK(SPEX_Left_LU_backslash(&sol_doub, SPEX_FP64, A, b,
+                    option));
+                if (pretend_to_fail) continue ;
+                TEST_OK (SPEX_matrix_free(&sol_doub, option));
 
                 // failure case
                 if (Ab_type == 1)
                 {
                     TEST_CHECK_FAILURE(SPEX_Left_LU_factorize(NULL, NULL,
-                        NULL, NULL, A, NULL, NULL));
+                        NULL, NULL, A, NULL, NULL), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // incorrect solution type
-                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPZ, A, b,
-                       option));
+                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPZ,
+                        A, b, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // NULL solution pointer
-                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(NULL, SPEX_MPZ, A, b,
-                       option));
+                    TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(NULL, SPEX_MPZ,
+                        A, b, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // invalid kind
                     A->kind = 4;
-                    SPEX_matrix_nnz(A, NULL);
+                    int64_t tmp;
+                    TEST_CHECK_FAILURE(SPEX_matrix_nnz(&tmp, A, NULL),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) continue ;
                     A->kind = SPEX_CSC;
                 }
             }
@@ -851,6 +913,7 @@ printf ("huh? %s %d\n", __FILE__, __LINE__) ;
             SPEX_FREE_ALL;
             if(!IS_SIMPLE_TEST)
             {
+                printf("im here %ld\n",malloc_count);
                 if (malloc_count > 0)
                 {
                     malloc_count_list[k] = kk;

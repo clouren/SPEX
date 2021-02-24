@@ -14,6 +14,8 @@
 
 #include "spex_util_internal.h"
 
+// TODO add to user guide?
+
 SPEX_info SPEX_cumsum
 (
     int64_t *p,          // vector to store the sum of c
@@ -21,6 +23,8 @@ SPEX_info SPEX_cumsum
     int64_t n            // size of c
 )
 {
+    // TODO check init?
+    //if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     if (!p || !c) return SPEX_INCORRECT_INPUT;
     ASSERT(n >= 0);    

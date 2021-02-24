@@ -185,10 +185,10 @@ typedef struct SPEX_options
                            // guaranteed to return the exact solution.
 } SPEX_options ;
 
-// Purpose: Create and return SPEX_options object with default parameters
+// Purpose: Create SPEX_options object with default parameters
 // upon successful allocation, which are defined in SPEX_util_nternal.h
-// To free it, simply use SPEX_FREE (option).
-SPEX_options* SPEX_create_default_options (void) ;
+// To free it, simply use SPEX_FREE (*option).
+SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
 // check if SPEX_initialize* has been called
 bool spex_initialized ( void ) ;        // true if called, false if not
@@ -339,9 +339,10 @@ SPEX_info SPEX_matrix_free
 // SPEX_matrix_nnz: # of entries in a matrix
 //------------------------------------------------------------------------------
 
-int64_t SPEX_matrix_nnz     // return # of entries in A, or -1 on error
+SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 (
-    const SPEX_matrix *A,         // matrix to query
+    int64_t *nnz,              // # of entries in A, -1 if A is NULL
+    const SPEX_matrix *A,      // matrix to query
     const SPEX_options *option
 ) ;
 
