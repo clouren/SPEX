@@ -558,23 +558,6 @@ SPEX_info SPEX_cumsum
     int64_t n           // size of c
 );
 
-/* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
- * size of x and i. so that they only take up the number of elements in the
- * matrix. For example if A->nzmax = 1000 but nnz(A) = 500, i and x are of size
- * 1000, so this function shrinks them to size 500.
- */
-SPEX_info SPEX_sparse_collapse
-(
-    SPEX_matrix* A // matrix to be shrunk
-);
-
-/* Purpose: This function expands a SPEX matrix by doubling its size. It
- * merely expands x and i and does not initialize/allocate the values.
- */
-SPEX_info SPEX_sparse_realloc
-(
-    SPEX_matrix* A // the matrix to be expanded
-);
 
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------

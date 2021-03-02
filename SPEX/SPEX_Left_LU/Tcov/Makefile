@@ -59,8 +59,8 @@ CS = \
     SPEX_matrix_mul.o \
     SPEX_matrix_nnz.o \
     SPEX_realloc.o \
-    SPEX_sparse_collapse.o \
-    SPEX_sparse_realloc.o \
+    spex_sparse_collapse.o \
+    spex_sparse_realloc.o \
     SPEX_LU_analysis_free.o \
     SPEX_LU_analyze.o \
     tcov_malloc_test.o \

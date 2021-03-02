@@ -17,16 +17,12 @@
 
 #include "spex_util_internal.h"
 
-// TODO add to user guide?
-
-SPEX_info SPEX_sparse_collapse
+SPEX_info spex_sparse_collapse
 (
     SPEX_matrix* A // matrix to be shrunk
 )
 {
 
-    // TODO check init?
-    //if (!spex_initialized ( )) return (SPEX_PANIC) ;
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
@@ -37,7 +33,6 @@ SPEX_info SPEX_sparse_collapse
 
     int64_t anz;
     SPEX_info info = SPEX_matrix_nnz (&anz, A, NULL);
-    // TODO this can be removed if spex_initialized() is checked
     if (info != SPEX_OK)
     {
         return info;

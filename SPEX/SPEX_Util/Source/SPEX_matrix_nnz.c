@@ -29,7 +29,7 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
     if (A == NULL)
     {
         *nnz = -1;
-        return (SPEX_OK) ;// TODO is this OK?
+        return (SPEX_OK) ;
     }
 
     //--------------------------------------------------------------------------

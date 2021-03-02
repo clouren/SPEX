@@ -204,12 +204,12 @@ SPEX_info SPEX_Left_LU_factorize
         if (lnz + n > L->nzmax)
         {
             // Double the size of L
-            SPEX_CHECK(SPEX_sparse_realloc(L));
+            SPEX_CHECK(spex_sparse_realloc(L));
         }
         if (unz + n > U->nzmax)
         {
             // Double the size of U
-            SPEX_CHECK(SPEX_sparse_realloc(U));
+            SPEX_CHECK(spex_sparse_realloc(U));
         }
 
         //----------------------------------------------------------------------
@@ -286,9 +286,9 @@ SPEX_info SPEX_Left_LU_factorize
 
     // This cannot fail since the size of L and U are shrinking.
     // Collapse L
-    SPEX_sparse_collapse(L);
+    spex_sparse_collapse(L);
     // Collapse U
-    SPEX_sparse_collapse(U);
+    spex_sparse_collapse(U);
 
     //--------------------------------------------------------------------------
     // finalize the row indices in L and U

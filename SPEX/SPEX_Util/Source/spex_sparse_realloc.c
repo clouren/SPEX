@@ -16,15 +16,11 @@
 
 #include "spex_util_internal.h"
 
-// TODO add to user guide?
-
-SPEX_info SPEX_sparse_realloc
+SPEX_info spex_sparse_realloc
 (
     SPEX_matrix* A // the matrix to be expanded
 )
 {
-    // TODO check init?
-    //if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     //--------------------------------------------------------------------------
     // check inputs

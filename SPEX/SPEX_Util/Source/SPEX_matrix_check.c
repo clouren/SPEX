@@ -81,7 +81,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     if (nz < 0)
     {
         SPEX_PR1 ("A is NULL\n") ;
-        return (SPEX_OK) ;// TODO is this OK?
+        return (SPEX_OK) ;
     }
 
     int64_t m = A->m ;

@@ -25,7 +25,6 @@
 
 #include "spex_util_internal.h"
 
-// TODO add to user guide?
 
 SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
 (
@@ -35,8 +34,7 @@ SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
     const SPEX_options *option
 )
 {
-    // TODO check init?
-    //if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     //--------------------------------------------------------------------------
     // check inputs

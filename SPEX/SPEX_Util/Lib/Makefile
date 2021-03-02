@@ -33,8 +33,8 @@ all: install
 
 OBJ = \
     SPEX_matrix_div.o spex_create_mpq_array.o SPEX_free.o SPEX_realloc.o SPEX_matrix_mul.o  \
-    spex_create_mpz_array.o SPEX_cumsum.o SPEX_malloc.o SPEX_sparse_collapse.o \
-    SPEX_calloc.o SPEX_matrix_allocate.o  SPEX_sparse_realloc.o spex_cast_array.o spex_create_mpfr_array.o \
+    spex_create_mpz_array.o SPEX_cumsum.o SPEX_malloc.o spex_sparse_collapse.o \
+    SPEX_calloc.o SPEX_matrix_allocate.o  spex_sparse_realloc.o spex_cast_array.o spex_create_mpfr_array.o \
     spex_expand_double_array.o SPEX_gmp.o SPEX_matrix_copy.o SPEX_matrix_check.o spex_cast_matrix.o \
     spex_expand_mpfr_array.o SPEX_initialize.o SPEX_matrix_free.o SPEX_check_solution.o SPEX_finalize.o  \
     spex_expand_mpq_array.o SPEX_initialize_expert.o SPEX_matrix_nnz.o SPEX_create_default_options.o  \
