@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/spex_cumsum: cumulative sum
+// SPEX_Util/SPEX_cumsum: cumulative sum
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,

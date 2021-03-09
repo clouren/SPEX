@@ -78,11 +78,6 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     int64_t nz;                            // Number of nonzeros in A
     status = SPEX_matrix_nnz(&nz, A, option);
     if (status != SPEX_OK) {return status;}
-    if (nz < 0)
-    {
-        SPEX_PR1 ("A is NULL\n") ;
-        return (SPEX_OK) ;
-    }
 
     int64_t m = A->m ;
     int64_t n = A->n ;

@@ -10,7 +10,7 @@
 
 # creates the user guide
 
-SPEX_UserGuide.pdf: SPEX_UserGuide.tex SPEX_UserGuide.bib
+SPEX_UserGuide.pdf: SPEX_UserGuide.tex SPEX_UserGuide.bib Makefile
 	pdflatex SPEX_UserGuide.tex
 	bibtex SPEX_UserGuide
 	pdflatex SPEX_UserGuide.tex

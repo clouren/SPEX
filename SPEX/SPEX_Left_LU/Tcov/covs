@@ -1,8 +1,8 @@
-#!/bin/csh
-# TODO use bash
+#!/bin/bash
 echo '================================================================='
-foreach file (SPEX_*.?cov spex_*.?cov)
+for file in SPEX_*.?cov spex_*.?cov
+do
         echo $file
         grep "#####" $file
         echo '================================================================='
-        end
+done

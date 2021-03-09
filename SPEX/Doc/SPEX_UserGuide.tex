@@ -35,7 +35,7 @@
 \begin{large}
 \textbf{User Guide for the SPEX Software Package} \\
 \vspace{5mm}
-Version 1.1.1, February 2021 % VERSION
+Version 1.1.1, March 2021 % VERSION
 \vspace{20mm}
 
 Christopher Lourenco, Jinhao Chen, \\ Erick Moreno-Centeno, Timothy A. Davis \\
@@ -58,11 +58,13 @@ Contact Information: Contact Chris Lourenco, \href{mailto:chrisjlourenco@gmail.c
     
 \chapter{SPEX Overview}
 
-SPEX is a software package comprising several state-of-the-art SParse EXact linear algebra routines. It currently comprises of the following:
-	\begin{description}
-	\item[SPEX Utilities] Utility and auxiliary functions for all SPEX routines: interface to the GMP/MPFR library, memory management functions, the \verb|SPEX_matrix| data structure, and various functions that are auxiliary to the factorization and solve functions. Please refer to Chapter \ref{ch:Util} for further details.
-	\item[SPEX Left LU] Sparse exact left-looking LU factorization to solve the linear system $A \mathbf{x} = \mathbf{b}$. The solution time is proportional to the arithmetic work in the bit-complexity model; this is an asymptotically efficient complexity bound. Please refer to Chapter \ref{ch:LeftLU} for further details.
-	\end{description}
+SPEX is a software package comprising several state-of-the-art SParse EXact
+linear algebra routines. It currently is comprised of the following:
+
+\begin{description}
+\item[SPEX Utilities] Utility and auxiliary functions for all SPEX routines: interface to the GMP/MPFR library, memory management functions, the \verb|SPEX_matrix| data structure, and various functions that are auxiliary to the factorization and solve functions. Please refer to Chapter \ref{ch:Util} for further details.
+\item[SPEX Left LU] Sparse exact left-looking LU factorization to solve the linear system $A \mathbf{x} = \mathbf{b}$. The solution time is proportional to the arithmetic work in the bit-complexity model; this is an asymptotically efficient complexity bound. Please refer to Chapter \ref{ch:LeftLU} for further details.
+\end{description}
 
 \noindent \textbf{Location:} \url{https://github.com/clouren/SPEX} and
 \url{www.suitesparse.com}\\
@@ -73,6 +75,7 @@ SPEX is a software package comprising several state-of-the-art SParse EXact line
 3-clause license and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
     \item COLAMD \cite{davis2004column,davis2004algorithmcolamd}, available under a BSD
 3-clause license and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
+    \item
     \verb|SuiteSparse_config| \cite{davis2020suitesparse}, no license restrictions and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
     \item GNU GMP \cite{granlund2015gnu} and MPFR
 \cite{fousse2007mpfr} libraries. Distributed under the LGPL3 and GPL2 and can be acquired and installed
@@ -161,7 +164,7 @@ For example, the last column appears in positions 8 to 10 of \verb|A->i| and \ve
 
 
 %-------------------------------------------------------------------------------
-\section{Installation} \label{s:install}
+\section{Installation} \label{s:util:install}
 %-------------------------------------------------------------------------------
 
 Installation of SPEX Util requires the \verb|make| utility in Linux/MacOS, or
@@ -237,6 +240,7 @@ Subsequent SPEX sessions can be restarted after a call to
 \verb|SPEX_finalize| when finished.
 
 %-------------------------------------------------------------------------------
+\newpage
 \cprotect\subsection{\verb|SPEX_initialize|: initialize the working environment}
 %-------------------------------------------------------------------------------
 
@@ -277,7 +281,7 @@ already been initialized, or \verb|SPEX_OK| if successful.
 
 \verb|SPEX_initialize_expert| is the same as \verb|SPEX_initialize| except that
 it allows for a redefinition of custom memory functions that are used for SPEX
-and GMP/MPFR.  The four inputs to this function are pointers to four
+and GMP/ MPFR.  The four inputs to this function are pointers to four
 functions with the same signatures as the ANSI C \verb'malloc', \verb'calloc',
 \verb'realloc', and \verb'free' functions.  That is:
 
@@ -296,6 +300,7 @@ Returns \verb|SPEX_PANIC| if SPEX has already been initialized,
 or \verb|SPEX_OK| if successful.
 
 %-------------------------------------------------------------------------------
+\newpage
 \cprotect\subsection{\verb|SPEX_finalize|: free the working environment}
 \label{ss:SPEX_finalize}
 %-------------------------------------------------------------------------------
@@ -354,6 +359,7 @@ pointer is returned.
 Returns \verb|NULL| if SPEX has not been initialized.
 
 %-------------------------------------------------------------------------------
+\newpage
 \cprotect\subsection{\verb|SPEX_malloc|: allocate uninitialized memory}
 \label{ss:SPEX_malloc}
 %-------------------------------------------------------------------------------
@@ -789,6 +795,9 @@ of $A$, if $A$ is a CSC matrix (\verb|NULL| for matrices in triplet or dense
 formats). Data Type: \verb|int64_t*|.
 
 \item \verb|A->p_shallow|: A boolean indicating whether \verb|A->p| is shallow.
+A {\em shallow} pointer is one that refers to a component of another matrix or
+data structure.  If \verb|A->p| is shallow, then it should not be modified
+as part of the \verb|A| matrix, and it is not freed if \verb|A| is freed.
 Data Type: \verb|bool|.
 
 \item \verb|A->i|: An array of size \verb|A->nzmax| which contains the row
@@ -1033,7 +1042,7 @@ Results are undefined for an invalid input matrix \verb|A|.  Returns
 \begin{verbatim}
     SPEX_info SPEX_matrix_nnz     // return # of entries in A, or -1 on error
     (
-    		int64_t *nnz,
+        int64_t *nnz,
         const SPEX_matrix *A,         // matrix to query
         const SPEX_options *option
     ) ;
@@ -1069,6 +1078,45 @@ of the 15 different matrix types (CSC, triplet, dense) $\times$ (\verb|mpz|,
 changed via \verb|option->print_level| (refer to Section \ref{ss:SPEX_options}
 for more details).  If default settings are desired, \verb|option| can be input
 as \verb|NULL|.  Returns \verb|SPEX_PANIC| if SPEX has not been initialized.
+
+
+%-------------------------------------------------------------------------------
+\newpage
+\cprotect\subsection{\verb|SPEX_matrix_div|: Divide dense matrix by scalar}
+%-------------------------------------------------------------------------------
+
+\begin{mdframed}[userdefinedwidth=6in]
+{\footnotesize
+\begin{verbatim}
+SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
+(
+    SPEX_matrix **x2_handle,    // x2 = x/scalar
+    SPEX_matrix* x,             // input vector x
+    const mpz_t scalar,         // the scalar
+    const SPEX_options *option
+);
+\end{verbatim}
+} \end{mdframed}
+
+This function divides the matrix \verb|x| by the scalar \verb|scalar|. On input, \verb|x2_handle| is NULL and \verb|x| must be \verb|SPEX_DENSE| of \verb|SPEX_MPZ| type. On success, \verb|x2_handle| is returned as \verb|SPEX_DENSE| with \verb|SPEX_MPQ| entries each of which is equal to \verb|x / scalar|.
+
+%-------------------------------------------------------------------------------
+\cprotect\subsection{\verb|SPEX_matrix_mul|: Multiply dense matrix by scalar}
+%-------------------------------------------------------------------------------
+
+\begin{mdframed}[userdefinedwidth=6in]
+{\footnotesize
+\begin{verbatim}
+SPEX_matrix_mul   // multiplies x by a scalar
+(
+    SPEX_matrix *x,         // matrix to be multiplied
+    const mpz_t scalar      // scalar to multiply by
+);
+\end{verbatim}
+} \end{mdframed}
+
+This function divides the matrix \verb|x| by the scalar \verb|scalar|. On input, \verb|x| must be \verb|SPEX_DENSE| of \verb|SPEX_MPZ| type. On success, \verb|x| is overwritten by \verb|x * scalar|.
+
 
 %-------------------------------------------------------------------------------
 \cprotect\section{\verb|SPEX_LU_analysis| structure}
@@ -1156,6 +1204,7 @@ has not been initialized.
 The analysis \verb|S| is freed by \verb|SPEX_LU_analysis_free|.
 
 %-------------------------------------------------------------------------------
+\newpage
 \cprotect\subsection{\verb|SPEX_LU_analysis_free|: free \verb|SPEX_LU_analysis| structure}
 \label{ss:LU_analysis_free}
 %-------------------------------------------------------------------------------
@@ -1209,6 +1258,7 @@ Given a GMP function \verb|void gmpfunc(TYPEa a, TYPEb b, ...)|, where
 A wrapper for a new GMP or MPFR function can be created by following
 this outline:
 
+\newpage
 \begin{mdframed}[userdefinedwidth=6in]
 {\footnotesize
 \begin{verbatim}
@@ -1490,40 +1540,6 @@ SPEX_info SPEX_check_solution
 
 
 Given a solution vector \verb|x|, check the solution of the linear system \verb|Ax = b|. This is done by computing a rational-arthmetic \verb|A*x == b|. Since all routines in SPEX are gauranteed to be exact, this function is for debugging purposes. On input, \verb|A| is \verb|SPEX_CSC| of \verb|SPEX_MPZ| type, \verb|x| is \verb|SPEX_DENSE| of \verb|SPEX_MPQ| type and \verb|b| is \verb|SPEX_DENSE| of \verb|SPEX_MPZ| type. On success, \verb|SPEX_OK| is returned.
-
-
-\cprotect\subsection{\verb|SPEX_matrix_div|: Divide dense matrix by scalar}
-
-\begin{mdframed}[userdefinedwidth=6in]
-{\footnotesize
-\begin{verbatim}
-SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
-(
-    SPEX_matrix **x2_handle,    // x2 = x/scalar
-    SPEX_matrix* x,             // input vector x
-    const mpz_t scalar,         // the scalar
-    const SPEX_options *option
-);
-\end{verbatim}
-} \end{mdframed}
-
-This function divides the matrix \verb|x| by the scalar \verb|scalar|. On input, \verb|x2_handle| is NULL and \verb|x| must be \verb|SPEX_DENSE| of \verb|SPEX_MPZ| type. On success, \verb|x2_handle| is returned as \verb|SPEX_DENSE| with \verb|SPEX_MPQ| entries each of which is equal to \verb|x / scalar|.
-
-\cprotect\subsection{\verb|SPEX_matrix_mul|: Multiply dense matrix by scalar}
-
-\begin{mdframed}[userdefinedwidth=6in]
-{\footnotesize
-\begin{verbatim}
-SPEX_matrix_mul   // multiplies x by a scalar
-(
-    SPEX_matrix *x,         // matrix to be multiplied
-    const mpz_t scalar      // scalar to multiply by
-);
-\end{verbatim}
-} \end{mdframed}
-
-This function divides the matrix \verb|x| by the scalar \verb|scalar|. On input, \verb|x| must be \verb|SPEX_DENSE| of \verb|SPEX_MPZ| type. On success, \verb|x| is overwritten by \verb|x * scalar|.
-
 
 
 \chapter{SPEX Left LU} \label{ch:LeftLU}
@@ -2001,7 +2017,7 @@ The symbolic analysis phase of an LU factorization entails computing the symboli
 
 The matrices \verb|L| and \verb|U|, the pivot sequence \verb|rhos|, and the row
 permutation \verb|pinv| are computed via the \verb|SPEX_Left_LU_factorize| function
-(Section \ref{ss:SPEX_Left_LU_factorize}).  Upon successful completion, this
+(Section \ref{s:LeftLU:SPEX_Left_LU_factorize}).  Upon successful completion, this
 function returns \verb|SPEX_OK|.
 
 %-------------------------------------------------------------------------------

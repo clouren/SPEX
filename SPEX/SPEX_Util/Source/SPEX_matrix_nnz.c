@@ -29,7 +29,7 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
     if (A == NULL)
     {
         *nnz = -1;
-        return (SPEX_OK) ;
+        return (SPEX_INCORRECT_INPUT) ;
     }
 
     //--------------------------------------------------------------------------
@@ -65,6 +65,6 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
         default:
             return (SPEX_INCORRECT_INPUT) ;
     }
-    return SPEX_OK;
+    return ((*nnz < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
 }
 

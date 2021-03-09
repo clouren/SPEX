@@ -701,8 +701,9 @@ int main( int argc, char* argv[])
                         TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
-                        // TODO might need to update if the return flag changed
-                        TEST_CHECK(SPEX_matrix_check(NULL, option));
+// FIXME
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(NULL, option),
+                            SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
 
                         // Incorrect calling with NULL pointer(s)

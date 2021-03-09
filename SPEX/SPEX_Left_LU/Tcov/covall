@@ -3,5 +3,5 @@
         sort -n cov.out > cov.sort
         ./covs > covs.out
         echo -n "statments not yet tested: "
-        grep "#####" *.c.gcov | wc -l
-        ./cover *.c.*v > cover.out
+        grep "#####" *.*.gcov | wc -l
+        ./cover *.*.gcov > cover.out

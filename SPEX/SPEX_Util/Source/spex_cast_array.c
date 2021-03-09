@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/spex_cast_array: ` and typecast an array
+// SPEX_Util/spex_cast_array: scale and typecast an array
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
