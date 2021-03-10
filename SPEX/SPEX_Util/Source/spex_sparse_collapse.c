@@ -33,10 +33,7 @@ SPEX_info spex_sparse_collapse
 
     int64_t anz;
     SPEX_info info = SPEX_matrix_nnz (&anz, A, NULL);
-    if (info != SPEX_OK)
-    {
-        return info;
-    }
+    if (info != SPEX_OK)    {return info;}
 
     // Shrink A->i and A->x such that they're of size anz.  These calls to
     // SPEX_realloc cannot fail since the space is shrinking.
@@ -44,11 +41,11 @@ SPEX_info spex_sparse_collapse
     bool ok ;
     A->i = (int64_t *)
         SPEX_realloc (anz, A->nzmax, sizeof (int64_t), A->i, &ok) ;
-    ASSERT (ok) ;
+    if (!ok)    {return SPEX_OUT_OF_MEMORY;}
 
     A->x.mpz = (mpz_t *)
         SPEX_realloc (anz, A->nzmax, sizeof (mpz_t), A->x.mpz, &ok) ;
-    ASSERT (ok) ;
+    if (!ok)    {return SPEX_OUT_OF_MEMORY;}
 
     A->nzmax = anz ;
     return (SPEX_OK) ;

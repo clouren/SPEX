@@ -114,6 +114,7 @@ int64_t Axden3[11] = {3, 3, 6, 1, 7, 1, 1, 1, 5, 1,  1};    // Denominator of x
 int64_t bxnum3[4] = {17, 182, 61, 67};                      // Numerator of b
 int64_t bxden3[4] = {15,  3,   6,  7};                      // Denominator of b
 
+#include <float.h>
 #include <assert.h>
 
 int main( int argc, char* argv[])
@@ -701,7 +702,6 @@ int main( int argc, char* argv[])
                         TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
-// FIXME
                         TEST_CHECK_FAILURE(SPEX_matrix_check(NULL, option),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
@@ -744,6 +744,22 @@ int main( int argc, char* argv[])
                         TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
+                    }
+                    else if (tk == 4 && tk1 == 3)// converting double to int64
+                    {
+                        // test spex_cast_array
+                        TEST_OK (SPEX_matrix_free (&A, option)) ;
+                        if (pretend_to_fail) break ;
+                        Ax->x.fp64[0] = 0.0/0.0;//NAN
+                        Ax->x.fp64[1] = DBL_MAX; //a value > INT64_MAX;
+                        Ax->x.fp64[2] = -DBL_MAX;//a value < INT64_MIN;
+                        TEST_CHECK(SPEX_matrix_copy(&A, (SPEX_kind)kind1,
+                            (SPEX_type) type1, Ax, option));
+                        if (pretend_to_fail) break ;
+
+                        Ax->x.fp64[0] = x_doub2[0];
+                        Ax->x.fp64[1] = x_doub2[1];
+                        Ax->x.fp64[2] = x_doub2[2];
                     }
                     TEST_OK (SPEX_matrix_free (&A, option)) ;
                     if (pretend_to_fail) break ;
