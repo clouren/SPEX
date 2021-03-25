@@ -16,7 +16,7 @@
 
 #include "spex_util_internal.h"
 
-SPEX_info SPEX_sparse_realloc
+SPEX_info spex_sparse_realloc
 (
     SPEX_matrix* A // the matrix to be expanded
 )

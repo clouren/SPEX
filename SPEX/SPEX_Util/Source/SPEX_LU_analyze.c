@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs the symbolic ordering for SPEX LU.
+/* Purpose: This function performs the symbolic ordering for unsymmetric matrices.
  * Currently, there are three options: user-defined order, COLAMD, or AMD.
  *
  * Input/output arguments:
@@ -55,7 +55,10 @@ SPEX_info SPEX_LU_analyze
     //--------------------------------------------------------------------------
 
     SPEX_LU_analysis *S = NULL ;
-    int64_t i, n = A->n, anz = SPEX_matrix_nnz(A, option);
+    int64_t i, n = A->n, anz;
+    // SPEX enviroment is checked to be init'ed and A is checked to be not NULL
+    // and a SPEX_CSC kind, so there shouldnt be any error from this function
+    SPEX_matrix_nnz(&anz, A, option);
     // ALlocate memory for S
     S = (SPEX_LU_analysis*) SPEX_malloc(sizeof(SPEX_LU_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}

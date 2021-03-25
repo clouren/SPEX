@@ -10,9 +10,10 @@
 
 default: run
 
+SUITESPARSE ?= $(realpath $(CURDIR)/../../..)
 include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
-# Linux test coverage
+# Linux test coverage (gcc is required for test coverage)
 CC = gcc
 CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wall -W -Wshadow -Wmissing-prototypes -Wstrict-prototypes \
@@ -58,8 +59,8 @@ CS = \
     SPEX_matrix_mul.o \
     SPEX_matrix_nnz.o \
     SPEX_realloc.o \
-    SPEX_sparse_collapse.o \
-    SPEX_sparse_realloc.o \
+    spex_sparse_collapse.o \
+    spex_sparse_realloc.o \
     SPEX_LU_analysis_free.o \
     SPEX_LU_analyze.o \
     tcov_malloc_test.o \

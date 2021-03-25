@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU_/MATLAB/SPEX_Left_LU_mex_soln: Use SPEX LU within MATLAB
+// SPEX_Left_LU_/MATLAB/SPEX_Left_LU_mex_soln: Use SPEX Left LU within MATLAB
 //------------------------------------------------------------------------------
 
 // SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: The .c file defining the SPEX LU MATLAB interfacee
+/* Purpose: The .c file defining the SPEX Left LU MATLAB interfacee
  * This function defines: x = SPEX_mex_soln (A, b, option)
  */
 
@@ -23,7 +23,7 @@ void mexFunction
 )
 {
     //--------------------------------------------------------------------------
-    // Initialize SPEX LU library environment
+    // Initialize SPEX Left LU library environment
     //--------------------------------------------------------------------------
 
     SPEX_info status ;
@@ -64,11 +64,8 @@ void mexFunction
     // get the input options
     //--------------------------------------------------------------------------
 
-    SPEX_options *option = SPEX_create_default_options();
-    if (option == NULL)
-    {
-        spex_left_lu_mex_error (SPEX_OUT_OF_MEMORY, "") ;
-    }
+    SPEX_options *option = NULL;
+    SPEX_MEX_OK(SPEX_create_default_options(&option));
 
     spex_mex_options mexoptions ;
     if (nargin > 2) spex_left_lu_get_matlab_options (option, &mexoptions, pargin [2]) ;
@@ -94,7 +91,7 @@ void mexFunction
     }
 
     //--------------------------------------------------------------------------
-    // x = A\b via SPEX_LU, returning result as SPEX_MPQ
+    // x = A\b via SPEX_Left_LU, returning result as SPEX_MPQ
     //--------------------------------------------------------------------------
 
     SPEX_matrix *x = NULL ;

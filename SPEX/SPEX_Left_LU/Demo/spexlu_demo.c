@@ -19,9 +19,6 @@
 // usage:
 // spex_lu_demo Followed by the listed args:
 //
-// help. e.g., spex_lu_demo help, which indicates spex_lu_demo to print to guideline
-// for using this function.
-//
 // f (or file) Filename. e.g., spex_lu_demo f MATRIX_NAME RHS_NAME, which indicates
 // spex_lu_demo will read matrix from MATRIX_NAME and right hand side from RHS_NAME.
 // The matrix must be stored in Matrix Market format. Refer to
@@ -116,7 +113,7 @@ int main (int argc, char* argv[])
     //
     //  option: Command options for the factorization. In general, this can be 
     //          set to default values and is almost always the last input argument
-    //          for SPEX LU functions (except SPEX_malloc and such)
+    //          for SPEX Left LU functions (except SPEX_malloc and such)
     //--------------------------------------------------------------------------
     SPEX_matrix *A = NULL;
     SPEX_matrix *L = NULL;
@@ -126,24 +123,18 @@ int main (int argc, char* argv[])
     SPEX_matrix *rhos = NULL;
     int64_t* pinv = NULL;
     SPEX_LU_analysis* S = NULL;
+    SPEX_info ok ;
     
     // Initialize option, command options for the factorization
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options *option = NULL;
+    OK(SPEX_create_default_options(&option));
     
     // Extra parameters used to obtain A, b, etc
-    SPEX_info ok ;
     char *mat_name, *rhs_name;
     SPEX_type rat;
     mat_name = "../ExampleMats/10teams_mat.txt";// Set demo matrix and RHS name
     rhs_name = "../ExampleMats/10teams_v.txt";
     
-    if (!option)
-    {
-        fprintf (stderr, "Error! OUT of MEMORY!\n");
-        SPEX_finalize();
-        return 0;
-    }
-
     //--------------------------------------------------------------------------
     // After initializing memory, we process the command line for this function.
     // Such a step is optional, a user can also manually set these parameters.
@@ -151,10 +142,8 @@ int main (int argc, char* argv[])
     // option->order = SPEX_AMD.
     //--------------------------------------------------------------------------
 
-    bool help ;
     OK(SPEX_process_command_line(argc, argv, option,
-        &mat_name, &rhs_name, &rat, &help));
-    if (help) return (0) ;
+        &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
     // In this demo file, we now read in the A and b matrices from external
@@ -217,7 +206,7 @@ int main (int argc, char* argv[])
     clock_t end_col = clock();
 
     //--------------------------------------------------------------------------
-    // Now we perform the SPEX LU factorization to obtain matrices L and U and a
+    // Now we perform the SPEX Left LU factorization to obtain matrices L and U and a
     // row permutation P such that PAQ = LDU. Note that the D matrix is never
     // explicitly constructed or used.
     //--------------------------------------------------------------------------
@@ -234,12 +223,12 @@ int main (int argc, char* argv[])
 
     clock_t start_solve = clock();
 
-    // SPEX LU has an optional check step which can verify that the solution
+    // SPEX Left LU has an optional check step which can verify that the solution
     // vector x satisfies Ax=b in perfect precision intended for debugging.
     //
     // Note that this is entirely optional and not necessary. The solution
     // returned is guaranteed to be exact.   It appears here just as a
-    // verification that SPEX LU is computing its expected result.  This test
+    // verification that SPEX Left LU is computing its expected result.  This test
     // can fail only if it runs out of memory, or if there is a bug in the
     // code.  Also, note that this function can be quite time consuming; thus
     // it is not recommended to be used in general.
@@ -282,7 +271,7 @@ int main (int argc, char* argv[])
     printf("\nNumber of L+U nonzeros: \t\t%"PRId64,
         (L->p[L->n]) + (U->p[U->n]) - (L->m));
     printf("\nSymbolic analysis time: \t\t%lf", t_sym);
-    printf("\nSPEX LU Factorization time: \t\t%lf", t_factor);
+    printf("\nSPEX Left LU Factorization time: \t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);
 
     //--------------------------------------------------------------------------

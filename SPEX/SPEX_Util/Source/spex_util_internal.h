@@ -141,8 +141,8 @@ extern int64_t spex_gmp_ntrials ;
 
 #ifndef SPEX_GMP_LIST_INIT
 // A size of 32 ensures that the list never needs to be increased in size.
-// The test coverage suite in SPEX_LU/Tcov reduces this initial size to
-// exercise the code, in SPEX_LU/Tcov/Makefile.
+// The test coverage suite in SPEX_Left_LU/Tcov reduces this initial size to
+// exercise the code, in SPEX_Left_LU/Tcov/Makefile.
 #define SPEX_GMP_LIST_INIT 32
 #endif
 
@@ -170,7 +170,7 @@ void spex_gmp_failure (int status) ;
 // for accuracy
 #define SPEX_DEFAULT_CHECK false
 
-// Pivoting scheme used for SPEX LU.
+// Pivoting scheme used for SPEX Left LU.
 //  SPEX_SMALLEST = 0,              Smallest pivot
 //  SPEX_DIAGONAL = 1,              Diagonal pivoting
 //  SPEX_FIRST_NONZERO = 2,         First nonzero per column chosen as pivot
@@ -240,6 +240,8 @@ void spex_gmp_failure (int status) ;
 //------------------------------------------------------------------------------
 // Field access macros for MPZ/MPQ/MPFR struct
 //------------------------------------------------------------------------------
+
+// FUTURE: make these accessible to the end user?
 
 // (similar definition in gmp-impl.h and mpfr-impl.h)
 
@@ -419,10 +421,6 @@ SPEX_info spex_expand_mpq_mat
 );
 
 
-/* Purpose: This function prints the basic info about SPEX library */
-void spex_lu_info(void);
-
-
 // typecast a double value to int64, accounting for Infs and Nans
 static inline int64_t spex_cast_double_to_int64 (double x)
 {
@@ -464,6 +462,24 @@ SPEX_info spex_cast_matrix
     const SPEX_options *option
 ) ;
 
+/* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
+ * size of x and i. so that they only take up the number of elements in the
+ * matrix. For example if A->nzmax = 1000 but nnz(A) = 500, i and x are of size
+ * 1000, so this function shrinks them to size 500.
+ */
+SPEX_info spex_sparse_collapse
+(
+    SPEX_matrix* A // matrix to be shrunk
+);
+
+/* Purpose: This function expands a SPEX matrix by doubling its size. It
+ * merely expands x and i and does not initialize/allocate the values.
+ */
+SPEX_info spex_sparse_realloc
+(
+    SPEX_matrix* A // the matrix to be expanded
+);
+
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type
 #define SPEX_X(A)                                                           \
     ((A->type == SPEX_MPZ  ) ? (void *) A->x.mpz   :                        \
@@ -497,3 +513,5 @@ SPEX_info spex_cast_matrix
 
 #endif
 
+
+    

@@ -8,9 +8,9 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs the SPEX LU factorization. This factorization
- * is done via n iterations of the sparse REF triangular solve function. The
- * overall factorization is PAQ = LDU
+/* Purpose: This function performs the SPEX Left LU factorization. This 
+ * factorization is done via n iterations of the sparse REF triangular solve 
+ * function. The overall factorization is PAQ = LDU
  * The determinant of A can be obtained as determinant = rhos[n-1]
  *
  *  L: undefined on input, created on output
@@ -61,7 +61,11 @@ SPEX_info SPEX_Left_LU_factorize
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
-    int64_t anz = SPEX_matrix_nnz (A, option) ;
+    int64_t anz;
+    // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
+    // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
+    SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
+    ASSERT(info == SPEX_OK);
 
     if (!L_handle || !U_handle || !rhos_handle || !pinv_handle || !S || anz < 0)
     {
@@ -87,7 +91,6 @@ SPEX_info SPEX_Left_LU_factorize
     int64_t *row_perm = NULL ;
     SPEX_matrix *x = NULL ;
 
-    SPEX_info info ;
     int64_t n = A->n ;
 
     int64_t k = 0, top, i, j, col, loc, lnz = 0, unz = 0, pivot, jnew ;
@@ -157,7 +160,7 @@ SPEX_info SPEX_Left_LU_factorize
     // allocate and initialize the workspace x
     //--------------------------------------------------------------------------
 
-    // SPEX LU utilizes arbitrary sized integers which can grow beyond the
+    // SPEX Left LU utilizes arbitrary sized integers which can grow beyond the
     // default 64 bits allocated by GMP. If the integers frequently grow, GMP
     // can get bogged down by performing intermediate reallocations. Instead,
     // we utilize a larger estimate on the workspace x vector so that computing
@@ -201,12 +204,12 @@ SPEX_info SPEX_Left_LU_factorize
         if (lnz + n > L->nzmax)
         {
             // Double the size of L
-            SPEX_CHECK(SPEX_sparse_realloc(L));
+            SPEX_CHECK(spex_sparse_realloc(L));
         }
         if (unz + n > U->nzmax)
         {
             // Double the size of U
-            SPEX_CHECK(SPEX_sparse_realloc(U));
+            SPEX_CHECK(spex_sparse_realloc(U));
         }
 
         //----------------------------------------------------------------------
@@ -283,9 +286,9 @@ SPEX_info SPEX_Left_LU_factorize
 
     // This cannot fail since the size of L and U are shrinking.
     // Collapse L
-    SPEX_sparse_collapse(L);
+    spex_sparse_collapse(L);
     // Collapse U
-    SPEX_sparse_collapse(U);
+    spex_sparse_collapse(U);
 
     //--------------------------------------------------------------------------
     // finalize the row indices in L and U

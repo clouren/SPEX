@@ -185,7 +185,7 @@ SPEX_info SPEX_matrix_allocate
         if (!ok)
         {
             SPEX_FREE_ALL ;
-            return (SPEX_INCORRECT_INPUT) ;
+            return (SPEX_OUT_OF_MEMORY) ;
         }
     }
 

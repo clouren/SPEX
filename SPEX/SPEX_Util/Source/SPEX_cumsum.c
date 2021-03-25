@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/spex_cumsum: cumulative sum
+// SPEX_Util/SPEX_cumsum: cumulative sum
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -21,6 +21,7 @@ SPEX_info SPEX_cumsum
     int64_t n            // size of c
 )
 {
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     if (!p || !c) return SPEX_INCORRECT_INPUT;
     ASSERT(n >= 0);    

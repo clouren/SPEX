@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_finalize: finalize SPEX_LU
+// SPEX_Util/SPEX_finalize: finalize SPEX
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -17,7 +17,7 @@ SPEX_info SPEX_finalize
     void
 )
 {
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) { return (SPEX_PANIC) ; }
 
     SPEX_mpfr_free_cache ( ) ;    // Free mpfr internal cache
     spex_gmp_finalize ( ) ;       // Reset GMP memory variables

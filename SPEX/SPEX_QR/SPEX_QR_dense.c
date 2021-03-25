@@ -21,7 +21,8 @@ int main( int argc, char* argv[] )
     SPEX_matrix *A2 = NULL ;                    // input matrix (to be generated)
     SPEX_matrix *R = NULL;                      // Upper triangular matrix
     SPEX_matrix *Q = NULL;                      // Orthogonal Matrix
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options *option = NULL;
+    SPEX_create_default_options(&option);
     if (!option)
     {
         fprintf (stderr, "Error! OUT of MEMORY!\n");

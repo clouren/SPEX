@@ -11,8 +11,10 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include "spex_util_internal.h"
 
-int64_t SPEX_matrix_nnz     // return # of entries in A, or -1 on error
+
+SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 (
+    int64_t *nnz,              // # of entries in A, -1 if A is NULL
     const SPEX_matrix *A,      // matrix to query
     const SPEX_options *option // command options, currently unused
 )
@@ -22,32 +24,47 @@ int64_t SPEX_matrix_nnz     // return # of entries in A, or -1 on error
     // check inputs
     //--------------------------------------------------------------------------
 
-    if (!spex_initialized ( )) return (-1) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     if (A == NULL)
     {
-        return (-1) ;
+        *nnz = -1;
+        return (SPEX_INCORRECT_INPUT) ;
     }
 
     //--------------------------------------------------------------------------
     // find nnz (A)
     //--------------------------------------------------------------------------
 
-    // In all three cases, SPEX_matrix_nnz(A,option) is <= A->nzmax.
+    // In all three cases, SPEX_matrix_nnz(&nnz, A, option) returns
+    // with nnz <= A->nzmax.
 
     switch (A->kind)
     {
         case SPEX_CSC:
+        {
             // CSC matrices:  nnz(A) is given by Ap[n].  A->nz is ignored.
-            return ((A->p == NULL || A->n < 0) ? (-1) : A->p [A->n]) ;
+            *nnz = (A->p == NULL || A->n < 0) ? (-1) : A->p [A->n] ;
+        }
+        break;
+
         case SPEX_TRIPLET:
+        {
             // triplet matrices:  nnz(A) is given by A->nz.
-            return (A->nz) ;
+            *nnz = A->nz ;
+        }
+        break;
+
         case SPEX_DENSE:
+        {
             // dense matrices: nnz(A) is always m*n.  A->nz is ignored.
-            return ((A->m < 0 || A->n < 0)? (-1) : (A->m * A->n)) ;
+            *nnz = (A->m < 0 || A->n < 0)? (-1) : (A->m * A->n) ;
+        }
+        break;
+
         default:
-            return (-1) ;
+            return (SPEX_INCORRECT_INPUT) ;
     }
+    return ((*nnz < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
 }
 

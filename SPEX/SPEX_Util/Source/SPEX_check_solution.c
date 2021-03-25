@@ -28,6 +28,7 @@ SPEX_info SPEX_check_solution
     const SPEX_options* option    // Command options
 )
 {
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     //--------------------------------------------------------------------------
     // check inputs. Input are also checked by the two callers

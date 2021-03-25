@@ -59,7 +59,7 @@ int compar (const void *x, const void *y)
 //      2: errors and terse output
 //      3: verbose
 
-SPEX_info SPEX_matrix_check     // returns a SPEX_LU status code
+SPEX_info SPEX_matrix_check     // returns a SPEX status code
 (
     const SPEX_matrix *A,     // matrix to check
     const SPEX_options* option
@@ -75,12 +75,9 @@ SPEX_info SPEX_matrix_check     // returns a SPEX_LU status code
     SPEX_info status = 0 ;
     char * buff = NULL ;
     int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
-    int64_t nz = SPEX_matrix_nnz(A, option);    // Number of nonzeros in A
-    if (nz < 0)
-    {
-        SPEX_PR1 ("A is NULL or nz invalid\n") ;
-        return (SPEX_INCORRECT_INPUT) ;
-    }
+    int64_t nz;                            // Number of nonzeros in A
+    status = SPEX_matrix_nnz(&nz, A, option);
+    if (status != SPEX_OK) {return status;}
 
     int64_t m = A->m ;
     int64_t n = A->n ;

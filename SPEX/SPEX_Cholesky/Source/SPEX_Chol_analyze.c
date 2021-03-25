@@ -63,7 +63,7 @@ SPEX_info SPEX_Chol_preorder
     SPEX_Chol_analysis2 *S = NULL ;
     int64_t i, n = A->n;
     ASSERT( n >= 0); // Dimension can't be negative
-    int64_t anz = SPEX_matrix_nnz(A, option);   // Number of nonzeros in A
+    SPEX_CHECK(SPEX_matrix_nnz(&anz, A, option);   // Number of nonzeros in A
     
     // Allocate memory for S
     S = (SPEX_Chol_analysis2*) SPEX_malloc(sizeof(SPEX_Chol_analysis2));

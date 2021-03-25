@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/MATLAB/spex_get_matlab_options: Set factorization options for SPEX LU
+// SPEX_Left_LU/MATLAB/spex_get_matlab_options: Set factorization options 
 //------------------------------------------------------------------------------
 
 // SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,

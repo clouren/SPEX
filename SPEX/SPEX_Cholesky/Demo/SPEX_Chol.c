@@ -62,7 +62,8 @@ int main( int argc, char* argv[] )
     SPEX_matrix* x = NULL;
     
     // Default options. May be changed in SLIP_LU_config.h
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options *option = NULL;
+    DEMO_OK(SPEX_create_default_options(&option));
     
     char* mat_name = "../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
     char* rhs_name = "../ExampleMats/2.mat.soln.txt";

@@ -23,7 +23,7 @@ SPEX_info SPEX_matrix_free
     // check inputs
     //--------------------------------------------------------------------------
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
 
     if (A_handle == NULL || (*A_handle) == NULL)
     {

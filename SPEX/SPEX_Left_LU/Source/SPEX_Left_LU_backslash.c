@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This code utilizes the SPEX LU factorization to exactly solve the
+/* Purpose: This code utilizes the SPEX Left LU factorization to exactly solve the
  *          linear system Ax = b. This is essentially an exact version of
  *          MATLAB sparse backslash
  *

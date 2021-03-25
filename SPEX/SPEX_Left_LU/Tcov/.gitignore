@@ -26,6 +26,7 @@ SPEX_gmp.c
 SPEX_initialize.c
 SPEX_initialize_expert.c
 SPEX_LU_analysis_free.c
+SPEX_LU_analyze.c
 SPEX_malloc.c
 SPEX_matrix_allocate.c
 SPEX_matrix_check.c
@@ -34,8 +35,8 @@ SPEX_matrix_free.c
 SPEX_matrix_mul.c
 SPEX_matrix_nnz.c
 SPEX_realloc.c
-SPEX_sparse_collapse.c
-SPEX_sparse_realloc.c
+spex_sparse_collapse.c
+spex_sparse_realloc.c
 tcov_malloc_test.c
 SPEX_Left_LU_analyze.c
 SPEX_Left_LU_backslash.c

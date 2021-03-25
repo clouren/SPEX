@@ -45,7 +45,13 @@ SPEX_info SPEX_matrix_copy
     SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
-    int64_t nz = SPEX_matrix_nnz (A, option) ;
+    int64_t nz;
+    SPEX_matrix *C = NULL ;
+    SPEX_matrix *Y = NULL ;
+    SPEX_matrix *T = NULL ;
+    int64_t *W = NULL ;
+
+    SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;
     ASSERT( nz >= 0);
     if (C_handle == NULL || nz < 0 ||
       //checked in SPEX_matrix_nnz
@@ -57,10 +63,6 @@ SPEX_info SPEX_matrix_copy
         return (SPEX_INCORRECT_INPUT) ;
     }
     (*C_handle) = NULL ;
-    SPEX_matrix *C = NULL ;
-    SPEX_matrix *Y = NULL ;
-    SPEX_matrix *T = NULL ;
-    int64_t *W = NULL ;
     int64_t m = A->m ;
     int64_t n = A->n ;
     mpfr_rnd_t round = SPEX_OPTION_ROUND (option) ;

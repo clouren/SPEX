@@ -63,7 +63,8 @@ SPEX_info SPEX_Chol_preorder
     SPEX_Chol_analysis *S = NULL ;
     int64_t i, n = A->n;
     ASSERT( n >= 0); // Dimension can't be negative
-    int64_t anz = SPEX_matrix_nnz(A, option);   // Number of nonzeros in A
+    int64_t anz;
+    SPEX_matrix_nnz(&anz, A, option);   // Number of nonzeros in A
     
     // Allocate memory for S
     S = (SPEX_Chol_analysis*) SPEX_malloc(sizeof(SPEX_Chol_analysis));
@@ -109,7 +110,7 @@ SPEX_info SPEX_Chol_preorder
         if (!A2)
         {
             // out of memory
-            SPEX_Chol_analysis_free2 (&S) ;
+            SPEX_Chol_analysis_free (&S) ;
             return (SPEX_OUT_OF_MEMORY) ;
         }
         // Initialize S->q as per COLAMD documentation

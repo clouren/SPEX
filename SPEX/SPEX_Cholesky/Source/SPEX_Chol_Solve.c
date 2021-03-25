@@ -92,7 +92,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     OK(spex_Chol_forward_sub(L, b2, rhos));
     
     // b2 = b2 * det 
-    nz = SPEX_matrix_nnz(b, NULL);
+    SPEX_CHECK(SPEX_matrix_nnz(&nz, b, NULL));
     for (i = 0; i < nz; i++)
     {
         OK ( SPEX_mpz_mul( b2->x.mpz[i], b2->x.mpz[i], rhos->x.mpz[L->n-1]));
@@ -108,7 +108,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     SPEX_CHECK (SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, b2->m, b->n,
         0, false, true, option)) ;
         
-    nz = SPEX_matrix_nnz(b, NULL);
+    SPEX_CHECK(SPEX_matrix_nnz(&nz, b, NULL));
     
     
     for (i = 0; i < nz; i++)

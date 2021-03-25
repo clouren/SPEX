@@ -67,7 +67,8 @@ int main (int argc, char **argv)
     SPEX_matrix *b = NULL ;                     // Right hand side vector
     SPEX_matrix *x = NULL ;                     // Solution vectors
     SPEX_Chol_analysis *S = NULL ;                // Column permutation
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options *option = NULL;
+    DEMO_OK(SPEX_create_default_options(&option));
     if (option == NULL)
     {
         fprintf (stderr, "Error! OUT of MEMORY!\n");

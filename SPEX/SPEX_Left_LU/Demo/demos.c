@@ -10,7 +10,6 @@
 
 // SPEX_print_options: print user options.
 // SPEX_process_command_line: process command line for demo programs.
-// SPEX_show_usage: show usage of demo program.
 // SPEX_tripread: read a matrix from a file in triplet format.
 // SPEX_tripread_double: read a double matrix from a file in triplet format.
 // SPEX_read_dense: read a dense matrix from a file.
@@ -99,23 +98,16 @@ SPEX_info SPEX_process_command_line //processes the command line
     SPEX_options* option,   // options (cannot be NULL)
     char** mat_name,        // Name of the matrix to be read in
     char** rhs_name,        // Name of the RHS vector to be read in
-    SPEX_type *rat,         // data type of output solution:
+    SPEX_type *rat          // data type of output solution:
                             // 1:SPEX_MPZ (default), 2:SPEX_FP64, 3:SPEX_MPFR
-    bool *help
 )
 {
     (*rat) = SPEX_MPZ ;
 
-    (*help) = false ;
     for (int i = 1; i < argc; i++)
     {
         char* arg = (char*) argv[i];
-        if ( strcmp(arg,"help") == 0)
-        {
-            SPEX_show_usage();
-            (*help) = true ;
-        }
-        else if ( strcmp(arg,"p") == 0 || strcmp(arg,"piv") == 0)
+        if ( strcmp(arg,"p") == 0 || strcmp(arg,"piv") == 0)
         {
             if (!argv[++i])
             {
@@ -210,25 +202,6 @@ SPEX_info SPEX_process_command_line //processes the command line
     }
 
     return SPEX_OK;
-}
-
-//------------------------------------------------------------------------------
-// SPEX_show_usage
-//------------------------------------------------------------------------------
-
-/* Purpose: This function shows the usage of the code.*/
-void SPEX_show_usage() //display the usage of the code
-{
-    printf("\n"
-    "\n./SPEX_LU followed by:"
-    "\n   c: indicates the solution will be checked"
-    "\n   p (or piv) 0 to 5 : indicates the type of pivoting"
-    "\n   col or q: column order used: 0: none, 1: COLAMD, 2: AMD"
-    "\n   t or tol: tolerance parameter"
-    "\n   o or out: level of output printed to screen"
-    "\n   f or file: filenames. must be of format MATRIX_NAME RHS_NAME"
-    "\nRefer to SPEX_LU/Doc for detailed description of input parameters."
-    "\n");
 }
 
 //------------------------------------------------------------------------------

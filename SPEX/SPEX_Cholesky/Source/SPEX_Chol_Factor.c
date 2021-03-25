@@ -49,10 +49,11 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
     // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
     SPEX_matrix ** rhos_handle, // sequence of pivots
+    const SPEX_matrix* A,      // matrix to be factored   
     SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
                                 //exact number of nonzeros of L and permutation used
     // Input
-    const SPEX_matrix* A,      // matrix to be factored
+    
     bool left,                 //set to true if performing a left-looking factorization; 
                                //otherwise perform an up-looking factorization.
     const SPEX_options* option 
@@ -70,7 +71,8 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
     ASSERT(*L_handle==NULL);
     ASSERT(*rhos_handle==NULL);
 
-    int64_t anz = SPEX_matrix_nnz (A, option) ;
+    int64_t anz;
+    SPEX_CHECK(SPEX_matrix_nnz (&anz, A, option)) ;
     
     if (anz < 0)
     {

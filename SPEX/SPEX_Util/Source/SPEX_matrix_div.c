@@ -25,6 +25,7 @@
 
 #include "spex_util_internal.h"
 
+
 SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
 (
     SPEX_matrix **x2_handle,    // x2 = x/scalar
@@ -33,6 +34,7 @@ SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
     const SPEX_options *option
 )
 {
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     //--------------------------------------------------------------------------
     // check inputs
@@ -63,7 +65,8 @@ SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
     // iterate each entry of x, copy to x2 and divide it by scalar
     //--------------------------------------------------------------------------
 
-    int64_t nz = SPEX_matrix_nnz (x, NULL) ;
+    int64_t nz;
+    SPEX_CHECK (SPEX_matrix_nnz (&nz, x, option)) ;
     for (int64_t i = 0; i < nz; i++)
     {
         // Set x2[i] = x[i]

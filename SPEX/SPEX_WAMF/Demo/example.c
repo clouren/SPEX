@@ -65,7 +65,8 @@ int main (int argc, char **argv)
     
     SPEX_matrix *B = NULL;                      // Bit-matrix copy of A
     
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options *option = NULL;
+    SPEX_create_default_options(&option);
     if (option == NULL)
     {
         fprintf (stderr, "Error! OUT of MEMORY!\n");

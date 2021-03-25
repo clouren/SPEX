@@ -66,7 +66,8 @@ void mexFunction
     // get the input options
     //--------------------------------------------------------------------------
 
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options *option = NULL;
+    SPEX_create_default_options(&option);
     if (option == NULL)
     {
         spex_chol_mex_error (SPEX_OUT_OF_MEMORY, "") ;

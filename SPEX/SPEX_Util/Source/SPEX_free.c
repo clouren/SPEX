@@ -17,7 +17,6 @@ void SPEX_free
     void *p         // pointer to memory space to free
 )
 {
-    if (!spex_initialized ( )) return ;
     SuiteSparse_free (p) ;
 }
 

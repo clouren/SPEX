@@ -1,0 +1,69 @@
+#------------------------------------------------------------------------------
+# SPEX_WAMF/Makefile: compile, install, and run demo and tests
+#------------------------------------------------------------------------------
+
+# SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
+# Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
+# All Rights Reserved.  See SPEX_Cholesky/License for the license.
+
+#------------------------------------------------------------------------------
+
+SUITESPARSE ?= $(realpath $(CURDIR)/../..)
+export SUITESPARSE
+
+# default: compile the dynamic library, and run the demos
+default: C
+
+include ../../SuiteSparse_config/SuiteSparse_config.mk
+
+# compile the dynamic library, and then run the demos and statement coverage
+demos: all
+
+# compile the dynamic library only, and then run the demos
+C:
+	( cd Lib ; $(MAKE) )
+	( cd Demo ; $(MAKE) )
+
+# compile the dynamic library, and then run the demos and statement coverage
+all: C cov
+
+# compile the dynamic library only
+library:
+	( cd Lib ; $(MAKE) )
+
+# compile the static library only
+static:
+	( cd Lib ; $(MAKE) static )
+
+# statement coverage test
+cov:
+	( cd Tcov ; $(MAKE) )
+
+# remove files not in the distribution, but keep compiled libraries
+clean:
+	( cd Lib ; $(MAKE) clean )
+	( cd Demo ; $(MAKE) clean )
+	( cd Tcov ; $(MAKE) clean )
+	- ( cd MATLAB/Source ; $(RM) *.o )
+	- ( cd MATLAB    ; $(RM) *.o )
+#	( cd Doc ; $(MAKE) clean )
+
+# remove all files not in the distribution
+purge:
+	( cd Lib ; $(MAKE) purge )
+	( cd Demo ; $(MAKE) purge )
+	( cd Tcov ; $(MAKE) purge )
+	- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
+	- ( cd MATLAB    ; $(RM) *.o *.mex* )
+#	( cd Doc ; $(MAKE) clean )
+
+distclean: purge
+
+# install the library
+install: library
+	( cd Lib ; $(MAKE) install )
+
+# uninstall the library
+uninstall:
+	( cd Lib ; $(MAKE) uninstall )
+

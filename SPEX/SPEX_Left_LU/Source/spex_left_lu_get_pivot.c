@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/* This function performs the pivoting for the SPEX LU factorization.
+/* This function performs the pivoting for the SPEX Left LU factorization.
  * The optional Order is:
  *
  *  SPEX_SMALLEST = 0,      Smallest pivot
@@ -56,7 +56,7 @@ SPEX_info spex_left_lu_get_pivot
     SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
     SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
 
-    // inputs have been checked in the only caller SPEX_LU_factorize
+    // inputs have been checked in the only caller SPEX_Left_LU_factorize
     // they are kept here for future reference
 #if 0
     if (!pivot || !pivs || !xi || !pinv || !row_perm )

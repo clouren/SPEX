@@ -11,7 +11,7 @@
 /* Purpose: This function obtains the first eligible nonzero pivot
  * This is enabled if the user sets option->pivot = SPEX_FIRST_NONZERO
  *
- * Note: This pivoting scheme is NOT recommended for SPEX LU.  It is provided
+ * Note: This pivoting scheme is NOT recommended for SPEX Left LU.  It is provided
  * for comparison with other pivoting options.
  *
  * On output, the kth pivot is returned.

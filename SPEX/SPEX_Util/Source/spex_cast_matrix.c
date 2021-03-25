@@ -43,9 +43,10 @@ SPEX_info spex_cast_matrix
     (*Y_handle) = NULL ;
 #endif
 
-    int64_t nz = SPEX_matrix_nnz (A, option) ;
+    int64_t nz;
     SPEX_info info = SPEX_OK ;
     SPEX_matrix *Y = NULL ;
+    SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;
 
 
     //--------------------------------------------------------------------------

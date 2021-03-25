@@ -177,7 +177,7 @@ typedef struct SPEX_options
                            // SPEX_TOL_SMALLEST and SPEX_TOL_LARGEST
     int print_level ;      // 0: print nothing, 1: just errors,
                            // 2: terse (basic stats from COLAMD/AMD and
-                           // SPEX LU), 3: all, with matrices and results
+                           // SPEX Left LU), 3: all, with matrices and results
     int32_t prec ;         // Precision used to output file if MPFR is chosen
     mpfr_rnd_t round ;     // Type of MPFR rounding used
     bool check ;           // Set true if the solution to the system should be
@@ -185,10 +185,10 @@ typedef struct SPEX_options
                            // guaranteed to return the exact solution.
 } SPEX_options ;
 
-// Purpose: Create and return SPEX_options object with default parameters
+// Purpose: Create SPEX_options object with default parameters
 // upon successful allocation, which are defined in SPEX_util_nternal.h
-// To free it, simply use SPEX_FREE (option).
-SPEX_options* SPEX_create_default_options (void) ;
+// To free it, simply use SPEX_FREE (*option).
+SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
 // check if SPEX_initialize* has been called
 bool spex_initialized ( void ) ;        // true if called, false if not
@@ -339,9 +339,10 @@ SPEX_info SPEX_matrix_free
 // SPEX_matrix_nnz: # of entries in a matrix
 //------------------------------------------------------------------------------
 
-int64_t SPEX_matrix_nnz     // return # of entries in A, or -1 on error
+SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 (
-    const SPEX_matrix *A,         // matrix to query
+    int64_t *nnz,              // # of entries in A, -1 if A is NULL
+    const SPEX_matrix *A,      // matrix to query
     const SPEX_options *option
 ) ;
 
@@ -403,7 +404,7 @@ SPEX_info SPEX_LU_analysis_free
     const SPEX_options *option
 ) ;
 
-// SPEX_LU_analyze performs the symbolic ordering and analysis for SPEX LU.
+// SPEX_LU_analyze performs the symbolic ordering and analysis for LU factorization.
 // Currently, there are three options: no ordering, COLAMD, and AMD.
 SPEX_info SPEX_LU_analyze
 (
@@ -557,53 +558,6 @@ SPEX_info SPEX_cumsum
     int64_t n           // size of c
 );
 
-/* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
- * size of x and i. so that they only take up the number of elements in the
- * matrix. For example if A->nzmax = 1000 but nnz(A) = 500, i and x are of size
- * 1000, so this function shrinks them to size 500.
- */
-SPEX_info SPEX_sparse_collapse
-(
-    SPEX_matrix* A // matrix to be shrunk
-);
-
-/* Purpose: This function expands a SPEX matrix by doubling its size. It
- * merely expands x and i and does not initialize/allocate the values.
- */
-SPEX_info SPEX_sparse_realloc
-(
-    SPEX_matrix* A // the matrix to be expanded
-);
-
-/* Purpose: This function sets C = A'. C is null on input. On output
- * C contans A'
- */
-SPEX_info SPEX_transpose
-(
-    SPEX_matrix **C_handle,     // C = A'
-    SPEX_matrix *A              // Matrix to be transposed
-);
-
-/* Purpose: Determine if the input A is indeed symmetric prior to factorization.
- * There are two options as to how to determine the symmetry. 
- * By setting the input exhaustive = 1, both the nonzero pattern and the values
- * of the nonzero entries are checked for symmetry. If A passes both of these tests,
- * then we can be sure it is indeed fully symmetric.
- * 
- * If exhaustive is set to any other value, only the nonzero pattern of A is checked,
- * thus we cannot gauranteee that the matrix is indeed fully symmetric as the values
- * of the entries is not checked.
- * 
- * On success, SPEX_OK is returned. If the matrix is not symmetric, SPEX_UNSYMMETRIC 
- * is returned.
- * 
- */
-
-SPEX_info SPEX_determine_symmetry
-(
-    SPEX_matrix* A,
-    bool exhaustive
-);
 
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------
@@ -649,9 +603,9 @@ SPEX_info SPEX_mpz_mul (mpz_t a, const mpz_t b, const mpz_t c) ;
 
 #if 0
 SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
-
-SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
 #endif
+SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
+
 
 SPEX_info SPEX_mpz_submul (mpz_t x, const mpz_t y, const mpz_t z) ;
 
@@ -759,6 +713,27 @@ SPEX_info SPEX_mpz_set_d (mpz_t x, const double y) ;
 
 SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 #endif
+
+/* WARNING: These functions have not been test covered!*/
+
+
+/* Purpose: This function sets C = A' 
+ * C_handle is NULL on input. On output, C_handle contains a pointer to A'
+ */
+SPEX_info SPEX_transpose
+(
+    SPEX_matrix **C_handle,     // C = A'
+    SPEX_matrix *A              // Matrix to be transposed
+);
+
+SPEX_info SPEX_determine_symmetry
+(
+    SPEX_matrix* A,
+    bool check_if_numerically_symmetric
+            // if true, check A=A' (pattern & values). if false,
+            // only check if the pattern of A is symmetric, not
+            // the values
+);
 
 #endif
 

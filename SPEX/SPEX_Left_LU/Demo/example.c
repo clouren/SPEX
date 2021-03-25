@@ -32,7 +32,7 @@
     
 int main (void)
 {
-
+    
     //--------------------------------------------------------------------------
     // Prior to using SPEX Left LU, its environment must be initialized. This is done
     // by calling the SPEX_initialize() function.
@@ -51,13 +51,8 @@ int main (void)
     SPEX_matrix *Rb = NULL;                     // Random matrix to create b
     SPEX_matrix *b = NULL ;                     // Right hand side vector
     SPEX_matrix *x = NULL ;                     // Solution vectors
-    SPEX_options *option = SPEX_create_default_options();
-    if (!option)
-    {
-        fprintf (stderr, "Error! OUT of MEMORY!\n");
-        FREE_WORKSPACE;
-        return 0;
-    }
+    SPEX_options *option = NULL;
+    OK(SPEX_create_default_options(&option));
 
     //--------------------------------------------------------------------------
     // Generate a random dense 50*50 matrix
@@ -66,7 +61,7 @@ int main (void)
     // R is a n*n triplet matrix whose entries are FP64 Note that the first
     // boolean parameter says that the matrix is not shallow, so that A->i,
     // A->j, and A->x are calloc'd. The second boolean parameter is meaningless
-    // for FP64 matrices, but it tells SPEX LU to allocate the values of A->x
+    // for FP64 matrices, but it tells SPEX Left LU to allocate the values of A->x
     // for the mpz_t, mpq_t, and mpfr_t entries
     SPEX_matrix_allocate(&R, SPEX_TRIPLET, SPEX_FP64, n, n, nz,
         false, true, option);
@@ -107,7 +102,7 @@ int main (void)
 
     clock_t start_s = clock();
    
-    // SPEX LU has an optional check, to enable it, one can set the following
+    // SPEX Left LU has an optional check, to enable it, one can set the following
     // parameter to be true.
     option->check = true;
     // Solve the system and give double solution
@@ -117,7 +112,7 @@ int main (void)
 
     double t_s = (double) (end_s - start_s) / CLOCKS_PER_SEC;
 
-    printf("\nSPEX LU Factor & Solve time: %lf\n", t_s);
+    printf("\nSPEX Left LU Factor & Solve time: %lf\n", t_s);
 
     //--------------------------------------------------------------------------
     // Free memory

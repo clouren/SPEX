@@ -10,7 +10,7 @@
 
 /* Purpose: This function converts a mpq array of size n into an appropriate
  * mpz array of size n. To do this, the lcm of the denominators is found as a
- * scaling factor. This function allows mpq arrays to be used in SPEX LU.
+ * scaling factor. This function allows mpq arrays to be used in SPEX.
  */
 
 #define SPEX_FREE_ALL               \

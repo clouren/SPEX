@@ -10,6 +10,7 @@
 
 default: all
 
+SUITESPARSE ?= $(realpath $(CURDIR)/../../..)
 include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
 # uncomment for extra error checking:

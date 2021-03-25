@@ -59,13 +59,8 @@ int main (int argc, char **argv)
     SPEX_matrix *b = NULL ;                     // Right hand side vector
     SPEX_matrix *x = NULL ;                     // Solution vectors
     SPEX_LU_analysis *S = NULL ;                // Column permutation
-    SPEX_options *option = SPEX_create_default_options();
-    if (option == NULL)
-    {
-        fprintf (stderr, "Error! OUT of MEMORY!\n");
-        FREE_WORKSPACE;
-        return 0;
-    }
+    SPEX_options *option = NULL;
+    OK(SPEX_create_default_options(&option));
 
     //--------------------------------------------------------------------------
     // Allocate memory, read in A and b
@@ -110,7 +105,7 @@ int main (int argc, char **argv)
 
     clock_t start_s = clock();
     
-    // SPEX LU has an optional check, to enable it, one can set the following
+    // SPEX Left LU has an optional check, to enable it, one can set the following
     // parameter to be true.
     option->check = true;
    
@@ -121,7 +116,7 @@ int main (int argc, char **argv)
 
     double t_s = (double) (end_s - start_s) / CLOCKS_PER_SEC;
 
-    printf("\nSPEX LU Factor & Solve time: %lf\n", t_s);
+    printf("\nSPEX Left LU Factor & Solve time: %lf\n", t_s);
 
     //--------------------------------------------------------------------------
     // Free memory
