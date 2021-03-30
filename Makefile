@@ -200,6 +200,8 @@ purge:
 #	- ( cd SKYLINE_SVD && $(MAKE) purge )
 	- ( cd SPEX/SPEX_Left_LU && $(MAKE) purge )
 	- ( cd SPEX/SPEX_Util && $(MAKE) purge )
+	- ( cd SPEX/SPEX_Cholesky && $(MAKE) purge )
+	- ( cd SPEX/SPEX_WAMF && $(MAKE) purge )
 #	- $(RM) MATLAB_Tools/*/*.mex* MATLAB_Tools/spok/private/*.mex*
 	- $(RM) -r include/* bin/* lib/* share/*
 
