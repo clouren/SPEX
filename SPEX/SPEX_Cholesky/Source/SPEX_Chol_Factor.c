@@ -16,8 +16,7 @@
     SPEX_FREE(post);                \
 
 
-#include "spex_chol_internal.h"
- //TODO: S has estimate/guess or exact? Change all coments to be consistent   
+#include "spex_chol_internal.h"  
 
 /* Purpose: This function performs the integer preserving Cholesky factorization.
  * It allows either the left-looking or up-looking integer-preserving Cholesky factorization.
@@ -49,11 +48,10 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
     // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
     SPEX_matrix ** rhos_handle, // sequence of pivots
-    const SPEX_matrix* A,      // matrix to be factored   
     SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
                                 //exact number of nonzeros of L and permutation used
     // Input
-    
+    const SPEX_matrix* A,      // matrix to be factored   
     bool left,                 //set to true if performing a left-looking factorization; 
                                //otherwise perform an up-looking factorization.
     const SPEX_options* option 

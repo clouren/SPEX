@@ -59,7 +59,6 @@ SPEX_info SPEX_Chol_backslash
     //-------------------------------------------------------------------------
     // check inputs
     //-------------------------------------------------------------------------
-    printf("chcek input\n");
 
     SPEX_info ok ;
     // SPEX must be initialized
@@ -115,7 +114,7 @@ SPEX_info SPEX_Chol_backslash
     // SPEX Chol Factorization
     //-------------------------------------------------------------------------- 
     
-    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, A2, S,
+    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, S,A2, 
                                  false,     // True = left, false = up
                                  (SPEX_options*) option));
 

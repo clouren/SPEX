@@ -17,7 +17,7 @@
 SPEX_info spex_Chol_ereach 
 (
     int64_t* top_handle,
-    SPEX_matrix *A,      // Matrix to be analyzed
+    const SPEX_matrix *A, // Matrix to be analyzed
     int64_t k,           // Node to start at
     int64_t*  parent,    // ELimination Tree
     int64_t * s,         // Contains the nonzero pattern in s[top..n-1]

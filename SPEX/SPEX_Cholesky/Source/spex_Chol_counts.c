@@ -19,7 +19,7 @@
 SPEX_info spex_Chol_counts 
 (
     int64_t** c_handle,
-    SPEX_matrix *A, 
+    const SPEX_matrix *A, 
     int64_t *parent, 
     int64_t *post
 )

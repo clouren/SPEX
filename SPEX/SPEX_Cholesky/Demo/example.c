@@ -22,6 +22,7 @@
     SPEX_FREE(option);              \
     SPEX_matrix_free(&b, option);   \
     SPEX_matrix_free(&x, option);   \
+    SPEX_matrix_free(&x2, option);   \
     SPEX_finalize();
 
 #include "demos.h"   
@@ -40,7 +41,6 @@
     
 int main (int argc, char **argv)
 {
-
     //--------------------------------------------------------------------------
     // Prior to using SPEX Chol, its environment must be initialized. This is
     // done by calling the SPEX_initialize() function.
@@ -63,9 +63,11 @@ int main (int argc, char **argv)
     // Declare our data structures
     //--------------------------------------------------------------------------
     SPEX_info ok;
-    SPEX_matrix *A = NULL ;                     // input matrix
+    //SPEX_matrix *Ad = NULL ;                     // input matrix as double
+    SPEX_matrix *A = NULL ;                     // input matrix with mpz values
     SPEX_matrix *b = NULL ;                     // Right hand side vector
     SPEX_matrix *x = NULL ;                     // Solution vectors
+    SPEX_matrix *x2 = NULL ;                     // copy of solution vectors
     SPEX_Chol_analysis *S = NULL ;                // Column permutation
     SPEX_options *option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
@@ -81,7 +83,7 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
 
     // Read in A. The output of this demo function is A in CSC format with
-    // mpz_t entries.
+    // double entries.
     FILE* mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
     {
@@ -89,19 +91,10 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
+    
     DEMO_OK(SPEX_tripread_double(&A, mat_file, option));
     fclose(mat_file);
 
-    // Read in b. The output of this demo function is b in dense format with
-    // mpz_t entries
-    //FILE* rhs_file = fopen(rhs_name,"r");
-    //if( rhs_file == NULL )
-    //{
-    //    perror("Error while opening the file");
-    //    FREE_WORKSPACE;
-    //    return 0;
-    //}
-//    OK(SPEX_read_dense(&b, rhs_file, option));
     int64_t n = A->n;
     SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
     // Create RHS
@@ -136,6 +129,9 @@ int main (int argc, char **argv)
 
     printf("\nSPEX Chol Factor & Solve time: %lf\n", t_s);
 
+    // x2 is a copy of the solution. x2 is a dense matrix with mpfr entries
+    DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
+    
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------

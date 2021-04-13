@@ -138,11 +138,6 @@
 //    precision floating point using the GMP mpfr_t data type. The associated
 //    precision is user defined.
 
-
-// Here are the things to do
-// TODO: Put const where appropriate
-// TODO: Check all comments
-// TODO: Make sure this looks identical to stuff in SPEX_LEFT_LU
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //---------------------Include files required by SPEX Cholesly------------------
@@ -193,7 +188,7 @@ typedef struct SPEX_Chol_analysis
                         // unpermuted matrix A, then j = S->q [k].
     int64_t* parent;    // Elimination tree for Cholesky
     int64_t* cp;        // Column pointers for Cholesky
-    int64_t lnz;        // Number of nonzeros in Cholesky L
+    int64_t lnz;        // Number of nonzeros in Cholesky L (might be estimate)
 } SPEX_Chol_analysis;
     
     
@@ -240,10 +235,11 @@ SPEX_info SPEX_Chol_Factor
 (
     // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
-    SPEX_matrix ** rhos_handle, // sequence of pivots
+    SPEX_matrix** rhos_handle, // sequence of pivots
+    SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
+                                //exact number of nonzeros of L and permutation used
     // Input
     const SPEX_matrix* A,      // matrix to be factored
-    SPEX_Chol_analysis* S,     // stores guess on nnz and column permutation
     bool left,                 //set to true if performing a left-looking factorization; 
                                //otherwise perform an up-looking factorization.
     const SPEX_options* option // command options
