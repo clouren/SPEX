@@ -17,6 +17,7 @@ include ../SuiteSparse_config/SuiteSparse_config.mk
 go:
 	( cd SPEX_Util && $(MAKE) )
 	( cd SPEX_Left_LU && $(MAKE) )
+	( cd SPEX_LU_Update && $(MAKE) )
 	( cd SPEX_Cholesky && $(MAKE) )
 	( cd SPEX_WAMF && $(MAKE) )
 
@@ -25,6 +26,7 @@ go:
 install:
 	( cd SPEX_Util && $(MAKE)  install )
 	( cd SPEX_Left_LU && $(MAKE) install )
+	( cd SPEX_LU_Update && $(MAKE) install )
 	( cd SPEX_Cholesky && $(MAKE) install )
 	( cd SPEX_WAMF && $(MAKE) install )
 	$(CP) Doc/SPEX_UserGuide.pdf $(INSTALL_DOC)
@@ -37,6 +39,7 @@ install:
 uninstall:
 	( cd SPEX_Util && $(MAKE) uninstall )
 	( cd SPEX_Left_LU && $(MAKE) uninstall )
+	( cd SPEX_LU_Update && $(MAKE) uninstall )
 	( cd SPEX_Cholesky && $(MAKE) uninstall )
 	( cd SPEX_WAMF && $(MAKE) uninstall )
 
@@ -55,6 +58,7 @@ cov:
 purge:
 	- ( cd SPEX_Util && $(MAKE) purge )
 	- ( cd SPEX_Left_LU && $(MAKE) purge )
+	- ( cd SPEX_LU_Update && $(MAKE) purge )
 	- ( cd SPEX_Cholesky && $(MAKE) purge )
 	- ( cd SPEX_WAMF && $(MAKE) purge )
 

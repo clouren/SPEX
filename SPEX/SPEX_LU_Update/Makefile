@@ -1,14 +1,16 @@
 #------------------------------------------------------------------------------
-# SPEX_Util/Makefile: compile, install, and run SPEX_Util demo and tests
+# SPEX_LU_Update/Makefile: compile, install, and run SPEX_LU_Update demo
+# and tests
 #------------------------------------------------------------------------------
 
-# SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-# Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
-# SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+# SPEX_LU_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
+# Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
+# SPEX_LU_Update/License for the license.
+
 #------------------------------------------------------------------------------
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
-export SUITESPARSE
+#export SUITESPARSE
 
 # default: compile the dynamic library, and run the demos
 default: C
@@ -36,24 +38,24 @@ static:
 
 # statement coverage test
 cov:
-	- ( cd Tcov ; $(MAKE) )
+	( cd Tcov ; $(MAKE) )
 
 # remove files not in the distribution, but keep compiled libraries
 clean:
 	( cd Lib ; $(MAKE) clean )
-	#( cd Demo ; $(MAKE) clean )
-	#( cd Tcov ; $(MAKE) clean )
-	#( cd MATLAB/Source ; $(RM) *.o )
-	#( cd MATLAB    ; $(RM) *.o )
+	( cd Demo ; $(MAKE) clean )
+	( cd Tcov ; $(MAKE) clean )
+	#- ( cd MATLAB/Source ; $(RM) *.o )
+	#- ( cd MATLAB    ; $(RM) *.o )
 	#( cd Doc ; $(MAKE) clean )
 
 # remove all files not in the distribution
 purge:
 	( cd Lib ; $(MAKE) purge )
-	#( cd Demo ; $(MAKE) purge )
-	#( cd Tcov ; $(MAKE) purge )
-	#( cd MATLAB/Source ; $(RM) *.o *.mex* )
-	#( cd MATLAB    ; $(RM) *.o *.mex* )
+	( cd Tcov ; $(MAKE) purge )
+	( cd Demo ; $(MAKE) purge )
+	#- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
+	#- ( cd MATLAB    ; $(RM) *.o *.mex* )
 	#( cd Doc ; $(MAKE) clean )
 
 distclean: purge
