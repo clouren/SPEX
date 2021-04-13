@@ -115,7 +115,7 @@ SPEX_info SPEX_Chol_backslash
     // SPEX Chol Factorization
     //-------------------------------------------------------------------------- 
     
-    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, A2, S,
+    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, S,A2, 
                                  false,     // True = left, false = up
                                  (SPEX_options*) option));
 

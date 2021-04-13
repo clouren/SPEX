@@ -59,8 +59,6 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);
     SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
-
-    ASSERT(*x_handle==NULL);
     
     if (!x_handle || !S) return SPEX_INCORRECT_INPUT;
     

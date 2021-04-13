@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_analyze: symbolic ordering and analysis for sparse Cholesky
+// SPEX_Chol/SPEX_Chol_preorder: symbolic ordering and analysis for sparse Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -15,7 +15,7 @@
  * Input/output arguments:
  *
  * S:       Symbolic analysis struct. Undefined on input; contains column
- *          permutation and estimates of nnz(L) and nnz(U) nnz on output
+ *          permutation and estimates of nnz on output (may be exact)
  *
  * A:       Input matrix, unmodified on input/output
  *
@@ -32,7 +32,7 @@
 
 SPEX_info SPEX_Chol_preorder
 (
-    SPEX_Chol_analysis** S_handle, // symbolic analysis (row/column perm. and nnz L,U)
+    SPEX_Chol_analysis** S_handle, // symbolic analysis (row/column perm. and nnz)
     const SPEX_matrix *A,        // Input matrix
     const SPEX_options *option   // Control parameters, if NULL, use default
 )
