@@ -965,19 +965,19 @@ SPEX_info SPEX_mpz_divexact
         return SPEX_PANIC;
     }
 #ifdef SPEX_DEBUG
-    mpz_t r;mpz_init(r);
-    mpz_fdiv_r(r,y,z);
-    if (mpz_sgn(r) != 0)
+    mpq_t r;
+    mpq_init(r); // r = 0/1
+    mpz_fdiv_r(SPEX_MPQ_NUM(r),y,z);
+    if (mpz_sgn(SPEX_MPQ_NUM(r)) != 0)
     {
-        mpq_t r1; mpq_init(r1);
-        mpq_set_z(r1,r);
-        mpq_set_den(r1,z);
-        mpq_canonicalize(r1);
-        gmp_printf("not exact division! remainder=%Qd\n",r1);
-        mpz_clear(r);
+        mpq_set_den(r,z);
+        mpq_canonicalize(r);
+        gmp_printf("not exact division! remainder=%Qd\n",r);
+        mpq_clear(r);
         SPEX_GMP_WRAPPER_FINISH;
-        return SPEX_INCORRECT_INPUT;
+        return SPEX_PANIC;
     }
+    mpq_clear(r);
 #endif
     mpz_divexact (x, y, z) ;
     SPEX_GMP_WRAPPER_FINISH ;
