@@ -600,6 +600,24 @@ SPEX_info SPEX_solve     // solves the linear system LD^(-1)U x = b
     const SPEX_options* option // Command options
 );
 
+
+SPEX_info SPEX_get_nnz_pattern    // find the nnz pattern of L and U
+(
+    // OUTPUT:
+    int64_t **Ldiag,              // L(k,k) can be found as L->v[k]->x[Ldiag[k]]
+    int64_t **Lr_offdiag,         // Lr_offdiag[k] gives the column index of the
+                                  // last off-diagonal nnz in k-th row of L.
+                                  // -1 if no off diagonal entry
+    int64_t **Uci,                // the row index for col-wise nnz pattern of U
+    int64_t **Ucp,                // col pointers for col-wise pattern of U
+    int64_t **Ucx,                // find the value of k-th entry as
+                                  // U->v[Uci[k]]->x[Ucx[k]]
+    // INPUT:
+    const SPEX_mat *L,         // the target matrix L
+    const SPEX_mat *U,         // the target matrix U
+    const int64_t *P,             // row permutation
+    const SPEX_options *option     // command option
+);
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------
 //------------------------------------------------------------------------------

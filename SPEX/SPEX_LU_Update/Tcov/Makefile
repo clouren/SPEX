@@ -10,6 +10,7 @@
 
 default: run
 
+SUITESPARSE ?= $(realpath $(CURDIR)/../../..)
 include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
 # Linux test coverage
@@ -45,12 +46,36 @@ CS2 = SPEX_initialize.o \
 
 $(CS2): ../../SPEX_Util/Include/SPEX_Util.h ../../SPEX_Util/Source/spex_util_internal.h
 
-.PRECIOUS: SPEX_%.c spex_%.c
+.PRECIOUS: SPEX_init%.c SPEX_fin%.c SPEX_calloc.c SPEX_malloc.c SPEX_realloc.c SPEX_fre%.c SPEX_gmp.c SPEX_%sum.c SPEX_%tions.c spex_cr%.c
 
-SPEX_%.c:
+SPEX_init%.c:
 	- ln -s ../../SPEX_Util/Source/$@
 
-spex_%.c:
+SPEX_fin%.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+SPEX_malloc.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+SPEX_calloc.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+SPEX_realloc.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+SPEX_fre%.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+SPEX_gmp.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+SPEX_%sum.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+SPEX_%tions.c:
+	- ln -s ../../SPEX_Util/Source/$@
+
+spex_cr%.c:
 	- ln -s ../../SPEX_Util/Source/$@
 
 CS1 = tcov_malloc_test.o \
@@ -61,8 +86,10 @@ CS1 = tcov_malloc_test.o \
     spex_insert_new_entry.o \
     spex_ipge.o \
     SPEX_LUU.o \
-    spex_delete_mpq_array.o \
-    spex_delete_mpz_array.o \
+    SPEX_create_mpq_array.o \
+    SPEX_create_mpz_array.o  \
+    SPEX_delete_mpq_array.o \
+    SPEX_delete_mpz_array.o \
     SPEX_mat_alloc.o \
     SPEX_mat_free.o \
     spex_finalize_and_insert_vk.o \

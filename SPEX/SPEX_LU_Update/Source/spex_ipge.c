@@ -20,8 +20,7 @@
 // This function is called by the following functions:
 // spex_dppu2: successive IPGE update for row k of U after swapping with row
 //             ks of U.
-// spex_cppu: compute the (n-1)-th IPGE update of column k
-//             after vk is inserted.
+// spex_cppu: compute the (n-1)-th IPGE update of column k after vk is inserted.
 // spex_triangular_solve: the REF triangular solve for LDx=v when L and v are
 //             sparse.
 // spex_forward_sub: the forward substitution when solving LDUx=b, which is
@@ -33,8 +32,10 @@
 // no pending scale factor, v(perm[j])=sd[j], and we can perform IPGE for x[i]
 // as
 // x[i] = (x[i]*sd[j]-v[i]*x[perm[j]])/sd[j-1].
-// This equation holds regardless of pending scaling factor x_scale is 1 or not.
-// And this update will not change x_scale
+// This equation holds regardless of pending scaling factor x_scale is 1 or
+// not.  However, when calling this function, x should have no pending scale.
+// Otherwise, the result of IPGE update is not guaranteed to be in integer
+// domain.
 //
 // In addition, in case of history update is needed before the IPGE update for
 // x[i] and/or x[perm[j]], the equation becomes
@@ -197,6 +198,7 @@ SPEX_info spex_ipge // perform IPGE on x based on v
             // tmpz = floor(v(i)*pending_scale)
             SPEX_CHECK(SPEX_mpz_mul(tmpz, v->x[p],
                                     SPEX_MPQ_NUM(pending_scale)));
+#ifndef SPEX_DEBUG
             SPEX_CHECK(SPEX_mpz_fdiv_q(tmpz, tmpz,
                                     SPEX_MPQ_DEN(pending_scale)));
 
@@ -205,6 +207,32 @@ SPEX_info spex_ipge // perform IPGE on x based on v
             {
                 SPEX_CHECK(SPEX_mpz_fdiv_q(sv_x->x[i], sv_x->x[i],sd[real_hi]));
             }
+#else
+                mpq_t tmpq1; mpq_init(tmpq1);
+                mpq_t tmpq2; mpq_init(tmpq2);mpq_set_ui(tmpq2,0,1);
+            mpz_fdiv_qr(tmpz, SPEX_MPQ_NUM(tmpq1), tmpz, SPEX_MPQ_DEN(pending_scale));
+                mpq_set_den(tmpq1,SPEX_MPQ_DEN(pending_scale));
+                mpq_canonicalize(tmpq1);
+
+            // x[i] = floor(x[i]/sd[h[i]])
+            if (real_hi > -1)
+            {
+                mpz_fdiv_qr(sv_x->x[i], SPEX_MPQ_NUM(tmpq2), sv_x->x[i],sd[real_hi]);
+                mpq_set_den(tmpq2,sd[real_hi]);
+                mpq_canonicalize(tmpq2);
+            }
+
+            SPEX_CHECK(SPEX_mpq_cmp(&sgn,tmpq1,tmpq2));
+            if (sgn!=0)
+            {
+                printf("file %s line %d\n",__FILE__,__LINE__);
+            mpq_clear(tmpq1);
+            mpq_clear(tmpq2);
+                SPEX_CHECK(SPEX_PANIC);
+            }
+            mpq_clear(tmpq1);
+            mpq_clear(tmpq2);
+#endif
 
             // x[i] = x[i]- tmpz
             SPEX_CHECK(SPEX_mpz_sub(sv_x->x[i], sv_x->x[i], tmpz));
@@ -214,6 +242,7 @@ SPEX_info spex_ipge // perform IPGE on x based on v
             // -----------------------------------------------------------------
             // x[i] = (x[i]-v[i]*x[perm[j]])/sd[h[i]].
             // -----------------------------------------------------------------
+            mpz_t xi; mpz_init_set(xi,sv_x->x[i]);
             SPEX_CHECK(SPEX_mpz_submul(sv_x->x[i], v->x[p], sv_x->x[perm[j]]));
             if (real_hi > -1)
             {

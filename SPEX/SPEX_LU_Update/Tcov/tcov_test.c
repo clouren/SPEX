@@ -26,13 +26,13 @@
 {                                                \
     if (mat_file != NULL) fclose(mat_file);      \
     SPEX_FREE(option);                           \
-    SPEX_matrix_free(&L);                        \
-    SPEX_matrix_free(&U);                        \
-    SPEX_matrix_free(&A);                        \
+    SPEX_mat_free(&L);                        \
+    SPEX_mat_free(&U);                        \
+    SPEX_mat_free(&A);                        \
     SPEX_vector_free(&vk);                       \
-    spex_delete_mpz_array(&d, An);                \
-    spex_delete_mpz_array(&sd, An);               \
-    spex_delete_mpq_array(&S, 3*An);              \
+    SPEX_delete_mpz_array(&d, An);                \
+    SPEX_delete_mpz_array(&sd, An);               \
+    SPEX_delete_mpq_array(&S, 3*An);              \
     SPEX_FREE(P);                                \
     SPEX_FREE(P_inv);                            \
     SPEX_FREE(Q);                                \
@@ -127,10 +127,8 @@ int main( int argc, char* argv[])
             // Allocate memory
             //------------------------------------------------------------------
 
-            SPEX_options* option = SPEX_create_default_options();
-            if (!option) return 0;//{continue;}
-
-            SPEX_matrix *L = NULL, *U = NULL, *A = NULL;
+            SPEX_options* option = NULL;
+            SPEX_mat *L = NULL, *U = NULL, *A = NULL;
             SPEX_vector *vk = NULL;
             mpz_t *d = NULL, *sd = NULL;
             mpq_t *S = NULL;
@@ -139,6 +137,7 @@ int main( int argc, char* argv[])
             mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);
             FILE *mat_file = NULL;
         GOTCHA;
+            TEST_CHECK(SPEX_create_default_options(&option));
 
             if (read_matrix)
             {
@@ -171,8 +170,8 @@ int main( int argc, char* argv[])
                     return 0;
                 }
 
-                TEST_CHECK(SPEX_matrix_alloc(&L, An, An, true));
-                TEST_CHECK(SPEX_matrix_alloc(&U, An, An, true));
+                TEST_CHECK(SPEX_mat_alloc(&L, An, An, true));
+                TEST_CHECK(SPEX_mat_alloc(&U, An, An, true));
                 TEST_CHECK(SPEX_vector_alloc(&vk, An, true));
                 for (j = 0; j < An; j++)
                 {
@@ -235,7 +234,7 @@ int main( int argc, char* argv[])
                 }
 
                 // randomly generate L, U and vk
-                TEST_CHECK(SPEX_matrix_alloc(&L, An, An, true));
+                TEST_CHECK(SPEX_mat_alloc(&L, An, An, true));
                 printf("l0=[\n");
                 for (j = 0; j < An; j++)
                 {
@@ -270,7 +269,7 @@ int main( int argc, char* argv[])
                     Anz += p;
                 }
                 printf("\nu0=[\n");
-                TEST_CHECK(SPEX_matrix_alloc(&U, An, An, true));
+                TEST_CHECK(SPEX_mat_alloc(&U, An, An, true));
                 for (j = 0; j < An; j++)
                 {
                     TEST_CHECK(SPEX_vector_realloc(U->v[j], An-j));
@@ -357,7 +356,7 @@ int main( int argc, char* argv[])
             }
 
             // get matrix A from L*U, since D is identity matrix
-            TEST_CHECK(SPEX_matrix_alloc(&A, An, An, true));
+            TEST_CHECK(SPEX_mat_alloc(&A, An, An, true));
             for (i = 0; i < An; i++)
             {
                 TEST_CHECK(SPEX_vector_realloc(A->v[i], An));
@@ -388,9 +387,9 @@ int main( int argc, char* argv[])
 
             // create d, sd as ones(An,1), S as ones(An,3),
             // P, Q, P_inv, Q_inv as 0:An-1 
-            d  = spex_create_mpz_array(An);
-            sd = spex_create_mpz_array(An);
-            S  = spex_create_mpq_array(3*An);
+            d  = SPEX_create_mpz_array(An);
+            sd = SPEX_create_mpz_array(An);
+            S  = SPEX_create_mpq_array(3*An);
             P     = (int64_t*) SPEX_malloc(An*sizeof(int64_t));
             Q     = (int64_t*) SPEX_malloc(An*sizeof(int64_t));
             P_inv = (int64_t*) SPEX_malloc(An*sizeof(int64_t));
@@ -404,9 +403,9 @@ int main( int argc, char* argv[])
             {
                 TEST_CHECK(SPEX_mpz_set_ui(d[i],  1));
                 TEST_CHECK(SPEX_mpz_set_ui(sd[i], 1));
-                TEST_CHECK(SPEX_mpq_set_ui(SPEX_2D(S, 1, i), 1, 1));
-                TEST_CHECK(SPEX_mpq_set_ui(SPEX_2D(S, 2, i), 1, 1));
-                TEST_CHECK(SPEX_mpq_set_ui(SPEX_2D(S, 3, i), 1, 1));
+                TEST_CHECK(SPEX_mpq_set_ui(SPEX_LUU_2D(S, 1, i), 1, 1));
+                TEST_CHECK(SPEX_mpq_set_ui(SPEX_LUU_2D(S, 2, i), 1, 1));
+                TEST_CHECK(SPEX_mpq_set_ui(SPEX_LUU_2D(S, 3, i), 1, 1));
                 P[i] = i;
                 Q[i] = i;
                 P_inv[i] = i;
@@ -425,7 +424,7 @@ int main( int argc, char* argv[])
             TEST_CHECK(SPEX_mpq_init(tmpq));
             for (i = 0; i < An; i++)
             {
-                TEST_CHECK(SPEX_mpq_mul(tmpq, SPEX_2D(S, 1, i), SPEX_2D(S, 3, i)));
+                TEST_CHECK(SPEX_mpq_mul(tmpq, SPEX_LUU_2D(S, 1, i), SPEX_LUU_2D(S, 3, i)));
 
                 for (p = 0; p < L->v[i]->nz; p++)
                 {
@@ -439,7 +438,7 @@ int main( int argc, char* argv[])
             }
             for (i = 0; i < An; i++)
             {
-                TEST_CHECK(SPEX_mpq_mul(tmpq, SPEX_2D(S, 2, i), SPEX_2D(S, 3, i)));
+                TEST_CHECK(SPEX_mpq_mul(tmpq, SPEX_LUU_2D(S, 2, i), SPEX_LUU_2D(S, 3, i)));
 
                 for (p = 0; p < U->v[i]->nz; p++)
                 {

@@ -60,9 +60,28 @@ SPEX_info spex_forward_sub // perform sparse forward substitution
         ASSERT(L->v[i]->i[Ldiag[i]] == P[i]);
 
         // perform i-th IPGE update for x
-        SPEX_CHECK(spex_ipge(x, h, NULL, L->v[i], P, P_inv, sd,
+        /*SPEX_CHECK(spex_ipge(x, h, NULL, L->v[i], P, P_inv, sd,
+            d, U->v[i]->x[Ucx[Ucp[Q[i]+1]-1]],
+            SPEX_LUU_2D(S, 1, i), SPEX_LUU_2D(S, 3, i), SPEX_LUU_2D(S, 2, i), i, Ldiag[i]));*/
+        info=(spex_ipge(x, h, NULL, L->v[i], P, P_inv, sd,
             d, U->v[i]->x[Ucx[Ucp[Q[i]+1]-1]],
             SPEX_LUU_2D(S, 1, i), SPEX_LUU_2D(S, 3, i), SPEX_LUU_2D(S, 2, i), i, Ldiag[i]));
+    if(info!=SPEX_OK)
+    {
+        printf("%ld-th IPGE\n",i);
+        for(int64_t ii =0;ii<L->v[i]->nz;ii++)SPEX_CHECK(SPEX_gmp_printf("P_inv[%ld]=%ld \n",L->v[i]->i[ii],P_inv[L->v[i]->i[ii]]));
+        for(int64_t jj =0;jj<n;jj++)
+        {
+        for(int64_t ii =0;ii<L->v[jj]->nz;ii++)
+        {
+            if(L->v[jj]->i[ii]==120)
+            {
+                printf("L(120,%ld) ",jj);break;
+            }
+        }}
+        return SPEX_PANIC;
+    }
+    else{SPEX_CHECK(info);}
     }
 
     return SPEX_OK; 

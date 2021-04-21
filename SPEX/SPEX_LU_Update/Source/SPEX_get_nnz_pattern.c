@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_CHOLMOD/spex_get_nnz_pattern.c: get the row-wise nonzero pattern of L
+// SPEX_CHOLMOD/SPEX_get_nnz_pattern.c: get the row-wise nonzero pattern of L
 // and column-wise nonzero pattern of U.
 //------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@
 
 #include "spex_lu_update_internal.h"
 
-SPEX_info spex_get_nnz_pattern    // find the nnz pattern of L and U
+SPEX_info SPEX_get_nnz_pattern    // find the nnz pattern of L and U
 (
     // OUTPUT:
     int64_t **Ldiag,              // L(k,k) can be found as L->v[k]->x[Ldiag[k]]

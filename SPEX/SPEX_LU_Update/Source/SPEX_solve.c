@@ -39,9 +39,9 @@
  *
  * P, P_inv & Q, Q_inv: the permutation vectors. unmodified on input/output.
  *
- * keep_b:   indicate if caller wants to keep the vector b. If not, this
- *           function will not make a copy of b before forward_sub and
- *           backward_sub. Instead, x->v[j]->x will be directly set as
+ * keep_b:   indicate if caller wants to keep the vector b. If true, this
+ *           function will make a copy of b before forward_sub and
+ *           backward_sub. Otherwise, x->v[j]->x will be directly set as
  *           b->v[j]->x and b->v[j]->x  will be reset to NULL.
  *
  * option:   command options

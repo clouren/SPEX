@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_LU_Update/Test/test.c: performance test for SPEX_LU_Update library
+// SPEX_LU_Update/Test/ptest.c: performance test for SPEX_LU_Update library
 //------------------------------------------------------------------------------
 
 // SPEX_LU_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
@@ -26,8 +26,8 @@
 int main( int argc, char* argv[])
 {
     //char *prob_name = "lp_80bau3b";
-    char *prob_name = "lp_25fv47";
-    //char *prob_name = "aa5";
+    //char *prob_name = "lp_25fv47";
+    char *prob_name = "aa5";
     if (argc >= 2)
     {
         prob_name = argv[1];
@@ -47,7 +47,7 @@ int main( int argc, char* argv[])
     SPEX_options* option = NULL;
     SPEX_matrix *Prob = NULL, *Prob_trip = NULL;
     SPEX_matrix *L1 = NULL, *U1 = NULL, *rhos = NULL, *A1 = NULL;
-    SPEX_mat *L2 = NULL, *U2 = NULL, *A2 = NULL;
+    SPEX_mat *L2 = NULL, *U2 = NULL, *A2 = NULL, *b = NULL;
     SPEX_vector *tmpv, *vk = NULL;
     mpz_t *d = NULL, *sd = NULL;
     mpq_t *S = NULL;
@@ -195,10 +195,25 @@ int main( int argc, char* argv[])
 
     // allocate space for vk
     OK(SPEX_vector_alloc(&vk, 0, true));
+    OK(SPEX_mat_alloc(&b, 1, n, true));
 
     int64_t k = 0, new_col = 0;
     while (glp_get_status(LP) != GLP_OPT)
     {
+        /*
+        // get the row-wise nnz pattern for L and column-wise nnz pattern for U
+        SPEX_CHECK(SPEX_get_nnz_pattern(&Ldiag, &Lr_offdiag, &Uci, &Ucp, &Ucx,
+            L, U, P, option));
+
+        b->v[0]->x = SPEX_create_mpz_array(n);
+        for (i = 0; i < n; i++)
+        {
+            OK(SPEX_mpz_set(b->v[0]->x[i], 
+        }
+        OK(SPEX_solve(&x, b, h, A2, L2, U2, S, sd, d, Ldiag, Ucp, Ucx,
+            P, P_inv, Q, Q_inv, false, option));
+*/
+
     GOTCHA;
         //----------------------------------------------------------------------
         // run one iteration of simplex and find the new basis
@@ -208,8 +223,10 @@ int main( int argc, char* argv[])
         for (i = 0; i < n; i++)
         {
             new_col = glp_get_bhead(LP, i+1);
+            //printf("%ld %ld %ld",i,basis[i],new_col);
             if (basis[i] != new_col)
             {
+              //  printf(" different\n");
                 if (k > -1)
                 {
                     printf("replacing more than 1 col\n");
@@ -219,13 +236,17 @@ int main( int argc, char* argv[])
                 k = i;
                 basis[i] = new_col;
             }
+            else
+            {
+                //printf(" same\n");
+            }
         }
         if (k == -1)
         {
             printf("same basis matrix\n");
-            //continue;
-            FREE_WORKSPACE;
-            return 0;
+            continue;
+            //FREE_WORKSPACE;
+            //return 0;
         }
 
         //----------------------------------------------------------------------
@@ -288,17 +309,43 @@ int main( int argc, char* argv[])
         // and U and a row permutation P such that PAQ = LDU.
         OK(SPEX_Left_LU_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis,
             option));
+        if (info == SPEX_OK) {printf("matrix is not singular!\n");}
 
         end_llu = clock();
 
         //----------------------------------------------------------------------
         // perform LU update for matrix A2->A1
         //----------------------------------------------------------------------
+        /*OK(SPEX_gmp_printf("%Qd\n",SPEX_LUU_2D(S,1,k)));
+        OK(SPEX_gmp_printf("%Qd\n",SPEX_LUU_2D(S,2,k)));
+        OK(SPEX_gmp_printf("%Qd\n",SPEX_LUU_2D(S,3,k)));
+        mpq_t tmpq; mpq_init(tmpq);
+        mpz_t tmpz; mpz_init(tmpz);
+        mpz_t mysd; mpz_init(mysd);
+        mpq_mul(tmp_q,SPEX_LUU_2D(S,1,k),SPEX_LUU_2D(S,1,k));
+        mpq_get_den(tmpz,tmpq);
+        mpz_mul(mysd,L2->v[k]->x[P[k]],*/
         start_luu = clock();
 
         OK(SPEX_LUU(A2, L2, U2, d, sd, S, P, P_inv, Q, Q_inv, &vk, k, option));
 
         end_luu = clock();
+        for(int ii =0; ii<n;ii++)
+        {
+            for (int jj =ii+1;jj<n;jj++)
+            {
+                if (Q[jj] == Q[ii])
+                {
+                    printf("Q %d %d\n",ii,jj);
+                    return 0;
+                }
+                if (P[jj] == P[ii])
+                {
+                    printf("P %d %d\n",ii,jj);
+                    return 0;
+                }
+            }
+        }
 
         //----------------------------------------------------------------------
         // print results

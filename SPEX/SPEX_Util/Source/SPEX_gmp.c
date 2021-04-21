@@ -907,6 +907,11 @@ SPEX_info SPEX_mpz_fdiv_q
 )
 {
     SPEX_GMPZ_WRAPPER_START (q) ;
+    if (mpz_sgn(d)==0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return SPEX_PANIC;
+    }
     mpz_fdiv_q (q, n, d) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
@@ -930,6 +935,11 @@ SPEX_info SPEX_mpz_cdiv_q
 )
 {
     SPEX_GMPZ_WRAPPER_START (q) ;
+    if (mpz_sgn(d)==0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return SPEX_PANIC;
+    }
     mpz_cdiv_q (q, n, d) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
@@ -949,6 +959,26 @@ SPEX_info SPEX_mpz_divexact
 )
 {
     SPEX_GMPZ_WRAPPER_START (x) ;
+    if (mpz_sgn(z)==0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return SPEX_PANIC;
+    }
+#ifdef SPEX_DEBUG
+    mpz_t r;mpz_init(r);
+    mpz_fdiv_r(r,y,z);
+    if (mpz_sgn(r) != 0)
+    {
+        mpq_t r1; mpq_init(r1);
+        mpq_set_z(r1,r);
+        mpq_set_den(r1,z);
+        mpq_canonicalize(r1);
+        gmp_printf("not exact division! remainder=%Qd\n",r1);
+        mpz_clear(r);
+        SPEX_GMP_WRAPPER_FINISH;
+        return SPEX_INCORRECT_INPUT;
+    }
+#endif
     mpz_divexact (x, y, z) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;

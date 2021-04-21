@@ -44,7 +44,7 @@ OBJ = \
     spex_find_next_nz.o             SPEX_vector_alloc.o \
     spex_forward_sub.o              SPEX_vector_free.o \
     SPEX_vector_realloc.o \
-    spex_get_nnz_pattern.o          spex_verify.o \
+    SPEX_get_nnz_pattern.o          spex_verify.o \
     SPEX_mat_to_CSC.o               SPEX_CSC_to_mat.o
 #    spex_delete_scattered_vector.o  spex_create_scattered_vector.o \
 

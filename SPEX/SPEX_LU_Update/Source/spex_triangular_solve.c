@@ -67,7 +67,7 @@ SPEX_info spex_triangular_solve // perform REF triangular solve for LDx=v
         {
             // skip if x(P[j]) == 0
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[P[j]]));
-            if (sgn == 0)       { continue; }
+            if (sgn == 0)       {continue; }
 
             // TODO add this to all caller of spex_ipge,
             // but no need to update spex_ipge
