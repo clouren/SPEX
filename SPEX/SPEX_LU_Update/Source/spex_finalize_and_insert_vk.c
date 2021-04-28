@@ -13,22 +13,21 @@
 // Purpose: This function is called to perform history update for entries that
 // would be in L and insert entries that would in U to corresponding row of U.
 // Entries that would appear in U are removed from the nnz pattern, while
-// entries that would be in L are moved to SPEX_vector vk and remained in nnz
-// pattern. The k-th entry (i.e., the new k-th pivot) is kept in both vk and
-// d[k] but not inserted to U.
+// entries that would be in L are updated and moved from vk_dense. The pivot
+// entry is kept as the first entry in L->v[k] but not inserted to U.
 
 #include "spex_lu_update_internal.h"
+
+#define SU(k) S->x.mpq[1+2*(k)]
 
 SPEX_info spex_finalize_and_insert_vk
 (
     spex_scattered_vector *vk_dense, //scattered version of the solution for
                       // LDx=v using the first k-1 columns of L
     int64_t *h,       // history vector for vk_dense
-    SPEX_mat *U,   // matrix U
-    SPEX_mat *L,   // matrix L
-    mpq_t *S,         // array of size 3*n that stores pending scales
-    mpz_t *d,         // array of unscaled pivots
-    int64_t *Ldiag,   // L(k,k) can be found as L->v[k]->x[Ldiag[k]]
+    SPEX_mat *U,      // matrix U
+    SPEX_mat *L,      // matrix L
+    SPEX_matrix *S,   // a 2*n dense mpq matrix that stores pending scales
     const mpz_t *sd,  // array of scaled pivots
     const int64_t *Q, // the column permutation
     const int64_t *P_inv,// inverse of row permutation
@@ -53,9 +52,9 @@ SPEX_info spex_finalize_and_insert_vk
             {
                 // insert vk_dense->x[i] to U(P_inv[i],Q[k]) by swapping
                 SPEX_CHECK(spex_insert_new_entry(vk_dense->x[i], U->v[real_i],
-                    SPEX_LUU_2D(S, 2, real_i), L->v[real_i], SPEX_LUU_2D(S, 1, real_i),
-                    SPEX_LUU_2D(S, 3, real_i), d[real_i], Q[k], Ldiag[real_i],
-                    one));
+                    SU(real_i), Q[k], one));
+                // vk_dense->x[i] = 0
+                SPEX_CHECK(SPEX_mpz_set_ui(vk_dense->x[i], 0));
             }
             vk_nz--;
             vk_dense->i[p] = vk_dense->i[vk_nz];
@@ -73,7 +72,7 @@ SPEX_info spex_finalize_and_insert_vk
     }
 
     // move the remaining nonzero entries to L->v[k]
-    Lk_nz = 0;
+    Lk_nz = 1; // reserve the first entry for the pivot
     for (p = 0; p < vk_nz; p++)
     {
         i = vk_dense->i[p];
@@ -91,14 +90,19 @@ SPEX_info spex_finalize_and_insert_vk
                                              vk_dense->x[i], sd[h[i]]));
             }
         }
-        if (P_inv[i] == diag)
+        if (P_inv[i] == diag) // put pivot as the first entry
         {
-            SPEX_CHECK(SPEX_mpz_set(d[k], vk_dense->x[i]));
-            Ldiag[k] = Lk_nz;
+            SPEX_CHECK(SPEX_mpz_swap(L->v[k]->x[0], vk_dense->x[i]));
+            L->v[k]->i[0] = i;
         }
-        SPEX_CHECK(SPEX_mpz_swap(L->v[k]->x[Lk_nz], vk_dense->x[i]));
-        L->v[k]->i[Lk_nz] = i;
-        Lk_nz++;
+        else
+        {
+            SPEX_CHECK(SPEX_mpz_swap(L->v[k]->x[Lk_nz], vk_dense->x[i]));
+            L->v[k]->i[Lk_nz] = i;
+            Lk_nz++;
+        }
+        // vk_dense->x[i] = 0
+        SPEX_CHECK(SPEX_mpz_set_ui(vk_dense->x[i], 0));
     }
     L->v[k]->nz = Lk_nz;
 

@@ -31,12 +31,13 @@ SPEX_info spex_find_next_nz
     for (p = 0; p < Ak_dense->nz; p++)
     {
         i = Ak_dense->i[p];
-        if (k == perm_inv[i]) { continue; }
+        int64_t real_i = perm_inv[i];
+        if (k == real_i) { continue; }
 
         SPEX_CHECK(SPEX_mpz_sgn(&sgn, Ak_dense->x[i]));
-        if (sgn != 0 && perm_inv[i] < *next)
+        if (sgn != 0 && real_i < *next)
         {
-            *next = perm_inv[i];
+            *next = real_i;
         }
     }
     return SPEX_OK;

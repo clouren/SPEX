@@ -240,6 +240,13 @@ SPEX_info SPEX_mat_to_CSC
     const SPEX_options *option
 );
 
+SPEX_info SPEX_mat_canonicalize
+(
+    SPEX_mat *A,    // the matrix to be canonicalize
+    int64_t *perm   // the permuation vector applied on each vector of A,
+                    // considered as identity if input as NULL
+);
+
 mpz_t* SPEX_create_mpz_array
 (
     int64_t n            // size of the array
@@ -455,7 +462,6 @@ SPEX_info SPEX_matrix_copy
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 */
-#define SPEX_LUU_2D(A,i,j) (A[(i)+(j)*(3)-1])
 //------------------------------------------------------------------------------
 // Memory management
 //------------------------------------------------------------------------------
@@ -555,12 +561,11 @@ SPEX_info SPEX_finalize (void) ;*/
 
 SPEX_info SPEX_LUU
 (
-    SPEX_mat *A,         // the original matrix in compressed-column form
-    SPEX_mat *L,         // stored in compressed-column form
-    SPEX_mat *U,         // stored in comptessed-row form
-    mpz_t *d,               // an array of size n that stores the unscaled pivot
+    SPEX_mat *A,            // the original matrix in compressed-column form
+    SPEX_mat *L,            // stored in compressed-column form
+    SPEX_mat *U,            // stored in comptessed-row form
     mpz_t *sd,              // an array of size n that stores the scaled pivot
-    mpq_t *S,               // an array of size 3*n that stores pending scales
+    SPEX_matrix *S,         // an array of size 3*n that stores pending scales
     int64_t *P,             // row permutation
     int64_t *P_inv,         // inverse of row permutation
     int64_t *Q,             // column permutation
@@ -578,46 +583,21 @@ SPEX_info SPEX_LUU
 SPEX_info SPEX_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
-    SPEX_mat **x_handle, // rational solution to the system
+    SPEX_mat **x_handle,    // solution to the system
     // input:
-    SPEX_mat *b,         // right hand side vector
+    SPEX_mat *b,            // right hand side vector
+    const SPEX_mat *L,      // lower triangular matrix
+    const SPEX_mat *U,      // upper triangular matrix
+    const mpq_t A_scale,    // scale of the input matrix
+    const bool Is_trans,    // true if solving A'x = b
     int64_t *h,             // history vector
-    const SPEX_mat *A,   // Input matrix
-    const SPEX_mat *L,   // lower triangular matrix
-    const SPEX_mat *U,   // upper triangular matrix
-    mpq_t *S,               // the pending scale factor matrix
+    SPEX_matrix *S,         // an array of size 3*n that stores pending scales
     const mpz_t *sd,        // array of scaled pivots
-    mpz_t *d,               // array of unscaled pivots
-    const int64_t *Ldiag,   // L(k,k) can be found as L->v[k]->x[Ldiag[k]]
-    const int64_t *Ucp,     // col pointers for col-wise nnz pattern of U
-    const int64_t *Ucx,     // the value of k-th entry is found as 
-                            // U->v[Uci[k]]->x[Ucx[k]]
     const int64_t *P,       // row permutation
-    const int64_t *P_inv,   // inverse of row permutation
-    const int64_t *Q,       // column permutation
     const int64_t *Q_inv,   // inverse of column permutation
-    const bool keep_b,      // indicate if b will be reused
     const SPEX_options* option // Command options
 );
 
-
-SPEX_info SPEX_get_nnz_pattern    // find the nnz pattern of L and U
-(
-    // OUTPUT:
-    int64_t **Ldiag,              // L(k,k) can be found as L->v[k]->x[Ldiag[k]]
-    int64_t **Lr_offdiag,         // Lr_offdiag[k] gives the column index of the
-                                  // last off-diagonal nnz in k-th row of L.
-                                  // -1 if no off diagonal entry
-    int64_t **Uci,                // the row index for col-wise nnz pattern of U
-    int64_t **Ucp,                // col pointers for col-wise pattern of U
-    int64_t **Ucx,                // find the value of k-th entry as
-                                  // U->v[Uci[k]]->x[Ucx[k]]
-    // INPUT:
-    const SPEX_mat *L,         // the target matrix L
-    const SPEX_mat *U,         // the target matrix U
-    const int64_t *P,             // row permutation
-    const SPEX_options *option     // command option
-);
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------
 //------------------------------------------------------------------------------

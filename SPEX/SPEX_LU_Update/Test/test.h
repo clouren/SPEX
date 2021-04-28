@@ -127,9 +127,12 @@ SPEX_info SPEX_load_matrix_to_LP
 );
 
 // read the remaining component (b, lb, ub and c) to finish constructing LP
-void SPEX_finish_LP
+void SPEX_construct_LP
 (
     glp_prob *LP,
+    SPEX_matrix **A_handle,
+    SPEX_matrix **b_handle,
+    SPEX_matrix **c_handle,
     char *file_name,
     SPEX_options *option
 );

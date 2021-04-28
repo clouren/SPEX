@@ -834,22 +834,65 @@ SPEX_info SPEX_load_matrix_to_LP
     return SPEX_OK;
 }
 
-// read the remaining component (b, lb, ub and c) to finish constructing LP
-void SPEX_finish_LP
+// read the matrices and construct LP obj
+#define OK1(method)                \
+{                                 \
+    info = method;                \
+    if (info != SPEX_OK)          \
+    {                             \
+        SPEX_matrix_free(&A, option);\
+        SPEX_matrix_free(&b, option);\
+        SPEX_matrix_free(&c, option);\
+        SPEX_matrix_free(&M1, option);\
+        SPEX_matrix_free(&M2, option);\
+        if (File != NULL) fclose(File);\
+        return;                    \
+    }                              \
+}
+
+void SPEX_construct_LP
 (
     glp_prob *LP,
+    SPEX_matrix **A_handle,
+    SPEX_matrix **b_handle,
+    SPEX_matrix **c_handle,
     char *file_name,
     SPEX_options *option
 )
 {
     SPEX_info info;
     double lb, ub;
-    int file_name_len = strlen(file_name)-4;
-    SPEX_matrix *M1 = NULL, *M2 = NULL;
+    int file_name_len = strlen(file_name);
+    SPEX_matrix *A = NULL, *b = NULL, *c = NULL, *M1 = NULL, *M2 = NULL;
     FILE *File = NULL;
     char *suffix = "";
 
+    // ---------------------------------------------------------------------------
+    // read A matrix
+    // ---------------------------------------------------------------------------
+    suffix = ".mtx";
+    strcpy(file_name+file_name_len,suffix);
+    printf("reading file %s\n",file_name);
+    File = fopen(file_name, "r");
+    if (File == NULL)
+    {
+        perror("Error while opening file");
+        return;
+    }
+
+    // Read matrix from given file as a triplet matrix
+    OK1(SPEX_mmread(&M1, File, option));
+    fclose(File); File = NULL;
+    // load matrix to LP
+    OK1(SPEX_load_matrix_to_LP(M1, LP));
+    // convert matrix to a CSC matrix
+    OK1(SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, M1, option));
+    // free the triplet matrix
+    OK1(SPEX_matrix_free(&M1, option));
+
+    // ---------------------------------------------------------------------------
     // read b matrix
+    // ---------------------------------------------------------------------------
     suffix = "_b.mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -859,21 +902,20 @@ void SPEX_finish_LP
         perror("Error while opening file\n");
         return;
     }
-    info = SPEX_mmread(&M1, File, option);
-    fclose(File);
-    if (info != SPEX_OK)
-    {
-        SPEX_matrix_free(&M1, option);
-        SPEX_matrix_free(&M2, option);
-        return;
-    }
+    OK1(SPEX_mmread(&M1, File, option));
+    fclose(File); File = NULL;
     for (int64_t i = 0; i < M1->m; i++)
     {
         glp_set_row_bnds(LP, i+1, GLP_FX, MY_MATRIX_ENTRY(M1, i), 0.0);
     }
+    // convert matrix to a CSC matrix
+    OK1(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, M1, option));
+    // free the triplet matrix
     SPEX_matrix_free(&M1, option);
 
+    // ---------------------------------------------------------------------------
     // read c matrix
+    // ---------------------------------------------------------------------------
     suffix = "_c.mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -883,21 +925,20 @@ void SPEX_finish_LP
         perror("Error while opening file\n");
         return;
     }
-    info = SPEX_mmread(&M1, File, option);
-    fclose(File);
-    if (info != SPEX_OK)
-    {
-        SPEX_matrix_free(&M1, option);
-        SPEX_matrix_free(&M2, option);
-        return;
-    }
+    OK1(SPEX_mmread(&M1, File, option));
+    fclose(File);File = NULL;
     for (int64_t i = 0; i < M1->m; i++)
     {
         glp_set_obj_coef(LP, i+1, MY_MATRIX_ENTRY(M1, i));
     }
+    // convert matrix to a CSC matrix
+    OK1(SPEX_matrix_copy(&c, SPEX_DENSE, SPEX_MPZ, M1, option));
+    // free the triplet matrix
     SPEX_matrix_free(&M1, option);
 
+    // ---------------------------------------------------------------------------
     // read lb and ub matrix
+    // ---------------------------------------------------------------------------
     suffix = "_lo.mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -924,21 +965,17 @@ void SPEX_finish_LP
         perror("Error while opening file\n");
         return;
     }
-    info = SPEX_mmread(&M2, File, option);
-    fclose(File);
-    if (info != SPEX_OK)
-    {
-        SPEX_matrix_free(&M1, option);
-        SPEX_matrix_free(&M2, option);
-        return;
-    }
+    OK1(SPEX_mmread(&M2, File, option));
+    fclose(File);File = NULL;
     for (int64_t i = 0; i < M1->m; i++)
     {
         lb = MY_MATRIX_ENTRY(M1, i);
         ub = MY_MATRIX_ENTRY(M2, i);
+        if (lb<0)printf("lb[%ld]=%f\n",i+1,lb);
         if (lb == ub)
         {
             glp_set_col_bnds(LP, i+1, GLP_FX, lb, 0.0);
+            printf("x[%ld]=%f\n",i+1,lb);
         }
         else
         {
@@ -947,5 +984,8 @@ void SPEX_finish_LP
     }
     SPEX_matrix_free(&M1, option);
     SPEX_matrix_free(&M2, option);
+    *A_handle = A;
+    *b_handle = b;
+    *c_handle = c;
     return;
 }

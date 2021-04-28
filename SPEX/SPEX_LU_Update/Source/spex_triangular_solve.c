@@ -19,6 +19,8 @@
 
 #include "spex_lu_update_internal.h"
 
+#define SL(k) S->x.mpq[2*(k)]
+
 SPEX_info spex_triangular_solve // perform REF triangular solve for LDx=v
 (
     spex_scattered_vector *sv_x,// the scattered version of solution for LDx=v,
@@ -31,30 +33,25 @@ SPEX_info spex_triangular_solve // perform REF triangular solve for LDx=v
                         // could be NULL if not needed
     const int64_t k,    // compute x up to k-th IPGE iteration, that is, using
                         // the first k-1 columns of L
-    const SPEX_mat *L,// matrix L
-    const SPEX_mat *U,// matrix U
-    const int64_t *Ldiag,// L(k,k) can be found as L->v[k]->x[Ldiag[k]]
-    const int64_t *Ucp, // col pointers for col-wise nnz pattern of U
-    const int64_t *Ucx, // the value of k-th entry is found as
-                        // U->v[Uci[k]]->x[Ucx[k]]
-    mpq_t *S,           // the pending scale factor matrix
+    const SPEX_mat *L,  // matrix L
+    const SPEX_mat *U,  // matrix U
+    SPEX_matrix *S,     // a 2*n dense mpq matrix that stores pending scales
     const mpz_t *sd,    // array of scaled pivots
-    mpz_t *d,           // array of unscaled pivots
     const int64_t *P,   // row permutation
-    const int64_t *P_inv,// inverse of row permutation
-    const int64_t *Q    // column permutation
+    const int64_t *P_inv// inverse of row permutation
 )
 {
-    SPEX_info info;
-    int sgn;
-    int64_t j;
     if (!sv_x || !h || !last_update || !L || !S || !P || !P_inv || !sd)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
-    // there is no nnz in vk(P[last_update,n-2]), so proceed only when k=n-1
+    SPEX_info info;
+    int sgn;
+    int64_t j;
     int64_t n = sv_x->nzmax;
+
+    // there is no nnz in vk(P[last_update,n-2]), so proceed only when k=n-1
     if (i_2ndlast != NULL && *i_2ndlast == -1 && k != n-1)
     {
         return SPEX_OK;    
@@ -71,12 +68,11 @@ SPEX_info spex_triangular_solve // perform REF triangular solve for LDx=v
 
             // TODO add this to all caller of spex_ipge,
             // but no need to update spex_ipge
-            ASSERT(L->v[j]->i[Ldiag[j]] == P[j]);
+            // check if the first entry is the corresponding pivot
+            ASSERT(L->v[j]->i[0] == P[j]);
             // perform j-th IPGE update for x
-            SPEX_CHECK(spex_ipge(sv_x, h, i_2ndlast, L->v[j], P, P_inv,
-                sd, d, U->v[j]->x[Ucx[Ucp[Q[j]+1]-1]],
-                SPEX_LUU_2D(S, 1, j), SPEX_LUU_2D(S, 3, j), SPEX_LUU_2D(S, 2, j),
-                j, Ldiag[j]));
+            SPEX_CHECK(spex_ipge(sv_x, h, i_2ndlast, L->v[j], P, P_inv, sd, 
+                SL(j), j));
         }
         *last_update = k-1;
 

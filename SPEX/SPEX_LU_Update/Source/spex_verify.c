@@ -21,24 +21,22 @@
 SPEX_info spex_verify
 (
     bool *correct,         // indicate if the verification is passed
-    const SPEX_mat *L,  // lower triangular matrix
-    const SPEX_mat *U,  // upper triangular matrix
-    const SPEX_mat *A,  // Input matrix
+    const SPEX_mat *L,     // lower triangular matrix
+    const SPEX_mat *U,     // upper triangular matrix
+    const SPEX_mat *A,     // Input matrix
     int64_t *h,            // history vector
+    SPEX_matrix *S,        // the pending scale factor matrix
     const mpz_t *sd,       // array of scaled pivots
-    mpz_t *d,              // array of unscaled pivots
-    mpq_t *S,              // the pending scale factor matrix
     const int64_t *P,      // row permutation
-    const int64_t *P_inv,  // inverse of row permutation
-    const int64_t *Q,      // column permutation
     const int64_t *Q_inv,  // inverse of column permutation
-    const int64_t *Ldiag,  // L(k,k) can be found as L->v[k]->x[Ldiag[k]]
-    const int64_t *Ucp,    // col pointers for col-wise nnz pattern of U
-    const int64_t *Ucx,    // the value of k-th entry is found as 
-                           // U->v[Uci[k]]->x[Ucx[k]]
     const SPEX_options *option// command options
 )
 {
+    if (!correct || !L || !U || !A || !h || !sd || !S || !P || !Q_inv)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+
     SPEX_info info;
     int64_t tmp, i, n = L->n;
     int sgn;
@@ -67,8 +65,7 @@ SPEX_info spex_verify
     // -------------------------------------------------------------------------
     // solve LD^(-1)Ux = b for x
     // -------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_solve(&x, b, h, A, L, U, S, sd, d, Ldiag, Ucp, Ucx,
-        P, P_inv, Q, Q_inv, true, option));
+    SPEX_CHECK(SPEX_solve(&x, b, L, U, A->scale, false, h, S, sd, P, Q_inv, option));
 
     // -------------------------------------------------------------------------
     // compute b2 = A*x
