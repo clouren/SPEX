@@ -748,7 +748,7 @@ SPEX_info SPEX_mpz_get_si
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *x = mpz_get_si (y) ;
+    *x = (int64_t) mpz_get_si (y) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
@@ -804,6 +804,25 @@ SPEX_info SPEX_mpz_mul
 {
     SPEX_GMPZ_WRAPPER_START (a) ;
     mpz_mul (a, b, c) ;
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK) ;
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpz_mul_si
+//------------------------------------------------------------------------------
+
+/* Purpose: Safely compute a = b*c */
+
+SPEX_info SPEX_mpz_mul_si
+(
+    mpz_t a,
+    const mpz_t b,
+    const int64_t c
+)
+{
+    SPEX_GMPZ_WRAPPER_START (a) ;
+    mpz_mul_si (a, b, (long int) c) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
@@ -1665,7 +1684,7 @@ SPEX_info SPEX_mpfr_set_si
 )
 {
     SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_set_si (x, y, rnd) ;
+    mpfr_set_si (x, (long int) y, rnd) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
@@ -1779,7 +1798,7 @@ SPEX_info SPEX_mpfr_get_si
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *x = mpfr_get_si (y, rnd) ;
+    *x = (int64_t) mpfr_get_si (y, rnd) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }

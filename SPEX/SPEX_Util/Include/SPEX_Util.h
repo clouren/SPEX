@@ -603,6 +603,8 @@ SPEX_info SPEX_mpz_set_q (mpz_t x, const mpq_t y) ;
 
 SPEX_info SPEX_mpz_mul (mpz_t a, const mpz_t b, const mpz_t c) ;
 
+SPEX_info SPEX_mpz_mul_si (mpz_t a, const mpz_t b, const int64_t c) ;
+
 SPEX_info SPEX_mpz_sub (mpz_t a, const mpz_t b, const mpz_t c) ;
 
 SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
