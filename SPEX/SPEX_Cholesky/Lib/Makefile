@@ -23,7 +23,7 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 #CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 # SPEX_Chol depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
-LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
+LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lspexutil -lm -lgmp -lmpfr
 
 C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
 
@@ -61,7 +61,7 @@ $(AR_TARGET): $(OBJ)
 #-------------------------------------------------------------------------------
 
 # install SPEX_LU
-install: $(AR_TARGET) #$(INSTALL_LIB)/$(SO_TARGET)
+install: $(AR_TARGET) $(INSTALL_LIB)/$(SO_TARGET)
 
 $(INSTALL_LIB)/$(SO_TARGET): $(OBJ)
 	@mkdir -p $(INSTALL_LIB)
