@@ -199,6 +199,7 @@ purge:
 #	- ( cd PIRO_BAND && $(MAKE) purge )
 #	- ( cd SKYLINE_SVD && $(MAKE) purge )
 	- ( cd SPEX/SPEX_Left_LU && $(MAKE) purge )
+	- ( cd SPEX/SPEX_Update && $(MAKE) purge )
 	- ( cd SPEX/SPEX_Util && $(MAKE) purge )
 	- ( cd SPEX/SPEX_Cholesky && $(MAKE) purge )
 	- ( cd SPEX/SPEX_WAMF && $(MAKE) purge )
