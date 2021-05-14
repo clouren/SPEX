@@ -37,10 +37,11 @@
 SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
-    bool check_if_numerically_symmetric
+    bool check_if_numerically_symmetric,
             // if true, check A=A' (pattern & values). if false,
             // only check if the pattern of A is symmetric, not
             // the values
+    const SPEX_options *option
 )
 {
     int64_t j;
@@ -48,7 +49,7 @@ SPEX_info SPEX_determine_symmetry
     // Declare matrix T
     SPEX_matrix *T = NULL, *R = NULL ;
     // T = A'
-    SPEX_CHECK( SPEX_transpose(&T, A));
+    SPEX_CHECK( SPEX_transpose(&T, A, option));
 
     // Check if column pointers are the same
     for (j = 0; j <= A->n; j++)
@@ -62,7 +63,7 @@ SPEX_info SPEX_determine_symmetry
     }
 
     // R = T'
-    SPEX_CHECK( SPEX_transpose(&R, T));
+    SPEX_CHECK( SPEX_transpose(&R, T, option));
     // then compare R and T
 
     // Check if i values are the same

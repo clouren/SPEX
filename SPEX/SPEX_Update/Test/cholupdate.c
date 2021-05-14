@@ -49,10 +49,10 @@ int main( int argc, char* argv[])
     SPEX_options *option = NULL;
     SPEX_Chol_analysis *analysis = NULL;
     SPEX_matrix *Prob_A = NULL, *Prob_b = NULL, *Prob_c = NULL;
-    SPEX_matrix *L1 = NULL, *rhos = NULL, *A1 = NULL, *tmpA = NULL;
-    SPEX_mat *L2 = NULL, *A2 = NULL;
+    SPEX_matrix *L1 = NULL, *rhos1 = NULL, *A1 = NULL, *tmpA = NULL;
+    SPEX_matrix *rhos2 = NULL;
+    SPEX_matrix *L2 = NULL, *A2 = NULL;
     SPEX_vector *w = NULL;
-    mpz_t *sd = NULL;
     mpz_t tmpz, tmpz1;
     int64_t *P2_inv = NULL, *P2 = NULL;
     int64_t *basis = NULL, *used= NULL;
@@ -122,10 +122,11 @@ int main( int argc, char* argv[])
     }
 
     // allocate A2 with n sparse vectors with initially n nnz
-    OK(SPEX_mat_alloc(&A2, n, n, true));
+    OK(SPEX_matrix_allocate(&A2, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, n, 0, false,
+        true, option));
     for (i = 0; i < n; i++)
     {
-        OK(SPEX_vector_realloc(A2->v[i], n));
+        OK(SPEX_vector_realloc(A2->v[i], n, option));
     }
     printf("set of basic variables found, now computing A=B*B^T....\n");
     for (i = 0; i < n; i++)
@@ -213,7 +214,7 @@ int main( int argc, char* argv[])
         }
     }
     OK(SPEX_mpq_mul(A2->scale, Prob_A->scale, Prob_A->scale));
-    OK(SPEX_mat_to_CSC(&A1, A2, NULL, true, option));
+    OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
 
     //--------------------------------------------------------------------------
     // perform Cholesky factorization
@@ -222,7 +223,7 @@ int main( int argc, char* argv[])
     OK(SPEX_Chol_preorder(&analysis, A1, option));
     OK(SPEX_Chol_permute_A(&tmpA, A1, analysis));
     bool left_looking = true;// True = left, false = up
-    OK(SPEX_Chol_Factor(&L1, &rhos, analysis, tmpA, left_looking, option));
+    OK(SPEX_Chol_Factor(&L1, &rhos1, analysis, tmpA, left_looking, option));
 
     //--------------------------------------------------------------------------
     // generate initial inputs for LU update
@@ -231,26 +232,28 @@ int main( int argc, char* argv[])
     // generate permutation vectors P, Q, P_inv, Q_inv and vectors sd
     P2     = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     P2_inv = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
-    sd = SPEX_create_mpz_array(n);
-    if (!P2 || !P2_inv || !sd)
+    if (!P2 || !P2_inv)
     {
         FREE_WORKSPACE;
         return 0;
     }
+    OK(SPEX_matrix_allocate(&rhos2, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
+        option));
     for (i = 0; i < n; i++)
     {
         P2[i] = analysis->q[i];
         P2_inv[P2[i]] = i;
-        OK(SPEX_mpz_set(sd[i], SPEX_1D(rhos, i, mpz)));
+        OK(SPEX_mpz_set(SPEX_1D(rhos2, i, mpz), SPEX_1D(rhos1, i, mpz)));
     }
 
     // convert the factorization to SPEX_mat to be used in the update process
-    OK(SPEX_CSC_to_mat(&L2, P2, true, L1, option));
-    OK(SPEX_mat_canonicalize(L2, P2));
+    OK(SPEX_matrix_copy(&L2, SPEX_DYNAMIC_CSC, SPEX_MPZ, L1, option));
+    OK(SPEX_permute_row(L2, P2, option));
+    OK(SPEX_matrix_canonicalize(L2, P2, option));
 
     // allocate space for scattered vector w
-    OK(SPEX_vector_alloc(&w, 0, true));
-    OK(SPEX_vector_realloc(w, n));
+    OK(SPEX_vector_allocate(&w, 0, true, option));
+    OK(SPEX_vector_realloc(w, n, option));
 
     //--------------------------------------------------------------------------
     // perform update
@@ -284,7 +287,7 @@ int main( int argc, char* argv[])
     printf("computing Cholesky rank-1 update if column %ld is add to B...\n",
         new_col);
     start1 = clock();
-    OK(SPEX_Update_Chol_Rank1(L2, sd, P2, P2_inv, w, 1));
+    OK(SPEX_Update_Chol_Rank1(L2, rhos2, P2, P2_inv, w, 1));
     end1 = clock();
 
     //--------------------------------------------------------------------------
@@ -351,15 +354,16 @@ int main( int argc, char* argv[])
         }
     }
     SPEX_matrix_free(&A1, NULL);
-    OK(SPEX_mat_to_CSC(&A1, A2, NULL, true, option));
+    OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
     SPEX_FREE(analysis);
     SPEX_matrix_free(&tmpA, NULL);
+    SPEX_matrix_free(&rhos1, NULL);
 
     // perform Cholesky factorization
     start2 = clock();
     OK(SPEX_Chol_preorder(&analysis, A1, option));
     OK(SPEX_Chol_permute_A(&tmpA, A1, analysis));
-    OK(SPEX_Chol_Factor(&L1, &rhos, analysis, tmpA, left_looking, option));
+    OK(SPEX_Chol_Factor(&L1, &rhos1, analysis, tmpA, left_looking, option));
     end2 = clock();
 
     for (j = 0; j < n; j++)

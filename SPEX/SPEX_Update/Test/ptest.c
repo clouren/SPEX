@@ -15,7 +15,6 @@
 #define FREE_WORKSPACE                           \
 {                                                \
     fclose(out_file);                            \
-    if (mat_file!=NULL) fclose(mat_file);        \
     SPEX_FREE(option);                           \
     SPEX_finalize() ;                            \
 }
@@ -50,13 +49,13 @@ int main( int argc, char* argv[])
     int sgn;
     double t1 = 0, t2 = 0, t3 = 0, t_solve = 0;
     SPEX_options* option = NULL;
-    SPEX_matrix *Prob_A = NULL, *Prob_b = NULL, *Prob_c = NULL;
+    SPEX_matrix *Prob_A = NULL, *Prob_c = NULL, *tempA = NULL;
     SPEX_matrix *L1 = NULL, *U1 = NULL, *rhos = NULL, *A1 = NULL;
-    SPEX_mat *L2 = NULL, *U2 = NULL, *A2 = NULL, *b = NULL, *c = NULL,
-             *x  = NULL, *y = NULL;
-    SPEX_mat *L3 = NULL, *U3 = NULL, *A3 = NULL;
+    SPEX_matrix *rhos2 = NULL, *rhos3 = NULL;
+    SPEX_matrix *L2 = NULL, *U2 = NULL, *A2 = NULL;
+    SPEX_matrix *b = NULL, *c = NULL,  *x  = NULL, *y = NULL;
+    SPEX_matrix *L3 = NULL, *U3 = NULL, *A3 = NULL;
     SPEX_vector *tmpv, *vk = NULL, *vk3 = NULL;
-    mpz_t *sd = NULL, *sd3 = NULL;
     mpz_t z, minz, tmpz;
     mpq_t minq, tmpq, one;
     SPEX_LU_analysis* analysis = NULL;
@@ -65,7 +64,7 @@ int main( int argc, char* argv[])
     int64_t *basis = NULL, *h = NULL, *used_as_basis = NULL;
     clock_t start_llu, start_luu, end_llu, end_luu, start1, end1, start2, end2,
             start_luu3 = 0, end_luu3 = 0;
-    FILE *mat_file = NULL, *out_file = NULL;
+    FILE *out_file = NULL;
     glp_prob *LP;
     glp_smcp parm;
     LP = glp_create_prob();
@@ -96,7 +95,7 @@ int main( int argc, char* argv[])
     char file_name[1000] = "TestMats/";
     strcat(file_name, prob_name);
     // read matrix A, arrays b, lb, ub and c to LP
-    SPEX_construct_LP(LP, &Prob_A, &Prob_b, &Prob_c, file_name, option);
+    SPEX_construct_LP(LP, &Prob_A, &b, &Prob_c, file_name, option);
     n = Prob_A->m;
 
     //--------------------------------------------------------------------------
@@ -164,12 +163,13 @@ int main( int argc, char* argv[])
     }
 
     // allocate A2 with n sparse vectors with initially 0 nnz
-    OK(SPEX_mat_alloc(&A2, n, n, true));
+    OK(SPEX_matrix_allocate(&A2, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, n, 0,
+        false, true, option));
     for (i = 0; i < n; i++)
     {
         if (basis[i] < n)
         {
-            OK(SPEX_vector_realloc(A2->v[i], 1));
+            OK(SPEX_vector_realloc(A2->v[i], 1, option));
             mpq_get_num(A2->v[i]->x[0], Prob_A->scale);
             A2->v[i]->i[0] = basis[i];
             A2->v[i]->nz = 1;
@@ -178,7 +178,8 @@ int main( int argc, char* argv[])
         {
             j = basis[i]-n;
             used_as_basis[j] = i;
-            OK(SPEX_vector_realloc(A2->v[i], Prob_A->p[j+1]-Prob_A->p[j]));
+            OK(SPEX_vector_realloc(A2->v[i], Prob_A->p[j+1]-Prob_A->p[j],
+                option));
             nz = 0;
             for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
             {
@@ -190,7 +191,8 @@ int main( int argc, char* argv[])
         }
     }
     OK(SPEX_mpq_set(A2->scale, Prob_A->scale));
-    OK(SPEX_mat_to_CSC(&A1, A2, NULL, true, option));
+    // get a CSC x MPZ A1 from dynamic_CSC x MPZ A2
+    OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
 
     //--------------------------------------------------------------------------
     // perform LU factorization for the initial matrix A1
@@ -209,7 +211,7 @@ int main( int argc, char* argv[])
     //--------------------------------------------------------------------------
     // generate initial inputs for LU update
     //--------------------------------------------------------------------------
-    // generate permutation vectors P, Q, P_inv, Q_inv and vectors sd
+    // generate permutation vectors P, Q, P_inv, Q_inv and vectors rhos
     Q      = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     Q3     = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     P      = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
@@ -218,46 +220,46 @@ int main( int argc, char* argv[])
     Q3_inv = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     P_inv  = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     P3_inv = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
-    sd  = SPEX_create_mpz_array(n);
-    sd3 = SPEX_create_mpz_array(n);
     h  = (int64_t*) SPEX_calloc(n, sizeof(int64_t));
-    if (!sd  || !P  || !Q  || !P_inv  || !Q_inv  ||
-        !sd3 || !P3 || !Q3 || !P3_inv || !Q3_inv || !h)
+    if (!P  || !Q  || !P_inv  || !Q_inv  ||
+        !P3 || !Q3 || !P3_inv || !Q3_inv || !h)
     {
         FREE_WORKSPACE;
         return 0;
     }
+    OK(SPEX_matrix_allocate(&rhos2, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
+        option));
+    OK(SPEX_matrix_allocate(&rhos3, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
+        option));
     for (i = 0; i < n; i++)
     {
         Q[i] = analysis->q[i];
         P_inv[i] = P1_inv[i];
         P[P_inv[i]] = i;
         Q_inv[Q[i]] = i;
-        OK(SPEX_mpz_set(sd[i], SPEX_1D(rhos, i, mpz)));
+        OK(SPEX_mpz_set(SPEX_1D(rhos2, i, mpz), SPEX_1D(rhos, i, mpz)));
     }
 
     // convert the factorization to SPEX_mat to be used in the update process
-    OK(SPEX_CSC_to_mat(&L2, P, true,  L1, option));
-    OK(SPEX_mat_canonicalize(L2, P));
-    OK(SPEX_CSC_to_mat(&U2, Q, false, U1, option));// U2 stored in row-wise
-    OK(SPEX_mat_canonicalize(U2, Q));
+    //OK(SPEX_CSC_to_mat(&L2, P, true,  L1, option));
+    OK(SPEX_matrix_copy(&L2, SPEX_DYNAMIC_CSC, SPEX_MPZ, L1, option));
+    OK(SPEX_permute_row(L2, P, option));
+    OK(SPEX_matrix_canonicalize(L2, P, option));
+    //OK(SPEX_CSC_to_mat(&U2, Q, false, U1, option));// U2 stored in row-wise
+    OK(SPEX_transpose(&tempA, U1, option));
+    OK(SPEX_matrix_copy(&U2, SPEX_DYNAMIC_CSC, SPEX_MPZ, tempA, option));
+    OK(SPEX_permute_row(U2, Q, option));
+    OK(SPEX_matrix_canonicalize(U2, Q, option));
 
     // allocate space for vk
-    OK(SPEX_vector_alloc(&vk, 0, true));
-    OK(SPEX_vector_alloc(&vk3, 0, true));
+    OK(SPEX_vector_allocate(&vk, 0, true, option));
+    OK(SPEX_vector_allocate(&vk3, 0, true, option));
 
-    // get SPEX_mat b from SPEX_matrix Prob_b
-    OK(SPEX_mat_alloc(&b, 1, n, true));
-    SPEX_FREE(b->v[0]->i); // no need for dense vector
-    b->v[0]->x = Prob_b->x.mpz;
-    Prob_b->x.mpz = NULL;
-    OK(SPEX_mpq_set(b->scale, Prob_b->scale));
-    OK(SPEX_matrix_free(&Prob_b, option));
-
-    // allocate space for c
-    OK(SPEX_mat_alloc(&c, 1, n, false));
-    // allocate space for y
-    OK(SPEX_mat_alloc(&y, 1, n, false));
+    // allocate space for c and y
+    OK(SPEX_matrix_allocate(&c, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
+        option));
+    OK(SPEX_matrix_allocate(&y, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
+        option));
 
     printf("scales of A and b are %s\n", mpq_equal(Prob_A->scale, b->scale)==0?
         "different":"same");
@@ -271,8 +273,8 @@ int main( int argc, char* argv[])
         start1 = clock();
         start2 = clock();
         // solve for x_basic
-        OK(SPEX_Update_Solve(&x, b, L2, U2, A2->scale, h, (const mpz_t*)sd, P,
-            Q_inv, option));
+        OK(SPEX_Update_Solve(&x, b, L2, U2, A2->scale, h,
+            (const SPEX_matrix*)rhos2, P, Q_inv, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
@@ -285,23 +287,23 @@ int main( int argc, char* argv[])
             {
                 //j = j-1;
                 // build vector c
-                OK(SPEX_mpz_set_ui(c->v[0]->x[i], 0));
+                OK(SPEX_mpz_set_ui(c->x.mpz[i], 0));
             }
             else
             {
                 j = j-n;
                 // build vector c
-                OK(SPEX_mpz_set(c->v[0]->x[i], Prob_c->x.mpz[j]));
+                OK(SPEX_mpz_set(c->x.mpz[i], Prob_c->x.mpz[j]));
 
                 // compute objective value z
-                OK(SPEX_mpz_addmul(z, c->v[0]->x[i], x->v[0]->x[i]));
+                OK(SPEX_mpz_addmul(z, c->x.mpz[i], x->x.mpz[i]));
 
-                OK(SPEX_mpq_set_z(tmpq, x->v[0]->x[i]));
+                OK(SPEX_mpq_set_z(tmpq, x->x.mpz[i]));
                 OK(SPEX_mpq_div(tmpq, tmpq, x->scale));
 #if 1
-                if (mpz_sgn(x->v[0]->x[i]) * mpq_sgn(x->scale) < 0)
+                if (mpz_sgn(x->x.mpz[i]) * mpq_sgn(x->scale) < 0)
                 {
-                    printf("xz[%ld]<0 %d %d %f \n",j,mpz_sgn(x->v[0]->x[i]),mpq_sgn(x->scale),mpq_get_d(tmpq));
+                    printf("xz[%ld]<0 %d %d %f \n",j,mpz_sgn(x->x.mpz[i]),mpq_sgn(x->scale),mpq_get_d(tmpq));
                     gmp_fprintf(out_file,"%Qd\n",tmpq);
                     OK(SPEX_PANIC);
                 }
@@ -333,8 +335,8 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         // solve A'*c_new = c for updated coefficient for objective function
         start2 = clock();
-        OK(SPEX_Update_Solve(&c, c, U2, L2, A2->scale, h, (const mpz_t*) sd, Q,
-            P_inv, option));
+        OK(SPEX_Update_Solve(&c, c, U2, L2, A2->scale, h,
+            (const SPEX_matrix*) rhos2, Q, P_inv, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
@@ -351,7 +353,7 @@ int main( int argc, char* argv[])
             for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
             {
                 i = Prob_A->i[p];
-                OK(SPEX_mpz_addmul(tmpz, Prob_A->x.mpz[p], c->v[0]->x[i]));
+                OK(SPEX_mpz_addmul(tmpz, Prob_A->x.mpz[p], c->x.mpz[i]));
             }
             OK(SPEX_mpq_set_z(tmpq, tmpz));
             OK(SPEX_mpq_div(tmpq, tmpq, Prob_A->scale));
@@ -384,17 +386,17 @@ int main( int argc, char* argv[])
         // reset y[i] = 0
         for (i = 0; i < n; i++)
         {
-            OK(SPEX_mpz_set_ui(y->v[0]->x[i], 0));
+            OK(SPEX_mpz_set_ui(y->x.mpz[i], 0));
         }
         // allocate space for vk if needed
         vk->nz = Prob_A->p[new_col+1]-Prob_A->p[new_col];
         if (vk->nzmax < vk->nz)
         {
-            OK(SPEX_vector_realloc(vk, vk->nz));
+            OK(SPEX_vector_realloc(vk, vk->nz, option));
         }
         if (vk3->nzmax < vk->nz)
         {
-            OK(SPEX_vector_realloc(vk3, vk->nz));
+            OK(SPEX_vector_realloc(vk3, vk->nz, option));
         }
         i = 0;
         j = 0;
@@ -403,9 +405,9 @@ int main( int argc, char* argv[])
         {
             for (; j < Prob_A->i[p]; j++)
             {
-                OK(SPEX_mpz_set_ui(y->v[0]->x[j], 0));
+                OK(SPEX_mpz_set_ui(y->x.mpz[j], 0));
             }
-            OK(SPEX_mpz_set(y->v[0]->x[j], SPEX_1D(Prob_A, p, mpz)));// dense y
+            OK(SPEX_mpz_set(y->x.mpz[j], SPEX_1D(Prob_A, p, mpz)));// dense y
 
             vk->i[i] = j;
             OK(SPEX_mpz_set(vk->x[i], SPEX_1D(Prob_A, p, mpz)));// sparse vk
@@ -423,36 +425,36 @@ int main( int argc, char* argv[])
         printf("\n double checking the nnz in column %ld:\n",new_col);
         for (i = 0; i<n;i++)
         {
-            if (mpz_sgn(y->v[0]->x[i])!=0)printf("%ld ",i);
+            if (mpz_sgn(y->x.mpz[i])!=0)printf("%ld ",i);
         }
         printf("\n nnz in solution:\n");
 #endif
 
         // solve for Ay = y
         start2 = clock();
-        OK(SPEX_Update_Solve(&y, y, L2, U2,A2->scale, h, (const mpz_t*) sd, P,
-            Q_inv, option));
+        OK(SPEX_Update_Solve(&y, y, L2, U2, A2->scale, h,
+            (const SPEX_matrix*) rhos2, P, Q_inv, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
         // perform ratio test to find existing variable
         k = -1;
-        int sd_sgn = mpz_sgn(sd[n-1]);
+        int sd_sgn = mpz_sgn(rhos2->x.mpz[n-1]);
         for (i = 0; i < n; i++)
         {
-            int y_sgn = mpz_sgn(y->v[0]->x[i]) * sd_sgn;
+            int y_sgn = mpz_sgn(y->x.mpz[i]) * sd_sgn;
 
             if (y_sgn > 0)
             {
-                if (mpz_sgn(x->v[0]->x[i]) == 0)
+                if (mpz_sgn(x->x.mpz[i]) == 0)
                 {
                     k = i;
                     printf("found 0!! This update won't improve obj value\n");
                     break;
                 }
 
-                OK(SPEX_mpq_set_num(tmpq, x->v[0]->x[i]));
-                OK(SPEX_mpq_set_den(tmpq, y->v[0]->x[i]));
+                OK(SPEX_mpq_set_num(tmpq, x->x.mpz[i]));
+                OK(SPEX_mpq_set_den(tmpq, y->x.mpz[i]));
                 OK(SPEX_mpq_canonicalize(tmpq));
                 OK(SPEX_mpq_mul(tmpq, tmpq, y->scale));
                 OK(SPEX_mpq_div(tmpq, tmpq, x->scale));
@@ -508,10 +510,10 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         tmpv = A2->v[k]; A2->v[k] = vk; vk = tmpv;
         OK(SPEX_matrix_free(&A1, option));
-        OK(SPEX_mat_to_CSC(&A1, A2, NULL, true, option));
+        OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
         if (iter == 0)
         {
-            OK(SPEX_CSC_to_mat(&A3, NULL, true, A1, option));
+            OK(SPEX_matrix_copy(&A3, SPEX_DYNAMIC_CSC, SPEX_MPZ, A2, option));
         }
         tmpv = A2->v[k]; A2->v[k] = vk; vk = tmpv;
 
@@ -544,7 +546,7 @@ int main( int argc, char* argv[])
         {
             start_luu3 = clock();
 
-            OK(SPEX_Update_LU_ColRep(A3, L3, U3, sd3, P3, P3_inv, Q3, Q3_inv,
+            OK(SPEX_Update_LU_ColRep(A3, L3, U3, rhos3, P3, P3_inv, Q3, Q3_inv,
                 &vk3, k, option));
 
             end_luu3 = clock();
@@ -571,22 +573,28 @@ int main( int argc, char* argv[])
             P3_inv[i] = P1_inv[i];
             P3[P3_inv[i]] = i;
             Q3_inv[Q3[i]] = i;
-            OK(SPEX_mpz_set(sd3[i], SPEX_1D(rhos, i, mpz)));
+            OK(SPEX_mpz_set(SPEX_1D(rhos3, i, mpz), SPEX_1D(rhos, i, mpz)));
         }
         // convert L and U to SPEX_mat to be used in the update process
-        SPEX_mat_free(&L3);
-        SPEX_mat_free(&U3);
-        OK(SPEX_CSC_to_mat(&L3, P3, true,  L1, option));
-        OK(SPEX_mat_canonicalize(L3, P3));
-        OK(SPEX_CSC_to_mat(&U3, Q3, false, U1, option));// U2 stored in row-wise
-        OK(SPEX_mat_canonicalize(U3, Q3));
+        SPEX_matrix_free(&L3, option);
+        SPEX_matrix_free(&U3, option);
+        //OK(SPEX_CSC_to_mat(&L3, P3, true,  L1, option));
+        OK(SPEX_matrix_copy(&L3, SPEX_DYNAMIC_CSC, SPEX_MPZ, L1, option));
+        OK(SPEX_permute_row(L3, P3, option));
+        OK(SPEX_matrix_canonicalize(L3, P3, option));
+        //OK(SPEX_CSC_to_mat(&U3, Q3, false, U1, option));// U2 stored in row-wise
+        OK(SPEX_transpose(&tempA, U1, option));
+        OK(SPEX_matrix_copy(&U3, SPEX_DYNAMIC_CSC, SPEX_MPZ, tempA, option));
+        OK(SPEX_matrix_free(&tempA, option));
+        OK(SPEX_permute_row(U3, Q3, option));
+        OK(SPEX_matrix_canonicalize(U3, Q3, option));
 
         //----------------------------------------------------------------------
         // perform LU update for matrix A2->A1
         //----------------------------------------------------------------------
         start_luu = clock();
 
-        OK(SPEX_Update_LU_ColRep(A2, L2, U2, sd, P, P_inv, Q, Q_inv, &vk, k,
+        OK(SPEX_Update_LU_ColRep(A2, L2, U2, rhos2, P, P_inv, Q, Q_inv, &vk, k,
             option));
 
         end_luu = clock();

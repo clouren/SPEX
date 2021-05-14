@@ -33,21 +33,14 @@ OBJ = \
     spex_update_insert_new_entry.o \
     spex_update_ipge.o \
     SPEX_Update_LU_ColRep.o \
-    SPEX_delete_mpz_array.o\
-    SPEX_create_mpz_array.o\
-    SPEX_mat_alloc.o \
-    spex_update_dppu1.o                    SPEX_mat_free.o \
+    spex_update_dppu1.o\
     spex_update_dppu2.o\
     spex_update_finalize_and_insert_vk.o   SPEX_Update_Solve.o \
     spex_update_triangular_solve.o \
-    spex_update_find_next_nz.o             SPEX_vector_alloc.o \
-    spex_update_forward_sub.o              SPEX_vector_free.o \
-    SPEX_vector_realloc.o \
+    spex_update_find_next_nz.o \
+    spex_update_forward_sub.o \
     spex_update_verify.o \
-    SPEX_mat_to_CSC.o               SPEX_CSC_to_mat.o\
-    SPEX_mat_canonicalize.o\
     SPEX_Update_Chol_Rank1.o
-#    spex_delete_scattered_vector.o  spex_create_scattered_vector.o \
 
 
 $(OBJ): ../Include/SPEX_Update.h ../Source/spex_update_internal.h Makefile

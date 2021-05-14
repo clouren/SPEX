@@ -190,9 +190,69 @@ typedef struct SPEX_options
 // To free it, simply use SPEX_FREE (*option).
 SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
-// check if SPEX_initialize* has been called
-bool spex_initialized ( void ) ;        // true if called, false if not
-void spex_set_initialized (bool s) ;    // set global initialzed flag to s
+//------------------------------------------------------------------------------
+// SPEX_vector: a compressed sparse vector data structure used to form
+// the dynamic matrix.
+// This is only used publicly when calling the functions in SPEX_Update
+// to construct the vector to modify original matrix A, (either w for
+// A'=A+sigma*w*w^T in rank-1 update/downdate or vk to be swapped with A->v[k]
+// in the update for column replacement). This is not intended to be used for
+// building any n-by-1 vector (e.g., the right-hand- side vector b in Ax=b),
+// which should be considered as a n-be-1 SPEX_matrix.
+//------------------------------------------------------------------------------
+
+typedef struct
+{
+    int64_t nz;   // number of nonzeros. nz is meaningless for a dense vector
+    int64_t nzmax;// size of array i and x, nz <= nzmax
+    int64_t *i;   // array of size nzmax that contains the column/row indices
+                  // of each nnz. For a dense vector, i == NULL
+    mpz_t *x;     // array of size nzmax that contains the values of each nnz
+    mpq_t scale;  // a scale factor that has not applied to entries in this v.
+                  // The real value of the i-th nonzero entry in the list should
+                  // be computed as x[i]*scale.
+} SPEX_vector;
+
+//------------------------------------------------------------------------------
+// SPEX_vector_allocate: allocate a SPEX_vector with nzmax entries
+//------------------------------------------------------------------------------
+
+// *v_handle->x is allocated as a mpz_t vector with nzmax mpz_t entries
+// initialized.
+// If IsSparse == true, then *v_handle->i is allocated with length of nzmax.
+// If IsSparse == false, the nnz pattern vector *v_handle->i is set to NULL.
+
+SPEX_info SPEX_vector_allocate
+(
+    SPEX_vector **v_handle,         // vector to be allocated
+    const int64_t nzmax,            // number of nnz entries in v
+    const bool IsSparse,            // indicate if the vector is sparse
+    const SPEX_options *option
+);
+
+//------------------------------------------------------------------------------
+// SPEX_vector_realloc: reallocate SPEX_vector with new_size entries
+//------------------------------------------------------------------------------
+
+// The input vector is always considered as a sparse vector. Therefore, both
+// v->i and v->x will be reallocated to size of new_size.
+
+SPEX_info SPEX_vector_realloc
+(
+    SPEX_vector* v,                 // the vector to be expanded
+    const int64_t new_size,         // desired new size for v
+    const SPEX_options *option
+);
+
+//------------------------------------------------------------------------------
+// SPEX_vector_free: free the given SPEX_vector object and set *v = NULL
+//------------------------------------------------------------------------------
+
+void SPEX_vector_free
+(
+    SPEX_vector **v,                // vector to be deleted
+    const SPEX_options *option
+);
 
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix
@@ -206,11 +266,14 @@ typedef enum
 {
     SPEX_CSC = 0,           // matrix is in compressed sparse column format
     SPEX_TRIPLET = 1,       // matrix is in sparse triplet format
-    SPEX_DENSE = 2          // matrix is in dense format
+    SPEX_DENSE = 2,         // matrix is in dense format
+    SPEX_DYNAMIC_CSC = 3    // matrix is in dynamic CSC format with each
+                            // column dynamically allocated as SPEX_vector
 }
 SPEX_kind ;
 
-// Each of the three formats can have values of 5 different data types: mpz_t,
+// The last format (SPEX_DYNAMIC_CSC) only support mpz_t type, while each of
+// the first three formats can have values of 5 different data types: mpz_t,
 // mpq_t, mpfr_t, int64_t, and double:
 
 typedef enum
@@ -223,8 +286,8 @@ typedef enum
 }
 SPEX_type ;
 
-// This gives a total of 15 different matrix types.  Not all functions accept
-// all 15 matrices types, however.
+// This gives a total of 16 different matrix types.  Not all functions accept
+// all 16 matrices types, however.
 
 // Suppose A is an m-by-n matrix with nz <= nzmax entries.
 // The p, i, j, and x components are defined as:
@@ -248,6 +311,17 @@ SPEX_type ;
 //      in column-oriented format.  The value of A(i,j) is A->x.type [p]
 //      with p = i + j*A->m.  A->nz is ignored; nz is A->m * A->n.
 
+// (3) SPEX_DYNAMIC_CSC: A sparse matrix in dynamic CSC (compressed sparse
+//     column) format with the number of nonzeros in each column changing
+//     independently and dynamically, which is only used in the update
+//     algorithms. The type of entry in this kind of matrix can only be mpz_t.
+//     For this kind, A->nzmax, A->nz, A->p, A->i, A->x and A->*_shallow are
+//     ignored and pointers p, i and x are remained as NULL pointers. To access
+//     entries in column j, A->v[j]->i[0 ... A->v[j]->nz] give the row indices
+//     of all nonzeros, and the mpz_t values of these entries appear in the
+//     same locations in A->v[j]->x. A->v[j]->nzmax is the max number of
+//     nonzeros allocated. 
+
 // The SPEX_matrix may contain 'shallow' components, A->p, A->i, A->j, and
 // A->x.  For example, if A->p_shallow is true, then a non-NULL A->p is a
 // pointer to a read-only array, and the A->p array is not freed by
@@ -258,26 +332,27 @@ typedef struct
 {
     int64_t m ;         // number of rows
     int64_t n ;         // number of columns
-    int64_t nzmax ;     // size of A->i, A->j, and A->x
+    int64_t nzmax ;     // size of A->i, A->j, and A->x.
+                        // Ignored for dynamic_CSC matrix
     int64_t nz ;        // # nonzeros in a triplet matrix .
-                        // Ignored for CSC and dense matrices.
-    SPEX_kind kind ;    // CSC, triplet, or dense
+                        // Ignored for CSC, dense and dynamic_CSC matrices.
+    SPEX_kind kind ;    // CSC, triplet, dense or dynamic_CSC
     SPEX_type type ;    // mpz, mpq, mpfr, int64, or fp64 (double)
 
     int64_t *p ;        // if CSC: column pointers, an array size is n+1.
-                        // if triplet or dense: A->p is NULL.
+                        // if triplet, dense or dynamic_CSC: A->p is NULL.
     bool p_shallow ;    // if true, A->p is shallow.
 
     int64_t *i ;        // if CSC or triplet: row indices, of size nzmax.
-                        // if dense: A->i is NULL.
+                        // if dense or dynamic_CSC: A->i is NULL.
     bool i_shallow ;    // if true, A->i is shallow.
 
     int64_t *j ;        // if triplet: column indices, of size nzmax.
-                        // if CSC or dense: A->j is NULL.
+                        // if CSC, dense or dynamic_CSC: A->j is NULL.
     bool j_shallow ;    // if true, A->j is shallow.
 
     union               // A->x.type has size nzmax.
-    {
+    {                   // if dynamic_CSC: A->x is NULL.
         mpz_t *mpz ;            // A->x.mpz
         mpq_t *mpq ;            // A->x.mpq
         mpfr_t *mpfr ;          // A->x.mpfr
@@ -286,9 +361,25 @@ typedef struct
     } x ;
     bool x_shallow ;    // if true, A->x.type is shallow.
 
+    SPEX_vector **v;    // If dynamic_CSC: array of size n, each entry of this
+                        // array is a dynamic column vector.
+                        // if CSC, triplet or dense: A->v is NULL.
+    //bool v_dense;       // if true, A->v[k]->x, k = 0...n-1 pointing to the
+                        // starting point of column k in A->x.mpz, and all
+                        // A->v[k]->i are NULL. In such case, users should not
+                        // try to any of the following:
+                        // 1) re-allocate any A->v[k] (e.g., when A->m changed);
+                        // 2) assign new value to any A->v[k];
+                        // 3) free A->v[k]->x (free A->x instead).
+                        // This is used when user wants to create a dense
+                        // dyname_CSC matrix while a dense matrix will be
+                        // allocated with additional A->v[k] allocated and set.
+
     mpq_t scale ;       // scale factor for mpz matrices (never shallow)
-                        // For all matrices who's type is not mpz,
+                        // For all matrices whose type is not mpz,
                         // mpz_scale = 1. 
+                        // The real value of the nonzero entry A(i,j)
+                        // should be computed as A(i,j)/scale.
 
 } SPEX_matrix ;
 
@@ -307,7 +398,7 @@ typedef struct
 SPEX_info SPEX_matrix_allocate
 (
     SPEX_matrix **A_handle, // matrix to allocate
-    SPEX_kind kind,         // CSC, triplet, or dense
+    SPEX_kind kind,         // CSC, triplet, dense or dynamic_CSC
     SPEX_type type,         // mpz, mpq, mpfr, int64, or double
     int64_t m,              // # of rows
     int64_t n,              // # of columns
@@ -315,13 +406,14 @@ SPEX_info SPEX_matrix_allocate
     bool shallow,           // if true, matrix is shallow.  A->p, A->i, A->j,
                             // A->x are all returned as NULL and must be set
                             // by the caller.  All A->*_shallow are returned
-                            // as true.
+                            // as true. Ignored for dynamic_CSC kind matrix.
     bool init,              // If true, and the data types are mpz, mpq, or
-                            // mpfr, the entries are initialized (using the
-                            // appropriate SPEX_mp*_init function). If false,
-                            // the mpz, mpq, and mpfr arrays are allocated but
-                            // not initialized. Meaningless for data types 
-                            // FP64 or INT64
+                            // mpfr, the entries of A->x are initialized (using
+                            // the appropriate SPEX_mp*_init function). If
+                            // false, the mpz, mpq, and mpfr arrays are
+                            // allocated but not initialized. Meaningless for
+                            // data types FP64 or INT64. Ignored if kind is
+                            // dynamic_CSC or shallow is true.
     const SPEX_options *option
 ) ;
 
@@ -375,6 +467,26 @@ SPEX_info SPEX_matrix_copy
 
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
+
+//------------------------------------------------------------------------------
+// SPEX_mat: to be deleted TODO
+//------------------------------------------------------------------------------
+
+SPEX_info SPEX_matrix_canonicalize
+(
+    SPEX_matrix *A,          // the matrix to be canonicalize
+    const int64_t *perm,  // the permuation vector applied on each vector of A,
+                          // considered as identity if input as NULL
+    const SPEX_options *option
+);
+
+SPEX_info SPEX_permute_row
+(
+    SPEX_matrix *A,          // the matrix to be canonicalize
+    const int64_t *perm,  // the permuation vector applied on each vector of A,
+                          // considered as identity if input as NULL
+    const SPEX_options *option
+);
 
 //------------------------------------------------------------------------------
 // SPEX_LU_analysis: symbolic pre-analysis
@@ -534,6 +646,7 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 (
     SPEX_matrix *x,         // matrix to be multiplied
     const mpz_t scalar      // scalar to multiply by
+    // TODO option as input?
 ) ;
 
 
@@ -556,6 +669,7 @@ SPEX_info SPEX_cumsum
     int64_t *p,          // vector to store the sum of c
     int64_t *c,          // vector which is summed
     int64_t n           // size of c
+    // TODO option as input?
 );
 
 
@@ -743,16 +857,18 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 SPEX_info SPEX_transpose
 (
     SPEX_matrix **C_handle,     // C = A'
-    SPEX_matrix *A              // Matrix to be transposed
+    SPEX_matrix *A,             // Matrix to be transposed
+    const SPEX_options *option
 );
 
 SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
-    bool check_if_numerically_symmetric
+    bool check_if_numerically_symmetric,
             // if true, check A=A' (pattern & values). if false,
             // only check if the pattern of A is symmetric, not
             // the values
+    const SPEX_options *option
 );
 
 #endif

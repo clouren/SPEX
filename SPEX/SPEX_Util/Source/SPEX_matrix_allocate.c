@@ -8,13 +8,14 @@
 
 //------------------------------------------------------------------------------
 
-// Allocate an m-by-n SPEX_matrix, in one of 15 data structures:
+// Allocate an m-by-n SPEX_matrix, in either dynamic_CSC x mpz or one of
+// 15 data structures:
 // (sparse CSC, sparse triplet, or dense) x
 // (mpz, mpz, mfpr, int64, or double).
 
-// The matrix may be created as 'shallow', in which case A->p, A->i, A->j, and
-// A->x are all returned as NULL, and all A->*_shallow flags are returned as
-// true.
+// If the matrix is not dynamic_CSC, then it may be created as 'shallow', in
+// which case A->p, A->i, A->j, and A->x are all returned as NULL, and all
+// A->*_shallow flags are returned as true.
 
 #define SPEX_FREE_ALL \
     SPEX_matrix_free (&A, option) ;
@@ -24,7 +25,7 @@
 SPEX_info SPEX_matrix_allocate
 (
     SPEX_matrix **A_handle, // matrix to allocate
-    SPEX_kind kind,         // CSC, triplet, or dense
+    SPEX_kind kind,         // CSC, triplet, dense, dynamic_CSC
     SPEX_type type,         // mpz, mpq, mpfr, int64, or double
     int64_t m,              // # of rows
     int64_t n,              // # of columns
@@ -33,13 +34,25 @@ SPEX_info SPEX_matrix_allocate
     bool shallow,           // if true, matrix is shallow.  A->p, A->i, A->j,
                             // A->x are all returned as NULL and must be set
                             // by the caller.  All A->*_shallow are returned
-                            // as true.
+                            // as true. Ignored if kind is dynamic_CSC.
     bool init,              // If true, and the data types are mpz, mpq, or
                             // mpfr, the entries are initialized (using the
                             // appropriate SPEX_mp*_init function). If false,
                             // the mpz, mpq, and mpfr arrays are malloced but
                             // not initialized. Utilized internally to reduce
                             // memory.  Ignored if shallow is true.
+    //bool dynamic_dense,     // If true and kind == SPEX_DYNAMIC_CSC, a dense
+                            // matrix will be allocated with additional A->v[k],
+                            // k = 0...n-1, allocated and set to the starting
+                            // point of column k in A->x.mpz, and all
+                            // A->v[k]->i are NULL. A->v_dense is returned as
+                            // true and A->kind is returned as SPEX_DYNAMIC_CSC.
+                            // In such case, users should not try to any of the
+                            // following:
+                            // 1) re-allocate any A->v[k] (e.g., when A->m
+                            //    changed);
+                            // 2) assign new value to any A->v[k];
+                            // 3) free A->v[k]->x (free A->x instead).
     const SPEX_options *option
 )
 {
@@ -57,9 +70,9 @@ SPEX_info SPEX_matrix_allocate
     }
     (*A_handle) = NULL ;
     if (m < 0 || n < 0 ||
-        kind  < SPEX_CSC || kind  > SPEX_DENSE ||
-        type  < SPEX_MPZ || type  > SPEX_FP64)
-
+        kind  < SPEX_CSC || kind  > SPEX_DYNAMIC_CSC ||
+        type  < SPEX_MPZ || type  > SPEX_FP64 ||
+        (kind == SPEX_DYNAMIC_CSC && type != SPEX_MPZ)) //dynamic must be mpz
     {
         return (SPEX_INCORRECT_INPUT) ;
     }
@@ -102,7 +115,24 @@ SPEX_info SPEX_matrix_allocate
     // allocate the p, i, j, and x components
     //--------------------------------------------------------------------------
 
-    if (shallow)
+    if (kind == SPEX_DYNAMIC_CSC)
+    {
+        bool IsSparse = true;//TODO
+        // make sure each A->v[] is initialized as NULL 
+        A->v = (SPEX_vector**) SPEX_calloc(n, sizeof(SPEX_vector*)); 
+        if (!(A->v)) 
+        { 
+            SPEX_FREE_ALL ;
+            return SPEX_OUT_OF_MEMORY; 
+        } 
+         
+        for (int64_t i = 0; i < n; i++) 
+        {
+            SPEX_CHECK(SPEX_vector_allocate(&(A->v[i]), (IsSparse ? 0 : m), 
+                IsSparse, option)); 
+        } 
+    }
+    else if(shallow)
     {
 
         // all components are shallow.  The caller can modify individual
@@ -134,6 +164,10 @@ SPEX_info SPEX_matrix_allocate
                 break ;
 
             case SPEX_DENSE:
+                // nothing to do
+                break ;
+
+            case SPEX_DYNAMIC_CSC:
                 // nothing to do
                 break ;
 

@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_CSC_to_mat.c: convert a SPEX_matrix in CSC format to
+// SPEX_Util/SPEX_CSC_to_mat.c: convert a SPEX_matrix in CSC format to
 // a SPEX_mat matrix that can be used in the SPEX LU update process
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
-// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@
     SPEX_FREE_WORK;                  \
     SPEX_mat_free(&A);
 
-#include "spex_update_internal.h"
+#include "spex_util_internal.h"
 
 SPEX_info SPEX_CSC_to_mat
 (
@@ -66,7 +66,7 @@ SPEX_info SPEX_CSC_to_mat
         for (j = 0; j < B->n; j++)
         {
             // reallocate space for each column of A
-            SPEX_CHECK(SPEX_vector_realloc(A->v[j], Bp[j+1]-Bp[j]));
+            SPEX_CHECK(SPEX_vector_realloc(A->v[j], Bp[j+1]-Bp[j], option));
             Ap = 0;
             for (p = Bp[j]; p < Bp[j+1]; p++)
             {
@@ -99,7 +99,7 @@ SPEX_info SPEX_CSC_to_mat
         // reallocate space for each column of A
         for (i = 0; i < B->m; i++)
         {
-            SPEX_CHECK(SPEX_vector_realloc(A->v[i], rowcount[i]));
+            SPEX_CHECK(SPEX_vector_realloc(A->v[i], rowcount[i], option));
         }
 
         // construct A from B

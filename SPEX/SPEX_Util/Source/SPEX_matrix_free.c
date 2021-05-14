@@ -36,63 +36,74 @@ SPEX_info SPEX_matrix_free
     // free any non-shallow components
     //--------------------------------------------------------------------------
 
-    // free the integer pattern
-    if (!(A->p_shallow)) SPEX_FREE (A->p) ;
-    if (!(A->i_shallow)) SPEX_FREE (A->i) ;
-    if (!(A->j_shallow)) SPEX_FREE (A->j) ;
-
-    // free the values
-    if (!(A->x_shallow))
+    if (A->kind == SPEX_DYNAMIC_CSC)
     {
-        switch (A->type)
+        for (int64_t i = 0; i < A->n; i++)
         {
-            case SPEX_MPZ:
-                if ( A->x.mpz)
-                for (int64_t i = 0; i < A->nzmax; i++)
-                {
-                    if ( A->x.mpz[i] != NULL)
+            SPEX_vector_free(&(A->v[i]), option);
+        }
+        SPEX_FREE(A->v);
+    }
+    else
+    {
+        // free the integer pattern
+        if (!(A->p_shallow)) SPEX_FREE (A->p) ;
+        if (!(A->i_shallow)) SPEX_FREE (A->i) ;
+        if (!(A->j_shallow)) SPEX_FREE (A->j) ;
+
+        // free the values
+        if (!(A->x_shallow))
+        {
+            switch (A->type)
+            {
+                case SPEX_MPZ:
+                    if ( A->x.mpz)
+                    for (int64_t i = 0; i < A->nzmax; i++)
                     {
-                        SPEX_MPZ_CLEAR( A->x.mpz[i]);
+                        if ( A->x.mpz[i] != NULL)
+                        {
+                            SPEX_MPZ_CLEAR( A->x.mpz[i]);
+                        }
                     }
-                }
-                SPEX_FREE (A->x.mpz);
-                break ;
+                    SPEX_FREE (A->x.mpz);
+                    break ;
 
-            case SPEX_MPQ:
-                if ( A->x.mpq)
-                for (int64_t i = 0; i < A->nzmax; i++)
-                {
-                    if ( A->x.mpq[i] != NULL)
+                case SPEX_MPQ:
+                    if ( A->x.mpq)
+                    for (int64_t i = 0; i < A->nzmax; i++)
                     {
-                        SPEX_MPQ_CLEAR( A->x.mpq[i]);
+                        if ( A->x.mpq[i] != NULL)
+                        {
+                            SPEX_MPQ_CLEAR( A->x.mpq[i]);
+                        }
                     }
-                }
-                SPEX_FREE (A->x.mpq);
-                break ;
+                    SPEX_FREE (A->x.mpq);
+                    break ;
 
-            case SPEX_MPFR:
-                if ( A->x.mpfr)
-                for (int64_t i = 0; i < A->nzmax; i++)
-                {
-                    if ( A->x.mpfr[i] != NULL)
+                case SPEX_MPFR:
+                    if ( A->x.mpfr)
+                    for (int64_t i = 0; i < A->nzmax; i++)
                     {
-                        SPEX_MPFR_CLEAR( A->x.mpfr[i]);
+                        if ( A->x.mpfr[i] != NULL)
+                        {
+                            SPEX_MPFR_CLEAR( A->x.mpfr[i]);
+                        }
                     }
-                }
-                SPEX_FREE (A->x.mpfr);
-                break ;
+                    SPEX_FREE (A->x.mpfr);
+                    break ;
 
-            case SPEX_INT64:
-                SPEX_FREE (A->x.int64) ;
-                break ;
+                case SPEX_INT64:
+                    SPEX_FREE (A->x.int64) ;
+                    break ;
 
-            case SPEX_FP64:
-                SPEX_FREE (A->x.fp64) ;
-                break ;
+                case SPEX_FP64:
+                    SPEX_FREE (A->x.fp64) ;
+                    break ;
 
-            default:
-                // do nothing
-                break ;
+                default:
+                    // do nothing
+                    break ;
+            }
         }
     }
 

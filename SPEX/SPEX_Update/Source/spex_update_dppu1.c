@@ -37,9 +37,9 @@
 
 SPEX_info spex_update_dppu1
 (
-    SPEX_mat *L,     // matrix L
-    SPEX_mat *U,     // matrix U
-    mpz_t *sd,       // array of size n that stores the scaled pivot
+    SPEX_matrix *L,     // matrix L
+    SPEX_matrix *U,     // matrix U
+    SPEX_matrix *rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
@@ -58,6 +58,7 @@ SPEX_info spex_update_dppu1
     int sgn, Lksk_sgn;
     int64_t pk, ck, pks, cks, j, n = U->n;
     int64_t Qk = Q[k], Pk = P[k], Qks, Pks;
+    mpz_t *sd = rhos->x.mpz;
     SPEX_vector *v;
 
     mpq_t pending_scale;
@@ -407,7 +408,8 @@ SPEX_info spex_update_dppu1
             // allocate additional space if needed
             if (U->v[ks]->nz+count > U->v[ks]->nzmax)
             {
-                SPEX_CHECK(SPEX_vector_realloc(U->v[ks], U->v[ks]->nz+count));
+                SPEX_CHECK(SPEX_vector_realloc(U->v[ks], U->v[ks]->nz+count,
+                    NULL));
             }
             pks = U->v[ks]->nz;
             for (pk = 0; count > 0 && pk < Uk_dense_row->nz; pk++)

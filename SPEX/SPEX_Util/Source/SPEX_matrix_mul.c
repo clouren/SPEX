@@ -30,6 +30,7 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 
     SPEX_info info ;
     SPEX_REQUIRE_TYPE (x, SPEX_MPZ) ;
+    if (x->kind == SPEX_DYNAMIC_CSC) return (SPEX_INCORRECT_INPUT);
 
     //--------------------------------------------------------------------------
     // x = x * scalar

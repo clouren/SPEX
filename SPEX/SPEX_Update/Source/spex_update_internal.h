@@ -55,7 +55,7 @@ void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 */
 
 #define spex_scattered_vector SPEX_vector
-#define spex_scattered_vector_alloc SPEX_vector_alloc
+#define spex_scattered_vector_alloc SPEX_vector_allocate
 #define spex_scattered_vector_free SPEX_vector_free
 
 SPEX_info spex_update_get_scattered_v
@@ -69,9 +69,9 @@ SPEX_info spex_update_get_scattered_v
 
 SPEX_info spex_update_cppu
 (
-    SPEX_mat *L,     // matrix L
-    SPEX_mat *U,     // matrix U
-    mpz_t *sd,       // array of size n that stores the scaled pivot
+    SPEX_matrix *L,     // matrix L
+    SPEX_matrix *U,     // matrix U
+    SPEX_matrix *rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
@@ -94,9 +94,9 @@ SPEX_info spex_update_cppu
 
 SPEX_info spex_update_dppu1
 (
-    SPEX_mat *L,     // matrix L
-    SPEX_mat *U,     // matrix U
-    mpz_t *sd,       // array of size n that stores the scaled pivot
+    SPEX_matrix *L,     // matrix L
+    SPEX_matrix *U,     // matrix U
+    SPEX_matrix *rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
@@ -113,9 +113,9 @@ SPEX_info spex_update_dppu1
 
 SPEX_info spex_update_dppu2
 (
-    SPEX_mat *L,     // matrix L
-    SPEX_mat *U,     // matrix U
-    mpz_t *sd,       // array of size n that stores the scaled pivot
+    SPEX_matrix *L,     // matrix L
+    SPEX_matrix *U,     // matrix U
+    SPEX_matrix *rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *jnext,  // the index of first off-diag entry in row k of U
@@ -134,9 +134,9 @@ SPEX_info spex_update_finalize_and_insert_vk
     spex_scattered_vector *vk_dense, //scattered version of the solution for
                       // LDx=v using the first k-1 columns of L
     int64_t *h,       // history vector for vk_dense
-    SPEX_mat *U,      // matrix U
-    SPEX_mat *L,      // matrix L
-    const mpz_t *sd,  // array of scaled pivots
+    SPEX_matrix *U,      // matrix U
+    SPEX_matrix *L,      // matrix L
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *Q, // the column permutation
     const int64_t *P_inv,// inverse of row permutation
     const int64_t k,  // the column index in L that vk_dense will be inserted
@@ -174,7 +174,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
                     // the vector v in the equations mentioned above
     const int64_t *perm, // permutation
     const int64_t *perm_inv, // inverse of permutation
-    const mpz_t *sd,// array of scaled pivots
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t j // column index of v
 );
 
@@ -189,9 +189,9 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
                         // of x[P] less than n, this could be NULL if not needed
     const int64_t k,    // compute x up to k-th IPGE iteration, that is, using
                         // the first k-1 columns of L
-    const SPEX_mat *L,  // matrix L
-    const SPEX_mat *U,  // matrix U
-    const mpz_t *sd,    // array of scaled pivots
+    const SPEX_matrix *L,  // matrix L
+    const SPEX_matrix *U,  // matrix U
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *P,   // row permutation
     const int64_t *P_inv// inverse of row permutation
 );
@@ -200,17 +200,17 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
 (
     SPEX_vector *x,     // Input: the right-hand-side vector
                         // Output: solution x
-    const SPEX_mat *L,  // matrix L
+    const SPEX_matrix *L,  // matrix L
     const int64_t *P,   // row permutation
-    const mpz_t *sd,    // array of scaled pivots
+    const SPEX_matrix *rhos,// array of scaled pivots
     int64_t *h          // history vector for x
 );
 
 SPEX_info spex_update_backward_sub  // performs sparse REF backward substitution
 (
     SPEX_vector *x,         // right hand side vector
-    const SPEX_mat *U,      // input upper triangular matrix
-    const mpz_t *sd,        // array of scaled pivots
+    const SPEX_matrix *U,      // input upper triangular matrix
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *P,       // row permutation
     const int64_t *Q_inv    // inverse of column permutation
 );
@@ -218,11 +218,11 @@ SPEX_info spex_update_backward_sub  // performs sparse REF backward substitution
 SPEX_info spex_update_verify
 (
     bool *correct,         // indicate if the verification is passed
-    const SPEX_mat *L,     // lower triangular matrix
-    const SPEX_mat *U,     // upper triangular matrix
-    const SPEX_mat *A,     // Input matrix
+    const SPEX_matrix *L,     // lower triangular matrix
+    const SPEX_matrix *U,     // upper triangular matrix
+    const SPEX_matrix *A,     // Input matrix
     int64_t *h,            // history vector
-    const mpz_t *sd,       // array of scaled pivots
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *P,      // row permutation
     const int64_t *Q_inv,  // inverse of column permutation
     const SPEX_options *option// command options

@@ -1,12 +1,11 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_mat_alloc.c: create and initialize a matrix with given
+// SPEX_Util/SPEX_mat_alloc.c: create and initialize a matrix with given
 // size n and m.
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
-// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
-
+// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 //------------------------------------------------------------------------------
 
 // Purpose: This function is called to create and initialize a matrix with
@@ -20,7 +19,7 @@
 #define SPEX_FREE_ALL       \
     SPEX_mat_free(&A);
 
-#include "spex_update_internal.h"
+#include "spex_util_internal.h"
 
 SPEX_info SPEX_mat_alloc
 (
@@ -59,7 +58,8 @@ SPEX_info SPEX_mat_alloc
     
     for (int64_t i = 0; i < n; i++)
     {
-        SPEX_CHECK(SPEX_vector_alloc(&(A->v[i]), (IsSparse ? 0 : m), IsSparse));
+        SPEX_CHECK(SPEX_vector_allocate(&(A->v[i]), (IsSparse ? 0 : m),
+            IsSparse, NULL));
     }
     SPEX_CHECK(SPEX_mpq_init(A->scale));
     SPEX_CHECK(SPEX_mpq_set_ui(A->scale, 1, 1));

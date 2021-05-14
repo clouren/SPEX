@@ -56,13 +56,11 @@ int main( int argc, char* argv[])
     // Allocate memory
     //------------------------------------------------------------------
 
-    int64_t m, n, nz, i, j, p;
-    SPEX_options* option = SPEX_create_default_options();
-    if (!option) return 0;//{continue;}
+    int64_t m, n, nz, i, j;
+    SPEX_options* option = NULL;
 
     SPEX_matrix *L = NULL, *U = NULL, *A = NULL, *T = NULL;
-    mpz_t *d = NULL, *sd = NULL;
-    mpq_t *S = NULL;
+    SPEX_matrix *rhos = NULL;
     int64_t *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL, *mark = NULL;
     int64_t tmpi;
     /*mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
@@ -95,10 +93,12 @@ int main( int argc, char* argv[])
         return 0;
     }
 
-    OK(SPEX_matrix_alloc(&T, m, n, true));
+    OK(SPEX_create_default_options(&option));
+    OK(SPEX_matrix_allocate(&T, SPEX_DYNAMIC_CSC, SPEX_MPZ, m, n, 0, false,
+        true, option));
     for (j = 0; j < n; j++)
     {
-        OK(SPEX_vector_realloc(T->v[j], m));
+        OK(SPEX_vector_realloc(T->v[j], m, option));
     }
     // Read in the values from file
     int64_t Tij;
@@ -119,17 +119,19 @@ int main( int argc, char* argv[])
         T->v[j-1]->nz++;
     }
 
-    OK(SPEX_matrix_alloc(&L, m, n, true));
-    OK(SPEX_matrix_alloc(&U, m, n, true));
-    OK(SPEX_matrix_alloc(&A, m, n, true));
-    d  = spex_create_mpz_array(n);
-    sd = spex_create_mpz_array(n);
-    S  = spex_create_mpq_array(3*n);
+    OK(SPEX_matrix_allocate(&L, SPEX_DYNAMIC_CSC, SPEX_MPZ, m, n, 0, false,
+        true, option));
+    OK(SPEX_matrix_allocate(&U, SPEX_DYNAMIC_CSC, SPEX_MPZ, m, n, 0, false,
+        true, option));
+    OK(SPEX_matrix_allocate(&A, SPEX_DYNAMIC_CSC, SPEX_MPZ, m, n, 0, false,
+        true, option));
+    OK(SPEX_matrix_allocate(&rhos, SPEX_DENSE, SPEX_MPZ, n, 1,
+	n, false, true, option));
     P     = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     Q     = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     P_inv = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
     Q_inv = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
-    if (!d || !sd || !S || !P || !Q || !P_inv || !Q_inv)
+    if (!P || !Q || !P_inv || !Q_inv)
     {
         FREE_WORKSPACE;
         return 0;
@@ -137,9 +139,9 @@ int main( int argc, char* argv[])
     // set A=L=U=P=Q=I
     for (i = 0; i < n; i++)
     {
-        OK(SPEX_vector_realloc(A->v[i], 1));
-        OK(SPEX_vector_realloc(L->v[i], 1));
-        OK(SPEX_vector_realloc(U->v[i], 1));
+        OK(SPEX_vector_realloc(A->v[i], 1, option));
+        OK(SPEX_vector_realloc(L->v[i], 1, option));
+        OK(SPEX_vector_realloc(U->v[i], 1, option));
 
         OK(SPEX_mpz_set_ui(A->v[i]->x[0], 1));
         A->v[i]->i[0] = i;
@@ -150,11 +152,7 @@ int main( int argc, char* argv[])
         OK(SPEX_mpz_set_ui(U->v[i]->x[0], 1));
         U->v[i]->i[0] = i;
         U->v[i]->nz = 1;
-        OK(SPEX_mpz_set(d[i],  L->v[i]->x[0]));
-        OK(SPEX_mpz_set(sd[i], L->v[i]->x[0]));
-        OK(SPEX_mpq_set_ui(SPEX_2D(S, 1, i), 1, 1));
-        OK(SPEX_mpq_set_ui(SPEX_2D(S, 2, i), 1, 1));
-        OK(SPEX_mpq_set_ui(SPEX_2D(S, 3, i), 1, 1));
+        OK(SPEX_mpz_set(rhos->x.mpz[i], L->v[i]->x[0]));
         P[i] = i;
         Q[i] = i;
         P_inv[i] = i;
@@ -172,8 +170,8 @@ int main( int argc, char* argv[])
         j = col_index[k];
         printf("-----------------------------------------------\n");
         printf("j = %ld\n", j);
-        info =SPEX_LUU(A, L, U, d, sd, S, P, P_inv, Q, Q_inv,
-                       &(T->v[Q_for_T[j]]), j, option);
+        info = SPEX_Update_LU_ColRep(A, L, U, rhos, P, P_inv, Q, Q_inv,
+	    &(T->v[Q_for_T[j]]), j, option);
         if (info != SPEX_OK)
         {
             printf("k=%ld\n",k);
@@ -199,8 +197,8 @@ int main( int argc, char* argv[])
         printf("j = %ld mark=%ld found_index = %ld\n", j, mark[j],found_index);
 
 
-        info =SPEX_LUU(A, L, U, d, sd, S, P, P_inv, Q, Q_inv,
-                       &(T->v[Q_for_T[j]]), j, option);
+        info = SPEX_Update_LU_ColRep(A, L, U, rhos, P, P_inv, Q, Q_inv,
+	    &(T->v[Q_for_T[j]]), j, option);
         if (info != SPEX_SINGULAR && info != SPEX_OK)
         {
             FREE_WORKSPACE;

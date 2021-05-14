@@ -35,9 +35,9 @@
 
 SPEX_info spex_update_dppu2
 (
-    SPEX_mat *L,     // matrix L
-    SPEX_mat *U,     // matrix U
-    mpz_t *sd,       // array of size n that stores the scaled pivot
+    SPEX_matrix *L,     // matrix L
+    SPEX_matrix *U,     // matrix U
+    SPEX_matrix *rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *jnext,  // the index of first off-diag entry in row k of U
@@ -56,6 +56,7 @@ SPEX_info spex_update_dppu2
     int sgn;
     int64_t j, n = U->n, tmp_ks = SPEX_MIN(ks, n-1);
     int64_t Qk = Q[k], Pk = P[k], Qks = Q[tmp_ks], Pks = P[tmp_ks], Qj;
+    mpz_t *sd = rhos->x.mpz;
     SPEX_vector *v; // used to switch vectors, no need to allocate nor free
 
     mpq_t pending_scale, one;
@@ -292,7 +293,7 @@ SPEX_info spex_update_dppu2
         ASSERT(U->v[j]->i[0] == Qj);
         // perform j-th IPGE update for U(ks,:)
         SPEX_CHECK(spex_update_ipge(Uk_dense_row, h, NULL, U->v[j], Q, Q_inv,
-            (const mpz_t*)sd, j));
+            (const SPEX_matrix*)rhos, j));
         // update index for last nonzero before ks-th entry
         last_nz_b4_ks = j;
 

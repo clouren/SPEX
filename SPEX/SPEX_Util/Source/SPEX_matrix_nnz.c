@@ -36,7 +36,7 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
     // find nnz (A)
     //--------------------------------------------------------------------------
 
-    // In all three cases, SPEX_matrix_nnz(&nnz, A, option) returns
+    // If kind != SPEX_DYNAMIC_CSC, SPEX_matrix_nnz(&nnz, A, option) returns
     // with nnz <= A->nzmax.
 
     switch (A->kind)
@@ -59,6 +59,16 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
         {
             // dense matrices: nnz(A) is always m*n.  A->nz is ignored.
             *nnz = (A->m < 0 || A->n < 0)? (-1) : (A->m * A->n) ;
+        }
+        break;
+
+        case SPEX_DYNAMIC_CSC:
+        {
+            *nnz = 0;
+            for (int64_t j = 0; j < A->n; j++)
+            {
+                *nnz += A->v[j]->nz;
+            }
         }
         break;
 

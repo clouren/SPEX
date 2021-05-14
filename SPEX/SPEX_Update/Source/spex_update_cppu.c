@@ -37,9 +37,9 @@
 
 SPEX_info spex_update_cppu
 (
-    SPEX_mat *L,     // matrix L
-    SPEX_mat *U,     // matrix U
-    mpz_t *sd,       // array of size n that stores the scaled pivot
+    SPEX_matrix *L,     // matrix L
+    SPEX_matrix *U,     // matrix U
+    SPEX_matrix *rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
@@ -73,6 +73,7 @@ SPEX_info spex_update_cppu
     int64_t Qk = Q[k], Qks, Pk = P[k], Pks, Pi;
     *inext = n;
     *jnext = n;
+    mpz_t *sd = rhos->x.mpz;
 
     mpq_t pending_scale, one;
     SPEX_MPQ_SET_NULL(pending_scale);
@@ -237,7 +238,7 @@ SPEX_info spex_update_cppu
 
                 // perform i-th IPGE update for Lk_dense_col
                 SPEX_CHECK(spex_update_ipge(Lk_dense_col, h, NULL, L->v[i],
-                    P, P_inv, (const mpz_t*) sd, i));
+                    P, P_inv, (const SPEX_matrix*)rhos, i));
 
                 // perform RwSOP for row i with flipped-sign entries in
                 // Lk_dense_col. All entries in row i of U must be SCALEUP such
@@ -290,7 +291,7 @@ SPEX_info spex_update_cppu
                     if (p == U->v[i]->nzmax)
                     {
                         SPEX_CHECK(SPEX_vector_realloc(U->v[i],
-                            SPEX_MIN(n, 2*(U->v[i]->nzmax))));
+                            SPEX_MIN(n, 2*(U->v[i]->nzmax)), NULL));
                     }
                     // insert new entry in the nonzero pattern
                     U->v[i]->i[p] = Qks;
@@ -406,7 +407,8 @@ SPEX_info spex_update_cppu
         if (L->v[k]->nzmax < L->v[ks]->nz+1)
         {
             SPEX_CHECK(SPEX_vector_realloc(L->v[k],
-                   SPEX_MIN(n, SPEX_MAX(2*(L->v[k]->nzmax), L->v[ks]->nz+1))));
+                SPEX_MIN(n, SPEX_MAX(2*(L->v[k]->nzmax), L->v[ks]->nz+1)),
+                NULL));
         }
 
         // update entries in L(:,k) for each nnz in L(:,ks)
@@ -527,7 +529,7 @@ SPEX_info spex_update_cppu
             {
                 SPEX_CHECK(SPEX_vector_realloc(L->v[k],
                        SPEX_MIN(n, SPEX_MAX(2*(L->v[k]->nzmax),
-                                            Lk_nz+Lk_untouched))));
+                                            Lk_nz+Lk_untouched)), NULL));
             }
             for (pk = 0; pk < Lk_dense_col->nz; pk++)
             {
@@ -575,7 +577,8 @@ SPEX_info spex_update_cppu
         if (Lk_dense_col->nz > L->v[k]->nzmax)
         {
             SPEX_CHECK(SPEX_vector_realloc(L->v[k],
-                   SPEX_MIN(n, SPEX_MAX(2*(L->v[k]->nzmax),Lk_dense_col->nz))));
+                SPEX_MIN(n, SPEX_MAX(2*(L->v[k]->nzmax), Lk_dense_col->nz)),
+                NULL));
         }
 
         // put pivot as the first entries in L->v[k]->x
@@ -811,7 +814,7 @@ SPEX_info spex_update_cppu
         {
             SPEX_CHECK(SPEX_vector_realloc(L->v[k],
                    SPEX_MIN(n, SPEX_MAX(2*(L->v[k]->nzmax),
-                                        Lk_dense_col->nz+1))));
+                                        Lk_dense_col->nz+1)), NULL));
         }
         Lk_nz = 1; // the pivot has been inserted to L->v[k]
         for (pks = 0; pks < Lk_dense_col->nz; pks++) 
@@ -1030,7 +1033,7 @@ SPEX_info spex_update_cppu
             {
                 SPEX_CHECK(SPEX_vector_realloc(U->v[i],
                        SPEX_MIN(n, SPEX_MAX(2*(U->v[i]->nzmax),
-                                            Ui_nz+num_of_fillin))));
+                                            Ui_nz+num_of_fillin)), NULL));
             }
         }
         // add FILLIN and restore P

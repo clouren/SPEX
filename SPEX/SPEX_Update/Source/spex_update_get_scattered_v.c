@@ -16,7 +16,7 @@
 // used to keep the original mpz values.
 
 #define SPEX_FREE_ALL   \
-    spex_scattered_vector_free(&sv);
+    spex_scattered_vector_free(&sv, NULL);
 
 #include "spex_update_internal.h"
 
@@ -39,7 +39,7 @@ SPEX_info spex_update_get_scattered_v
     spex_scattered_vector *sv = NULL;
 
     // make sv a sparse vector so that we can have sv->i for nnz pattern
-    SPEX_CHECK(spex_scattered_vector_alloc(&sv, n, true));
+    SPEX_CHECK(spex_scattered_vector_alloc(&sv, n, true, NULL));
 
     int sgn;
     p = 0;

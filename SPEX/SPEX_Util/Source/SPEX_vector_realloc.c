@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_vector_realloc: realloc the space for a SPEX_vector object
+// SPEX_Util/SPEX_vector_realloc: realloc the space for a SPEX_vector object
 // to given new size.
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
-// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -13,12 +13,13 @@
  * initialize/allocate for the mpz entries.
  */
 
-#include "spex_update_internal.h"
+#include "spex_util_internal.h"
 
 SPEX_info SPEX_vector_realloc
 (
-    SPEX_vector* v, // the vector to be expanded
-    const int64_t new_size// desired new size for v
+    SPEX_vector* v,         // the vector to be expanded
+    const int64_t new_size, // desired new size for v
+    const SPEX_options *option
 )
 {
     SPEX_info info;

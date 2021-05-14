@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_vector_alloc.c: create and initialize a vector with given
+// SPEX_Util/SPEX_vector_allocate.c: create and initialize a vector with given
 // size nzmax.
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
-// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -14,13 +14,17 @@
 // IsSparse is true, then i is allocated with length of nzmax. Otherwise,
 // the nnz pattern vector i is set to NULL.
 
-#include "spex_update_internal.h"
+#define SPEX_FREE_ALL \
+    SPEX_vector_free (&v, option) ;
 
-SPEX_info SPEX_vector_alloc
+#include "spex_util_internal.h"
+
+SPEX_info SPEX_vector_allocate
 (
     SPEX_vector **v_handle,         // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
-    const bool IsSparse             // indicate if the vector is sparse
+    const bool IsSparse,            // indicate if the vector is sparse
+    const SPEX_options *option
 )
 {
     if (!spex_initialized()) return (SPEX_PANIC);
@@ -30,6 +34,7 @@ SPEX_info SPEX_vector_alloc
     }
     *v_handle = NULL;
 
+    SPEX_info info;
     SPEX_vector *v = (SPEX_vector*) SPEX_malloc(sizeof(SPEX_vector));
     if (!v)
     {
@@ -40,24 +45,11 @@ SPEX_info SPEX_vector_alloc
     v->i = NULL;
     v->nzmax = nzmax;
     v->nz = 0;
+    SPEX_MPQ_SET_NULL(v->scale);
 
     // initialize and set v->scale = 1
-    SPEX_MPQ_SET_NULL(v->scale);
-    SPEX_info info = SPEX_mpq_init(v->scale);
-    if (info != SPEX_OK)
-    {
-        SPEX_MPQ_CLEAR(v->scale);
-        SPEX_FREE(v);
-        return info;
-    }
-
-    info = SPEX_mpq_set_ui(v->scale, 1, 1);
-    if (info != SPEX_OK)
-    {
-        SPEX_MPQ_CLEAR(v->scale);
-        SPEX_FREE(v);
-        return info;
-    }
+    SPEX_CHECK(SPEX_mpq_init(v->scale));
+    SPEX_CHECK(SPEX_mpq_set_ui(v->scale, 1, 1));
 
     // if nzmax == 0
     if (nzmax == 0)
@@ -67,11 +59,10 @@ SPEX_info SPEX_vector_alloc
     }
 
     // allocate for v->x
-    v->x = SPEX_create_mpz_array(nzmax);
+    v->x = spex_create_mpz_array(nzmax);
     if (!(v->x))
     {
-        SPEX_MPQ_CLEAR(v->scale);
-        SPEX_FREE(v);
+        SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
 
@@ -81,9 +72,7 @@ SPEX_info SPEX_vector_alloc
         v->i = (int64_t*) SPEX_malloc(nzmax*sizeof(int64_t));
         if (!(v->i))
         {
-            SPEX_delete_mpz_array(&(v->x), nzmax);
-            SPEX_MPQ_CLEAR(v->scale);
-            SPEX_FREE(v);
+            SPEX_FREE_ALL;
             return SPEX_OUT_OF_MEMORY;
         }
     }

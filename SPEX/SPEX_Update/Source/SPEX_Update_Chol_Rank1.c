@@ -30,19 +30,22 @@
 
 SPEX_info SPEX_Update_Chol_Rank1
 (
-     SPEX_mat *L,
-     mpz_t *sd,
-     int64_t *P,
-     int64_t *P_inv,
-     SPEX_vector *w,
-     int64_t sigma
+    SPEX_matrix *L,
+    SPEX_matrix *rhos,// array of scaled pivots
+    int64_t *P,
+    int64_t *P_inv,
+    SPEX_vector *w,
+    int64_t sigma
 )
 {
+    SPEX_REQUIRE(L, SPEX_DYNAMIC_CSC, SPEX_MPZ);
+    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
     // initialize workspace
     SPEX_info info;
     int sgn;
     int64_t i, j, p, n = L->n, w_top = 0;
     int64_t *h = NULL;
+    mpz_t *sd = rhos->x.mpz;
     mpq_t sd_ratio;// = sd_new/sd_old
     mpq_t tmpq, pending_scale;
     mpz_t tmpz;
@@ -279,7 +282,7 @@ SPEX_info SPEX_Update_Chol_Rank1
                     if (Lj_nz == L->v[j]->nzmax)
                     {
                         SPEX_CHECK(SPEX_vector_realloc(L->v[j],
-                            SPEX_MIN(n, 2*(L->v[j]->nzmax))));
+                            SPEX_MIN(n, 2*(L->v[j]->nzmax)), NULL));
                     }
 
                     // L(i,j) = sigma*w[P[j]]*w[i]/sd_old[j-1]

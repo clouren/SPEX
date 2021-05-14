@@ -77,7 +77,13 @@ CS = \
     spex_left_lu_permute_x.o \
     spex_left_lu_reach.o \
     spex_left_lu_ref_triangular_solve.o \
-    SPEX_Left_LU_solve.o 
+    SPEX_Left_LU_solve.o \
+    SPEX_vector_allocate.o \
+    SPEX_vector_realloc.o \
+    SPEX_vector_free.o \
+    spex_dynamic_to_CSC_mpz.o \
+    spex_CSC_mpz_to_dynamic.o \
+    spex_delete_mpz_array.o
     #SPEX_determine_symmetry.o SPEX_transpose.o \
 
 $(CS): ../Include/SPEX_Left_LU.h ../../SPEX_Util/Include/SPEX_Util.h ../Source/spex_left_lu_internal.h ../../SPEX_Util/Source/spex_util_internal.h tcov_malloc_test.h ../Demo/demos.h

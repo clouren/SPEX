@@ -67,12 +67,12 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
                     // the vector v in the equations mentioned above
     const int64_t *perm, // permutation
     const int64_t *perm_inv, // inverse of perm, can be NULL if prev == NULL
-    const mpz_t *sd,// array of scaled pivots
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t j // column index of v
 )
 {
     SPEX_info info;
-    if (!sv_x || !h || !perm || (prev != NULL && !perm_inv) || !v || !sd ||
+    if (!sv_x || !h || !perm || (prev != NULL && !perm_inv) || !v || !rhos ||
         v->i[0] != perm[j])
     {
         return SPEX_INCORRECT_INPUT;
@@ -80,6 +80,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
 
     mpq_t pending_scale; SPEX_MPQ_SET_NULL(pending_scale);
     mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
+    mpz_t *sd = rhos->x.mpz;
     int64_t perm_j = perm[j];
 
     // check if v has only 1 entry in the diagonal. If so, perform history

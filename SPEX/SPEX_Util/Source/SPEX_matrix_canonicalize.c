@@ -1,26 +1,29 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_mat_canonicalize.c: canonicalize a SPEX_mat matrix such
+// SPEX_Util/SPEX_matrix_canonicalize.c: canonicalize a SPEX_matrix matrix such
 // that the pivot of the vector is found as the first entry of the nnz list.
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
-// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-// SPEX_mat_canonicalize is called to canonicalize a SPEX_mat matrix such
-// that the pivot of the vector is found as the first entry of the nnz list.
+// SPEX_matrix_canonicalize is called to canonicalize a SPEX_matrix matrix in
+// SPEX_DYNAMIC_CSC format, such that the pivot of the vector is found as the
+// first entry of the nnz list.
 
-#include "spex_update_internal.h"
+#include "spex_util_internal.h"
 
-SPEX_info SPEX_mat_canonicalize
+SPEX_info SPEX_matrix_canonicalize
 (
-    SPEX_mat *A,    // the matrix to be canonicalize
-    int64_t *perm   // the permuation vector applied on each vector of A,
-                    // considered as identity if input as NULL
+    SPEX_matrix *A,       // the matrix to be canonicalize
+    const int64_t *perm,  // the permuation vector applied on each vector of A,
+                          // considered as identity if input as NULL
+    const SPEX_options *option
 )
 {
+    SPEX_REQUIRE_KIND(A, SPEX_DYNAMIC_CSC);
     SPEX_info info;
     int64_t i, j, p, diag;
     for (j = 0; j < A->n; j++)

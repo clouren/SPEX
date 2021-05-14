@@ -61,7 +61,7 @@ SPEX_info spex_update_insert_new_entry
     if (v->nz == v->nzmax)
     {
         // reallocate the nonzero pattern if needed
-        SPEX_CHECK(SPEX_vector_realloc(v, v->nzmax+1));
+        SPEX_CHECK(SPEX_vector_realloc(v, v->nzmax+1, NULL));
     }
     v->i[v->nz] = i;
     SPEX_CHECK(SPEX_mpz_swap(v->x[v->nz], vi));

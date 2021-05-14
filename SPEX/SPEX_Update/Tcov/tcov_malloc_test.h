@@ -11,7 +11,7 @@
 #ifndef TCOV_SPEX_MALLOC_TEST_H
 #define TCOV_SPEX_MALLOC_TEST_H
 
-#include "spex_lu_update_internal.h"
+#include "spex_update_internal.h"
 #include "SPEX_gmp.h"
 
 extern int64_t malloc_count ;

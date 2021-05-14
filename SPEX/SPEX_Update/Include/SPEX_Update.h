@@ -127,6 +127,7 @@
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix
 //------------------------------------------------------------------------------
+#if 0
 typedef struct
 {
     int64_t nz;   // number of nonzeros. nz is meaningless for a dense vector
@@ -218,6 +219,7 @@ void SPEX_delete_mpz_array
     mpz_t **x,      // mpz array to be deleted
     int64_t n       // Size of x
 );
+#endif
 
 //------------------------------------------------------------------------------
 // Primary factorization update routine
@@ -225,10 +227,10 @@ void SPEX_delete_mpz_array
 
 SPEX_info SPEX_Update_LU_ColRep
 (
-    SPEX_mat *A,            // the original matrix in compressed-column form
-    SPEX_mat *L,            // stored in compressed-column form
-    SPEX_mat *U,            // stored in comptessed-row form
-    mpz_t *sd,              // an array of size n that stores the scaled pivot
+    SPEX_matrix *A,            // the original matrix in compressed-column form
+    SPEX_matrix *L,            // stored in compressed-column form
+    SPEX_matrix *U,            // stored in comptessed-row form
+    SPEX_matrix *rhos,      // array of scaled pivots
     int64_t *P,             // row permutation
     int64_t *P_inv,         // inverse of row permutation
     int64_t *Q,             // column permutation
@@ -241,8 +243,8 @@ SPEX_info SPEX_Update_LU_ColRep
 
 SPEX_info SPEX_Update_Chol_Rank1
 (
-    SPEX_mat *L,            // Lower-triangular factorization
-    mpz_t *sd,              // an array of size n that stores the scaled pivot
+    SPEX_matrix *L,            // Lower-triangular factorization
+    SPEX_matrix *rhos,      // array of scaled pivots
     int64_t *P,             // row permutation
     int64_t *P_inv,         // inverse of row permutation
     SPEX_vector *w,         // resulting matrix is A+sigma*w*w^T
@@ -256,14 +258,14 @@ SPEX_info SPEX_Update_Chol_Rank1
 SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
 (
     // Output
-    SPEX_mat **x_handle,    // solution to the system
+    SPEX_matrix **x_handle,    // solution to the system
     // input:
-    SPEX_mat *b,            // right hand side vector
-    const SPEX_mat *L,      // lower triangular matrix
-    const SPEX_mat *U,      // upper triangular matrix
+    SPEX_matrix *b,            // right hand side vector
+    const SPEX_matrix *L,      // lower triangular matrix
+    const SPEX_matrix *U,      // upper triangular matrix
     const mpq_t A_scale,    // scale of the input matrix
     int64_t *h,             // history vector
-    const mpz_t *sd,        // array of scaled pivots
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *P,       // row permutation
     const int64_t *Q_inv,   // inverse of column permutation
     const SPEX_options* option // Command options

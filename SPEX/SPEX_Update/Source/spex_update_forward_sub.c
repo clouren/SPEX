@@ -24,13 +24,14 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
 (
     SPEX_vector *x,     // Input: the right-hand-side vector
                         // Output: solution x
-    const SPEX_mat *L,  // matrix L
+    const SPEX_matrix *L,  // matrix L
     const int64_t *P,   // row permutation
-    const mpz_t *sd,    // array of scaled pivots
+    const SPEX_matrix *rhos,// array of scaled pivots
     int64_t *h          // history vector for x
 )
 {
-    if (!x || !h || !L ||!P || !sd)
+    // TODO only perform input check in user callable functions
+    if (!x || !h || !L ||!P || !rhos)
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -57,10 +58,10 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
         ASSERT(L->v[i]->i[0] == P[i]);
         // perform i-th IPGE update for x
 #if 1
-        SPEX_CHECK(spex_update_ipge(x, h, NULL, L->v[i], P, NULL, sd, i));
+        SPEX_CHECK(spex_update_ipge(x, h, NULL, L->v[i], P, NULL, rhos, i));
 #else
         /*
-        SPEX_CHECK(spex_ipge1(x, h, NULL, L, P, NULL, sd, SL(i), i));
+        SPEX_CHECK(spex_ipge1(x, h, NULL, L, P, NULL, rhos, SL(i), i));
         */
         
         /*
@@ -74,7 +75,7 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
                                     x->x[P[i]], SPEX_MPQ_DEN(SL(i-1))));
         }
         */
-        SPEX_CHECK(spex_ipge3(x, h, NULL, L, P, NULL, sd, x_scale,SL(i), i));
+        SPEX_CHECK(spex_ipge3(x, h, NULL, L, P, NULL, rhos, x_scale,SL(i), i));
         //gmp_printf("%Qd\n",x_scale);
 #endif
     }

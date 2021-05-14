@@ -29,8 +29,8 @@
 SPEX_info spex_update_backward_sub// performs sparse REF backward substitution
 (
     SPEX_vector *x,         // right hand side vector
-    const SPEX_mat *U,      // input upper triangular matrix
-    const mpz_t *sd,        // array of scaled pivots
+    const SPEX_matrix *U,   // input upper triangular matrix
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *P,       // row permutation
     const int64_t *Q_inv    // inverse of column permutation
 )
@@ -38,6 +38,7 @@ SPEX_info spex_update_backward_sub// performs sparse REF backward substitution
     SPEX_info info ;
     int sgn;
     int64_t i, j, real_i, real_j, p, n = U->n;
+    mpz_t *sd = rhos->x.mpz;
     mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
     SPEX_CHECK(SPEX_mpz_init(tmpz));
 

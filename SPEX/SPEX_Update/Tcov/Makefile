@@ -21,7 +21,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wno-unused-parameter -I../Include -I../Source -I../Demo \
         -I../../SPEX_Util/Include/ -I../../SPEX_Util/Source/ \
         -I../../../SuiteSparse_config \
-        -DSPEX_GMP_LIST_INIT=2 -DSPEX_UPDATE_TCOV -DSPEX_DEBUG
+        -DSPEX_GMP_LIST_INIT=2 -DSPEX_UPDATE_TCOV #-DSPEX_DEBUG
 
 LDLIBS += -lm -lgmp -lmpfr -lsuitesparseconfig
 
@@ -31,92 +31,78 @@ run: runtests
 
 all: test demo
 
-CS2 = SPEX_initialize.o \
-    SPEX_initialize_expert.o \
-    SPEX_finalize.o \
-    SPEX_realloc.o \
-    SPEX_malloc.o \
+CS2 = \
     SPEX_calloc.o \
+    SPEX_matrix_div.o \
+    spex_cast_array.o \
+    spex_cast_matrix.o \
+    SPEX_check_solution.o \
+    SPEX_create_default_options.o \
+    spex_create_mpfr_array.o \
+    spex_create_mpq_array.o \
+    spex_create_mpz_array.o \
+    SPEX_cumsum.o \
+    spex_expand_double_array.o \
+    spex_expand_mpfr_array.o \
+    spex_expand_mpq_array.o \
+    SPEX_finalize.o \
     SPEX_free.o \
     SPEX_gmp.o \
-    SPEX_cumsum.o \
-    SPEX_create_default_options.o \
-    spex_create_mpq_array.o \
-    spex_create_mpz_array.o  \
+    SPEX_initialize.o \
+    SPEX_initialize_expert.o \
+    SPEX_malloc.o \
+    SPEX_matrix_allocate.o \
+    SPEX_matrix_check.o \
+    SPEX_matrix_copy.o \
+    SPEX_matrix_free.o \
+    SPEX_matrix_mul.o \
+    SPEX_matrix_nnz.o \
+    SPEX_realloc.o \
+    spex_sparse_collapse.o \
+    spex_sparse_realloc.o \
+    SPEX_LU_analysis_free.o \
+    SPEX_vector_allocate.o \
+    SPEX_vector_realloc.o \
+    SPEX_vector_free.o \
+    spex_dynamic_to_CSC_mpz.o \
+    spex_CSC_mpz_to_dynamic.o \
+    spex_delete_mpz_array.o
 
 $(CS2): ../../SPEX_Util/Include/SPEX_Util.h ../../SPEX_Util/Source/spex_util_internal.h
 
-.PRECIOUS: SPEX_init%.c SPEX_fin%.c SPEX_calloc.c SPEX_malloc.c SPEX_realloc.c SPEX_fre%.c SPEX_gmp.c SPEX_%sum.c SPEX_%tions.c spex_cr%.c
+.PRECIOUS: SPEX_%.c spex_%.c
 
-SPEX_init%.c:
+spex_%.c:
 	- ln -s ../../SPEX_Util/Source/$@
 
-SPEX_fin%.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-SPEX_malloc.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-SPEX_calloc.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-SPEX_realloc.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-SPEX_fre%.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-SPEX_gmp.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-SPEX_%sum.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-SPEX_%tions.c:
-	- ln -s ../../SPEX_Util/Source/$@
-
-spex_cr%.c:
+SPEX_%.c:
 	- ln -s ../../SPEX_Util/Source/$@
 
 CS1 = tcov_malloc_test.o \
-    spex_get_scattered_v.o \
-    spex_cppu.o \
-    spex_dppu1.o \
-    spex_dppu2.o \
-    spex_insert_new_entry.o \
-    spex_ipge.o \
-    SPEX_LUU.o \
-    SPEX_create_mpq_array.o \
-    SPEX_create_mpz_array.o  \
-    SPEX_delete_mpq_array.o \
-    SPEX_delete_mpz_array.o \
-    SPEX_mat_alloc.o \
-    SPEX_mat_free.o \
-    spex_finalize_and_insert_vk.o \
-    spex_triangular_solve.o \
-    spex_find_next_nz.o \
-    SPEX_vector_alloc.o \
-    SPEX_vector_free.o \
-    SPEX_vector_realloc.o \
-    SPEX_solve.o \
-    spex_backward_sub.o \
-    spex_forward_sub.o \
-    spex_get_nnz_pattern.o \
-    spex_verify.o \
-    SPEX_create_mpq_array.o \
-    SPEX_create_mpz_array.o  \
-    SPEX_delete_mpq_array.o \
-    SPEX_delete_mpz_array.o  \
+    spex_update_get_scattered_v.o \
+    spex_update_cppu.o \
+    spex_update_dppu1.o \
+    spex_update_dppu2.o \
+    spex_update_insert_new_entry.o \
+    spex_update_ipge.o \
+    SPEX_Update_LU_ColRep.o \
+    spex_update_finalize_and_insert_vk.o \
+    spex_update_triangular_solve.o \
+    spex_update_find_next_nz.o \
+    SPEX_Update_Solve.o \
+    spex_update_backward_sub.o \
+    spex_update_forward_sub.o \
+    spex_update_verify.o \
 #spex_delete_scattered_vector.o  spex_create_scattered_vector.o
 
-$(CS1): ../Include/SPEX_LU_Update.h ../Source/spex_lu_update_internal.h tcov_malloc_test.h #../../SPEX_Util/Include/SPEX_Util.h ../../SPEX_Util/Source/spex_util_internal.h
+$(CS1): ../Include/SPEX_Update.h ../Source/spex_update_internal.h tcov_malloc_test.h #../../SPEX_Util/Include/SPEX_Util.h ../../SPEX_Util/Source/spex_util_internal.h
 
 .PRECIOUS: SPEX_%.c spex_%.c
 
-SPEX_%.c:
+SPEX_Update%.c:
 	- ln -s ../Source/$@
 
-spex_%.c:
+spex_update%.c:
 	- ln -s ../Source/$@
 
 LU_update_demo.c:

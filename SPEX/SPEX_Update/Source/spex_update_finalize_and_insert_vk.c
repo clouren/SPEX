@@ -23,9 +23,9 @@ SPEX_info spex_update_finalize_and_insert_vk
     spex_scattered_vector *vk_dense, //scattered version of the solution for
                       // LDx=v using the first k-1 columns of L
     int64_t *h,       // history vector for vk_dense
-    SPEX_mat *U,      // matrix U
-    SPEX_mat *L,      // matrix L
-    const mpz_t *sd,  // array of scaled pivots
+    SPEX_matrix *U,      // matrix U
+    SPEX_matrix *L,      // matrix L
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *Q, // the column permutation
     const int64_t *P_inv,// inverse of row permutation
     const int64_t k,  // the column index in L that vk_dense will be inserted
@@ -36,6 +36,7 @@ SPEX_info spex_update_finalize_and_insert_vk
     SPEX_info info;
     int64_t i, p = 0, real_i, vk_nz = vk_dense->nz, Lk_nz;
     int sgn;
+    mpz_t *sd = rhos->x.mpz;
 
     // move entries to U
     while(p < vk_nz)
@@ -65,7 +66,7 @@ SPEX_info spex_update_finalize_and_insert_vk
     // check if L->v[k] needs more space for all remaining entries
     if (vk_nz > L->v[k]->nzmax)
     {
-        SPEX_CHECK(SPEX_vector_realloc(L->v[k], vk_nz));
+        SPEX_CHECK(SPEX_vector_realloc(L->v[k], vk_nz, NULL));
     }
 
     // move the remaining nonzero entries to L->v[k]
