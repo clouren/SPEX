@@ -43,7 +43,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     // Output
     SPEX_matrix** x_handle,     // rational solution to the system
     // Input
-    const SPEX_matrix *A,             // Input matrix (permuted)
+    const SPEX_matrix* A,             // Input matrix (permuted)
     const SPEX_matrix* A_orig,        // Input matrix (unpermuted)
     const SPEX_matrix* b,             // right hand side vector
     const SPEX_matrix* rhos,          // sequence of pivots
@@ -52,7 +52,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     const SPEX_options* option        // command options
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     // Check the inputs
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(A_orig, SPEX_CSC, SPEX_MPZ);
@@ -111,8 +111,8 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     
     for (i = 0; i < nz; i++)
     {
-        OK ( SPEX_mpq_set_num( x->x.mpq[i], b2->x.mpz[i]));
-        OK ( SPEX_mpq_div( x->x.mpq[i], x->x.mpq[i], det2));
+        SPEX_CHECK ( SPEX_mpq_set_num( x->x.mpq[i], b2->x.mpz[i]));
+        SPEX_CHECK ( SPEX_mpq_div( x->x.mpq[i], x->x.mpq[i], det2));
     }
     
     // Permute x

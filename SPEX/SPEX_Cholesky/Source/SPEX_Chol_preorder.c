@@ -33,8 +33,8 @@
 SPEX_info SPEX_Chol_preorder
 (
     SPEX_Chol_analysis** S_handle, // symbolic analysis (row/column perm. and nnz)
-    const SPEX_matrix *A,        // Input matrix
-    const SPEX_options *option   // Control parameters, if NULL, use default
+    const SPEX_matrix* A,        // Input matrix
+    const SPEX_options* option   // Control parameters, if NULL, use default
 )
 {
 
@@ -60,7 +60,7 @@ SPEX_info SPEX_Chol_preorder
     // allocate symbolic analysis object
     //--------------------------------------------------------------------------
 
-    SPEX_Chol_analysis *S = NULL ;
+    SPEX_Chol_analysis* S = NULL ;
     int64_t i, n = A->n;
     ASSERT( n >= 0); // Dimension can't be negative
     int64_t anz;

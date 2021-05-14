@@ -13,7 +13,7 @@
 /* Purpose: Permute the matrix A and return A2 = PAP */
 SPEX_info SPEX_Chol_permute_A
 (
-    SPEX_matrix **A2_handle, // Output permuted matrix
+    SPEX_matrix** A2_handle, // Output permuted matrix
     SPEX_matrix* A,          // Initial input matrix
     SPEX_Chol_analysis* S    //Symbolic analysis struct that contains column 
                             //and inverse row permutations

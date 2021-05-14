@@ -24,7 +24,7 @@ SPEX_info spex_Chol_counts
     int64_t *post
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     int64_t i, j, k, n, m, J, s, p, q, jleaf, *maxfirst, *prevleaf,
         *ancestor, *head = NULL, *next = NULL, *colcount, *w, *first, *delta ;
     if (!A || !parent || !post) return (SPEX_INCORRECT_INPUT) ;    /* check inputs */
