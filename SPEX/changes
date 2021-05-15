@@ -21,6 +21,7 @@ TOMS paper
 6) rename SPEX_matrix_canonicalize and SPEX_permute_row
       - need discussion about where to put them<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+7) update spex_chol_internal to include spex_util_internal
 
 -----------------------------------TODO-----------------------------------------
 

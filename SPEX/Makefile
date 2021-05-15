@@ -19,7 +19,7 @@ go:
 	( cd SPEX_Left_LU && $(MAKE) )
 	( cd SPEX_Update && $(MAKE) )
 	( cd SPEX_Cholesky && $(MAKE) )
-	( cd SPEX_WAMF && $(MAKE) )
+	#( cd SPEX_WAMF && $(MAKE) )
 
 # install all packages in /usr/local/lib and /usr/local/include
 # (note that CSparse is not installed; CXSparse is installed instead)

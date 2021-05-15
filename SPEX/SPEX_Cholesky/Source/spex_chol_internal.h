@@ -14,66 +14,7 @@
 #ifndef SPEX_CHOL_INTERNAL_H
 #define SPEX_CHOL_INTERNAL_H
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-value"
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//-------------------------C Libraries------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-// Standard C libraries
-#include <setjmp.h>
-#include <math.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <inttypes.h>
-
-// SuiteSparse headers
-#include "SuiteSparse_config.h"
-#include "colamd.h"
-#include "amd.h"
-
-//------------------------------------------------------------------------------
-// debugging
-//------------------------------------------------------------------------------
-
-#ifdef SPEX_DEBUG
-
-#ifdef MATLAB_MEX_FILE
-
-#define ASSERT(x)                                                             \
-{                                                                             \
-    if (!(x))                                                                 \
-    {                                                                         \
-        mexErrMsgTxt ("assertion failed: %s line %d\n", __FILE__, __LINE__) ; \
-    }                                                                         \
-}
-
-#else
-
-#include <assert.h>
-#define ASSERT(x) assert (x)
-
-#endif
-
-#else
-
-// debugging disabled
-#define ASSERT(x)
-
-#endif
-
-//------------------------------------------------------------------------------
-//-------------------------Common Macros----------------------------------------
-//------------------------------------------------------------------------------
-
-#ifdef MATLAB_MEX_FILE
-#include "mex.h"
-#include "matrix.h"
-#endif
-
+#include "spex_util_internal.h"
 #include "SPEX_Chol.h"
 
 // Various other macros are inherited from SPEX_Util.h and may be seen in that file
