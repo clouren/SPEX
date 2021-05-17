@@ -40,6 +40,23 @@
  * c:               Column pointers of L
  * 
  */
+
+
+// Sorting function
+static inline int compare (const void * a, const void * b)
+{
+    int64_t delta = ( *(int64_t*)a - *(int64_t*)b ) ;
+    //return value for delta==0 won't matter since it's not happening here
+    if (delta < 0)
+    {
+        return (-1) ;
+    }
+    else// if (delta >= 0)
+    {
+        return (1) ;
+    }
+}
+
 SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular solve
 (
     int64_t *top_output,         // Output the beginning of nonzero pattern
@@ -54,7 +71,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     int64_t* c                   // Column pointers
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
@@ -71,6 +88,9 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     //--------------------------------------------------------------------------
     // TODO IS there a way to optimize this process? Maybe even during the preallocation
     // in SPEX_Chol_Factor
+    // idea for this: integer matrix (not quite a pointer matrix but sort of), change
+    // for's so that populating non zero pattern and obtaining values of k-1 entries 
+    // are done "together"
     n = A->n;                                // Size of matrix and the dense vectors
     ASSERT(n >= 0);
     
@@ -78,7 +98,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
      * the vector xi contains the indices of the first k-1 nonzeros in column
      * k of L 
      */
-    OK( spex_Chol_ereach(&top, A, k, parent, xi, c));
+    SPEX_CHECK( spex_Chol_ereach(&top, A, k, parent, xi, c));
     
     j = top; // Store where the first k-1 nonzeros end
     
@@ -109,7 +129,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     {
         if ( A->i[i] >= k)
         {
-            OK(SPEX_mpz_set(x->x.mpz[A->i[i]], A->x.mpz[i]));
+            SPEX_CHECK(SPEX_mpz_set(x->x.mpz[A->i[i]], A->x.mpz[i]));
         }
     }
     // Sort the nonzero pattern
@@ -152,15 +172,15 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
                         // No previous pivot
                         if (j < 1)
                         {
-                            OK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
+                            SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
                             h[i] = j;                  // Entry is up to date
                         }
                         
                         // Previous pivot exists
                         else
                         {
-                            OK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
-                            OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
+                            SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
+                            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
                             h[i] = j;                  // Entry is up to date
                         }
                     }
@@ -174,8 +194,8 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
                         // No previous pivot in this case
                         if (j < 1)
                         {
-                            OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[0]));      // x[i] = x[i]*rho[0]
-                            OK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
+                            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[0]));      // x[i] = x[i]*rho[0]
+                            SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
                             h[i] = j;                  // Entry is now up to date
                         }
                         // There is a previous pivot
@@ -184,15 +204,15 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
                             // History update if necessary
                             if (h[i] < j - 1)
                             {
-                                OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] * rho[j-1]
+                                SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] * rho[j-1]
                                 if (h[i] > -1)
                                 {
-                                    OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[h[i]]));// x[i] = x[i] / rho[h[i]]
+                                    SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[h[i]]));// x[i] = x[i] / rho[h[i]]
                                 }
                             }
-                            OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j]));// x[i] = x[i] * rho[j]
-                            OK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
-                            OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1] 
+                            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j]));// x[i] = x[i] * rho[j]
+                            SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
+                            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1] 
                             h[i] = j;                  // Entry is up to date
                         }
                     }
@@ -206,10 +226,10 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
             //------------------------------------------------------------------
             if (h[j] < k-1)
             {
-                OK(SPEX_mpz_mul(x->x.mpz[j],x->x.mpz[j],rhos->x.mpz[k-1]));           // x[j] = x[j] * rho[k-1]
+                SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[j],x->x.mpz[j],rhos->x.mpz[k-1]));           // x[j] = x[j] * rho[k-1]
                 if (h[j] > -1)
                 {
-                    OK(SPEX_mpz_divexact(x->x.mpz[j],x->x.mpz[j],rhos->x.mpz[h[j]]));// x[j] = x[j] / rho[h[j]]
+                    SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[j],x->x.mpz[j],rhos->x.mpz[h[j]]));// x[j] = x[j] / rho[h[j]]
                 }
             }
         }

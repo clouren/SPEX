@@ -22,7 +22,7 @@ SPEX_info spex_Chol_ltsolve
     SPEX_matrix *x            // Solution vector
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     // Check input
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
@@ -41,10 +41,10 @@ SPEX_info spex_Chol_ltsolve
             
             for (p = L->p[j]+1; p < L->p[j+1]; p++)
             {
-                OK ( SPEX_mpz_submul( SPEX_2D(x, j, k, mpz), L->x.mpz[p], 
+                SPEX_CHECK( SPEX_mpz_submul( SPEX_2D(x, j, k, mpz), L->x.mpz[p], 
                                       SPEX_2D( x, L->i[p], k, mpz)));
             }
-            OK( SPEX_mpz_divexact( SPEX_2D(x, j, k, mpz), SPEX_2D(x, j, k, mpz), L->x.mpz[ L->p[j]]));
+            SPEX_CHECK( SPEX_mpz_divexact( SPEX_2D(x, j, k, mpz), SPEX_2D(x, j, k, mpz), L->x.mpz[ L->p[j]]));
         }
     }
     return SPEX_OK;

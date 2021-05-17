@@ -57,7 +57,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
     const SPEX_options* option 
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------

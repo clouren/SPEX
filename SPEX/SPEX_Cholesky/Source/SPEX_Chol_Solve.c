@@ -81,24 +81,24 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     {
         for (j = 0; j < b->n; j++)   
         {
-            OK (SPEX_mpz_set( SPEX_2D(b2, pinv[i], j, mpz),
+            SPEX_CHECK (SPEX_mpz_set( SPEX_2D(b2, pinv[i], j, mpz),
                               SPEX_2D(b, i, j, mpz)));
         }
     }
     
     // b2 = L \ b2    
-    OK(spex_Chol_forward_sub(L, b2, rhos));
+    SPEX_CHECK(spex_Chol_forward_sub(L, b2, rhos));
     
     // b2 = b2 * det 
     SPEX_CHECK(SPEX_matrix_nnz(&nz, b, NULL));
     for (i = 0; i < nz; i++)
     {
-        OK ( SPEX_mpz_mul( b2->x.mpz[i], b2->x.mpz[i], rhos->x.mpz[L->n-1]));
+        SPEX_CHECK( SPEX_mpz_mul( b2->x.mpz[i], b2->x.mpz[i], rhos->x.mpz[L->n-1]));
     }
     
     SPEX_CHECK(SPEX_mpq_init(det2));
     // b2 = L' \ b2
-    OK(spex_Chol_ltsolve(L, b2));
+    SPEX_CHECK(spex_Chol_ltsolve(L, b2));
     
     // x = b2/det 
     mpq_set_num(det2, rhos->x.mpz[L->n-1]);

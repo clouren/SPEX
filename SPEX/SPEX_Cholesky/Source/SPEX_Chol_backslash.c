@@ -61,7 +61,7 @@ SPEX_info SPEX_Chol_backslash
     //-------------------------------------------------------------------------
     printf("chcek input\n");
 
-    SPEX_info ok ;
+    SPEX_info info ;
     // SPEX must be initialized
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 

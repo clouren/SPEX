@@ -19,7 +19,7 @@ SPEX_info SPEX_Chol_permute_A
                             //and inverse row permutations
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     // Check inputs
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     if (!A2_handle || !S)
@@ -46,7 +46,7 @@ SPEX_info SPEX_Chol_permute_A
 
 
     // Set A2 scale
-    OK(SPEX_mpq_set(A2->scale, A->scale));
+    SPEX_CHECK(SPEX_mpq_set(A2->scale, A->scale));
     // Populate the entries in A2
     for (int64_t k = 0 ; k < n ; k++)
     {
@@ -54,7 +54,7 @@ SPEX_info SPEX_Chol_permute_A
         j = S->q [k];
         for (int64_t t = A->p [j] ; t < A->p [j+1] ; t++)
         {
-            OK(SPEX_mpz_set(A2->x.mpz[nz], A->x.mpz[t]));  // row i of A is row pinv[i] of A2 
+            SPEX_CHECK(SPEX_mpz_set(A2->x.mpz[nz], A->x.mpz[t]));  // row i of A is row pinv[i] of A2 
             A2->i [nz++] = pinv [A->i [t]];
         }
     }

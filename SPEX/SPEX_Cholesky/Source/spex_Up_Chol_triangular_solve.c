@@ -42,6 +42,20 @@
  *                  contains the kth row of L.
  */
 
+// Sorting function
+static inline int compare (const void * a, const void * b)
+{
+    int64_t delta = ( *(int64_t*)a - *(int64_t*)b ) ;
+    //return value for delta==0 won't matter since it's not happening here
+    if (delta < 0)
+    {
+        return (-1) ;
+    }
+    else// if (delta >= 0)
+    {
+        return (1) ;
+    }
+}
 
 
 SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular solve
@@ -58,7 +72,7 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     SPEX_matrix* x                  // solution of system ==> kth row of L
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
@@ -104,7 +118,7 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     {
         if (A->i[i] <= k)
         {
-            OK(SPEX_mpz_set(x->x.mpz[A->i[i]], A->x.mpz[i]));
+            SPEX_CHECK(SPEX_mpz_set(x->x.mpz[A->i[i]], A->x.mpz[i]));
         }
     }
     
@@ -121,10 +135,10 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
         if (h[j] < j-1)
         {
             // History update x[j]
-            OK(SPEX_mpz_mul(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[j-1]));
+            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[j-1]));
             if (h[j] > -1)
             {
-               OK(SPEX_mpz_divexact(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[ h[j]]));
+               SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[ h[j]]));
             }
         }
         
@@ -149,15 +163,15 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
                     // No previous pivot
                     if (j < 1)
                     {
-                        OK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
+                        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
                         h[i] = j;                  // Entry is up to date
                     }
                         
                     // Previous pivot exists
                     else
                     {
-                        OK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
-                        OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
+                        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
+                        SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
                         h[i] = j;                  // Entry is up to date
                     }
                 }
@@ -171,8 +185,8 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
                     // No previous pivot in this case
                     if (j < 1)
                     {
-                        OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[0]));      // x[i] = x[i]*rho[0]
-                        OK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
+                        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[0]));      // x[i] = x[i]*rho[0]
+                        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
                         h[i] = j;                  // Entry is now up to date
                     }
                     // There is a previous pivot
@@ -181,15 +195,15 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
                         // History update if necessary
                         if (h[i] < j - 1)
                         {
-                            OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] * rho[j-1]
+                            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] * rho[j-1]
                             if (h[i] > -1)
                             {
-                                OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[h[i]]));// x[i] = x[i] / rho[h[i]]
+                                SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[h[i]]));// x[i] = x[i] / rho[h[i]]
                             }
                         }
-                        OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j]));// x[i] = x[i] * rho[j]
-                        OK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
-                        OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1] 
+                        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j]));// x[i] = x[i] * rho[j]
+                        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
+                        SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1] 
                         h[i] = j;                  // Entry is up to date
                     }
                 }
@@ -198,25 +212,25 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
         // Update x[k]
         if (h[k] < j - 1)
         {
-            OK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j-1])); // x[k] = x[k] * rho[j-1]
+            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j-1])); // x[k] = x[k] * rho[j-1]
             if (h[k] > -1)
             {
-                OK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[h[k]]));// x[k] = x[k] / rho[h[k]]
+                SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[h[k]]));// x[k] = x[k] / rho[h[k]]
             }
         }
-        OK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j])); // x[k] = x[k] * rho[j]
-        OK(SPEX_mpz_submul(x->x.mpz[k], x->x.mpz[j], x->x.mpz[j]));// x[k] = x[k] - xj*xj
+        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j])); // x[k] = x[k] * rho[j]
+        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[k], x->x.mpz[j], x->x.mpz[j]));// x[k] = x[k] - xj*xj
         if (j != 0)
-            OK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j-1])); // x[k] = x[k] / rho[j-1] 
+            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j-1])); // x[k] = x[k] / rho[j-1] 
         h[k] = j;   
     }
     // Finalize x[k]
     if (h[k] < k-1)
     {
-        OK(SPEX_mpz_mul(x->x.mpz[k], x->x.mpz[k], rhos->x.mpz[k-1]));
+        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[k], x->x.mpz[k], rhos->x.mpz[k-1]));
         if (h[k] > -1)
         {
-            OK(SPEX_mpz_divexact(x->x.mpz[k], x->x.mpz[k], rhos->x.mpz[ h[k]]));
+            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[k], x->x.mpz[k], rhos->x.mpz[ h[k]]));
         }
     }
     *top_output = top;
