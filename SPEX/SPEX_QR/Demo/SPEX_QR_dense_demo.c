@@ -1,5 +1,32 @@
+//------------------------------------------------------------------------------
+// SPEX_QR/SPEX_QR_dense.c: Dense REF QR factorization
+//------------------------------------------------------------------------------
+
+// SPEX_QR: (c) 2021, Chris Lourenco, US Naval Academy, All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
+
+/* This code contains a dense REF QR factorization. It is meant to be proof of 
+ * concept for the REF QR factorization algorithms
+ */
+
 
 # include "SPEX_QR.h"
+
+#define FREE_WORKSPACE                          \
+    SPEX_matrix_free(&A,  NULL);                \
+    SPEX_matrix_free(&A2, NULL);                \
+    SPEX_matrix_free(&R,  NULL);                \
+    SPEX_matrix_free(&Q,  NULL);                \
+    SPEX_matrix_free(&R2, NULL);                \
+    SPEX_matrix_free(&Q2, NULL);                \
+    SPEX_matrix_free(&R3, NULL);                \
+    SPEX_matrix_free(&Q3, NULL);                \
+    SPEX_FREE(option);                          \
+    SPEX_finalize();                            \
+
 
 int main( int argc, char* argv[] )
 {
@@ -10,53 +37,57 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
 
     SPEX_initialize();
+    
+    unsigned int seed;
+    int64_t n;
+    int64_t lower;
+    int64_t upper;
+    
+    if (argc != 5)
+    {
+        printf("\nExpected usage: ./SPEX_QR_dense SEED N LOWER UPPER\n");
+        printf("\nUsing default settings\n");
+        seed = 10;
+        n = 100;
+        lower = 1;
+        upper = 10;
+    }
+    else
+    {
+        seed = (unsigned int) atoi(argv[1]);
+        n = atoi(argv[2]);
+        lower = atoi(argv[3]);
+        upper = atoi(argv[4]);
+    }
+    
 
     //--------------------------------------------------------------------------
     // Declare and initialize essential variables
     //--------------------------------------------------------------------------
 
     SPEX_info ok;
-    int64_t n = 300, nz = n*n, num=0;
     SPEX_matrix *A = NULL ;                     // input matrix
-    SPEX_matrix *A2 = NULL ;                    // input matrix (to be generated)
+    SPEX_matrix *A2 = NULL;                    // Matrix to be generated
     SPEX_matrix *R = NULL;                      // Upper triangular matrix
     SPEX_matrix *Q = NULL;                      // Orthogonal Matrix
+    SPEX_matrix *Q2 = NULL;
+    SPEX_matrix *R2 = NULL;
+    SPEX_matrix *Q3 = NULL;
+    SPEX_matrix *R3 = NULL;
     SPEX_options *option = NULL;
     SPEX_create_default_options(&option);
     if (!option)
     {
         fprintf (stderr, "Error! OUT of MEMORY!\n");
-        //FREE_WORKSPACE;
+        FREE_WORKSPACE;
         return 0;
     }
 
     //--------------------------------------------------------------------------
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
-
-    // A2 is a n*n triplet matrix whose entries are FP64 Note that the first
-    // boolean parameter says that the matrix is not shallow, so that A2->i,
-    // A2->j, and A2->x are calloc'd. The second boolean parameter is meaningless
-    // for FP64 matrices, but it tells SPEX LU to allocate the values of A2->x
-    // for the mpz_t, mpq_t, and mpfr_t entries
-    SPEX_matrix_allocate(&A2, SPEX_TRIPLET, SPEX_FP64, n, n, nz,
-        false, true, option);
     
-    // Randomly generate the input
-    unsigned int seed = 10;
-    srand(seed);
-    for (int64_t k = 0; k < n; k++)
-    {
-        for (int64_t p = 0; p < n; p++)
-        {
-            A2->i[num] = k;
-            A2->j[num] = p;
-            //A2->x.fp64[num] = rand(); rdno = rand() % (b-a) + a
-            A2->x.fp64[num] = rand() % (10-1) + 1;
-            num+=1;
-        }
-    }
-
+    SPEX_generate_random_matrix ( &A2, n, seed, lower, upper);
     A2->nz = n*n;
     
     // Create A as a copy of A2
@@ -70,6 +101,7 @@ int main( int argc, char* argv[] )
     // Perform the mulitplication heavy QR_IPGE. This method is focused on doing
     // dot products and tries to limit the number of divisions
     // Better for parallelization and memory
+    // I.e., algorithm 1 from paper
     
     clock_t start_solve1 = clock();
     
@@ -78,10 +110,9 @@ int main( int argc, char* argv[] )
     clock_t end_solve1 = clock();
     
     // Use IPGE Pursell method. This approach performs IPGE on [A' * A | A']
-    // This specific version operates on A'*A and A' seperately and is quite inefficient
+    // This specific version operates on A'*A and A' seperately
     
-    SPEX_matrix *Q2, *R2;
-    
+       
     clock_t start_solve2 = clock();
     
     SPEX_QR_PURSELL( A, &R2, &Q2);
@@ -91,84 +122,13 @@ int main( int argc, char* argv[] )
     // Use IPGE Pursell method. This approach explicitly constructs [A'*A | A']
     // The pursell method is generally quite division heavy.
     
-    SPEX_matrix *Q3, *R3;
-    
+       
     clock_t start_solve3 = clock();
     
     SPEX_QR_PURSELL2( A, &R3, &Q3);
     
     clock_t end_solve3 = clock();
-/*    
-    printf("\nA is: \n");
-    for (int64_t i = 0; i < A->m; i++)
-    {
-        for (int64_t j = 0; j < A->n; j++)
-        {
-            gmp_printf(" %Zd", SPEX_2D(A,i,j,mpz));
-        }
-        printf("\n");
-    }
-    
-    printf("\nOur Q is: \n");
-    for (int64_t i = 0; i < A->m; i++)
-    {
-        for (int64_t j = 0; j < A->n; j++)
-        {
-            gmp_printf(" %Zd", SPEX_2D(Q,i,j,mpz));
-        }
-        printf("\n");
-    }
-    
-    printf("\nOur R is: \n");
-    for (int64_t i = 0; i < A->n; i++)
-    {
-        for (int64_t j = 0; j < A->n; j++)
-        {
-            gmp_printf(" %Zd", SPEX_2D(R,i,j,mpz));
-        }
-        printf("\n");
-    }
-    
-    printf("\nPursell 1 Q is: \n");
-    for (int64_t i = 0; i < A->m; i++)
-    {
-        for (int64_t j = 0; j < A->n; j++)
-        {
-            gmp_printf(" %Zd", SPEX_2D(Q2,i,j,mpz));
-        }
-        printf("\n");
-    }
-    
-    printf("\nPursell 1 R is: \n");
-    for (int64_t i = 0; i < A->n; i++)
-    {
-        for (int64_t j = 0; j < A->n; j++)
-        {
-            gmp_printf(" %Zd", SPEX_2D(R2,i,j,mpz));
-        }
-        printf("\n");
-    }
-    
-    printf("\nPursell 2 Q is: \n");
-    for (int64_t i = 0; i < A->m; i++)
-    {
-        for (int64_t j = 0; j < A->n; j++)
-        {
-            gmp_printf(" %Zd", SPEX_2D(Q3,i,j,mpz));
-        }
-        printf("\n");
-    }
-    
-    printf("\nPursell 2 R is: \n");
-    for (int64_t i = 0; i < A->n; i++)
-    {
-        for (int64_t j = 0; j < A->n; j++)
-        {
-            gmp_printf(" %Zd", SPEX_2D(R3,i,j,mpz));
-        }
-        printf("\n");
-    }
-*/    
+
     // Now check to make sure they are the same
     for (int64_t i = 0; i < A->m; i++)
     {
@@ -236,7 +196,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
-    
+    FREE_WORKSPACE;
                  
 }
     
