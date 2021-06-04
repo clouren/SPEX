@@ -29,13 +29,13 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 # SPEX_Chol depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lspexutil -lm -lgmp -lmpfr
 
-C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
+C = $(CC) $(CF) -g -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
 
 all: install
 
 OBJ = \
      SPEX_dense_mat_dot.o SPEX_dot.o SPEX_generate_random_matrix.o \
-     SPEX_QR_IPGE.o SPEX_QR_PURSELL.o SPEX_QR_PURSELL2.o
+     SPEX_QR_IPGE.o SPEX_QR_PURSELL.o SPEX_QR_PURSELL2.o SPEX_Qtb.o
 
 $(OBJ): ../Include/SPEX_QR.h Makefile
 

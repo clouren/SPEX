@@ -26,6 +26,9 @@ SPEX_info SPEX_QR_IPGE
     SPEX_info info;
     int64_t m = A->m, n = A->n;
     ASSERT( m >= n); // A should be transposed if not true
+    if (m < n)
+        return SPEX_PANIC;
+    //printf("\nm is: %d and n is %d", m, n);
     ASSERT( A != NULL);
     // Only dense for now
     ASSERT( A->type == SPEX_MPZ);
@@ -71,6 +74,9 @@ SPEX_info SPEX_QR_IPGE
                 if (k > 0)
                 {
                     // Q(j,i) = Q(j,i)/R(k-1,k-1)
+                    //printf("\nIteration %d",k);
+                    //gmp_printf("\nQ(j,i) is %Zd", SPEX_2D(Q,j,i,mpz));
+                    //gmp_printf("\nR(k,k) is %Zd", SPEX_2D(R,k-1,k-1,mpz));
                     SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(R, k-1, k-1, mpz)));

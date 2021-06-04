@@ -13,28 +13,30 @@
 SPEX_info SPEX_generate_random_matrix
 (
     SPEX_matrix **A_handle, // Matrix to be created
-    int64_t n,              // Dimension of matrix
+    int64_t m,              // Rows of the matrix
+    int64_t n,              // Columns of the matrix
     unsigned int seed,      // Random number seed
     int64_t lower,          // Lower bound for numbers to be generated
     int64_t upper           // Upper bound for numbers to be generated
 )
 {
     ASSERT(n >= 0);
+    ASSERT(m >= 0);
     ASSERT(lower < upper);
     SPEX_info info;
     SPEX_matrix* A = NULL; 
-    // A is a n*n triplet matrix whose entries are FP64 Note that the first
+    // A is a ,*n triplet matrix whose entries are FP64 Note that the first
     // boolean parameter says that the matrix is not shallow, so that A->i,
     // A->j, and A->x are calloc'd. The second boolean parameter is meaningless
     // for FP64 matrices, but it tells SPEX to allocate the values of A->x
     // for the mpz_t, mpq_t, and mpfr_t entries
-    SPEX_CHECK(SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_FP64, n, n, n*n,
+    SPEX_CHECK(SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_FP64, m, n, m*n,
         false, true, NULL));
     
     int64_t counter = 0;
     // Start the random number generator with seed
     srand(seed);
-    for (int64_t k = 0; k < n; k++)
+    for (int64_t k = 0; k < m; k++)
     {
         for (int64_t p = 0; p < n; p++)
         {

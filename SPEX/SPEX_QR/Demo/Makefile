@@ -24,7 +24,7 @@ CS = ../Lib/libspexqr.a $(LDLIBS)
 
 
 all: lib SPEX_QR_dense_demo SPEX_QR_dense_demo_debug
-	- ./SPEX_QR_dense 100 100 10 100
+	- ./SPEX_QR_dense 100 100 100 10 100
 
 lib:
 	( cd ../Lib ; $(MAKE) )

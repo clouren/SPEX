@@ -86,6 +86,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -169,12 +170,19 @@ SPEX_info SPEX_QR_PURSELL2
 SPEX_info SPEX_generate_random_matrix
 (
     SPEX_matrix **A_handle, // Matrix to be created
-    int64_t n,              // Dimension of matrix
+    int64_t m,              // Rows of the matrix
+    int64_t n,              // Columns of the matrix
     unsigned int seed,      // Random number seed
     int64_t lower,          // Lower bound for numbers to be generated
     int64_t upper           // Upper bound for numbers to be generated
 );
 
+SPEX_info SPEX_Qtb
+(
+    SPEX_matrix* Q,        // Q matrix, want Q'
+    SPEX_matrix* b,        // Original RHS Vector
+    SPEX_matrix** b_handle // Q'*b
+);
     
     
 

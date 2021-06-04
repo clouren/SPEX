@@ -49,9 +49,9 @@ SPEX_info SPEX_QR_PURSELL
     
     // Compute A_T
     
-    for (i = 0; i < m; i++)
+    for (i = 0; i < n; i++)
     {
-        for (j = 0; j < n; j++)
+        for (j = 0; j < m; j++)
         {
             // A'(i,j) = A(j,i)
             SPEX_CHECK(SPEX_mpz_set( SPEX_2D(A_T, i, j, mpz),

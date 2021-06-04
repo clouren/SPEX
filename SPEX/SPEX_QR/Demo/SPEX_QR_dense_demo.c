@@ -24,6 +24,9 @@
     SPEX_matrix_free(&Q2, NULL);                \
     SPEX_matrix_free(&R3, NULL);                \
     SPEX_matrix_free(&Q3, NULL);                \
+    SPEX_matrix_free(&b, NULL);                 \
+    SPEX_matrix_free(&b2, NULL);                \
+    SPEX_matrix_free(&b_new, NULL);             \
     SPEX_FREE(option);                          \
     SPEX_finalize();                            \
 
@@ -39,15 +42,17 @@ int main( int argc, char* argv[] )
     SPEX_initialize();
     
     unsigned int seed;
+    int64_t m;
     int64_t n;
     int64_t lower;
     int64_t upper;
     
-    if (argc != 5)
+    if (argc != 6)
     {
-        printf("\nExpected usage: ./SPEX_QR_dense SEED N LOWER UPPER\n");
+        printf("\nExpected usage: ./SPEX_QR_dense SEED M N LOWER UPPER\n");
         printf("\nUsing default settings\n");
         seed = 10;
+        m = 100;
         n = 100;
         lower = 1;
         upper = 10;
@@ -55,9 +60,10 @@ int main( int argc, char* argv[] )
     else
     {
         seed = (unsigned int) atoi(argv[1]);
-        n = atoi(argv[2]);
-        lower = atoi(argv[3]);
-        upper = atoi(argv[4]);
+        m = atoi(argv[2]);
+        n = atoi(argv[3]);
+        lower = atoi(argv[4]);
+        upper = atoi(argv[5]);
     }
     
 
@@ -74,6 +80,9 @@ int main( int argc, char* argv[] )
     SPEX_matrix *R2 = NULL;
     SPEX_matrix *Q3 = NULL;
     SPEX_matrix *R3 = NULL;
+    SPEX_matrix *b = NULL;
+    SPEX_matrix *b2 = NULL;
+    SPEX_matrix *b_new = NULL;
     SPEX_options *option = NULL;
     SPEX_create_default_options(&option);
     if (!option)
@@ -87,8 +96,8 @@ int main( int argc, char* argv[] )
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
     
-    SPEX_generate_random_matrix ( &A2, n, seed, lower, upper);
-    A2->nz = n*n;
+    SPEX_generate_random_matrix ( &A2, m, n, seed, lower, upper);
+    A2->nz = m*n;
     
     // Create A as a copy of A2
     // A is a copy of the A2 matrix. A is a dense matrix with mpz_t entries
@@ -112,7 +121,7 @@ int main( int argc, char* argv[] )
     // Use IPGE Pursell method. This approach performs IPGE on [A' * A | A']
     // This specific version operates on A'*A and A' seperately
     
-       
+    
     clock_t start_solve2 = clock();
     
     SPEX_QR_PURSELL( A, &R2, &Q2);
@@ -129,10 +138,17 @@ int main( int argc, char* argv[] )
     
     clock_t end_solve3 = clock();
 
+    //option->print_level = 3;
+    //SPEX_matrix_check(Q, option);
+    
+    //SPEX_matrix_check(Q2, option);
+    
+    //SPEX_matrix_check(Q3, option);
+    
     // Now check to make sure they are the same
-    for (int64_t i = 0; i < A->m; i++)
+    for (int64_t i = 0; i < A->n; i++)
     {
-        for (int64_t j = 0; j < A->n; j++)
+        for (int64_t j = 0; j < A->m; j++)
         {
             int r ;
             // Have to transpose Q here because theirs is backwards
@@ -158,7 +174,7 @@ int main( int argc, char* argv[] )
         for (int64_t j = 0; j < A->n; j++)
         {
             int r ;
-            SPEX_mpz_cmp(&r, SPEX_2D(Q,j,i,mpz), SPEX_2D(Q3, i, j, mpz));
+            SPEX_mpz_cmp(&r, SPEX_2D(Q,i,j,mpz), SPEX_2D(Q3, i, j, mpz));
             if ( r != 0)
                 printf("\n Q3 Incorrect at %ld %ld", i, j);
         }
@@ -175,6 +191,28 @@ int main( int argc, char* argv[] )
         }
     }
     
+    
+    //--------------------------------------------------------------------------
+    // Randomly generate a RHS
+    //--------------------------------------------------------------------------
+    
+    // Generate floating point matrix
+    SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
+    b2->nz = m;
+    
+    clock_t start_b = clock();
+    
+    // Make a copy of b
+    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
+    
+    // Compute Q'*b
+    SPEX_Qtb(Q, b, &b_new);
+    
+    clock_t end_b = clock();
+    
+    // TODO Solve x = R \ Q^T b
+    
+    
     //--------------------------------------------------------------------------
     // Output & Timing Stats
     //--------------------------------------------------------------------------
@@ -182,6 +220,7 @@ int main( int argc, char* argv[] )
     double t_qr1 =  (double) (end_solve1 - start_solve1) / CLOCKS_PER_SEC;
     double t_qr2 =  (double) (end_solve2 - start_solve2) / CLOCKS_PER_SEC;
     double t_qr3 =  (double) (end_solve3 - start_solve3) / CLOCKS_PER_SEC;
+    double t_b =  (double) (end_b - start_b) / CLOCKS_PER_SEC;
 
 
     double rat  = t_qr2 / t_qr1;
@@ -192,7 +231,8 @@ int main( int argc, char* argv[] )
     printf("\nIPGE QR Pursell2 time: \t\t%lf\n\n", t_qr3);
     printf("\nRatio IPGE QR/ Pursell1: \t%lf\n\n", rat);
     printf("\nRatio IPGE QR/ Pursell2: \t%lf\n\n", rat2);
-    
+    printf("\nTime to do Q^T*b: \t\t%lf\n", t_b);
+        
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------

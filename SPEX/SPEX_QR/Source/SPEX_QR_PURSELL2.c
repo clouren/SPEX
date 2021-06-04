@@ -69,9 +69,9 @@ SPEX_info SPEX_QR_PURSELL2
     
     // Compute A_T
     
-    for (i = 0; i < m; i++)
+    for (i = 0; i < n; i++)
     {
-        for (j = 0; j < n; j++)
+        for (j = 0; j < m; j++)
         {
             SPEX_CHECK(SPEX_mpz_set( SPEX_2D(A_T, i, j, mpz),
                           SPEX_2D(A, j, i, mpz)));
@@ -163,7 +163,7 @@ SPEX_info SPEX_QR_PURSELL2
     {
         for (j = 0; j < m; j++)
         {
-            SPEX_CHECK(SPEX_mpz_set( SPEX_2D(Q, i, j, mpz),
+            SPEX_CHECK(SPEX_mpz_set( SPEX_2D(Q, j, i, mpz),
                           SPEX_2D(A3, i, j+n, mpz)));
         }
     }
