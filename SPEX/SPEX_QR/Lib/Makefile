@@ -35,7 +35,8 @@ all: install
 
 OBJ = \
      SPEX_dense_mat_dot.o SPEX_dot.o SPEX_generate_random_matrix.o \
-     SPEX_QR_IPGE.o SPEX_QR_PURSELL.o SPEX_QR_PURSELL2.o SPEX_Qtb.o
+     SPEX_QR_IPGE.o SPEX_QR_PURSELL.o SPEX_QR_PURSELL2.o SPEX_Qtb.o \
+     SPEX_QR_backsolve.o
 
 $(OBJ): ../Include/SPEX_QR.h Makefile
 

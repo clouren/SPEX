@@ -184,6 +184,13 @@ SPEX_info SPEX_Qtb
     SPEX_matrix** b_handle // Q'*b
 );
     
+
+SPEX_info SPEX_QR_backsolve
+(
+    SPEX_matrix* R,        // Upper triangular matrix
+    SPEX_matrix* b,        // Q^T * b
+    SPEX_matrix** x_handle // Solution
+);
     
 
 #endif

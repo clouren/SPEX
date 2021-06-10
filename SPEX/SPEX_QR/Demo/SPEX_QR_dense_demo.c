@@ -27,6 +27,8 @@
     SPEX_matrix_free(&b, NULL);                 \
     SPEX_matrix_free(&b2, NULL);                \
     SPEX_matrix_free(&b_new, NULL);             \
+    SPEX_matrix_free(&x, NULL);                 \
+    SPEX_matrix_free(&x_doub, NULL);            \
     SPEX_FREE(option);                          \
     SPEX_finalize();                            \
 
@@ -53,7 +55,7 @@ int main( int argc, char* argv[] )
         printf("\nUsing default settings\n");
         seed = 10;
         m = 100;
-        n = 100;
+        n = 50;
         lower = 1;
         upper = 10;
     }
@@ -83,6 +85,8 @@ int main( int argc, char* argv[] )
     SPEX_matrix *b = NULL;
     SPEX_matrix *b2 = NULL;
     SPEX_matrix *b_new = NULL;
+    SPEX_matrix *x = NULL;
+    SPEX_matrix *x_doub = NULL;
     SPEX_options *option = NULL;
     SPEX_create_default_options(&option);
     if (!option)
@@ -210,8 +214,34 @@ int main( int argc, char* argv[] )
     
     clock_t end_b = clock();
     
-    // TODO Solve x = R \ Q^T b
+    clock_t start_bsolve = clock();
     
+    SPEX_QR_backsolve(R, b_new, &x);
+    
+    clock_t end_bsolve = clock();
+    
+    SPEX_mpq_set_num(x->scale, SPEX_2D(R, n-1, n-1, mpz));
+    
+    
+    // Create a double version of x
+    SPEX_matrix_copy(&x_doub, SPEX_DENSE, SPEX_FP64, x, option);
+    
+    // Optional check of A x and b
+    //printf("\nA is:\n");
+    //option->print_level = 3;
+    //SPEX_matrix_check(A, option);
+    
+    //printf("\nb is:\n");
+    //option->print_level = 3;
+    //SPEX_matrix_check(b, option);
+    
+    //printf("\nx is:\n");
+    //option->print_level = 3;
+    //SPEX_matrix_check(x, option);
+    
+    //printf("\nx_doub is:\n");
+    //option->print_level = 3;
+    //SPEX_matrix_check(x_doub, option);
     
     //--------------------------------------------------------------------------
     // Output & Timing Stats
@@ -221,6 +251,7 @@ int main( int argc, char* argv[] )
     double t_qr2 =  (double) (end_solve2 - start_solve2) / CLOCKS_PER_SEC;
     double t_qr3 =  (double) (end_solve3 - start_solve3) / CLOCKS_PER_SEC;
     double t_b =  (double) (end_b - start_b) / CLOCKS_PER_SEC;
+    double t_bsolve =  (double) (end_bsolve - start_bsolve) / CLOCKS_PER_SEC;
 
 
     double rat  = t_qr2 / t_qr1;
@@ -232,6 +263,7 @@ int main( int argc, char* argv[] )
     printf("\nRatio IPGE QR/ Pursell1: \t%lf\n\n", rat);
     printf("\nRatio IPGE QR/ Pursell2: \t%lf\n\n", rat2);
     printf("\nTime to do Q^T*b: \t\t%lf\n", t_b);
+    printf("\nTime to solve Rx=Q^T*b: \t%lf\n", t_bsolve);
         
     //--------------------------------------------------------------------------
     // Free Memory
