@@ -105,7 +105,7 @@ CS_Left_LU = \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_Left_LU_solve.o
 
-$(CS_Util): ../SPEX_Left_LU/Include/SPEX_Left_LU.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h ../SPEX_Left_LU/Demo/demos.h
+$(CS_Left_LU): ../SPEX_Left_LU/Include/SPEX_Left_LU.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h ../SPEX_Left_LU/Demo/demos.h
 
 .PRECIOUS: SPEX_Left_LU_%.c spex_left_lu_%.c spexlu_demo.c demos.c
 
