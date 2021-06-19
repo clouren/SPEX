@@ -64,9 +64,19 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 
         case SPEX_DYNAMIC_CSC:
         {
+            if (A->v == NULL)
+            {
+                *nnz = -1;
+                return SPEX_INCORRECT_INPUT;
+            }
             *nnz = 0;
             for (int64_t j = 0; j < A->n; j++)
             {
+                if (A->v[j] == NULL)
+                {
+                    *nnz = -1;
+                    return SPEX_INCORRECT_INPUT;
+                }
                 *nnz += A->v[j]->nz;
             }
         }

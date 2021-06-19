@@ -58,7 +58,7 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     SPEX_matrix* x                  // solution of system ==> kth row of L
 )
 {
-    SPEX_info ok;
+    SPEX_info info, ok;
     
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);

@@ -9,7 +9,9 @@
 //------------------------------------------------------------------------------
 
 #define SPEX_FREE_ALL    \
-    SPEX_FREE (work) ;
+    SPEX_FREE (work) ;   \
+    SPEX_MPZ_CLEAR(q);   \
+    SPEX_MPZ_CLEAR(r);
 
 #include "spex_util_internal.h"
 
@@ -136,6 +138,9 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     int64_t i, j, p, pend ;
     int64_t* work = NULL;   // used for checking duplicates for CSC and triplet
     uint64_t prec = SPEX_OPTION_PREC (option);
+    mpz_t q, r;
+    SPEX_MPZ_SET_NULL(q);
+    SPEX_MPZ_SET_NULL(r);
 
     int64_t lines = 0 ;     // # of lines printed so far
 
@@ -517,12 +522,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
         case SPEX_DYNAMIC_CSC:
         {
-            if (A->v == NULL)
-            {
-                // vector pointer not present
-                SPEX_PR1("v invalid\n");
-                return (SPEX_INCORRECT_INPUT);
-            }
+            // This is checked by SPEX_matrix_nnz
+            ASSERT (A->v != NULL);
 
             // allocate workspace to check for duplicates
             work = (int64_t *) SPEX_calloc (m, sizeof (int64_t)) ;
@@ -534,12 +535,20 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                 return (SPEX_OUT_OF_MEMORY) ;
             }
 
+            // initialize q and r
+            SPEX_info info;
+            SPEX_CHECK(SPEX_mpz_init(q));
+            SPEX_CHECK(SPEX_mpz_init(r));
+
             //------------------------------------------------------------------
             // check the row indices && print values
             //------------------------------------------------------------------
 
             for (j = 0 ; j < n ; j++)  // iterate across columns
             {
+                // This is checked by SPEX_matrix_nnz
+                ASSERT (A->v[j] != NULL);
+
                 SPEX_PR_LIMIT ;
                 SPEX_PR2 ("column %"PRId64" :\n", j) ;
                 int64_t marked = j+1 ;
@@ -549,6 +558,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                 {
                     // row indices or values not present
                     SPEX_PR1 ("i or x invalid\n") ;
+                    SPEX_FREE_ALL;
                     return (SPEX_INCORRECT_INPUT) ;
                 }
 
@@ -574,18 +584,42 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         SPEX_PR_LIMIT ;
                         SPEX_PR2 ("  row %"PRId64" : ", i) ;
 
-                        status = SPEX_mpfr_asprintf(&buff, "%Zd \n",
-                            A->v[j]->x[p]);
-                        if (status >= 0)
+                        // check if each entry will be integer after scale
+                        // applied, report error if not.
+                        int sgn;
+                        SPEX_CHECK(SPEX_mpz_sgn(&sgn, A->v[j]->x[p]));
+                        if (sgn != 0)
                         {
-                            SPEX_PR2("%s", buff);
-                            SPEX_mpfr_free_str (buff);
+                            SPEX_CHECK(SPEX_mpz_mul(q, A->v[j]->x[p],
+                                SPEX_MPQ_NUM(A->v[j]->scale)));
+                            SPEX_CHECK(SPEX_mpz_cdiv_qr(q, r, q,
+                                SPEX_MPQ_DEN(A->v[j]->scale)));
+                            SPEX_CHECK(SPEX_mpz_sgn(&sgn, r));
+                            if (sgn != 0)
+                            {
+                                // entry is not integer after scale applied
+                                SPEX_PR1 ("entry not integer: (%ld,%ld)\n",
+                                    i, j) ;
+                                SPEX_FREE_ALL ;
+                                return (SPEX_INCORRECT_INPUT) ;
+                            }
+                            status = SPEX_mpfr_asprintf(&buff, "%Zd \n", q);
+                            if (status >= 0)
+                            {
+                                SPEX_PR2("%s", buff);
+                                SPEX_mpfr_free_str (buff);
+                            }
+                            else
+                            {
+                                SPEX_FREE_ALL ;
+                                SPEX_PRINTF (" error: %d\n", status) ;
+                                return (status) ;
+                            }
                         }
                         else
                         {
-                            SPEX_FREE_ALL ;
-                            SPEX_PRINTF (" error: %d\n", status) ;
-                            return (status) ;
+                            // just print 0 as it is
+                            SPEX_PR2("%d \n", 0);
                         }
                     }
                     work [i] = marked ;

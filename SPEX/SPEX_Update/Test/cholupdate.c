@@ -248,11 +248,11 @@ int main( int argc, char* argv[])
 
     // convert the factorization to SPEX_mat to be used in the update process
     OK(SPEX_matrix_copy(&L2, SPEX_DYNAMIC_CSC, SPEX_MPZ, L1, option));
-    OK(SPEX_permute_row(L2, P2, option));
-    OK(SPEX_matrix_canonicalize(L2, P2, option));
+    OK(SPEX_Update_permute_row(L2, P2, option));
+    OK(SPEX_Update_matrix_canonicalize(L2, P2, option));
 
     // allocate space for scattered vector w
-    OK(SPEX_vector_allocate(&w, 0, true, option));
+    OK(SPEX_vector_allocate(&w, 0, option));
     OK(SPEX_vector_realloc(w, n, option));
 
     //--------------------------------------------------------------------------
@@ -287,7 +287,7 @@ int main( int argc, char* argv[])
     printf("computing Cholesky rank-1 update if column %ld is add to B...\n",
         new_col);
     start1 = clock();
-    OK(SPEX_Update_Chol_Rank1(L2, rhos2, P2, P2_inv, w, 1));
+    OK(SPEX_Update_Chol_Rank1(L2, rhos2, P2, P2_inv, w, 1, option));
     end1 = clock();
 
     //--------------------------------------------------------------------------

@@ -28,6 +28,7 @@ SPEX_info SPEX_transpose
 )
 {
     SPEX_info info;
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
     // Check input
     SPEX_REQUIRE_KIND (A, SPEX_CSC);
     if (!C_handle)       { return SPEX_INCORRECT_INPUT;}

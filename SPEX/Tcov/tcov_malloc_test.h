@@ -38,19 +38,51 @@ extern int64_t malloc_count ;
     }                                                                       \
 }
 
-#ifdef SPEX_CHECK
-#undef SPEX_CHECK
-#endif
+// wrapper for SPEX_initialize*, SPEX_finalize, and all SPEX_*free functions
+#define TEST_OK(method)                             \
+if (!pretend_to_fail)                               \
+{                                                   \
+     info = (method) ; assert (info == SPEX_OK) ;   \
+}
 
-#define SPEX_CHECK(method)          \
-{                                   \
-    info = (method) ;               \
-    if (info != SPEX_OK)            \
-    {                               \
-        SPEX_PRINT_INFO (info)      \
-        SPEX_FREE_ALL ;             \
-        return (info) ;             \
-    }                               \
+//wrapper for all other SPEX_* functions
+#define TEST_CHECK(method)                       \
+if (!pretend_to_fail)                            \
+{                                                \
+    info = (method) ;                            \
+    if (info == SPEX_OUT_OF_MEMORY)              \
+    {                                            \
+        SPEX_FREE_ALL;                           \
+        pretend_to_fail = true ;                 \
+    }                                            \
+    else if (info != SPEX_OK)                    \
+    {                                            \
+        SPEX_PRINT_INFO (info) ;                 \
+        printf ("test failure at line %d\n", __LINE__) ;         \
+        abort ( ) ;                              \
+    }                                            \
+}
+
+// wrapper for SPEX_* function when expected error would produce
+#define TEST_CHECK_FAILURE(method,expected_error)               \
+if (!pretend_to_fail)                            \
+{                                                \
+    info = (method) ;                            \
+    if (info == SPEX_OUT_OF_MEMORY)              \
+    {                                            \
+        SPEX_FREE_ALL;                           \
+        pretend_to_fail = true ;                 \
+    }                                            \
+    else if (info != expected_error)             \
+    {                                            \
+        printf ("SPEX method was expected to fail, but succeeded!\n") ; \
+        printf ("this error was expected:\n") ;  \
+        SPEX_PRINT_INFO (expected_error) ;       \
+        printf ("but this error was obtained:\n") ;     \
+        SPEX_PRINT_INFO (info) ;                 \
+        printf ("test failure at line %d (wrong error)\n", __LINE__) ;  \
+        abort ( ) ;                              \
+    }                                            \
 }
 
 // wrapper for malloc

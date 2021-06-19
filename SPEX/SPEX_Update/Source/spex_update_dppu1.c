@@ -50,7 +50,8 @@ SPEX_info spex_update_dppu1
     int64_t *P,      // row permutation
     int64_t *P_inv,  // inverse of row permutation
     const int64_t k,   // current column index 0 <= k < n
-    const int64_t ks   // index of the diagonal to be swapped with, [0,n)
+    const int64_t ks,  // index of the diagonal to be swapped with, [0,n)
+    const SPEX_options *option
 )
 {
     // initialize workspace
@@ -111,39 +112,6 @@ SPEX_info spex_update_dppu1
         }
         else
         {
-#ifdef SPEX_DEBUG
-            mpq_t r1, r2; mpq_init(r1); mpq_init(r2);
-            mpz_fdiv_qr(U->v[n-1]->x[0], SPEX_MPQ_NUM(r1),
-                        U->v[n-1]->x[0], sd[n-2]);
-            mpq_set_den(r1, sd[n-2]);
-            mpq_canonicalize(r1);
-
-            // L(P(n-1),k) = L(P(n-1),k)*S(1,k), which should be integer
-            SPEX_CHECK(SPEX_mpz_divexact(Lk_dense_col->x[Pks],
-                       Lk_dense_col->x[Pks], SPEX_MPQ_DEN(SL(k))));
-            SPEX_CHECK(SPEX_mpz_mul(Lk_dense_col->x[Pks],
-                       Lk_dense_col->x[Pks], SPEX_MPQ_NUM(SL(k))));
-            // tmpz = ceil(U(k,Q(n-1))*L(P(n-1),k)/U(k,Q(k))
-            SPEX_CHECK(SPEX_mpz_mul(tmpz, Uk_dense_row->x[Qks],
-                                    Lk_dense_col->x[Pks]));
-            mpz_cdiv_qr(tmpz, SPEX_MPQ_NUM(r2),
-                        tmpz, Uk_dense_row->x[Qk]);
-            mpq_set_den(r2, Uk_dense_row->x[Qk]);
-            mpq_canonicalize(r2);
-            mpq_neg(r2,r2);
-
-            if (mpq_cmp(r1,r2) != 0)
-            {
-                SPEX_CHECK(SPEX_gmp_printf("%Qd\n%Qd\n",r1,r2));
-                mpq_clear(r1);
-                mpq_clear(r2);
-                SPEX_FREE_ALL;
-                SPEX_CHECK(SPEX_PANIC);
-            }
-            mpq_clear(r1);
-            mpq_clear(r2);
-
-#else
             SPEX_CHECK(SPEX_mpz_fdiv_q(U->v[n-1]->x[0],
                                        U->v[n-1]->x[0], sd[n-2]));
             // L(P(n-1),k) = L(P(n-1),k)*S(1,k), which should be integer
@@ -151,11 +119,12 @@ SPEX_info spex_update_dppu1
                        Lk_dense_col->x[Pks], SPEX_MPQ_DEN(SL(k))));
             SPEX_CHECK(SPEX_mpz_mul(Lk_dense_col->x[Pks],
                        Lk_dense_col->x[Pks], SPEX_MPQ_NUM(SL(k))));
+
             // tmpz = ceil(U(k,Q(n-1))*L(P(n-1),k)/U(k,Q(k))
             SPEX_CHECK(SPEX_mpz_mul(tmpz, Uk_dense_row->x[Qks],
                                     Lk_dense_col->x[Pks]));
             SPEX_CHECK(SPEX_mpz_cdiv_q(tmpz, tmpz, Uk_dense_row->x[Qk]));
-#endif
+
             // U(n-1,Q(n-1)) = U(n-1,Q(n-1))+tmpz
             SPEX_CHECK(SPEX_mpz_add(U->v[n-1]->x[0], U->v[n-1]->x[0], tmpz));
 
@@ -329,45 +298,16 @@ SPEX_info spex_update_dppu1
             // U(ks,cks) = U(ks,cks)*S(2,ks)+U(k,cks)*Lksk/U(k,Q(k))
             if (h[cks] == -2)  // U(k,cks) != 0
             {
-#ifdef SPEX_DEBUG
-                mpq_t r1, r2; mpq_init(r1); mpq_init(r2);
-                // tmpz = ceil(U(k,cks)*Lksk/U(k,Q(k))
-                SPEX_CHECK(SPEX_mpz_mul(tmpz, Uk_dense_row->x[cks], Lksk));
-                mpz_cdiv_qr(tmpz, SPEX_MPQ_NUM(r1),
-                            tmpz, Uk_dense_row->x[Qk]);
-                mpq_set_den(r1, Uk_dense_row->x[Qk]);                
-                mpq_canonicalize(r1);
-
-                // U(ks,cks) = floor(U(ks,cks)*S(2,ks))
-                SPEX_CHECK(SPEX_mpz_mul(U->v[ks]->x[pks], U->v[ks]->x[pks],
-                                        SPEX_MPQ_NUM(SU(ks))));
-                mpz_fdiv_qr(U->v[ks]->x[pks], SPEX_MPQ_NUM(r2),
-                            U->v[ks]->x[pks], SPEX_MPQ_DEN(SU(ks)));
-                mpq_set_den(r2, SPEX_MPQ_DEN(SU(ks)));
-                mpq_canonicalize(r2);
-                mpq_neg(r2,r2);
-                if (mpq_cmp(r1,r2) != 0)
-                {
-    printf("file %s line %d\n",__FILE__,__LINE__);
-                    SPEX_CHECK(SPEX_gmp_printf("%Qd\n%Qd\n",r1,r2));
-                    mpq_clear(r1);
-                    mpq_clear(r2);
-                    SPEX_FREE_ALL;
-                    return SPEX_PANIC;
-                }
-                mpq_clear(r1);
-                mpq_clear(r2);
-
-#else
                 // tmpz = ceil(U(k,cks)*Lksk/U(k,Q(k))
                 SPEX_CHECK(SPEX_mpz_mul(tmpz, Uk_dense_row->x[cks], Lksk));
                 SPEX_CHECK(SPEX_mpz_cdiv_q(tmpz, tmpz, Uk_dense_row->x[Qk]));
+
                 // U(ks,cks) = floor(U(ks,cks)*S(2,ks))
                 SPEX_CHECK(SPEX_mpz_mul(U->v[ks]->x[pks], U->v[ks]->x[pks],
                                         SPEX_MPQ_NUM(SU(ks))));
                 SPEX_CHECK(SPEX_mpz_fdiv_q(U->v[ks]->x[pks], U->v[ks]->x[pks],
                                         SPEX_MPQ_DEN(SU(ks))));
-#endif
+
                 // U(ks,cks) = U(ks,cks)+tmpz
                 SPEX_CHECK(SPEX_mpz_add(U->v[ks]->x[pks],
                                         U->v[ks]->x[pks], tmpz));
@@ -409,7 +349,7 @@ SPEX_info spex_update_dppu1
             if (U->v[ks]->nz+count > U->v[ks]->nzmax)
             {
                 SPEX_CHECK(SPEX_vector_realloc(U->v[ks], U->v[ks]->nz+count,
-                    NULL));
+                    option));
             }
             pks = U->v[ks]->nz;
             for (pk = 0; count > 0 && pk < Uk_dense_row->nz; pk++)
@@ -490,13 +430,19 @@ SPEX_info spex_update_dppu1
     // be deleted and replaced. Therefore, its IPGE update in the last
     // iteration can be treated same as row k of U for better efficiency.
     // ------------------------------------------------------------------------
-    // if this is last iteration, then we don't need to perform the remaining
-    // IPGE update, since it will be delete and updated with inserted column
-    if (ks == n-1)
+    // If this is the last iteration, then we don't need to perform the
+    // remaining IPGE update, since L(:,k) will be deleted and updated with
+    // inserted column.
+    // However, the current heurestic used in SPEX_Update_LU_ColRep will always
+    // handle such case with cppu instead. In case the heurestic is changed in
+    // the furture, and thus this case become possible for dppu1 (the following
+    // assert is triggered), enable the following if clause.
+    ASSERT(ks != n-1); // This is used to detect if this case becomes possible.
+    /*if (ks == n-1)
     {
         SPEX_FREE_ALL;
         return SPEX_OK;
-    }
+    }*/
 
     // Since L(P[ks],k) will be 0 after swapping, the IPGE update for row k of
     // U can be done by multiplying with sd(ks-1)/sd(k-1).
@@ -574,19 +520,18 @@ SPEX_info spex_update_dppu1
         //       L(:,ks) and L(:, k). Both could have explicit zero(s).
         //       L(:,k) can be jumbled.
         *inext = n;
-        for (pk = 0; pk < L->v[k]->nz; pk++)
+        for (pk = 1 /*exclude L(P[k],k)*/; pk < L->v[k]->nz; pk++)
         {
+            SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->v[k]->x[pk]));
+            if (sgn == 0)  {continue;}// skip if L(ck, k) == 0
+
             // row index in column k of L
             ck = L->v[k]->i[pk];
-            // exclude L(P[k],k)
-            if (ck == Pk)
-            {
-                continue;
-            }
 
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, Lk_dense_col->x[ck]));
             if (sgn != 0) // L(ck, ks) != 0
             {
+                // L(ck, ks) = L(ck, ks) * L(P[k], k)
                 SPEX_CHECK(SPEX_mpz_mul(Lk_dense_col->x[ck],
                                         Lk_dense_col->x[ck],
                                         L->v[k]->x[0]));

@@ -57,50 +57,6 @@
 
 #include "tcov_malloc_test.h"
 
-#define TEST_OK(method)                             \
-if (!pretend_to_fail)                               \
-{                                                   \
-     info = (method) ; assert (info == SPEX_OK) ;   \
-}
-
-#define TEST_CHECK(method)                       \
-if (!pretend_to_fail)                            \
-{                                                \
-    info = (method) ;                            \
-    if (info == SPEX_OUT_OF_MEMORY)              \
-    {                                            \
-        SPEX_FREE_ALL;                           \
-        pretend_to_fail = true ;                 \
-    }                                            \
-    else if (info != SPEX_OK)                    \
-    {                                            \
-        SPEX_PRINT_INFO (info) ;                 \
-        printf ("test failure at line %d\n", __LINE__) ;         \
-        abort ( ) ;                              \
-    }                                            \
-}
-
-#define TEST_CHECK_FAILURE(method,expected_error)               \
-if (!pretend_to_fail)                            \
-{                                                \
-    info = (method) ;                            \
-    if (info == SPEX_OUT_OF_MEMORY)              \
-    {                                            \
-        SPEX_FREE_ALL;                           \
-        pretend_to_fail = true ;                 \
-    }                                            \
-    else if (info != expected_error)             \
-    {                                            \
-        printf ("SPEX method was expected to fail, but succeeded!\n") ; \
-        printf ("this error was expected:\n") ;  \
-        SPEX_PRINT_INFO (expected_error) ;       \
-        printf ("but this error was obtained:\n") ;     \
-        SPEX_PRINT_INFO (info) ;                 \
-        printf ("test failure at line %d (wrong error)\n", __LINE__) ;  \
-        abort ( ) ;                              \
-    }                                            \
-}
-
 #define MAX_MALLOC_COUNT 1000
 
 int64_t Ap[5] = {0, 3, 5, 8, 11};

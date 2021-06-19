@@ -40,7 +40,6 @@ OBJ = \
     spex_expand_mpq_array.o SPEX_initialize_expert.o SPEX_matrix_nnz.o SPEX_create_default_options.o  \
     SPEX_LU_analysis_free.o SPEX_LU_analyze.o SPEX_transpose.o SPEX_determine_symmetry.o\
     spex_delete_mpz_array.o spex_dynamic_to_CSC_mpz.o spex_CSC_mpz_to_dynamic.o \
-    SPEX_matrix_canonicalize.o SPEX_permute_row.o \
     SPEX_vector_free.o SPEX_vector_allocate.o SPEX_vector_realloc.o
 
 $(OBJ): ../Include/SPEX_Util.h ../Source/spex_util_internal.h Makefile

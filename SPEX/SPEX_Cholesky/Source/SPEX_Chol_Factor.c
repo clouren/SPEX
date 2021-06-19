@@ -47,7 +47,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
 (
     // Output
     SPEX_matrix** L_handle,     // lower triangular matrix
-    SPEX_matrix ** rhos_handle, // sequence of pivots
+    SPEX_matrix** rhos_handle, // sequence of pivots
     SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
                                 //exact number of nonzeros of L and permutation used
     // Input
@@ -57,7 +57,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
     const SPEX_options* option 
 )
 {
-    SPEX_info ok;
+    SPEX_info info;
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
@@ -187,7 +187,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
     
     if (left)
     {
-        OK(spex_Chol_Pre_Left_Factor(A, &L, xi, S->parent, S, c));
+        SPEX_CHECK(spex_Chol_Pre_Left_Factor(A, &L, xi, S->parent, S, c));
     }
     else
     {
@@ -210,12 +210,12 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
         for (k = 0; k < n; k++)
         {
             // LDx = A(:,k)
-            OK (spex_Left_Chol_triangular_solve(&top, L, A, k, xi, rhos, h, x, S->parent, c));
+            SPEX_CHECK (spex_Left_Chol_triangular_solve(&top, L, A, k, xi, rhos, h, x, S->parent, c));
 
             // Set the pivot element
             if (mpz_sgn(x->x.mpz[k]) != 0)
             {
-                OK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
+                SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
             }
             else
             {
@@ -233,9 +233,9 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
                     // Place the i location of the L->nz nonzero
                     size = mpz_sizeinbase(x->x.mpz[jnew],2);
                     // GMP manual: Allocated size should be size+2
-                    OK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
+                    SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
                     // Place the x value of the L->nz nonzero
-                    OK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew]));
+                    SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew]));
                     // Increment lnz
                     lnz += 1;
                 }
@@ -256,7 +256,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
             // If x[k] is nonzero that is the pivot. if x[k] == 0 then matrix is singular.
             if (mpz_sgn(x->x.mpz[k]) != 0)
             {
-                OK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
+                SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
             }
             else
             {
@@ -277,15 +277,15 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
                 L->i[p] = k;
                 size = mpz_sizeinbase(x->x.mpz[jnew],2);
                 // GMP manual: Allocated size should be size+2
-                OK(SPEX_mpz_init2(L->x.mpz[p], size+2));
+                SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[p], size+2));
                 // Place the x value of the L->nz nonzero
-                OK(SPEX_mpz_set(L->x.mpz[p],x->x.mpz[jnew]));
+                SPEX_CHECK(SPEX_mpz_set(L->x.mpz[p],x->x.mpz[jnew]));
             }
             p = c[k]++;
             L->i[p] = k;
             size = mpz_sizeinbase(x->x.mpz[k], 2);
-            OK(SPEX_mpz_init2(L->x.mpz[p], size+2));
-            OK(SPEX_mpz_set(L->x.mpz[p], x->x.mpz[k]));
+            SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[p], size+2));
+            SPEX_CHECK(SPEX_mpz_set(L->x.mpz[p], x->x.mpz[k]));
         }
     }
     // Finalize L->p

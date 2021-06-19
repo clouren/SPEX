@@ -121,7 +121,7 @@ typedef enum
     SPEX_OUT_OF_MEMORY = -1,    // out of memory
     SPEX_SINGULAR = -2,         // the input matrix A is singular
     SPEX_INCORRECT_INPUT = -3,  // one or more input arguments are incorrect
-    SPEX_INCORRECT = -4,        // The solution is incorrect
+    SPEX_INCORRECT = -4,        // The solution/factorization is incorrect
     SPEX_UNSYMMETRIC = -5,      // The input matrix is unsymmetric (for Cholesky)
     SPEX_PANIC = -6             // SPEX used without proper initialization
 }
@@ -180,9 +180,10 @@ typedef struct SPEX_options
                            // SPEX Left LU), 3: all, with matrices and results
     int32_t prec ;         // Precision used to output file if MPFR is chosen
     mpfr_rnd_t round ;     // Type of MPFR rounding used
-    bool check ;           // Set true if the solution to the system should be
-                           // checked.  Intended for debugging only; SPEX is
-                           // guaranteed to return the exact solution.
+    bool check ;           // Set true if users wish to check the solution to
+                           // the system or verify the resulted factorization.
+                           // Intended for debugging only; SPEX is guaranteed
+                           // to be exact and correct.
 } SPEX_options ;
 
 // Purpose: Create SPEX_options object with default parameters
@@ -201,6 +202,14 @@ SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 // which should be considered as a n-be-1 SPEX_matrix.
 //------------------------------------------------------------------------------
 
+// NOTE: the real value of the i-th nonzero entry in the list should be computed
+// as x[i]*scale. While scale is a rational number, the real values for all
+// entries should be ensured to be INTEGER!! If the real value for any entry
+// turns out to be non-integer, make sure to scale up all entries in the same
+// matrix such that the real values of all entries become integer, then
+// properly update the scale in the matrix (see the scale component in the
+// SPEX_matrix structure).
+
 typedef struct
 {
     int64_t nz;   // number of nonzeros. nz is meaningless for a dense vector
@@ -210,7 +219,7 @@ typedef struct
     mpz_t *x;     // array of size nzmax that contains the values of each nnz
     mpq_t scale;  // a scale factor that has not applied to entries in this v.
                   // The real value of the i-th nonzero entry in the list should
-                  // be computed as x[i]*scale.
+                  // be computed as x[i]*scale. x[i]/den(scale) must be integer.
 } SPEX_vector;
 
 //------------------------------------------------------------------------------
@@ -226,7 +235,6 @@ SPEX_info SPEX_vector_allocate
 (
     SPEX_vector **v_handle,         // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
-    const bool IsSparse,            // indicate if the vector is sparse
     const SPEX_options *option
 );
 
@@ -248,7 +256,7 @@ SPEX_info SPEX_vector_realloc
 // SPEX_vector_free: free the given SPEX_vector object and set *v = NULL
 //------------------------------------------------------------------------------
 
-void SPEX_vector_free
+SPEX_info SPEX_vector_free
 (
     SPEX_vector **v,                // vector to be deleted
     const SPEX_options *option
@@ -314,19 +322,21 @@ SPEX_type ;
 // (3) SPEX_DYNAMIC_CSC: A sparse matrix in dynamic CSC (compressed sparse
 //     column) format with the number of nonzeros in each column changing
 //     independently and dynamically, which is only used in the update
-//     algorithms. The type of entry in this kind of matrix can only be mpz_t.
-//     For this kind, A->nzmax, A->nz, A->p, A->i, A->x and A->*_shallow are
-//     ignored and pointers p, i and x are remained as NULL pointers. To access
-//     entries in column j, A->v[j]->i[0 ... A->v[j]->nz] give the row indices
-//     of all nonzeros, and the mpz_t values of these entries appear in the
-//     same locations in A->v[j]->x. A->v[j]->nzmax is the max number of
-//     nonzeros allocated. 
+//     algorithms. The matrix is held as an array of n SPEX_vectors, one per
+//     column. Each column is held as a SPEX_vector, containing mpz_t values
+//     and its own scale factor.  For this kind, A->nzmax, A->nz, A->p, A->i,
+//     A->x and A->*_shallow are ignored and pointers p, i and x are remained
+//     as NULL pointers. To access entries in column j, A->v[j]->i[0 ...
+//     A->v[j]->nz] give the row indices of all nonzeros, and the mpz_t values
+//     of these entries appear in the same locations in A->v[j]->x.
+//     A->v[j]->nzmax is the max number of nonzeros allocated.
 
 // The SPEX_matrix may contain 'shallow' components, A->p, A->i, A->j, and
 // A->x.  For example, if A->p_shallow is true, then a non-NULL A->p is a
 // pointer to a read-only array, and the A->p array is not freed by
 // SPEX_matrix_free.  If A->p is NULL (for a triplet or dense matrix), then
-// A->p_shallow has no effect.
+// A->p_shallow has no effect.  A SPEX_matrix held in SPEX_DYNAMIC_CSC
+// format never contains shallow components.
 
 typedef struct
 {
@@ -364,16 +374,7 @@ typedef struct
     SPEX_vector **v;    // If dynamic_CSC: array of size n, each entry of this
                         // array is a dynamic column vector.
                         // if CSC, triplet or dense: A->v is NULL.
-    //bool v_dense;       // if true, A->v[k]->x, k = 0...n-1 pointing to the
-                        // starting point of column k in A->x.mpz, and all
-                        // A->v[k]->i are NULL. In such case, users should not
-                        // try to any of the following:
-                        // 1) re-allocate any A->v[k] (e.g., when A->m changed);
-                        // 2) assign new value to any A->v[k];
-                        // 3) free A->v[k]->x (free A->x instead).
-                        // This is used when user wants to create a dense
-                        // dyname_CSC matrix while a dense matrix will be
-                        // allocated with additional A->v[k] allocated and set.
+                        // Neither A->v nor any vector A->v[j] are shallow.
 
     mpq_t scale ;       // scale factor for mpz matrices (never shallow)
                         // For all matrices whose type is not mpz,
@@ -468,25 +469,6 @@ SPEX_info SPEX_matrix_copy
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
-//------------------------------------------------------------------------------
-// SPEX_mat: to be deleted TODO
-//------------------------------------------------------------------------------
-
-SPEX_info SPEX_matrix_canonicalize
-(
-    SPEX_matrix *A,          // the matrix to be canonicalize
-    const int64_t *perm,  // the permuation vector applied on each vector of A,
-                          // considered as identity if input as NULL
-    const SPEX_options *option
-);
-
-SPEX_info SPEX_permute_row
-(
-    SPEX_matrix *A,          // the matrix to be canonicalize
-    const int64_t *perm,  // the permuation vector applied on each vector of A,
-                          // considered as identity if input as NULL
-    const SPEX_options *option
-);
 
 //------------------------------------------------------------------------------
 // SPEX_LU_analysis: symbolic pre-analysis
@@ -730,6 +712,8 @@ SPEX_info SPEX_mpz_submul (mpz_t x, const mpz_t y, const mpz_t z) ;
 SPEX_info SPEX_mpz_fdiv_q (mpz_t q, const mpz_t n, const mpz_t d) ;
 
 SPEX_info SPEX_mpz_cdiv_q (mpz_t q, const mpz_t n, const mpz_t d) ;
+
+SPEX_info SPEX_mpz_cdiv_qr (mpz_t q, mpz_t r, const mpz_t n, const mpz_t d) ;
 
 SPEX_info SPEX_mpz_divexact (mpz_t x, const mpz_t y, const mpz_t z) ;
 

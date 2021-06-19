@@ -33,6 +33,16 @@
 #define SPEX_GMPZ_WRAPPER_START(x)                                      \
 {                                                                       \
     spex_gmpz_archive = (mpz_t *) x;                                    \
+    spex_gmpz_archive2 = NULL;                                          \
+    spex_gmpq_archive = NULL;                                           \
+    spex_gmpfr_archive = NULL;                                          \
+    SPEX_GMP_WRAPPER_START;                                             \
+}
+
+#define SPEX_GMPZ_WRAPPER_START2(x,y)                                   \
+{                                                                       \
+    spex_gmpz_archive  = (mpz_t *) x;                                   \
+    spex_gmpz_archive2 = (mpz_t *) y;                                   \
     spex_gmpq_archive = NULL;                                           \
     spex_gmpfr_archive = NULL;                                          \
     SPEX_GMP_WRAPPER_START;                                             \
@@ -41,6 +51,7 @@
 #define SPEX_GMPQ_WRAPPER_START(x)                                      \
 {                                                                       \
     spex_gmpz_archive = NULL;                                           \
+    spex_gmpz_archive2 = NULL;                                          \
     spex_gmpq_archive =(mpq_t *) x;                                     \
     spex_gmpfr_archive = NULL;                                          \
     SPEX_GMP_WRAPPER_START;                                             \
@@ -49,6 +60,7 @@
 #define SPEX_GMPFR_WRAPPER_START(x)                                     \
 {                                                                       \
     spex_gmpz_archive = NULL;                                           \
+    spex_gmpz_archive2 = NULL;                                          \
     spex_gmpq_archive = NULL;                                           \
     spex_gmpfr_archive = (mpfr_t *) x;                                  \
     SPEX_GMP_WRAPPER_START;                                             \
@@ -59,6 +71,7 @@
     /* clear (but do not free) the list.  The caller must ensure */     \
     /* the result is eventually freed. */                               \
     spex_gmpz_archive = NULL ;                                          \
+    spex_gmpz_archive2 = NULL;                                          \
     spex_gmpq_archive = NULL ;                                          \
     spex_gmpfr_archive = NULL ;                                         \
     spex_gmp_nmalloc = 0 ;                                              \
@@ -72,6 +85,13 @@
         if (p == SPEX_MPZ_PTR(*spex_gmpz_archive))                      \
         {                                                               \
             SPEX_MPZ_PTR(*spex_gmpz_archive) = NULL ;                   \
+        }                                                               \
+    }                                                                   \
+    else if (spex_gmpz_archive2 != NULL)                                \
+    {                                                                   \
+        if (p == SPEX_MPZ_PTR(*spex_gmpz_archive2))                     \
+        {                                                               \
+            SPEX_MPZ_PTR(*spex_gmpz_archive2) = NULL ;                  \
         }                                                               \
     }                                                                   \
     else if (spex_gmpq_archive != NULL)                                 \

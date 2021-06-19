@@ -17,6 +17,10 @@
 // which case A->p, A->i, A->j, and A->x are all returned as NULL, and all
 // A->*_shallow flags are returned as true.
 
+// If the matrix is dynamic_CSC, each column of the returned matrix will be
+// allocated as SPEX_vector with zero available entry. Additional reallocation
+// for each column will be needed.
+
 #define SPEX_FREE_ALL \
     SPEX_matrix_free (&A, option) ;
 
@@ -41,18 +45,6 @@ SPEX_info SPEX_matrix_allocate
                             // the mpz, mpq, and mpfr arrays are malloced but
                             // not initialized. Utilized internally to reduce
                             // memory.  Ignored if shallow is true.
-    //bool dynamic_dense,     // If true and kind == SPEX_DYNAMIC_CSC, a dense
-                            // matrix will be allocated with additional A->v[k],
-                            // k = 0...n-1, allocated and set to the starting
-                            // point of column k in A->x.mpz, and all
-                            // A->v[k]->i are NULL. A->v_dense is returned as
-                            // true and A->kind is returned as SPEX_DYNAMIC_CSC.
-                            // In such case, users should not try to any of the
-                            // following:
-                            // 1) re-allocate any A->v[k] (e.g., when A->m
-                            //    changed);
-                            // 2) assign new value to any A->v[k];
-                            // 3) free A->v[k]->x (free A->x instead).
     const SPEX_options *option
 )
 {
@@ -117,8 +109,7 @@ SPEX_info SPEX_matrix_allocate
 
     if (kind == SPEX_DYNAMIC_CSC)
     {
-        bool IsSparse = true;//TODO
-        // make sure each A->v[] is initialized as NULL 
+        // make sure each A->v[] is initialized as NULL
         A->v = (SPEX_vector**) SPEX_calloc(n, sizeof(SPEX_vector*)); 
         if (!(A->v)) 
         { 
@@ -128,8 +119,7 @@ SPEX_info SPEX_matrix_allocate
          
         for (int64_t i = 0; i < n; i++) 
         {
-            SPEX_CHECK(SPEX_vector_allocate(&(A->v[i]), (IsSparse ? 0 : m), 
-                IsSparse, option)); 
+            SPEX_CHECK(SPEX_vector_allocate(&(A->v[i]), 0, option)); 
         } 
     }
     else if(shallow)
@@ -163,13 +153,8 @@ SPEX_info SPEX_matrix_allocate
                 ok = (A->i != NULL && A->j != NULL) ;
                 break ;
 
-            case SPEX_DENSE:
-                // nothing to do
-                break ;
-
-            case SPEX_DYNAMIC_CSC:
-                // nothing to do
-                break ;
+            default: //SPEX_DENSE or SPEX_DYNAMIC_CSC
+                ;// nothing to do
 
         }
 

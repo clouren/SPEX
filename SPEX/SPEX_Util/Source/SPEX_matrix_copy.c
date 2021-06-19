@@ -500,10 +500,6 @@ SPEX_info SPEX_matrix_copy
         case SPEX_DENSE:
         {
 
-            // allocate C
-            SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
-                m, n, nz, false, true, option)) ;
-
             switch (A->kind)
             {
 
@@ -513,6 +509,10 @@ SPEX_info SPEX_matrix_copy
 
                 case SPEX_CSC:
                 {
+                    // allocate C
+                    SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
+                        m, n, nz, false, true, option)) ;
+
                     // Y = typecast the values of A into the type of C
                     SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option)) ;
                     
@@ -597,6 +597,10 @@ SPEX_info SPEX_matrix_copy
 
                 case SPEX_TRIPLET:
                 {
+                    // allocate C
+                    SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
+                        m, n, nz, false, true, option)) ;
+
                     // Y = typecast the values of A into the type of C
                     SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option)) ;
 
@@ -669,6 +673,10 @@ SPEX_info SPEX_matrix_copy
 
                 case SPEX_DENSE:
                 {
+                    // allocate C
+                    SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
+                        m, n, nz, false, true, option)) ;
+
                     // copy and typecast A->x into C->x
                     SPEX_CHECK (spex_cast_array (SPEX_X (C), C->type,
                         SPEX_X (A), A->type, nz, C->scale, A->scale, option)) ;

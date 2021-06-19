@@ -38,11 +38,14 @@ SPEX_info SPEX_matrix_free
 
     if (A->kind == SPEX_DYNAMIC_CSC)
     {
-        for (int64_t i = 0; i < A->n; i++)
+        if (A->v != NULL)
         {
-            SPEX_vector_free(&(A->v[i]), option);
+            for (int64_t i = 0; i < A->n; i++)
+            {
+                SPEX_vector_free(&(A->v[i]), option);
+            }
+            SPEX_FREE(A->v);
         }
-        SPEX_FREE(A->v);
     }
     else
     {

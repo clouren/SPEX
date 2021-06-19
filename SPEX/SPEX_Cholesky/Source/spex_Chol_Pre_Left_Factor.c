@@ -22,11 +22,11 @@ SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol facto
     int64_t*  xi,                   // nonzero pattern vector
     int64_t*  parent,               // Elimination tree
     SPEX_Chol_analysis* S,         // stores nnz and elimination tree
-    int64_t * c                     // Column pointers
+    int64_t* c                     // Column pointers
 )
 {
     // Input check/
-    SPEX_info ok;
+    SPEX_info info;
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     if (!L_handle || !xi || !parent || !S || !c)
         return SPEX_INCORRECT_INPUT;

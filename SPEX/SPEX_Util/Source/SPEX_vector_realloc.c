@@ -23,6 +23,8 @@ SPEX_info SPEX_vector_realloc
 )
 {
     SPEX_info info;
+    if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
+
     int64_t p, old_size = v->nzmax ;
     if (old_size == new_size) {return SPEX_OK;}
 

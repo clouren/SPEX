@@ -102,7 +102,7 @@ SPEX_info spex_ipge1 // perform IPGE on x based on v
     h[perm_j] = real_hj;
 
     SPEX_vector *v = M->v[j];
-    mpq_t pending_scale; SPEX_MPQ_SET_NULL(pending_scale);// TODO make input
+    mpq_t pending_scale; SPEX_MPQ_SET_NULL(pending_scale);
     mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
     SPEX_CHECK(SPEX_mpq_init(pending_scale));
     SPEX_CHECK(SPEX_mpz_init(tmpz));

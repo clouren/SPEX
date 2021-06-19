@@ -36,15 +36,11 @@ library:
 static:
 	( cd Lib ; $(MAKE) static )
 
-# statement coverage test
-cov:
-	( cd Tcov ; $(MAKE) )
-
 # remove files not in the distribution, but keep compiled libraries
 clean:
 	( cd Lib ; $(MAKE) clean )
 	( cd Demo ; $(MAKE) clean )
-	( cd Tcov ; $(MAKE) clean )
+	#( cd Test ; $(MAKE) clean )
 	#- ( cd MATLAB/Source ; $(RM) *.o )
 	#- ( cd MATLAB    ; $(RM) *.o )
 	#( cd Doc ; $(MAKE) clean )
@@ -52,8 +48,8 @@ clean:
 # remove all files not in the distribution
 purge:
 	( cd Lib ; $(MAKE) purge )
-	( cd Tcov ; $(MAKE) purge )
 	( cd Demo ; $(MAKE) purge )
+	#( cd Test ; $(MAKE) purge )
 	#- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
 	#- ( cd MATLAB    ; $(RM) *.o *.mex* )
 	#( cd Doc ; $(MAKE) clean )

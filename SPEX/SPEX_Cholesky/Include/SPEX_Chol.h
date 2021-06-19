@@ -170,7 +170,8 @@
 #define SPEX_CHOL_VERSION_MINOR 0
 #define SPEX_CHOL_VERSION_SUB   1
 
-
+//TODO consistency on * data types
+//TODO check comments: what is on input/what is on output
 
 //------------------------------------------------------------------------------
 // SPEX_Chol_analysis is the data structure for symbolic analysis in the 
@@ -182,13 +183,16 @@
 typedef struct SPEX_Chol_analysis
 {
     int64_t* pinv;      // Row permutation
-    int64_t *q ;        // Column permutation, representing
-                        // the permutation matrix Q.   The matrix A*Q is factorized.
-                        // If the kth column of L, and A*Q is column j of the
+    int64_t* q ;        // Column permutation, representing
+                        // the permutation matrix P. The matrix P*A*P' is factorized.
+                        // If the kth column of L, and P*A*P' is column j of the
                         // unpermuted matrix A, then j = S->q [k].
-    int64_t* parent;    // Elimination tree for Cholesky
-    int64_t* cp;        // Column pointers for Cholesky
+    int64_t* parent;    // Elimination tree of A for Cholesky
+    int64_t* cp;        // Column pointers of L 
     int64_t lnz;        // Number of nonzeros in Cholesky L (might be estimate)
+                        // at initialization if default column ordering (AMD) is used 
+                        // it will be exact otherwise it will be an estimate
+                        // after elimination tree is computed it will be exact
 } SPEX_Chol_analysis;
     
     
@@ -198,14 +202,62 @@ void SPEX_Chol_analysis_free
     SPEX_Chol_analysis** S
 );
 
+/* Purpose: Compute the exact solution of Ax = b. A must be SPD
+ * on output, x contains the solution of the linear system
+ */
+SPEX_info SPEX_Chol_backslash
+(
+    // Output
+    SPEX_matrix** X_handle,       // Final solution vector
+    // Input
+    SPEX_type type,               // Type of output desired
+                                  // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix* A,         // Input matrix
+    const SPEX_matrix* b,         // Right hand side vector(s)
+    const SPEX_options* option    // Command options
+);
    
+/* Purpose: Symbolic analysis for integer-preserving Cholesky factorization.
+ * On output, S contains the row/column permutation of A
+ */
+SPEX_info SPEX_Chol_preorder
+(
+    // Output
+    SPEX_Chol_analysis** S_handle, // symbolic analysis: on input it is null
+                                   // on output it contains column and inverse row permutation
+    // Input
+    const SPEX_matrix* A,        // Input matrix
+    const SPEX_options* option   // Control parameters, if NULL, use default
+);
+
 /* Purpose: Permute the matrix A and return A2 = PAP' */
 SPEX_info SPEX_Chol_permute_A
 (
-    SPEX_matrix **A2_handle,    // Output permuted matrix
-    SPEX_matrix* A,             // Initial input matrix
+    //Output
+    SPEX_matrix** A2_handle,    // Output permuted matrix
+    //Input
+    SPEX_matrix* A,             // Input matrix
     SPEX_Chol_analysis* S      //Symbolic analysis struct that contains column 
                              //and inverse row permutations
+);
+
+/* Purpose: Compute the integer-preserving factorization A = LDL'
+ * only appropriate if A is SPD. On output, L contains the 
+ * lower triangular matrix and rhos contains the pivots' values
+ * used in the factorization 
+ */
+SPEX_info SPEX_Chol_Factor     
+(
+    // Output
+    SPEX_matrix** L_handle,     // lower triangular matrix
+    SPEX_matrix** rhos_handle, // pivots' values
+    SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
+                               //exact number of nonzeros of L and permutation used //TODO homogenize this
+    // Input
+    const SPEX_matrix* A,      // matrix to be factored 
+    bool left,                 //set to true if performing a left-looking factorization; 
+                               //otherwise perform an up-looking factorization.
+    const SPEX_options* option // command options
 );
 
 /* Purpose: After computing the Cholesky factor A = LDL',
@@ -217,60 +269,17 @@ SPEX_info SPEX_Chol_Solve
     // Output
     SPEX_matrix** x_handle,     // rational solution to the system
     // Input
-    const SPEX_matrix *A,             // Input matrix (permuted)
+    const SPEX_matrix* A,             // Input matrix (permuted)
     const SPEX_matrix* A_orig,        // Input matrix (unpermuted)
     const SPEX_matrix* b,             // right hand side vector
-    const SPEX_matrix* rhos,          // sequence of pivots
+    const SPEX_matrix* rhos,          // pivots' values
     const SPEX_matrix* L,             // lower triangular matrix
-    const SPEX_Chol_analysis* S,        // Symbolic analysis struct
+    const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains elimination tree of A,  
+                                      // column pointers of L, exact number of nonzeros of L and permutation used
     const SPEX_options* option        // command options
 );
 
-/* Purpose: Compute the integer-preserving factorization A = LDL'
- * only appropriate if A is SPD. On output, L contains the 
- * lower triangular matrix and rhos contains the sequence of pivots
- * used in the factorization 
- */
-SPEX_info SPEX_Chol_Factor     
-(
-    // Output
-    SPEX_matrix** L_handle,     // lower triangular matrix
-    SPEX_matrix** rhos_handle, // sequence of pivots
-    SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
-                                //exact number of nonzeros of L and permutation used
-    // Input
-    const SPEX_matrix* A,      // matrix to be factored
-    bool left,                 //set to true if performing a left-looking factorization; 
-                               //otherwise perform an up-looking factorization.
-    const SPEX_options* option // command options
-);
 
 
-/* Purpose: Symbolic analysis for integer-preserving Cholesky factorization.
- * On output, S contains the row/column permutation of A
- */
-SPEX_info SPEX_Chol_preorder
-(
-    // Output
-    SPEX_Chol_analysis** S_handle, // symbolic analysis 
-    // Input
-    const SPEX_matrix *A,        // Input matrix
-    const SPEX_options *option   // Control parameters, if NULL, use default
-);
-
-/* Purpose: Compute the exact solution of Ax = b. A must be SPD
- * on output, x contains the solution of the linear system
- */
-SPEX_info SPEX_Chol_backslash
-(
-    // Output
-    SPEX_matrix **X_handle,       // Final solution vector
-    // Input
-    SPEX_type type,               // Type of output desired
-                                  // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *b,         // Right hand side vector(s)
-    const SPEX_options* option    // Command options
-);
 
 #endif

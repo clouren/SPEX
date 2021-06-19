@@ -23,11 +23,16 @@ TOMS paper
 
 7) update spex_chol_internal to include spex_util_internal
 
+8) update SPEX_gmp.h to allow implement wrapper for SPEX_mpz_cdiv_qr
+
 -----------------------------------TODO-----------------------------------------
 
 1*) add option as input for SPEX_cumsum, SPEX_matrix_mul for consistency
 
-2) combine find_next_nz and get_scattered_v?
+2) higher-level data structure for factorization
+
+3) determine symmetry
+
 
 
 ------------------------discuss with Dr. Davis----------------------------------

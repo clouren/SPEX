@@ -33,7 +33,7 @@ SPEX_info spex_Chol_forward_sub
     const SPEX_matrix *rhos // sequence of pivots used in factorization
 )
 {
-    SPEX_info ok;
+    SPEX_info info, ok;
     int64_t  i, j, p, k, n, m, mnew;
     // Size of x vector
     n = L->n;

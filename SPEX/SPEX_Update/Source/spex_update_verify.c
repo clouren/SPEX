@@ -20,7 +20,6 @@
 
 SPEX_info spex_update_verify
 (
-    bool *correct,         // indicate if the verification is passed
     const SPEX_matrix *L,     // lower triangular matrix
     const SPEX_matrix *U,     // upper triangular matrix
     const SPEX_matrix *A,     // Input matrix
@@ -31,11 +30,6 @@ SPEX_info spex_update_verify
     const SPEX_options *option// command options
 )
 {
-    if (!correct || !L || !U || !A || !h || !rhos || !P || !Q_inv)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
     SPEX_info info;
     int64_t tmp, i, n = L->n;
     int sgn;
@@ -74,17 +68,15 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     for (i = 0; i < n; i++)
     {
-        //SPEX_CHECK(SPEX_gmp_printf("x[%ld]=%Zd\n",i,x->v[0]->x[i]));
         SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[i]));
         if (sgn == 0) { continue;}
 
-        //printf("b2=[");
         for (int64_t p = 0; p < A->v[i]->nz; p++)
         {
             int64_t j = A->v[i]->i[p];
             // b2[j] += x[i]*A(j,i)
-            SPEX_CHECK(SPEX_mpz_addmul(b2->x.mpz[j], x->x.mpz[i],A->v[i]->x[p]));
-           // SPEX_CHECK(SPEX_gmp_printf("%Zd(%ld) ",b2->v[0]->x[j],j));
+            SPEX_CHECK(SPEX_mpz_addmul(b2->x.mpz[j],
+                x->x.mpz[i], A->v[i]->x[p]));
         }
     }
     // update b2->scale = x->scale*A->scale
@@ -93,7 +85,6 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     // check if b2 == b
     // -------------------------------------------------------------------------
-    *correct = true;
     // set b2->scale = b2->scale/b->scale since we only want to compare the
     // integer values b2*b->scale and b*b->scale. b*b->scale are the values
     // stored in b->v->x. It can be shown that the resulted
@@ -110,15 +101,30 @@ SPEX_info spex_update_verify
         SPEX_CHECK(SPEX_mpz_divexact(b2->x.mpz[i],
                                      b2->x.mpz[i], SPEX_MPQ_NUM(b2->scale)));
 
-        //SPEX_CHECK(SPEX_gmp_printf("x[%ld]=%Zd, Ax=%Zd, b=%Zd\n",i,x->v[0]->x[i],b2->v[0]->x[i],b->v[0]->x[i]));
         SPEX_CHECK(SPEX_mpz_cmp(&sgn, b2->x.mpz[i], b->x.mpz[i]));
         if (sgn != 0)
         {
-            *correct = false;
+            info = SPEX_INCORRECT;
             break;
         }
     }
 
+    //--------------------------------------------------------------------------
+    // Print info
+    //--------------------------------------------------------------------------
+
+    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
+    if (info == SPEX_OK)
+    {
+        SPEX_PR1 ("Factorization is verified to be correct and exact.\n") ;
+    }
+    else if (info == SPEX_INCORRECT)
+    {
+        // This can never happen.
+        SPEX_PR1 ("ERROR! Factorization is wrong. This is a bug; please "
+                  "contact the authors of SPEX.\n") ;
+    }
+
     SPEX_FREE_ALL;
-    return SPEX_OK;
+    return info;
 }

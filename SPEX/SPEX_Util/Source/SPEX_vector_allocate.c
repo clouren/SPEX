@@ -10,9 +10,8 @@
 //------------------------------------------------------------------------------
 
 // Purpose: This function is called to create and initialize a mpz vector with
-// given size nzmax. The mpz_t vector is allocated with length nzmax. If
-// IsSparse is true, then i is allocated with length of nzmax. Otherwise,
-// the nnz pattern vector i is set to NULL.
+// given size nzmax. The mpz_t vector v->x and the index vector v->i are
+// allocated with length nzmax.
 
 #define SPEX_FREE_ALL \
     SPEX_vector_free (&v, option) ;
@@ -23,7 +22,6 @@ SPEX_info SPEX_vector_allocate
 (
     SPEX_vector **v_handle,         // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
-    const bool IsSparse,            // indicate if the vector is sparse
     const SPEX_options *option
 )
 {
@@ -66,15 +64,12 @@ SPEX_info SPEX_vector_allocate
         return SPEX_OUT_OF_MEMORY;
     }
 
-    // allocate for v->i if v is sparse
-    if (IsSparse)
+    // allocate for v->i
+    v->i = (int64_t*) SPEX_malloc(nzmax*sizeof(int64_t));
+    if (!(v->i))
     {
-        v->i = (int64_t*) SPEX_malloc(nzmax*sizeof(int64_t));
-        if (!(v->i))
-        {
-            SPEX_FREE_ALL;
-            return SPEX_OUT_OF_MEMORY;
-        }
+        SPEX_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
     }
 
     *v_handle = v;

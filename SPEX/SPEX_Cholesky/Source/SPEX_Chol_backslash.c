@@ -47,12 +47,12 @@
 SPEX_info SPEX_Chol_backslash
 (
     // Output
-    SPEX_matrix **X_handle,       // Final solution vector
+    SPEX_matrix** X_handle,       // Final solution vector
     // Input
     SPEX_type type,               // Type of output desired
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *b,         // Right hand side vector(s)
+    const SPEX_matrix* A,         // Input matrix
+    const SPEX_matrix* b,         // Right hand side vector(s)
     const SPEX_options* option    // Command options
 )
 {
@@ -61,7 +61,7 @@ SPEX_info SPEX_Chol_backslash
     //-------------------------------------------------------------------------
     printf("chcek input\n");
 
-    SPEX_info ok ;
+    SPEX_info info ;
     // SPEX must be initialized
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 

@@ -243,17 +243,17 @@ int main( int argc, char* argv[])
     // convert the factorization to SPEX_mat to be used in the update process
     //OK(SPEX_CSC_to_mat(&L2, P, true,  L1, option));
     OK(SPEX_matrix_copy(&L2, SPEX_DYNAMIC_CSC, SPEX_MPZ, L1, option));
-    OK(SPEX_permute_row(L2, P, option));
-    OK(SPEX_matrix_canonicalize(L2, P, option));
+    OK(SPEX_Update_permute_row(L2, P, option));
+    OK(SPEX_Update_matrix_canonicalize(L2, P, option));
     //OK(SPEX_CSC_to_mat(&U2, Q, false, U1, option));// U2 stored in row-wise
     OK(SPEX_transpose(&tempA, U1, option));
     OK(SPEX_matrix_copy(&U2, SPEX_DYNAMIC_CSC, SPEX_MPZ, tempA, option));
-    OK(SPEX_permute_row(U2, Q, option));
-    OK(SPEX_matrix_canonicalize(U2, Q, option));
+    OK(SPEX_Update_permute_row(U2, Q, option));
+    OK(SPEX_Update_matrix_canonicalize(U2, Q, option));
 
     // allocate space for vk
-    OK(SPEX_vector_allocate(&vk, 0, true, option));
-    OK(SPEX_vector_allocate(&vk3, 0, true, option));
+    OK(SPEX_vector_allocate(&vk, 0, option));
+    OK(SPEX_vector_allocate(&vk3, 0, option));
 
     // allocate space for c and y
     OK(SPEX_matrix_allocate(&c, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
@@ -580,14 +580,14 @@ int main( int argc, char* argv[])
         SPEX_matrix_free(&U3, option);
         //OK(SPEX_CSC_to_mat(&L3, P3, true,  L1, option));
         OK(SPEX_matrix_copy(&L3, SPEX_DYNAMIC_CSC, SPEX_MPZ, L1, option));
-        OK(SPEX_permute_row(L3, P3, option));
-        OK(SPEX_matrix_canonicalize(L3, P3, option));
+        OK(SPEX_Update_permute_row(L3, P3, option));
+        OK(SPEX_Update_matrix_canonicalize(L3, P3, option));
         //OK(SPEX_CSC_to_mat(&U3, Q3, false, U1, option));// U2 stored in row-wise
         OK(SPEX_transpose(&tempA, U1, option));
         OK(SPEX_matrix_copy(&U3, SPEX_DYNAMIC_CSC, SPEX_MPZ, tempA, option));
         OK(SPEX_matrix_free(&tempA, option));
-        OK(SPEX_permute_row(U3, Q3, option));
-        OK(SPEX_matrix_canonicalize(U3, Q3, option));
+        OK(SPEX_Update_permute_row(U3, Q3, option));
+        OK(SPEX_Update_matrix_canonicalize(U3, Q3, option));
 
         //----------------------------------------------------------------------
         // perform LU update for matrix A2->A1

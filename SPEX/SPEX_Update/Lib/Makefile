@@ -37,10 +37,10 @@ OBJ = \
     spex_update_dppu2.o\
     spex_update_finalize_and_insert_vk.o   SPEX_Update_Solve.o \
     spex_update_triangular_solve.o \
-    spex_update_find_next_nz.o \
     spex_update_forward_sub.o \
     spex_update_verify.o \
-    SPEX_Update_Chol_Rank1.o
+    SPEX_Update_Chol_Rank1.o \
+    SPEX_Update_permute_row.o SPEX_Update_matrix_canonicalize.o
 
 
 $(OBJ): ../Include/SPEX_Update.h ../Source/spex_update_internal.h Makefile
