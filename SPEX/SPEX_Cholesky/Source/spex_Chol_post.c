@@ -13,9 +13,11 @@
 /* Purpose: post order a forest. Modified from csparse */
 SPEX_info spex_Chol_post 
 (
-    int64_t** post_handle,
-    int64_t* parent,    // Parent[j] is parent of node j int64_t* forest
-    int64_t n           // Number of nodes int64_t* the forest
+    // Output
+    int64_t** post_handle, // On input is NULL. On output is post-order of the forest
+    // Input
+    int64_t* parent,    // Parent[j] is parent of node j in forest
+    int64_t n           // Number of nodes in the fores
 )
 {
     int64_t j, k = 0, *post, *w, *head, *next, *stack ;

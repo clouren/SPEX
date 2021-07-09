@@ -47,7 +47,7 @@
 SPEX_info SPEX_Chol_backslash
 (
     // Output
-    SPEX_matrix** X_handle,       // Final solution vector
+    SPEX_matrix** X_handle,       // On input: null. On output: final solution vector
     // Input
     SPEX_type type,               // Type of output desired
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
@@ -59,7 +59,6 @@ SPEX_info SPEX_Chol_backslash
     //-------------------------------------------------------------------------
     // check inputs
     //-------------------------------------------------------------------------
-    printf("chcek input\n");
 
     SPEX_info info ;
     // SPEX must be initialized
@@ -128,6 +127,7 @@ SPEX_info SPEX_Chol_backslash
                                     L,
                                     S,
                                     (SPEX_options*) option));
+
 
     //--------------------------------------------------------------------------
     // Now, x contains the exact solution of the linear system in mpq_t

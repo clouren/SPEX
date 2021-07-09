@@ -18,10 +18,12 @@
  */
 SPEX_info spex_Chol_counts 
 (
-    int64_t** c_handle,
-    const SPEX_matrix *A, 
-    int64_t *parent, 
-    int64_t *post
+    // Output
+    int64_t** c_handle,     // Column counts
+    // Input
+    const SPEX_matrix *A,   // Input matrix
+    int64_t* parent,        // Parent of the tree
+    int64_t* post           // Post-order of the tree
 )
 {
     SPEX_info info;

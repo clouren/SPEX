@@ -52,10 +52,12 @@ void mexFunction
     {
         spex_chol_mex_error (1, "inputs must be real") ;
     }
+    /***/
     if (!mxIsSparse (pargin [0]))     // Is the matrix sparse?
     {
         spex_chol_mex_error (1, "first input must be sparse") ;
     }
+    /**/
     if (mxIsSparse (pargin [1]))         // Is b sparse?
     {
         spex_chol_mex_error (1, "second input must be full") ;
@@ -82,7 +84,7 @@ void mexFunction
     SPEX_matrix *A = NULL ;
     SPEX_matrix *b = NULL ;
     spex_chol_mex_get_A_and_b (&A, &b, pargin, option) ;
-
+/**/
     if (option->print_level > 0)
     {
         printf ("\nScaled integer input matrix A:\n") ;
@@ -175,5 +177,7 @@ void mexFunction
     SPEX_matrix_free (&A, option) ;
     SPEX_FREE (option) ;
     SPEX_finalize ( ) ;
+    /**/
+
 }
 

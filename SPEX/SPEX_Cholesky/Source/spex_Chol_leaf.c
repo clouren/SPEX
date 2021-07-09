@@ -51,5 +51,5 @@ SPEX_info spex_Chol_leaf
         ancestor [s] = q ;
     }
     (*lca_handle) = q;
-    return SPEX_OK ;                    // q = least common ancester (jprev,j) 
+    return SPEX_OK ;                    // q = least common ancestor (jprev,j) 
 }

@@ -32,7 +32,10 @@
 
 SPEX_info SPEX_Chol_preorder
 (
-    SPEX_Chol_analysis** S_handle, // symbolic analysis (row/column perm. and nnz)
+    //Output
+    SPEX_Chol_analysis** S_handle, // symbolic analysis: on input it is null
+                                   // on output it contains column and inverse row permutation
+    //Input
     const SPEX_matrix* A,        // Input matrix
     const SPEX_options* option   // Control parameters, if NULL, use default
 )
@@ -102,7 +105,7 @@ SPEX_info SPEX_Chol_preorder
     // The number of nonzeros in L is set as 10 times the number of
     // nonzeros in A. This is a crude estimate.
     //--------------------------------------------------------------------------
-    else if (order == SPEX_AMD)
+    else if (order == SPEX_COLAMD)
     {
         // Declared as per COLAMD documentation
         int64_t Alen = 2*anz + 6 *(n+1) + 6*(n+1) + n;

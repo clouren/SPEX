@@ -10,13 +10,25 @@
 
 #include "spex_chol_internal.h"
 
-/* Purpose: Permute the matrix A and return A2 = PAP */
+/* Purpose: Permute the matrix A and return A2 = PAP 
+ * Input arguments:
+ * 
+ * A2_handle:   The user's permuted input matrix. 
+ * 
+ * A:           The user's input matrix
+ * 
+ * S:           Symbolic analysis struct for Cholesky factorization. 
+ *              Contains column and inverse row permutations
+ * 
+ */
 SPEX_info SPEX_Chol_permute_A
 (
-    SPEX_matrix** A2_handle, // Output permuted matrix
-    SPEX_matrix* A,          // Initial input matrix
-    SPEX_Chol_analysis* S    //Symbolic analysis struct that contains column 
-                            //and inverse row permutations
+    //Output
+    SPEX_matrix** A2_handle,    // Output permuted matrix
+    //Input
+    SPEX_matrix* A,             // Input matrix
+    SPEX_Chol_analysis* S      //Symbolic analysis struct that contains column 
+                             //and inverse row permutations
 )
 {
     SPEX_info info;
@@ -37,7 +49,7 @@ SPEX_info SPEX_Chol_permute_A
         pinv[index] = k;
     }
     S->pinv=pinv;
-   
+    
 
     // Allocate memory for A2 which is a permuted copy of A
     int64_t nz = 0, j;

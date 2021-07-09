@@ -97,6 +97,9 @@ int main (int argc, char **argv)
 
     int64_t n = A->n;
     SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
+    if(!b){
+        printf("scream \n");
+    }
     // Create RHS
     for (int64_t k = 0; k < n; k++)
         DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
@@ -138,6 +141,7 @@ int main (int argc, char **argv)
     FREE_WORKSPACE;
 
     printf ("\n%s: all tests passed\n\n", __FILE__) ;
+
     return 0;
 }
 

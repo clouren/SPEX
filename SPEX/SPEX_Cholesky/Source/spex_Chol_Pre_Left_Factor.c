@@ -17,12 +17,15 @@
  */
 SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol factor
 (
-    const SPEX_matrix* A,            // Input matrix
-    SPEX_matrix** L_handle,         // partial L matrix
-    int64_t*  xi,                   // nonzero pattern vector
-    int64_t*  parent,               // Elimination tree
-    SPEX_Chol_analysis* S,         // stores nnz and elimination tree
-    int64_t* c                     // Column pointers
+    // Output
+    SPEX_matrix** L_handle,       // Partial L matrix //TODO this is output, reorganize
+    int64_t* xi,                  // Nonzero pattern vector
+    // Input
+    const SPEX_matrix* A,         // Input Matrix
+    int64_t* parent,              // Elimination tree
+    SPEX_Chol_analysis* S,        //Symbolic analysis struct that contains column 
+                                  //and inverse row permutations, and number of nonzeros in L
+    int64_t* c                   // Column pointers
 )
 {
     // Input check/
@@ -50,7 +53,7 @@ SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol facto
     //--------------------------------------------------------------------------
     for (k = 1; k < n; k++)
     {
-        SPEX_CHECK(spex_Chol_ereach(&top, A, k, parent, xi, c));  // Obtain nonzero pattern in xi[top..n]
+        SPEX_CHECK(spex_Chol_ereach(&top, xi, A, k, parent, c));  // Obtain nonzero pattern in xi[top..n]
      
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x

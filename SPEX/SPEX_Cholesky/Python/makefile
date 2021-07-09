@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX_Chol/Demo/Makefile: compile and run the demos
+# SPEX_Chol/Python/Makefile: compile and run the demos
 #-------------------------------------------------------------------------------
 
 # SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
@@ -31,30 +31,30 @@ LDLIBS += -lsuitesparseconfig -lcolamd -lamd \
 
 
 
-all: demo demo_debug example.o libraryE.so
+all: demo demo_debug SPEX_Chol_connect.o SPEX_Chol_connect.so
 	- ./demo
 	- ./demo_debug
 
 
-demo: example.c 
-	$(CC) $(LDFLAGS) $(CF) $(I) -o demo main.c example.c $(LDLIBS)
+demo: SPEX_Chol_connect.c 
+	$(CC) $(LDFLAGS) $(CF) $(I) -o demo main.c SPEX_Chol_connect.c $(LDLIBS)
 	
-demo_debug: example.c 
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o demo_debug main.c example.c $(LDLIBS)
+demo_debug: SPEX_Chol_connect.c 
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o demo_debug main.c SPEX_Chol_connect.c $(LDLIBS)
 
-example.o: example.c
-	$(CC) $(LDFLAGS) $(CF) $(I) -fPIC -c -o example.o example.c $(LDLIBS)
+SPEX_Chol_connect.o: SPEX_Chol_connect.c
+	$(CC) $(LDFLAGS) $(CF) $(I) -fPIC -c -o SPEX_Chol_connect.o SPEX_Chol_connect.c $(LDLIBS)
 	
-libraryE.so: example.o 
-	$(CC) $(LDFLAGS) $(CF) $(I) -shared example.o -o libraryE.so $(LDLIBS)
+SPEX_Chol_connect.so: SPEX_Chol_connect.o 
+	$(CC) $(LDFLAGS) $(CF) $(I) -shared SPEX_Chol_connect.o -o SPEX_Chol_connect.so $(LDLIBS)
 	
 
 
 clean:
-	- $(RM) demo example libraryE.so example.o
+	- $(RM) demo SPEX_Chol_connect.so SPEX_Chol_connect.o
 
 purge: distclean
 
 distclean: clean
-	- $(RM) -r SPEX_Chol SPEX_Chol_debug *.a *.dSYM *.obj *.dll
+	- $(RM) -r example example_debug *.a *.dSYM *.obj *.dll
 

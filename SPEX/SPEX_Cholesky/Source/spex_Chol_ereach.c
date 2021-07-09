@@ -16,18 +16,20 @@
    
 SPEX_info spex_Chol_ereach 
 (
+    // Output
     int64_t* top_handle,
-    const SPEX_matrix *A, // Matrix to be analyzed
-    int64_t k,           // Node to start at
-    int64_t*  parent,    // ELimination Tree
-    int64_t * s,         // Contains the nonzero pattern in s[top..n-1]
-    int64_t * w          // Workspace array
+    int64_t* xi,            // Contains the nonzero pattern in xi[top..n-1]
+    // Input
+    const SPEX_matrix* A,   // Matrix to be analyzed
+    int64_t k,              // Node to start at
+    int64_t* parent,        // ELimination Tree
+    int64_t* w               // Workspace array
 )
 {
     int64_t i, p, n, len, top ;
     // Check inputs
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
-    if (!parent || !s || !w) return (SPEX_INCORRECT_INPUT) ;
+    if (!parent || !xi || !w) return (SPEX_INCORRECT_INPUT) ;
     ASSERT(A->n >= 0);
     top = n = A->n ; 
     // Mark node k as visited
@@ -43,13 +45,13 @@ SPEX_info spex_Chol_ereach
         }
         for (len = 0 ; !SPEX_MARKED (w,i) ; i = parent [i]) // traverse up etree
         {
-            s [len++] = i ;           // L(k,i) is nonzero 
+            xi [len++] = i ;           // L(k,i) is nonzero 
             SPEX_MARK (w, i) ;        // mark i as visited 
         }
-        while (len > 0) s [--top] = s [--len] ; // push path onto stack 
+        while (len > 0) xi [--top] = xi [--len] ; // push path onto stack 
     }
-    for (p = top ; p < n ; p++) SPEX_MARK (w, s [p]) ;    // unmark all nodes 
+    for (p = top ; p < n ; p++) SPEX_MARK (w, xi [p]) ;    // unmark all nodes 
     SPEX_MARK (w, k) ;                // unmark node k 
     (*top_handle) = top;
-    return SPEX_OK ;                    // s [top..n-1] contains pattern of L(k,:)
+    return SPEX_OK ;                    // xi [top..n-1] contains pattern of L(k,:)
 }

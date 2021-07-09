@@ -41,14 +41,15 @@
 SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
 (
     // Output
-    SPEX_matrix** x_handle,     // rational solution to the system
+    SPEX_matrix** x_handle,           // Rational solution to the system. NULL on input
     // Input
     const SPEX_matrix* A,             // Input matrix (permuted)
     const SPEX_matrix* A_orig,        // Input matrix (unpermuted)
-    const SPEX_matrix* b,             // right hand side vector
-    const SPEX_matrix* rhos,          // sequence of pivots
-    const SPEX_matrix* L,             // lower triangular matrix
-    const SPEX_Chol_analysis* S,        // Symbolic analysis struct
+    const SPEX_matrix* b,             // Right hand side vector
+    const SPEX_matrix* rhos,          // Pivots' values 
+    const SPEX_matrix* L,             // Lower triangular matrix
+    const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains elimination tree of A,  
+                                      // column pointers of L, exact number of nonzeros of L and permutation used
     const SPEX_options* option        // command options
 )
 {
@@ -87,7 +88,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     }
     
     // b2 = L \ b2    
-    SPEX_CHECK(spex_Chol_forward_sub(L, b2, rhos));
+    SPEX_CHECK(spex_Chol_forward_sub(b2, L, rhos));
     
     // b2 = b2 * det 
     SPEX_CHECK(SPEX_matrix_nnz(&nz, b, NULL));
@@ -98,7 +99,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     
     SPEX_CHECK(SPEX_mpq_init(det2));
     // b2 = L' \ b2
-    SPEX_CHECK(spex_Chol_ltsolve(L, b2));
+    SPEX_CHECK(spex_Chol_ltsolve(b2, L));
     
     // x = b2/det 
     mpq_set_num(det2, rhos->x.mpz[L->n-1]);

@@ -15,7 +15,7 @@
 int64_t spex_Chol_tdfs 
 (
     int64_t j,      // Root node
-    int64_t k,      
+    int64_t k,      // Index (kth node) 
     int64_t* head,  // Head of list
     int64_t* next,  // Next node in the list
     int64_t* post,  // Post ordered tree

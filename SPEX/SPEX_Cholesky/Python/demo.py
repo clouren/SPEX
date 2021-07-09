@@ -20,6 +20,6 @@ def test2():
     x=SPEX_Chol_backslash.SPEX_Chol_backslash(A,b)
     print('Test from file successful')
 
-test2()
+#test2()
 
-#SPEX_Chol_backslash.test()
+SPEX_Chol_backslash.test()

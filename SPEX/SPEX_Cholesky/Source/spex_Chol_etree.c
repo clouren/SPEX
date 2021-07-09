@@ -13,9 +13,12 @@
 
 /* Purpose: Compute the elimination tree of A */
 
+
 SPEX_info spex_Chol_etree 
 (
-    int64_t** tree,
+    // Output
+    int64_t** tree,      // Elimination tree of A
+    // Input
     const SPEX_matrix* A // Input matrix (must be SPD)
 )
 {

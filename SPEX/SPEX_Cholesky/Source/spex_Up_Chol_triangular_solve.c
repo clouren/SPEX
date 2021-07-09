@@ -60,16 +60,19 @@ static inline int compare (const void * a, const void * b)
 
 SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular solve
 (
-    int64_t *top_output,            // Output the beginng of nonzero pattern
-    SPEX_matrix* L,                 // partial L matrix
-    const SPEX_matrix* A,           // input matrix
-    int64_t k,                      // iteration of algorithm
-    int64_t*  xi,                   // nonzero pattern vector
-    int64_t*  parent,               // Elimintaation tree
-    int64_t* c,                     // Column pointers
-    SPEX_matrix* rhos,              // sequence of pivots
-    int64_t * h,                    // history vector
-    SPEX_matrix* x                  // solution of system ==> kth row of L
+    //Output
+    int64_t* top_output,               // On input NULL. On output contains the beginning of nonzero pattern
+                                       // The nonzero pattern is contained in xi[top_output...n-1] //TODO needs better comment DONE
+    int64_t* xi,                       // Nonzero pattern vector
+    SPEX_matrix* x,                    // Solution of system ==> kth row of L
+    // Input
+    SPEX_matrix* L,                    // Partial L matrix
+    const SPEX_matrix* A,              // Input matrix
+    int64_t k,                         // Iteration of algorithm
+    int64_t* parent,                   // Elimination tree
+    int64_t* c,                        // Column pointers
+    SPEX_matrix* rhos,                 // sequence of pivots
+    int64_t* h                         // History vector
 )
 {
     SPEX_info info;
@@ -91,7 +94,7 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     //--------------------------------------------------------------------------
     // Obtain the nonzero pattern in xi[top..n]
     // This is the nonzeros in row k of L
-    SPEX_CHECK(spex_Chol_ereach(&top, A, k, parent, xi, c));
+    SPEX_CHECK(spex_Chol_ereach(&top, xi, A, k, parent, c));
     // Sort the nonzero pattern using quicksort
     qsort(&xi[top], n-top, sizeof(int64_t*), compare); 
         

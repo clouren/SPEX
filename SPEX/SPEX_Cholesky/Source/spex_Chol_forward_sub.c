@@ -28,9 +28,11 @@ SPEX_matrix_free(&h, NULL);             \
 
 SPEX_info spex_Chol_forward_sub
 (
-    const SPEX_matrix *L,   // lower triangular matrix
-    SPEX_matrix *x,         // right hand side matrix of size n*numRHS
-    const SPEX_matrix *rhos // sequence of pivots used in factorization
+    // Output
+    SPEX_matrix* x,              // Right hand side matrix of size n*numRHS
+    // Input
+    const SPEX_matrix* L,        // Lower triangular matrix
+    const SPEX_matrix* rhos      // Sequence of pivots used in factorization
 )
 {
     SPEX_info info;

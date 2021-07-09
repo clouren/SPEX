@@ -49,6 +49,7 @@ void spex_chol_mex_get_A_and_b
     Ap = (int64_t *) mxGetJc (pargin[0]) ;
     Ai = (int64_t *) mxGetIr (pargin[0]) ;
     Ax = mxGetDoubles (pargin[0]) ;
+    
     if (!Ai || !Ap || !Ax)
     {
         spex_chol_mex_error (SPEX_INCORRECT_INPUT, "") ;

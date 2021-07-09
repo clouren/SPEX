@@ -59,16 +59,19 @@ static inline int compare (const void * a, const void * b)
 
 SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular solve
 (
-    int64_t *top_output,         // Output the beginning of nonzero pattern
-    SPEX_matrix* L,              // partial L matrix
-    const SPEX_matrix* A,        // input matrix
-    int64_t k,                   // iteration of algorithm
-    int64_t* xi,                 // nonzero pattern vector
-    SPEX_matrix* rhos,           // sequence of pivots
-    int64_t* h,                  // history vector
-    SPEX_matrix* x,              // solution of system ==> kth column of L
-    int64_t* parent,             // Elimination tree
-    int64_t* c                   // Column pointers
+    //Output
+    int64_t* top_output,        // On input NULL. On output contains the beginning of nonzero pattern
+                                // The nonzero pattern is contained in xi[top_output...n-1] 
+    SPEX_matrix* x,             // Solution of system ==> kth column of L and U
+    int64_t* xi,                // Nonzero pattern vector
+    // Input
+    SPEX_matrix* L,             // Partial L matrix
+    const SPEX_matrix* A,       // Input matrix
+    int64_t k,                  // Iteration of algorithm
+    SPEX_matrix* rhos,          // Sequence of pivots
+    int64_t* h,                 // History vector
+    int64_t* parent,            // Elimination tree
+    int64_t* c                  // Column counts of A
 )
 {
     SPEX_info info;
@@ -98,7 +101,7 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
      * the vector xi contains the indices of the first k-1 nonzeros in column
      * k of L 
      */
-    SPEX_CHECK( spex_Chol_ereach(&top, A, k, parent, xi, c));
+    SPEX_CHECK( spex_Chol_ereach(&top, xi, A, k, parent, c));
     
     j = top; // Store where the first k-1 nonzeros end
     

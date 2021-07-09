@@ -21,6 +21,7 @@ void SPEX_Chol_analysis_free
     SPEX_FREE ((*S)->q) ;
     SPEX_FREE((*S)->parent);
     SPEX_FREE((*S)->cp);
+    SPEX_FREE((*S)->pinv);
     SPEX_FREE (*S) ;
   }
 }

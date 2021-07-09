@@ -25,16 +25,16 @@
  * 
  * Input arguments:
  * 
- * A:           The user's permuted input matrix
- * 
  * L_handle:    A handle to the L matrix. Null on input. On output, contains a pointer to the 
  *              L matrix
  * 
- * S:           Symbolic analysis struct for Cholesky factorization. NULL on input. On output,
+ * S:           Symbolic analysis struct for Cholesky factorization. On output,
  *              contains the elimination tree and estimate number of nonzeros in L.
  * 
  * rhos_handle: A handle to the sequence of pivots. NULL on input. On output, contains a pointer
  *              to the pivots matrix.
+ *
+ * A:           The user's permuted input matrix
  * 
  * left:        A boolean parameter which tells the function whether it is performing a left-looking
  *              or up-looking factorization. If this bool is true, a left-looking factorization
@@ -43,18 +43,18 @@
  * option:      Command options
  * 
  */
-SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky factorization
+SPEX_info SPEX_Chol_Factor      
 (
     // Output
-    SPEX_matrix** L_handle,     // lower triangular matrix
-    SPEX_matrix** rhos_handle, // sequence of pivots
-    SPEX_Chol_analysis* S,     // contains elimination tree of A, column pointers of L, 
+    SPEX_matrix** L_handle,     // Lower triangular matrix. NULL on input
+    SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
+    SPEX_Chol_analysis* S,     // Symbolic analysis struct that contains elimination tree of A, column pointers of L, 
                                 //exact number of nonzeros of L and permutation used
     // Input
-    const SPEX_matrix* A,      // matrix to be factored   
-    bool left,                 //set to true if performing a left-looking factorization; 
+    const SPEX_matrix* A,      // Matrix to be factored   
+    bool left,                 // Set to true if performing a left-looking factorization; 
                                //otherwise perform an up-looking factorization.
-    const SPEX_options* option 
+    const SPEX_options* option //command options
 )
 {
     SPEX_info info;
@@ -187,7 +187,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
     
     if (left)
     {
-        SPEX_CHECK(spex_Chol_Pre_Left_Factor(A, &L, xi, S->parent, S, c));
+        SPEX_CHECK(spex_Chol_Pre_Left_Factor(&L, xi, A, S->parent, S, c));
     }
     else
     {
@@ -210,7 +210,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
         for (k = 0; k < n; k++)
         {
             // LDx = A(:,k)
-            SPEX_CHECK (spex_Left_Chol_triangular_solve(&top, L, A, k, xi, rhos, h, x, S->parent, c));
+            SPEX_CHECK (spex_Left_Chol_triangular_solve(&top, x, xi, L, A, k, rhos, h, S->parent, c));
 
             // Set the pivot element
             if (mpz_sgn(x->x.mpz[k]) != 0)
@@ -251,7 +251,7 @@ SPEX_info SPEX_Chol_Factor      // performs an integer-preserving Cholesky facto
         for (k = 0; k < n; k++)
         {
             // LDx = A(:,k)
-            SPEX_CHECK ( spex_Up_Chol_triangular_solve(&top, L, A, k, xi, S->parent, c, rhos, h, x));
+            SPEX_CHECK ( spex_Up_Chol_triangular_solve(&top, xi, x, L, A, k, S->parent, c, rhos, h));
         
             // If x[k] is nonzero that is the pivot. if x[k] == 0 then matrix is singular.
             if (mpz_sgn(x->x.mpz[k]) != 0)

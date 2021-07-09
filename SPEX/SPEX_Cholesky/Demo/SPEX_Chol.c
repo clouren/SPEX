@@ -54,10 +54,10 @@ int main( int argc, char* argv[] )
     int64_t n = 0, check, ok, j, index, k, nz = 0;
    
     SPEX_Chol_analysis* S = NULL;
-    SPEX_matrix *A = NULL;
-    SPEX_matrix *L = NULL;
-    SPEX_matrix *b = NULL;
-    SPEX_matrix *rhos = NULL;
+    SPEX_matrix* A = NULL;
+    SPEX_matrix* L = NULL;
+    SPEX_matrix* b = NULL;
+    SPEX_matrix* rhos = NULL;
     SPEX_matrix* A2 = NULL;
     SPEX_matrix* x = NULL;
     
@@ -167,6 +167,7 @@ int main( int argc, char* argv[] )
     clock_t start_solve = clock();
     option->check = true;
     
+
     DEMO_OK( SPEX_Chol_Solve( &x, A2, A, b, rhos, L, S, option));
     
     
@@ -187,6 +188,7 @@ int main( int argc, char* argv[] )
     printf("\nSymbolic analysis time: \t\t%lf", t_col);
     printf("\nIP Chol Factorization time: \t\t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);
+    
 
     //--------------------------------------------------------------------------
     // Free Memory

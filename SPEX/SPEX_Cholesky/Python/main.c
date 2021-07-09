@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "example.h"
+#include "SPEX_Chol_connect.h"
 //TODO rewrite this to make it into a demo for the python interfase
 //TODO I still need the makefile :(
 
@@ -48,18 +48,37 @@ int main(){
           printf("%f,", input[i]);
      }
      printf("\n");*/
-
+    /*
      double* x2=NULL;
      x2=(double *)malloc(n*sizeof(double));
      for (int i = 0; i < n; ++i)
     {
         x2[i]=0;
     }
-     python_backslash2(x2,col_pointers,row_index,data,rhs,n,nz); //passing by reference on python is weird and complicated
+     python_backslash_double(x2,col_pointers,row_index,data,rhs,n,nz); //passing by reference on python is weird and complicated
      printf("%f,%f,%f\n",x2[0],x2[1],x2[2]);
+*/
+    /*
+    mpz_t var;
+    mpz_init(var);
+    mpz_set_ui(var, 40005442);
+    char* varS;
+    varS=(char *)malloc(n*sizeof(char));
+    varS=mpz_get_str(NULL,10,var);
+    printf("%s\n",varS);
+    */
+     char** x2=NULL;
+     x2=(char **)malloc(n*sizeof(char *));
+     for (int i = 0; i < n; ++i)
+    {
+        x2[i]=(char *)malloc(n*sizeof(char));
+    }
 
-
-
+    
+    python_backslash_char(x2,col_pointers,row_index,data,rhs,n,nz); 
+    printf("allfine\n");
+     printf("%s,%s,%s\n",x2[0],x2[1],x2[2]);
+     
      free(x2);
      return 0;
 }
