@@ -13,12 +13,11 @@
 
 # include "spex_qr_internal.h"
 
-/* Compute the dot product of two integer vectors x,y and return in z */
 SPEX_info SPEX_Qtb
 (
     SPEX_matrix* Q,        // Q matrix, want Q'
     SPEX_matrix* b,        // Original RHS Vector
-    SPEX_matrix** b_handle // Q'*b
+    SPEX_matrix** b_handle // Null on input. Contains Q'*b on output
 )
 {
     SPEX_info info;
@@ -31,10 +30,12 @@ SPEX_info SPEX_Qtb
     ASSERT( b->kind == SPEX_DENSE);
     
     SPEX_matrix* b_new = NULL;
+    
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, Q->n, b->n, Q->n*b->n,
         false, true, NULL));
     
+    // Indices
     int64_t i, j, k;
     // Need to compute b_new[i] = Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = Q[:,i] dot b[i]
@@ -47,9 +48,6 @@ SPEX_info SPEX_Qtb
         {
             for (j = 0; j < Q->m; j++)
             {
-                //gmp_printf("\nb_new[i,k] is %Zd", SPEX_2D(b_new,i,k,mpz));
-                //gmp_printf("\nb[j,k] is %Zd", SPEX_2D(b, j, k, mpz));
-                //gmp_printf("\nQ[j,i] is %Zd",SPEX_2D(Q, j, i, mpz));
                 SPEX_CHECK( SPEX_mpz_addmul( SPEX_2D(b_new,i,k,mpz),
                                              SPEX_2D(b, j, k, mpz),
                                              SPEX_2D(Q, j, i, mpz)));

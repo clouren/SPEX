@@ -9,7 +9,10 @@
 
 
 /* This code contains a dense REF QR factorization. It is meant to be proof of 
- * concept for the REF QR factorization algorithms
+ * concept for the REF QR factorization algorithms. It computes the factorization
+ * A = Q D R where Q and R is integer. Note that all code in this version of SPEX QR
+ * assumes that A is a fully dense matrix; thus these routines are not yet appropriate
+ * for sparse matrices.
  */
 
 
@@ -32,6 +35,9 @@
     SPEX_FREE(option);                          \
     SPEX_finalize();                            \
 
+#ifndef ASSERT
+#define ASSERT assert
+#endif
 
 int main( int argc, char* argv[] )
 {
@@ -43,12 +49,15 @@ int main( int argc, char* argv[] )
 
     SPEX_initialize();
     
+    // Input arguments.
     unsigned int seed;
     int64_t m;
     int64_t n;
     int64_t lower;
     int64_t upper;
     
+    // Process the command line. If there are not exactly 5 input arguments, then
+    // default values are used. 
     if (argc != 6)
     {
         printf("\nExpected usage: ./SPEX_QR_dense SEED M N LOWER UPPER\n");
@@ -59,6 +68,7 @@ int main( int argc, char* argv[] )
         lower = 1;
         upper = 10;
     }
+    // Acquire input arguments
     else
     {
         seed = (unsigned int) atoi(argv[1]);
@@ -68,25 +78,38 @@ int main( int argc, char* argv[] )
         upper = atoi(argv[5]);
     }
     
+    // Input checks
+    ASSERT(m >= 0);
+    ASSERT(n >= 0);
+    ASSERT(lower < upper);
+    ASSERT(seed >= 1);
+    
 
     //--------------------------------------------------------------------------
     // Declare and initialize essential variables
     //--------------------------------------------------------------------------
 
     SPEX_info ok;
-    SPEX_matrix *A = NULL ;                     // input matrix
-    SPEX_matrix *A2 = NULL;                    // Matrix to be generated
-    SPEX_matrix *R = NULL;                      // Upper triangular matrix
-    SPEX_matrix *Q = NULL;                      // Orthogonal Matrix
+    SPEX_matrix *A = NULL ;     // Integer matrix to be factorized
+    SPEX_matrix *A2 = NULL;     // Matrix to be randomly generated
+    
+    // Next we define 3 Q R pairs. Each pair is generated via a different dense
+    // algorithm
+    SPEX_matrix *Q = NULL;
+    SPEX_matrix *R = NULL;
     SPEX_matrix *Q2 = NULL;
     SPEX_matrix *R2 = NULL;
     SPEX_matrix *Q3 = NULL;
     SPEX_matrix *R3 = NULL;
+    
+    // RHS and solution vectors
     SPEX_matrix *b = NULL;
     SPEX_matrix *b2 = NULL;
     SPEX_matrix *b_new = NULL;
     SPEX_matrix *x = NULL;
     SPEX_matrix *x_doub = NULL;
+    
+    // SPEX Options
     SPEX_options *option = NULL;
     SPEX_create_default_options(&option);
     if (!option)
@@ -114,7 +137,7 @@ int main( int argc, char* argv[] )
     // Perform the mulitplication heavy QR_IPGE. This method is focused on doing
     // dot products and tries to limit the number of divisions
     // Better for parallelization and memory
-    // I.e., algorithm 1 from paper
+    // I.e., Algorithm 1 from paper
     
     clock_t start_solve1 = clock();
     
@@ -124,8 +147,7 @@ int main( int argc, char* argv[] )
     
     // Use IPGE Pursell method. This approach performs IPGE on [A' * A | A']
     // This specific version operates on A'*A and A' seperately
-    
-    
+        
     clock_t start_solve2 = clock();
     
     SPEX_QR_PURSELL( A, &R2, &Q2);
@@ -135,13 +157,14 @@ int main( int argc, char* argv[] )
     // Use IPGE Pursell method. This approach explicitly constructs [A'*A | A']
     // The pursell method is generally quite division heavy.
     
-       
     clock_t start_solve3 = clock();
     
     SPEX_QR_PURSELL2( A, &R3, &Q3);
     
     clock_t end_solve3 = clock();
 
+    // Optional Check to print matrices
+    
     //option->print_level = 3;
     //SPEX_matrix_check(Q, option);
     
@@ -149,7 +172,12 @@ int main( int argc, char* argv[] )
     
     //SPEX_matrix_check(Q3, option);
     
-    // Now check to make sure they are the same
+    
+    
+    //--------------------------------------------------------------------------
+    // Ensure that all 3 algorithms produce identical Q and R
+    //--------------------------------------------------------------------------
+    
     for (int64_t i = 0; i < A->n; i++)
     {
         for (int64_t j = 0; j < A->m; j++)
@@ -213,6 +241,8 @@ int main( int argc, char* argv[] )
     SPEX_Qtb(Q, b, &b_new);
     
     clock_t end_b = clock();
+    
+    // Solve R x = Q'*b
     
     clock_t start_bsolve = clock();
     

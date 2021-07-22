@@ -23,6 +23,8 @@ SPEX_info SPEX_QR_backsolve
 )
 {
     SPEX_info info;
+    // Indices
+    int64_t i, j, k;
     // Check inputs, the number of rows/columns of R must equal the number of rows of b
     // Also, both matrices must be mpz and dense
     ASSERT( R->m == b->m);
@@ -36,8 +38,7 @@ SPEX_info SPEX_QR_backsolve
     
     // Set x = b
     SPEX_matrix_copy(&x, SPEX_DENSE, SPEX_MPZ, b, NULL);
-    // Scale x
-    int64_t i, j, k;
+    // Scale x by determinant of A'*A (R(n,n))
     for (i = 0; i < x->m*x->n; i++)
     {
         SPEX_mpz_mul( x->x.mpz[i], x->x.mpz[i], SPEX_2D(R, R->n-1, R->n-1, mpz));

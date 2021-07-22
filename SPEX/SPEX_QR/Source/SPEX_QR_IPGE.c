@@ -19,8 +19,8 @@
 SPEX_info SPEX_QR_IPGE
 (
     SPEX_matrix *A,            // Matrix to be factored
-    SPEX_matrix **R_handle,    // upper triangular matrix
-    SPEX_matrix **Q_handle     // orthogonal triangular matrix
+    SPEX_matrix **R_handle,    // Null on input, contains R on output
+    SPEX_matrix **Q_handle     // Null on input, contains Q on output
 )
 {
     SPEX_info info;
@@ -28,7 +28,6 @@ SPEX_info SPEX_QR_IPGE
     ASSERT( m >= n); // A should be transposed if not true
     if (m < n)
         return SPEX_PANIC;
-    //printf("\nm is: %d and n is %d", m, n);
     ASSERT( A != NULL);
     // Only dense for now
     ASSERT( A->type == SPEX_MPZ);
@@ -40,7 +39,8 @@ SPEX_info SPEX_QR_IPGE
     // Final matrices Q and R
     SPEX_matrix *Q, *R;
     
-    // Allocate R
+    // Allocate R. We are performing the Thin REF QR factorization so 
+    // R is n*n
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_DENSE, SPEX_MPZ, n, n, n*n,
         false, true, NULL));
     
@@ -74,9 +74,6 @@ SPEX_info SPEX_QR_IPGE
                 if (k > 0)
                 {
                     // Q(j,i) = Q(j,i)/R(k-1,k-1)
-                    //printf("\nIteration %d",k);
-                    //gmp_printf("\nQ(j,i) is %Zd", SPEX_2D(Q,j,i,mpz));
-                    //gmp_printf("\nR(k,k) is %Zd", SPEX_2D(R,k-1,k-1,mpz));
                     SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(R, k-1, k-1, mpz)));

@@ -124,7 +124,8 @@ SPEX_info SPEX_QR_PURSELL2
     {
         for (i = k+1; i < n; i++)
         {
-            for (j = k+1; j < A3->n; j++)
+            //for (j = k+1; j < A3->n; j++)
+            for (j = i; j < A3->n; j++)
             {
                 //TODO This is slower because it's not operating on only the upper
                 // triangular portion of R unlike the above code. Fix this!
@@ -132,7 +133,7 @@ SPEX_info SPEX_QR_PURSELL2
                                SPEX_2D(A3, i, j, mpz),
                                SPEX_2D(A3, k, k, mpz)));
                 SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(A3, i, j, mpz),
-                                 SPEX_2D(A3, i, k, mpz),
+                                 SPEX_2D(A3, k, i, mpz),
                                  SPEX_2D(A3, k, j, mpz)));
                 if (k > 0)
                     SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(A3, i, j, mpz),

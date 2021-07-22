@@ -353,9 +353,9 @@ SPEX_info SPEX_tripread_double
         return (info) ;
     }
 
-    info = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
+    s = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
         &(A->i[0]), &(A->j[0]), &(A->x.fp64[0])) ;
-    if (feof(file) || info != SPEX_OK)
+    if (feof(file) || s < 2)
     {
         printf ("premature end-of-file\n") ;
         SPEX_matrix_free(&A, option);

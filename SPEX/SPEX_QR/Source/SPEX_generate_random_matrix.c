@@ -12,7 +12,7 @@
 
 SPEX_info SPEX_generate_random_matrix
 (
-    SPEX_matrix **A_handle, // Matrix to be created
+    SPEX_matrix **A_handle, // Matrix to be created. Null on input
     int64_t m,              // Rows of the matrix
     int64_t n,              // Columns of the matrix
     unsigned int seed,      // Random number seed
@@ -20,9 +20,11 @@ SPEX_info SPEX_generate_random_matrix
     int64_t upper           // Upper bound for numbers to be generated
 )
 {
+    // Input checks
     ASSERT(n >= 0);
     ASSERT(m >= 0);
     ASSERT(lower < upper);
+    
     SPEX_info info;
     SPEX_matrix* A = NULL; 
     // A is a ,*n triplet matrix whose entries are FP64 Note that the first
@@ -42,7 +44,6 @@ SPEX_info SPEX_generate_random_matrix
         {
             A->i[counter] = k;
             A->j[counter] = p;
-            //A2->x.fp64[num] = rand(); rdno = rand() % (b-a) + a
             A->x.fp64[counter] = rand() % (upper-lower) + lower;
             counter+=1;
         }

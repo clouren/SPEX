@@ -18,17 +18,22 @@
  */
 SPEX_info SPEX_dense_mat_dot
 (
-    SPEX_matrix* A,
-    int64_t i,
-    SPEX_matrix* B,
-    int64_t j,
-    mpz_t prod
+    SPEX_matrix* A,     // Matrix we obtain A(:,i) from
+    int64_t i,          // ith column of A
+    SPEX_matrix* B,     // Matrix we obtain B(:,j) from
+    int64_t j,          // jth column of B
+    mpz_t prod          // Dot product of A(:,i) and B(:,j).
+                        // Should be allocated and initialized on input
 )
 {
     SPEX_info info;
+    // Reset prod
+    //SPEX_CHECK( SPEX_mpz_set_ui(prod, 0));
+    // Number of columns must be identical; otherwise no dot product
     ASSERT(A->m == B->m);
     for (int64_t k = 0; k < A->m; k++)
     {
+        // prod += A(k,i)*B(k,j)
         SPEX_CHECK(SPEX_mpz_addmul(prod, SPEX_2D(A, k, i, mpz),
                         SPEX_2D(B, k, j, mpz)));
     }

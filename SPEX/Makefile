@@ -21,7 +21,7 @@ go:
 	( cd SPEX_Update && $(MAKE) )
 	( cd SPEX_Cholesky && $(MAKE) )
 	( cd SPEX_QR && $(MAKE) )
-#	( cd SPEX_WAMF && $(MAKE) ) Until fixed...
+	( cd SPEX_Backslash && $(MAKE) )
 
 # install all packages in /usr/local/lib and /usr/local/include
 # (note that CSparse is not installed; CXSparse is installed instead)
@@ -31,7 +31,7 @@ install:
 	( cd SPEX_Update && $(MAKE) install )
 	( cd SPEX_Cholesky && $(MAKE) install )
 	( cd SPEX_QR && $(MAKE) install )
-	#( cd SPEX_WAMF && $(MAKE) install )
+	( cd SPEX_Backslash && $(MAKE) install )
 	$(CP) Doc/SPEX_UserGuide.pdf $(INSTALL_DOC)
 	$(CP) README.md $(INSTALL_DOC)/SPEX_README.md
 	chmod 755 $(INSTALL_LIB)/$(SO_TARGET)
@@ -45,7 +45,7 @@ uninstall:
 	( cd SPEX_Update && $(MAKE) uninstall )
 	( cd SPEX_Cholesky && $(MAKE) uninstall )
 	( cd SPEX_QR && $(MAKE) uninstall )
-#	( cd SPEX_WAMF && $(MAKE) uninstall )
+	( cd SPEX_Backslash && $(MAKE) uninstall )
 
 # compile the libraries.
 library: go
@@ -56,7 +56,7 @@ static: go
 cov:
 	( cd SPEX_Left_LU && $(MAKE) cov )
 #	( cd SPEX_Cholesky && $(MAKE) cov ) TODO
-#	( cd SPEX_WAMF && $(MAKE) cov ) TODO
+#	( cd SPEX_Backslash && $(MAKE) cov ) TODO
 
 # Remove all files not in the original distribution
 purge:
@@ -64,7 +64,7 @@ purge:
 	- ( cd SPEX_Left_LU && $(MAKE) purge )
 	- ( cd SPEX_Update && $(MAKE) purge )
 	- ( cd SPEX_Cholesky && $(MAKE) purge )
-	- ( cd SPEX_WAMF && $(MAKE) purge )
+	- ( cd SPEX_Backslash && $(MAKE) purge )
 	- ( cd SPEX_QR && $(MAKE) purge )
 
 # Remove all files not in the original distribution, but keep the libraries

@@ -141,6 +141,33 @@ SPEX_info spex_Chol_ereach
 //------------------------------------------------------------------------------
 
 
+/* Purpose: Perform the up-looking Cholesky factorization 
+ */
+SPEX_info spex_Chol_Up_Factor      
+(
+    // Output
+    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input
+    SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
+    SPEX_Chol_analysis* S,     // Symbolic analysis struct that contains elimination tree of A, column pointers of L, 
+                                //exact number of nonzeros of L and permutation used
+    // Input
+    const SPEX_matrix* A,      // Matrix to be factored   
+    const SPEX_options* option //command options
+);
+
+/* Purpose: Perform the left-looking Cholesky factorization
+ */
+SPEX_info spex_Chol_Left_Factor      
+(
+    // Output
+    SPEX_matrix** L_handle,     // Lower triangular matrix. NULL on input
+    SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
+    SPEX_Chol_analysis* S,     // Symbolic analysis struct that contains elimination tree of A, column pointers of L, 
+                                //exact number of nonzeros of L and permutation used
+    // Input
+    const SPEX_matrix* A,      // Matrix to be factored   
+    const SPEX_options* option //command options
+);
 
 /* Purpose: This function performs a symbolic left-looking factorization.
  * On input, A is the matrix to be factored, parent contains the elimination tree
@@ -163,8 +190,6 @@ SPEX_info spex_Chol_Pre_Left_Factor
                                   // row/coluimn permutation and its inverse  
     int64_t* c                    // Column pointers
 );
-// TODO think about combining Pre_Left_Factor and Left_Chol_triangular_solve
-// Chris TODO Can probably eliminate the prealllocation in the left factorization
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve. i.e., 
  * (LD) x = A(:,k). 
