@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data type
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -34,7 +35,7 @@
 
 # define SPEX_FREE_WORK                 \
     SPEX_matrix_free(&L, NULL);         \
-    SPEX_matrix_free(&A2,NULL);         \
+    SPEX_matrix_free(&PAP,NULL);         \
     SPEX_matrix_free(&rhos, NULL);      \
     SPEX_Chol_analysis_free (&S);   \
 
@@ -84,7 +85,7 @@ SPEX_info SPEX_Chol_backslash
 
     SPEX_matrix *L = NULL ;
     SPEX_matrix *x = NULL;
-    SPEX_matrix* A2 = NULL;
+    SPEX_matrix* PAP = NULL;
     SPEX_matrix *rhos = NULL ;
     SPEX_Chol_analysis *S = NULL;
     int64_t k, n = A->n, index;
@@ -105,16 +106,16 @@ SPEX_info SPEX_Chol_backslash
     SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1));    // Determine symmetry with nonzero pattern and values
 
     //--------------------------------------------------------------------------
-    // Permute matrix A, that is set A2 = PAP'
+    // Permute matrix A, that is set PAP = PAP'
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( SPEX_Chol_permute_A(&A2, (SPEX_matrix*) A, S));
+    SPEX_CHECK( SPEX_Chol_permute_A(&PAP, (SPEX_matrix*) A, S));
 
     //--------------------------------------------------------------------------
     // SPEX Chol Factorization
     //-------------------------------------------------------------------------- 
     
-    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, S,A2, 
+    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, S,PAP, 
                                  false,     // True = left, false = up
                                  (SPEX_options*) option));
 
@@ -122,7 +123,7 @@ SPEX_info SPEX_Chol_backslash
     // Solve
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK (SPEX_Chol_Solve (&x, A2, (SPEX_matrix*) A, (SPEX_matrix*) b,
+    SPEX_CHECK (SPEX_Chol_Solve (&x, PAP, (SPEX_matrix*) A, (SPEX_matrix*) b,
                                     rhos,
                                     L,
                                     S,

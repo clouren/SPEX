@@ -27,6 +27,7 @@ CS = ../Lib/libspexchol.a $(LDLIBS)
 all: lib SPEX_Chol SPEX_Chol_debug example
 	- ./example
 	- ./SPEX_Chol
+	- echo "WARNING: Remember to remove the -g for test and releases in the Lib/Makefile"
 
 lib:
 	( cd ../Lib ; $(MAKE) )

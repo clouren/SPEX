@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Chol: Demo main program for SPEX_Chol
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -14,7 +15,7 @@
 {                                       \
     SPEX_matrix_free(&A,NULL);          \
     SPEX_matrix_free(&L,NULL);          \
-    SPEX_matrix_free(&A2,NULL);         \
+    SPEX_matrix_free(&PAP,NULL);         \
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&rhos,NULL);       \
     SPEX_matrix_free(&x,NULL);          \
@@ -58,7 +59,7 @@ int main( int argc, char* argv[] )
     SPEX_matrix* L = NULL;
     SPEX_matrix* b = NULL;
     SPEX_matrix* rhos = NULL;
-    SPEX_matrix* A2 = NULL;
+    SPEX_matrix* PAP = NULL;
     SPEX_matrix* x = NULL;
     
     // Default options. May be changed in SLIP_LU_config.h
@@ -122,7 +123,7 @@ int main( int argc, char* argv[] )
    
     clock_t end_sym = clock();
     //--------------------------------------------------------------------------
-    // Permute matrix A, that is set A2 = PAP'
+    // Permute matrix A, that is set PAP = PAP'
     //--------------------------------------------------------------------------
     /*
     pinv = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
@@ -134,11 +135,11 @@ int main( int argc, char* argv[] )
     */
     
     
-    DEMO_OK( SPEX_Chol_permute_A(&A2, A, S));
+    DEMO_OK( SPEX_Chol_permute_A(&PAP, A, S));
     option->print_level = 3;
     option->check = true;
     
-  //SPEX_matrix_check(A2,option);
+  //SPEX_matrix_check(PAP,option);
     
     //--------------------------------------------------------------------------
     // SPEX Chol Factorization
@@ -152,7 +153,7 @@ int main( int argc, char* argv[] )
     bool left = true;  // Set true if want left-looking
     
     
-    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, S, A2, left, option));
+    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, S, PAP, left, option));
     
 //    SPEX_matrix_check(L, option);
 //     
@@ -168,7 +169,7 @@ int main( int argc, char* argv[] )
     option->check = true;
     
 
-    DEMO_OK( SPEX_Chol_Solve( &x, A2, A, b, rhos, L, S, option));
+    DEMO_OK( SPEX_Chol_Solve( &x, PAP, A, b, rhos, L, S, option));
     
     
     clock_t end_solve = clock();

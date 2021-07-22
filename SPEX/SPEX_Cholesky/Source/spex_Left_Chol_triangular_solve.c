@@ -57,7 +57,7 @@ static inline int compare (const void * a, const void * b)
     }
 }
 
-SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular solve
+SPEX_info spex_Left_Chol_triangular_solve
 (
     //Output
     int64_t* top_output,        // On input NULL. On output contains the beginning of nonzero pattern
@@ -65,12 +65,12 @@ SPEX_info spex_Left_Chol_triangular_solve // performs the sparse REF triangular 
     SPEX_matrix* x,             // Solution of system ==> kth column of L and U
     int64_t* xi,                // Nonzero pattern vector
     // Input
-    SPEX_matrix* L,             // Partial L matrix
+    const SPEX_matrix* L,             // Partial L matrix
     const SPEX_matrix* A,       // Input matrix
-    int64_t k,                  // Iteration of algorithm
-    SPEX_matrix* rhos,          // Sequence of pivots
+    const int64_t k,            // Iteration of algorithm
+    const SPEX_matrix* rhos,    // Sequence of pivots
     int64_t* h,                 // History vector
-    int64_t* parent,            // Elimination tree
+    const int64_t* parent,      // Elimination tree
     int64_t* c                  // Column counts of A
 )
 {

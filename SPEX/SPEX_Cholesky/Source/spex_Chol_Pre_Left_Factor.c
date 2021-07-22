@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Chol_Pre_Left_Factor: Symbolic left-looking Chol
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -15,19 +16,22 @@
  * It allocates the memory for the L matrix and allocates the individual
  * entries in the matrix.
  */
-SPEX_info spex_Chol_Pre_Left_Factor // pre-allocates the left-looking Chol factor
+SPEX_info spex_Chol_Pre_Left_Factor
 (
     // Output
-    SPEX_matrix** L_handle,       // Partial L matrix //TODO this is output, reorganize
-    int64_t* xi,                  // Nonzero pattern vector
+    SPEX_matrix** L_handle,       // On output: partial L matrix 
+                                  // On input: undefined
     // Input
+    int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix* A,         // Input Matrix
-    int64_t* parent,              // Elimination tree
-    SPEX_Chol_analysis* S,        //Symbolic analysis struct that contains column 
-                                  //and inverse row permutations, and number of nonzeros in L
-    int64_t* c                   // Column pointers
+    const int64_t* parent,        // Elimination tree
+    const SPEX_Chol_analysis* S,  // Symbolic analysis struct containing the
+                                  // number of nonzeros in L, and the
+                                  // row/coluimn permutation and its inverse  
+    int64_t* c                    // Column pointers
 )
 {
+    // TODO Remove this, make left-factor combine these two. (Chris)
     // Input check/
     SPEX_info info;
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);

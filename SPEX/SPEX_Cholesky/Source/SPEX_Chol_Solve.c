@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Chol_Solve: Solve the SPD linear system after factorization
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -74,7 +75,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     SPEX_matrix *b2 = NULL;  // permuted b
     int64_t* pinv = NULL;   // row permutation
 
-    pinv=S->pinv; //TOASK asi o dentro del for ??
+    pinv=S->pinv;
     
     // Permute b and place it in b2
     SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, b->m, b->n, b->m*b->n, false, true, option);
@@ -99,7 +100,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     
     SPEX_CHECK(SPEX_mpq_init(det2));
     // b2 = L' \ b2
-    SPEX_CHECK(spex_Chol_ltsolve(b2, L));
+    SPEX_CHECK(spex_Chol_backward_sub(b2, L));
     
     // x = b2/det 
     mpq_set_num(det2, rhos->x.mpz[L->n-1]);
@@ -124,7 +125,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LD^(-1)L' x = b
     {
         for (int32_t j = 0; j < x->n; j++)
         {
-            SPEX_CHECK(SPEX_mpq_set( SPEX_2D(x2, S->q[i], j, mpq), SPEX_2D(x, i, j, mpq)));
+            SPEX_CHECK(SPEX_mpq_set( SPEX_2D(x2, S->p[i], j, mpq), SPEX_2D(x, i, j, mpq)));
         }
     }
 

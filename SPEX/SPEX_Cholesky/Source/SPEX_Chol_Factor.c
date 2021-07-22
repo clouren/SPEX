@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Chol_Factor: Integer preserving Cholesky factorization
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -43,6 +44,7 @@
  * option:      Command options
  * 
  */
+//TODO split into 2-3 functions (up, left and factor that calls the other two)    
 SPEX_info SPEX_Chol_Factor      
 (
     // Output

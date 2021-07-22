@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Chol_preorder: symbolic ordering and analysis for sparse Cholesky
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -34,7 +35,7 @@ SPEX_info SPEX_Chol_preorder
 (
     //Output
     SPEX_Chol_analysis** S_handle, // symbolic analysis: on input it is null
-                                   // on output it contains column and inverse row permutation
+                                   // on output it contains column and inverse row permutation, and estimates of nnz (may be exact)
     //Input
     const SPEX_matrix* A,        // Input matrix
     const SPEX_options* option   // Control parameters, if NULL, use default
@@ -74,15 +75,15 @@ SPEX_info SPEX_Chol_preorder
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
 
     // Allocate memory for column permutation
-    S->q = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
-    if (S->q == NULL)
+    S->p = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
+    if (S->p == NULL)
     {
         SPEX_FREE(S);
         return SPEX_OUT_OF_MEMORY;
     }
 
     //--------------------------------------------------------------------------
-    // No ordering is used. S->q is set to [0 ... n] and the number of nonzeros
+    // No ordering is used. S->p is set to [0 ... n] and the number of nonzeros
     // in L is estimated to be 10 times the number of nonzeros in A. This
     // is a very crude estimate on the nnz(L)
     //--------------------------------------------------------------------------
@@ -94,14 +95,14 @@ SPEX_info SPEX_Chol_preorder
     {
         for (i = 0; i < n+1; i++)
         {
-            S->q[i] = i;
+            S->p[i] = i;
         }
         // estimates for number of L and U nonzeros
         S->lnz = 10*anz;
     }
 
     //--------------------------------------------------------------------------
-    // The COLAMD ordering is used. S->q is set as COLAMD's column ordering.
+    // The COLAMD ordering is used. S->p is set as COLAMD's column ordering.
     // The number of nonzeros in L is set as 10 times the number of
     // nonzeros in A. This is a crude estimate.
     //--------------------------------------------------------------------------
@@ -116,10 +117,10 @@ SPEX_info SPEX_Chol_preorder
             SPEX_Chol_analysis_free (&S) ;
             return (SPEX_OUT_OF_MEMORY) ;
         }
-        // Initialize S->q as per COLAMD documentation
+        // Initialize S->p as per COLAMD documentation
         for (i = 0; i < n+1; i++)
         {
-            S->q[i] = A->p[i];
+            S->p[i] = A->p[i];
         }
         // Initialize A2 per COLAMD documentation
         for (i = 0; i < anz; i++)
@@ -128,7 +129,7 @@ SPEX_info SPEX_Chol_preorder
         }
         int64_t stats [COLAMD_STATS];
         colamd_l (n, n, Alen, (SuiteSparse_long *) A2,
-            (SuiteSparse_long *) S->q, (double *) NULL,
+            (SuiteSparse_long *) S->p, (double *) NULL,
             (SuiteSparse_long *) stats) ;
         // estimate for lnz and unz
         S->lnz = 10*anz;
@@ -144,7 +145,7 @@ SPEX_info SPEX_Chol_preorder
     }
 
     //--------------------------------------------------------------------------
-    // The AMD ordering is used. S->q is set to AMD's column ordering on
+    // The AMD ordering is used. S->p is set to AMD's column ordering on
     // A. The number of nonzeros in L is given as AMD's computed
     // number of nonzeros in the Cholesky factor L of A which is the exact
     // nnz(L) for Cholesky factorization (barring numeric cancellation)
@@ -156,7 +157,7 @@ SPEX_info SPEX_Chol_preorder
         double Info [AMD_INFO];
         // Perform AMD
         amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-            (SuiteSparse_long *) S->q, Control, Info) ;
+            (SuiteSparse_long *) S->p, Control, Info) ;
         S->lnz = Info[AMD_LNZ];        // estimate for unz and lnz
         if (pr > 0)   // Output AMD info if desired
         {

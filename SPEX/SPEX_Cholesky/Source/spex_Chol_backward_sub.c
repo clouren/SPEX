@@ -16,7 +16,7 @@ return SPEX_OUT_OF_MEMORY;      \
  * On input, L contains the lower triangular matrix. x has the solution
  * to the linear system from forward substitution
  */
-SPEX_info spex_Chol_ltsolve 
+SPEX_info spex_Chol_backward_sub 
 (
     // Output
     SPEX_matrix* x,           // Solution vector

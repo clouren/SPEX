@@ -1,4 +1,14 @@
-// example.c
+//------------------------------------------------------------------------------
+// SPEX_Cholesky/Python/SPEX_Chol_connect.c: use SPEX_Chol in Python
+//------------------------------------------------------------------------------
+
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
 #include "SPEX_Chol_connect.h"
 
 #define FREE_WORKSPACE              \

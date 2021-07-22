@@ -13,6 +13,7 @@ default: go
 
 include ../SuiteSparse_config/SuiteSparse_config.mk
 
+
 # Compile the default rules for each package
 go:
 	( cd SPEX_Util && $(MAKE) )

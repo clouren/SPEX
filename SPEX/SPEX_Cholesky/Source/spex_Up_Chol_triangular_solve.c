@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Up_Chol_triangular_solve: Sparse symmetric REF Triangular solve
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -58,7 +59,7 @@ static inline int compare (const void * a, const void * b)
 }
 
 
-SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular solve
+SPEX_info spex_Up_Chol_triangular_solve
 (
     //Output
     int64_t* top_output,               // On input NULL. On output contains the beginning of nonzero pattern
@@ -66,12 +67,12 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     int64_t* xi,                       // Nonzero pattern vector
     SPEX_matrix* x,                    // Solution of system ==> kth row of L
     // Input
-    SPEX_matrix* L,                    // Partial L matrix
+    const SPEX_matrix* L,              // Partial L matrix
     const SPEX_matrix* A,              // Input matrix
-    int64_t k,                         // Iteration of algorithm
-    int64_t* parent,                   // Elimination tree
+    const int64_t k,                   // Iteration of algorithm
+    const int64_t* parent,             // Elimination tree
     int64_t* c,                        // Column pointers
-    SPEX_matrix* rhos,                 // sequence of pivots
+    const SPEX_matrix* rhos,           // sequence of pivots
     int64_t* h                         // History vector
 )
 {

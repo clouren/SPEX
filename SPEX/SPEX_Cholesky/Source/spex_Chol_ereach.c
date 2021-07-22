@@ -2,9 +2,10 @@
 // SPEX_Chol/spex_Chol_ereach: Compute reach of an elimination tree
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -17,24 +18,32 @@
 SPEX_info spex_Chol_ereach 
 (
     // Output
-    int64_t* top_handle,
-    int64_t* xi,            // Contains the nonzero pattern in xi[top..n-1]
+    int64_t* top_handle,    // On output: starting point of nonzero pattern
+                            // On input: undefined
+    int64_t* xi,            // On output: contains the nonzero pattern in xi[top..n-1] 
+                            // On input: undefined
     // Input
     const SPEX_matrix* A,   // Matrix to be analyzed
     int64_t k,              // Node to start at
-    int64_t* parent,        // ELimination Tree
-    int64_t* w               // Workspace array
+    const int64_t* parent,  // Elimination tree of A
+    int64_t* w              // Workspace array
 )
 {
-    int64_t i, p, n, len, top ;
     // Check inputs
-    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
-    if (!parent || !xi || !w) return (SPEX_INCORRECT_INPUT) ;
+    //SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     ASSERT(A->n >= 0);
+    ASSERT(A->kind == SPEX_CSC);
+    ASSERT(A->type == SPEX_MPZ);
+    if (!parent || !xi || !w) return (SPEX_INCORRECT_INPUT) ;
+    
+    // Declare variables
+    int64_t i, p, n, len, top ;
     top = n = A->n ; 
+    
     // Mark node k as visited
     SPEX_MARK (w, k) ;
     
+    // Iterate across nonzeros in A(:,k)
     for (p = A->p [k] ; p < A->p [k+1] ; p++)
     {
         // A(i,k) is nonzero
@@ -50,8 +59,8 @@ SPEX_info spex_Chol_ereach
         }
         while (len > 0) xi [--top] = xi [--len] ; // push path onto stack 
     }
-    for (p = top ; p < n ; p++) SPEX_MARK (w, xi [p]) ;    // unmark all nodes 
-    SPEX_MARK (w, k) ;                // unmark node k 
+    for (p = top ; p < n ; p++) SPEX_MARK (w, xi [p]) ;    // unmark all nodes
+    SPEX_MARK (w, k) ;                // unmark node k
     (*top_handle) = top;
-    return SPEX_OK ;                    // xi [top..n-1] contains pattern of L(k,:)
+    return SPEX_OK ;                  // xi [top..n-1] contains pattern of L(k,:)
 }
