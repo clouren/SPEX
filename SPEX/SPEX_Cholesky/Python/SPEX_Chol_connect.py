@@ -5,6 +5,7 @@ from scipy.sparse import csc_matrix
 
 #TODO add options
 #TODO add the functionality of getting strings as output (related to options, so user can specify)
+#TODO add gitignore to both pycache's
 
 def SPEX_Chol_backslash( A,b ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
