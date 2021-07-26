@@ -38,6 +38,18 @@ if (exist ('ssget') ~= 0)
     err = norm(x-x2)/norm(x);
     maxerr = max (maxerr, err) ;
     fprintf ('.') ;
+    
+    % 907 is a square unsymmetric matrix
+    prob = ssget(907);
+    A = prob.A;
+    [m n] = size(A);
+    b = rand(m, 1);
+    fprintf ('.') ;
+    x = SPEX_Backslash(A,b);
+    x2 = A\b;
+    err = norm(x-x2)/norm(x);
+    maxerr = max (maxerr, err) ;
+    
 end
 
 orderings = { 'none', 'colamd', 'amd' } ;

@@ -17,9 +17,13 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
 PATH_TO_SPEX_UTIL=-Wl,-rpath,"../../SPEX_Util/Lib/"
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -O
-I = -I../Include -I../Source -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Util/Lib
+I = -I../Include -I../Source -I../../../SuiteSparse_config \
+-I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include \
+-I../../SPEX_Util/Source -I../../SPEX_Util/Lib
 
-LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -L../../SPEX_Util/Lib/ -lspexutil 
+LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd \
+-lamd -L../../SPEX_Util/Lib/ -lspexutil 
+
 CS = ../Lib/libspexqr.a $(LDLIBS)
 
 

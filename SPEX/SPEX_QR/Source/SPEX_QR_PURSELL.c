@@ -8,8 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-/* This code performs REF QR via the Pursell Algorithm on A'*A. This version
- * exploits symmetry when computing R.
+/* This code performs REF QR via the Pursell Algorithm on A'*A.
  */
 
 # include "spex_qr_internal.h"

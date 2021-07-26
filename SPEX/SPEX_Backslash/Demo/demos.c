@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/Demo/demos.c: support functions for the demo programs
+// SPEX_Backslash/Demo/demos.c: support functions for the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -19,11 +20,11 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 //------------------------------------------------------------------------------
-// SPEX_Chol_process_command_line
+// SPEX_Backslash_process_command_line
 //------------------------------------------------------------------------------
 
 /* Purpose: This processes the command line for user specified options */
-SPEX_info SPEX_Chol_process_command_line //processes the command line
+SPEX_info SPEX_Backslash_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char* argv[],           // set of command line arguments
@@ -43,74 +44,75 @@ SPEX_info SPEX_Chol_process_command_line //processes the command line
             //SPEX_show_usage();
             return SPEX_INCORRECT_INPUT;
         }
-        /* Not used...kept for legacy
+        // Type of pivoting if LU is used
         else if ( strcmp(arg,"p") == 0 || strcmp(arg,"piv") == 0)
         {
             if (!argv[++i])
             {
-                print64_t*f("\n****ERROR! There must be a pivot argument between"
-                    " 0-5 followint64_t*g p\n");
+                printf("\n****ERROR! There must be a pivot argument between"
+                    " 0-5 following p\n");
                 return SPEX_INCORRECT_INPUT;
             }
             option->pivot = atoi(argv[i]);
             if (option->pivot < 0 || option->pivot > 5)
             {
-                print64_t*f("\n****ERROR! Invalid pivot selection!"
-                    "\nDefaultint64_t*g to smallest pivot\n\n");
+                printf("\n****ERROR! Invalid pivot selection!"
+                    "\nDefaulting to smallest pivot\n\n");
                 option->pivot = SPEX_SMALLEST;
             }
-        }*/
+        }
+        // Type of column ordering used for LU or row/col permutation for Chol
         else if ( strcmp(arg, "q") == 0 || strcmp(arg,"col") == 0)
         {
             if (!argv[++i])
             {
                 printf("\n****ERROR! There must be an argument between 0-2"
-                    "followint64_t*g q\n");
+                    "following q\n");
                 return SPEX_INCORRECT_INPUT;
             }
             option->order = atoi(argv[i]);
             if (option->order < 0 || option->order > 2)
             {
                 printf("\n****ERROR! Invalid column orderint64_t*g"
-                    "\nDefaultint64_t*g to COLAMD\n\n");
+                    "\nDefaulting to COLAMD\n\n");
                 option->order = SPEX_COLAMD;
             }
         }
-        /* Not used, kept for legacy
+        // Tolerance for pivoting in LU
         else if ( strcmp(arg,"t") == 0 || strcmp(arg, "tol") == 0)
         {
             if (!argv[++i])
             {
-                print64_t*f("\n****ERROR! There must be a non negative tolerance"
-                    " value followint64_t*g t\n");
+                printf("\n****ERROR! There must be a non negative tolerance"
+                    " value following t\n");
                 return SPEX_INCORRECT_INPUT;
             }
             else if (!atof(argv[i]))
             {
-                print64_t*f("\n****ERROR! There must be a non negative tolerance"
-                    " value followint64_t*g t\n");
+                printf("\n****ERROR! There must be a non negative tolerance"
+                    " value following t\n");
                 return SPEX_INCORRECT_INPUT;
             }
             option->tol = atof(argv[i]);
             if (option->tol < 0)
             {
-                print64_t*f("\n****ERROR! Invalid Tolerance, tolerance must be"
+                printf("\n****ERROR! Invalid Tolerance, tolerance must be"
                     " non-negative\n");
                 return SPEX_INCORRECT_INPUT;
             }
-        }*/
+        }
         else if ( strcmp(arg,"out2") == 0 || strcmp(arg, "o2") == 0)
         {
             if (!argv[++i])
             {
                 printf("\n****ERROR! o2 or out2 must be followed by"
-                    " 0 (print64_t*64_tnothint64_t*g) 1 (print64_t*64_terr) or 2 (terse) \n");
+                    " 0 (print nothing) 1 (print err) or 2 (terse) \n");
                 return SPEX_INCORRECT_INPUT;
             }
             else if (!atoi(argv[i]))
             {
                 printf("\n****ERROR! o2 or out2 must be followed by"
-                    " 0 (print64_t*64_tnothint64_t*g) 1 (print64_t*64_terr) or 2 (terse) \n");
+                    " 0 (printt nothing) 1 (print err) or 2 (terse) \n");
                 return SPEX_INCORRECT_INPUT;
             }
             option->print_level = atoi(argv[i]);
@@ -133,7 +135,7 @@ SPEX_info SPEX_Chol_process_command_line //processes the command line
             if (*rat < 1 || *rat > 3)
             {
                 printf("\n\n****ERROR! Invalid output type!\n"
-                   "Defaultint64_t*g to rational");
+                   "Defaulting to rational");
                 *rat = 1;
             }
             if (*rat == 3)
@@ -174,8 +176,8 @@ SPEX_info SPEX_Chol_process_command_line //processes the command line
         }
         else
         {
-            printf("\n\n**ERROR! Unknown command lint64_t*e parameter: %s"
-                    "\nIgnorint64_t*g this parameter\n",arg);
+            printf("\n\n**ERROR! Unknown command line parameter: %s"
+                    "\nIgnoring this parameter\n",arg);
             return SPEX_INCORRECT_INPUT;
         }
     }
@@ -439,29 +441,4 @@ SPEX_info SPEX_read_dense
 
     (*b_handle) = A;
     return (info) ;
-}
-
-/* Purpose: Determine why a SPEX_Chol function failed
- */
-void SPEX_Chol_determine_error
-(
-    SPEX_info ok
-)
-{
-    if (ok == SPEX_OUT_OF_MEMORY)
-    {
-        printf("\nOut of memory\n");
-    }
-    else if (ok == SPEX_SINGULAR)
-    {
-        printf("\nInput matrix is singular OR no diagonal pivot. Please ensure input is SPD\n");
-    }
-    else if (ok == SPEX_UNSYMMETRIC)
-    {
-        printf("\nInput matrix is unsymmetric, please try left LU\n");
-    }
-    else if (ok == SPEX_INCORRECT_INPUT)
-    {
-        printf("\nIncorrect input for a SPEX_Chol Function\n");
-    }
 }

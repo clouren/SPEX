@@ -1,18 +1,17 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/Demo/demos.h: #include file the demo programs
+// SPEX_Backslash/Demo/demos.h: #include file the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
 #include "SPEX_Util.h"
 #include "SPEX_Left_LU.h"
 #include "SPEX_Chol.h"
-//#include "../Include/SPEX_Backslash.h"
-//TODO Why does the below not work...some makefile nonsense
 #include "SPEX_Backslash.h"
 #include <time.h>
 #include <stdint.h>
@@ -20,7 +19,7 @@
 
 #define SPEX_MIN(a,b) (((a) < (b)) ? (a) : (b))
 /* Purpose: This processes the command line for user specified options */
-SPEX_info SPEX_Chol_process_command_line //processes the command line
+SPEX_info SPEX_Backslash_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char* argv[],           // set of command line arguments
@@ -62,22 +61,4 @@ SPEX_info SPEX_read_dense
     SPEX_matrix **b_handle, // Matrix to be constructed
     FILE* file,             // file to read from (must already be open)
     SPEX_options* option
-);
-
-//------------------------------------------------------------------------------
-// SPEX_read_dense
-//------------------------------------------------------------------------------
-
-/* Purpose: Print error codes for Chol factorization
- */
-void SPEX_Chol_determine_error
-(
-    SPEX_info ok
-);
-
-SPEX_info SPEX_tripread
-(
-    SPEX_matrix **A_handle,      // Matrix to be constructed
-    FILE* file,                  // file to read from (must already be open)
-    SPEX_options* option         // Command options
 );

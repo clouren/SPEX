@@ -88,13 +88,13 @@ eval (m1) ;
 
 if (run_demo)
     % Test SPEX_backslash.
-    %SPEX_Backslash_test ;
+    SPEX_Backslash_test ;
 end
 
 fprintf ('To use SPEX_Backslash in future MATLAB sessions, add the following\n') ;
 fprintf ('line to your startup.m file:\n') ;
 fprintf ('   addpath (''%s'') ;\n', pwd) ;
 fprintf ('Type ''doc startup'' for more info on how to use startup.m\n') ;
-fprintf ('To run a demo, type:\n') ;
-fprintf ('   echodemo SPEX_Backslash_demo ;\n') ;
+%fprintf ('To run a demo, type:\n') ;
+%fprintf ('   echodemo SPEX_Backslash_demo ;\n') ;
 
