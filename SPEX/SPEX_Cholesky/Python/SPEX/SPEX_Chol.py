@@ -5,12 +5,8 @@ from scipy.sparse import csc_matrix
 from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc
 #TODO add options
 #TODO add the functionality of getting strings as output (related to options, so user can specify)
-##TODO figure out paths
-##TODO change file names :D
-# TODO make output a np.array ...maybe
 #TODO each function in a different file? (check how that works in python libraries)
 
-##TODO add ifs so that A can be just a numpy matrix and then we make it csc
 
 def SPEX_Chol_backslashVIEJO( A,b ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
@@ -51,7 +47,7 @@ def SPEX_Chol_backslashVIEJO( A,b ):
    
     return x
 
-def SPEX_Chol_backslash_string( A,b ): 
+def SPEX_Chol_string( A,b ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -92,7 +88,7 @@ def SPEX_Chol_backslash_string( A,b ):
     print(type(x))
     return x
 
-def SPEX_Chol_backslash_double( A,b ): 
+def SPEX_Chol_double( A,b ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -131,7 +127,7 @@ def SPEX_Chol_backslash_double( A,b ):
    
     return np.array(list(x), dtype=np.float64)
 
-def SPEX_Chol_backslash( A, b, options={'SolutionType': 'double'}): 
+def Cholesky( A, b, options={'SolutionType': 'double'}): 
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     ## options is a dictionary that specifies what tipe the solution should be, this by default is double
@@ -149,30 +145,14 @@ def SPEX_Chol_backslash( A, b, options={'SolutionType': 'double'}):
     ## Call the correct function depending on the desired output type
     ##--------------------------------------------------------------------------    
     if options['SolutionType']=="double":
-        x=SPEX_Chol_backslash_double(A,b)
+        x=SPEX_Chol_double(A,b)
     elif options['SolutionType']=="string":
-        x=SPEX_Chol_backslash_string(A,b)
+        x=SPEX_Chol_string(A,b)
     else:
         return "Error: invalid options"
 
    
     return x
-
-
-def test():
-    ##baby test with small dense matrix
-    ##just to check the "connection" with c works
-    row = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
-    col = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2])
-    data = np.array([4, 12, -16, 12, 37, -43, -16, -43, 98],dtype=np.float64)
-    A=csc_matrix((data, (row, col)), shape=(3, 3))
-    b=np.ones(3,dtype=np.float64)
-
-    x=SPEX_Chol_backslash(A,b,{'SolutionType': 'string'})
-    print(type(x))
-    for i in range(10):
-        print(x[i])
-    
 
 
 def spex_matrix_from_file(fname):
