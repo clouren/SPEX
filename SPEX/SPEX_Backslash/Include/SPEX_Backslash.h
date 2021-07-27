@@ -52,8 +52,8 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    Christopher Lourenco, Lorena Mejia Domenzain, Erick Moreno-Centeno, 
-//    Timothy Davis
+//    Christopher Lourenco, Jinhao Chen, Lorena Mejia Domenzain, 
+//    Erick Moreno-Centeno, Timothy Davis
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -89,8 +89,9 @@
 //
 //    See license.txt for license info.
 //
-// This software is copyright by Christopher Lourenco, Lorena Mejia Domenzain,
-// Erick Moreno-Centeno, and Timothy A. Davis. All Rights Reserved.
+// This software is copyright by Christopher Lourenco, Jinhao Chen, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis. 
+// All Rights Reserved.
 //
 
 //------------------------------------------------------------------------------
@@ -166,6 +167,9 @@
 #define SPEX_BACKSLASH_VERSION_MINOR 0
 #define SPEX_BACKSLASH_VERSION_SUB   1
 
+/* Purpose: Solve Ax = b by analyzing the input matrix
+ * and applying the appropiate factorization approach
+ */
 SPEX_info SPEX_Backslash
 (
     // Output
@@ -176,6 +180,14 @@ SPEX_info SPEX_Backslash
     const SPEX_matrix *A,         // Input matrix
     const SPEX_matrix *b,         // Right hand side vector(s)
     const SPEX_options* option    // Command options
+);
+
+/* Purpose: Modify the options struct based on the chosen factorization
+ */
+SPEX_info spex_backslash_set_defaults
+(
+    SPEX_options* option,
+    bool lu
 );
     
 #endif

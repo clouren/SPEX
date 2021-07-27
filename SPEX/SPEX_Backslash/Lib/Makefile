@@ -42,7 +42,7 @@ C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I
 all: install
 
 OBJ = \
-     SPEX_Backslash.o
+     SPEX_Backslash.o spex_backslash_set_defaults.o
 $(OBJ): ../Include/SPEX_Backslash.h Makefile
 
 %.o: ../Source/%.c ../Include/SPEX_Backslash.h 
