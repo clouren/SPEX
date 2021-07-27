@@ -377,6 +377,88 @@ SPEX_info SPEX_matrix_copy
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 //------------------------------------------------------------------------------
+// SPEX_factorization: data structure for factorization and analysis
+//------------------------------------------------------------------------------
+// data structure for factorization
+typedef enum
+{
+    SPEX_LU_FACTORIZATION = 0,            // LU factorization
+    SPEX_LU_ANALYSIS = 1,                 // LU analysis
+    SPEX_CHOLESKY_FACTORIZATION = 2,      // Cholesky factorization
+    SPEX_CHOLESKY_ANALYSIS = 3,           // Cholesky analysis
+    SPEX_QR_FACTORIZATION = 4,            // QR factorization
+    SPEX_QR_ANALYSIS = 5                  // QR analysis
+}SPEX_factorization_kind ;
+
+typedef struct
+{
+    SPEX_factorization_type kind;         // LU, Cholesky, QR factorization or
+                                          // analysis
+    mpq_t scale_for_A;                    // the scale of the target matrix
+
+    //--------------------------------------------------------------------------
+    // These are used for LU or Cholesky factorization, but ignored for QR
+    // factorization. Check L->kind to see if the factorization is updatable.
+    //--------------------------------------------------------------------------
+
+    SPEX_matrix *L;                       // The lower-triangular matrix from LU
+                                          // or Cholesky factorization.
+    SPEX_matrix *U;                       // The upper-triangular matrix from LU
+                                          // factorization. NULL for Cholesky
+                                          // factorization.
+    SPEX_matrix *rhos;                    // A n-by-1 dense matrix for the
+                                          // pivot values
+
+    //--------------------------------------------------------------------------
+    // These are used for QR factorization, but ignored for LU or Cholesky
+    // factorization. Check L->kind to see if the factorization is updatable
+    //--------------------------------------------------------------------------
+
+    SPEX_matrix *Q;                       // The orthogonal matrix from QR
+    SPEX_matrix *R;                       // The upper triangular matrix from QR
+
+    //--------------------------------------------------------------------------
+    // The permutations of the matrix that are used during the factorization.
+    // These are currently used only for LU or Cholesky analysis/factorization.
+    // One or more of these permutations could be NULL for some
+    // SPEX_factorization_kind. Specifically,
+    // For kind == SPEX_LU_FACTORIZATION, Qinv_perm will be NULL, but it will
+    // be generated when the factorization is converted to the updatable form.
+    // For kind == SPEX_LU_ANALYSIS, only Q_perm is not NULL.
+    // For kind == SPEX_CHOLESKY_FACTORIZATION or SPEX_CHOLESKY_ANALYSIS, both
+    // Q_perm and Qinv_perm are NULL.
+    // TODO for QR????
+    //--------------------------------------------------------------------------
+
+    int64_t *P_perm;                     // row permutation
+                                         // should not free by Left_LU_factorize
+    int64_t *Pinv_perm;                  // inverse of row permutation
+
+    int64_t *Q_perm;                     // column permutation
+    int64_t *Qinv_perm;                  // inverse of column permutation
+                                         // should not free by Left_LU_factorize
+
+    //--------------------------------------------------------------------------
+    // These are used in the analysis process
+    //--------------------------------------------------------------------------
+
+    int64_t lnz ;                        // Approximate number of nonzeros in L.
+                                         // Available only for SPEX_LU_analysis
+                                         // or SPEX_CHOLESKY_analysis.
+    int64_t unz ;                        // Approximate number of nonzeros in U.
+                                         // lnz and unz are used to allocate
+                                         // the initial space for L and U; the
+                                         // space is reallocated as needed.
+                                         // Available only for SPEX_LU_analysis.
+
+    // These are only used in the Cholesky analysis process
+    int64_t* parent;                     // Elimination tree of target matrix
+                                         // for Cholesky factorization.
+    int64_t* cp;                         // column pointers of L for Cholesky
+                                         // factorization.
+} SPEX_factorization;
+
+//------------------------------------------------------------------------------
 // SPEX_LU_analysis: symbolic pre-analysis
 //------------------------------------------------------------------------------
 
