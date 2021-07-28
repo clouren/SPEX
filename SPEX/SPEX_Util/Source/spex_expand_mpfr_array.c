@@ -114,8 +114,8 @@ SPEX_info spex_expand_mpfr_array
 
     if (!nz_found)     // Array is all zeros
     {
-        SPEX_FREE_ALL;
         SPEX_mpq_set_z(scale, one);
+        SPEX_FREE_ALL;
         return SPEX_OK;
     }
 

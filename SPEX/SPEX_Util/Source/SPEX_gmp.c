@@ -70,6 +70,7 @@
 //------------------------------------------------------------------------------
 // global variables
 //------------------------------------------------------------------------------
+// TODO this is not thread-safe
 
 jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
 int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in SPEX_gmp_list
@@ -109,6 +110,7 @@ bool spex_gmp_init ( )
 void spex_gmp_finalize ( )
 {
     spex_gmpz_archive = NULL ;
+    spex_gmpz_archive2 = NULL ;
     spex_gmpq_archive = NULL ;
     spex_gmpfr_archive = NULL ;
     spex_gmp_nmalloc = 0 ;
@@ -614,6 +616,9 @@ SPEX_info SPEX_mpfr_printf
 //------------------------------------------------------------------------------
 
 /* Purpose: Safely initialize an mpz_t number */
+// NOTE: This function never returns out-of-memory error with GMP-6.2.1 or
+//       later versions (since there will be no memory allocation). But it could
+//       return such error for GMP-6.1.2 or ealier versions.
 
 SPEX_info SPEX_mpz_init
 (

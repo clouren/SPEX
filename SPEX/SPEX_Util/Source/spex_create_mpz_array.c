@@ -35,6 +35,9 @@ mpz_t* spex_create_mpz_array
     {
         if (SPEX_mpz_init(x[i]) != SPEX_OK)
         {
+            // NOTE: This can be triggered only when using GMP-6.1.2 or earlier
+            // versions. For GMP-6.2.1 or later versions, there will be no
+            // memory allocation, and thus such failure will never occur.
             // Out of memory
             SPEX_MPZ_SET_NULL(x[i]);
             for (int64_t j = 0; j < n; j++)

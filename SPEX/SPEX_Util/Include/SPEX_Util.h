@@ -340,29 +340,42 @@ SPEX_type ;
 
 typedef struct
 {
-    int64_t m ;         // number of rows
-    int64_t n ;         // number of columns
-    int64_t nzmax ;     // size of A->i, A->j, and A->x.
-                        // Ignored for dynamic_CSC matrix
-    int64_t nz ;        // # nonzeros in a triplet matrix .
-                        // Ignored for CSC, dense and dynamic_CSC matrices.
     SPEX_kind kind ;    // CSC, triplet, dense or dynamic_CSC
     SPEX_type type ;    // mpz, mpq, mpfr, int64, or fp64 (double)
+                        // NOTE: entries of dynamic_CSC matrix must be mpz type.
+
+    int64_t m ;         // number of rows
+    int64_t n ;         // number of columns
+
+    mpq_t scale ;       // scale factor for mpz matrices (never shallow)
+                        // For all matrices whose type is not mpz,
+                        // mpz_scale = 1. 
+                        // The real value of the nonzero entry A(i,j)
+                        // should be computed as A(i,j)/scale.
+
+    //--------------------------------------------------------------------------
+    // these are used for CSC, triplet or dense matrix, but ignored for
+    // dynamic_CSC matrix
+    //--------------------------------------------------------------------------
+
+    int64_t nzmax ;     // size of A->i, A->j, and A->x.
+    int64_t nz ;        // # nonzeros in a triplet matrix .
+                        // Ignored for CSC or dense matrices.
 
     int64_t *p ;        // if CSC: column pointers, an array size is n+1.
-                        // if triplet, dense or dynamic_CSC: A->p is NULL.
+                        // if triplet or dense: A->p is NULL.
     bool p_shallow ;    // if true, A->p is shallow.
 
     int64_t *i ;        // if CSC or triplet: row indices, of size nzmax.
-                        // if dense or dynamic_CSC: A->i is NULL.
+                        // if dense: A->i is NULL.
     bool i_shallow ;    // if true, A->i is shallow.
 
     int64_t *j ;        // if triplet: column indices, of size nzmax.
-                        // if CSC, dense or dynamic_CSC: A->j is NULL.
+                        // if CSC or dense: A->j is NULL.
     bool j_shallow ;    // if true, A->j is shallow.
 
     union               // A->x.type has size nzmax.
-    {                   // if dynamic_CSC: A->x is NULL.
+    {
         mpz_t *mpz ;            // A->x.mpz
         mpq_t *mpq ;            // A->x.mpq
         mpfr_t *mpfr ;          // A->x.mpfr
@@ -371,18 +384,59 @@ typedef struct
     } x ;
     bool x_shallow ;    // if true, A->x.type is shallow.
 
+    //--------------------------------------------------------------------------
+    // This component is only used for dynamic_CSC matrix, and ignored for CSC,
+    // triplet and dense matrix.
+    //--------------------------------------------------------------------------
+
     SPEX_vector **v;    // If dynamic_CSC: array of size n, each entry of this
                         // array is a dynamic column vector.
-                        // if CSC, triplet or dense: A->v is NULL.
                         // Neither A->v nor any vector A->v[j] are shallow.
-
-    mpq_t scale ;       // scale factor for mpz matrices (never shallow)
-                        // For all matrices whose type is not mpz,
-                        // mpz_scale = 1. 
-                        // The real value of the nonzero entry A(i,j)
-                        // should be computed as A(i,j)/scale.
-
 } SPEX_matrix ;
+
+/*TODO write new function interface
+typedef enum
+{
+    SPEX_LU_FACTORIZATION = 0,            // LU factorization
+    // SPEX_LU_ANALYSIS = 0,                 // LU analysis
+    SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
+    // SPEX_CHOLESKY_ANALYSIS = 1,           // Cholesky analysis
+    SPEX_QR = 2                           // QR factorization
+}SPEX_factorization_kind ;
+
+typedef struct
+{
+    SPEX_factorization_type kind;
+    SPEX_matrix *L; // check if dynamic from L->kind
+    SPEX_matrix *U;
+    //SPEX_matrix *Q;
+    //SPEX_matrix *R;
+    SPEX_matrix *rhos;
+    int64_t *P_perm;// should not free by Left_LU_factorize
+    int64_t *Pinv_perm;
+    int64_t *Q_perm;// from SPEX_*_analysis *S
+    int64_t *Qinv_perm;// should not free by Left_LU_factorize
+    mpq_t scale_for_A;
+    // int64_t lnz;// consider combine with SPEX_*_analysis
+    // int64_t unz;
+} SPEX_factorization;
+
+// for reference
+typedef struct SPEX_Chol_analysis
+{
+    int64_t* pinv;      // Row permutation
+    int64_t* q ;        // Column permutation, representing
+                        // the permutation matrix P. The matrix P*A*P' is factorized.
+                        // If the kth column of L, and P*A*P' is column j of the
+                        // unpermuted matrix A, then j = S->q [k].
+    int64_t* parent;    // Elimination tree of A for Cholesky
+    int64_t* cp;        // Column pointers of L 
+    int64_t lnz;        // Number of nonzeros in Cholesky L (might be estimate)
+                        // at initialization if default column ordering (AMD) is used 
+                        // it will be exact otherwise it will be an estimate
+                        // after elimination tree is computed it will be exact
+} SPEX_Chol_analysis;
+*/
 
 //------------------------------------------------------------------------------
 // SPEX_matrix_allocate: allocate an m-by-n SPEX_matrix

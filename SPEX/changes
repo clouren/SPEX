@@ -25,6 +25,10 @@ TOMS paper
 
 8) update SPEX_gmp.h to allow implement wrapper for SPEX_mpz_cdiv_qr
 
+9*) fix bugs for spex_expand_mpfr_array and spex_expand_double_array
+
+10*) optimize spex_expand_mpq_array, no need to allocate those memory space
+
 -----------------------------------TODO-----------------------------------------
 
 1*) add option as input for SPEX_cumsum, SPEX_matrix_mul for consistency
