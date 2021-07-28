@@ -788,74 +788,72 @@ SPEX_info SPEX_mmread
 }
 
 
-// load constraint matrix to the LP problem
-#define MY_MATRIX_ENTRY(M, i) \
-    (M->type == SPEX_FP64) ? M->x.fp64[i] : (double) M->x.int64[i]
-SPEX_info SPEX_load_matrix_to_LP
-(
-    SPEX_matrix *A, 
-    glp_prob *LP
-)
-{
-    if (A->kind != SPEX_TRIPLET)
-    {
-        printf("input matrix is not triplet matrix\n");
-        return SPEX_INCORRECT_INPUT;
-    }
-    printf("m=%ld n=%ld nz=%ld\n",A->m, A->n,A->nz);
-    glp_add_rows(LP, A->m);
-    glp_add_cols(LP, A->n);
-    int64_t nz = A->nz;
-    int *i = NULL, *j = NULL;
-    double *x = NULL;
-    i = (int*)    SPEX_malloc((nz+1) * sizeof(int));
-    j = (int*)    SPEX_malloc((nz+1) * sizeof(int));
-    x = (double*) SPEX_malloc((nz+1) * sizeof(double));
-    if (!i || !j || !x)
-    {
-        SPEX_FREE(i);
-        SPEX_FREE(j);
-        SPEX_FREE(x);
-        return SPEX_OUT_OF_MEMORY;
-    }
-    i[0] = 0;
-    j[0] = 0;
-    x[0] = 0;
-    for (int64_t p = 0; p < nz; p++)
-    {
-        i[p+1] = (int) A->i[p] + 1;
-        j[p+1] = (int) A->j[p] + 1;
-        x[p+1] = MY_MATRIX_ENTRY(A, p);
-    }
-    glp_load_matrix(LP, (int) nz, i, j, x);
-    SPEX_FREE(i);
-    SPEX_FREE(j);
-    SPEX_FREE(x);
-    return SPEX_OK;
+// -------------------------------------------------------------------------
+// read the matrices and construct LP obj
+// -------------------------------------------------------------------------
+#define MY_MAT_X(M, i) \
+    (((M)->type == SPEX_FP64) ? (M)->x.fp64[i] : (M)->x.int64[i])
+
+#define MY_SHIFT_X(M, i, j)       \
+{                                 \
+    if ((M)->type == SPEX_FP64)     \
+    {                             \
+        (M)->x.fp64[i] = (M)->x.fp64[j];\
+    }                             \
+    else                          \
+    {                             \
+        (M)->x.int64[i] = (M)->x.int64[j];\
+    }                             \
 }
 
-// read the matrices and construct LP obj
-#define OK1(method)                \
+#define MY_SHIFT_NEG_X(M, i, j)       \
+{                                 \
+    if ((M)->type == SPEX_FP64)     \
+    {                             \
+        (M)->x.fp64[i] = -1*((M)->x.fp64[j]);\
+    }                             \
+    else                          \
+    {                             \
+        (M)->x.int64[i] = -1*((M)->x.int64[j]);\
+    }                             \
+}
+
+#define MY_FREE_WORK              \
+{                                 \
+    SPEX_matrix_free(&MA, option);\
+    SPEX_matrix_free(&Mlb, option);\
+    SPEX_matrix_free(&Mub, option);\
+    SPEX_FREE(I);                 \
+    SPEX_FREE(J);                 \
+    SPEX_FREE(X);                 \
+    if (File != NULL) fclose(File);\
+}
+
+#define MY_FREE_ALL               \
+{                                 \
+    MY_FREE_WORK;                 \
+    SPEX_matrix_free(&MA_CSC, option);\
+    SPEX_matrix_free(&Mb, option);\
+    SPEX_matrix_free(&Mc, option);\
+}
+
+#define OK1(method)               \
 {                                 \
     info = method;                \
     if (info != SPEX_OK)          \
     {                             \
-        SPEX_matrix_free(&A, option);\
-        SPEX_matrix_free(&b, option);\
-        SPEX_matrix_free(&c, option);\
-        SPEX_matrix_free(&M1, option);\
-        SPEX_matrix_free(&M2, option);\
-        if (File != NULL) fclose(File);\
-        return;                    \
-    }                              \
+        MY_FREE_ALL;              \
+        return info;              \
+    }                             \
 }
 
-void SPEX_construct_LP
+SPEX_info SPEX_construct_LP
 (
     glp_prob *LP,
     SPEX_matrix **A_handle,
     SPEX_matrix **b_handle,
     SPEX_matrix **c_handle,
+    double *z0_handle,
     char *file_name,
     SPEX_options *option
 )
@@ -863,13 +861,16 @@ void SPEX_construct_LP
     SPEX_info info;
     double lb, ub;
     int file_name_len = strlen(file_name);
-    SPEX_matrix *A = NULL, *b = NULL, *c = NULL, *M1 = NULL, *M2 = NULL;
+    SPEX_matrix *MA = NULL, *Mb = NULL, *Mc = NULL, *Mlb = NULL, *Mub = NULL;
+    SPEX_matrix *MA_CSC = NULL, *tmp = NULL;
+    int *I = NULL, *J = NULL;
+    double *X = NULL;
     FILE *File = NULL;
     char *suffix = "";
 
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // read A matrix
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     suffix = ".mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -877,22 +878,21 @@ void SPEX_construct_LP
     if (File == NULL)
     {
         perror("Error while opening file");
-        return;
+        MY_FREE_ALL;
+        return SPEX_INCORRECT_INPUT;
     }
 
     // Read matrix from given file as a triplet matrix
-    OK1(SPEX_mmread(&M1, File, option));
+    OK1(SPEX_mmread(&MA, File, option));
+    // convert to a CSC matrix
+    OK1(SPEX_matrix_copy(&MA_CSC, SPEX_CSC, MA->type, MA, option));
+    int64_t nz = MA->nz;
+    SPEX_matrix_free(&MA, option);
     fclose(File); File = NULL;
-    // load matrix to LP
-    OK1(SPEX_load_matrix_to_LP(M1, LP));
-    // convert matrix to a CSC matrix
-    OK1(SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, M1, option));
-    // free the triplet matrix
-    OK1(SPEX_matrix_free(&M1, option));
 
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // read b matrix
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     suffix = "_b.mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -900,22 +900,19 @@ void SPEX_construct_LP
     if (File == NULL)
     {
         perror("Error while opening file\n");
-        return;
+        MY_FREE_ALL;
+        return SPEX_INCORRECT_INPUT;
     }
-    OK1(SPEX_mmread(&M1, File, option));
+    OK1(SPEX_mmread(&Mb, File, option));
     fclose(File); File = NULL;
-    for (int64_t i = 0; i < M1->m; i++)
-    {
-        glp_set_row_bnds(LP, i+1, GLP_FX, MY_MATRIX_ENTRY(M1, i), 0.0);
-    }
-    // convert matrix to a CSC matrix
-    OK1(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, M1, option));
-    // free the triplet matrix
-    SPEX_matrix_free(&M1, option);
+    // convert to a dense matrix
+    OK1(SPEX_matrix_copy(&tmp, SPEX_DENSE, Mb->type, Mb, option));
+    SPEX_matrix_free(&Mb, option);
+    Mb = tmp;
 
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // read c matrix
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     suffix = "_c.mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -923,22 +920,20 @@ void SPEX_construct_LP
     if (File == NULL)
     {
         perror("Error while opening file\n");
-        return;
+        MY_FREE_ALL;
+        return SPEX_INCORRECT_INPUT;
     }
-    OK1(SPEX_mmread(&M1, File, option));
+    OK1(SPEX_mmread(&Mc, File, option));
     fclose(File);File = NULL;
-    for (int64_t i = 0; i < M1->m; i++)
-    {
-        glp_set_obj_coef(LP, i+1, MY_MATRIX_ENTRY(M1, i));
-    }
-    // convert matrix to a CSC matrix
-    OK1(SPEX_matrix_copy(&c, SPEX_DENSE, SPEX_MPZ, M1, option));
-    // free the triplet matrix
-    SPEX_matrix_free(&M1, option);
+    // convert to a dense matrix
+    OK1(SPEX_matrix_copy(&tmp, SPEX_DENSE, Mc->type, Mc, option));
+    SPEX_matrix_free(&Mc, option);
+    Mc = tmp;
 
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // read lb and ub matrix
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    //read lower bound file
     suffix = "_lo.mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -946,16 +941,17 @@ void SPEX_construct_LP
     if (File == NULL)
     {
         perror("Error while opening file\n");
-        return;
+        MY_FREE_ALL;
+        return SPEX_INCORRECT_INPUT;
     }
-    info = SPEX_mmread(&M1, File, option);
-    fclose(File);
-    if (info != SPEX_OK)
-    {
-        SPEX_matrix_free(&M1, option);
-        SPEX_matrix_free(&M2, option);
-        return;
-    }
+    OK1(SPEX_mmread(&Mlb, File, option));
+    fclose(File); File = NULL;
+    // convert to a dense matrix
+    OK1(SPEX_matrix_copy(&tmp, SPEX_DENSE, Mlb->type, Mlb, option));
+    SPEX_matrix_free(&Mlb, option);
+    Mlb = tmp;
+
+    // read upper bound file
     suffix = "_hi.mtx";
     strcpy(file_name+file_name_len,suffix);
     printf("reading file %s\n",file_name);
@@ -963,29 +959,381 @@ void SPEX_construct_LP
     if (File == NULL)
     {
         perror("Error while opening file\n");
-        return;
+        MY_FREE_ALL;
+        return SPEX_INCORRECT_INPUT;
     }
-    OK1(SPEX_mmread(&M2, File, option));
+    OK1(SPEX_mmread(&Mub, File, option));
     fclose(File);File = NULL;
-    for (int64_t i = 0; i < M1->m; i++)
+    // convert to a dense matrix
+    OK1(SPEX_matrix_copy(&tmp, SPEX_DENSE, Mub->type, Mub, option));
+    SPEX_matrix_free(&Mub, option);
+    Mub = tmp;
+
+    // -------------------------------------------------------------------------
+    // check dimension
+    // -------------------------------------------------------------------------
+    int64_t nvars = MA_CSC->n;
+    int64_t neqs  = MA_CSC->m;
+    if (Mlb->m != nvars || Mub->m != nvars || Mc->m != nvars || Mb->m != neqs)
     {
-        lb = MY_MATRIX_ENTRY(M1, i);
-        ub = MY_MATRIX_ENTRY(M2, i);
-        if (lb<0)printf("lb[%ld]=%f\n",i+1,lb);
+        printf("Dimension unmatched!\n");
+        MY_FREE_ALL;
+        return SPEX_INCORRECT_INPUT;
+    }
+
+    // -------------------------------------------------------------------------
+    // find out if there are any fixed variables, and remove all fixed
+    // variables if exist
+    // -------------------------------------------------------------------------
+    int64_t num_nz_removed = 0;
+    int64_t num_var_removed = 0;
+    for (int64_t j = 0; j < nvars; j++)
+    {
+        lb = (double) (MY_MAT_X(Mlb, j));
+        ub = (double) (MY_MAT_X(Mub, j));
+        //if (lb<0)printf("lb[%ld]=%f\n",j+1,lb);
         if (lb == ub)
         {
-            glp_set_col_bnds(LP, i+1, GLP_FX, lb, 0.0);
-            printf("x[%ld]=%f\n",i+1,lb);
+            //printf("x[%ld]=%f\n",j+1,lb);
+
+            // remove all columns in A corresponding to these variables
+            for (int64_t p = MA_CSC->p[j]; p < MA_CSC->p[j+1]; p++)
+            {
+                int64_t i = MA_CSC->i[p];
+                if (Mb->type == SPEX_FP64)
+                {
+                    Mb->x.fp64[i] -= (double) (MY_MAT_X(MA_CSC, p)) * lb;
+                }
+                else
+                {
+                    Mb->x.int64[i] -= (int64_t) (MY_MAT_X(MA_CSC, p) * lb);
+                }
+                num_nz_removed++;
+            }
+            (*z0_handle) += MY_MAT_X(Mc, j) * lb;
+            num_var_removed++;
         }
-        else
+        else if (num_var_removed > 0)
         {
-            glp_set_col_bnds(LP, i+1, GLP_DB, lb, ub);
+            // shift all remaining entries
+            int64_t shifted_j = j - num_var_removed;
+            MY_SHIFT_X(Mc,  shifted_j, j);
+            MY_SHIFT_X(Mlb, shifted_j, j);
+            MY_SHIFT_X(Mub, shifted_j, j);
+            MA_CSC->p[shifted_j] = MA_CSC->p[j] - num_nz_removed;
+            for (int64_t p = MA_CSC->p[j]; p < MA_CSC->p[j+1]; p++)
+            {
+                int64_t shifted_p = p - num_nz_removed;
+                MA_CSC->i[shifted_p] = MA_CSC->i[p];
+                MY_SHIFT_X(MA_CSC, shifted_p, p);
+            }
         }
     }
-    SPEX_matrix_free(&M1, option);
-    SPEX_matrix_free(&M2, option);
-    *A_handle = A;
-    *b_handle = b;
-    *c_handle = c;
-    return;
+    int64_t remain_vars = nvars - num_var_removed;
+    int64_t remain_nz   = nz - num_nz_removed;
+    Mc->nz  = remain_vars;
+    Mc->m   = remain_vars;
+    Mlb->nz = remain_vars;
+    Mlb->m  = remain_vars;
+    Mub->nz = remain_vars;
+    Mub->m  = remain_vars;
+    MA_CSC->p[remain_vars] = remain_nz;
+    MA_CSC->n  = remain_vars;
+    printf("m=%ld n=%ld fixed_var=%ld nz=%ld real_nnz=%ld\n", neqs,
+        nvars, num_var_removed, nz, remain_nz);
+
+    // -------------------------------------------------------------------------
+    // check bounds for each variables to make sure lb[j] = 0
+    // -------------------------------------------------------------------------
+    // find out the number of new columns need by check if there is any bounds
+    // for xi is (-inf,inf)
+    int64_t new_vars = 0;
+    int64_t new_nz = 0;
+    for (int64_t j = 0; j < remain_vars; j++)
+    {
+        lb = (double) (MY_MAT_X(Mlb, j));
+        ub = (double) (MY_MAT_X(Mub, j));
+        if (lb == -1e308 && ub == 1e308)
+        {
+            new_nz += MA_CSC->p[j+1] - MA_CSC->p[j];
+            new_vars++;
+        }
+    }
+    if (new_vars > 0)
+    {
+        if (MA_CSC->nzmax < remain_nz+new_nz)
+        {
+            bool okx, oki;
+            if (MA_CSC->type == SPEX_FP64)
+            {
+                MA_CSC->x.fp64 = (double*)SPEX_realloc(remain_nz+new_nz,
+                    MA_CSC->nzmax, sizeof(double), MA_CSC->x.fp64, &okx);
+            }
+            else
+            {
+                MA_CSC->x.int64 = (int64_t*)SPEX_realloc(remain_nz+new_nz,
+                    MA_CSC->nzmax, sizeof(int64_t), MA_CSC->x.int64, &okx);
+            }
+            MA_CSC->i = (int64_t*)SPEX_realloc(remain_nz+new_nz,
+                MA_CSC->nzmax, sizeof(int64_t), MA_CSC->i, &oki);
+            if (!okx || !oki)
+            {
+                MY_FREE_ALL;
+                return SPEX_OUT_OF_MEMORY;
+            }
+        }
+        MA_CSC->nzmax = remain_nz;
+        if (nvars < remain_vars+new_vars)
+        {
+            bool okp, okc, okl, oku;
+            MA_CSC->p = (int64_t*)SPEX_realloc(remain_vars+new_vars+1,
+                nvars+1, sizeof(int64_t), MA_CSC->p, &okp);
+            //expand Mc
+            if (Mc->type == SPEX_FP64)
+            {
+                Mc->x.fp64 = (double*)SPEX_realloc(remain_vars+new_vars,
+                    nvars, sizeof(double), Mc->x.fp64, &okc);
+            }
+            else
+            {
+                Mc->x.int64 = (int64_t*)SPEX_realloc(remain_vars+new_vars,
+                    nvars, sizeof(int64_t), Mc->x.int64, &okc);
+            }
+
+            //expand Mlb
+            if (Mlb->type == SPEX_FP64)
+            {
+                Mlb->x.fp64 = (double*)SPEX_realloc(remain_vars+new_vars,
+                    nvars, sizeof(double), Mlb->x.fp64, &okl);
+            }
+            else
+            {
+                Mlb->x.int64 = (int64_t*)SPEX_realloc(remain_vars+new_vars,
+                    nvars, sizeof(int64_t), Mlb->x.int64, &okl);
+            }
+            //expand Mub
+            if (Mub->type == SPEX_FP64)
+            {
+                Mub->x.fp64 = (double*)SPEX_realloc(remain_vars+new_vars,
+                    nvars, sizeof(double), Mub->x.fp64, &oku);
+            }
+            else
+            {
+                Mub->x.int64 = (int64_t*)SPEX_realloc(remain_vars+new_vars,
+                    nvars, sizeof(int64_t), Mub->x.int64, &oku);
+            }
+
+            if (!okp || !okc || !okl || !oku)
+            {
+                MY_FREE_ALL;
+                return SPEX_OUT_OF_MEMORY;
+            }
+        }
+        Mc->nzmax  = remain_vars;
+        Mlb->nzmax = remain_vars;
+        Mub->nzmax = remain_vars;
+
+        // adding entries
+        for (int64_t j = 0; j < remain_vars; j++)
+        {
+            lb = (double) (MY_MAT_X(Mlb, j));
+            ub = (double) (MY_MAT_X(Mub, j));
+            if (lb == -1e308)
+            {
+                if (ub == 1e308)
+                {
+                    // let xj = xj1 - xj2, where xj1 > 0 and xj2 > 0
+                    for (int64_t p = MA_CSC->p[j]; p < MA_CSC->p[j+1]; p++)
+                    {
+                        MA_CSC->i[remain_nz] = MA_CSC->i[p];
+                        MY_SHIFT_NEG_X(MA_CSC, remain_nz, p);
+                        remain_nz++;
+                    }
+                    MA_CSC->p[remain_vars] = remain_nz;
+                    if (Mlb->type == SPEX_FP64)
+                    {
+                        Mlb->x.fp64[j] = 0;
+                    }
+                    else
+                    {
+                        Mlb->x.int64[j] = 0;
+                    }
+                    MY_SHIFT_NEG_X(Mc,  remain_vars, j);
+                    MY_SHIFT_X(Mlb, remain_vars, j);
+                    MY_SHIFT_X(Mub, remain_vars, j);
+                    remain_vars++;
+                }
+                else
+                {
+                    // let xj = -(xj-ub[j]) so that xj > 0
+                    for (int64_t p = MA_CSC->p[j]; p < MA_CSC->p[j+1]; p++)
+                    {
+                        int64_t i = MA_CSC->i[p];
+                        if (Mb->type == SPEX_FP64)
+                        {
+                            Mb->x.fp64[i] -= (double) (MY_MAT_X(MA_CSC, p)) *ub;
+                        }
+                        else
+                        {
+                            Mb->x.int64[i] -= (int64_t)(MY_MAT_X(MA_CSC, p)*ub);
+                        }
+                        if (MA_CSC->type == SPEX_FP64)
+                        {
+                            MA_CSC->x.fp64[p] *= -1;
+                        }
+                        else
+                        {
+                            MA_CSC->x.int64[p] *= -1;
+                        }
+                    }
+                    (*z0_handle) += MY_MAT_X(Mc, j) * ub;
+                    if (Mc->type == SPEX_FP64)
+                    {
+                        Mc->x.fp64[j] *= -1;
+                    }
+                    else
+                    {
+                        Mc->x.int64[j] *= -1;
+                    }
+                    //ub = - lb;
+                    if (Mub->type == SPEX_FP64)
+                    {
+                        Mub->x.fp64[j] = -lb;
+                    }
+                    else
+                    {
+                        Mub->x.int64[j] = -1*(MY_MAT_X(Mlb, j));
+                    }
+                    //lb = 0.0;
+                    if (Mlb->type == SPEX_FP64)
+                    {
+                        Mlb->x.fp64[j] = 0;
+                    }
+                    else
+                    {
+                        Mlb->x.int64[j] = 0;
+                    }
+                }
+            }
+            //------------------------------------------------------------------
+            // find if there is any nonzero lower bound, shift the corresponding
+            // variables such that the lower bound is 0.
+            //------------------------------------------------------------------
+         /*   else if (lb != 0)
+            {
+                //printf("%ld: %lf %lf\n", j, lb, ub);
+                for (int64_t p = MA_CSC->p[j]; p < MA_CSC->p[j+1]; p++)
+                {
+                    int64_t i = MA_CSC->i[p];
+                    if (Mb->type == SPEX_FP64)
+                    {
+                        Mb->x.fp64[i] -= (double) (MY_MAT_X(MA_CSC, p)) * lb;
+                    }
+                    else
+                    {
+                        Mb->x.int64[i] -= (int64_t) (MY_MAT_X(MA_CSC, p) * lb);
+                    }
+                }
+                ub = ub - lb;
+                (*z0_handle) += MY_MAT_X(Mc, j) * lb;
+                lb = 0.0;
+                //printf("%ld: %lf %lf\n\n\n", j, lb, ub);
+            }*/
+        }
+        Mc->nz  = remain_vars;
+        Mc->m   = remain_vars;
+        Mlb->nz = remain_vars;
+        Mlb->m  = remain_vars;
+        Mub->nz = remain_vars;
+        Mub->m  = remain_vars;
+        MA_CSC->p[remain_vars] = remain_nz;
+        MA_CSC->n  = remain_vars;
+        printf("m=%ld n=%ld new_vars=%ld real_nnz=%ld\n", neqs, remain_vars,
+            new_vars, remain_nz);
+    }
+
+    // -------------------------------------------------------------------------
+    // load matrices to LP
+    // -------------------------------------------------------------------------
+    I = (int*)    SPEX_malloc((remain_nz+1) * sizeof(int));
+    J = (int*)    SPEX_malloc((remain_nz+1) * sizeof(int));
+    X = (double*) SPEX_malloc((remain_nz+1) * sizeof(double));
+    if (!I || !J || !X)
+    {
+        MY_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
+    }
+    I[0] = 0;
+    J[0] = 0;
+    X[0] = 0;
+
+    for (int j = 0; j < remain_vars; j++)
+    {
+        for (int64_t p = MA_CSC->p[j]; p < MA_CSC->p[j+1]; p++)
+        {
+            J[p+1] = j + 1;
+            I[p+1] = (int) (MA_CSC->i[p]) + 1;
+            X[p+1] = (double) (MY_MAT_X(MA_CSC, p));
+        }
+    }
+
+    glp_add_rows(LP, neqs);
+    glp_add_cols(LP, remain_vars);
+    glp_load_matrix(LP, (int) remain_nz, I, J, X);
+ 
+    for (int64_t j = 0; j < remain_vars; j++)
+    {
+        lb = (double) (MY_MAT_X(Mlb, j));
+        ub = (double) (MY_MAT_X(Mub, j));
+        if (lb < 0)
+        {
+            printf("%ld: lb=%lf(<0) ub=%lf coef=%lf\n", j, lb, ub,
+                MY_MAT_X(Mc, j));
+        }
+        // find if there is any positive lower bound, shift the corresponding
+        // variables such that the lower bound is 0.
+        if (lb != 0)
+        {
+            //printf("%ld: %lf %lf\n", j, lb, ub);
+            for (int64_t p = MA_CSC->p[j]; p < MA_CSC->p[j+1]; p++)
+            {
+                int64_t i = MA_CSC->i[p];
+                if (Mb->type == SPEX_FP64)
+                {
+                    Mb->x.fp64[i] -= (double) (MY_MAT_X(MA_CSC, p)) * lb;
+                }
+                else
+                {
+                    Mb->x.int64[i] -= (int64_t) (MY_MAT_X(MA_CSC, p) * lb);
+                }
+            }
+            ub = ub - lb;
+            (*z0_handle) += MY_MAT_X(Mc, j) * lb;
+            lb = 0.0;
+            //printf("%ld: %lf %lf\n\n\n", j, lb, ub);
+        }
+        if (ub <= 0)
+        {
+            printf("%ld: %lf %lf\n", j, lb, ub);
+        }
+        glp_set_col_bnds(LP, j+1, GLP_DB, lb, ub);
+        /*if (MY_MAT_X(Mc, j) < 0)
+        {
+            printf("c[%ld]=%lf<0\n",j,MY_MAT_X(Mc,j));
+        }*/
+        glp_set_obj_coef(LP, j+1, MY_MAT_X(Mc, j));
+    }
+
+    for (int64_t i = 0; i < neqs; i++)
+    {
+        glp_set_row_bnds(LP, i+1, GLP_FX, MY_MAT_X(Mb, i), 0.0);
+    }
+
+    // free the workspace
+    MY_FREE_WORK;
+
+    *A_handle = MA_CSC;
+    *b_handle = Mb;
+    *c_handle = Mc;
+    return SPEX_OK;
 }
