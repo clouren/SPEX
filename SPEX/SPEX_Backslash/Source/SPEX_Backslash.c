@@ -60,24 +60,36 @@ SPEX_info SPEX_Backslash
         return SPEX_INCORRECT_INPUT;
     }
 
-    SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ) ;
-    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;
+    // A must be CSC and MPZ
+    ASSERT( A->type == SPEX_MPZ);
+    ASSERT( A->kind == SPEX_CSC);
+
+    // b must be dense and MPZ
+    ASSERT( b->type == SPEX_MPZ);
+    ASSERT( b->kind == SPEX_DENSE);
+    
+    // A must be a square matrix
     ASSERT(A->m == A->n);
+    
     // Declare output
     SPEX_matrix* x = NULL;
     
-    // Determine what type of factorization to use on A
-    
     // Determine if A is symmetric by checking both the pattern
-    // and values. The output of this function is either SPEX_OK,
-    // SPEX_unsymmetric, or an error code. If it's SPEX_OK, the matrix 
-    // is symmetric so we will try Cholesky factorization. 
-    // If it's SPEX_UNSYMMETRIC, we try LU factorization. If it's an
-    // error code, we return the error code
+    // and values. The output of this function is either:
+    // SPEX_OK:          Matrix is symmetric, try Cholesky
+    // SPEX_UNSYMMETRIC: Matrix is unsymmetric, try LU
+    // Other error code: Some error occured. Return the error
     info = SPEX_determine_symmetry( (SPEX_matrix*) A, 1);
-    // Solve
+
     if (info == SPEX_OK)
     {
+        // A was classified to be symmetric. Attempt a Cholesky
+        // factorization of A
+        
+        // Since Cholesky is occuring, we update the option
+        // struct to do AMD and diagonal pivoting
+        spex_backslash_set_defaults(option, false);
+        
         // Try SPEX Cholesky. The output for this function
         // is either:
         // SPEX_OK: Cholesky success, x is the exact solution
@@ -88,43 +100,66 @@ SPEX_info SPEX_Backslash
         info = SPEX_Chol_backslash(&x, type, A, b, option);
         if (info == SPEX_OK)
         {
-            // x is correct. Set it
+            // Cholesky was successful. Set X_handle = x
             (*X_handle) = x;
         }
-        if (info == SPEX_SINGULAR)
+        else if (info == SPEX_SINGULAR)
         {
-            // Try LU. The LU factorization can return either:
+            // Cholesky factorization failed. Must try
+            // LU factorization now
+            
+            // Since LU is occuring we update the options struct
+            // to use COLAMD and tolerance based pivoting.
+            spex_backslash_set_defaults(option, true);
+            
+            // The LU factorization can return either:
             // SPEX_OK: LU success, x is the exact solution
             // Other error code: Some error. Return the error
             //                   code and exit
             info = SPEX_Left_LU_backslash(&x, type, A, b, option);
             if (info == SPEX_OK)
             {
+                // LU success, set X_handle = x
                 (*X_handle) = x;
             }
             else
             {
+                // Both Cholesky and LU have failed, info contains
+                // the problem, most likely that A is singular
                 return info;
             }
         }
         else
         {
+            // Cholesky failed, but not due to a SPEX_SINGULAR 
+            // error code. Most likely invalid input or out of 
+            // memory condition.
             return info;
         }
     }
     else if (info == SPEX_UNSYMMETRIC)
     {
-        // Try LU. The LU factorization can return either:
+        // A is classifed as unsymmetric, so an LU factorization
+        // will be used.
+        
+        
+        // Since LU is occuring we update the options struct
+        // to use COLAMD and tolerance based pivoting.
+        spex_backslash_set_defaults(option, false);
+        
+        // The LU factorization can return either:
         // SPEX_OK: LU success, x is the exact solution
         // Other error code: Some error. Return the error
         //                   code and exit
         info = SPEX_Left_LU_backslash(&x, type, A, b, option);
         if (info == SPEX_OK)
         {
+            // LU factorization was successful. Set X_handle = x
             (*X_handle) = x;
         }
         else
         {
+            // LU factorization failed. Return the error code
             return info;
         }
     }

@@ -77,7 +77,12 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    To be done
+// Given a rectangular matrix A, SPEX QR factorizes A into the product of A = QDR
+// where Q is orthogonal and R is upper trapezoidal. R is also the REF Cholesky 
+// factor of A'*A. 
+
+// SPEX QR can be used to solve rectangular linear systems Ax = b or accurately
+// determine the singularity of a matrix.
 
 
 //------------------------------------------------------------------------------
@@ -92,8 +97,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+// GMP and MPFR
 #include <gmp.h>
 #include <mpfr.h>
+
+// SPEX Util
 #include "SPEX_Util.h"
 
 // SuiteSparse headers

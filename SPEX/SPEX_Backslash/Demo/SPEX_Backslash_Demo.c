@@ -2,7 +2,10 @@
 // SPEX/Tests/SPEX_WAMF_Unsymmetric: Test SPEX Left with WAMF
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2021
+// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -22,7 +25,7 @@
     ok = method ;                       \
     if (ok != SPEX_OK)                  \
     {                                   \
-        SPEX_Chol_determine_error(ok);  \
+        printf("\nError code: %ld",ok); \
         FREE_WORKSPACE ;                \
         return 0 ;                      \
     }                                   \
@@ -53,7 +56,7 @@ int main( int argc, char* argv[] )
     SPEX_matrix *b = NULL;
     SPEX_matrix* x = NULL;
     
-    // Default options. May be changed in 
+    // Set default options
     SPEX_options *option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     
@@ -62,7 +65,7 @@ int main( int argc, char* argv[] )
     int64_t rat = 1;
     
     // Process the command line
-    DEMO_OK(SPEX_Chol_process_command_line(argc, argv, option,
+    DEMO_OK(SPEX_Backslash_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
     
     //--------------------------------------------------------------------------

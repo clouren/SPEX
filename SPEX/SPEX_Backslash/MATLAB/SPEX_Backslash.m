@@ -21,7 +21,7 @@ function x = SPEX_Backslash (A,b,option)
 % strings of decimal digits of arbitrary length.
 %
 % Usage:
-%
+%cl
 % x = SPEX_backslash (A,b) returns the solution to Ax=b using default settings.
 %
 % x = SPEX_backslash (A,b,options) returns the solution to Ax=b with user
