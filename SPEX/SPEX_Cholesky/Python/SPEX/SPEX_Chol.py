@@ -47,7 +47,7 @@ def SPEX_Chol_backslashVIEJO( A,b ):
    
     return x
 
-def SPEX_Chol_string( A,b ): 
+def SPEX_Chol_string( A, b, order ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -88,7 +88,7 @@ def SPEX_Chol_string( A,b ):
     print(type(x))
     return x
 
-def SPEX_Chol_double( A,b ): 
+def SPEX_Chol_double( A, b, order ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -127,7 +127,7 @@ def SPEX_Chol_double( A,b ):
    
     return np.array(list(x), dtype=np.float64)
 
-def Cholesky( A, b, options={'SolutionType': 'double'}): 
+def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}): 
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     ## options is a dictionary that specifies what tipe the solution should be, this by default is double
@@ -140,14 +140,26 @@ def Cholesky( A, b, options={'SolutionType': 'double'}):
     ## If the sparse input matrix is not in csc form, convert it into csc form
     if not isspmatrix_csc(A):
         A.tocsc()
+    
+    ##--------------------------------------------------------------------------
+    ## Ordering
+    ##--------------------------------------------------------------------------
+    if options['Ordering']=="none":
+        order=0
+    elif options['Ordering']=="colamd":
+        order=1
+    elif options['Ordering']=="amd": ##amd is the default ordering for Cholesky
+        order=2
+    else:
+        return "Error: invalid options"
         
     ##--------------------------------------------------------------------------
     ## Call the correct function depending on the desired output type
     ##--------------------------------------------------------------------------    
     if options['SolutionType']=="double":
-        x=SPEX_Chol_double(A,b)
+        x=SPEX_Chol_double(A,b,order)
     elif options['SolutionType']=="string":
-        x=SPEX_Chol_string(A,b)
+        x=SPEX_Chol_string(A,b,order)
     else:
         return "Error: invalid options"
 

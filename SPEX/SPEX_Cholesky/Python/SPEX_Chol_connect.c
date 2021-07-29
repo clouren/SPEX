@@ -24,17 +24,17 @@
 void python_backslash_double
 ( 
  //output
- double* sol,                //solution
+ double* sol,                // solution
  //input
- int64_t* col_pointers,     //column pointers of A, an array size is n+1
- int64_t* row_index,        //row indices of A, of size nzmax.
- double* data,              //values of A
- double* rhs,               //values of b
+ int64_t* col_pointers,     // column pointers of A, an array size is n+1
+ int64_t* row_index,        // row indices of A, of size nzmax.
+ double* data,              // values of A
+ double* rhs,               // values of b
  int n,                     // # of rows/columns of A
- int nz                     // max # entries for CSC matrix A
+ int nz,                    // max # entries for CSC matrix A
+ int ordering               // type of ordering: 0-none, 1-colamd, 2-amd
 )
 {
-    //eventually make into void function (or something) right now return is to see if things are working
     //this function will make the SPEX_matrix A, b and x and call SPEX_Chol_backslash
 
     //--------------------------------------------------------------------------
@@ -53,13 +53,15 @@ void python_backslash_double
     SPEX_matrix* x = NULL;          //solution
     
     SPEX_options *option = NULL;
-    SPEX_create_default_options(&option); //TOFREE opitons
+    SPEX_create_default_options(&option); 
+    SPEX_col_order order_in = ordering;
+    (*option)->order = order_in; //using input ordering  //TOCHECK
     
     //--------------------------------------------------------------------------
     // Allocate memory, populate in A and b
     //--------------------------------------------------------------------------
-    SPEX_matrix_allocate(&A_in, SPEX_CSC, SPEX_FP64, n, n, nz, false, true, option); //TOFREE A_in (x4?)
-    SPEX_matrix_allocate(&b_in, SPEX_DENSE, SPEX_FP64, n, 1, n, false, true, option); //TOFREE b_in
+    SPEX_matrix_allocate(&A_in, SPEX_CSC, SPEX_FP64, n, n, nz, false, true, option); 
+    SPEX_matrix_allocate(&b_in, SPEX_DENSE, SPEX_FP64, n, 1, n, false, true, option);
 
     
     //populate A_in and b_in with function inputs 
@@ -108,7 +110,8 @@ void python_backslash_char
  double* data,              //values of A
  double* rhs,               //values of b
  int n,                     // # of rows/columns of A
- int nz                     // max # entries for CSC matrix A
+ int nz,                    // max # entries for CSC matrix A
+ int ordering               // type of ordering: 0-none, 1-colamd, 2-amd
 )
 {
     //basically the same funcion as the previous one but with different solution type
