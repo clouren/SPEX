@@ -17,9 +17,10 @@
 SPEX_info spex_Chol_etree 
 (
     // Output
-    int64_t** tree,      // Elimination tree of A
+    int64_t** tree_handle,      // On output: contains the elimination tree of A
+                                // On input: undefined.
     // Input
-    const SPEX_matrix* A // Input matrix (must be SPD)
+    const SPEX_matrix* A        // Input matrix (must be SPD). Note to compute
 )
 {
     // Check input
@@ -33,9 +34,9 @@ SPEX_info spex_Chol_etree
     m = A->m ; n = A->n ;
     
     // Allocate parent
-    parent = (int64_t*) SPEX_malloc(n * sizeof(int64_t));
+    parent = (int64_t*) SPEX_malloc( n * sizeof(int64_t));
     // Allocate workspace
-    w = (int64_t*) SPEX_malloc( (n+m) * sizeof(int64_t));
+    w = (int64_t*) SPEX_malloc( (n+m) * sizeof(int64_t) );
     if (!parent || !w)
         return SPEX_OUT_OF_MEMORY;
     ancestor = w ; prev = w + n ;
@@ -55,6 +56,6 @@ SPEX_info spex_Chol_etree
         }
     }
     SPEX_FREE(w);
-    (*tree) = parent;
+    (*tree_handle) = parent;
     return SPEX_OK;
 }

@@ -159,6 +159,11 @@ void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
 
 void spex_gmp_failure (int status) ;
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//-----------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Tolerance used in the pivoting schemes. This number can be anything in
 // between 0 and 1. A value of 0 selects the diagonal element exclusively and a
@@ -190,6 +195,18 @@ void spex_gmp_failure (int status) ;
 
 // MPFR precision used (quad is default)
 #define SPEX_DEFAULT_PRECISION 128
+
+//TOASK here? //TODO change name
+// Type of factorization used
+// SPEX_LU_LEFT = 0,    // Left looking LU factorization (Default for LU)
+// SPEX_CHOL_LEFT = 1,  // Left looking Cholesky factorization
+// SPEX_CHOL_UP = 2,    // Up looking Cholesky factorization (Default for Chol)
+// SPEX_QR_DEFAULT = 3  // Default factorization for QR
+#define SPEX_DEFAULT_CHOL_TYPE SPEX_CHOL_UP
+
+#define SPEX_DEFAULT_LU_TYPE SPEX_LU_LEFT
+
+#define SPEX_DEFAULT_QR_TYPE SPEX_QR_DEFAULT
 
 //------------------------------------------------------------------------------
 // Type of MPFR rounding used.

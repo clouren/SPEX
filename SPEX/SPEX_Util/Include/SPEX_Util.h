@@ -123,8 +123,9 @@ typedef enum
     SPEX_INCORRECT_INPUT = -3,  // one or more input arguments are incorrect
     SPEX_INCORRECT = -4,        // The solution is incorrect
     SPEX_UNSYMMETRIC = -5,      // The input matrix is unsymmetric (for Cholesky)
-    SPEX_PANIC = -6             // SPEX used without proper initialization
-}
+    SPEX_PANIC = -6,            // SPEX used without proper initialization
+    SPEX_NOTSPD = -7            // The input matrix is not SPD (for Cholesky)
+} //TOASK reorder to have Panic be the last?
 SPEX_info ;
 
 //------------------------------------------------------------------------------
@@ -162,6 +163,22 @@ typedef enum
 SPEX_col_order ;
 
 //------------------------------------------------------------------------------
+// Factorization type codes //TODO we need to change the word type (maybe "direction"?)
+//------------------------------------------------------------------------------
+
+// A code in SPEX_options to tell SPEX which "direction" to use when computing 
+// the exact factorization
+
+typedef enum
+{
+    SPEX_LU_LEFT = 0,    // Left looking LU factorization (Default for LU)
+    SPEX_CHOL_LEFT = 1,  // Left looking Cholesky factorization
+    SPEX_CHOL_UP = 2,    // Up looking Cholesky factorization (Default for Chol)
+    SPEX_QR_DEFAULT = 3  // Default factorization for QR
+}
+SPEX_fact_type ; //TODO rename!!!
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //-------------------------Data Structures--------------------------------------
 //------------------------------------------------------------------------------
@@ -183,6 +200,18 @@ typedef struct SPEX_options
     bool check ;           // Set true if the solution to the system should be
                            // checked.  Intended for debugging only; SPEX is
                            // guaranteed to return the exact solution.
+    SPEX_fact_type chol_type ;   // parameter which tells the function
+                           // whether it is performing a left-looking or
+                           // up-looking factorization in case of Cholesky
+                           // 1: left looking, 2: up looking
+    SPEX_fact_type lu_type ; // parameter which tells the function
+                           // what type of factorization it is performing 
+                           //in case of LU
+                           // 0: left looking
+    SPEX_fact_type qr_type ; // parameter which tells the function
+                           // what type of factorization it is performing 
+                           //in case of QR
+                           // 3: default //TODO fix comments when name is fixed
 } SPEX_options ;
 
 // Purpose: Create SPEX_options object with default parameters
@@ -388,7 +417,7 @@ typedef enum
     SPEX_CHOLESKY_ANALYSIS = 3,           // Cholesky analysis
     SPEX_QR_FACTORIZATION = 4,            // QR factorization
     SPEX_QR_ANALYSIS = 5                  // QR analysis
-}SPEX_factorization_kind ;
+}SPEX_factorization_type ;
 
 typedef struct
 {

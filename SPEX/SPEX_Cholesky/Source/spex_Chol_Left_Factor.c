@@ -20,52 +20,57 @@
 #include "spex_chol_internal.h"  
 
 /* Purpose: This function performs the left-looking REF Cholesky factorization.
-  * In order to compute the L matrix, it performs n iterations of a sparse REF symmetric
- * triangular solve function which, at each iteration, computes the kth column of L. 
+ * In order to compute the L matrix, it performs n iterations of a sparse REF 
+ * symmetric triangular solve function which, at each iteration, computes the
+ * kth column of L. 
  * 
- * Note that, importantly, this function assumes that A has been permuted
- * prior to factorization.
+ * Importantly, this function assumes that A has already been permuted.
  * 
- * Input arguments:
+ * Input arguments of the function:
  * 
- * L_handle:    A handle to the L matrix. Null on input. On output, contains a pointer to the 
- *              L matrix
+ * L_handle:    A handle to the L matrix. Null on input.
+ *              On output, contains a pointer to the L matrix.
  * 
- * S:           Symbolic analysis struct for Cholesky factorization. On output,
- *              contains the elimination tree and estimate number of nonzeros in L.
+ * S:           Symbolic analysis struct for Cholesky factorization. 
+ *              On input it contains information that is not used in this 
+ *              function such as the row/column permutation
+ *              On output it contains the elimination tree and 
+ *              the number of nonzeros in L.
  * 
- * rhos_handle: A handle to the sequence of pivots. NULL on input. On output, contains a pointer
- *              to the pivots matrix.
+ * rhos_handle: A handle to the sequence of pivots. NULL on input. 
+ *              On output it contains a pointer to the pivots matrix.
  *
  * A:           The user's permuted input matrix
  * 
  * option:      Command options
  * 
  */
+
 SPEX_info spex_Chol_Left_Factor      
 (
     // Output
-    SPEX_matrix** L_handle,     // Lower triangular matrix. NULL on input
+    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct that contains elimination tree of A, column pointers of L, 
-                                //exact number of nonzeros of L and permutation used
+    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+                               // elimination tree of A, the column pointers of
+                               // L, and the exact number of nonzeros of L.
     // Input
     const SPEX_matrix* A,      // Matrix to be factored   
-    const SPEX_options* option //command options
+    const SPEX_options* option // command options
 )
 {
     SPEX_info info;
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
-    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     if (!L_handle || !S || !rhos_handle || !option )
     {
         return SPEX_INCORRECT_INPUT;
     }
-    ASSERT(*L_handle==NULL);
-    ASSERT(*rhos_handle==NULL);
+    ASSERT(A->type == SPEX_MPZ);
+    ASSERT(A->kind == SPEX_CSC);
 
+    // Check the number of nonzeros in A
     int64_t anz;
     SPEX_CHECK(SPEX_matrix_nnz (&anz, A, option)) ;
     
@@ -73,10 +78,7 @@ SPEX_info spex_Chol_Left_Factor
     {
         return SPEX_INCORRECT_INPUT;
     }
-
-    (*L_handle) = NULL ;
-    (*rhos_handle) = NULL ;
-        
+       
     //--------------------------------------------------------------------------
     // Declare and initialize workspace 
     //--------------------------------------------------------------------------
@@ -95,7 +97,6 @@ SPEX_info spex_Chol_Left_Factor
     int64_t* post = NULL;
     int64_t* c = NULL;
 
-
     
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
@@ -103,8 +104,8 @@ SPEX_info spex_Chol_Left_Factor
     // solve algorithm
     h = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
 
-    // xi is the global nonzero pattern vector. It stores
-    // the pattern of nonzeros of the kth column of L and U
+    // xi serves as a global nonzero pattern vector. It stores
+    // the pattern of nonzeros of the kth column of L
     // for the triangular solve.
     xi = (int64_t*) SPEX_malloc(2*n* sizeof(int64_t));
 
@@ -124,7 +125,7 @@ SPEX_info spex_Chol_Left_Factor
     SPEX_CHECK(spex_Chol_etree(&S->parent, A));
     
     // Postorder the elimination tree of A
-    SPEX_CHECK( spex_Chol_post(&post, S->parent, n));    // Postorder the tree
+    SPEX_CHECK( spex_Chol_post(&post, S->parent, n));
     
     // Get the column counts of A
     SPEX_CHECK( spex_Chol_counts(&c, A, S->parent, post));
@@ -133,10 +134,11 @@ SPEX_info spex_Chol_Left_Factor
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
     SPEX_CHECK( SPEX_cumsum(S->cp, c, n));
    
+    // Set the exact number of nonzeros in L
     S->lnz = S->cp[n];
    
     //--------------------------------------------------------------------------
-    // allocate and initialize the workspace x
+    // Allocate and initialize the workspace x
     //--------------------------------------------------------------------------
 
     // SPEX utilizes arbitrary sized integers which can grow beyond the
@@ -146,18 +148,28 @@ SPEX_info spex_Chol_Left_Factor
     // the values in L and U do not require too many extra intermediate calls to
     // realloc.
     //
+    // The bound given in the paper is that the number of bits is <= n log sigma
+    // where sigma is the largest entry in A. Because this bound is extremely 
+    // pessimistic, instead of using this bound, we use a very rough estimate:
+    // 64*max(2, log (n))
+    //
     // Note that the estimate presented here is not an upper bound nor a lower
     // bound.  It is still possible that more bits will be required which is
     // correctly handled internally.
     int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n))) ;
     
-    // Create x, a global dense mpz_t matrix of dimension n*1. Unlike rhos, the
-    // second boolean parameter is set to false to avoid initializing
-    // each mpz entry of x with default size.  It is initialized below.
+    // Create x, a "global" dense mpz_t matrix of dimension n*1 (i.e., it is 
+    // used as workspace re-used at each iteration). The second boolean
+    // parameter is set to false, indicating that the size of each mpz entry
+    // will be initialized afterwards (and should not be initialized with the
+    // default size).
     SPEX_CHECK (SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, /* do not initialize the entries of x: */ false, option));
     
-    // Create rhos, a global dense mpz_t matrix of dimension n*1. 
+    // Create rhos, a "global" dense mpz_t matrix of dimension n*1. 
+    // As inidicated with the second boolean parameter true, the mpz entries in
+    // rhos are initialized to the default size (unlike x).
+
     SPEX_CHECK (SPEX_matrix_allocate(&rhos, SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
     
@@ -181,15 +193,17 @@ SPEX_info spex_Chol_Left_Factor
     // Since we are performing a left-looking factorization, we pre-allocate L
     // by performing a symbolic version of the factorization and obtaining the 
     // exact nonzero pattern of L.
-    // That said, the inidividual (x) values of L are not allocated. Instead,
+    // That said, the individual (x) values of L are not allocated. Instead,
     // a more efficient method to allocate these values is done inside the 
     // factorization to reduce memory usage.
     
     SPEX_CHECK(spex_Chol_Pre_Left_Factor(&L, xi, A, S->parent, S, c));
         
     // Set the column pointers of L
-    for (k = 0; k < n; k++) 
+    for (k = 0; k < n; k++)
+    {
         L->p[k] = c[k] = S->cp[k];
+    }
     
 
     //--------------------------------------------------------------------------
@@ -202,18 +216,20 @@ SPEX_info spex_Chol_Left_Factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK (spex_Left_Chol_triangular_solve(&top, x, xi, L, A, k, rhos, h, S->parent, c));
+        SPEX_CHECK(spex_Left_Chol_triangular_solve(&top, x, xi, L, A, k, rhos,
+                                                    h, S->parent, c));
 
-        // Set the pivot element If this element is equal to zero, no pivot element exists and
-        // the matrix is either not SPD or singular
+        // Set the pivot element If this element is equal to zero, no pivot
+        // element exists and the matrix is either not SPD or singular
         if (mpz_sgn(x->x.mpz[k]) != 0)
         {
             SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
         }
         else
         {
+            //same TODO: SPEX_NOTSPD DONE
             FREE_WORKSPACE;
-            return SPEX_SINGULAR;
+            return SPEX_NOTSPD;
         }
         //----------------------------------------------------------------------
         // Add the nonzeros to the L matrix
@@ -230,8 +246,9 @@ SPEX_info spex_Chol_Left_Factor
                 // GMP manual: Allocated size should be size+2
                 SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
                 
-                // Place the x value of this nonzero in row jnew
+                // Place the x value of this nonzero in row jnew of L
                 SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew]));
+
                 // Increment lnz
                 lnz += 1;
             }

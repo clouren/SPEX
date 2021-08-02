@@ -3,8 +3,8 @@ import numpy as np
 from numpy.ctypeslib import ndpointer
 from scipy.sparse import csc_matrix
 from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc
-#TODO add options
-#TODO add the functionality of getting strings as output (related to options, so user can specify)
+
+#TODO add the functionality of getting strings as output 
 #TODO each function in a different file? (check how that works in python libraries)
 
 
@@ -66,6 +66,7 @@ def SPEX_Chol_string( A, b, order ):
                             ndpointer(dtype=np.float64, ndim=1, flags=None),
                             ndpointer(dtype=np.float64, ndim=1, flags=None), 
                             ctypes.c_int, 
+                            ctypes.c_int,
                             ctypes.c_int]
     c_backslash.restype = None #C method is void
     
@@ -83,7 +84,8 @@ def SPEX_Chol_string( A, b, order ):
                 A.data.astype(np.float64), 
                 b,
                 n,
-                A.nnz)
+                A.nnz,
+                order)
    
     print(type(x))
     return x
@@ -107,6 +109,7 @@ def SPEX_Chol_double( A, b, order ):
                             ndpointer(dtype=np.float64, ndim=1, flags=None),
                             ndpointer(dtype=np.float64, ndim=1, flags=None), 
                             ctypes.c_int, 
+                            ctypes.c_int,
                             ctypes.c_int]
     c_backslash.restype = None #C method is void
     
@@ -123,7 +126,8 @@ def SPEX_Chol_double( A, b, order ):
                 A.data.astype(np.float64), 
                 b,
                 n,
-                A.nnz)
+                A.nnz,
+                order)
    
     return np.array(list(x), dtype=np.float64)
 
@@ -140,6 +144,10 @@ def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}):
     ## If the sparse input matrix is not in csc form, convert it into csc form
     if not isspmatrix_csc(A):
         A.tocsc()
+    ## Check symmetry    
+    tol=1e-8    
+    if scipy.sparse.linalg.norm(A-A.T, scipy.Inf) > tol:
+        return "Error: Matrix is not symmetric"
     
     ##--------------------------------------------------------------------------
     ## Ordering

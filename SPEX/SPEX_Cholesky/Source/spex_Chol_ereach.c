@@ -24,16 +24,16 @@ SPEX_info spex_Chol_ereach
                             // On input: undefined
     // Input
     const SPEX_matrix* A,   // Matrix to be analyzed
-    int64_t k,              // Node to start at
+    const int64_t k,        // Node to start at
     const int64_t* parent,  // Elimination tree of A
     int64_t* w              // Workspace array
 )
 {
     // Check inputs
     //SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
-    ASSERT(A->n >= 0);
-    ASSERT(A->kind == SPEX_CSC);
-    ASSERT(A->type == SPEX_MPZ);
+    ASSERT(A->n >= 0) ;
+    ASSERT(A->kind == SPEX_CSC) ;
+    ASSERT(A->type == SPEX_MPZ) ;
     if (!parent || !xi || !w) return (SPEX_INCORRECT_INPUT) ;
     
     // Declare variables
@@ -41,26 +41,26 @@ SPEX_info spex_Chol_ereach
     top = n = A->n ; 
     
     // Mark node k as visited
-    SPEX_MARK (w, k) ;
+    SPEX_MARK(w, k) ;
     
     // Iterate across nonzeros in A(:,k)
-    for (p = A->p [k] ; p < A->p [k+1] ; p++)
+    for (p = A->p[k] ; p < A->p[k+1] ; p++)
     {
         // A(i,k) is nonzero
-        i = A->i [p] ;
+        i = A->i[p] ;
         if (i > k) 
         {
             continue ;  // only use upper triangular part of A 
         }
-        for (len = 0 ; !SPEX_MARKED (w,i) ; i = parent [i]) // traverse up etree
+        for (len = 0 ; !SPEX_MARKED(w,i) ; i = parent[i]) // traverse up etree
         {
-            xi [len++] = i ;           // L(k,i) is nonzero 
-            SPEX_MARK (w, i) ;        // mark i as visited 
+            xi[len++] = i ;           // L(k,i) is nonzero 
+            SPEX_MARK(w, i) ;        // mark i as visited 
         }
-        while (len > 0) xi [--top] = xi [--len] ; // push path onto stack 
+        while (len > 0) xi[--top] = xi[--len] ; // push path onto stack 
     }
-    for (p = top ; p < n ; p++) SPEX_MARK (w, xi [p]) ;    // unmark all nodes
-    SPEX_MARK (w, k) ;                // unmark node k
-    (*top_handle) = top;
-    return SPEX_OK ;                  // xi [top..n-1] contains pattern of L(k,:)
+    for (p = top ; p < n ; p++) SPEX_MARK(w, xi[p]) ;    // unmark all nodes
+    SPEX_MARK(w, k) ;                // unmark node k
+    (*top_handle) = top ;
+    return SPEX_OK ;                 // xi [top..n-1] contains pattern of L(k,:)
 }

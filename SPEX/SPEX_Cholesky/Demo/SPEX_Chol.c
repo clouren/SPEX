@@ -150,10 +150,7 @@ int main( int argc, char* argv[] )
     SPEX_matrix* L2 = NULL;
     SPEX_matrix* rhos2 = NULL;
     
-    bool left = true;  // Set true if want left-looking
-    
-    
-    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, S, PAP, left, option));
+    DEMO_OK( SPEX_Chol_Factor( &L, &rhos, S, PAP, option));
     
 //    SPEX_matrix_check(L, option);
 //     
