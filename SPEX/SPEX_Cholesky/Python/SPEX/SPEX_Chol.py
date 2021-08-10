@@ -3,8 +3,8 @@ import numpy as np
 from numpy.ctypeslib import ndpointer
 from scipy.sparse import csc_matrix
 from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc
-#TODO add options
-#TODO add the functionality of getting strings as output (related to options, so user can specify)
+
+#TODO add the functionality of getting strings as output 
 #TODO each function in a different file? (check how that works in python libraries)
 
 
@@ -47,7 +47,7 @@ def SPEX_Chol_backslashVIEJO( A,b ):
    
     return x
 
-def SPEX_Chol_string( A,b ): 
+def SPEX_Chol_string( A, b, order ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -66,6 +66,7 @@ def SPEX_Chol_string( A,b ):
                             ndpointer(dtype=np.float64, ndim=1, flags=None),
                             ndpointer(dtype=np.float64, ndim=1, flags=None), 
                             ctypes.c_int, 
+                            ctypes.c_int,
                             ctypes.c_int]
     c_backslash.restype = None #C method is void
     
@@ -83,12 +84,13 @@ def SPEX_Chol_string( A,b ):
                 A.data.astype(np.float64), 
                 b,
                 n,
-                A.nnz)
+                A.nnz,
+                order)
    
     print(type(x))
     return x
 
-def SPEX_Chol_double( A,b ): 
+def SPEX_Chol_double( A, b, order ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -107,6 +109,7 @@ def SPEX_Chol_double( A,b ):
                             ndpointer(dtype=np.float64, ndim=1, flags=None),
                             ndpointer(dtype=np.float64, ndim=1, flags=None), 
                             ctypes.c_int, 
+                            ctypes.c_int,
                             ctypes.c_int]
     c_backslash.restype = None #C method is void
     
@@ -123,11 +126,12 @@ def SPEX_Chol_double( A,b ):
                 A.data.astype(np.float64), 
                 b,
                 n,
-                A.nnz)
+                A.nnz,
+                order)
    
     return np.array(list(x), dtype=np.float64)
 
-def Cholesky( A, b, options={'SolutionType': 'double'}): 
+def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}): 
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     ## options is a dictionary that specifies what tipe the solution should be, this by default is double
@@ -140,14 +144,30 @@ def Cholesky( A, b, options={'SolutionType': 'double'}):
     ## If the sparse input matrix is not in csc form, convert it into csc form
     if not isspmatrix_csc(A):
         A.tocsc()
+    ## Check symmetry    
+    tol=1e-8    
+    if scipy.sparse.linalg.norm(A-A.T, scipy.Inf) > tol:
+        return "Error: Matrix is not symmetric"
+    
+    ##--------------------------------------------------------------------------
+    ## Ordering
+    ##--------------------------------------------------------------------------
+    if options['Ordering']=="none":
+        order=0
+    elif options['Ordering']=="colamd":
+        order=1
+    elif options['Ordering']=="amd": ##amd is the default ordering for Cholesky
+        order=2
+    else:
+        return "Error: invalid options"
         
     ##--------------------------------------------------------------------------
     ## Call the correct function depending on the desired output type
     ##--------------------------------------------------------------------------    
     if options['SolutionType']=="double":
-        x=SPEX_Chol_double(A,b)
+        x=SPEX_Chol_double(A,b,order)
     elif options['SolutionType']=="string":
-        x=SPEX_Chol_string(A,b)
+        x=SPEX_Chol_string(A,b,order)
     else:
         return "Error: invalid options"
 

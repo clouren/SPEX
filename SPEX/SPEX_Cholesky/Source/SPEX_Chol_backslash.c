@@ -116,7 +116,6 @@ SPEX_info SPEX_Chol_backslash
     //-------------------------------------------------------------------------- 
     
     SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, S,PAP, 
-                                 false,     // True = left, false = up
                                  (SPEX_options*) option));
 
     //--------------------------------------------------------------------------

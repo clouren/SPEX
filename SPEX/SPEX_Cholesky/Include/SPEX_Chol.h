@@ -284,11 +284,10 @@ SPEX_info SPEX_Chol_Factor
     // Also could add option->LU_TYPE = LU_LEFT (in future LU_RIGHT)
     // Default should be CHOL_UP
     // TODO Define CHOL_LEFT, CHOL_UP, LU_LEFT, and expand options in SPEX_UTIL
-    // Also, upgrade the comments here
-    bool left,                 // Set to true if performing a left-looking factorization; 
+    //bool left,                 // Set to true if performing a left-looking factorization; 
                                // otherwise perform an up-looking factorization.
     const SPEX_options* option // Command options
-                               // Notably, option->CHOL_TYPE indicates whether
+                               // Notably, option->chol_type indicates whether
                                // CHOL_UP (default) or CHOL_LEFT is used.
 );
 

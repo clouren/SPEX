@@ -16,7 +16,7 @@
  *
  * option:      Command options
  *
- * lu:          If true, LU factorization is used, if false, Cholesky is used
+ * lu:          If true, LU factorization is used, if false, Cholesky is used //TODO this will change with Jinaho's changes
  */
 
 #include "SPEX_Backslash.h"

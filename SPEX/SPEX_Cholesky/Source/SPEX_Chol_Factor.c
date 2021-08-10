@@ -12,42 +12,55 @@
 #include "spex_chol_internal.h"  
 
 /* Purpose: This function performs the integer preserving Cholesky factorization.
- * It allows either the left-looking or up-looking integer-preserving Cholesky factorization.
- * In order to compute the L matrix, it performs n iterations of a sparse REF symmetric
- * triangular solve function. The overall factorization is PAP' = LDL'
+ * It allows either the left-looking or up-looking integer-preserving Cholesky
+ * factorization. In order to compute the L matrix, it performs n iterations of
+ * a sparse REF symmetric triangular solve function. The overall factorization
+ * is PAP' = LDL'
  * 
- * Input arguments:
+ * Importantly, this function assumes that A has already been permuted.
  * 
- * L_handle:    A handle to the L matrix. Null on input. On output, contains a pointer to the 
- *              L matrix
+ * Input arguments of the function:
  * 
- * S:           Symbolic analysis struct for Cholesky factorization. On output,
- *              contains the elimination tree and estimate number of nonzeros in L.
+ * L_handle:    A handle to the L matrix. Null on input.
+ *              On output, contains a pointer to the L matrix.
  * 
- * rhos_handle: A handle to the sequence of pivots. NULL on input. On output, contains a pointer
- *              to the pivots matrix.
+ * S:           Symbolic analysis struct for Cholesky factorization. 
+ *              On input it contains information that is not used in this 
+ *              function such as the row/column permutation
+ *              On output it contains the elimination tree and 
+ *              the number of nonzeros in L.
+ * 
+ * rhos_handle: A handle to the sequence of pivots. NULL on input. 
+ *              On output it contains a pointer to the pivots matrix.
  *
  * A:           The user's permuted input matrix
  * 
- * left:        A boolean parameter which tells the function whether it is performing a left-looking
- *              or up-looking factorization. If this bool is true, a left-looking factorization
+ * left:        A boolean parameter which tells the function whether it is 
+ *              performing a left-looking or up-looking factorization. If this
+ *              bool is true, a left-looking factorization
  *              is done, otherwise the up-looking factorization is done.
  * 
- * option:      Command options
+ * option:      Command options. Notably, option->chol_type indicates whether
+ *              it is performing a left-looking (SPEX_CHOL_LEFT) or up-looking 
+ *              factorization (SPEX_CHOL_UP) (default)
  * 
  */
+
+//TODO cooments (like up and left) DONE
+
 SPEX_info SPEX_Chol_Factor      
 (
     // Output
-    SPEX_matrix** L_handle,     // Lower triangular matrix. NULL on input
+    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct that contains elimination tree of A, column pointers of L, 
-                                //exact number of nonzeros of L and permutation used
+    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+                               // elimination tree of A, the column pointers of
+                               // L, and the exact number of nonzeros of L.
     // Input
     const SPEX_matrix* A,      // Matrix to be factored   
-    bool left,                 // Set to true if performing a left-looking factorization; 
-                               //otherwise perform an up-looking factorization.
     const SPEX_options* option //command options
+                               // Notably, option->chol_type indicates whether
+                               // CHOL_UP (default) or CHOL_LEFT is used.
 )
 {
     SPEX_info info;
@@ -59,8 +72,6 @@ SPEX_info SPEX_Chol_Factor
     {
         return SPEX_INCORRECT_INPUT;
     }
-    ASSERT(*L_handle==NULL);
-    ASSERT(*rhos_handle==NULL);
 
     int64_t anz;
     SPEX_CHECK(SPEX_matrix_nnz (&anz, A, option)) ;
@@ -70,34 +81,54 @@ SPEX_info SPEX_Chol_Factor
         return SPEX_INCORRECT_INPUT;
     }
 
-    (*L_handle) = NULL ;
-    (*rhos_handle) = NULL ;
-        
     //--------------------------------------------------------------------------
     // Declare outputs 
     //--------------------------------------------------------------------------
-    
+
     SPEX_matrix *L = NULL ;
     SPEX_matrix *rhos = NULL ;
-    
+
     //--------------------------------------------------------------------------
     // Call factorization
     //--------------------------------------------------------------------------
-    
-    // TODO Put this in option
-    if (left)
-    {
-        SPEX_CHECK(spex_Chol_Left_Factor(&L, &rhos, S, A, option));
-    }
-    else
+
+    // TODO Put this in option DONE
+    // option->CHOL_TYPE = CHOL_LEFT or CHOL_UP
+    // While doing this, it wouldnt hurt to add option->LU_TYPE and option->QR_TYPE
+    // option->LU_TYPE = LU_LEFT (yes)
+    // option->QR_TYPE = QR_DEFAULT (optional)
+    // Default option->CHOL_TYPE = CHOL_UP
+    // #define SPEX_DEFAULT_CHOL_TYPE SPEX_CHOL_UP or CHOL_UP (mimick the other options)
+    /*if (option->chol_type==SPEX_CHOL_UP)
     {
         SPEX_CHECK(spex_Chol_Up_Factor(&L, &rhos, S, A, option));
     }
+    else
+    {
+        SPEX_CHECK(spex_Chol_Left_Factor(&L, &rhos, S, A, option));
+    } *///TODO switch DONE
+    
+    /**/
+    switch(option->chol_type) 
+    {
+        case SPEX_CHOL_UP:
+            SPEX_CHECK(spex_Chol_Up_Factor(&L, &rhos, S, A, option));
+            break;
+        case SPEX_CHOL_LEFT:
+            SPEX_CHECK(spex_Chol_Left_Factor(&L, &rhos, S, A, option));
+            break;
+        default:
+            //This should not happen... 
+            //TOASK what kind of error goes here?
+            //should we just not have a default? it can't be empty
+            printf("idk\n");
+
+    }
+    /**/
     
     //--------------------------------------------------------------------------
     // Set outputs, return ok
     //--------------------------------------------------------------------------
-    
     (*L_handle) = L;
     (*rhos_handle) = rhos;
     return SPEX_OK;

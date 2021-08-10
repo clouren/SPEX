@@ -95,7 +95,9 @@ SPEX_info SPEX_Backslash
         // SPEX_OK: Cholesky success, x is the exact solution
         // SPEX_SINGULAR: Cholesky factorization failed. This means
         //                either A is singular or simply that it's
-        //                not SPD. In this case, we try LU
+        //                not SPD. In this case, we try LU //TOASK (do we need to add SPEX_NOT_SPD in other places to make SINGULAR happen only when SINGULAR?)
+        // SPEX_NOT_SPD: Cholesky factorization failed. This means
+        //                either A is not SPD. In this case, we try LU
         // Other error code: Some error. Return the error code and exit
         info = SPEX_Chol_backslash(&x, type, A, b, option);
         if (info == SPEX_OK)

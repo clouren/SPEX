@@ -40,14 +40,13 @@
 SPEX_info spex_Chol_etree 
 (
     // Output
-    int64_t** tree,      // On output: contains the elimination tree of A
-                         // On input: undefined.
+    int64_t** tree_handle,      // On output: contains the elimination tree of A
+                                // On input: undefined.
     // Input
-    const SPEX_matrix* A // Input matrix (must be SPD). Note to compute
+    const SPEX_matrix* A        // Input matrix (must be SPD). Note to compute
 );
 
 /* Purpose: post order a forest */
-//TODO: const where appropiate
 SPEX_info spex_Chol_post 
 (
     // Output
@@ -59,11 +58,8 @@ SPEX_info spex_Chol_post
 );
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
-//TODO: const where appropiate
-//TODO: This needs to return SPEX_INFO; specifically it now returns -1 if inputs are wrong, but that whouls be fixed to the appropraite SPEX_INFO
 SPEX_info spex_Chol_tdfs 
 (
-    //TODO: Change to int64_t* k (so that it is both input and output). Remember, when calling this function pass in &k (and not k) DONE
     int64_t* k,     // Index (kth node) 
     const int64_t j,// Root node
     int64_t* head,  // Head of list
@@ -78,7 +74,6 @@ SPEX_info spex_Chol_tdfs
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j) 
    Used to determine Column counts of cholesky factor*/
-//TODO: const where appropiate
 SPEX_info spex_Chol_leaf
 (
     int64_t* lca_handle,    // Least common ancestor (jprev,j) 
@@ -94,7 +89,6 @@ SPEX_info spex_Chol_leaf
 /* Purpose: Obtain the column counts of an SPD matrix for Cholesky factorization
  * This is a modified version of Csparse's cs_chol_counts function
  */
-//TODO: const where appropiate
 SPEX_info spex_Chol_counts
 (
     // Output
@@ -102,8 +96,8 @@ SPEX_info spex_Chol_counts
                             // On input: undefined
     // Input
     const SPEX_matrix *A,   // Input matrix
-    int64_t* parent,        // Elimination tree
-    int64_t* post           // Post-order of the tree
+    const int64_t* parent,  // Elimination tree
+    const int64_t* post     // Post-order of the tree
 );
 
 
@@ -118,7 +112,6 @@ SPEX_info spex_Chol_counts
  * On output, xi[top_handle..n-1] contains the nonzero pattern of the 
  * kth row of L (or the kth column of L')
  */
-//TODO: const where appropiate
 SPEX_info spex_Chol_ereach 
 (
     // Output
@@ -128,7 +121,7 @@ SPEX_info spex_Chol_ereach
                             // On input: undefined
     // Input
     const SPEX_matrix* A,   // Matrix to be analyzed
-    int64_t k,              // Node to start at
+    const int64_t k,        // Node to start at
     const int64_t* parent,  // Elimination tree of A
     int64_t* w              // Workspace array
 );
@@ -175,7 +168,6 @@ SPEX_info spex_Chol_Left_Factor
  * On output, L_handle is allocated to contain the nonzero pattern of L and 
  * memory for the values.
  */
-//TODO: const where appropiate (ALL input are const, just need to change and propagate) DONE
 SPEX_info spex_Chol_Pre_Left_Factor
 (
     // Output
@@ -194,7 +186,6 @@ SPEX_info spex_Chol_Pre_Left_Factor
 /* Purpose: This function performs the symmetric sparse REF triangular solve. i.e., 
  * (LD) x = A(:,k). 
  */
-//TODO: const where appropiate
 SPEX_info spex_Left_Chol_triangular_solve
 (
     //Output

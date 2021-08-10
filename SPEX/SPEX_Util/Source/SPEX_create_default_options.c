@@ -42,6 +42,9 @@ SPEX_info SPEX_create_default_options (SPEX_options **option )
     (*option)->tol         = SPEX_DEFAULT_TOL ;
     (*option)->round       = SPEX_DEFAULT_MPFR_ROUND ;
     (*option)->check       = false ;
+    (*option)->chol_type   = SPEX_DEFAULT_CHOL_TYPE ;
+    (*option)->lu_type     = SPEX_DEFAULT_LU_TYPE ;
+    (*option)->qr_type     = SPEX_DEFAULT_QR_TYPE ;
 
     //--------------------------------------------------------------------------
     // return result

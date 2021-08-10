@@ -101,6 +101,13 @@ SPEX_info spex_Left_Chol_triangular_solve
      * the vector xi contains the indices of the first k-1 nonzeros in column
      * k of L 
      */
+    // Note that the left-looking Cholesky factorization performs two elimination tree
+    // analyses. The first, done here is to preallocate the L matrix. The second, performed
+    // in the factorization itself gets the nonzero pattern of L(k,:) (To compute
+    // L(:,k) you need the prealocation first). Technically, one could store the ereach
+    // here and only perform it once; however such storage requires O(n^2) space; while
+    // analyzing the tree itself is essentially O(|A|). So we thought it simpler
+    // to just have 2 ereaches which in total is essentially O(2 |A|). 
     SPEX_CHECK( spex_Chol_ereach(&top, xi, A, k, parent, c));
     
     j = top; // Store where the first k-1 nonzeros end
