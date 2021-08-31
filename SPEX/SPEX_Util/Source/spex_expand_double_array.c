@@ -45,9 +45,10 @@ SPEX_info spex_expand_double_array
     int r1, r2 = 1;
     bool nz_found = false;
     SPEX_info info ;
-    // Double precision accurate to about 2e-16. We multiply by 10e17 to convert
-    // (overestimate to be safe)
-    double expon = pow(10, 17);
+    // Double precision accurate to about 2e-16. We multiply by 10e16 to convert
+    // which is a slight overestimate to be safe but preserves the 16 digits of
+    // precision
+    double expon = pow(10, 16);
     // Quad precision in case input is huge
     SPEX_matrix* x3 = NULL;
     mpz_t gcd, one; SPEX_MPZ_SET_NULL(gcd); SPEX_MPZ_SET_NULL(one);
@@ -62,7 +63,7 @@ SPEX_info spex_expand_double_array
     SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPFR, n, 1, n,
         false, true, option));
 
-    SPEX_CHECK(SPEX_mpq_set_d(scale, expon));           // scale = 10^17
+    SPEX_CHECK(SPEX_mpq_set_d(scale, expon));           // scale = 10^16
     for (i = 0; i < n; i++)
     {
         // Set x3[i] = x[i]
