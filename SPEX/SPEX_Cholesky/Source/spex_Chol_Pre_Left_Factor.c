@@ -16,7 +16,6 @@
  * It allocates the memory for the L matrix and determines the full nonzero
  * pattern of L
  * 
- * TODO: Importantly, .....  permuted. DONE (almost)
  * Importantly, this function assumes that A has already been permuted.
  * 
  * Input arguments of the function:
@@ -28,8 +27,6 @@
  *              nonzeros of the kth column of L for the triangular solve.
  *
  * A:           The user's permuted input matrix
- *
- * parent:      //TOASK why are we sending this individually when it is S->parent
  *
  * S:            Symbolic analysis struct for Cholesky factorization. 
  *               On input it contains information that is not used in this 
@@ -45,11 +42,12 @@ SPEX_info spex_Chol_Pre_Left_Factor
     SPEX_matrix** L_handle,       // On output: partial L matrix 
                                   // On input: undefined
     // Input
-    int64_t* xi,                  // Workspace nonzero pattern vector //TOASK output?
+    int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix* A,         // Input Matrix
-    const int64_t* parent,        // Elimination tree
     const SPEX_Chol_analysis* S,  // Symbolic analysis struct containing the
-                                  // number of nonzeros in L.
+                                  // number of nonzeros in L, the elimination
+                                  // tree, the row/coluimn permutation and its
+                                  // inverse
     int64_t* c                    // Column pointers
 )
 {
@@ -57,7 +55,7 @@ SPEX_info spex_Chol_Pre_Left_Factor
     SPEX_info info;
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
-    if (!L_handle || !xi || !parent || !S || !c)
+    if (!L_handle || !xi || !(S->parent) || !S || !c)
         return SPEX_INCORRECT_INPUT;
     
     int64_t  top, k, j, jnew, n = A->n;
@@ -83,15 +81,7 @@ SPEX_info spex_Chol_Pre_Left_Factor
     for (k = 1; k < n; k++)
     {
         // Obtain nonzero pattern in xi[top..n]
-// TODO: Copy this comment inside the left-looking Cholesky ereach. DONE? (copied into left triangular solve)
-// Note that the left-looking Cholesky factorization performs two elimination tree
-// analyses. The first, done here is to preallocate the L matrix. The second, performed
-// in the factorization itself gets the nonzero pattern of L(k,:) (To compute
-// L(:,k) you need the prealocation first). Technically, one could store the ereach
-// here and only perform it once; however such storage requires O(n^2) space; while
-// analyzing the tree itself is essentially O(|A|). So we thought it simpler
-// to just have 2 ereaches which in total is essentially O(2 |A|).
-        SPEX_CHECK(spex_Chol_ereach(&top, xi, A, k, parent, c));
+        SPEX_CHECK(spex_Chol_ereach(&top, xi, A, k, S->parent, c));
      
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x

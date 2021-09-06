@@ -36,6 +36,8 @@
 // Routines to compute and postorder the etree
 //------------------------------------------------------------------------------
 
+//TODO fix 80 DONE
+
 /* Purpose: Compute the elimination tree of A */
 SPEX_info spex_Chol_etree 
 (
@@ -80,10 +82,12 @@ SPEX_info spex_Chol_leaf
     const int64_t i,        // Index (subtree i)
     const int64_t j,        // Index (node j)
     const int64_t* first,   // first[j] is the first descendant of node j
-    int64_t* maxfirst,      // maxfirst[j] is the maximum first descendant of node j
+    int64_t* maxfirst,      // maxfirst[j] is the maximum first descendant of
+                            // node j
     int64_t* prevleaf,      // prevleaf[i] is the previous leaf of ith subtree 
     int64_t* ancestor,      // ancestor[i] is the ancestor of ith subtree
-    int64_t* jleaf          // indicates whether j is the first leaf (value of 1) or not (value of 2) //output
+    int64_t* jleaf          // indicates whether j is the first leaf (value of
+                            // 1) or not (value of 2)
 );
 
 /* Purpose: Obtain the column counts of an SPD matrix for Cholesky factorization
@@ -117,7 +121,8 @@ SPEX_info spex_Chol_ereach
     // Output
     int64_t* top_handle,    // On output: starting point of nonzero pattern
                             // On input: undefined
-    int64_t* xi,            // On output: contains the nonzero pattern in xi[top..n-1] 
+    int64_t* xi,            // On output: contains the nonzero pattern in
+                            // xi[top..n-1] 
                             // On input: undefined
     // Input
     const SPEX_matrix* A,   // Matrix to be analyzed
@@ -139,13 +144,14 @@ SPEX_info spex_Chol_ereach
 SPEX_info spex_Chol_Up_Factor      
 (
     // Output
-    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input
+    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct that contains elimination tree of A, column pointers of L, 
-                                //exact number of nonzeros of L and permutation used
+    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+                               // elimination tree of A, the column pointers of
+                               // L, and the exact number of nonzeros of L.
     // Input
     const SPEX_matrix* A,      // Matrix to be factored   
-    const SPEX_options* option //command options
+    const SPEX_options* option // command options
 );
 
 /* Purpose: Perform the left-looking Cholesky factorization
@@ -153,18 +159,19 @@ SPEX_info spex_Chol_Up_Factor
 SPEX_info spex_Chol_Left_Factor      
 (
     // Output
-    SPEX_matrix** L_handle,     // Lower triangular matrix. NULL on input
+    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct that contains elimination tree of A, column pointers of L, 
-                                //exact number of nonzeros of L and permutation used
+    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+                               // elimination tree of A, the column pointers of
+                               // L, and the exact number of nonzeros of L.
     // Input
     const SPEX_matrix* A,      // Matrix to be factored   
-    const SPEX_options* option //command options
+    const SPEX_options* option // command options
 );
 
 /* Purpose: This function performs a symbolic left-looking factorization.
- * On input, A is the matrix to be factored, parent contains the elimination tree
- * and S contains the row/column permutations and number of nonzeros in L
+ * On input, A is the matrix to be factored, parent contains the elimination
+ * tree and S contains the row/column permutations and number of nonzeros in L
  * On output, L_handle is allocated to contain the nonzero pattern of L and 
  * memory for the values.
  */
@@ -176,66 +183,75 @@ SPEX_info spex_Chol_Pre_Left_Factor
     // Input
     int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix* A,         // Input Matrix
-    const int64_t* parent,        // Elimination tree
     const SPEX_Chol_analysis* S,  // Symbolic analysis struct containing the
-                                  // number of nonzeros in L, and the
-                                  // row/coluimn permutation and its inverse  
+                                  // number of nonzeros in L, the elimination
+                                  // tree, the row/coluimn permutation and its
+                                  // inverse
     int64_t* c                    // Column pointers
 );
 
-/* Purpose: This function performs the symmetric sparse REF triangular solve. i.e., 
- * (LD) x = A(:,k). 
+/* Purpose: This function performs the symmetric sparse REF triangular solve.
+ * i.e.,(LD) x = A(:,k). 
  */
 SPEX_info spex_Left_Chol_triangular_solve
 (
     //Output
-    int64_t* top_output,        // On output: the beginning of nonzero pattern
-                                // The nonzero pattern is contained in xi[top_output...n-1]
-                                // On input: undefined
-    SPEX_matrix* x,             // On output: solution of system ==> kth column of L and U
-    int64_t* xi,                // On output: nonzero pattern vector
+    int64_t* top_output,     // On output: the beginning of nonzero pattern of
+                             // L(:,k). The nonzero pattern is contained in
+                             // xi[top_output...n-1]
+                             // On input: undefined
+    SPEX_matrix* x,          // On output: Solution of LD x = A(:,k) ==> kth row
+                             // of L but really, the ONLY valid values of x are
+                             // those in x[xi] since x is a working vector its
+                             // other positions are jumbled.
+    int64_t* xi,             // On output: Nonzero pattern vector
     // Input
-    const SPEX_matrix* L,       // Partial L matrix
-    const SPEX_matrix* A,       // Input matrix
-    const int64_t k,            // Iteration of algorithm
-    const SPEX_matrix* rhos,    // Sequence of pivots
-    int64_t* h,                 // History vector
-    const int64_t* parent,      // Elimination tree
-    int64_t* c                  // Column counts of A
+    const SPEX_matrix* L,    // Partial L matrix
+    const SPEX_matrix* A,    // Input matrix
+    const int64_t k,         // Iteration of algorithm
+    const SPEX_matrix* rhos, // Partial sequence of pivots
+    int64_t* h,              // History vector
+    const int64_t* parent,   // Elimination tree
+    int64_t* c               // Column pointers of L but they don't point to the 
+                             // top position of each column of L. Instead they
+                             // point to the position on each column where the 
+                             // next value of L will be grabbed, since at
+                             // iteration k we need to grab the kth of L in
+                             // order to not recompute those values.
 );
 
-/* Purpose: This function performs the symmetric sparse REF triangular solve. for uplooking
- * Cholesky factorization. i.e., 
+/* Purpose: This function performs the symmetric sparse REF triangular solve.
+ * for uplooking Cholesky factorization. i.e., 
  * (LD) x = A(1:k-1,k). 
  * At the given iteration k it computes the k-th column of L' (k-th row of L)
  */
 SPEX_info spex_Up_Chol_triangular_solve 
 (
     //Output
-    int64_t* top_output,     // On output: the beginning of nonzero pattern
-                             // The nonzero pattern is contained in xi[top_output...n-1]
-                             // On input: undefined
-    int64_t* xi,             // On output: Nonzero pattern vector
-    SPEX_matrix* x,          // On output: solution of system ==> kth row of L
+    int64_t* top_output,               // On input NULL. On output contains the
+                                       // beginning of nonzero pattern
+                                       // The nonzero pattern is contained in 
+                                       // xi[top_output...n-1]
+    int64_t* xi,                       // Nonzero pattern vector
+    SPEX_matrix* x,                    // Solution of system ==> kth row of L
     // Input
-    const SPEX_matrix* L,    // Partial L matrix
-    const SPEX_matrix* A,    // Input matrix
-    const int64_t k,         // Iteration of algorithm
-    const int64_t* parent,   // Elimination tree
-    int64_t* c,              // Column pointers
-    const SPEX_matrix* rhos, // sequence of pivots
-    int64_t* h               // History vector
+    const SPEX_matrix* L,              // Partial L matrix
+    const SPEX_matrix* A,              // Input matrix
+    const int64_t k,                   // Iteration of algorithm
+    const int64_t* parent,             // Elimination tree
+    int64_t* c,                        // Column pointers
+    const SPEX_matrix* rhos,           // sequence of pivots
+    int64_t* h                         // History vector
 );
 
 
 /* Purpose: This function performs sparse REF forward substitution for Cholesky
  * factorization. 
- * On input, x contains the righ hand side vectors, L is the Cholesky factor of A
- * and rhos is the sequence of pivots used during factorization. 
+ * On input, x contains the righ hand side vectors, L is the Cholesky factor of
+ * A and rhos is the sequence of pivots used during factorization. 
  * On output, x contains the solution to LD x = x
  * Note that this function assumes that x is stored as a dense matrix
  */
-//TODO: const where appropiate
 SPEX_info spex_Chol_forward_sub
 (
     // Input/Output
@@ -252,7 +268,6 @@ SPEX_info spex_Chol_forward_sub
  * REF Cholesky factor of A.
  * On output, x is the solution to the linear system Ax = (det A)b.
  */
-//TODO: const where appropiate
 SPEX_info spex_Chol_backward_sub
 (
     // Input/Output

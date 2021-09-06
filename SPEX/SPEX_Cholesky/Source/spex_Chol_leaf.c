@@ -21,14 +21,17 @@ SPEX_info spex_Chol_leaf
     const int64_t i,        // Index (subtree i)
     const int64_t j,        // Index (node j)
     const int64_t* first,   // first[j] is the first descendant of node j
-    int64_t* maxfirst,      // maxfirst[j] is the maximum first descendant of node j
+    int64_t* maxfirst,      // maxfirst[j] is the maximum first descendant of
+                            // node j
     int64_t* prevleaf,      // prevleaf[i] is the previous leaf of ith subtree 
     int64_t* ancestor,      // ancestor[i] is the ancestor of ith subtree
-    int64_t* jleaf          // indicates whether j is the first leaf (value of 1) or not (value of 2) //output
+    int64_t* jleaf          // indicates whether j is the first leaf (value of
+                            // 1) or not (value of 2)
 )
 {
     // Check inputs
-    if (!first || !maxfirst || !prevleaf || !ancestor || !jleaf) return (SPEX_INCORRECT_INPUT) ;
+    if (!first || !maxfirst || !prevleaf || !ancestor || !jleaf) 
+        return (SPEX_INCORRECT_INPUT) ;
     
     *jleaf = 0 ;
     if (i <= j || first [j] <= maxfirst [i])

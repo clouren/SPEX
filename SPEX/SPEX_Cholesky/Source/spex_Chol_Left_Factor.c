@@ -9,12 +9,17 @@
 
 //------------------------------------------------------------------------------
 
-#define FREE_WORKSPACE              \
+#define SPEX_FREE_WORKSPACE         \
     SPEX_matrix_free(&x, NULL);     \
     SPEX_FREE(c);                   \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
     SPEX_FREE(post);                \
+
+# define SPEX_FREE_ALLOCATION        \
+    SPEX_FREE_WORKSPACE              \
+    SPEX_matrix_free(&L, NULL);      \
+    SPEX_matrix_free(&rhos, NULL);   \
 
 
 #include "spex_chol_internal.h"  
@@ -90,7 +95,7 @@ SPEX_info spex_Chol_Left_Factor
     SPEX_matrix *x = NULL ;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
+    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k, sgn;
     size_t size;
 
     // Post and c are used to compute the elimination tree
@@ -111,7 +116,7 @@ SPEX_info spex_Chol_Left_Factor
 
     if (!h || !xi)
     {
-        FREE_WORKSPACE;
+        SPEX_FREE_WORKSPACE;
         return SPEX_OUT_OF_MEMORY;
     }
     // initialize workspace history array
@@ -175,7 +180,7 @@ SPEX_info spex_Chol_Left_Factor
     
     if (!x || !rhos)
     {
-        FREE_WORKSPACE;
+        SPEX_FREE_WORKSPACE;
         return SPEX_OUT_OF_MEMORY;
     }
     
@@ -197,7 +202,7 @@ SPEX_info spex_Chol_Left_Factor
     // a more efficient method to allocate these values is done inside the 
     // factorization to reduce memory usage.
     
-    SPEX_CHECK(spex_Chol_Pre_Left_Factor(&L, xi, A, S->parent, S, c));
+    SPEX_CHECK(spex_Chol_Pre_Left_Factor(&L, xi, A, S, c));
         
     // Set the column pointers of L
     for (k = 0; k < n; k++)
@@ -221,14 +226,14 @@ SPEX_info spex_Chol_Left_Factor
 
         // Set the pivot element If this element is equal to zero, no pivot
         // element exists and the matrix is either not SPD or singular
-        if (mpz_sgn(x->x.mpz[k]) != 0)
+        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k]));
+        if (sgn != 0)
         {
             SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
         }
         else
         {
-            //same TODO: SPEX_NOTSPD DONE
-            FREE_WORKSPACE;
+            SPEX_FREE_WORKSPACE;
             return SPEX_NOTSPD;
         }
         //----------------------------------------------------------------------
@@ -247,7 +252,7 @@ SPEX_info spex_Chol_Left_Factor
                 SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
                 
                 // Place the x value of this nonzero in row jnew of L
-                SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew]));
+                SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew])); //try mpz_swap (might screw up the size thing) (valgrind should show increase in mallocs)
 
                 // Increment lnz
                 lnz += 1;
@@ -262,6 +267,6 @@ SPEX_info spex_Chol_Left_Factor
     //--------------------------------------------------------------------------
     (*L_handle) = L;
     (*rhos_handle) = rhos;
-    FREE_WORKSPACE;
+    SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }

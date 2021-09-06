@@ -9,12 +9,17 @@
 
 //------------------------------------------------------------------------------
 
-#define FREE_WORKSPACE              \
+#define SPEX_FREE_WORKSPACE         \
     SPEX_matrix_free(&x, NULL);     \
     SPEX_FREE(c);                   \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
     SPEX_FREE(post);                \
+
+# define SPEX_FREE_ALLOCATION        \
+    SPEX_FREE_WORKSPACE              \
+    SPEX_matrix_free(&L, NULL);      \
+    SPEX_matrix_free(&rhos, NULL);   \
 
 #include "spex_chol_internal.h"  
 
@@ -93,7 +98,7 @@ SPEX_info spex_Chol_Up_Factor
     SPEX_matrix *x = NULL ;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
+    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k, sgn;
     size_t size;
 
     // Post & c are arrays used for the construction of the elimination tree
@@ -113,7 +118,7 @@ SPEX_info spex_Chol_Up_Factor
 
     if (!h || !xi)
     {
-        FREE_WORKSPACE;
+        SPEX_FREE_WORKSPACE;
         return SPEX_OUT_OF_MEMORY;
     }
 
@@ -176,7 +181,7 @@ SPEX_info spex_Chol_Up_Factor
     
     if (!x || !rhos)
     {
-        FREE_WORKSPACE;
+        SPEX_FREE_WORKSPACE;
         return SPEX_OUT_OF_MEMORY;
     }
     
@@ -222,13 +227,14 @@ SPEX_info spex_Chol_Up_Factor
   
         // If x[k] is nonzero chose it as pivot. Otherwise, the matrix is 
         // not SPD (indeed, it may even be singular).
-        if (mpz_sgn(x->x.mpz[k]) != 0)
+        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k]));
+        if (sgn != 0)
         {
             SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
         }
         else
         {
-            FREE_WORKSPACE;
+            SPEX_FREE_WORKSPACE;
             // TODO: We need to create the error SPEX_NOTSPD DONE
             // When this is done we also need to change SPEX_Backslash.c 
             // so that it correctly classifies what happens.
@@ -276,6 +282,6 @@ SPEX_info spex_Chol_Up_Factor
     //--------------------------------------------------------------------------
     (*L_handle) = L;
     (*rhos_handle) = rhos;
-    FREE_WORKSPACE;
+    SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }

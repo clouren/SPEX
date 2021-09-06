@@ -11,16 +11,17 @@
 
 #include "spex_chol_internal.h"
 
-/* Purpose: This function computes the reach of the kth row of A onto the graph of L using the 
-   elimination tree. It finds the nonzero pattern of row k of L and uses the upper triangular 
-   part of A(:,k) */
+/* Purpose: This function computes the reach of the kth row of A onto the graph
+ * of L using the elimination tree. It finds the nonzero pattern of row k of L
+ * and uses the upper triangular part of A(:,k) */
    
 SPEX_info spex_Chol_ereach 
 (
     // Output
     int64_t* top_handle,    // On output: starting point of nonzero pattern
                             // On input: undefined
-    int64_t* xi,            // On output: contains the nonzero pattern in xi[top..n-1] 
+    int64_t* xi,            // On output: contains the nonzero pattern in
+                            // xi[top..n-1] 
                             // On input: undefined
     // Input
     const SPEX_matrix* A,   // Matrix to be analyzed
@@ -30,7 +31,6 @@ SPEX_info spex_Chol_ereach
 )
 {
     // Check inputs
-    //SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     ASSERT(A->n >= 0) ;
     ASSERT(A->kind == SPEX_CSC) ;
     ASSERT(A->type == SPEX_MPZ) ;

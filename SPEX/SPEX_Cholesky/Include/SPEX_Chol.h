@@ -7,7 +7,7 @@
 // Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-//TODO propagate this to every single file :D DOUBLECHECK
+//TODO propagate this to every single file
 
 //------------------------------------------------------------------------------
 
@@ -184,7 +184,7 @@
 typedef struct SPEX_Chol_analysis
 {
     int64_t* pinv;      // Inverse row/column permutation
-    int64_t* p ;        // Row/column permutation, representing //TODO propagate q->p DONE
+    int64_t* p ;        // Row/column permutation, representing
                         // the permutation matrix P. The matrix P*A*P' is factorized.
                         // If the kth column of L, and P*A*P' is column j of the
                         // unpermuted matrix A, then j = S->p [k].
@@ -215,7 +215,7 @@ void SPEX_Chol_analysis_free
 SPEX_info SPEX_Chol_backslash
 (
     // Output
-    SPEX_matrix** X_handle,       // On input: undefined. 
+    SPEX_matrix** x_handle,       // On input: undefined. 
                                   // On output: final solution vector
     // Input
     SPEX_type type,               // Type of output desired
@@ -249,25 +249,22 @@ SPEX_info SPEX_Chol_preorder
 SPEX_info SPEX_Chol_permute_A
 (
     //Output
-    SPEX_matrix** PAP_handle,  // On input: undefined // TODO Propagate A2 -> PAP DONE TOASK PAP= PAP' <- looks weird and kind of confusing
+    SPEX_matrix** PAP_handle,  // On input: undefined
                                // On output: contains the permuted matrix
     //Input
-    SPEX_matrix* A,            // Input matrix
+    const SPEX_matrix* A,      // Input matrix
     SPEX_Chol_analysis* S      // Symbolic analysis struct that contains 
                                // column and inverse row permutations
 );
 
 /* Purpose: Compute the REF Cholesky factorization A = LDL'
  * only appropriate if A is SPD. 
- * On input A contains the user's matrix, left is a bool
- * where true indicates a left-looking factorization and false
- * indicates the up-looking factorization
+ * On input A contains the user's matrix, option->algo indicates which
+ * factorization algorithm is used; up-looking (default) or left-looking
  * On output, L contains the REF Cholesky factor of A, rhos contains
  * the REF Cholesky pivot elements and S contains the elimination tree
  * lower triangular matrix and rhos contains the pivots' values
  * used in the factorization 
- *
- * TODO: Write that left/up is based on SPEX_options once done
  */
 SPEX_info SPEX_Chol_Factor     
 (
@@ -276,24 +273,19 @@ SPEX_info SPEX_Chol_Factor
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
     SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, column pointers of L, 
-                               // exact number of nonzeros of L and permutation used
+                               // exact number of nonzeros of L and permutation
+                               // used.
     // Input
     const SPEX_matrix* A,      // Matrix to be factored
-    
-    // TODO: add an option of option->CHOL_TYPE = CHOL_LEFT or CHOL_UP
-    // Also could add option->LU_TYPE = LU_LEFT (in future LU_RIGHT)
-    // Default should be CHOL_UP
-    // TODO Define CHOL_LEFT, CHOL_UP, LU_LEFT, and expand options in SPEX_UTIL
-    //bool left,                 // Set to true if performing a left-looking factorization; 
-                               // otherwise perform an up-looking factorization.
     const SPEX_options* option // Command options
-                               // Notably, option->chol_type indicates whether
-                               // CHOL_UP (default) or CHOL_LEFT is used.
+                               // Notably, option->algo indicates whether up 
+                               // looking factorization SPEX_CHOL_UP (default)
+                               // or left looking factorization SPEX_CHOL_LEFT
+                               // is used.
 );
 
 /* Purpose: After computing the REF Cholesky factorization A = LDL',
  * this function solves the associated linear system LDL' x = b
- * TODO On input blah on output BLAH DONE
  * On input x is undefined, A contains the user's matrix, b contains 
  * the user's right hand side, rhos contains the pivots' values used 
  * in the factorization, L contains the REF Cholesky factor of A, 
@@ -305,17 +297,20 @@ SPEX_info SPEX_Chol_Solve
 (
     // Output
     SPEX_matrix** x_handle,           // On input: undefined.
-                                      // On output: Rational solution (SPEX_MPQ) to the system. 
+                                      // On output: Rational solution (SPEX_MPQ)
+                                      // to the system. 
     // Input
-    const SPEX_matrix* A,             // Input matrix (permuted)
-    // TODO: A_orig is only used for check, the check can be seperated from this function.
+    const SPEX_matrix* PAP,           // Input matrix (permuted)
+    const SPEX_matrix* A,             // Input matrix (unpermuted)
+        // TODO: A_orig is only used for check, the check can be seperated from this function.
     // So remove A_orig and put it seperately
-    const SPEX_matrix* A_orig,        // Input matrix (unpermuted)
     const SPEX_matrix* b,             // Right hand side vector
     const SPEX_matrix* rhos,          // Pivots' values 
     const SPEX_matrix* L,             // Lower triangular matrix
-    const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains elimination tree of A,  
-                                      // column pointers of L, exact number of nonzeros of L and permutation used
+    const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains
+                                      // elimination tree of A,  
+                                      // column pointers of L, exact number of
+                                      // nonzeros of L and permutation used
     const SPEX_options* option        // command options
 );
 

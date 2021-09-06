@@ -9,6 +9,10 @@
 
 //------------------------------------------------------------------------------
 
+# define SPEX_FREE_ALLOCATION      \
+    SPEX_matrix_free(&L, NULL);    \
+    SPEX_matrix_free(&rhos, NULL); \
+
 #include "spex_chol_internal.h"  
 
 /* Purpose: This function performs the integer preserving Cholesky factorization.
@@ -67,7 +71,8 @@ SPEX_info SPEX_Chol_Factor
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
-    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
+    ASSERT(A->type == SPEX_MPZ);
+    ASSERT(A->kind == SPEX_CSC);
     if (!L_handle || !S || !rhos_handle || !option )
     {
         return SPEX_INCORRECT_INPUT;
@@ -92,25 +97,9 @@ SPEX_info SPEX_Chol_Factor
     // Call factorization
     //--------------------------------------------------------------------------
 
-    // TODO Put this in option DONE
-    // option->CHOL_TYPE = CHOL_LEFT or CHOL_UP
-    // While doing this, it wouldnt hurt to add option->LU_TYPE and option->QR_TYPE
-    // option->LU_TYPE = LU_LEFT (yes)
-    // option->QR_TYPE = QR_DEFAULT (optional)
-    // Default option->CHOL_TYPE = CHOL_UP
-    // #define SPEX_DEFAULT_CHOL_TYPE SPEX_CHOL_UP or CHOL_UP (mimick the other options)
-    /*if (option->chol_type==SPEX_CHOL_UP)
+    switch(option->algo) 
     {
-        SPEX_CHECK(spex_Chol_Up_Factor(&L, &rhos, S, A, option));
-    }
-    else
-    {
-        SPEX_CHECK(spex_Chol_Left_Factor(&L, &rhos, S, A, option));
-    } *///TODO switch DONE
-    
-    /**/
-    switch(option->chol_type) 
-    {
+        case SPEX_ALGORITHM_DEFAULT:
         case SPEX_CHOL_UP:
             SPEX_CHECK(spex_Chol_Up_Factor(&L, &rhos, S, A, option));
             break;
@@ -118,11 +107,7 @@ SPEX_info SPEX_Chol_Factor
             SPEX_CHECK(spex_Chol_Left_Factor(&L, &rhos, S, A, option));
             break;
         default:
-            //This should not happen... 
-            //TOASK what kind of error goes here?
-            //should we just not have a default? it can't be empty
-            printf("idk\n");
-
+            return SPEX_INCORRECT_ALGORITHM; //TODO ADD DONE
     }
     /**/
     

@@ -9,6 +9,7 @@
 
 //------------------------------------------------------------------------------
 
+//TODO (maybe) change name of folder from SPEX_Cholesky to Cholesky
 
 /* This example shows how to use SPEX Chol with a given input matrix and a double
    output. The input is read from a file */
@@ -78,7 +79,7 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-
+    option->order = SPEX_AMD; //AMD is default for Cholesky //TODO maybe change Util?
     //--------------------------------------------------------------------------
     // Allocate memory, read in A and b
     //--------------------------------------------------------------------------
@@ -122,8 +123,8 @@ int main (int argc, char **argv)
     // SPEX Cholesky has an optional check, to enable it, one can set the following
     // parameter to be true.
     option->check = true;
-    //option->print_level = 2;
-   
+    option->print_level = 3;
+    
     // Solve the system and give MPQ solution
     DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
     
