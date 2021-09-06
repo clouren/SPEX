@@ -175,7 +175,7 @@ SPEX_info SPEX_Backslash
     // Output
     SPEX_matrix **X_handle,       // Final solution vector
     // Input
-    SPEX_type type,               // Type of output desired
+    const SPEX_type type,         // Type of output desired
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix *A,         // Input matrix
     const SPEX_matrix *b,         // Right hand side vector(s)
