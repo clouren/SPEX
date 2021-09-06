@@ -419,8 +419,10 @@ typedef enum
 
 typedef struct
 {
-    SPEX_factorization_type kind;         // LU, Cholesky, QR factorization or
+    SPEX_factorization_kind kind;         // LU, Cholesky, QR factorization or
                                           // analysis
+
+    // This is only available for factorization
     mpq_t scale_for_A;                    // the scale of the target matrix
 
     //--------------------------------------------------------------------------
@@ -484,6 +486,58 @@ typedef struct
     int64_t* cp;                         // column pointers of L for Cholesky
                                          // factorization.
 } SPEX_factorization;
+
+// SPEX_LU_analysis_free frees the SPEX_LU_analysis object.
+SPEX_info SPEX_factorization_free        
+(
+    SPEX_factorization **F, // Factorization to be deleted
+    const SPEX_options *option
+) ;
+
+
+// SPEX_analyze performs the symbolic ordering and analysis for specified
+// factorization kind. The pre-ordering method is specified in the option.
+// For the pre-ordering for LU factorization, there are three options:
+// no ordering, COLAMD, and AMD.
+// TODO? For the pre-ordering for Cholesky factorization, 
+SPEX_info SPEX_analyze
+(
+    SPEX_factorization **S_handle, // symbolic analysis
+    const SPEX_matrix *A, // Input matrix
+    const SPEX_factorization_kind kind, // LU, Cholesky or QR analysis
+    const SPEX_options *option  // Control parameters
+) ;
+
+// SPEX_factorize performs SPEX factorization based on the available symbolic
+// analysis S->kind, which should be either LU, Choleksy or QR.
+SPEX_info SPEX_factorize
+(
+    SPEX_factorization **F_handle, // The resulted factorization as specified
+    const SPEX_matrix *A, // Input matrix
+    const SPEX_factorization *S, // symbolic analysis
+    const SPEX_options *option  // Control parameters
+) ;
+
+// SPEX_solve solves the linear system Ax=b with available factorization of A.
+SPEX_info SPEX_solve
+(
+    SPEX_matrix **x_handle, // the solution to the system
+    const SPEX_matrix *b,   // the right-hand-side vector
+    const SPEX_factorization *F, // factorization of A
+    const SPEX_options *option  // Control parameters
+) ;
+
+
+/* TODO
+// SPEX_solve solves the linear system Ax=b with available factorization of A.
+SPEX_info SPEX_solve
+(
+    SPEX_matrix **x, // input as the right-hand-side vector, and output with 
+                     // the solution to the system
+    const SPEX_factorization *F, // factorization of A
+    const SPEX_options *option  // Control parameters
+) ;
+*/
 
 //------------------------------------------------------------------------------
 // SPEX_LU_analysis: symbolic pre-analysis
