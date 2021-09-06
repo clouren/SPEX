@@ -47,7 +47,7 @@ SPEX_info spex_expand_double_array
     SPEX_info info ;
     // Double precision accurate to about 2e-16. We multiply by 10e17 to convert
     // (overestimate to be safe)
-    double expon = pow(10, 17);
+    double expon = pow(10, 16);
     // Quad precision in case input is huge
     SPEX_matrix* x3 = NULL;
     mpz_t gcd, one; SPEX_MPZ_SET_NULL(gcd); SPEX_MPZ_SET_NULL(one);

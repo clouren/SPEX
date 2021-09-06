@@ -117,15 +117,18 @@
 
 typedef enum
 {
-    SPEX_OK = 0,                // all is well
-    SPEX_OUT_OF_MEMORY = -1,    // out of memory
-    SPEX_SINGULAR = -2,         // the input matrix A is singular
-    SPEX_INCORRECT_INPUT = -3,  // one or more input arguments are incorrect
-    SPEX_INCORRECT = -4,        // The solution is incorrect
-    SPEX_UNSYMMETRIC = -5,      // The input matrix is unsymmetric (for Cholesky)
-    SPEX_PANIC = -6,            // SPEX used without proper initialization
-    SPEX_NOTSPD = -7            // The input matrix is not SPD (for Cholesky)
-} //TOASK reorder to have Panic be the last?
+    SPEX_OK = 0,                  // all is well
+    SPEX_OUT_OF_MEMORY = -1,      // out of memory
+    SPEX_SINGULAR = -2,           // the input matrix A is singular
+    SPEX_INCORRECT_INPUT = -3,    // one or more input arguments are incorrect
+    SPEX_INCORRECT = -4,          // The solution is incorrect
+    SPEX_UNSYMMETRIC = -5,        // The input matrix is unsymmetric
+    SPEX_NOTSPD = -6,             // The input matrix is not SPD
+                                  // UNSYMMETRIC and NOTSPD are used for Cholesky
+    SPEX_INCORRECT_ALGORITHM = -7,// The algorithm is not compatible with 
+                                  // the factorization
+    SPEX_PANIC = -8               // SPEX used without proper initialization
+}
 SPEX_info ;
 
 //------------------------------------------------------------------------------
@@ -171,12 +174,13 @@ SPEX_col_order ;
 
 typedef enum
 {
-    SPEX_LU_LEFT = 0,    // Left looking LU factorization (Default for LU)
-    SPEX_CHOL_LEFT = 1,  // Left looking Cholesky factorization
-    SPEX_CHOL_UP = 2,    // Up looking Cholesky factorization (Default for Chol)
-    SPEX_QR_DEFAULT = 3  // Default factorization for QR
+    SPEX_ALGORITHM_DEFAULT = 0,    // Defaults: Left for LU, Up for Chol, Gram for QR looking LU factorization //TODO maybe rename default...
+    SPEX_LU_LEFT = 1,    // Left looking LU factorization
+    SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
+    SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
+    SPEX_QR_GRAM = 4     // Default factorization for QR
 }
-SPEX_fact_type ; //TODO rename!!!
+SPEX_factorization_algorithm ; //TODO rename SPEX_factorization_algorithm and Propagate
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -200,18 +204,12 @@ typedef struct SPEX_options
     bool check ;           // Set true if the solution to the system should be
                            // checked.  Intended for debugging only; SPEX is
                            // guaranteed to return the exact solution.
-    SPEX_fact_type chol_type ;   // parameter which tells the function
-                           // whether it is performing a left-looking or
-                           // up-looking factorization in case of Cholesky
-                           // 1: left looking, 2: up looking
-    SPEX_fact_type lu_type ; // parameter which tells the function
-                           // what type of factorization it is performing 
-                           //in case of LU
-                           // 0: left looking
-    SPEX_fact_type qr_type ; // parameter which tells the function
-                           // what type of factorization it is performing 
-                           //in case of QR
-                           // 3: default //TODO fix comments when name is fixed
+    SPEX_factorization_algorithm algo ; // parameter which tells the function
+                           // whether it is performing a left-looking (2) or
+                           // up-looking (3) factorization in case of Cholesky
+                           // left looking LU (1) or if it is doing Gram-Schmidt
+                           // (4). The Default (0) is up looking for Cholesky, 
+                           // left looking for LU and Gram-Schmidt for QR
 } SPEX_options ;
 
 // Purpose: Create SPEX_options object with default parameters
