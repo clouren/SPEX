@@ -419,7 +419,7 @@ typedef enum
 
 typedef struct
 {
-    SPEX_factorization_kind kind;         // LU, Cholesky, QR factorization or
+    SPEX_factorization_type kind;         // LU, Cholesky, QR factorization or
                                           // analysis
 
     // This is only available for factorization
@@ -504,7 +504,7 @@ SPEX_info SPEX_analyze
 (
     SPEX_factorization **S_handle, // symbolic analysis
     const SPEX_matrix *A, // Input matrix
-    const SPEX_factorization_kind kind, // LU, Cholesky or QR analysis
+    const SPEX_factorization_type kind, // LU, Cholesky or QR analysis
     const SPEX_options *option  // Control parameters
 ) ;
 

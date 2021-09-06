@@ -67,21 +67,16 @@
  *              output.
  */
 
+
+#define SPEX_FREE_ALLOCATION            \
+    SPEX_matrix_free (&x, NULL) ;
+
 #include "spex_left_lu_internal.h"
 
 // Sorting function
 static inline int compare (const void * a, const void * b)
 {
-    int64_t delta = ( *(int64_t*)a - *(int64_t*)b ) ;
-    //return value for delta==0 won't matter since it's not happening here
-    if (delta < 0)
-    {
-        return (-1) ;
-    }
-    else// if (delta >= 0)
-    {
-        return (1) ;
-    }
+    return ( *(int64_t*)a - *(int64_t*)b ) ;
 }
 
 SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangular solve

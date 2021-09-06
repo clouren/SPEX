@@ -31,15 +31,15 @@
  *              NULL on input, default values are used.
  */
 
-# define SPEX_FREE_WORK             \
+# define SPEX_FREE_WORKSPACE        \
     SPEX_matrix_free(&L, NULL);     \
     SPEX_matrix_free(&U, NULL);     \
     SPEX_FREE(pinv);                \
     SPEX_matrix_free(&rhos, NULL);  \
     SPEX_LU_analysis_free (&S, NULL);
 
-# define SPEX_FREE_ALL              \
-    SPEX_FREE_WORK                  \
+# define SPEX_FREE_ALLOCATION       \
+    SPEX_FREE_WORKSPACE             \
     SPEX_matrix_free(&x, NULL);     \
 
 #include "spex_left_lu_internal.h"
@@ -130,7 +130,7 @@ SPEX_info SPEX_Left_LU_backslash
     // Free memory
     //--------------------------------------------------------------------------
 
-    SPEX_FREE_WORK ;
+    SPEX_FREE_WORKSPACE ;
     return (SPEX_OK) ;
 }
 

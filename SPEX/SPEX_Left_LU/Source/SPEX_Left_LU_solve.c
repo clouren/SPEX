@@ -39,13 +39,13 @@
  * option:   command options
  */
 
-#define SPEX_FREE_WORK                  \
+#define SPEX_FREE_WORKSPACE             \
     SPEX_matrix_free (&b2, NULL) ;      \
     SPEX_matrix_free (&x2, NULL) ;      \
     SPEX_MPQ_CLEAR (scale) ;
 
-#define SPEX_FREE_ALL                   \
-    SPEX_FREE_WORK                      \
+#define SPEX_FREE_ALLOCATION            \
+    SPEX_FREE_WORKSPACE                 \
     SPEX_matrix_free (&x, NULL) ;
 
 #include "spex_left_lu_internal.h"
@@ -169,7 +169,7 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     // free workspace and return result
     //--------------------------------------------------------------------------
 
-    SPEX_FREE_WORK ;
+    SPEX_FREE_WORKSPACE ;
     (*x_handle) = x ;
     return (SPEX_OK) ;
 }

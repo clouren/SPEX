@@ -12,7 +12,7 @@
  * That is, x = Q*x.
  */
 
-#define SPEX_FREE_ALL \
+#define SPEX_FREE_ALLOCATION \
     SPEX_matrix_free (&x, NULL) ;
 
 #include "spex_left_lu_internal.h"

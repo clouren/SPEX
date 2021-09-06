@@ -23,14 +23,14 @@
  *  option: input only, not modified
  */
 
-#define SPEX_FREE_WORK              \
+#define SPEX_FREE_WORKSPACE         \
     SPEX_matrix_free(&x, NULL);     \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
     SPEX_FREE(pivs);                \
     SPEX_FREE(row_perm);            \
 
-#define SPEX_FREE_ALL               \
+#define SPEX_FREE_ALLOCATION        \
     SPEX_FREE_WORK                  \
     SPEX_matrix_free(&L, NULL);     \
     SPEX_matrix_free(&U, NULL);     \
@@ -282,7 +282,7 @@ SPEX_info SPEX_Left_LU_factorize
     //--------------------------------------------------------------------------
 
     // free everything, but keep L, U, rhos, and pinv
-    SPEX_FREE_WORK ;
+    SPEX_FREE_WORKSPACE ;
 
     // This cannot fail since the size of L and U are shrinking.
     // Collapse L

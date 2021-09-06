@@ -19,6 +19,9 @@
  * by the solution x.
  */
 
+# define SPEX_FREE_ALLOCATION     \
+    SPEX_matrix_free(&bx, NULL);   \
+
 #include "spex_left_lu_internal.h"
 
 SPEX_info spex_left_lu_back_sub  // performs sparse REF backward substitution
