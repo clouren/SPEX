@@ -46,7 +46,7 @@ SPEX_info SPEX_Backslash
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix *A,         // Input matrix
     const SPEX_matrix *b,         // Right hand side vector(s)
-    const SPEX_options* option    // Command options
+    SPEX_options* option    // Command options
 )
 {
     SPEX_info info;
