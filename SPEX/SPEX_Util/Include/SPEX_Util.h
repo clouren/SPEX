@@ -190,9 +190,6 @@ typedef struct SPEX_options
 // To free it, simply use SPEX_FREE (*option).
 SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
-// check if SPEX_initialize* has been called
-bool spex_initialized ( void ) ;        // true if called, false if not
-void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix

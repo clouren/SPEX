@@ -325,6 +325,10 @@ void spex_gmp_failure (int status) ;
 //                           Internal Functions
 // ============================================================================
 
+// check if SPEX_initialize* has been called
+bool spex_initialized ( void ) ;        // true if called, false if not
+void spex_set_initialized (bool s) ;    // set global initialzed flag to s
+
 
 //------------------------------------------------------------------------------
 // mpfr_vector: a 1D mpfr_t array
