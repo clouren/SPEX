@@ -3,7 +3,7 @@
 // data type.
 //------------------------------------------------------------------------------
 
-// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Util: (c) 2019-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -32,6 +32,7 @@ SPEX_info SPEX_factorization_free
         SPEX_matrix_free(&((*F)->L), option);
         SPEX_matrix_free(&((*F)->U), option);
         SPEX_matrix_free(&((*F)->rhos), option);
+        SPEX_FREE((*F)->parent);
 
         SPEX_matrix_free(&((*F)->Q), option);
         SPEX_matrix_free(&((*F)->R), option);
@@ -41,8 +42,6 @@ SPEX_info SPEX_factorization_free
         SPEX_FREE((*F)->Q_perm);
         SPEX_FREE((*F)->Qinv_perm);
 
-        SPEX_FREE((*F)->parent);
-        SPEX_FREE((*F)->cp);
         SPEX_FREE (*F) ;
     }
 

@@ -32,11 +32,8 @@
  */
 
 # define SPEX_FREE_WORKSPACE        \
-    SPEX_matrix_free(&L, NULL);     \
-    SPEX_matrix_free(&U, NULL);     \
-    SPEX_FREE(pinv);                \
-    SPEX_matrix_free(&rhos, NULL);  \
-    SPEX_LU_analysis_free (&S, NULL);
+    SPEX_factorization_free(&F, option);     \
+    SPEX_symbolic_analysis_free (&S, option);
 
 # define SPEX_FREE_ALLOCATION       \
     SPEX_FREE_WORKSPACE             \
@@ -49,8 +46,8 @@ SPEX_info SPEX_Left_LU_backslash
     // Output
     SPEX_matrix **X_handle,       // Final solution vector
     // Input
-    SPEX_type type,               // Type of output desired
-                                  // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    SPEX_type type,               // Type of output desired. Must be SPEX_MPZ,
+                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix *A,         // Input matrix
     const SPEX_matrix *b,         // Right hand side vector(s)
     const SPEX_options* option    // Command options
@@ -78,43 +75,34 @@ SPEX_info SPEX_Left_LU_backslash
     SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ) ;
     SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;
 
-    SPEX_matrix *L = NULL ;
-    SPEX_matrix *U = NULL ;
+    SPEX_symbolic_analysis *S = NULL;
+    SPEX_factorization *F = NULL ;
     SPEX_matrix *x = NULL;
-    int64_t *pinv = NULL ;
-    SPEX_matrix *rhos = NULL ;
-    SPEX_LU_analysis *S = NULL;
 
     //--------------------------------------------------------------------------
     // Symbolic Analysis
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_LU_analyze(&S, A, option));
+    SPEX_CHECK(spex_lu_analyze(&S, A, option));
 
     //--------------------------------------------------------------------------
     // LU Factorization
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_Left_LU_factorize(&L, &U, &rhos, &pinv, A, S, option));
+    SPEX_CHECK(spex_left_lu_factorize(&F, A, S, option));
 
     //--------------------------------------------------------------------------
     // Solve
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK (SPEX_Left_LU_solve (&x, b, A,
-        (const SPEX_matrix *) L,
-        (const SPEX_matrix *) U,
-        (const SPEX_matrix *) rhos,
-        S,
-        (const int64_t *) pinv,
-        option)) ;
+    SPEX_CHECK (spex_left_lu_solve (&x, b, F, option)) ;
 
     //--------------------------------------------------------------------------
-    // Now, x contains the exact solution of the linear system in mpq_t
+    // Now, x contains the exact solution of the linear system in mpz_t
     // precision set the output.
     //--------------------------------------------------------------------------
 
-    if (type == SPEX_MPQ)
+    if (type == SPEX_MPZ)
     {
         (*X_handle) = x ;
     }

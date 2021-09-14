@@ -24,7 +24,7 @@
 // out is file for output calculated result
 
 #define FREE_WORKSPACE              \
-    SPEX_LU_analysis_free(&S, option);\
+    SPEX_symbolic_analysis_free(&S, option);\
     SPEX_matrix_free(&A, option);   \
     SPEX_FREE(option);              \
     SPEX_matrix_free(&b, option);   \
@@ -58,7 +58,7 @@ int main (int argc, char **argv)
     SPEX_matrix *A = NULL ;                     // input matrix
     SPEX_matrix *b = NULL ;                     // Right hand side vector
     SPEX_matrix *x = NULL ;                     // Solution vectors
-    SPEX_LU_analysis *S = NULL ;                // Column permutation
+    SPEX_symbolic_analysis *S = NULL ;                // Column permutation
     SPEX_options *option = NULL;
     OK(SPEX_create_default_options(&option));
 

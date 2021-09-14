@@ -64,11 +64,8 @@
 
 #define FREE_WORKSPACE                           \
     SPEX_matrix_free(&A, option);                \
-    SPEX_matrix_free(&L, option);                \
-    SPEX_matrix_free(&U, option);                \
-    SPEX_matrix_free(&rhos, option);             \
-    SPEX_FREE(pinv);                             \
-    SPEX_LU_analysis_free(&S, option);           \
+    SPEX_factorization_free(&F, option);         \
+    SPEX_symbolic_analysis_free(&S, option);     \
     SPEX_FREE(option);                           \
     SPEX_finalize( ) ;
 
@@ -114,11 +111,8 @@ int main (int argc, char* argv[])
     //          for SPEX Left LU functions (except SPEX_malloc and such)
     //--------------------------------------------------------------------------
     SPEX_matrix *A = NULL;
-    SPEX_matrix *L = NULL;
-    SPEX_matrix *U = NULL;
-    SPEX_matrix *rhos = NULL;
-    int64_t* pinv = NULL;
-    SPEX_LU_analysis* S = NULL;
+    SPEX_symbolic_analysis* S = NULL;
+    SPEX_factorization *F = NULL;
     SPEX_info ok ;
     
     // Initialize option, command options for the factorization
@@ -211,7 +205,7 @@ int main (int argc, char* argv[])
 
     clock_t start_factor = clock();
 
-    ok = SPEX_Left_LU_factorize(&L, &U, &rhos, &pinv, A, S, option);
+    ok = SPEX_Left_LU_factorize(&F, A, S, option);
     if (ok != SPEX_OK)
     {
         if (ok == SPEX_SINGULAR)
@@ -232,7 +226,7 @@ int main (int argc, char* argv[])
     double t_factor = (double) (end_factor - start_factor) / CLOCKS_PER_SEC;
     
     printf("\nNumber of L+U nonzeros: \t\t%"PRId64,
-        (L->p[L->n]) + (U->p[U->n]) - (L->m));
+        (F->L->p[F->L->n]) + (F->U->p[F->U->n]) - (F->L->m));
     printf("\nSymbolic analysis time: \t\t%lf", t_sym);
     printf("\nSPEX Left LU Factorization time: \t%lf", t_factor);
     
