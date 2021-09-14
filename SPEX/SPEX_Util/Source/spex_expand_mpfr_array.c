@@ -9,17 +9,13 @@
 //------------------------------------------------------------------------------
 
 /* Purpose: This function converts a mpfr array of size n and precision prec to
- * an appropriate mpz array of size n. To do this, the number is multiplied by
- * the appropriate power of 10 then the gcd is found. This function allows mpfr
- * arrays to be used within SPEX.
+ * an appropriate mpz array of size n. To do this, the number is cast to an 
+ * equivalent mpq_t (rational number) a conversion which MPFR gaurantees to be
+ * exact. Then, this rational array is converted to an mpz_t array
+ * This function allows mpfr arrays to be used within SPEX.
  */
 
 #define SPEX_FREE_ALL               \
-    SPEX_MPFR_CLEAR(expon);         \
-    SPEX_MPZ_CLEAR(temp_expon);     \
-    SPEX_MPZ_CLEAR(gcd);            \
-    SPEX_MPZ_CLEAR(one);            \
-    SPEX_MPQ_CLEAR(temp);           \
     SPEX_matrix_free(&x3, NULL);    \
 
 #include "spex_util_internal.h"
@@ -45,93 +41,24 @@ SPEX_info spex_expand_mpfr_array
     // initializations
     //--------------------------------------------------------------------------
 
-    int64_t i, k ;
-    int r1, r2 = 1 ;
-    bool nz_found = false;
-    mpfr_t expon; SPEX_MPFR_SET_NULL(expon);
-    mpz_t temp_expon, gcd, one;
+    int64_t i;
     SPEX_matrix* x3 = NULL;
-    SPEX_MPZ_SET_NULL(temp_expon);
-    SPEX_MPZ_SET_NULL(gcd);
-    SPEX_MPZ_SET_NULL(one);
-    mpq_t temp; SPEX_MPQ_SET_NULL(temp);
-
-    uint64_t prec = SPEX_OPTION_PREC (option) ;
     mpfr_rnd_t round = SPEX_OPTION_ROUND (option) ;
-
-    SPEX_CHECK(SPEX_mpq_init(temp));
-    SPEX_CHECK(SPEX_mpfr_init2(expon, prec));
-    SPEX_CHECK(SPEX_mpz_init(temp_expon));
-    SPEX_CHECK(SPEX_mpz_init(gcd));
-    SPEX_CHECK(SPEX_mpz_init(one));
-
-    SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPFR, n, 1, n,
+    
+    SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPQ, n, 1, n,
         false, true, option));
 
-    // expon = 2^prec (overestimate)
-    SPEX_CHECK(SPEX_mpfr_ui_pow_ui(expon, 2, prec, round)) ;
-
+    // Cast the mpfr array to a rational array
     for (i = 0; i < n; i++)
     {
-        // x3[i] = x[i]*2^prec
-        SPEX_CHECK(SPEX_mpfr_mul(x3->x.mpfr[i], x[i], expon, round));
-
-        // x_out[i] = x3[i]
-        SPEX_CHECK(SPEX_mpfr_get_z(x_out[i], x3->x.mpfr[i], round));
+        // x3[i] = x[i]
+        SPEX_CHECK(SPEX_mpfr_get_q(x3->x.mpq[i],x[i],round));
     }
-    SPEX_CHECK(SPEX_mpfr_get_z(temp_expon, expon, round));
-    SPEX_CHECK(SPEX_mpq_set_z(scale, temp_expon));
+    
+    // Expand the mpq array
+    SPEX_CHECK( spex_expand_mpq_array( x_out, x3->x.mpq, scale, n, option));
 
-    //--------------------------------------------------------------------------
-    // Find the gcd to reduce scale
-    //--------------------------------------------------------------------------
-
-    SPEX_CHECK(SPEX_mpz_set_ui(one, 1));
-    // Find an initial GCD
-    for (i = 0; i < n; i++)
-    {
-        if (!nz_found)
-        {
-            SPEX_CHECK(SPEX_mpz_cmp_ui(&r1, x_out[i], 0));
-            if (r1 != 0)
-            {
-                nz_found = true;
-                k = i;
-                SPEX_CHECK(SPEX_mpz_set(gcd, x_out[i]));
-            }
-        }
-        else
-        {
-            // Compute the GCD of the numbers, stop if gcd == 1
-            SPEX_CHECK(SPEX_mpz_gcd(gcd, gcd, x_out[i]));
-            SPEX_CHECK(SPEX_mpz_cmp(&r2, gcd, one));
-            if (r2 == 0)
-            {
-                break;
-            }
-        }
-    }
-
-    if (!nz_found)     // Array is all zeros
-    {
-        SPEX_FREE_ALL;
-        SPEX_mpq_set_z(scale, one);
-        return SPEX_OK;
-    }
-
-    //--------------------------------------------------------------------------
-    // Scale all entries to make as small as possible
-    //--------------------------------------------------------------------------
-
-    if (r2 != 0)  // If gcd == 1 stop
-    {
-        for (i = k; i < n; i++)
-        {
-            SPEX_CHECK(SPEX_mpz_divexact(x_out[i],x_out[i],gcd));
-        }
-        SPEX_CHECK(SPEX_mpq_set_z(temp,gcd));
-        SPEX_CHECK(SPEX_mpq_div(scale,scale,temp));
-    }
+    // Free memory
     SPEX_FREE_ALL;
     return SPEX_OK;
 }

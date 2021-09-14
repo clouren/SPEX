@@ -45,9 +45,10 @@ SPEX_info spex_expand_double_array
     int r1, r2 = 1;
     bool nz_found = false;
     SPEX_info info ;
-    // Double precision accurate to about 2e-16. We multiply by 10e16 to convert
-    // which is a slight overestimate to be safe but preserves the 16 digits of
-    // precision
+    // Machine epsilon is about 2e-16. We multiply by 10e16 to convert
+    // which is a slight overestimate to be safe but preserves the 16 decimal digits 
+    // If more than 16 decimal digits are desired by the user, one should use the 
+    // MPFR input which allows an arbitrary number of decimal digits.
     double expon = pow(10, 16);
     // Quad precision in case input is huge
     SPEX_matrix* x3 = NULL;
@@ -69,7 +70,7 @@ SPEX_info spex_expand_double_array
         // Set x3[i] = x[i]
         SPEX_CHECK(SPEX_mpfr_set_d(x3->x.mpfr[i], x[i], round));
 
-        // x3[i] = x[i] * 10^17
+        // x3[i] = x[i] * 10^16
         SPEX_CHECK(SPEX_mpfr_mul_d(x3->x.mpfr[i], x3->x.mpfr[i], expon, round));
 
         // x_out[i] = x3[i]
