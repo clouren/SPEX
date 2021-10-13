@@ -869,7 +869,7 @@ SPEX_info SPEX_mpz_divexact
     SPEX_GMPZ_WRAPPER_START (x) ;
     if (mpz_sgn(z) == 0)
     {
-        SPEX_GMP_WEAPPER_FINISH;
+        SPEX_GMP_WRAPPER_FINISH;
         return SPEX_PANIC;
     }
     mpz_divexact (x, y, z) ;
