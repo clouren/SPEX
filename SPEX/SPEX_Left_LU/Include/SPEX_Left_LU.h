@@ -160,10 +160,10 @@
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_LEFT_LU_VERSION "1.1.0"
+#define SPEX_LEFT_LU_VERSION "1.1.1"
 #define SPEX_LEFT_LU_VERSION_MAJOR 1
 #define SPEX_LEFT_LU_VERSION_MINOR 1
-#define SPEX_LEFT_LU_VERSION_SUB   0
+#define SPEX_LEFT_LU_VERSION_SUB   1
 
 
 

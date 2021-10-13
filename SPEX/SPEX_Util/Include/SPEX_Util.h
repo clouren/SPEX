@@ -102,10 +102,10 @@
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_UTIL_VERSION "1.1.0"
+#define SPEX_UTIL_VERSION "1.1.1"
 #define SPEX_UTIL_VERSION_MAJOR 1
 #define SPEX_UTIL_VERSION_MINOR 1
-#define SPEX_UTIL_VERSION_SUB   0
+#define SPEX_UTIL_VERSION_SUB   1
 
 //------------------------------------------------------------------------------
 // Error codes
