@@ -188,6 +188,8 @@ SPEX_info SPEX_Left_LU_backslash
     const SPEX_options* option
 ) ;
 
+#if 0
+//TODO delete
 // SPEX_Left_LU_factorize performs the SPEX Left LU factorization. 
 // This factorization is done via n iterations of the sparse REF 
 // triangular solve function. The overall factorization is 
@@ -230,6 +232,35 @@ SPEX_info SPEX_Left_LU_solve         // solves the linear system LD^(-1)U x = b
     const int64_t *pinv,        // inverse row permutation
     const SPEX_options* option
 ) ;
+#endif
+SPEX_info SPEX_Left_LU_factorize
+(
+    // output:
+    SPEX_factorization **F_handle, // LU factorization
+    // input:
+    const SPEX_matrix *A,      // matrix to be factored
+    const SPEX_symbolic_analysis *S, // symbolic analysis
+    const SPEX_options* option // command options
+);
+
+SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
+(
+    // Output
+    SPEX_matrix **x_handle,  // rational solution to the system
+    // input:
+    const SPEX_matrix *b,   // right hand side vector
+    const SPEX_factorization* F, // LU factorization
+    const SPEX_options* option // Command options
+);
+
+SPEX_info SPEX_LU_analyze
+(
+    SPEX_symbolic_analysis** S_handle, // symbolic analysis including
+                                 // column perm. and nnz of L and U
+    const SPEX_matrix *A,        // Input matrix
+    const SPEX_options *option   // Control parameters, if NULL, use default
+);
+
 
 #endif
 

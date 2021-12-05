@@ -11,7 +11,7 @@
 
 //TODO spex free alloc DONE
 # define SPEX_FREE_ALLOCATION      \
-    SPEX_matrix_free(pinv);    \
+    SPEX_matrix_free(pinv, NULL);    //TODO maybe add option so it'll go here
 
 #include "spex_chol_internal.h"
 
@@ -36,12 +36,11 @@ SPEX_info SPEX_Chol_permute_A
     const SPEX_matrix* A,      // Input matrix
     
     //Input/Ouput
-    SPEX_Chol_analysis* S      // Symbolic analysis struct that contains 
+    SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
                                // row/column permutations
 )
 {
     SPEX_info info;
-
     // Check inputs
     ASSERT(A != NULL);
     ASSERT(S != NULL);
@@ -64,15 +63,13 @@ SPEX_info SPEX_Chol_permute_A
     {
         return SPEX_OUT_OF_MEMORY;
     }
-    
     // Populate pinv
     for (k = 0; k < n; k++)
     {
-        index = S->p[k];
+        index = S->Q_perm[k];
         pinv[index] = k;
     }
-    S->pinv=pinv;
-    
+    S->Pinv_perm=pinv;
 
     // Allocate memory for PAP which is a permuted copy of A
     SPEX_matrix* PAP = NULL;
@@ -88,7 +85,7 @@ SPEX_info SPEX_Chol_permute_A
         PAP->p[k] = nz;
         // Column k of PAP is equal to column S->p[k] of A. j is the starting
         // point for nonzeros and indices for column S->p[k] of A
-        j = S->p[k];
+        j = S->Q_perm[k];
         // Iterate across the nonzeros in column S->p[k]
         for (t = A->p[j]; t < A->p[j+1]; t++)
         {

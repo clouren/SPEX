@@ -52,9 +52,9 @@ def test2():
     print('Test from file successful')
     print(x)
 
-test2()
+#test2()
 
-test()
+#test()
 
 ##doesnt need to be a function, idk what is cleaner
 def test_void():
@@ -75,9 +75,7 @@ def test_void():
     ##--------------------------------------------------------------------------
     ## solve
     ##--------------------------------------------------------------------------
-    x=SPEX_Chol.SPEX_Chol_void(A,b,2)
+    x=SPEX_Chol.SPEX_Chol_void(A,b,2,True)
     print('Test from file successful')
-    for i in range(3):
-        print(x[i])
         
 test_void()

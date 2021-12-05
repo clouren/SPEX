@@ -44,7 +44,7 @@ SPEX_info spex_Chol_Pre_Left_Factor
     // Input
     int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix* A,         // Input Matrix
-    const SPEX_Chol_analysis* S,  // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis* S,  // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse

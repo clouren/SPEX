@@ -21,12 +21,16 @@ void SPEX_Chol_analysis_free
     //meaninig when you declare S; even if S*=NULL (if S is pointing to a NULL address), S itself needs to be stored at some location/address so &S cannot be NULL)
     if ((S != NULL) && (*S != NULL))
     {
-        SPEX_FREE((*S)->p);
-        SPEX_FREE((*S)->parent);
-        SPEX_FREE((*S)->cp);
-        SPEX_FREE((*S)->pinv);
+        /*if((*S)->p != NULL)
+            SPEX_FREE((*S)->p);
+        if((*S)->parent != NULL)
+            SPEX_FREE((*S)->parent);
+        if(((*S)->cp)!=NULL)
+            SPEX_FREE((*S)->cp);
+        if((*S)->pinv != NULL)
+            SPEX_FREE((*S)->pinv);*/
         SPEX_FREE(*S);
     }
 
-    //TODO make safe free
+    //TODO make safe free I hate this function but it should stop existing once jinhao makes changes to api
 }

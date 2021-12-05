@@ -38,10 +38,8 @@
 // functions that allocate "to return" is SPEX_FREE_ALLOCATION (instead of FREE_ALL) (to free workspce and allocations that were going to be returned)
 // change to macro in util (and this will be propagated throughout)
 # define SPEX_FREE_WORKSPACE       \
-    SPEX_matrix_free(&L, NULL);    \
-    SPEX_matrix_free(&PAP,NULL);   \
-    SPEX_matrix_free(&rhos, NULL); \
-    SPEX_Chol_analysis_free(&S);   \
+    SPEX_factorization_free(&F, option);     \
+    //SPEX_symbolic_analysis_free (&S, option);
 
 # define SPEX_FREE_ALLOCATION     \
     SPEX_FREE_WORKSPACE           \
@@ -111,17 +109,15 @@ SPEX_info SPEX_Chol_backslash
     }
     
     // Declare memory
-    SPEX_matrix *L = NULL;
+    SPEX_symbolic_analysis *S = NULL;
+    SPEX_factorization *F = NULL ;
     SPEX_matrix *x = NULL;
     SPEX_matrix* PAP = NULL;
-    SPEX_matrix *rhos = NULL;
-    SPEX_Chol_analysis *S = NULL;
     
     
     //--------------------------------------------------------------------------
     // Symbolic Analysis: obtain the row/column ordering of A
     //--------------------------------------------------------------------------
-
     SPEX_CHECK(SPEX_Chol_preorder(&S, A, option));
     
     //--------------------------------------------------------------------------
@@ -147,10 +143,10 @@ SPEX_info SPEX_Chol_backslash
     // A. By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //-------------------------------------------------------------------------- 
-    
+
     //TODO:The functions Factor and solve (below) should expect option to be const; DONE
     //TODO: After those changes are done, then the casting (SPEX_options*) needs to be removed from here. DONE
-    SPEX_CHECK(SPEX_Chol_Factor(&L, &rhos, S,PAP, option));
+    SPEX_CHECK(SPEX_Chol_Factor(&F, S,PAP, option));
 
     //--------------------------------------------------------------------------
     // Solve: Solve Ax = b using the REF Cholesky factorization. That is,
@@ -159,9 +155,7 @@ SPEX_info SPEX_Chol_backslash
     // Ax = b stored as a set of numerators and denominators (mpq_t)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_Chol_Solve(&x, PAP, A, b,
-                               rhos, L, S, option));
-
+    SPEX_CHECK(SPEX_Chol_Solve(&x, F, b, option));
 
     //--------------------------------------------------------------------------
     // At this point x is stored as mpq_t. If the user desires the output 

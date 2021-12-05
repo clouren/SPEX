@@ -55,7 +55,7 @@ int main(){
     {
         x2[i]=0;
     }
-     python_backslash_double(x2,col_pointers,row_index,data,rhs,n,nz); //passing by reference on python is weird and complicated
+     python_backslash_double(x2,col_pointers,row_index,data,rhs,n,nz,2); //passing by reference on python is weird and complicated
      printf("%f,%f,%f\n",x2[0],x2[1],x2[2]);
 */
     /*
@@ -67,19 +67,43 @@ int main(){
     varS=mpz_get_str(NULL,10,var);
     printf("%s\n",varS);
     */
-     char** x2=NULL;
-     x2=(char **)malloc(n*sizeof(char *));
-     for (int i = 0; i < n; ++i)
-    {
-        x2[i]=(char *)malloc(n*sizeof(char));
-    }
+    /*char** x2=NULL;
+    x2=(char **)malloc(n*sizeof(char *));
 
     
-    python_backslash_char(x2,col_pointers,row_index,data,rhs,n,nz); 
+    python_backslash_char(x2,col_pointers,row_index,data,rhs,n,nz,0); 
     printf("allfine\n");
      printf("%s,%s,%s\n",x2[0],x2[1],x2[2]);
      
-     free(x2);
+     free(x2);*/
+
+     double* x_d=NULL;
+     x_d=(double *)malloc(n*sizeof(double));
+     char** x_c=NULL;
+     x_c=(char **)malloc(n*sizeof(char *));
+     bool charOut = true;
+
+     void** x_v=NULL;
+     x_v=(void **)malloc(n*sizeof(void *));
+
+
+     SPEX_python_backslash(x_c,x_d,x_v,charOut,col_pointers,row_index,data,rhs,n,n,nz,2);
+     if(charOut)
+     {
+          printf("STRING SOLUTION\n");
+          printf("%s,%s,%s\n",x_c[0],x_c[1],x_c[2]);
+          printf("void %s,%s,%s\n",x_v[0],x_v[1],x_v[2]);
+     }
+     else
+     {
+          printf("DOUBLE SOLUTION\n");
+          printf("%f,%f,%f\n",x_d[0],x_d[1],x_d[2]);
+          //printf("void %f,%f,%f\n",*(double *)x_v[0],*(double *)x_v[1],*(double *)x_v[2]);
+          printf("void %f,%f,%f\n",x_v[0],x_v[1],x_v[2]);
+     }
+     free(x_d);
+     free(x_c);
+     free(x_v);
      return 0;
 }
 

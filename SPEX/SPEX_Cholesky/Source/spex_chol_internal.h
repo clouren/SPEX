@@ -146,7 +146,7 @@ SPEX_info spex_Chol_Up_Factor
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -161,7 +161,7 @@ SPEX_info spex_Chol_Left_Factor
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -183,7 +183,7 @@ SPEX_info spex_Chol_Pre_Left_Factor
     // Input
     int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix* A,         // Input Matrix
-    const SPEX_Chol_analysis* S,  // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis* S,  // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse

@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/spex_left_lu_factorize: exact sparse LU factorization
+// SPEX_Left_LU/SPEX_Left_LU_factorize: exact sparse LU factorization
+// TODO: delete
 //------------------------------------------------------------------------------
 
 // SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -8,13 +9,15 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This internal function performs the SPEX Left LU factorization, but
- * does not free the row permutation when finished. This factorization is done
- * via n iterations of the sparse REF triangular solve function. The overall
- * factorization is PAQ = LDU The determinant of A can be obtained as
- * determinant = rhos[n-1]
+/* Purpose: This function performs the SPEX Left LU factorization. This 
+ * factorization is done via n iterations of the sparse REF triangular solve 
+ * function. The overall factorization is PAQ = LDU
+ * The determinant of A can be obtained as determinant = rhos[n-1]
  *
- *  F: undefined on input, created on output
+ *  L: undefined on input, created on output
+ *  U: undefined on input, created on output
+ *  rhos: undefined on input, created on output
+ *  pinv: undefined on input, created on output
  *
  *  A: input only, not modified
  *  S: input only, not modified
@@ -26,20 +29,28 @@
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
     SPEX_FREE(pivs);                \
+    SPEX_FREE(row_perm);            \
 
 #define SPEX_FREE_ALLOCATION        \
-    SPEX_FREE_WORK                  \
-    SPEX_factorization_free(&F, option);
+    SPEX_FREE_WORKSPACE             \
+    SPEX_matrix_free(&L, NULL);     \
+    SPEX_matrix_free(&U, NULL);     \
+    SPEX_matrix_free(&rhos, NULL);  \
+    SPEX_FREE(pinv);
 
 #include "spex_left_lu_internal.h"
 
-SPEX_info spex_left_lu_factorize
+SPEX_info SPEX_Left_LU_factorize
 (
     // output:
-    SPEX_factorization **F_handle, // LU factorization
+    SPEX_matrix **L_handle,    // lower triangular matrix
+    SPEX_matrix **U_handle,    // upper triangular matrix
+    SPEX_matrix **rhos_handle, // sequence of pivots
+    int64_t **pinv_handle,     // inverse row permutation
     // input:
     const SPEX_matrix *A,      // matrix to be factored
-    const SPEX_symbolic_analysis *S, // symbolic analysis
+    const SPEX_LU_analysis *S, // column permutation and estimates
+                               // of nnz in L and U 
     const SPEX_options* option // command options
 )
 {
@@ -48,27 +59,37 @@ SPEX_info spex_left_lu_factorize
     // check inputs
     //--------------------------------------------------------------------------
 
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+
+    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
     int64_t anz;
     // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
     // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
     SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
     ASSERT(info == SPEX_OK);
 
-    if (!F_handle || !S || anz < 0)
+    if (!L_handle || !U_handle || !rhos_handle || !pinv_handle || !S || anz < 0)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
-    (*F_handle) = NULL ;
+    (*L_handle) = NULL ;
+    (*U_handle) = NULL ;
+    (*rhos_handle) = NULL ;
+    (*pinv_handle) = NULL ;
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
 
-    SPEX_factorization *F = NULL ;
+    SPEX_matrix *L = NULL ;
+    SPEX_matrix *U = NULL ;
+    SPEX_matrix *rhos = NULL ;
+    int64_t *pinv = NULL ;
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
     int64_t *pivs = NULL ;
+    int64_t *row_perm = NULL ;
     SPEX_matrix *x = NULL ;
 
     int64_t n = A->n ;
@@ -76,25 +97,8 @@ SPEX_info spex_left_lu_factorize
     int64_t k = 0, top, i, j, col, loc, lnz = 0, unz = 0, pivot, jnew ;
     size_t size ;
 
-    // allocate memory space for the factorization
-    F = (SPEX_factorization*) SPEX_calloc(1, sizeof(SPEX_factorization));
-    if (F == NULL)
-    {
-        return SPEX_OUT_OF_MEMORY;
-    }
-    // set factorization kind
-    F->kind = SPEX_LU_FACTORIZATION;
-    // Allocate and set scale_for_A
-    SPEX_CHECK(SPEX_mpq_init(F->scale_for_A));
-    SPEX_CHECK(SPEX_mpq_set (F->scale_for_A, A->scale));
-
     // Inverse pivot ordering
-    F->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-    // Actual row permutation, the inverse of pinv. This
-    // is used for sorting
-    F->P_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-    // column permutation, to be copied from S->Q_perm
-    F->Q_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+    pinv = (int64_t *) SPEX_malloc (n * sizeof (int64_t)) ;
 
     // Indicator of which rows have been pivotal
     // pivs[i] = 1 if row i has been selected as a pivot
@@ -112,16 +116,16 @@ SPEX_info spex_left_lu_factorize
     // for the triangular solve.
     xi = (int64_t*) SPEX_malloc(2*n* sizeof(int64_t));
 
-    if (!(F->Pinv_perm) || !(F->P_perm) || !(F->Q_perm) ||
-        !pivs || !h || !xi)
+    // Actual row permutation, the inverse of pinv. This
+    // is used for sorting
+    row_perm = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
+
+    if (!pivs || !h || !xi || !row_perm || !pinv)
     {
         // out of memory: free everything and return
         SPEX_FREE_ALL  ;
         return SPEX_OUT_OF_MEMORY;
     }
-
-    // copy column permutation from symbolic analysis to factorization
-    memcpy(F->Q_perm, S->Q_perm, n * sizeof(int64_t));
 
     // initialize workspace and pivot status
     for (i = 0; i < n; i++)
@@ -129,8 +133,8 @@ SPEX_info spex_left_lu_factorize
         h[i] = -1;
         pivs[i] = -1;
         // Initialize location based vectors
-        F->Pinv_perm[i] = i;
-        F->P_perm[i]    = i;
+        pinv[i] = i;
+        row_perm[i] = i;
     }
 
     //--------------------------------------------------------------------------
@@ -138,7 +142,7 @@ SPEX_info spex_left_lu_factorize
     //--------------------------------------------------------------------------
 
     // Create rhos, a global dense mpz_t matrix of dimension n*1
-    SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
+    SPEX_CHECK (SPEX_matrix_allocate(&rhos, SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, false, option));
 
     // Allocate L and U without initializing each entry.
@@ -148,9 +152,9 @@ SPEX_info spex_left_lu_factorize
     // L and U are not allocated. Instead, a more efficient method to
     // allocate these values is done in the factorization to reduce
     // memory usage.
-    SPEX_CHECK (SPEX_matrix_allocate(&(F->L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
+    SPEX_CHECK (SPEX_matrix_allocate(&L, SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
         false, false, option));
-    SPEX_CHECK (SPEX_matrix_allocate(&(F->U), SPEX_CSC, SPEX_MPZ, n, n, S->unz,
+    SPEX_CHECK (SPEX_matrix_allocate(&U, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
         false, false, option));
 
     //--------------------------------------------------------------------------
@@ -189,41 +193,41 @@ SPEX_info spex_left_lu_factorize
     for (k = 0; k < n; k++)
     {
         // Column pointers for column k of L and U
-        F->L->p[k] = lnz;
-        F->U->p[k] = unz;
-        col = F->Q_perm[k];
+        L->p[k] = lnz;
+        U->p[k] = unz;
+        col = S->q[k];
 
         //----------------------------------------------------------------------
         // Reallocate memory if necessary
         // if lnz+n > L->nzmax, L needs to expand to accomodate new nonzeros.
         // To do so, we double the size of the L and U matrices.
         //----------------------------------------------------------------------
-        if (lnz + n > F->L->nzmax)
+        if (lnz + n > L->nzmax)
         {
             // Double the size of L
-            SPEX_CHECK(spex_sparse_realloc(F->L));
+            SPEX_CHECK(spex_sparse_realloc(L));
         }
-        if (unz + n > F->U->nzmax)
+        if (unz + n > U->nzmax)
         {
             // Double the size of U
-            SPEX_CHECK(spex_sparse_realloc(F->U));
+            SPEX_CHECK(spex_sparse_realloc(U));
         }
 
         //----------------------------------------------------------------------
         // Triangular solve to compute LDx = A(:,k)
         //----------------------------------------------------------------------
-        SPEX_CHECK(spex_left_lu_ref_triangular_solve(&top, F->L, A, k, xi,
-            (const int64_t *) (F->Q_perm),
-            F->rhos,
-            (const int64_t *) (F->Pinv_perm),
-            (const int64_t *) (F->P_perm),
+        SPEX_CHECK(spex_left_lu_ref_triangular_solve(&top, L, A, k, xi,
+            (const int64_t *) (S->q),
+            rhos,
+            (const int64_t *) pinv,
+            (const int64_t *) row_perm,
             h, x)) ;
 
         //----------------------------------------------------------------------
         // Obtain pivot
         //----------------------------------------------------------------------
         SPEX_CHECK(spex_left_lu_get_pivot(&pivot, x, pivs, n, top, xi,
-            col, k, F->rhos, F->Pinv_perm, F->P_perm, option));
+            col, k, rhos, pinv, row_perm, option));
 
         //----------------------------------------------------------------------
         // Populate L and U. We iterate across all nonzeros in x
@@ -232,7 +236,7 @@ SPEX_info spex_left_lu_factorize
         {
             jnew = xi[j];
             // Location of x[j] in final matrix
-            loc = F->Pinv_perm[jnew];
+            loc = pinv[jnew];
 
             //------------------------------------------------------------------
             // loc <= k are rows above k, thus go to U
@@ -240,13 +244,13 @@ SPEX_info spex_left_lu_factorize
             if (loc <= k)
             {
                 // Place the i location of the unz nonzero
-                F->U->i[unz] = jnew;
+                U->i[unz] = jnew;
                 // Find the size in bits of x[j]
                 SPEX_CHECK(SPEX_mpz_sizeinbase(&size, x->x.mpz[jnew], 2));
                 // GMP manual: Allocated size should be size+2
-                SPEX_CHECK(SPEX_mpz_init2(F->U->x.mpz[unz], size+2));
+                SPEX_CHECK(SPEX_mpz_init2(U->x.mpz[unz], size+2));
                 // Place the x value of the unz nonzero
-                SPEX_CHECK(SPEX_mpz_set(F->U->x.mpz[unz], x->x.mpz[jnew]));
+                SPEX_CHECK(SPEX_mpz_set(U->x.mpz[unz], x->x.mpz[jnew]));
                 // Increment unz
                 unz++;
             }
@@ -257,13 +261,13 @@ SPEX_info spex_left_lu_factorize
             if (loc >= k)
             {
                 // Place the i location of the lnz nonzero
-                F->L->i[lnz] = jnew;
+                L->i[lnz] = jnew;
                 // Set the size of x[j]
                 SPEX_CHECK(SPEX_mpz_sizeinbase(&size, x->x.mpz[jnew], 2));
                 // GMP manual: Allocated size should be size+2
-                SPEX_CHECK(SPEX_mpz_init2(F->L->x.mpz[lnz], size+2));
+                SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
                 // Place the x value of the lnz nonzero
-                SPEX_CHECK(SPEX_mpz_set(F->L->x.mpz[lnz], x->x.mpz[jnew]));
+                SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz], x->x.mpz[jnew]));
                 // Increment lnz
                 lnz++;
             }
@@ -271,21 +275,21 @@ SPEX_info spex_left_lu_factorize
     }
 
     // Finalize L->p, U->p
-    F->L->p[n] = lnz;
-    F->U->p[n] = unz;
+    L->p[n] = lnz;
+    U->p[n] = unz;
 
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------
 
-    // free everything, but keep F
+    // free everything, but keep L, U, rhos, and pinv
     SPEX_FREE_WORKSPACE ;
 
     // This cannot fail since the size of L and U are shrinking.
     // Collapse L
-    spex_sparse_collapse(F->L);
+    spex_sparse_collapse(L);
     // Collapse U
-    spex_sparse_collapse(F->U);
+    spex_sparse_collapse(U);
 
     //--------------------------------------------------------------------------
     // finalize the row indices in L and U
@@ -294,12 +298,12 @@ SPEX_info spex_left_lu_factorize
     // Permute entries in L
     for (i = 0; i < lnz; i++)
     {
-        F->L->i[i] = F->Pinv_perm[F->L->i[i]];
+        L->i[i] = pinv[L->i[i]];
     }
     // Permute entries in U
     for (i = 0; i < unz; i++)
     {
-        F->U->i[i] = F->Pinv_perm[F->U->i[i]];
+        U->i[i] = pinv[U->i[i]];
     }
 
     //--------------------------------------------------------------------------
@@ -307,15 +311,18 @@ SPEX_info spex_left_lu_factorize
     //--------------------------------------------------------------------------
 
     #if 0
-    SPEX_CHECK (SPEX_matrix_check (F->L, option)) ;
-    SPEX_CHECK (SPEX_matrix_check (F->U, option)) ;
+    SPEX_CHECK (SPEX_matrix_check (L, option)) ;
+    SPEX_CHECK (SPEX_matrix_check (U, option)) ;
     #endif
 
     //--------------------------------------------------------------------------
     // return result
     //--------------------------------------------------------------------------
 
-    (*F_handle) = F ;
+    (*L_handle) = L ;
+    (*U_handle) = U ;
+    (*rhos_handle) = rhos ;
+    (*pinv_handle) = pinv ;
     return (SPEX_OK) ;
 }
 

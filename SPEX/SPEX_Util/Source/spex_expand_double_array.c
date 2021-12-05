@@ -112,8 +112,8 @@ SPEX_info spex_expand_double_array
 
     if (!nz_found)     // Array is all zeros
     {
-        SPEX_FREE_WORKSPACE;
         SPEX_mpq_set_z(scale, one);
+        SPEX_FREE_ALLOCATION;
         return SPEX_OK;
     }
 

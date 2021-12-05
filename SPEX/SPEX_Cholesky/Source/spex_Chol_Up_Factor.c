@@ -14,12 +14,12 @@
     SPEX_FREE(c);                   \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
-    SPEX_FREE(post);                \
+    SPEX_FREE(post);                // TOCHECK all the allocations and the free are driving me crazy
 
+//TOASK idk if this free F goes here
 # define SPEX_FREE_ALLOCATION        \
     SPEX_FREE_WORKSPACE              \
-    SPEX_matrix_free(&L, NULL);      \
-    SPEX_matrix_free(&rhos, NULL);   \
+    //SPEX_factorization_free(&F, option);    //TOCHECK need to declare F before using the free 
 
 #include "spex_chol_internal.h"  
 
@@ -56,7 +56,9 @@ SPEX_info spex_Chol_Up_Factor
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+    //SPEX_factorization **F_handle,
+    // Input/Output
+    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -69,7 +71,7 @@ SPEX_info spex_Chol_Up_Factor
     // Check inputs
     //--------------------------------------------------------------------------
     
-    if (!L_handle || !S || !rhos_handle || !option || !A)
+    /*if (!L_handle || !S || !option || !A)
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -84,13 +86,12 @@ SPEX_info spex_Chol_Up_Factor
     if (anz < 0)
     {
         return SPEX_INCORRECT_INPUT ;
-    }
+    }*/
 
         
     //--------------------------------------------------------------------------
     // Declare and initialize workspace 
     //--------------------------------------------------------------------------
-    
     SPEX_matrix *L = NULL ;
     SPEX_matrix *rhos = NULL ;
     int64_t *xi = NULL ;
@@ -176,7 +177,7 @@ SPEX_info spex_Chol_Up_Factor
     // Create rhos, a "global" dense mpz_t matrix of dimension n*1. 
     // As inidicated with the second boolean parameter true, the mpz entries in
     // rhos are initialized to the default size (unlike x).
-    SPEX_CHECK (SPEX_matrix_allocate(&rhos, SPEX_DENSE, SPEX_MPZ, n, 1, n,
+    SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
     
     if (!x || !rhos)
@@ -202,7 +203,7 @@ SPEX_info spex_Chol_Up_Factor
     // a more efficient method to allocate these values is done inside the 
     // factorization to reduce memory usage.
     
-    SPEX_CHECK(SPEX_matrix_allocate(&L, SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
+    SPEX_CHECK(SPEX_matrix_allocate(&(L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
                                     false, false, option));
     
     // Set the column pointers of L
@@ -227,7 +228,7 @@ SPEX_info spex_Chol_Up_Factor
   
         // If x[k] is nonzero chose it as pivot. Otherwise, the matrix is 
         // not SPD (indeed, it may even be singular).
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k]));
+        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k])); //TODO valgrind says sgn is not initialized, what?
         if (sgn != 0)
         {
             SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));

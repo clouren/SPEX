@@ -9,17 +9,13 @@
 
 //------------------------------------------------------------------------------
 
-//TODO: Please check 80 character limit DONE
-
-//TODO: Change to whatever (SPEX_FREE_WORKSPACE) DONE
 #define SPEX_FREE_WORKSPACE        \
     SPEX_matrix_free(&b2, option); \
-    SPEX_matrix_free(&x, option);  \
-    SPEX_MPQ_CLEAR(scale);         \
+    SPEX_MPQ_CLEAR(scale);         
 
 # define SPEX_FREE_ALLOCATION      \
     SPEX_FREE_WORKSPACE            \
-    SPEX_matrix_free(&x, NULL);    \
+    SPEX_matrix_free(&x, NULL);    
 
 #include "spex_chol_internal.h"
     
@@ -55,12 +51,11 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
     // Input
-    const SPEX_matrix* PAP,           // Input matrix (permuted)
-    const SPEX_matrix* A,             // Input matrix (unpermuted)
+    //const SPEX_matrix* PAP,           // Input matrix (permuted)
+    //const SPEX_matrix* A,             // Input matrix (unpermuted)
+    const SPEX_factorization* F,      // Cholesky factorization
     const SPEX_matrix* b,             // Right hand side vector
-    const SPEX_matrix* rhos,          // Pivots' values 
-    const SPEX_matrix* L,             // Lower triangular matrix
-    const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains
+    //const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains
                                       // elimination tree of A,  
                                       // column pointers of L, exact number of
                                       // nonzeros of L and permutation used
@@ -72,33 +67,17 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     if (!spex_initialized()) return SPEX_PANIC;
   
     // Check the inputs
-    ASSERT(!S);
-    ASSERT(!L); 
-    ASSERT(!A);
-    ASSERT(!PAP);
-    ASSERT(!rhos);
     ASSERT(!x_handle);
-    ASSERT(L->type == SPEX_MPZ);
-    ASSERT(L->kind == SPEX_CSC);
-    ASSERT(A->type == SPEX_MPZ);
-    ASSERT(A->kind == SPEX_CSC);
     ASSERT(b->type == SPEX_MPZ);
     ASSERT(b->kind == SPEX_DENSE);
-    ASSERT(PAP->type == SPEX_MPZ);
-    ASSERT(PAP->kind == SPEX_CSC);
-    ASSERT(rhos->type == SPEX_MPZ);
-    ASSERT(rhos->kind == SPEX_DENSE);
-    
-    if (!x_handle || !S || !A || !PAP || !rhos || !L || L->type != SPEX_MPZ || 
-        L->kind != SPEX_CSC || A->type != SPEX_MPZ || A->kind != SPEX_CSC || 
-        b->type != SPEX_MPZ || b->kind != SPEX_DENSE || PAP->type != SPEX_MPZ ||
-        PAP->kind != SPEX_CSC || rhos->type != SPEX_MPZ || 
-        rhos->kind != SPEX_DENSE)
+
+    //TOASK do we want to check the type and kind of things inside F??
+    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {
         return SPEX_INCORRECT_INPUT;
     }
     
-    int64_t i, j, k, n = L->n, nz;
+    int64_t i, j, k, n = F->L->n, nz;
     
     // Scale is the scaling factor for the solution vectors.
     // When the forward/backsolve is complete, the entries in
@@ -121,7 +100,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     SPEX_matrix *x2 = NULL;
     // b2 is the permuted right hand side vector(s)
     SPEX_matrix *b2 = NULL;
-
+    //TOASK left_lu_permute_b ???
     // Allocate memory for b2
     SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 
                                         b->m*b->n, false, true, option));
@@ -130,19 +109,18 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     {
         for (j = 0; j < b->n; j++)   
         {
-            SPEX_CHECK(SPEX_mpz_set(SPEX_2D(b2, S->pinv[i], j, mpz),
+            SPEX_CHECK(SPEX_mpz_set(SPEX_2D(b2, F->Pinv_perm[i], j, mpz),
                               SPEX_2D(b, i, j, mpz)));
         }
     }
-    
     // Forward substitution, b2 = L \ b2. Note that b2 is overwritten    
-    SPEX_CHECK(spex_Chol_forward_sub(b2, L, rhos));
-    
+    SPEX_CHECK(spex_Chol_forward_sub(b2, F->L, F->rhos));
     // Set the value of the determinant det = rhos[n-1] 
-    det = &(rhos->x.mpz[L->n-1]);
+    det = &(F->rhos->x.mpz[F->L->n-1]);
     size_t bitsDet = mpz_sizeinbase((*det),2); //CLUSTER
-    gmp_printf("%llu, ", (bitsDet)); //CLUSTER
-                              
+    //gmp_printf("%llu, ", (bitsDet)); //CLUSTER
+    
+    //TOASK SPEX_matrix_mul vs SPEX_mpz_mul + for                          
     // Apply the determinant to b2, b2 = det*b2
     SPEX_CHECK(SPEX_matrix_nnz(&nz, b, NULL));
     for (i = 0; i < nz; i++)
@@ -151,17 +129,18 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     }
     
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
-    SPEX_CHECK(spex_Chol_backward_sub(b2, L));
-    
+    SPEX_CHECK(spex_Chol_backward_sub(b2, F->L));
+
     // Allocate memory for the (real) solution vector x = b2/det
     SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, b2->m, b->n,
         0, false, true, option)) ;
-    
+/*
     size_t bitsSmall=mpz_sizeinbase(b2->x.mpz[0],2); //CLUSTER
     size_t bitsLarge=0; //CLUSTER
     size_t bitsTemp; //CLUSTER
     int64_t bitsSum=0; //CLUSTER
     // Set x[i] = b2[i]/det
+
     for (i = 0; i < nz; i++)
     {
         bitsTemp=mpz_sizeinbase(b2->x.mpz[i],2); //CLUSTER
@@ -181,11 +160,11 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
         mpq_set_z(temp,(*det));
         mpq_div(x->x.mpq[i],x->x.mpq[i],temp);*/ //THIS WORKS
         //SPEX_CHECK(SPEX_mpq_set_den(x->x.mpq[i], (*det) ));
-        SPEX_CHECK(SPEX_mpz_set(mpq_denref(x->x.mpq[i]), (*det)));
+        /*SPEX_CHECK(SPEX_mpz_set(mpq_denref(x->x.mpq[i]), (*det)));
         SPEX_CHECK(SPEX_mpq_canonicalize(x->x.mpq[i])); //remove all common factors //TODO add wrapper DONE
     }
     gmp_printf("%llu, %llu, %llu, ", bitsSmall, bitsLarge, bitsSum); //CLUSTER
-    
+    */
     // Allocate memory for x2 which is the permuted version of x
     SPEX_CHECK(SPEX_matrix_allocate(&x2, SPEX_DENSE, SPEX_MPQ, x->m, x->n,
                                     0, false, true, option));
@@ -195,7 +174,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     {
         for (j = 0; j < x->n; j++)
         {
-            SPEX_CHECK(SPEX_mpq_set(SPEX_2D(x2, S->p[i], j, mpq), SPEX_2D(x, i,
+            SPEX_CHECK(SPEX_mpq_set(SPEX_2D(x2, F->Q_perm[i], j, mpq), SPEX_2D(x, i,
                                                                     j, mpq)));
         }
     }
@@ -203,20 +182,22 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
 
     // Check solution
     // TODO: Shouldnt this be removed if/when Jinhao changes function?
-    if (option->check)
+    /*if (option->check)
     {
         SPEX_CHECK(SPEX_check_solution(A, x2, b, option));
     }
-    
+    */
     
     //--------------------------------------------------------------------------
     // Scale the solution if necessary.
     //--------------------------------------------------------------------------
 
+    //TODO doublecheck scaling process
     SPEX_CHECK(SPEX_mpq_init(scale));
 
     // set the scaling factor scale = PAP->scale / b->scale
-    SPEX_CHECK(SPEX_mpq_div(scale, PAP->scale, b->scale));
+    //TODO TOASK double check PAP scale is the same thing as F->scale for A
+    SPEX_CHECK(SPEX_mpq_div(scale, F->scale_for_A, b->scale));
 
     // Apply scaling factor, but ONLY if it is different from a scaling factor
     // to 1

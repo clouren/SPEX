@@ -232,7 +232,7 @@ SPEX_info SPEX_Chol_backslash
 SPEX_info SPEX_Chol_preorder
 (
     // Output
-    SPEX_Chol_analysis** S_handle,  // Symbolic analysis data structure 
+    SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 
                                     // On input: undefined
                                     // On output: contains the 
                                     // row/column permutation and its
@@ -253,7 +253,7 @@ SPEX_info SPEX_Chol_permute_A
                                // On output: contains the permuted matrix
     //Input
     const SPEX_matrix* A,      // Input matrix
-    SPEX_Chol_analysis* S      // Symbolic analysis struct that contains 
+    SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
                                // column and inverse row permutations
 );
 
@@ -269,9 +269,8 @@ SPEX_info SPEX_Chol_permute_A
 SPEX_info SPEX_Chol_Factor     
 (
     // Output
-    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input
-    SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_factorization **F_handle, // Cholesky factorization
+    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, column pointers of L, 
                                // exact number of nonzeros of L and permutation
                                // used.
@@ -300,14 +299,13 @@ SPEX_info SPEX_Chol_Solve
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
     // Input
-    const SPEX_matrix* PAP,           // Input matrix (permuted)
-    const SPEX_matrix* A,             // Input matrix (unpermuted)
+    //const SPEX_matrix* PAP,           // Input matrix (permuted)
+    //const SPEX_matrix* A,             // Input matrix (unpermuted)
         // TODO: A_orig is only used for check, the check can be seperated from this function.
     // So remove A_orig and put it seperately
+    const SPEX_factorization *F, // Cholesky factorization
     const SPEX_matrix* b,             // Right hand side vector
-    const SPEX_matrix* rhos,          // Pivots' values 
-    const SPEX_matrix* L,             // Lower triangular matrix
-    const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains
+    //const SPEX_symbolic_analysis* S,      // Symbolic analysis struct. contains
                                       // elimination tree of A,  
                                       // column pointers of L, exact number of
                                       // nonzeros of L and permutation used

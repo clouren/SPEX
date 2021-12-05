@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_LU_analyze: symbolic ordering and analysis for sparse LU
+// SPEX_Util/spex_lu_analyze: symbolic ordering and analysis for sparse LU
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
@@ -22,59 +22,48 @@
  *
  */
 
-// SPEX_LU_analyze creates the SPEX_LU_analysis object S.  Use
-// SPEX_LU_analysis_free to delete it.
+#include "spex_left_lu_internal.h"
 
-#include "spex_util_internal.h"
-
-SPEX_info SPEX_LU_analyze
+SPEX_info spex_lu_analyze
 (
-    SPEX_LU_analysis** S_handle, // symbolic analysis (column perm. and nnz L,U)
+    SPEX_symbolic_analysis** S_handle, // symbolic analysis including
+                                 // column perm. and nnz of L and U
     const SPEX_matrix *A,        // Input matrix
     const SPEX_options *option   // Control parameters, if NULL, use default
 )
 {
 
-    //--------------------------------------------------------------------------
-    // check inputs
-    //--------------------------------------------------------------------------
-
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
-
-    // A can have any data type, but must be in sparse CSC format
-    SPEX_REQUIRE_KIND (A, SPEX_CSC) ;
-
-    if (!S_handle || A->n != A->m)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
+    // inputs have been checked in SPEX_symbolic_analyze
     (*S_handle) = NULL ;
 
     //--------------------------------------------------------------------------
     // allocate symbolic analysis object
     //--------------------------------------------------------------------------
 
-    SPEX_LU_analysis *S = NULL ;
+    SPEX_symbolic_analysis *S = NULL ;
     int64_t i, n = A->n, anz;
     // SPEX enviroment is checked to be init'ed and A is checked to be not NULL
     // and a SPEX_CSC kind, so there shouldnt be any error from this function
     SPEX_matrix_nnz(&anz, A, option);
+
     // ALlocate memory for S
-    S = (SPEX_LU_analysis*) SPEX_malloc(sizeof(SPEX_LU_analysis));
+    S = (SPEX_symbolic_analysis*) SPEX_calloc(1,
+        sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
+    S->kind = SPEX_LU_SYMBOLIC_ANALYSIS;
 
     // Allocate memory for column permutation
-    S->q = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
-    if (S->q == NULL)
+    S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
+    if (S->Q_perm == NULL)
     {
         SPEX_FREE(S);
         return SPEX_OUT_OF_MEMORY;
     }
 
     //--------------------------------------------------------------------------
-    // No ordering is used. S->q is set to [0 ... n] and the number of nonzeros
-    // in L and U is estimated to be 10 times the number of nonzeros in A. This
-    // is a very crude estimate on the nnz(L) and nnz(U)
+    // No ordering is used. S->Q_perm is set to [0...n] and the number of
+    // nonzeros in L and U is estimated to be 10 times the number of nonzeros
+    // in A. This is a very crude estimate on the nnz(L) and nnz(U)
     //--------------------------------------------------------------------------
 
     SPEX_col_order order = SPEX_OPTION_ORDER (option) ;
@@ -84,14 +73,14 @@ SPEX_info SPEX_LU_analyze
     {
         for (i = 0; i < n+1; i++)
         {
-            S->q[i] = i;
+            S->Q_perm[i] = i;
         }
         // estimates for number of L and U nonzeros
         S->lnz = S->unz = 10*anz;
     }
 
     //--------------------------------------------------------------------------
-    // The AMD ordering is used. S->q is set to AMD's column ordering on
+    // The AMD ordering is used. S->Q_perm is set to AMD's column ordering on
     // A+A'. The number of nonzeros in L and U is given as AMD's computed
     // number of nonzeros in the Cholesky factor L of A+A'
     //--------------------------------------------------------------------------
@@ -102,7 +91,7 @@ SPEX_info SPEX_LU_analyze
         double Info [AMD_INFO];
         // Perform AMD
         amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-            (SuiteSparse_long *) S->q, Control, Info) ;
+            (SuiteSparse_long *) S->Q_perm, Control, Info) ;
         S->lnz = S->unz = Info[AMD_LNZ];        // estimate for unz and lnz
         if (pr > 0)   // Output AMD info if desired
         {
@@ -113,9 +102,9 @@ SPEX_info SPEX_LU_analyze
     }
 
     //--------------------------------------------------------------------------
-    // The COLAMD ordering is used. S->q is set as COLAMD's column ordering.
-    // The number of nonzeros in L and U is set as 10 times the number of
-    // nonzeros in A. This is a crude estimate.
+    // The COLAMD ordering is used. S->Q_perm is set as COLAMD's column
+    // ordering. The number of nonzeros in L and U is set as 10 times the
+    // number of nonzeros in A. This is a crude estimate.
     //--------------------------------------------------------------------------
     else
     {
@@ -125,13 +114,13 @@ SPEX_info SPEX_LU_analyze
         if (!A2)
         {
             // out of memory
-            SPEX_LU_analysis_free (&S, option) ;
+            SPEX_symbolic_analysis_free (&S, option) ;
             return (SPEX_OUT_OF_MEMORY) ;
         }
-        // Initialize S->q as per COLAMD documentation
+        // Initialize S->Q_perm as per COLAMD documentation
         for (i = 0; i < n+1; i++)
         {
-            S->q[i] = A->p[i];
+            S->Q_perm[i] = A->p[i];
         }
         // Initialize A2 per COLAMD documentation
         for (i = 0; i < anz; i++)
@@ -140,7 +129,7 @@ SPEX_info SPEX_LU_analyze
         }
         int64_t stats [COLAMD_STATS];
         colamd_l (n, n, Alen, (SuiteSparse_long *) A2,
-            (SuiteSparse_long *) S->q, (double *) NULL,
+            (SuiteSparse_long *) S->Q_perm, (double *) NULL,
             (SuiteSparse_long *) stats) ;
         // estimate for lnz and unz
         S->lnz = S->unz = 10*anz;
