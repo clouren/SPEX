@@ -413,11 +413,6 @@ typedef enum
     SPEX_LU_SYMBOLIC_ANALYSIS = 0,                 // LU analysis
     SPEX_CHOLESKY_SYMBOLIC_ANALYSIS = 1,           // Cholesky analysis
     SPEX_QR_SYMBOLIC_ANALYSIS = 2                  // QR analysis
-/* TODO or?
-    SPEX_LU_ANALYSIS = 0,                 // LU analysis
-    SPEX_CHOLESKY_ANALYSIS = 1,           // Cholesky analysis
-    SPEX_QR_ANALYSIS = 2                  // QR analysis
-*/
 }SPEX_symbolic_analysis_kind ;
 
 // This struct stores the results of symbolic analysis
@@ -517,9 +512,6 @@ typedef struct
                                           // factorization.
     SPEX_matrix *rhos;                    // A n-by-1 dense matrix for the
                                           // pivot values
-    // This is only used in the Cholesky factorization
-    int64_t* parent;                     // Elimination tree of target matrix
-                                         // for Cholesky factorization.
 
     //--------------------------------------------------------------------------
     // These are used for QR factorization, but ignored for LU or Cholesky
