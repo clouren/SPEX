@@ -157,9 +157,9 @@ SPEX_info SPEX_python_backslash
         {
             //sol_void[i] = (void*) malloc (1*sizeof(double));
             (sol_void[i])=&(x2->x.fp64[i]);
-        }
-           
+        }  
     }
+    printf("\n void mem %p,%p,%p\n",sol_void[0],sol_void[1],sol_void[2]);
     
     FREE_WORKSPACE;
 }

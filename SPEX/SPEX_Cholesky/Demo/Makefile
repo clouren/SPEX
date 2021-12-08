@@ -51,4 +51,4 @@ clean:
 purge: distclean
 
 distclean: clean
-	- $(RM) -r SPEX_Chol SPEX_Chol_debug *.a *.dSYM *.obj *.dll
+	- $(RM) -r example_simple example_extended example_extended_debug *.a *.dSYM *.obj *.dll

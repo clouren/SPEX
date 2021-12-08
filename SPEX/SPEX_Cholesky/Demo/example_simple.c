@@ -19,12 +19,11 @@
 // out is file for output calculated result
 
 #define FREE_WORKSPACE              \
-    SPEX_Chol_analysis_free(&S);\
-    SPEX_matrix_free(&A, option);   \
-    SPEX_FREE(option);              \
+    SPEX_matrix_free(&A, option);              \
     SPEX_matrix_free(&b, option);   \
     SPEX_matrix_free(&x, option);   \
     SPEX_matrix_free(&x2, option);   \
+    SPEX_FREE(option);   
     SPEX_finalize();
 
 #include "demos.h"   
@@ -70,7 +69,6 @@ int main (int argc, char **argv)
     SPEX_matrix* b = NULL ;                     // Right hand side vector
     SPEX_matrix* x = NULL ;                     // Solution vectors
     SPEX_matrix* x2 = NULL ;                     // copy of solution vectors
-    SPEX_Chol_analysis* S = NULL ;                // Column permutation
     SPEX_options* option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     if (option == NULL)
@@ -99,9 +97,7 @@ int main (int argc, char **argv)
 
     int64_t n = A->n;
     SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
-    if(!b){
-        printf("scream \n");
-    }
+
     // Create RHS
     for (int64_t k = 0; k < n; k++)
         DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
@@ -123,8 +119,7 @@ int main (int argc, char **argv)
     // SPEX Cholesky has an optional check, to enable it, one can set the following
     // parameter to be true.
     option->check = true;
-    option->print_level = 3;
-    
+    //option->print_level = 1;
     // Solve the system and give MPQ solution
     DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
     

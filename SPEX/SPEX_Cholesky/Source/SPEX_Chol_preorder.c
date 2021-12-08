@@ -26,20 +26,18 @@
  *
  */
 
-// SPEX_Chol_analyze creates the SPEX_Chol_analysis object S_Chol.  Use
-// SPEX_Chol_analysis_free to delete it.
 // This function is a slightly modified version of SPEX_Left_LU's 
 // LU analysis function
 
 # define SPEX_FREE_ALLOCATION             \
-    SPEX_Chol_analysis_free(&S_handle);   \
+    SPEX_symbolic_analysis_free(&S_handle, option);   \
 
 #include "spex_chol_internal.h"
 
 SPEX_info SPEX_Chol_preorder
 (
     // Output
-    SPEX_Chol_analysis** S_handle,  // Symbolic analysis data structure 
+    SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 
                                     // On input: undefined
                                     // On output: contains the 
                                     // row/column permutation and its
@@ -75,7 +73,7 @@ SPEX_info SPEX_Chol_preorder
     // allocate symbolic analysis object
     //--------------------------------------------------------------------------
 
-    SPEX_Chol_analysis* S = NULL;
+    SPEX_symbolic_analysis* S = NULL;
     int64_t i, n = A->n;
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
 
@@ -85,12 +83,14 @@ SPEX_info SPEX_Chol_preorder
     SPEX_matrix_nnz(&anz, A, option);   
 
     // Allocate memory for S
-    S = (SPEX_Chol_analysis*) SPEX_malloc(sizeof(SPEX_Chol_analysis));
+    S = (SPEX_symbolic_analysis*) SPEX_malloc(sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
 
+    S->kind = SPEX_CHOLESKY_SYMBOLIC_ANALYSIS ;
+
     // Allocate memory for column permutation
-    S->p = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
-    if (S->p == NULL)
+    S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
+    if (S->Q_perm == NULL)
     {
         //TODO: Use SPEX_FREE_ALLOCATION mechanism DONE
         //Is SPEX_Chol_analysis_free(&S) a safe free? Please make sure it is a safe free (meaning that it won't crash if we call it twice; i.e., if we free an already freed or an unallocated stuff)
@@ -110,7 +110,7 @@ SPEX_info SPEX_Chol_preorder
         {
             for (i = 0; i < n+1; i++)
             {
-                S->p[i] = i;
+                S->Q_perm[i] = i;
             }
             // Very crude estimate for number of L and U nonzeros
             S->lnz = 10*anz;
@@ -136,7 +136,7 @@ SPEX_info SPEX_Chol_preorder
             // Initialize S->p as per COLAMD documentation
             for (i = 0; i < n+1; i++)
             {
-                S->p[i] = A->p[i];
+                S->Q_perm[i] = A->p[i];
             }
             // Initialize A2 per COLAMD documentation
             for (i = 0; i < anz; i++)
@@ -145,7 +145,7 @@ SPEX_info SPEX_Chol_preorder
             }
             int64_t stats[COLAMD_STATS];
             colamd_l(n, n, Alen, (SuiteSparse_long *) A2,
-                (SuiteSparse_long *) S->p, (double *) NULL,
+                (SuiteSparse_long *) S->Q_perm, (double *) NULL,
                 (SuiteSparse_long *) stats);
             // estimate for lnz and unz
             S->lnz = 10*anz;
@@ -175,7 +175,7 @@ SPEX_info SPEX_Chol_preorder
             double Info [AMD_INFO];
             // Perform AMD
             amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-            (SuiteSparse_long *) S->p, Control, Info) ;
+            (SuiteSparse_long *) S->Q_perm, Control, Info) ;
              S->lnz = Info[AMD_LNZ];        // Exact number of nonzeros for Cholesky
              if (pr > 0)   // Output AMD info if desired
              {
@@ -184,7 +184,7 @@ SPEX_info SPEX_Chol_preorder
                  amd_l_info(Info);
              }
              double flops=A->n + Info[AMD_NDIV] +2*Info [AMD_NMULTSUBS_LDL]; //n + ndiv + 2*nmultsubs_ldl //CLUSTER
-             printf("%f, %d, ",flops, S->lnz); //CLUSTER
+             //printf("%f, %d, ",flops, S->lnz); //CLUSTER
         }
         break;
     }//end switch(order)

@@ -925,5 +925,11 @@ SPEX_info SPEX_determine_symmetry
             // the values
 );
 
+SPEX_info SPEX_determine_empty_column
+(
+    bool empty_column_exists, //true if A has a column of only 0s
+    SPEX_matrix* A
+);
+
 #endif
 

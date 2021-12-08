@@ -10,8 +10,8 @@
 //------------------------------------------------------------------------------
 
 # define SPEX_FREE_ALLOCATION      \
-    SPEX_matrix_free(&L, NULL);    \
-    SPEX_matrix_free(&rhos, NULL); \
+    SPEX_factorization_free(&F, option);   
+
 
 #include "spex_chol_internal.h"  
 
@@ -55,9 +55,8 @@
 SPEX_info SPEX_Chol_Factor      
 (
     // Output
-    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
-    SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_factorization **F_handle, // Cholesky factorization
+    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -68,12 +67,15 @@ SPEX_info SPEX_Chol_Factor
 )
 {
     SPEX_info info;
+
+    SPEX_factorization *F = NULL ;
+
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
-    if (!L_handle || !S || !rhos_handle || !option )
+    /**/if (!F_handle || !S || !option )
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -84,14 +86,61 @@ SPEX_info SPEX_Chol_Factor
     if (anz < 0)
     {
         return SPEX_INCORRECT_INPUT;
+    }/**/ //TOCHECK why do I need to comment this so that things will compile
+
+    (*F_handle) = NULL ;
+
+    //--------------------------------------------------------------------------
+    // Declare and initialize workspace
+    //--------------------------------------------------------------------------
+
+    int64_t n = A->n ;
+
+    //SPEX_factorization *F = NULL ;
+    // allocate memory space for the factorization
+    F = (SPEX_factorization*) SPEX_calloc(1, sizeof(SPEX_factorization));
+    if (F == NULL)
+    {
+        return SPEX_OUT_OF_MEMORY;
     }
+    // set factorization kind
+    F->kind = SPEX_CHOLESKY_FACTORIZATION;
+
+    // Allocate and set scale_for_A
+    SPEX_CHECK(SPEX_mpq_init(F->scale_for_A));
+    SPEX_CHECK(SPEX_mpq_set (F->scale_for_A, A->scale));
+
+    // Inverse pivot ordering
+    F->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+    // Actual row permutation, the inverse of pinv. This
+    // is used for sorting
+    F->P_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+    // column permutation, to be copied from S->Q_perm
+    F->Q_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+
+
+    // copy column permutation from symbolic analysis to factorization
+    memcpy(F->Q_perm, S->Q_perm, n * sizeof(int64_t));
+
 
     //--------------------------------------------------------------------------
-    // Declare outputs 
+    // Declare memory for rhos, L, and U
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *L = NULL ;
-    SPEX_matrix *rhos = NULL ;
+    // Create rhos, a global dense mpz_t matrix of dimension n*1
+    SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
+        false, false, option));
+
+    // Allocate L without initializing each entry.
+    // L is allocated to have nnz(L) which is estimated by the symbolic
+    // analysis. However, unlike traditional matrix allocation, the second
+    // boolean parameter here is set to false, so the individual values of
+    // L are not allocated. Instead, a more efficient method to
+    // allocate these values is done in the factorization to reduce
+    // memory usage.
+    SPEX_CHECK (SPEX_matrix_allocate(&(F->L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
+        false, false, option));
+
 
     //--------------------------------------------------------------------------
     // Call factorization
@@ -101,20 +150,20 @@ SPEX_info SPEX_Chol_Factor
     {
         case SPEX_ALGORITHM_DEFAULT:
         case SPEX_CHOL_UP:
-            SPEX_CHECK(spex_Chol_Up_Factor(&L, &rhos, S, A, option));
+            SPEX_CHECK(spex_Chol_Up_Factor(&(F->L), &(F->rhos), S, A, option));
             break;
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK(spex_Chol_Left_Factor(&L, &rhos, S, A, option));
+            SPEX_CHECK(spex_Chol_Left_Factor(&(F->L), &(F->rhos), S, A, option));
             break;
         default:
             return SPEX_INCORRECT_ALGORITHM; //TODO ADD DONE
     }
     /**/
-    
+    memcpy(F->Pinv_perm, S->Pinv_perm, n * sizeof(int64_t)); //TOCHECK
+
     //--------------------------------------------------------------------------
     // Set outputs, return ok
     //--------------------------------------------------------------------------
-    (*L_handle) = L;
-    (*rhos_handle) = rhos;
+    (*F_handle) = F ;
     return SPEX_OK;
 }

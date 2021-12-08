@@ -18,8 +18,7 @@
 
 # define SPEX_FREE_ALLOCATION        \
     SPEX_FREE_WORKSPACE              \
-    SPEX_matrix_free(&L, NULL);      \
-    SPEX_matrix_free(&rhos, NULL);   \
+    //SPEX_factorization_free(&F, option);     
 
 
 #include "spex_chol_internal.h"  
@@ -56,7 +55,8 @@ SPEX_info spex_Chol_Left_Factor
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_Chol_analysis* S,     // Symbolic analysis struct containing the
+    //SPEX_factorization **F_handle,
+    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -68,7 +68,7 @@ SPEX_info spex_Chol_Left_Factor
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
-    if (!L_handle || !S || !rhos_handle || !option )
+    /*if ( !S || !option )
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -82,12 +82,11 @@ SPEX_info spex_Chol_Left_Factor
     if (anz < 0)
     {
         return SPEX_INCORRECT_INPUT;
-    }
+    }*/
        
     //--------------------------------------------------------------------------
     // Declare and initialize workspace 
     //--------------------------------------------------------------------------
-    
     SPEX_matrix *L = NULL ;
     SPEX_matrix *rhos = NULL ;
     int64_t *xi = NULL ;
@@ -175,7 +174,7 @@ SPEX_info spex_Chol_Left_Factor
     // As inidicated with the second boolean parameter true, the mpz entries in
     // rhos are initialized to the default size (unlike x).
 
-    SPEX_CHECK (SPEX_matrix_allocate(&rhos, SPEX_DENSE, SPEX_MPZ, n, 1, n,
+    SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
     
     if (!x || !rhos)
@@ -202,7 +201,7 @@ SPEX_info spex_Chol_Left_Factor
     // a more efficient method to allocate these values is done inside the 
     // factorization to reduce memory usage.
     
-    SPEX_CHECK(spex_Chol_Pre_Left_Factor(&L, xi, A, S, c));
+    SPEX_CHECK(spex_Chol_Pre_Left_Factor(&(L), xi, A, S, c));
         
     // Set the column pointers of L
     for (k = 0; k < n; k++)
