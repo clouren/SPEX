@@ -99,7 +99,8 @@ SPEX_info spex_Up_Chol_triangular_solve
     ASSERT(rhos->type == SPEX_MPZ);
     ASSERT(rhos->kind == SPEX_CSC);
     
-    int64_t j, i, inew, p, m, top, n = A->n, col, sgn;
+    int64_t j, i, inew, p, m, top, n = A->n, col;
+    int sgn;
     
     ASSERT(n >= 0);
     
