@@ -1,0 +1,94 @@
+        -:    0:Source:SPEX_matrix_nnz.c
+        -:    0:Graph:SPEX_matrix_nnz.gcno
+        -:    0:Data:SPEX_matrix_nnz.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_matrix_nnz: find # of entries in a matrix
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:#pragma GCC diagnostic ignored "-Wunused-variable"
+        -:   12:#include "spex_util_internal.h"
+        -:   13:
+        -:   14:
+   185066:   15:SPEX_info SPEX_matrix_nnz     // find the # of entries in A
+        -:   16:(
+        -:   17:    int64_t *nnz,              // # of entries in A, -1 if A is NULL
+        -:   18:    const SPEX_matrix *A,      // matrix to query
+        -:   19:    const SPEX_options *option // command options, currently unused
+        -:   20:)
+        -:   21:{
+        -:   22:
+        -:   23:    //--------------------------------------------------------------------------
+        -:   24:    // check inputs
+        -:   25:    //--------------------------------------------------------------------------
+        -:   26:
+  185066*:   27:    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+        -:   28:
+   185066:   29:    if (A == NULL)
+        -:   30:    {
+      316:   31:        *nnz = -1;
+      316:   32:        return (SPEX_INCORRECT_INPUT) ;
+        -:   33:    }
+        -:   34:
+        -:   35:    //--------------------------------------------------------------------------
+        -:   36:    // find nnz (A)
+        -:   37:    //--------------------------------------------------------------------------
+        -:   38:
+        -:   39:    // If kind != SPEX_DYNAMIC_CSC, SPEX_matrix_nnz(&nnz, A, option) returns
+        -:   40:    // with nnz <= A->nzmax.
+        -:   41:
+   184750:   42:    switch (A->kind)
+        -:   43:    {
+    72379:   44:        case SPEX_CSC:
+        -:   45:        {
+        -:   46:            // CSC matrices:  nnz(A) is given by Ap[n].  A->nz is ignored.
+   72379*:   47:            *nnz = (A->p == NULL || A->n < 0) ? (-1) : A->p [A->n] ;
+        -:   48:        }
+    72379:   49:        break;
+        -:   50:
+    53543:   51:        case SPEX_TRIPLET:
+        -:   52:        {
+        -:   53:            // triplet matrices:  nnz(A) is given by A->nz.
+    53543:   54:            *nnz = A->nz ;
+        -:   55:        }
+    53543:   56:        break;
+        -:   57:
+    57588:   58:        case SPEX_DENSE:
+        -:   59:        {
+        -:   60:            // dense matrices: nnz(A) is always m*n.  A->nz is ignored.
+   57588*:   61:            *nnz = (A->m < 0 || A->n < 0)? (-1) : (A->m * A->n) ;
+        -:   62:        }
+    57588:   63:        break;
+        -:   64:
+     1238:   65:        case SPEX_DYNAMIC_CSC:
+        -:   66:        {
+     1238:   67:            if (A->v == NULL)
+        -:   68:            {
+       19:   69:                *nnz = -1;
+       19:   70:                return SPEX_INCORRECT_INPUT;
+        -:   71:            }
+     1219:   72:            *nnz = 0;
+     9646:   73:            for (int64_t j = 0; j < A->n; j++)
+        -:   74:            {
+     8446:   75:                if (A->v[j] == NULL)
+        -:   76:                {
+       19:   77:                    *nnz = -1;
+       19:   78:                    return SPEX_INCORRECT_INPUT;
+        -:   79:                }
+     8427:   80:                *nnz += A->v[j]->nz;
+        -:   81:            }
+        -:   82:        }
+     1200:   83:        break;
+        -:   84:
+        2:   85:        default:
+        2:   86:            return (SPEX_INCORRECT_INPUT) ;
+        -:   87:    }
+  184710*:   88:    return ((*nnz < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+        -:   89:}
+        -:   90:

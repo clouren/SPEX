@@ -1,0 +1,86 @@
+        -:    0:Source:spex_expand_mpq_array.c
+        -:    0:Graph:spex_expand_mpq_array.gcno
+        -:    0:Data:spex_expand_mpq_array.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/spex_expand_mpq_array: convert mpq array to mpz
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function converts a mpq array of size n into an appropriate
+        -:   12: * mpz array of size n. To do this, the lcm of the denominators is found as a
+        -:   13: * scaling factor. This function allows mpq arrays to be used in SPEX.
+        -:   14: */
+        -:   15:
+        -:   16:#define SPEX_FREE_ALL               \
+        -:   17:    SPEX_MPZ_CLEAR(temp);           \
+        -:   18:    SPEX_matrix_free(&x3, NULL);    \
+        -:   19:    SPEX_matrix_free(&x4, NULL);
+        -:   20:
+        -:   21:#include "spex_util_internal.h"
+        -:   22:
+     4047:   23:SPEX_info spex_expand_mpq_array
+        -:   24:(
+        -:   25:    mpz_t* x_out,        // mpz array, on output x_out = x*scale
+        -:   26:    mpq_t* x,            // mpq array that needs to be converted
+        -:   27:    mpq_t scale,         // scaling factor. x_out = scale*x
+        -:   28:    int64_t n,           // size of x
+        -:   29:    const SPEX_options* option // Command options
+        -:   30:)
+        -:   31:{
+        -:   32:
+        -:   33:    //--------------------------------------------------------------------------
+        -:   34:    // check inputs
+        -:   35:    //--------------------------------------------------------------------------
+        -:   36:    // inputs have checked in the only caller spex_cast_array
+        -:   37:    ASSERT(n >= 0);    
+        -:   38:    SPEX_info info ;
+        -:   39:
+        -:   40:    //--------------------------------------------------------------------------
+        -:   41:
+        -:   42:    // Define temporary matrices
+        -:   43:    mpz_t temp;
+     4047:   44:    SPEX_matrix *x3 = NULL;
+     4047:   45:    SPEX_matrix *x4 = NULL;;
+     4047:   46:    SPEX_MPZ_SET_NULL(temp);
+    4047*:   47:    SPEX_CHECK (SPEX_mpz_init(temp)) ;
+        -:   48:
+        -:   49:    // Allocate memory
+     4036:   50:    SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPZ, n, 1, n,
+        -:   51:        false, true, option));
+     3878:   52:    SPEX_CHECK (SPEX_matrix_allocate(&x4, SPEX_DENSE, SPEX_MPQ, n, 1, n,
+        -:   53:        false, true, option));
+        -:   54:
+        -:   55:    ASSERT( x3 != NULL);
+        -:   56:    ASSERT( x4 != NULL);
+        -:   57:    // x3 = denominators of (mpq_t) x
+    51667:   58:    for (int64_t i = 0; i < n; i++)
+        -:   59:    {
+   48061*:   60:        SPEX_CHECK(SPEX_mpq_get_den(x3->x.mpz[i], x[i]));
+        -:   61:    }
+        -:   62:
+        -:   63:    // Find LCM of denominators of x
+    3606*:   64:    SPEX_CHECK(SPEX_mpz_set(temp,x3->x.mpz[0]));
+    47958:   65:    for (int64_t i = 1; i < n; i++)
+        -:   66:    {
+    44363:   67:        SPEX_CHECK(SPEX_mpz_lcm(temp, x3->x.mpz[i], temp));
+        -:   68:    }
+    3595*:   69:    SPEX_CHECK(SPEX_mpq_set_z(scale,temp));
+        -:   70:
+    50202:   71:    for (int64_t i = 0; i < n; i++)
+        -:   72:    {
+        -:   73:        // x4[i] = x[i]*temp
+    46835:   74:        SPEX_CHECK(SPEX_mpq_mul(x4->x.mpq[i], x[i], scale));
+        -:   75:
+        -:   76:        // x_out[i] = x4[i]
+   46607*:   77:        SPEX_CHECK(SPEX_mpz_set_q(x_out[i], x4->x.mpq[i]));
+        -:   78:    }
+     3367:   79:    SPEX_FREE_ALL;
+     3367:   80:    return SPEX_OK;
+        -:   81:}
+        -:   82:

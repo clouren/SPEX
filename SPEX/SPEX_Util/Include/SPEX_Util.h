@@ -217,10 +217,6 @@ typedef struct SPEX_options
 // To free it, simply use SPEX_FREE (*option).
 SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
-// check if SPEX_initialize* has been called
-bool spex_initialized ( void ) ;        // true if called, false if not
-void spex_set_initialized (bool s) ;    // set global initialzed flag to s
-
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix
 //------------------------------------------------------------------------------
@@ -919,10 +915,11 @@ SPEX_info SPEX_transpose
 SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
-    bool check_if_numerically_symmetric
+    bool check_if_numerically_symmetric,
             // if true, check A=A' (pattern & values). if false,
             // only check if the pattern of A is symmetric, not
             // the values
+    const SPEX_options* option
 );
 
 #if 0

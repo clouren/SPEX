@@ -1,0 +1,180 @@
+        -:    0:Source:SPEX_Left_LU_solve.c
+        -:    0:Graph:SPEX_Left_LU_solve.gcno
+        -:    0:Data:SPEX_Left_LU_solve.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Left_LU/SPEX_Left_LU_solve: exact solution of Ax=b
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function solves the linear system LD^(-1)U x = b. It
+        -:   12: * essnetially serves as a wrapper for all forward and backward substitution
+        -:   13: * routines. This function always returns the solution matrix x as a rational
+        -:   14: * matrix. If a user desires to have double or mpfr output, they must create
+        -:   15: * a matrix copy.
+        -:   16: *
+        -:   17: * Input/output arguments:
+        -:   18: *
+        -:   19: * x_handle: A pointer to the solution vectors. Unitialized on input.
+        -:   20: *           on output, contains the exact rational solution of the system
+        -:   21: *
+        -:   22: * b:        Set of RHS vectors
+        -:   23: *
+        -:   24: * A:        Input matrix. Unmodified on input/output
+        -:   25: *
+        -:   26: * L:        Lower triangular matrix. Unmodified on input/output
+        -:   27: *
+        -:   28: * U:        Upper triangular matrix. Unmodified on input/output
+        -:   29: *
+        -:   30: * rhos:     dense mpz_t matrix of pivots. Contains the sequence of pivots
+        -:   31: *           encountered during factorization and is used for forward/back
+        -:   32: *           substitution. Unmodified on input/output.
+        -:   33: *
+        -:   34: * S:        symbolic analysis struct, used for vector permutation
+        -:   35: *
+        -:   36: * pinv:     inverse row permutation vector, used to permute the b vectors.
+        -:   37: *           unmodified on input/output.
+        -:   38: *
+        -:   39: * option:   command options
+        -:   40: */
+        -:   41:
+        -:   42:#define SPEX_FREE_WORK                  \
+        -:   43:    SPEX_matrix_free (&b2, NULL) ;      \
+        -:   44:    SPEX_matrix_free (&x2, NULL) ;      \
+        -:   45:    SPEX_MPQ_CLEAR (scale) ;
+        -:   46:
+        -:   47:#define SPEX_FREE_ALL                   \
+        -:   48:    SPEX_FREE_WORK                      \
+        -:   49:    SPEX_matrix_free (&x, NULL) ;
+        -:   50:
+        -:   51:#include "spex_left_lu_internal.h"
+        -:   52:
+      867:   53:SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
+        -:   54:(
+        -:   55:    // Output
+        -:   56:    SPEX_matrix **x_handle,  // rational solution to the system
+        -:   57:    // input:
+        -:   58:    const SPEX_matrix *b,   // right hand side vector
+        -:   59:    const SPEX_matrix *A,   // Input matrix
+        -:   60:    const SPEX_matrix *L,   // lower triangular matrix
+        -:   61:    const SPEX_matrix *U,   // upper triangular matrix
+        -:   62:    const SPEX_matrix *rhos,// sequence of pivots
+        -:   63:    const SPEX_LU_analysis *S,// symbolic analysis struct
+        -:   64:    const int64_t *pinv,    // inverse row permutation
+        -:   65:    const SPEX_options* option // Command options
+        -:   66:)
+        -:   67:{
+        -:   68:
+        -:   69:    //--------------------------------------------------------------------------
+        -:   70:    // check inputs
+        -:   71:    //--------------------------------------------------------------------------
+        -:   72:
+        -:   73:    SPEX_info info ;
+     867*:   74:    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+        -:   75:
+     867*:   76:    SPEX_REQUIRE (b,    SPEX_DENSE, SPEX_MPZ) ;
+     867*:   77:    SPEX_REQUIRE (A,    SPEX_CSC,   SPEX_MPZ) ;
+     867*:   78:    SPEX_REQUIRE (L,    SPEX_CSC,   SPEX_MPZ) ;
+     867*:   79:    SPEX_REQUIRE (U,    SPEX_CSC,   SPEX_MPZ) ;
+     867*:   80:    SPEX_REQUIRE (rhos, SPEX_DENSE, SPEX_MPZ) ;
+        -:   81:
+      867:   82:    if (!x_handle || !S || !pinv || L->m != A->m || L->n != U->m ||
+      395:   83:        U->n != A->n || A->n != A->m || A->m != b->m )
+        -:   84:    {
+      472:   85:        return SPEX_INCORRECT_INPUT;
+        -:   86:    }
+      395:   87:    *x_handle = NULL;
+        -:   88:
+        -:   89:    //--------------------------------------------------------------------------
+        -:   90:    // Declare and initialize workspace
+        -:   91:    //--------------------------------------------------------------------------
+        -:   92:
+      395:   93:    int64_t i, n = L->n;
+        -:   94:    mpq_t scale ;
+      395:   95:    SPEX_MPQ_SET_NULL (scale) ;
+        -:   96:
+      395:   97:    SPEX_matrix *x = NULL;   // final solution
+      395:   98:    SPEX_matrix *x2 = NULL;  // unpermuted solution
+      395:   99:    SPEX_matrix *b2 = NULL;  // permuted b
+        -:  100:
+        -:  101:    //--------------------------------------------------------------------------
+        -:  102:    // b2 (pinv) = b
+        -:  103:    //--------------------------------------------------------------------------
+        -:  104:
+     395*:  105:    SPEX_CHECK (spex_left_lu_permute_b (&b2, b, pinv, option)) ;
+        -:  106:
+        -:  107:    //--------------------------------------------------------------------------
+        -:  108:    // b2 = L\b2, via forward substitution
+        -:  109:    //--------------------------------------------------------------------------
+        -:  110:
+     331*:  111:    SPEX_CHECK(spex_left_lu_forward_sub(L, b2, (SPEX_matrix*) rhos));
+        -:  112:
+        -:  113:    //--------------------------------------------------------------------------
+        -:  114:    // b2 = b2 * det, where det=rhos[n-1]
+        -:  115:    //--------------------------------------------------------------------------
+        -:  116:
+     286*:  117:    SPEX_CHECK(SPEX_matrix_mul(b2, rhos->x.mpz[n-1]));
+        -:  118:
+        -:  119:    //--------------------------------------------------------------------------
+        -:  120:    // b2 = U\b2, via back substitution
+        -:  121:    //--------------------------------------------------------------------------
+     275*:  122:    SPEX_CHECK(spex_left_lu_back_sub(U, b2));
+        -:  123:
+        -:  124:    //--------------------------------------------------------------------------
+        -:  125:    // x2 = b2/det, where det=rhos[n-1]
+        -:  126:    //--------------------------------------------------------------------------
+        -:  127:
+     270*:  128:    SPEX_CHECK (SPEX_matrix_div (&x2, b2, rhos->x.mpz[n-1], option)) ;
+        -:  129:
+        -:  130:    //--------------------------------------------------------------------------
+        -:  131:    // x = Q*x2
+        -:  132:    //--------------------------------------------------------------------------
+        -:  133:
+     157*:  134:    SPEX_CHECK (spex_left_lu_permute_x (&x, x2, (SPEX_LU_analysis *) S, option)) ;
+       81:  135:    SPEX_matrix_free (&x2, NULL) ;
+        -:  136:
+        -:  137:    //--------------------------------------------------------------------------
+        -:  138:    // Check the solution if desired (debugging only)
+        -:  139:    //--------------------------------------------------------------------------
+        -:  140:
+       81:  141:    bool check = SPEX_OPTION_CHECK (option) ;
+       81:  142:    if (check)
+        -:  143:    {
+       4*:  144:        SPEX_CHECK (SPEX_check_solution (A, x, b, option)) ;
+        -:  145:    }
+        -:  146:
+        -:  147:    //--------------------------------------------------------------------------
+        -:  148:    // Scale the solution if necessary.
+        -:  149:    //--------------------------------------------------------------------------
+        -:  150:
+      81*:  151:    SPEX_CHECK(SPEX_mpq_init(scale));
+        -:  152:
+        -:  153:    // set the scaling factor scale = A->scale / b->scale
+       71:  154:    SPEX_CHECK( SPEX_mpq_div(scale, A->scale, b->scale));
+        -:  155:
+        -:  156:    // Determine if the scaling factor is 1
+        -:  157:    int r;
+      61*:  158:    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, scale, 1, 1));
+       61:  159:    int64_t nz = x->m * x->n;
+       61:  160:    if (r != 0 )
+        -:  161:    {
+      177:  162:        for (i = 0; i < nz; i++)
+        -:  163:        {
+      149:  164:            SPEX_CHECK(SPEX_mpq_mul(x->x.mpq[i], x->x.mpq[i], scale));
+        -:  165:        }
+        -:  166:    }
+        -:  167:
+        -:  168:    //--------------------------------------------------------------------------
+        -:  169:    // free workspace and return result
+        -:  170:    //--------------------------------------------------------------------------
+        -:  171:
+       46:  172:    SPEX_FREE_WORK ;
+       46:  173:    (*x_handle) = x ;
+       46:  174:    return (SPEX_OK) ;
+        -:  175:}
+        -:  176:

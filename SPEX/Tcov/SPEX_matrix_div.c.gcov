@@ -1,0 +1,90 @@
+        -:    0:Source:SPEX_matrix_div.c
+        -:    0:Graph:SPEX_matrix_div.gcno
+        -:    0:Data:SPEX_matrix_div.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_matrix_div: divide a matrix by a scalar
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function takes as input a dense SPEX_matrix x, which is MPZ,
+        -:   12: * and divides it a scalar.  This division is then stored in a dense MPQ
+        -:   13: * matrix, which must have the same number of entries as x.  This is used
+        -:   14: * internally to divide the solution vector by the determinant of the matrix.
+        -:   15: *
+        -:   16: * On output, the contents of the matrix x2 are modified.
+        -:   17: */
+        -:   18:
+        -:   19:#define SPEX_FREE_WORK            \
+        -:   20:    SPEX_MPQ_CLEAR(scalar2);
+        -:   21:
+        -:   22:#define SPEX_FREE_ALL               \
+        -:   23:    SPEX_FREE_WORK                  \
+        -:   24:    SPEX_matrix_free (&x2, NULL) ;
+        -:   25:
+        -:   26:#include "spex_util_internal.h"
+        -:   27:
+        -:   28:
+      270:   29:SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
+        -:   30:(
+        -:   31:    SPEX_matrix **x2_handle,    // x2 = x/scalar
+        -:   32:    SPEX_matrix* x,             // input vector x
+        -:   33:    const mpz_t scalar,         // the scalar
+        -:   34:    const SPEX_options *option
+        -:   35:)
+        -:   36:{
+     270*:   37:    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+        -:   38:
+        -:   39:    //--------------------------------------------------------------------------
+        -:   40:    // check inputs
+        -:   41:    //--------------------------------------------------------------------------
+        -:   42:
+        -:   43:    SPEX_info info ;
+      270:   44:    SPEX_matrix *x2 = NULL ;
+      270:   45:    (*x2_handle) = NULL ;
+     270*:   46:    SPEX_REQUIRE (x, SPEX_DENSE, SPEX_MPZ) ;
+        -:   47:
+        -:   48:    //--------------------------------------------------------------------------
+        -:   49:    // Set scalar2 = scalar
+        -:   50:    //--------------------------------------------------------------------------
+        -:   51:
+        -:   52:    mpq_t scalar2 ;
+      270:   53:    SPEX_MPQ_SET_NULL (scalar2) ;
+     270*:   54:    SPEX_CHECK (SPEX_mpq_init (scalar2)) ;
+      260:   55:    SPEX_CHECK (SPEX_mpq_set_num (scalar2, scalar)) ;
+        -:   56:
+        -:   57:    //--------------------------------------------------------------------------
+        -:   58:    // allocate x2
+        -:   59:    //--------------------------------------------------------------------------
+        -:   60:
+      258:   61:    SPEX_CHECK (SPEX_matrix_allocate(&x2, SPEX_DENSE, SPEX_MPQ, x->m, x->n,
+        -:   62:        0, false, true, option)) ;
+        -:   63:
+        -:   64:    //--------------------------------------------------------------------------
+        -:   65:    // iterate each entry of x, copy to x2 and divide it by scalar
+        -:   66:    //--------------------------------------------------------------------------
+        -:   67:
+        -:   68:    int64_t nz;
+     198*:   69:    SPEX_CHECK (SPEX_matrix_nnz (&nz, x, option)) ;
+     1407:   70:    for (int64_t i = 0; i < nz; i++)
+        -:   71:    {
+        -:   72:        // Set x2[i] = x[i]
+     1250:   73:        SPEX_CHECK (SPEX_mpq_set_num (x2->x.mpq[i], x->x.mpz[i])) ;
+        -:   74:        // x2[i] = x2[i] / scalar2
+     1242:   75:        SPEX_CHECK (SPEX_mpq_div (x2->x.mpq[i], x2->x.mpq[i], scalar2)) ;
+        -:   76:    }
+        -:   77:
+        -:   78:    //--------------------------------------------------------------------------
+        -:   79:    // free workspace and return result
+        -:   80:    //--------------------------------------------------------------------------
+        -:   81:
+      157:   82:    SPEX_FREE_WORK ;
+      157:   83:    (*x2_handle) = x2 ;
+      157:   84:    return (SPEX_OK) ;
+        -:   85:}
+        -:   86:

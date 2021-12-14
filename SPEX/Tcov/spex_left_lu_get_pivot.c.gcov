@@ -1,0 +1,224 @@
+        -:    0:Source:spex_left_lu_get_pivot.c
+        -:    0:Graph:spex_left_lu_get_pivot.gcno
+        -:    0:Data:spex_left_lu_get_pivot.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Left_LU/spex_left_lu_get_pivot: find a pivot entry in a column
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* This function performs the pivoting for the SPEX Left LU factorization.
+        -:   12: * The optional Order is:
+        -:   13: *
+        -:   14: *  SPEX_SMALLEST = 0,      Smallest pivot
+        -:   15: *  SPEX_DIAGONAL = 1,      Diagonal pivoting
+        -:   16: *  SPEX_FIRST_NONZERO = 2, First nonzero per column chosen as pivot
+        -:   17: *  SPEX_TOL_SMALLEST = 3,  Diagonal pivoting with tolerance for pivot. (Default)
+        -:   18: *  SPEX_TOL_LARGEST = 4,   Diagonal pivoting with tolerance for largest pivot
+        -:   19: *  SPEX_LARGEST = 5        Largest pivot
+        -:   20: *
+        -:   21: * Options 2, 4 and 5 are not recommended and may lead to significant drops in
+        -:   22: * performance.
+        -:   23: *
+        -:   24: * On output, the pivs, rhos, pinv, and row_perm arrays are all modified.
+        -:   25: */
+        -:   26:
+        -:   27:#define SPEX_FREE_ALL           \
+        -:   28:    SPEX_MPQ_CLEAR (tol) ;      \
+        -:   29:    SPEX_MPQ_CLEAR (ratio) ;
+        -:   30:
+        -:   31:#include "spex_left_lu_internal.h"
+        -:   32:
+     3626:   33:SPEX_info spex_left_lu_get_pivot
+        -:   34:(
+        -:   35:    int64_t *pivot,         // found index of pivot entry
+        -:   36:    SPEX_matrix* x,         // kth column of L and U
+        -:   37:    int64_t* pivs,          // vector indicating which rows have been pivotal
+        -:   38:    int64_t n,              // dimension of the problem
+        -:   39:    int64_t top,            // nonzero pattern is located in xi[top..n-1]
+        -:   40:    int64_t* xi,            // nonzero pattern of x
+        -:   41:    int64_t col,            // current column of A (real kth column i.e., q[k])
+        -:   42:    int64_t k,              // iteration of the algorithm
+        -:   43:    SPEX_matrix* rhos,      // vector of pivots
+        -:   44:    int64_t* pinv,          // row permutation
+        -:   45:    int64_t* row_perm,      // opposite of pinv.
+        -:   46:                            // if pinv[i] = j then row_perm[j] = i
+        -:   47:    const SPEX_options* option // command options
+        -:   48:)
+        -:   49:{
+        -:   50:
+        -:   51:    //--------------------------------------------------------------------------
+        -:   52:    // check inputs
+        -:   53:    //--------------------------------------------------------------------------
+        -:   54:
+        -:   55:    SPEX_info info ;
+    3626*:   56:    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
+    3626*:   57:    SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
+        -:   58:
+        -:   59:    // inputs have been checked in the only caller SPEX_Left_LU_factorize
+        -:   60:    // they are kept here for future reference
+        -:   61:#if 0
+        -:   62:    if (!pivot || !pivs || !xi || !pinv || !row_perm )
+        -:   63:    {
+        -:   64:        return SPEX_INCORRECT_INPUT;
+        -:   65:    }
+        -:   66:#endif
+        -:   67:    // pivoting method to use (see above description)
+    3626*:   68:    SPEX_pivot order = SPEX_OPTION_PIVOT(option);
+        -:   69:    // tolerance used if some tol-based pivoting is used
+    3626*:   70:    double tolerance = SPEX_OPTION_TOL(option);
+        -:   71:
+        -:   72:    //--------------------------------------------------------------------------
+        -:   73:    // allocate workspace
+        -:   74:    //--------------------------------------------------------------------------
+        -:   75:
+        -:   76:    int sgn, r;
+        -:   77:    mpq_t tol, ratio;
+     3626:   78:    SPEX_MPQ_SET_NULL(tol);
+     3626:   79:    SPEX_MPQ_SET_NULL(ratio);
+        -:   80:
+        -:   81:    //--------------------------------------------------------------------------
+        -:   82:    // Smallest pivot
+        -:   83:    //--------------------------------------------------------------------------
+        -:   84:
+     3626:   85:    if (order == SPEX_SMALLEST)
+        -:   86:    {
+     533*:   87:        SPEX_CHECK(spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi));
+        -:   88:    }
+        -:   89:
+        -:   90:    //--------------------------------------------------------------------------
+        -:   91:    // Diagonal
+        -:   92:    //--------------------------------------------------------------------------
+     3093:   93:    else if (order == SPEX_DIAGONAL)
+        -:   94:    {
+        -:   95:        // Check if x[col] is eligible. take smallest pivot    if not
+     461*:   96:        SPEX_CHECK (SPEX_mpz_sgn(&sgn, x->x.mpz[col]));
+      461:   97:        if (sgn != 0 && pivs[col] < 0)
+        -:   98:        {
+      230:   99:            *pivot = col;
+        -:  100:        }
+        -:  101:        else
+        -:  102:        {
+     231*:  103:            SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi));
+        -:  104:        }
+        -:  105:    }
+        -:  106:
+        -:  107:    //--------------------------------------------------------------------------
+        -:  108:    // First nonzero
+        -:  109:    //--------------------------------------------------------------------------
+     2632:  110:    else if (order == SPEX_FIRST_NONZERO)
+        -:  111:    {
+     498*:  112:        SPEX_CHECK (spex_left_lu_get_nonzero_pivot(pivot, x, pivs, n, top, xi));
+        -:  113:    }
+        -:  114:
+        -:  115:    //--------------------------------------------------------------------------
+        -:  116:    // Tolerance with largest pivot
+        -:  117:    //--------------------------------------------------------------------------
+     2134:  118:    else if (order == SPEX_TOL_LARGEST)
+        -:  119:    {
+       2*:  120:        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, x, pivs, n, top, xi));
+        -:  121:
+        -:  122:        //----------------------------------------------------------------------
+        -:  123:        // Check x[col] vs largest potential pivot
+        -:  124:        //----------------------------------------------------------------------
+       2*:  125:        SPEX_CHECK (SPEX_mpz_sgn(&sgn, x->x.mpz[col]));
+        2:  126:        if (sgn != 0 && pivs[col] < 0)
+        -:  127:        {
+       2*:  128:            SPEX_CHECK(SPEX_mpq_init(tol));
+       2*:  129:            SPEX_CHECK(SPEX_mpq_init(ratio));
+        -:  130:            // tol = user specified tolerance
+       2*:  131:            SPEX_CHECK(SPEX_mpq_set_d(tol, tolerance));
+        -:  132:            // ratio = diagonal/largest
+       2*:  133:            SPEX_CHECK(SPEX_mpq_set_num(ratio, x->x.mpz[col]));
+       2*:  134:            SPEX_CHECK(SPEX_mpq_set_den(ratio, x->x.mpz[*pivot]));
+        -:  135:            // ratio = |ratio|
+       2*:  136:            SPEX_CHECK(SPEX_mpq_abs(ratio, ratio));
+        -:  137:
+        -:  138:            // Is ratio >= tol?
+       2*:  139:            SPEX_CHECK(SPEX_mpq_cmp(&r, ratio, tol));
+        2:  140:            if (r >= 0)
+        -:  141:            {
+        2:  142:                *pivot = col;
+        -:  143:            }
+        -:  144:        }
+        -:  145:    }
+        -:  146:
+        -:  147:    //--------------------------------------------------------------------------
+        -:  148:    // Use the largest potential pivot
+        -:  149:    //--------------------------------------------------------------------------
+     2132:  150:    else if (order == SPEX_LARGEST)
+        -:  151:    {
+     531*:  152:        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, x, pivs, n, top, xi));
+        -:  153:    }
+        -:  154:
+        -:  155:    //--------------------------------------------------------------------------
+        -:  156:    // Tolerance with smallest pivot (default option)
+        -:  157:    //--------------------------------------------------------------------------
+        -:  158:    else // if (order == SPEX_TOL_SMALLEST)
+        -:  159:    {
+    1601*:  160:        SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi)) ;
+        -:  161:
+        -:  162:        //----------------------------------------------------------------------
+        -:  163:        // Checking x[col] vs smallest pivot
+        -:  164:        //----------------------------------------------------------------------
+    1202*:  165:        SPEX_CHECK (SPEX_mpz_sgn(&sgn, x->x.mpz[col]));
+     1202:  166:        if (sgn != 0 && pivs[col] < 0)
+        -:  167:        {
+        -:  168:
+        -:  169:            // Initialize tolerance and ratio
+     535*:  170:            SPEX_CHECK(SPEX_mpq_init(tol));
+     523*:  171:            SPEX_CHECK(SPEX_mpq_init(ratio));
+        -:  172:
+        -:  173:            // ratio = |smallest/diagonal|
+     511*:  174:            SPEX_CHECK(SPEX_mpz_abs(SPEX_MPQ_NUM(ratio), x->x.mpz[*pivot]));
+     511*:  175:            SPEX_CHECK(SPEX_mpz_abs(SPEX_MPQ_DEN(ratio), x->x.mpz[col]));
+        -:  176:
+        -:  177:            // Set user specified tolerance
+      511:  178:            SPEX_CHECK(SPEX_mpq_set_d(tol, tolerance));
+        -:  179:
+        -:  180:            // Is ratio >= tol?
+     505*:  181:            SPEX_CHECK(SPEX_mpq_cmp(&r, ratio, tol));
+      505:  182:            if (r >= 0)
+        -:  183:            {
+      495:  184:                *pivot = col;
+        -:  185:            }
+        -:  186:        }
+        -:  187:    }
+        -:  188:
+        -:  189:    //--------------------------------------------------------------------------
+        -:  190:    // Reflect changes in row location & row_perm
+        -:  191:    //--------------------------------------------------------------------------
+        -:  192:    // Must move pivot into position k
+     2511:  193:    int64_t intermed = pinv[*pivot];
+     2511:  194:    int64_t intermed2 = row_perm[k];
+        -:  195:
+        -:  196:    //--------------------------------------------------------------------------
+        -:  197:    // Set row_perm[k] = pivot and row_perm[pinv[pivot]] = row_perm[k]
+        -:  198:    // Also, set pinv[pivot] = k and pinv[row_perm[k]] = pinv[pivot]
+        -:  199:    //--------------------------------------------------------------------------
+     2511:  200:    row_perm[k] = *pivot;
+     2511:  201:    row_perm[intermed] = intermed2;
+     2511:  202:    pinv[*pivot] = k;
+     2511:  203:    pinv[intermed2] = intermed;
+        -:  204:    // Row pivot is now pivotal
+     2511:  205:    pivs[*pivot] = 1;
+        -:  206:    
+        -:  207:    // Set the kth pivot.
+        -:  208:    size_t size;
+        -:  209:    // Get the size of x[pivot]
+    2511*:  210:    SPEX_CHECK(SPEX_mpz_sizeinbase(&size, x->x.mpz[*pivot], 2));
+        -:  211:    // GMP manual: Allocated size should be size+2
+     2511:  212:    SPEX_CHECK(SPEX_mpz_init2(rhos->x.mpz[k], size+2));
+        -:  213:    // The kth pivot is x[pivot]    
+    2491*:  214:    SPEX_CHECK (SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[*pivot]));
+        -:  215:
+        -:  216:    // Free memory
+     2491:  217:    SPEX_FREE_ALL;
+     2491:  218:    return SPEX_OK;
+        -:  219:}
+        -:  220:

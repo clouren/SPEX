@@ -1,0 +1,83 @@
+        -:    0:Source:SPEX_vector_allocate.c
+        -:    0:Graph:SPEX_vector_allocate.gcno
+        -:    0:Data:SPEX_vector_allocate.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_vector_allocate.c: create and initialize a vector with given
+        -:    3:// size nzmax.
+        -:    4://------------------------------------------------------------------------------
+        -:    5:
+        -:    6:// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+        -:    7:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    8:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    9:
+        -:   10://------------------------------------------------------------------------------
+        -:   11:
+        -:   12:// Purpose: This function is called to create and initialize a mpz vector with
+        -:   13:// given size nzmax. The mpz_t vector v->x and the index vector v->i are
+        -:   14:// allocated with length nzmax.
+        -:   15:
+        -:   16:#define SPEX_FREE_ALL \
+        -:   17:    SPEX_vector_free (&v, option) ;
+        -:   18:
+        -:   19:#include "spex_util_internal.h"
+        -:   20:
+   232007:   21:SPEX_info SPEX_vector_allocate
+        -:   22:(
+        -:   23:    SPEX_vector **v_handle,         // vector to be allocated
+        -:   24:    const int64_t nzmax,            // number of nnz entries in v
+        -:   25:    const SPEX_options *option
+        -:   26:)
+        -:   27:{
+  232007*:   28:    if (!spex_initialized()) return (SPEX_PANIC);
+   232007:   29:    if (v_handle == NULL || nzmax < 0)
+        -:   30:    {
+       38:   31:        return SPEX_INCORRECT_INPUT;
+        -:   32:    }
+   231969:   33:    *v_handle = NULL;
+        -:   34:
+        -:   35:    SPEX_info info;
+   231969:   36:    SPEX_vector *v = (SPEX_vector*) SPEX_malloc(sizeof(SPEX_vector));
+   231969:   37:    if (!v)
+        -:   38:    {
+      557:   39:        return SPEX_OUT_OF_MEMORY;
+        -:   40:    }
+        -:   41:
+   231412:   42:    v->x = NULL;
+   231412:   43:    v->i = NULL;
+   231412:   44:    v->nzmax = nzmax;
+   231412:   45:    v->nz = 0;
+   231412:   46:    SPEX_MPQ_SET_NULL(v->scale);
+        -:   47:
+        -:   48:    // initialize and set v->scale = 1
+   231412:   49:    SPEX_CHECK(SPEX_mpq_init(v->scale));
+  230298*:   50:    SPEX_CHECK(SPEX_mpq_set_ui(v->scale, 1, 1));
+        -:   51:
+        -:   52:    // if nzmax == 0
+   230298:   53:    if (nzmax == 0)
+        -:   54:    {
+   178048:   55:        *v_handle = v;
+   178048:   56:        return SPEX_OK;
+        -:   57:    }
+        -:   58:
+        -:   59:    // allocate for v->x
+    52250:   60:    v->x = spex_create_mpz_array(nzmax);
+    52250:   61:    if (!(v->x))
+        -:   62:    {
+     1379:   63:        SPEX_FREE_ALL;
+     1379:   64:        return SPEX_OUT_OF_MEMORY;
+        -:   65:    }
+        -:   66:
+        -:   67:    // allocate for v->i
+    50871:   68:    v->i = (int64_t*) SPEX_malloc(nzmax*sizeof(int64_t));
+    50871:   69:    if (!(v->i))
+        -:   70:    {
+      197:   71:        SPEX_FREE_ALL;
+      197:   72:        return SPEX_OUT_OF_MEMORY;
+        -:   73:    }
+        -:   74:
+    50674:   75:    *v_handle = v;
+        -:   76:
+    50674:   77:    return SPEX_OK;
+        -:   78:}
+        -:   79:

@@ -1,0 +1,57 @@
+        -:    0:Source:spex_sparse_collapse.c
+        -:    0:Graph:spex_sparse_collapse.gcno
+        -:    0:Data:spex_sparse_collapse.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/spex_sparse_collapse: shrink space required by a CSC mpz matrix
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
+        -:   12: * size of x and i. so that they only take up the number of elements in the
+        -:   13: * matrix. For example if A->nzmax = 1000 but nnz(A) = 500, A->i and A->x are
+        -:   14: * of size 1000, so this function shrinks them to size 500.  This is only valid
+        -:   15: * in the factorization routines for sparse csc mpz matrices
+        -:   16: */
+        -:   17:
+        -:   18:#include "spex_util_internal.h"
+        -:   19:
+      790:   20:SPEX_info spex_sparse_collapse
+        -:   21:(
+        -:   22:    SPEX_matrix* A // matrix to be shrunk
+        -:   23:)
+        -:   24:{
+        -:   25:
+        -:   26:    //--------------------------------------------------------------------------
+        -:   27:    // check inputs
+        -:   28:    //--------------------------------------------------------------------------
+        -:   29:
+     790*:   30:    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
+        -:   31:
+        -:   32:    //--------------------------------------------------------------------------
+        -:   33:
+        -:   34:    int64_t anz;
+      790:   35:    SPEX_info info = SPEX_matrix_nnz (&anz, A, NULL);
+     790*:   36:    if (info != SPEX_OK)    {return info;}
+        -:   37:
+        -:   38:    // Shrink A->i and A->x such that they're of size anz.  These calls to
+        -:   39:    // SPEX_realloc cannot fail since the space is shrinking.
+        -:   40:
+        -:   41:    bool ok ;
+      790:   42:    A->i = (int64_t *)
+      790:   43:        SPEX_realloc (anz, A->nzmax, sizeof (int64_t), A->i, &ok) ;
+     790*:   44:    if (!ok)    {return SPEX_OUT_OF_MEMORY;}
+        -:   45:
+      790:   46:    A->x.mpz = (mpz_t *)
+      790:   47:        SPEX_realloc (anz, A->nzmax, sizeof (mpz_t), A->x.mpz, &ok) ;
+     790*:   48:    if (!ok)    {return SPEX_OUT_OF_MEMORY;}
+        -:   49:
+      790:   50:    A->nzmax = anz ;
+      790:   51:    return (SPEX_OK) ;
+        -:   52:}
+        -:   53:

@@ -1,0 +1,109 @@
+        -:    0:Source:spex_cast_matrix.c
+        -:    0:Graph:spex_cast_matrix.gcno
+        -:    0:Data:spex_cast_matrix.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/spex_cast_matrix: create a dense typecasted matrix
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:// spex_cast_matrix constructs a dense nz-by-1 matrix Y that holds the
+        -:   12:// typecasted values of the input matrix A.  The input matrix A can be of any
+        -:   13:// kind (CSC, triplet, or dense) and any type.
+        -:   14:
+        -:   15:#define SPEX_FREE_ALL                   \
+        -:   16:    SPEX_matrix_free (&Y, option) ;
+        -:   17:
+        -:   18:#include "spex_util_internal.h"
+        -:   19:
+    33171:   20:SPEX_info spex_cast_matrix
+        -:   21:(
+        -:   22:    SPEX_matrix **Y_handle,     // nz-by-1 dense matrix to create
+        -:   23:    SPEX_type Y_type,           // type of Y
+        -:   24:    SPEX_matrix *A,             // matrix with nz entries
+        -:   25:    const SPEX_options *option  // Command options, if NULL defaults are used
+        -:   26:)
+        -:   27:{
+        -:   28:
+        -:   29:    //--------------------------------------------------------------------------
+        -:   30:    // check inputs
+        -:   31:    //--------------------------------------------------------------------------
+        -:   32:
+        -:   33:    // inputs have been checked in the only caller SPEX_matrix_copy
+        -:   34:#if 0
+        -:   35:    if (Y_handle == NULL || A == NULL)
+        -:   36:    {
+        -:   37:        return (SPEX_INCORRECT_INPUT) ;
+        -:   38:    }
+        -:   39:    if (nz < 0)
+        -:   40:    {
+        -:   41:        return (SPEX_INCORRECT_INPUT) ;
+        -:   42:    }
+        -:   43:    (*Y_handle) = NULL ;
+        -:   44:#endif
+        -:   45:
+        -:   46:    int64_t nz;
+    33171:   47:    SPEX_info info = SPEX_OK ;
+    33171:   48:    SPEX_matrix *Y = NULL ;
+   33171*:   49:    SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;
+        -:   50:
+        -:   51:
+        -:   52:    //--------------------------------------------------------------------------
+        -:   53:    // allocate Y (shallow if Y_type is the same as A->type)
+        -:   54:    //--------------------------------------------------------------------------
+        -:   55:
+    33171:   56:    SPEX_CHECK (SPEX_matrix_allocate (&Y, SPEX_DENSE, Y_type,
+        -:   57:        nz, 1, nz, Y_type == A->type, true, option)) ;
+        -:   58:
+        -:   59:    //--------------------------------------------------------------------------
+        -:   60:    // typecast the values from A into Y
+        -:   61:    //--------------------------------------------------------------------------
+        -:   62:
+    31816:   63:    if (Y_type == A->type)
+        -:   64:    {
+        -:   65:
+        -:   66:        //----------------------------------------------------------------------
+        -:   67:        // Y is shallow; just copy in the pointer of the values of A
+        -:   68:        //----------------------------------------------------------------------
+        -:   69:
+     6252:   70:        switch (Y_type) // checked in SPEX_matrix_copy
+        -:   71:        {
+     1436:   72:            case SPEX_MPZ:   Y->x.mpz   = A->x.mpz   ;
+     1436:   73:            break;
+     1616:   74:            case SPEX_MPQ:   Y->x.mpq   = A->x.mpq   ;
+     1616:   75:            break;
+     1337:   76:            case SPEX_MPFR:  Y->x.mpfr  = A->x.mpfr  ;
+     1337:   77:            break;
+      810:   78:            case SPEX_INT64: Y->x.int64 = A->x.int64 ;
+      810:   79:            break;
+     1053:   80:            case SPEX_FP64:  Y->x.fp64  = A->x.fp64  ;
+     1053:   81:            break;
+        -:   82:        }
+        -:   83:
+     6252:   84:    }
+        -:   85:    else
+        -:   86:    {
+        -:   87:
+        -:   88:        //----------------------------------------------------------------------
+        -:   89:        // Y is deep; typecast the values from A into Y
+        -:   90:        //----------------------------------------------------------------------
+        -:   91:
+    25564:   92:        SPEX_CHECK (spex_cast_array (SPEX_X (Y), Y->type,
+        -:   93:            SPEX_X (A), A->type, nz, Y->scale, A->scale, option)) ;
+        -:   94:
+        -:   95:    }
+        -:   96:
+        -:   97:    //--------------------------------------------------------------------------
+        -:   98:    // return result
+        -:   99:    //--------------------------------------------------------------------------
+        -:  100:
+    30636:  101:    (*Y_handle) = Y;
+   30636*:  102:    SPEX_CHECK (info) ;
+    30636:  103:    return (SPEX_OK) ;
+        -:  104:}
+        -:  105:

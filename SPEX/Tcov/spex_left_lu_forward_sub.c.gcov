@@ -1,0 +1,186 @@
+        -:    0:Source:spex_left_lu_forward_sub.c
+        -:    0:Graph:spex_left_lu_forward_sub.gcno
+        -:    0:Data:spex_left_lu_forward_sub.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Left_LU/spex_forward_sub: sparse forward substitution (x = (LD)\x)
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function performs sparse roundoff-error-free (REF) forward
+        -:   12: * substitution This is essentially the same as the sparse REF triangular solve
+        -:   13: * applied to each column of the right hand side vectors. Like the normal one,
+        -:   14: * this function expects that the matrix x is dense. As a result,the nonzero
+        -:   15: * pattern is not computed and each nonzero in x is iterated across.  The
+        -:   16: * system to solve is L*D*x_output = x_input, overwriting the right-hand-side
+        -:   17: * with the solution.
+        -:   18: *
+        -:   19: * On output, the SPEX_matrix* x structure is modified.
+        -:   20: */
+        -:   21:
+        -:   22:#define SPEX_FREE_ALL            \
+        -:   23:    SPEX_matrix_free(&h, NULL)  ;
+        -:   24:
+        -:   25:#include "spex_left_lu_internal.h"
+        -:   26:
+      331:   27:SPEX_info spex_left_lu_forward_sub
+        -:   28:(
+        -:   29:    const SPEX_matrix *L,   // lower triangular matrix
+        -:   30:    SPEX_matrix *x,         // right hand side matrix of size n*numRHS
+        -:   31:    const SPEX_matrix *rhos // sequence of pivots used in factorization
+        -:   32:)
+        -:   33:{
+        -:   34:
+        -:   35:    //--------------------------------------------------------------------------
+        -:   36:    // check inputs
+        -:   37:    //--------------------------------------------------------------------------
+        -:   38:
+        -:   39:    SPEX_info info ;
+     331*:   40:    SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
+     331*:   41:    SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
+     331*:   42:    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
+        -:   43:
+        -:   44:    //--------------------------------------------------------------------------
+        -:   45:
+        -:   46:    int64_t i, hx, k, j, jnew;
+        -:   47:    int sgn ;
+        -:   48:
+        -:   49:    // Build the history matrix
+        -:   50:    SPEX_matrix *h;
+      331:   51:    SPEX_CHECK (SPEX_matrix_allocate(&h, SPEX_DENSE, SPEX_INT64, x->m, x->n,
+        -:   52:        x->nzmax, false, true, NULL));
+        -:   53:
+        -:   54:    // initialize entries of history matrix to be -1
+     2074:   55:    for (i = 0; i < x->nzmax; i++)
+        -:   56:    {
+     1763:   57:        h->x.int64[i] = -1;
+        -:   58:    }
+        -:   59:
+        -:   60:
+        -:   61:    //--------------------------------------------------------------------------
+        -:   62:    // Iterate across each RHS vector
+        -:   63:    //--------------------------------------------------------------------------
+        -:   64:
+      598:   65:    for (k = 0; k < x->n; k++)
+        -:   66:    {
+        -:   67:
+        -:   68:        //----------------------------------------------------------------------
+        -:   69:        // Iterate accross all nonzeros in x. Assume x is dense
+        -:   70:        //----------------------------------------------------------------------
+        -:   71:
+     1996:   72:        for (i = 0; i < x->m; i++)
+        -:   73:        {
+     1709:   74:            hx = SPEX_2D(h, i, k, int64);
+        -:   75:            // If x[i][k] = 0, can skip operations and continue to next i
+    1709*:   76:            SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, i, k, mpz)));
+     1709:   77:            if (sgn == 0) {continue;}
+        -:   78:
+        -:   79:            //------------------------------------------------------------------
+        -:   80:            // History Update
+        -:   81:            //------------------------------------------------------------------
+        -:   82:
+     1658:   83:            if (hx < i-1)
+        -:   84:            {
+        -:   85:                // x[i] = x[i] * rhos[i-1]
+      561:   86:                SPEX_CHECK(SPEX_mpz_mul( SPEX_2D(x, i, k, mpz),
+        -:   87:                                         SPEX_2D(x, i, k, mpz),
+        -:   88:                                         SPEX_1D(rhos, i-1, mpz)));
+        -:   89:                // x[i] = x[i] / rhos[hx]
+      556:   90:                if (hx > -1)
+        -:   91:                {
+     124*:   92:                    SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(x, i, k, mpz),
+        -:   93:                                                  SPEX_2D(x, i, k, mpz),
+        -:   94:                                                  SPEX_1D(rhos, hx, mpz)));
+        -:   95:                }
+        -:   96:            }
+        -:   97:
+        -:   98:            //------------------------------------------------------------------
+        -:   99:            // IPGE updates
+        -:  100:            //------------------------------------------------------------------
+        -:  101:
+        -:  102:            // Access the Lji
+    16184:  103:            for (j = L->p[i]; j < L->p[i+1]; j++)
+        -:  104:            {
+        -:  105:                // Location of Lji
+    14551:  106:                jnew = L->i[j];
+        -:  107:
+        -:  108:                // skip if Lx[j] is zero
+   14551*:  109:                SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->x.mpz[j]));
+    14551:  110:                if (sgn == 0) {continue;}
+        -:  111:
+        -:  112:                // j > i
+    12014:  113:                if (jnew > i)
+        -:  114:                {
+        -:  115:                    // check if x[jnew] is zero
+   10368*:  116:                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, jnew, k, mpz)));
+    10368:  117:                    if (sgn == 0)
+        -:  118:                    {
+        -:  119:                        // x[j] = x[j] - lji xi
+     292*:  120:                        SPEX_CHECK(SPEX_mpz_submul(SPEX_2D(x, jnew, k, mpz),
+        -:  121:                                                   SPEX_1D(L, j, mpz),
+        -:  122:                                                   SPEX_2D(x, i, k, mpz)));
+        -:  123:                        // x[j] = x[j] / rhos[i-1]
+      292:  124:                        if (i > 0)
+        -:  125:                        {
+     292*:  126:                            SPEX_CHECK(
+        -:  127:                                SPEX_mpz_divexact(SPEX_2D(x, jnew, k, mpz),
+        -:  128:                                                  SPEX_2D(x, jnew, k, mpz),
+        -:  129:                                                  SPEX_1D(rhos, i-1, mpz)));
+        -:  130:                        }
+        -:  131:                    }
+        -:  132:                    else
+        -:  133:                    {
+    10076:  134:                        hx = SPEX_2D(h, jnew, k, int64);
+        -:  135:                        // History update if necessary
+    10076:  136:                        if (hx < i-1)
+        -:  137:                        {
+        -:  138:                            // x[j] = x[j] * rhos[i-1]
+    2063*:  139:                            SPEX_CHECK(SPEX_mpz_mul(SPEX_2D(x, jnew, k, mpz),
+        -:  140:                                                    SPEX_2D(x, jnew, k, mpz),
+        -:  141:                                                    SPEX_1D(rhos, i-1, mpz)));
+        -:  142:                            // x[j] = x[j] / rhos[hx]
+     2063:  143:                            if (hx > -1)
+        -:  144:                            {
+    1691*:  145:                                SPEX_CHECK(
+        -:  146:                                    SPEX_mpz_divexact(SPEX_2D(x, jnew, k, mpz),
+        -:  147:                                                      SPEX_2D(x, jnew, k, mpz),
+        -:  148:                                                      SPEX_1D(rhos, hx, mpz)));
+        -:  149:                            }
+        -:  150:                        }
+        -:  151:                        // x[j] = x[j] * rhos[i]
+    10076:  152:                        SPEX_CHECK(SPEX_mpz_mul(SPEX_2D(x, jnew, k, mpz),
+        -:  153:                                                SPEX_2D(x, jnew, k, mpz),
+        -:  154:                                                SPEX_1D(rhos, i, mpz)));
+        -:  155:                        // x[j] = x[j] - lmi xi
+    10062:  156:                        SPEX_CHECK(SPEX_mpz_submul(SPEX_2D(x, jnew, k, mpz),
+        -:  157:                                                   SPEX_1D(L, j, mpz),
+        -:  158:                                                   SPEX_2D(x, i, k, mpz)));
+        -:  159:                        // x[j] = x[j] / rhos[i-1]
+    10056:  160:                        if (i > 0)
+        -:  161:                        {
+    9450*:  162:                            SPEX_CHECK(
+        -:  163:                                SPEX_mpz_divexact(SPEX_2D(x, jnew, k, mpz),
+        -:  164:                                                  SPEX_2D(x, jnew, k, mpz),
+        -:  165:                                                  SPEX_1D(rhos, i-1, mpz)));
+        -:  166:                        }
+        -:  167:                    }
+        -:  168:                    //h[jnew][k] = i;
+    10348:  169:                    SPEX_2D(h, jnew, k, int64) = i;
+        -:  170:                }
+        -:  171:            }
+        -:  172:        }
+        -:  173:    }
+        -:  174:
+        -:  175:    //--------------------------------------------------------------------------
+        -:  176:    // Free h memory
+        -:  177:    //--------------------------------------------------------------------------
+        -:  178:
+      286:  179:    SPEX_FREE_ALL;
+      286:  180:    return SPEX_OK;
+        -:  181:}
+        -:  182:

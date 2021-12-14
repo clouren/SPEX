@@ -1,0 +1,333 @@
+        -:    0:Source:spex_left_lu_ref_triangular_solve.c
+        -:    0:Graph:spex_left_lu_ref_triangular_solve.gcno
+        -:    0:Data:spex_left_lu_ref_triangular_solve.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Left_LU/spex_left_lu_ref_triangular_solve: sparse REF triangular solve
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:
+        -:   12:/*
+        -:   13: * Purpose: This function performs the sparse REF triangular solve. i.e.,
+        -:   14: * (LD) x = A(:,k). The algorithm is described in the paper; however in essence
+        -:   15: * it computes the nonzero pattern xi, then performs a sequence of IPGE
+        -:   16: * operations on the nonzeros to obtain their final value. All operations are
+        -:   17: * guaranteed to be integral (mpz_t). There are various enhancements in this
+        -:   18: * code used to reduce the overall cost of the operations and minimize
+        -:   19: * operations as much as possible.
+        -:   20: */
+        -:   21:
+        -:   22:/* Description of input/output
+        -:   23: *
+        -:   24: *  top_output: An int64_t scalar which on input is uninitialized. On output
+        -:   25: *              contains the contains the beginning of the nonzero pattern.
+        -:   26: *              The nonzero pattern is contained in xi[top_output...n-1].
+        -:   27: *
+        -:   28: *  L:          The partial L matrix. On input contains columns 1:k-1 of L.
+        -:   29: *              Unmodified on on output.
+        -:   30: *
+        -:   31: *  A:          The input matrix. Unmodified on input/output
+        -:   32: *
+        -:   33: *  k:          Unmodified int64_t which indicates which column of L and U is
+        -:   34: *              being computed.  That is, this triangular solve computes L(:,k)
+        -:   35: *              and U(:,k).
+        -:   36: *
+        -:   37: *  xi:         A worspace array of size 2n, unitialized on input. On output,
+        -:   38: *              xi[top...n-1] contains the nonzero pattern of L(:,k) and U(:,k)
+        -:   39: *              in strictly sorted order.  The row indices in xi[top...n-1]
+        -:   40: *              reflect the row indices in the original A matrix not the final
+        -:   41: *              L and U because of permutation.
+        -:   42: *
+        -:   43: *  q:          An array of size n+1 which is unmodified on input/output.
+        -:   44: *              j = q[k] if the original column j is the kth column of the
+        -:   45: *              LU factorization.
+        -:   46: *
+        -:   47: *  rhos:       Sequence of pivots, unmodified on input/output. This matrix is
+        -:   48: *              utilized to perform history and IPGE updates in the triangular
+        -:   49: *              solve.
+        -:   50: *
+        -:   51: *  pinv:       An array of size n which contains the inverse row permutation,
+        -:   52: *              unmodified on input/ output. This vector is utilized in the
+        -:   53: *              factorization as well as for sorting.
+        -:   54: *
+        -:   55: *  row_perm:   An array of size n which contains the row permutation,
+        -:   56: *              unmodified on input/output.  row_perm is the inverse of pinv
+        -:   57: *              and is utilized for the sorting routine.
+        -:   58: *
+        -:   59: *  h:          A workspace array of size n, unitialized on input and undefined
+        -:   60: *              on output. This vector is utilized to perform history updates
+        -:   61: *              on entries in x. During the triangular solve, h[i] indicates
+        -:   62: *              the last pivot in which entry x[i] was IPGE updated.
+        -:   63: *
+        -:   64: *  x:          Dense mpz_t matrix Workspace of size n*1, unitialized on input.
+        -:   65: *              On output, x[i] is the value of L(i,k) here i is in the nonzero
+        -:   66: *              pattern xi[top...n-1]. Other entries of x are undefined on
+        -:   67: *              output.
+        -:   68: */
+        -:   69:
+        -:   70:#include "spex_left_lu_internal.h"
+        -:   71:
+        -:   72:// Sorting function
+   123732:   73:static inline int compare (const void * a, const void * b)
+        -:   74:{
+   123732:   75:    int64_t delta = ( *(int64_t*)a - *(int64_t*)b ) ;
+        -:   76:    //return value for delta==0 won't matter since it's not happening here
+   123732:   77:    if (delta < 0)
+        -:   78:    {
+    68193:   79:        return (-1) ;
+        -:   80:    }
+        -:   81:    else// if (delta >= 0)
+        -:   82:    {
+    55539:   83:        return (1) ;
+        -:   84:    }
+        -:   85:}
+        -:   86:
+     3645:   87:SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangular solve
+        -:   88:(
+        -:   89:    int64_t *top_output,      // Output the beginning of nonzero pattern
+        -:   90:    SPEX_matrix* L,           // partial L matrix
+        -:   91:    const SPEX_matrix* A,     // input matrix
+        -:   92:    int64_t k,                // constructing L(:,k)
+        -:   93:    int64_t* xi,              // nonzero pattern vector
+        -:   94:    const int64_t* q,         // column permutation, not modified
+        -:   95:    SPEX_matrix* rhos,        // sequence of pivots
+        -:   96:    const int64_t* pinv,      // inverse row permutation
+        -:   97:    const int64_t* row_perm,  // row permutation
+        -:   98:    int64_t* h,               // history vector
+        -:   99:    SPEX_matrix* x            // solution of system ==> kth column of L and U
+        -:  100:)
+        -:  101:{
+        -:  102:
+        -:  103:    //--------------------------------------------------------------------------
+        -:  104:    // check inputs
+        -:  105:    //--------------------------------------------------------------------------
+        -:  106:
+        -:  107:    // inputs have been validated in SPEX_Left_LU_factorize.c
+        -:  108:    SPEX_info info ;
+    3645*:  109:    SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
+    3645*:  110:    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
+    3645*:  111:    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
+        -:  112:
+        -:  113:    int64_t j, jnew, i, inew, p, m, n, col, top ;
+        -:  114:    int sgn ;
+     3645:  115:    mpz_t *x_mpz = x->x.mpz, *Ax_mpz = A->x.mpz, *Lx_mpz = L->x.mpz,
+     3645:  116:          *rhos_mpz = rhos->x.mpz;
+        -:  117:
+        -:  118:    //--------------------------------------------------------------------------
+        -:  119:    // Begin the REF triangular solve by obtaining the nonzero pattern, and
+        -:  120:    // reseting the vectors x, xi, and h
+        -:  121:    //--------------------------------------------------------------------------
+        -:  122:
+        -:  123:    // Size of matrix and the dense vectors
+     3645:  124:    n = A->n;
+        -:  125:
+        -:  126:    // This triangular solve is computing L(:,k) and U(:,k) for the
+        -:  127:    // factorization L*D*U = A*Q.  The column permutation is held in the
+        -:  128:    // permutation vector q, and col = q [k] is the column of A that has been
+        -:  129:    // permuted to the kth column of A*Q.
+     3645:  130:    col = q[k];
+        -:  131:
+        -:  132:    // Obtain nonzero pattern of L(:,k) in xi[top..n]
+     3645:  133:    spex_left_lu_reach(&top, L, A, col, xi, pinv);
+        -:  134:
+        -:  135:    // Sort xi [top..n-1] wrt sequence of pivots
+        -:  136:    // Convert xi vector with respect to pinv
+    43599:  137:    for (j = top; j < n; j++)
+        -:  138:    {
+    39954:  139:        xi[j] = pinv[xi[j]];
+        -:  140:    }
+        -:  141:
+        -:  142:    // Sort xi[top..n-1]
+     3645:  143:    qsort(&xi[top], n-top, sizeof(int64_t), compare);
+        -:  144:
+        -:  145:    // Place xi back in original value
+    43599:  146:    for (j = top; j < n; j++)
+        -:  147:    {
+    39954:  148:        xi[j] = row_perm[xi[j]];
+        -:  149:    }
+        -:  150:
+        -:  151:    // Reset x[i] = 0 for all i in nonzero pattern xi [top..n-1]
+    43599:  152:    for (i = top; i < n; i++)
+        -:  153:    {
+   39954*:  154:        SPEX_CHECK (SPEX_mpz_set_ui (x_mpz[xi [i]], 0)) ;
+        -:  155:    }
+        -:  156:    // Set x[col] = 0.  A(col,col) is the diagonal entry in the original
+        -:  157:    // matrix.  The pivot search prefers to select the diagonal, if it is
+        -:  158:    // present.  It may be not present in A itself, at all, and thus also
+        -:  159:    // not in the pattern xi [top..n-1].  The value x[col] is set to zero
+        -:  160:    // here, in case the entry A(col,col) is not present, so that the pivot
+        -:  161:    // search query the value of the diagonal.
+    3645*:  162:    SPEX_CHECK(SPEX_mpz_set_ui(x_mpz[col], 0));
+        -:  163:
+        -:  164:    // Reset h[i] = -1 for all i in nonzero pattern xi [top..n-1]
+    43599:  165:    for (i = top; i < n; i++)
+        -:  166:    {
+    39954:  167:        h[xi[i]] = -1;
+        -:  168:    }
+        -:  169:
+        -:  170:    // Set x = A(:,q(k))
+    15196:  171:    for (i = A->p[col]; i < A->p[col + 1]; i++)
+        -:  172:    {
+        -:  173:        // Value of the ith nonzero
+    11554:  174:        SPEX_CHECK(SPEX_mpz_set(x_mpz[A->i[i]], Ax_mpz[i]));
+        -:  175:    }
+        -:  176:
+        -:  177:
+        -:  178:    //--------------------------------------------------------------------------
+        -:  179:    // Iterate across nonzeros in x
+        -:  180:    //--------------------------------------------------------------------------
+    43547:  181:    for (p = top; p < n; p++)
+        -:  182:    {
+        -:  183:        /* Finalize x[j] */
+    39921:  184:        j = xi[p];                         // First nonzero term
+    39921:  185:        jnew = pinv[j];                    // Location of nonzero term
+        -:  186:        // Check if x[j] == 0, if so continue to next nonzero
+   39921*:  187:        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x_mpz[j]));
+    39921:  188:        if (sgn == 0) {continue;}          // x[j] = 0 no work must be done
+        -:  189:
+        -:  190:        // x[j] is nonzero
+    29405:  191:        if (jnew < k)                      // jnew < k implies entries in U
+        -:  192:        {
+        -:  193:            //------------------------------------------------------------------
+        -:  194:            // History update: Bring x[j] to its final value
+        -:  195:            //------------------------------------------------------------------
+    14806:  196:            if (h[j] < jnew - 1)           // HU must be performed
+        -:  197:            {
+        -:  198:                // x[j] = x[j] * rho[j-1]
+    7250*:  199:                SPEX_CHECK(SPEX_mpz_mul(x_mpz[j],x_mpz[j],rhos_mpz[jnew-1]));
+        -:  200:
+     7250:  201:                if (h[j] > -1)
+        -:  202:                {
+        -:  203:                    // x[j] = x[j] / rho[h[j]]
+    4822*:  204:                    SPEX_CHECK(SPEX_mpz_divexact(x_mpz[j],x_mpz[j],
+        -:  205:                        rhos_mpz[h[j]]));
+        -:  206:                }
+        -:  207:            }
+        -:  208:
+        -:  209:            //------------------------------------------------------------------
+        -:  210:            // IPGE updates
+        -:  211:            //------------------------------------------------------------------
+        -:  212:
+        -:  213:            // ----------- Iterate across nonzeros in Lij ---------------------
+   519666:  214:            for (m = L->p[jnew]; m < L->p[jnew+1]; m++)
+        -:  215:            {
+   504874:  216:                i = L->i[m];               // i value of Lij
+   504874:  217:                inew = pinv[i];            // i location of Lij
+   504874:  218:                if (inew > jnew)
+        -:  219:                {
+        -:  220:                    /*************** If lij==0 then no update******************/
+  490076*:  221:                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, Lx_mpz[m]));
+   490076:  222:                    if (sgn == 0) {continue;}
+        -:  223:
+        -:  224:                    // lij is nonzero. Check if x[i] is nonzero
+  388752*:  225:                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, x_mpz[i]));
+        -:  226:
+        -:  227:                    //----------------------------------------------------------
+        -:  228:                    /************* lij is nonzero, x[i] is zero****************/
+        -:  229:                    // x[i] = 0 then only perform IPGE update
+        -:  230:                    // subtraction/division
+        -:  231:                    //----------------------------------------------------------
+        -:  232:
+   388752:  233:                    if (sgn == 0)
+        -:  234:                    {
+        -:  235:                        // No previous pivot
+    35566:  236:                        if (jnew < 1)
+        -:  237:                        {
+        -:  238:                            // x[i] = 0 - lij*x[j]
+      58*:  239:                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
+        -:  240:                                x_mpz[j]));
+       58:  241:                            h[i] = jnew;   // Entry is up to date
+        -:  242:                        }
+        -:  243:
+        -:  244:                        // Previous pivot exists
+        -:  245:                        else
+        -:  246:                        {
+        -:  247:                            // x[i] = 0 - lij*x[j]
+   35508*:  248:                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
+        -:  249:                                x_mpz[j]));
+        -:  250:
+        -:  251:                            // x[i] = x[i] / rho[j-1]
+   35508*:  252:                            SPEX_CHECK(SPEX_mpz_divexact(x_mpz[i], x_mpz[i],
+        -:  253:                                rhos_mpz[jnew-1]));
+    35508:  254:                            h[i] = jnew;   // Entry is up to date
+        -:  255:                        }
+        -:  256:                    }
+        -:  257:
+        -:  258:                    //----------------------------------------------------------
+        -:  259:                    /************ Both lij and x[i] are nonzero****************/
+        -:  260:                    // x[i] != 0 --> History & IPGE update on x[i]
+        -:  261:                    //----------------------------------------------------------
+        -:  262:                    else
+        -:  263:                    {
+        -:  264:                        // No previous pivot in this case
+   353186:  265:                        if (jnew < 1)
+        -:  266:                        {
+        -:  267:                            // x[i] = x[i]*rho[0]
+     1072:  268:                            SPEX_CHECK(SPEX_mpz_mul(x_mpz[i],x_mpz[i],
+        -:  269:                                rhos_mpz[0]));
+        -:  270:
+        -:  271:                            // x[i] = x[i] - lij*xj
+     1070:  272:                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
+        -:  273:                                x_mpz[j]));
+     1066:  274:                            h[i] = jnew;   // Entry is now up to date
+        -:  275:                        }
+        -:  276:                        // There is a previous pivot
+        -:  277:                        else
+        -:  278:                        {
+        -:  279:                            // History update if necessary
+   352114:  280:                            if (h[i] < jnew - 1)
+        -:  281:                            {
+        -:  282:                                // x[i] = x[i] * rho[j-1]
+   89409*:  283:                                SPEX_CHECK(SPEX_mpz_mul(x_mpz[i], x_mpz[i],
+        -:  284:                                    rhos_mpz[jnew-1]));
+    89409:  285:                                if (h[i] > -1)
+        -:  286:                                {
+        -:  287:                                    // x[i] = x[i] / rho[h[i]]
+   88187*:  288:                                    SPEX_CHECK(SPEX_mpz_divexact(x_mpz[i],
+        -:  289:                                        x_mpz[i], rhos_mpz[h[i]]));
+        -:  290:                                }
+        -:  291:                            }
+        -:  292:                            // x[i] = x[i] * rho[j]
+   352114:  293:                            SPEX_CHECK(SPEX_mpz_mul(x_mpz[i],x_mpz[i],
+        -:  294:                                rhos_mpz[jnew]));
+        -:  295:                            // x[i] = x[i] - lij*xj
+   352110:  296:                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
+        -:  297:                                x_mpz[j]));
+        -:  298:                            // x[i] = x[i] / rho[j-1]
+  352106*:  299:                            SPEX_CHECK(SPEX_mpz_divexact(x_mpz[i], x_mpz[i],
+        -:  300:                                rhos_mpz[jnew-1]));
+   352106:  301:                            h[i] = jnew;   // Entry is up to date
+        -:  302:                        }
+        -:  303:                    }
+        -:  304:                }
+        -:  305:            }
+        -:  306:        }
+        -:  307:        else                               // Entries of L
+        -:  308:        {
+        -:  309:            //------------------------------------------------------------------
+        -:  310:            // History update
+        -:  311:            //------------------------------------------------------------------
+    14599:  312:            if (h[j] < k-1)
+        -:  313:            {
+        -:  314:                // x[j] = x[j] * rho[k-1]
+     4125:  315:                SPEX_CHECK(SPEX_mpz_mul(x_mpz[j], x_mpz[j], rhos_mpz[k-1]));
+     4123:  316:                if (h[j] > -1)
+        -:  317:                {
+        -:  318:                    // x[j] = x[j] / rho[h[j]]
+    2809*:  319:                    SPEX_CHECK(SPEX_mpz_divexact(x_mpz[j], x_mpz[j],
+        -:  320:                        rhos_mpz[h[j]]));
+        -:  321:                }
+        -:  322:            }
+        -:  323:        }
+        -:  324:    }
+        -:  325:    // Output the beginning of nonzero pattern
+     3626:  326:    *top_output = top;
+     3626:  327:    return SPEX_OK;
+        -:  328:}
+        -:  329:

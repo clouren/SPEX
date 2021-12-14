@@ -1,0 +1,53 @@
+        -:    0:Source:SPEX_initialize.c
+        -:    0:Graph:SPEX_initialize.gcno
+        -:    0:Data:SPEX_initialize.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_initialize: initialize SPEX
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:// SPEX_initialize initializes the working evironment for SPEX
+        -:   12:
+        -:   13:#include "spex_util_internal.h"
+        -:   14:
+        -:   15://------------------------------------------------------------------------------
+        -:   16:// global variable access
+        -:   17://------------------------------------------------------------------------------
+        -:   18:// TODO this is not thread-safe
+        -:   19:
+        -:   20:// a global variable, but only accessible within this file.
+        -:   21:extern bool spex_initialize_has_been_called ;
+        -:   22:
+        -:   23:bool spex_initialize_has_been_called = false ;
+        -:   24:
+  9277518:   25:bool spex_initialized ( void )
+        -:   26:{
+  9277518:   27:    return (spex_initialize_has_been_called) ;
+        -:   28:}
+        -:   29:
+    44256:   30:void spex_set_initialized (bool s)
+        -:   31:{
+    44256:   32:    spex_initialize_has_been_called = s ;
+    44256:   33:}
+        -:   34:
+        -:   35://------------------------------------------------------------------------------
+        -:   36:// SPEX_initialize
+        -:   37://------------------------------------------------------------------------------
+        -:   38:
+    32846:   39:SPEX_info SPEX_initialize ( void )
+        -:   40:{
+    32846:   41:    if (spex_initialized ( )) return (SPEX_PANIC) ;
+        -:   42:
+    22128:   43:    mp_set_memory_functions (spex_gmp_allocate, spex_gmp_reallocate,
+        -:   44:        spex_gmp_free) ;
+        -:   45:
+    22128:   46:    spex_set_initialized (true) ;
+    22128:   47:    return (SPEX_OK) ;
+        -:   48:}
+        -:   49:

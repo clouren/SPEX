@@ -1,0 +1,65 @@
+        -:    0:Source:spex_update_insert_new_entry.c
+        -:    0:Graph:spex_update_insert_new_entry.gcno
+        -:    0:Data:spex_update_insert_new_entry.gcda
+        -:    0:Runs:3
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Update/spex_update_insert_new_entry.c: insert an entry vi who has no
+        -:    3:// pending scale to a scaled vector v, all v->x[i] will be scaled and S will be
+        -:    4:// 1 after vi is inserted.
+        -:    5://------------------------------------------------------------------------------
+        -:    6:
+        -:    7:// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
+        -:    8:// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
+        -:    9:// SPEX_Update/License for the license.
+        -:   10:
+        -:   11://------------------------------------------------------------------------------
+        -:   12:
+        -:   13:// Purpose: This function is call to insert vi as i-th entry of vector v, where
+        -:   14:// v could be column of L or row of U in frame j. S is the pending scales for
+        -:   15:// vector v. Since vi has no pending scale factor and v has pending scale
+        -:   16:// factor, we will apply S to all v->x[i] before insert vi into v. S is reset to
+        -:   17:// 1 when finished.
+        -:   18://
+        -:   19:// NOTE: the value of vi is inserted by swapping with corresponding mpz_t value
+        -:   20:// in v, which should be considered as undefined after this function.
+        -:   21:
+        -:   22:#include "spex_update_internal.h"
+        -:   23:
+    27476:   24:SPEX_info spex_update_insert_new_entry
+        -:   25:(
+        -:   26:    mpz_t vi,          // the entry to be inserted as i-th entry of v
+        -:   27:    SPEX_vector *v,   // the vector that would add new entry
+        -:   28:    mpq_t S,          // pending scale for v
+        -:   29:    const int64_t i,   // the index of vi when inserted to v
+        -:   30:    const SPEX_options *option
+        -:   31:)
+        -:   32:{
+        -:   33:    SPEX_info info;
+        -:   34:    int r;
+        -:   35:    int64_t p;
+        -:   36:
+   27476*:   37:    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, S, 1, 1));
+    27476:   38:    if (r != 0) //S != 1
+        -:   39:    {
+     2847:   40:        for (p = 0; p < v->nz; p++)
+        -:   41:        {
+        -:   42:            // Since entries in v will be integer after scale, we can
+        -:   43:            // perform division first to make it small, and this
+        -:   44:            // division will preserve integer propety
+    1474*:   45:            SPEX_CHECK(SPEX_mpz_divexact(v->x[p], v->x[p], SPEX_MPQ_DEN(S)));
+     1474:   46:            SPEX_CHECK(SPEX_mpz_mul(v->x[p], v->x[p], SPEX_MPQ_NUM(S)));
+        -:   47:        }
+    1373*:   48:        SPEX_CHECK(SPEX_mpq_set_ui(S, 1, 1));
+        -:   49:    }
+        -:   50:    // append vi to v
+    27473:   51:    if (v->nz == v->nzmax)
+        -:   52:    {
+        -:   53:        // reallocate the nonzero pattern if needed
+     9331:   54:        SPEX_CHECK(SPEX_vector_realloc(v, v->nzmax+1, option));
+        -:   55:    }
+    27362:   56:    v->i[v->nz] = i;
+   27362*:   57:    SPEX_CHECK(SPEX_mpz_swap(v->x[v->nz], vi));
+    27362:   58:    v->nz ++;
+        -:   59:
+    27362:   60:    return SPEX_OK;
+        -:   61:}

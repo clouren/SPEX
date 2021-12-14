@@ -1,0 +1,101 @@
+        -:    0:Source:spex_update_get_scattered_v.c
+        -:    0:Graph:spex_update_get_scattered_v.gcno
+        -:    0:Data:spex_update_get_scattered_v.gcda
+        -:    0:Runs:3
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Update/spex_update_get_scattered_v.c: build scattered vector for given
+        -:    3:// sparse vector
+        -:    4://------------------------------------------------------------------------------
+        -:    5:
+        -:    6:// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
+        -:    7:// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
+        -:    8:// SPEX_Update/License for the license.
+        -:    9:
+        -:   10://------------------------------------------------------------------------------
+        -:   11:
+        -:   12:// Purpose: This function is called to build scattered mpz vector for column or
+        -:   13:// row k of A, or the inserted column. This function eliminates explicit 0
+        -:   14:// regardless of keep_v. If keep_v is false, this function swap the mpz values,
+        -:   15:// and thus the original vector will become all zeros. Otherwise, mpz_set will
+        -:   16:// be used to make a copy of the original mpz values.
+        -:   17://
+        -:   18:// This function also searches for the smallest column/row index of the nonzero
+        -:   19:// entry with pivot excluded, if requested.
+        -:   20:
+        -:   21:#define SPEX_FREE_ALL   \
+        -:   22:    spex_scattered_vector_free(&sv, option);
+        -:   23:
+        -:   24:#include "spex_update_internal.h"
+        -:   25:
+    43741:   26:SPEX_info spex_update_get_scattered_v
+        -:   27:(
+        -:   28:    // output
+        -:   29:    spex_scattered_vector **sv_handle,// output vector in scattered form
+        -:   30:    int64_t *next,               // the smallest col/row index of non-pivot nz.
+        -:   31:                                 // If next == NULL, searching is not performed.
+        -:   32:    // input
+        -:   33:    SPEX_vector *v,              // the vector in compressed form, whose
+        -:   34:                                 // max index is n
+        -:   35:    const int64_t n,             // number of entries in v
+        -:   36:    const int64_t k,             // column index of v in L, or row index in U.
+        -:   37:                                 // Ignored if next == NULL.
+        -:   38:    const int64_t *perm_inv,     // inverse of permutation applied on v.
+        -:   39:                                 // This can be NULL if next == NULL.
+        -:   40:    const bool keep_v,           // indicate if the mpz values should be kept
+        -:   41:    const SPEX_options *option
+        -:   42:)
+        -:   43:{
+    43741:   44:    *sv_handle = NULL;
+        -:   45:    SPEX_info info;
+        -:   46:    int64_t p, i;
+    43741:   47:    spex_scattered_vector *sv = NULL;
+        -:   48:
+        -:   49:    // make sv a sparse vector so that we can have sv->i for nnz pattern
+    43741:   50:    SPEX_CHECK(spex_scattered_vector_alloc(&sv, n, option));
+        -:   51:
+        -:   52:    int sgn;
+    41794:   53:    if (next != NULL) {(*next) = n;}
+    41794:   54:    p = 0;
+   168280:   55:    while (p < v->nz)
+        -:   56:    {
+  126486*:   57:        SPEX_CHECK(SPEX_mpz_sgn(&sgn, v->x[p]));
+   126486:   58:        if (sgn != 0)
+        -:   59:        {
+   126478:   60:            i = v->i[p];
+   126478:   61:            if (next != NULL)
+        -:   62:            {
+        -:   63:                // search the smallest col/row index of the non-pivot nonzero
+    54767:   64:                int64_t real_i = perm_inv[i];
+    54767:   65:                if (k != real_i && real_i < (*next))
+        -:   66:                {
+    21323:   67:                    (*next) = real_i;
+        -:   68:                }
+        -:   69:            }
+        -:   70:
+   126478:   71:            if (keep_v)
+        -:   72:            {
+        -:   73:                // make a copy of the mpz value
+   38812*:   74:                SPEX_CHECK(SPEX_mpz_set (sv->x[i], v->x[p]));
+        -:   75:            }
+        -:   76:            else
+        -:   77:            {
+        -:   78:                // swapping mpz pointer, which is more efficient
+   87666*:   79:                SPEX_CHECK(SPEX_mpz_swap(sv->x[i], v->x[p]));
+        -:   80:            }
+   126478:   81:            sv->i[p] = i;
+   126478:   82:            p++;
+        -:   83:        }
+        -:   84:        else
+        -:   85:        {
+        -:   86:            // remove explicit zeros
+        8:   87:            v->nz--;
+       8*:   88:            SPEX_CHECK(SPEX_mpz_swap(v->x[p], v->x[v->nz]));
+        8:   89:            v->i[p] = v->i[v->nz];
+        -:   90:        }
+        -:   91:    }
+    41794:   92:    sv->nz = v->nz;
+        -:   93:
+    41794:   94:    *sv_handle = sv;
+    41794:   95:    return SPEX_OK;
+        -:   96:}
+        -:   97:

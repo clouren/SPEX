@@ -1,0 +1,191 @@
+        -:    0:Source:SPEX_LU_analyze.c
+        -:    0:Graph:SPEX_LU_analyze.gcno
+        -:    0:Data:SPEX_LU_analyze.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_LU_analyze: symbolic ordering and analysis for sparse LU
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function performs the symbolic ordering for unsymmetric matrices.
+        -:   12: * Currently, there are three options: user-defined order, COLAMD, or AMD.
+        -:   13: *
+        -:   14: * Input/output arguments:
+        -:   15: *
+        -:   16: * S:       Symbolic analysis struct. Undefined on input; contains column
+        -:   17: *          permutation and estimates of nnz(L) and nnz(U) nnz on output
+        -:   18: *
+        -:   19: * A:       Input matrix, unmodified on input/output
+        -:   20: *
+        -:   21: * option:  option->order tells the function which ordering scheme to use
+        -:   22: *
+        -:   23: */
+        -:   24:
+        -:   25:// SPEX_LU_analyze creates the SPEX_LU_analysis object S.  Use
+        -:   26:// SPEX_LU_analysis_free to delete it.
+        -:   27:
+        -:   28:#include "spex_util_internal.h"
+        -:   29:
+     2221:   30:SPEX_info SPEX_LU_analyze
+        -:   31:(
+        -:   32:    SPEX_LU_analysis** S_handle, // symbolic analysis (column perm. and nnz L,U)
+        -:   33:    const SPEX_matrix *A,        // Input matrix
+        -:   34:    const SPEX_options *option   // Control parameters, if NULL, use default
+        -:   35:)
+        -:   36:{
+        -:   37:
+        -:   38:    //--------------------------------------------------------------------------
+        -:   39:    // check inputs
+        -:   40:    //--------------------------------------------------------------------------
+        -:   41:
+    2221*:   42:    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+        -:   43:
+        -:   44:    // A can have any data type, but must be in sparse CSC format
+    2221*:   45:    SPEX_REQUIRE_KIND (A, SPEX_CSC) ;
+        -:   46:
+     2221:   47:    if (!S_handle || A->n != A->m)
+        -:   48:    {
+      316:   49:        return SPEX_INCORRECT_INPUT;
+        -:   50:    }
+     1905:   51:    (*S_handle) = NULL ;
+        -:   52:
+        -:   53:    //--------------------------------------------------------------------------
+        -:   54:    // allocate symbolic analysis object
+        -:   55:    //--------------------------------------------------------------------------
+        -:   56:
+     1905:   57:    SPEX_LU_analysis *S = NULL ;
+     1905:   58:    int64_t i, n = A->n, anz;
+        -:   59:    // SPEX enviroment is checked to be init'ed and A is checked to be not NULL
+        -:   60:    // and a SPEX_CSC kind, so there shouldnt be any error from this function
+     1905:   61:    SPEX_matrix_nnz(&anz, A, option);
+        -:   62:    // ALlocate memory for S
+     1905:   63:    S = (SPEX_LU_analysis*) SPEX_malloc(sizeof(SPEX_LU_analysis));
+     1905:   64:    if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
+        -:   65:
+        -:   66:    // Allocate memory for column permutation
+     1897:   67:    S->q = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
+     1897:   68:    if (S->q == NULL)
+        -:   69:    {
+        8:   70:        SPEX_FREE(S);
+        8:   71:        return SPEX_OUT_OF_MEMORY;
+        -:   72:    }
+        -:   73:
+        -:   74:    //--------------------------------------------------------------------------
+        -:   75:    // No ordering is used. S->q is set to [0 ... n] and the number of nonzeros
+        -:   76:    // in L and U is estimated to be 10 times the number of nonzeros in A. This
+        -:   77:    // is a very crude estimate on the nnz(L) and nnz(U)
+        -:   78:    //--------------------------------------------------------------------------
+        -:   79:
+    1889*:   80:    SPEX_col_order order = SPEX_OPTION_ORDER (option) ;
+    1889*:   81:    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
+        -:   82:
+     1889:   83:    if (order == SPEX_NO_ORDERING)
+        -:   84:    {
+      179:   85:        for (i = 0; i < n+1; i++)
+        -:   86:        {
+      178:   87:            S->q[i] = i;
+        -:   88:        }
+        -:   89:        // estimates for number of L and U nonzeros
+        1:   90:        S->lnz = S->unz = 10*anz;
+        -:   91:    }
+        -:   92:
+        -:   93:    //--------------------------------------------------------------------------
+        -:   94:    // The AMD ordering is used. S->q is set to AMD's column ordering on
+        -:   95:    // A+A'. The number of nonzeros in L and U is given as AMD's computed
+        -:   96:    // number of nonzeros in the Cholesky factor L of A+A'
+        -:   97:    //--------------------------------------------------------------------------
+     1888:   98:    else if (order == SPEX_AMD)
+        -:   99:    {
+        -:  100:        double Control [AMD_CONTROL];           // Declare AMD control
+        1:  101:        amd_l_defaults (Control) ;              // Set AMD defaults
+        -:  102:        double Info [AMD_INFO];
+        -:  103:        // Perform AMD
+        1:  104:        amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
+        1:  105:            (SuiteSparse_long *) S->q, Control, Info) ;
+        1:  106:        S->lnz = S->unz = Info[AMD_LNZ];        // estimate for unz and lnz
+        1:  107:        if (pr > 0)   // Output AMD info if desired
+        -:  108:        {
+        1:  109:            SPEX_PRINTF ("\n****Column Ordering Information****\n") ;
+        1:  110:            amd_l_control (Control) ;
+        1:  111:            amd_l_info (Info) ;
+        -:  112:        }
+        -:  113:    }
+        -:  114:
+        -:  115:    //--------------------------------------------------------------------------
+        -:  116:    // The COLAMD ordering is used. S->q is set as COLAMD's column ordering.
+        -:  117:    // The number of nonzeros in L and U is set as 10 times the number of
+        -:  118:    // nonzeros in A. This is a crude estimate.
+        -:  119:    //--------------------------------------------------------------------------
+        -:  120:    else
+        -:  121:    {
+        -:  122:        // Declared as per COLAMD documentation
+     1887:  123:        int64_t Alen = 2*anz + 6 *(n+1) + 6*(n+1) + n;
+     1887:  124:        int64_t* A2 = (int64_t*) SPEX_malloc(Alen* sizeof(int64_t));
+     1887:  125:        if (!A2)
+        -:  126:        {
+        -:  127:            // out of memory
+        8:  128:            SPEX_LU_analysis_free (&S, option) ;
+        8:  129:            return (SPEX_OUT_OF_MEMORY) ;
+        -:  130:        }
+        -:  131:        // Initialize S->q as per COLAMD documentation
+    11620:  132:        for (i = 0; i < n+1; i++)
+        -:  133:        {
+     9741:  134:            S->q[i] = A->p[i];
+        -:  135:        }
+        -:  136:        // Initialize A2 per COLAMD documentation
+    24296:  137:        for (i = 0; i < anz; i++)
+        -:  138:        {
+    22417:  139:            A2[i] = A->i[i];
+        -:  140:        }
+        -:  141:        int64_t stats [COLAMD_STATS];
+     1879:  142:        colamd_l (n, n, Alen, (SuiteSparse_long *) A2,
+     1879:  143:            (SuiteSparse_long *) S->q, (double *) NULL,
+        -:  144:            (SuiteSparse_long *) stats) ;
+        -:  145:        // estimate for lnz and unz
+     1879:  146:        S->lnz = S->unz = 10*anz;
+        -:  147:
+        -:  148:        // Print stats if desired
+     1879:  149:        if (pr > 0)
+        -:  150:        {
+     1878:  151:            SPEX_PRINTF ("\n****Column Ordering Information****\n") ;
+     1878:  152:            colamd_l_report ((SuiteSparse_long *) stats) ;
+     1878:  153:            SPEX_PRINTF ("\nEstimated L and U nonzeros: %" PRId64 "\n", S->lnz);
+        -:  154:        }
+     1879:  155:        SPEX_FREE(A2);
+        -:  156:    }
+        -:  157:
+        -:  158:    //--------------------------------------------------------------------------
+        -:  159:    // Make sure appropriate space is allocated. It's possible to return
+        -:  160:    // estimates which exceed the dimension of L and U or estimates which are
+        -:  161:    // too small for L U. In this case, this block of code ensures that the
+        -:  162:    // estimates on nnz(L) and nnz(U) are at least n and no more than n*n.
+        -:  163:    //--------------------------------------------------------------------------
+        -:  164:    // estimate exceeds max number of nnz in A
+     1881:  165:    if (S->lnz > (double) n*n)
+        -:  166:    {
+     1877:  167:        int64_t nnz = ceil(0.5*n*n);
+     1877:  168:        S->lnz = S->unz = nnz;
+        -:  169:    }
+        -:  170:    // If estimate < n, first column of triangular solve may fail
+     1881:  171:    if (S->lnz < n)
+        -:  172:    {
+        1:  173:        S->lnz = S->lnz + n;
+        -:  174:    }
+     1881:  175:    if (S->unz < n)
+        -:  176:    {
+        1:  177:        S->unz = S->unz + n;
+        -:  178:    }
+        -:  179:
+        -:  180:    //--------------------------------------------------------------------------
+        -:  181:    // return result
+        -:  182:    //--------------------------------------------------------------------------
+        -:  183:
+     1881:  184:    (*S_handle) = S ;
+     1881:  185:    return SPEX_OK;
+        -:  186:}
+        -:  187:
