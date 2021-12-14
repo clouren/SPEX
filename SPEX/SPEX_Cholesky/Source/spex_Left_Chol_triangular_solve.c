@@ -109,7 +109,8 @@ SPEX_info spex_Left_Chol_triangular_solve
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
    
-    int64_t j, jnew, i, inew, p, m, top, n, col, sgn;
+    int64_t j, jnew, i, inew, p, m, top, n, col;
+    int sgn;
     
     // row_top is the start of the nonzero pattern obtained after analyzing the
     // elimination tree xi[row_top..n-1] contains the nonzero pattern of the kth
