@@ -42,6 +42,7 @@ SPEX_info SPEX_create_default_options (SPEX_options **option )
     (*option)->tol         = SPEX_DEFAULT_TOL ;
     (*option)->round       = SPEX_DEFAULT_MPFR_ROUND ;
     (*option)->check       = false ;
+    (*option)->algo        = SPEX_DEFAULT_ALGORITHM ;
 
     //--------------------------------------------------------------------------
     // return result

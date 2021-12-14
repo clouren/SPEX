@@ -2,9 +2,10 @@
 // SPEX_Chol/spex_Chol_etree: Compute the elimination tree of a matrix A
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -15,22 +16,27 @@
 
 SPEX_info spex_Chol_etree 
 (
-    int64_t** tree,
-    const SPEX_matrix* A // Input matrix (must be SPD)
+    // Output
+    int64_t** tree_handle,      // On output: contains the elimination tree of A
+                                // On input: undefined.
+    // Input
+    const SPEX_matrix* A        // Input matrix (must be SPD). Note to compute
 )
 {
     // Check input
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
-    
+    ASSERT(A->m >= 0);
+    ASSERT(A->n >= 0);
+
+    // Declare variables
     int64_t i, k, p, m, n, inext, *w, *parent, *ancestor, *prev ;
     m = A->m ; n = A->n ;
-    ASSERT(m >= 0);
-    ASSERT(n >= 0);
+    
     // Allocate parent
-    parent = (int64_t*) SPEX_malloc(n * sizeof(int64_t));
+    parent = (int64_t*) SPEX_malloc( n * sizeof(int64_t));
     // Allocate workspace
-    w = (int64_t*) SPEX_malloc( (n+m) * sizeof(int64_t));
+    w = (int64_t*) SPEX_malloc( (n+m) * sizeof(int64_t) );
     if (!parent || !w)
         return SPEX_OUT_OF_MEMORY;
     ancestor = w ; prev = w + n ;
@@ -50,6 +56,6 @@ SPEX_info spex_Chol_etree
         }
     }
     SPEX_FREE(w);
-    (*tree) = parent;
+    (*tree_handle) = parent;
     return SPEX_OK;
 }

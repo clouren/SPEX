@@ -2,32 +2,36 @@
 // SPEX_Chol/spex_Chol_leaf: Subroutine for column counts of Cholesky
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
 #include "spex_chol_internal.h"
 
-/* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j) 
+/* Purpose: consider A(i,j), node j in ith row subtree and return 
+ * the Least Common Ancestor (lca(jprev,j))
  * Used to determine Column counts of Cholesky factor
  */
 SPEX_info spex_Chol_leaf 
 (
-    int64_t* lca_handle,
-    int64_t i, 
-    int64_t j, 
-    int64_t* first, 
-    int64_t* maxfirst, 
-    int64_t* prevleaf,
-    int64_t* ancestor, 
-    int64_t* jleaf
+    int64_t* lca_handle,    // Least common ancestor (jprev,j) 
+    const int64_t i,        // Index (subtree i)
+    const int64_t j,        // Index (node j)
+    const int64_t* first,   // first[j] is the first descendant of node j
+    int64_t* maxfirst,      // maxfirst[j] is the maximum first descendant of
+                            // node j
+    int64_t* prevleaf,      // prevleaf[i] is the previous leaf of ith subtree 
+    int64_t* ancestor,      // ancestor[i] is the ancestor of ith subtree
+    int64_t* jleaf          // indicates whether j is the first leaf (value of
+                            // 1) or not (value of 2)
 )
 {
-    int64_t q, s, sparent, jprev ;
     // Check inputs
-    if (!first || !maxfirst || !prevleaf || !ancestor || !jleaf) return (SPEX_INCORRECT_INPUT) ;
+    if (!first || !maxfirst || !prevleaf || !ancestor || !jleaf) 
+        return (SPEX_INCORRECT_INPUT) ;
     
     *jleaf = 0 ;
     if (i <= j || first [j] <= maxfirst [i])
@@ -35,10 +39,15 @@ SPEX_info spex_Chol_leaf
         (*lca_handle) = -1;
         return (SPEX_OK) ;  // j not a leaf 
     }
+    
+    // Declare variables
+    int64_t q, s, sparent, jprev ;    
+
     maxfirst [i] = first [j] ;      // update max first[j] seen so far 
     jprev = prevleaf [i] ;          // jprev = previous leaf of ith subtree 
     prevleaf [i] = j ;
-    *jleaf = (jprev == -1) ? 1: 2 ; // j is first or subsequent leaf 
+    *jleaf = (jprev == -1) ? 1:2 ; // j is first or subsequent leaf 
+    
     if (*jleaf == 1)
     {
         (*lca_handle) = i;
@@ -51,5 +60,5 @@ SPEX_info spex_Chol_leaf
         ancestor [s] = q ;
     }
     (*lca_handle) = q;
-    return SPEX_OK ;                    // q = least common ancester (jprev,j) 
+    return SPEX_OK ;                    // q = least common ancestor (jprev,j) 
 }

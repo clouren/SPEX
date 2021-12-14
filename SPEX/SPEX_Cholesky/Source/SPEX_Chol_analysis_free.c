@@ -2,9 +2,10 @@
 // SPEX_Chol/SPEX_Chol_analysis_free: Free SPEX_Chol_analysis data struct
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -16,11 +17,20 @@ void SPEX_Chol_analysis_free
     SPEX_Chol_analysis** S
 )
 {
-  if ((S != NULL) && (*S != NULL))
-  {
-    SPEX_FREE ((*S)->q) ;
-    SPEX_FREE((*S)->parent);
-    SPEX_FREE((*S)->cp);
-    SPEX_FREE (*S) ;
-  }
+    //TIM: Can you please explain to us (Lorena, Chris & Erick), why the first term is not always true?
+    //meaninig when you declare S; even if S*=NULL (if S is pointing to a NULL address), S itself needs to be stored at some location/address so &S cannot be NULL)
+    if ((S != NULL) && (*S != NULL))
+    {
+        /*if((*S)->p != NULL)
+            SPEX_FREE((*S)->p);
+        if((*S)->parent != NULL)
+            SPEX_FREE((*S)->parent);
+        if(((*S)->cp)!=NULL)
+            SPEX_FREE((*S)->cp);
+        if((*S)->pinv != NULL)
+            SPEX_FREE((*S)->pinv);*/
+        SPEX_FREE(*S);
+    }
+
+    //TODO make safe free I hate this function but it should stop existing once jinhao makes changes to api
 }

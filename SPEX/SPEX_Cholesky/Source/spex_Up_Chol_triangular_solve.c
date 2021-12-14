@@ -2,21 +2,28 @@
 // SPEX_Chol/SPEX_Up_Chol_triangular_solve: Sparse symmetric REF Triangular solve
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
+# define SPEX_FREE_ALLOCATION     \
+    SPEX_matrix_free(&x, NULL);   \
+    SPEX_FREE(xi);                \
+
 #include "spex_chol_internal.h"
 
-
+// TODO mimic comments from left DONE
+//TODO check the 80char thing DONE
 /* Purpose: This function performs the symmetric sparse REF triangular solve for
  * the up-looking Cholesky factorization. i,e, LD x = A(1:k-1, k). At the end of
  * this function, the vector x contains the values of the kth row of the integer-
  * preserving matrix L. 
  * 
- * Command input:
+ * Input arguments of the function:
+ *
  * top_output:      A pointer to the beginning of the nonzero pattern. Undefined
  *                  on input, on output xi[top_output..n] contains the beginning
  *                  of the nonzero pattern.
@@ -30,9 +37,13 @@
  * xi:              Nonzero pattern. Undefined on input, on output contains teh 
  *                  nonzero pattern of the kth row of L
  * 
- * parent:          Elimintaation tree
+ * parent:          Elimination tree
  * 
- * c:               Column pointers of L
+ * c:               Column pointers of L but they don't point to the top
+ *                  position of each column of L. Instead they point to the
+ *                  position on each column where the next value of L will be
+ *                  grabbed, since at iteration k we need to grab the kth of L
+ *                  in order to not recompute those values.
  * 
  * rhos:            Pivot matrix
  * 
@@ -42,57 +53,85 @@
  *                  contains the kth row of L.
  */
 
+// Comparison function used for the quicksort in the factorization
+// Each iteration of the triangular solve requires that the nonzero pattern
+// is sorted prior to numeric operations. This is the helper function for
+// c's default qsort
+static inline int compare (const void * a, const void * b)
+{
+    return ( *(int64_t*)a - *(int64_t*)b ) ;
+}
 
 
-SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular solve
+SPEX_info spex_Up_Chol_triangular_solve
 (
-    int64_t *top_output,            // Output the beginng of nonzero pattern
-    SPEX_matrix* L,                 // partial L matrix
-    const SPEX_matrix* A,           // input matrix
-    int64_t k,                      // iteration of algorithm
-    int64_t*  xi,                   // nonzero pattern vector
-    int64_t*  parent,               // Elimintaation tree
-    int64_t* c,                     // Column pointers
-    SPEX_matrix* rhos,              // sequence of pivots
-    int64_t * h,                    // history vector
-    SPEX_matrix* x                  // solution of system ==> kth row of L
+    //Output
+    int64_t* top_output,               // On input NULL. On output contains the
+                                       // beginning of nonzero pattern
+                                       // The nonzero pattern is contained in 
+                                       // xi[top_output...n-1]
+    int64_t* xi,                       // Nonzero pattern vector
+    SPEX_matrix* x,                    // Solution of system ==> kth row of L
+    // Input
+    const SPEX_matrix* L,              // Partial L matrix
+    const SPEX_matrix* A,              // Input matrix
+    const int64_t k,                   // Iteration of algorithm
+    const int64_t* parent,             // Elimination tree
+    int64_t* c,                        // Column pointers
+    const SPEX_matrix* rhos,           // sequence of pivots
+    int64_t* h                         // History vector
 )
 {
-    SPEX_info info, ok;
+    SPEX_info info;
     
-    SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
-    SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
-    
-    if (!xi || !parent || !c || !h)
+    // TODO: Double check we are checking for ALL null inputs in both Up and Left (i.e., propagate their union) DONE
+
+    // check inputs
+    if (!xi || !parent || !c || !h || !L || !A || !rhos || !x)
         return SPEX_INCORRECT_INPUT;
     
+    ASSERT(L->type == SPEX_MPZ);
+    ASSERT(L->kind == SPEX_CSC);
+    ASSERT(A->type == SPEX_MPZ);
+    ASSERT(A->kind == SPEX_CSC);
+    ASSERT(x->type == SPEX_MPZ);
+    ASSERT(x->kind == SPEX_DENSE);
+    ASSERT(rhos->type == SPEX_MPZ);
+    ASSERT(rhos->kind == SPEX_CSC);
+    
     int64_t j, i, inew, p, m, top, n = A->n, col;
+    int sgn;
     
     ASSERT(n >= 0);
     
     //--------------------------------------------------------------------------
-    // Initialize REF TS by getting nonzero patern of x && obtaining A(:,k)
+    // Initialize REF Triangular Solve by getting the nonzero patern of x &&
+    // obtaining A(:,k)
     //--------------------------------------------------------------------------
-    // Obtain the nonzero pattern in xi[top..n]
-    // This is the nonzeros in row k of L
-    SPEX_CHECK(spex_Chol_ereach(&top, A, k, parent, xi, c));
-    // Sort the nonzero pattern using quicksort
+    // Obtain the nonzero pattern of the kth row of L by analyzing the
+    // elimination tree of A. The indices of these nonzeros are stored in
+    // xi[top..n-1]
+    SPEX_CHECK(spex_Chol_ereach(&top, xi, A, k, parent, c));
+    
+    // Sort the nonzero pattern using quicksort (reuqired by IPGE unlike in GE)
     qsort(&xi[top], n-top, sizeof(int64_t*), compare); 
         
     // Reset x[i] = 0 for all i in nonzero pattern xi [top..n-1]
     for (i = top; i < n; i++)
     {
-        SPEX_CHECK (SPEX_mpz_set_ui (x->x.mpz[xi [i]], 0)) ;
+        SPEX_CHECK(SPEX_mpz_set_ui(x->x.mpz[xi[i]],0));
     }
+    
+    // TODO: Add a nonzero diagonal check to the symmertic check (due to the sparse format, this has to be done with a workspace 'marking' array at the same time of the numeric symmerty check)
     // Reset value of x[k]. If the matrix is nonsingular, x[k] will
     // be a part of the nonzero pattern and reset in the above loop.
     // However, in some rare cases, the matrix can be singular but x[k]
     // will be nonzero from a previous iteration. Thus, here we reset
     // x[k] to account for this extremely rare case.
-    SPEX_CHECK( SPEX_mpz_set_ui( x->x.mpz[k], 0));
-        
+    // Note that this can only happen if the `expert' user did not performed the
+    // symmerty/non-zero-diagonal check.
+    SPEX_CHECK(SPEX_mpz_set_ui(x->x.mpz[k],0));
+
     // Reset h[i] = -1 for all i in nonzero pattern
     for (i = top; i < n; i++)
     {
@@ -100,31 +139,38 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
     }
     
     // Set x = A(:,k)
+    // Note: The if is needed since the columns of A are allowed to be unsorted.
     for (i = A->p[k]; i < A->p[k+1]; i++)
     {
         if (A->i[i] <= k)
         {
-            OK(SPEX_mpz_set(x->x.mpz[A->i[i]], A->x.mpz[i]));
+            SPEX_CHECK(SPEX_mpz_set(x->x.mpz[A->i[i]], A->x.mpz[i]));
         }
     }
     
     //--------------------------------------------------------------------------
-    // Iterate accross nonzeros in x
+    // Perform the REF Triangular Solve. Note that, unlike the left-looking 
+    // Cholesky triangular solve where L is lower trapezoidal, the up-looking 
+    // L matrix is actually lower triangular; thus this is a true triangular solve.
     //--------------------------------------------------------------------------
     for (p = top; p < n; p++)
     {   
-        /* Finalize x[j] */
-        j = xi[p];                                  // First nonzero term
-        if (mpz_sgn(x->x.mpz[j]) == 0) continue;    // If x[j] == 0 no work must be done
+        // Obtain the index of the current nonzero
+        j = xi[p];
+        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[j]));
+        if (sgn == 0) continue;    // If x[j] == 0 no work must be done
                 
-        // History update x[j]
+        // Initial history update to finalize x[j] if necessary
         if (h[j] < j-1)
         {
-            // History update x[j]
-            OK(SPEX_mpz_mul(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[j-1]));
+            // History update x[j]: x[j] = x[j]*rhos[j-1]/rhos[h[j]]
+            // x[j] = x[j]*rhos[j-1]
+            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[j-1]));
             if (h[j] > -1)
             {
-               OK(SPEX_mpz_divexact(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[ h[j]]));
+               // x[j] = x[j] / rhos [ h[j] ]
+               SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[j], x->x.mpz[j], 
+                                            rhos->x.mpz[h[j]]));
             }
         }
         
@@ -132,34 +178,58 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
         // IPGE updates
         //------------------------------------------------------------------
         // ----------- Iterate accross nonzeros in Lij ---------------------
-        for (m = L->p[j] +1; m < c[j]; m++)
+        for (m = L->p[j]+1; m < c[j]; m++)
         {
             i = L->i[m];            // i value of Lij
             if (i > j && i < k)     // Update all dependent x[i] excluding x[k]
             {
                     /*************** If lij==0 then no update******************/
-                if (mpz_sgn(L->x.mpz[m]) == 0) continue;
+                SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->x.mpz[m]));
+                if (sgn == 0) continue;
 
                 //----------------------------------------------------------
                 /************* lij is nonzero, x[i] is zero****************/
                 // x[i] = 0 then only perform IPGE update subtraction/division
                 //----------------------------------------------------------
-                if (mpz_sgn(x->x.mpz[i]) == 0)
+                SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[i]));
+                if (sgn == 0)
                 {
-                    // No previous pivot
-                    if (j < 1)
+                    // First, get the correct value of x[i] = 0 - lij * x[j]
+                    // TODO: Please compare this single fgunction call to doing via two calls: x[i] = lij * x[j], and then flipping the sign of x[i] (flip sign with flip sign function, not multiply by -1) ----all of this check for the case where x[i] is zero
+                    // ^ use a list of humongous numbers
+                    SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m],
+                                                 x->x.mpz[j]));
+                    // Do a division by the pivot if necessary.
+                    if (j >= 1)
                     {
-                        OK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
-                        h[i] = j;                  // Entry is up to date
+                        // x[i] = x[i] / rho[j-1]
+                        SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i], x->x.mpz[i], 
+                                                        rhos->x.mpz[j-1]));
                     }
+                    // Update the history value of x[i]
+                    h[i] = j;
+                    
+                    // TODO: Make sure the above code works correctly. If so delete this next block
+                    // BLOCK TO DELETE BEGIN
+                    // No previous pivot
+                    //if (j < 1)
+                    //{
+                    //    // x[i] = 0 - lij*x[j]
+                      //  SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));
+                        
+                        // Update the history value of x[i]
+                        //h[i] = j;
+                    //}
                         
                     // Previous pivot exists
-                    else
-                    {
-                        OK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
-                        OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
-                        h[i] = j;                  // Entry is up to date
-                    }
+                    //else
+                    //{
+                        // x[i] = 0 - lij*x[j] 
+                     //   SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
+                      //  SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
+                       // h[i] = j;                  // Entry is up to date
+                    //}
+                    // BLOCK TO DELETE END
                 }
 
                 //----------------------------------------------------------
@@ -168,12 +238,18 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
                 //----------------------------------------------------------
                 else
                 {
-                    // No previous pivot in this case
+                    // TODO for TIM: What do you prefer the block below (longer) or the one commented below (more compact)?
+                    // There is no previous pivot
                     if (j < 1)
                     {
-                        OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[0]));      // x[i] = x[i]*rho[0]
-                        OK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
-                        h[i] = j;                  // Entry is now up to date
+                        // History update x[i] = x[i]*rhos[0]
+                        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],
+                                                rhos->x.mpz[0]));
+                        // x[i] = x[i] - lij x[j]
+                        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], 
+                                                    x->x.mpz[j]));
+                        // Update the history value of x[i]
+                        h[i] = j;
                     }
                     // There is a previous pivot
                     else
@@ -181,44 +257,112 @@ SPEX_info spex_Up_Chol_triangular_solve // performs the sparse REF triangular so
                         // History update if necessary
                         if (h[i] < j - 1)
                         {
-                            OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] * rho[j-1]
+                            // x[i] = x[i] * rhos[j-1]
+                            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],
+                                                     rhos->x.mpz[j-1]));
+                            // Divide by the history pivot only if the history 
+                            // pivot is not the rho[-1] (which equals 1) (rho[0] 
+                            // in the 1-based logic of othe IPGE algorithm)
                             if (h[i] > -1)
                             {
-                                OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[h[i]]));// x[i] = x[i] / rho[h[i]]
+                                // x[i] = x[i] / rho[h[i]]
+                                SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],
+                                            x->x.mpz[i],rhos->x.mpz[h[i]]));
                             }
                         }
-                        OK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j]));// x[i] = x[i] * rho[j]
-                        OK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));// x[i] = x[i] - lij*xj
-                        OK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1] 
-                        h[i] = j;                  // Entry is up to date
+                        // ---- IPGE Update x[i] = (x[i]*rhos[j] - lij*xj) / rho[j-1] ------
+                        // x[i] = x[i]*rhos[j]
+                        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],
+                                                rhos->x.mpz[j]));
+                        // x[i] = x[i] - lij*xj
+                        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], 
+                                                    x->x.mpz[j]));
+                        // x[i] = x[i] / rho[j-1] 
+                        SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],
+                                                        rhos->x.mpz[j-1]));
+                        // Entry is up to date; 
+                        h[i] = j;
                     }
+                                        
+/*
+                    // History update if necessary; That is, if there is the previous pivot is not rho[-1] (which equals 1) (j>0), and the entry is not up-to-date (h[i] < j - 1)
+                    if (j > 0 && h[i] < j - 1)
+                    {
+                        // x[i] = x[i] * rhos[j-1]
+                        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i], x->x.mpz[i], rhos->x.mpz[j-1]));
+                        // Divide by the history pivot only if the history pivot is not the rho[-1] (which equals 1) (rho[0] in the 1-based logic of othe IPGE algorithm)
+                        if (h[i] > -1)
+                        {
+                            // x[i] = x[i] / rho[h[i]]
+                            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i], x->x.mpz[i], rhos->x.mpz[h[i]]));
+                        }
+                    }
+                    // ---- IPGE Update x[i] = (x[i]*rhos[j] - lij*xj) / rho[j-1] ------
+                    // x[i] = x[i]*rhos[0]
+                    SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i], x->x.mpz[i], rhos->x.mpz[j]));
+                    // x[i] = x[i] - lij*xj
+                    SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m], x->x.mpz[j]));
+                    // x[i] = x[i] / rho[j-1] 
+                    // Only divide by previous pivot if the previous pivot is not 1 (which is always the case in the first IPGE iteration)
+                    if (j > 0)
+                    {
+                        SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i], x->x.mpz[i], rhos->x.mpz[j-1]));
+                    }
+                    // Entry is up to date; 
+                    h[i] = j;
+ */                   
                 }
             }
         }
-        // Update x[k]
+        // ------ History Update x[k] if necessary -----
         if (h[k] < j - 1)
         {
-            OK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j-1])); // x[k] = x[k] * rho[j-1]
+            // x[k] = x[k] * rho[j-1]
+            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j-1]));
+            // Divide by the history pivot only if the history pivot is not the 
+            // rho[-1] (which equals 1) (rho[0] in the 1-based logic of the 
+            // IPGE algorithm)
             if (h[k] > -1)
             {
-                OK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[h[k]]));// x[k] = x[k] / rho[h[k]]
+                // x[k] = x[k] / rho[h[k]]
+                SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],
+                                              rhos->x.mpz[h[k]]));
             }
         }
-        OK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j])); // x[k] = x[k] * rho[j]
-        OK(SPEX_mpz_submul(x->x.mpz[k], x->x.mpz[j], x->x.mpz[j]));// x[k] = x[k] - xj*xj
-        if (j != 0)
-            OK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j-1])); // x[k] = x[k] / rho[j-1] 
+        // ---- IPGE Update x[k] = (x[k]*rhos[j] - xj*xj) / rho[j-1] ------
+        // x[k] = x[k] * rho[j]
+        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[k],x->x.mpz[k],rhos->x.mpz[j]));
+        // x[k] = x[k] - xj*xj
+        SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[k], x->x.mpz[j], x->x.mpz[j]));
+        // Only divide by previous pivot if the previous pivot is not 1 (which 
+        // is always the case in the first IPGE iteration)
+        if (j > 0)
+            // x[k] = x[k] / rho[j-1] 
+            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[k],x->x.mpz[k],
+                                            rhos->x.mpz[j-1])); 
+        // Entry is up to date; 
         h[k] = j;   
     }
-    // Finalize x[k]
+    //----------------------------------------------------------
+    // At this point, x[k] has been updated throughout the 
+    // triangular solve. The last step is to make sure x[k]
+    // has its correct final value. Thus, a final history
+    // update is done to x[k] if necessary
+    //----------------------------------------------------------
     if (h[k] < k-1)
     {
-        OK(SPEX_mpz_mul(x->x.mpz[k], x->x.mpz[k], rhos->x.mpz[k-1]));
+        // x[k] = x[k] * rhos[k-1]
+        SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[k], x->x.mpz[k], rhos->x.mpz[k-1]));
+        // Only divide by previous pivot if the previous pivot is not 1 (which 
+        // is always the case in the first IPGE iteration)
         if (h[k] > -1)
         {
-            OK(SPEX_mpz_divexact(x->x.mpz[k], x->x.mpz[k], rhos->x.mpz[ h[k]]));
+            // x[k] = x[k] / rhos[h[k]]
+            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[k], x->x.mpz[k], 
+                                           rhos->x.mpz[ h[k]]));
         }
     }
+    // Output the top of the nonzero pattern
     *top_output = top;
     return SPEX_OK;
 }

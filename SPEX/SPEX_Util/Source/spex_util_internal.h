@@ -89,9 +89,28 @@
 // so that SPEX_CHECK(info) works.
 
 // the default is to free nothing
+// TODO remove this!!! and fix 80char
 #ifndef SPEX_FREE_ALL
 #define SPEX_FREE_ALL
 #endif
+
+// Frees workspace and memory that would be returned. Only used when there is an error
+// and we need to cleanly close things (like out of memory conditions and failed SPEX_CHECK)
+/*
+#ifndef SPEX_FREE_ALLOCATION
+#define SPEX_FREE_ALLOCATION
+#endif
+*/
+// Frees all workspace (but not memory that was allocated and meant to be returned). Used usually at the end of the function.
+// This workspace mechanism should be used even if the function only has one workspace variable 
+// (it can be risky otherwise with further development)
+/*
+#ifndef SPEX_FREE_WORKSPACE
+#define SPEX_FREE_WORKSPACE
+#endif
+*/
+// Local variables (only declared, allocated and freed inside an if, for example) do not go inside 
+// the workspace
 
 #define SPEX_CHECK(method)      \
 {                               \
@@ -159,6 +178,11 @@ void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
 
 void spex_gmp_failure (int status) ;
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//-----------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Tolerance used in the pivoting schemes. This number can be anything in
 // between 0 and 1. A value of 0 selects the diagonal element exclusively and a
@@ -190,6 +214,14 @@ void spex_gmp_failure (int status) ;
 
 // MPFR precision used (quad is default)
 #define SPEX_DEFAULT_PRECISION 128
+
+// Defines the algorithm used
+// SPEX_ALGORITHM_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Gram for QR looking LU factorization //TODO maybe rename default...
+// SPEX_LU_LEFT = 1,              Left looking LU factorization
+// SPEX_CHOL_LEFT = 2,            Left looking Cholesky factorization
+// SPEX_CHOL_UP = 3,              Up looking Cholesky factorization
+// SPEX_QR_GRAM = 4               Default factorization for QR
+#define SPEX_DEFAULT_ALGORITHM SPEX_ALGORITHM_DEFAULT
 
 //------------------------------------------------------------------------------
 // Type of MPFR rounding used.

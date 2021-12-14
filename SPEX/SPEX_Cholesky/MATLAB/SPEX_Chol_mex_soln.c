@@ -2,9 +2,10 @@
 // SPEX_Chol/MATLAB/SPEX_Chol_mex_soln: Use SPEX Chol within MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -52,10 +53,12 @@ void mexFunction
     {
         spex_chol_mex_error (1, "inputs must be real") ;
     }
+    /***/
     if (!mxIsSparse (pargin [0]))     // Is the matrix sparse?
     {
         spex_chol_mex_error (1, "first input must be sparse") ;
     }
+    /**/
     if (mxIsSparse (pargin [1]))         // Is b sparse?
     {
         spex_chol_mex_error (1, "second input must be full") ;
@@ -82,7 +85,7 @@ void mexFunction
     SPEX_matrix *A = NULL ;
     SPEX_matrix *b = NULL ;
     spex_chol_mex_get_A_and_b (&A, &b, pargin, option) ;
-
+/**/
     if (option->print_level > 0)
     {
         printf ("\nScaled integer input matrix A:\n") ;
@@ -175,5 +178,7 @@ void mexFunction
     SPEX_matrix_free (&A, option) ;
     SPEX_FREE (option) ;
     SPEX_finalize ( ) ;
+    /**/
+
 }
 

@@ -110,7 +110,7 @@ end
 
 
 % Preprocessing complete. Now use SPEX Chol to solve A*x=b.
-x = SPEX_Chol_mex_soln (A, b, option) ;
+x=SPEX_Chol_mex_soln (A, b, option) ;
 
 % convert to vpa, if requested
 if (isfield (option, 'solution') && isequal (option.solution, 'vpa'))

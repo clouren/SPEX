@@ -37,10 +37,11 @@ OBJ = \
      spex_left_lu_permute_b.o spex_left_lu_ref_triangular_solve.o \
      spex_left_lu_dfs.o \
      spex_left_lu_get_largest_pivot.o  spex_left_lu_get_smallest_pivot.o  \
-     spex_left_lu_permute_x.o \
-     SPEX_Left_LU_solve.o SPEX_Left_LU_backslash.o SPEX_Left_LU_factorize.o \
+     SPEX_Left_LU_backslash.o \
      spex_left_lu_get_nonzero_pivot.o \
-     spex_left_lu_reach.o
+     spex_left_lu_reach.o \
+     SPEX_Left_LU_factorize.o     SPEX_Left_LU_solve.o SPEX_LU_analyze.o
+     #spex_left_lu_permute_x.o \
 
 
 $(OBJ): ../Include/SPEX_Left_LU.h ../Source/spex_left_lu_internal.h Makefile

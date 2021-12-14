@@ -64,13 +64,10 @@
 
 #define FREE_WORKSPACE                           \
     SPEX_matrix_free(&A, option);                \
-    SPEX_matrix_free(&L, option);                \
-    SPEX_matrix_free(&U, option);                \
+    SPEX_symbolic_analysis_free(&S, option);     \
+    SPEX_factorization_free(&F, option);         \
     SPEX_matrix_free(&x, option);                \
     SPEX_matrix_free(&b, option);                \
-    SPEX_matrix_free(&rhos, option);             \
-    SPEX_FREE(pinv);                             \
-    SPEX_LU_analysis_free(&S, option);           \
     SPEX_FREE(option);                           \
     SPEX_finalize( ) ;
 
@@ -116,13 +113,10 @@ int main (int argc, char* argv[])
     //          for SPEX Left LU functions (except SPEX_malloc and such)
     //--------------------------------------------------------------------------
     SPEX_matrix *A = NULL;
-    SPEX_matrix *L = NULL;
-    SPEX_matrix *U = NULL;
+    SPEX_symbolic_analysis* S = NULL;
+    SPEX_factorization *F = NULL;
     SPEX_matrix *x = NULL;
     SPEX_matrix *b = NULL;
-    SPEX_matrix *rhos = NULL;
-    int64_t* pinv = NULL;
-    SPEX_LU_analysis* S = NULL;
     SPEX_info ok ;
     
     // Initialize option, command options for the factorization
@@ -213,7 +207,7 @@ int main (int argc, char* argv[])
 
     clock_t start_factor = clock();
 
-    OK(SPEX_Left_LU_factorize(&L, &U, &rhos, &pinv, A, S, option));
+    OK(SPEX_Left_LU_factorize(&F, A, S, option));
 
     clock_t end_factor = clock();
 
@@ -238,14 +232,7 @@ int main (int argc, char* argv[])
     option->check = true; 
     
     // Solve LDU x = b
-    OK(SPEX_Left_LU_solve(&x, b,
-        (const SPEX_matrix *) A,
-        (const SPEX_matrix *) L,
-        (const SPEX_matrix *) U,
-        (const SPEX_matrix *) rhos,
-                     S,
-        (const int64_t *) pinv,
-                     option));    
+    OK(SPEX_Left_LU_solve(&x, F, b, option));
 
     clock_t end_solve = clock();
 
@@ -269,7 +256,7 @@ int main (int argc, char* argv[])
     double t_solve =  (double) (end_solve - start_solve) / CLOCKS_PER_SEC;
 
     printf("\nNumber of L+U nonzeros: \t\t%"PRId64,
-        (L->p[L->n]) + (U->p[U->n]) - (L->m));
+        (F->L->p[F->L->n]) + (F->U->p[F->U->n]) - (F->L->m));
     printf("\nSymbolic analysis time: \t\t%lf", t_sym);
     printf("\nSPEX Left LU Factorization time: \t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);

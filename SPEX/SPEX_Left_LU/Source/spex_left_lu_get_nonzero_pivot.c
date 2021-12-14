@@ -17,6 +17,8 @@
  * On output, the kth pivot is returned.
  */
 
+//TOASK free_alloc
+
 #include "spex_left_lu_internal.h"
 
 SPEX_info spex_left_lu_get_nonzero_pivot // find the first eligible nonzero pivot

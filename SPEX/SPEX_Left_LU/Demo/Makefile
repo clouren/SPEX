@@ -22,7 +22,7 @@ I = -I../Include -I../Source -I../../../SuiteSparse_config -I../../../COLAMD/Inc
 LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspexleftlu \
     -lspexutil
 
-all: lib example example2 spexlu_demo
+all: lib example example2 spexlu_demo spexlu_doub_demo
 	- ./example
 	- ./example2
 	- ./spexlu_demo
@@ -38,6 +38,10 @@ example2: lib example2.c Makefile
 
 spexlu_demo: lib spexlu_demo.c demos.h demos.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o spexlu_demo spexlu_demo.c demos.c $(LDLIBS)
+
+spexlu_doub_demo: lib spexlu_doub_demo.c demos.h demos.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o spexlu_doub_demo spexlu_doub_demo.c demos.c $(LDLIBS)
+
 clean:
 	- $(RM) *.o
 

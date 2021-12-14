@@ -24,8 +24,9 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 
 # SPEX_Chol depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lspexutil -lm -lgmp -lmpfr
-
+CF += -g
 C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
+#C += -g
 
 all: install
 
@@ -34,9 +35,9 @@ OBJ = \
      spex_Chol_ereach.o \
      SPEX_Chol_Solve.o spex_Chol_etree.o spex_Chol_tdfs.o SPEX_Chol_Factor.o \
      spex_Chol_forward_sub.o spex_Left_Chol_triangular_solve.o \
-     spex_Chol_leaf.o spex_Chol_ltsolve.o SPEX_Chol_permute_A.o \
+     spex_Chol_leaf.o spex_Chol_backward_sub.o SPEX_Chol_permute_A.o \
      spex_Up_Chol_triangular_solve.o  SPEX_Chol_backslash.o \
-     SPEX_Chol_preorder.o 
+     SPEX_Chol_preorder.o spex_Chol_Up_Factor.o spex_Chol_Left_Factor.o
 
 $(OBJ): ../Include/SPEX_Chol.h Makefile
 

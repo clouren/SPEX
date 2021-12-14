@@ -2,30 +2,45 @@
 // SPEX_Chol/spex_Chol_post: Postorder a forest
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
+// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
 #include "spex_chol_internal.h"
+#ifndef SPEX_FREE_WORKSPACE
+#define SPEX_FREE_WORKSPACE
+#endif
 
-/* Purpose: post order a forest. Modified from csparse */
+/* Purpose: post order a forest. */
 SPEX_info spex_Chol_post 
 (
-    int64_t** post_handle,
-    int64_t* parent,    // Parent[j] is parent of node j int64_t* forest
-    int64_t n           // Number of nodes int64_t* the forest
+    // Output
+    int64_t** post_handle, // On input is NULL. On output is post-order of the forest
+    // Input
+    const int64_t* parent, // Parent[j] is parent of node j in forest
+    const int64_t n        // Number of nodes in the forest
 )
 {
+    SPEX_info info ;
+
+    // Input checks
+    ASSERT( n >= 0);
+    if (!parent) return (SPEX_INCORRECT_INPUT) ;
+    
+    // Declare variables
     int64_t j, k = 0, *post, *w, *head, *next, *stack ;
-    if (!parent) return (SPEX_INCORRECT_INPUT) ;                                // check inputs 
+    
     // Allocate the postordering result
     post = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
+    
     // Create a workspace
     w = (int64_t*) SPEX_malloc (3*n* sizeof (int64_t)) ;
     if (!w || !post) return (SPEX_OUT_OF_MEMORY) ;
     head = w ; next = w + n ; stack = w + 2*n ;
+    
     // Empty linked lists
     for (j = 0 ; j < n ; j++)
     {
@@ -40,7 +55,7 @@ SPEX_info spex_Chol_post
     for (j = 0 ; j < n ; j++)
     {
         if (parent [j] != -1) continue ;    // skip j if it is not a root 
-        k = spex_Chol_tdfs (j, k, head, next, post, stack) ;
+        SPEX_CHECK(spex_Chol_tdfs (&k, j, head, next, post, stack)) ;
     }
     SPEX_free(w);
     (*post_handle) = post;

@@ -43,7 +43,7 @@ SPEX_info SPEX_determine_symmetry
             // the values
     const SPEX_options *option
 )
-{
+{    
     int64_t j;
     SPEX_info info;
     // Declare matrix T
@@ -67,7 +67,7 @@ SPEX_info SPEX_determine_symmetry
     // then compare R and T
 
     // Check if i values are the same
-    for (j = 0; j < R->nz; j++)
+    for (j = 0; j < R->p[R->n]; j++)
     {
         if (T->i[j] != R->i[j])
         {
@@ -82,7 +82,7 @@ SPEX_info SPEX_determine_symmetry
     if (check_if_numerically_symmetric)
     {
         int r;
-        for (j = 0; j < R->nz; j++)
+        for (j = 0; j < R->p[R->n]; j++)
         {
             SPEX_CHECK(SPEX_mpz_cmp(&r, R->x.mpz[j], T->x.mpz[j]));
             if ( r != 0)

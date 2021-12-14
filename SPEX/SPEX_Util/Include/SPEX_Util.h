@@ -117,13 +117,19 @@
 
 typedef enum
 {
-    SPEX_OK = 0,                // all is well
-    SPEX_OUT_OF_MEMORY = -1,    // out of memory
-    SPEX_SINGULAR = -2,         // the input matrix A is singular
-    SPEX_INCORRECT_INPUT = -3,  // one or more input arguments are incorrect
-    SPEX_INCORRECT = -4,        // The solution/factorization is incorrect
-    SPEX_UNSYMMETRIC = -5,      // The input matrix is unsymmetric (for Cholesky)
-    SPEX_PANIC = -6             // SPEX used without proper initialization
+
+    SPEX_OK = 0,                  // all is well
+    SPEX_OUT_OF_MEMORY = -1,      // out of memory
+    SPEX_SINGULAR = -2,           // the input matrix A is singular
+    SPEX_INCORRECT_INPUT = -3,    // one or more input arguments are incorrect
+    SPEX_INCORRECT = -4,          // The solution is incorrect
+    SPEX_UNSYMMETRIC = -5,        // The input matrix is unsymmetric
+    SPEX_NOTSPD = -6,             // The input matrix is not SPD
+                                  // UNSYMMETRIC and NOTSPD are used for
+                                  // Cholesky factorization
+    SPEX_INCORRECT_ALGORITHM = -7,// The algorithm is not compatible with 
+                                  // the factorization
+    SPEX_PANIC = -8               // SPEX used without proper initialization
 }
 SPEX_info ;
 
@@ -162,6 +168,23 @@ typedef enum
 SPEX_col_order ;
 
 //------------------------------------------------------------------------------
+// Factorization type codes //TODO we need to change the word type (maybe "direction"?)
+//------------------------------------------------------------------------------
+
+// A code in SPEX_options to tell SPEX which "direction" to use when computing 
+// the exact factorization
+
+typedef enum
+{
+    SPEX_ALGORITHM_DEFAULT = 0,    // Defaults: Left for LU, Up for Chol, Gram for QR looking LU factorization //TODO maybe rename default...
+    SPEX_LU_LEFT = 1,    // Left looking LU factorization
+    SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
+    SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
+    SPEX_QR_GRAM = 4     // Default factorization for QR
+}
+SPEX_factorization_algorithm ; //TODO rename SPEX_factorization_algorithm and Propagate
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //-------------------------Data Structures--------------------------------------
 //------------------------------------------------------------------------------
@@ -184,6 +207,12 @@ typedef struct SPEX_options
                            // the system or verify the resulted factorization.
                            // Intended for debugging only; SPEX is guaranteed
                            // to be exact and correct.
+    SPEX_factorization_algorithm algo ; // parameter which tells the function
+                           // whether it is performing a left-looking (2) or
+                           // up-looking (3) factorization in case of Cholesky
+                           // left looking LU (1) or if it is doing Gram-Schmidt
+                           // (4). The Default (0) is up looking for Cholesky, 
+                           // left looking for LU and Gram-Schmidt for QR
 } SPEX_options ;
 
 // Purpose: Create SPEX_options object with default parameters
@@ -525,41 +554,184 @@ SPEX_info SPEX_matrix_copy
 
 
 //------------------------------------------------------------------------------
-// SPEX_LU_analysis: symbolic pre-analysis
+// SPEX_symbolic_analysis: symbolic pre-analysis
 //------------------------------------------------------------------------------
 
-// This struct stores the column permutation for LU and the estimate of the
-// number of nonzeros in L and U.
+// data structure for symbolic analysis
+typedef enum
+{
+    SPEX_LU_SYMBOLIC_ANALYSIS = 0,                 // LU analysis
+    SPEX_CHOLESKY_SYMBOLIC_ANALYSIS = 1,           // Cholesky analysis
+    SPEX_QR_SYMBOLIC_ANALYSIS = 2                  // QR analysis
+}SPEX_symbolic_analysis_kind ;
+
+// This struct stores the results of symbolic analysis
 
 typedef struct
 {
-    int64_t *q ;    // Column permutation for LU factorization, representing
-                    // the permutation matrix Q.   The matrix A*Q is factorized.
-                    // If the kth column of L, U, and A*Q is column j of the
-                    // unpermuted matrix A, then j = S->q [k].
-    int64_t lnz ;   // Approximate number of nonzeros in L.
-    int64_t unz ;   // Approximate number of nonzeros in U.
-                    // lnz and unz are used to allocate the initial space for
-                    // L and U; the space is reallocated as needed.
-} SPEX_LU_analysis ;
+    SPEX_symbolic_analysis_kind kind;             // LU, Cholesky or QR analysis
 
-// The symbolic analysis object is created by SPEX_LU_analyze.
+    //--------------------------------------------------------------------------
+    // The permutations of the matrix that are found during the symbolic
+    // analysis process.  One or more of these permutations could be NULL for
+    // some SPEX_symbolic_analysis_kind. Specifically,
+    // For kind == SPEX_LU_ANALYSIS, only Q_perm is not NULL.
+    // For kind == SPEX_CHOLESKY_ANALYSIS, both Q_perm and Qinv_perm are
+    // NULL.
+    // TODO for QR????
+    //--------------------------------------------------------------------------
+    int64_t *P_perm;                     // row permutation
+                                         // should not free by Left_LU_factorize
+    int64_t *Pinv_perm;                  // inverse of row permutation
 
-// SPEX_LU_analysis_free frees the SPEX_LU_analysis object.
-SPEX_info SPEX_LU_analysis_free        
+    int64_t *Q_perm;                     // column permutation
+    int64_t *Qinv_perm;                  // inverse of column permutation
+                                         // should not free by Left_LU_factorize
+
+    //--------------------------------------------------------------------------
+    // estimates of nonzeros that will apprear in the factorization
+    //--------------------------------------------------------------------------
+
+    int64_t lnz ;                        // Approximate number of nonzeros in L.
+                                         // Available only for SPEX_LU_analysis
+                                         // or SPEX_CHOLESKY_analysis.
+    int64_t unz ;                        // Approximate number of nonzeros in U.
+                                         // lnz and unz are used to allocate
+                                         // the initial space for L and U; the
+                                         // space is reallocated as needed.
+                                         // Available only for SPEX_LU_analysis.
+
+    //--------------------------------------------------------------------------
+    // These are only used in the Cholesky analysis process
+    //--------------------------------------------------------------------------
+    int64_t* parent;                     // Elimination tree of target matrix
+                                         // for Cholesky factorization.
+    int64_t* cp;                         // column pointers of L for Cholesky
+                                         // factorization.
+} SPEX_symbolic_analysis ;
+
+// The symbolic analysis object is created by SPEX_symbolic_analyze.
+
+// SPEX_symbolic_analysis_free frees the SPEX_symbolic_analysis object.
+SPEX_info SPEX_symbolic_analysis_free        
 (
-    SPEX_LU_analysis **S, // Structure to be deleted
+    SPEX_symbolic_analysis **S, // Structure to be deleted
     const SPEX_options *option
 ) ;
 
-// SPEX_LU_analyze performs the symbolic ordering and analysis for LU factorization.
-// Currently, there are three options: no ordering, COLAMD, and AMD.
-SPEX_info SPEX_LU_analyze
+// SPEX_symbolic_analyze performs the symbolic ordering and analysis for
+// specified kind. The pre-ordering method is specified in the option.
+// For the pre-ordering for LU factorization, there are three options:
+// no ordering, COLAMD, and AMD.
+// TODO? For the pre-ordering for Cholesky factorization, 
+SPEX_info SPEX_symbolic_analyze
 (
-    SPEX_LU_analysis **S, // symbolic analysis (column permutation and nnz L,U)
+    SPEX_symbolic_analysis **S_handle, // symbolic analysis
     const SPEX_matrix *A, // Input matrix
+    const SPEX_symbolic_analysis_kind kind, // LU, Cholesky or QR analysis
     const SPEX_options *option  // Control parameters
 ) ;
+
+
+//------------------------------------------------------------------------------
+// SPEX_factorization: data structure for factorization
+//------------------------------------------------------------------------------
+// data structure for factorization
+typedef enum
+{
+    SPEX_LU_FACTORIZATION = 0,            // LU factorization
+    SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
+    SPEX_QR_FACTORIZATION = 2             // QR factorization
+}SPEX_factorization_kind ;
+
+typedef struct
+{
+    SPEX_factorization_kind kind;         // LU, Cholesky, QR factorization
+
+    mpq_t scale_for_A;                    // the scale of the target matrix
+
+    //--------------------------------------------------------------------------
+    // These are used for LU or Cholesky factorization, but ignored for QR
+    // factorization. Check L->kind to see if the factorization is updatable.
+    //--------------------------------------------------------------------------
+
+    SPEX_matrix *L;                       // The lower-triangular matrix from LU
+                                          // or Cholesky factorization.
+    SPEX_matrix *U;                       // The upper-triangular matrix from LU
+                                          // factorization. NULL for Cholesky
+                                          // factorization.
+    SPEX_matrix *rhos;                    // A n-by-1 dense matrix for the
+                                          // pivot values
+
+    //--------------------------------------------------------------------------
+    // These are used for QR factorization, but ignored for LU or Cholesky
+    // factorization. Check L->kind to see if the factorization is updatable
+    //--------------------------------------------------------------------------
+
+    SPEX_matrix *Q;                       // The orthogonal matrix from QR
+    SPEX_matrix *R;                       // The upper triangular matrix from QR
+
+    //--------------------------------------------------------------------------
+    // The permutations of the matrix that are used during the factorization.
+    // These are currently used only for LU or Cholesky factorization.
+    // One or more of these permutations could be NULL for some
+    // SPEX_factorization_kind. Specifically,
+    // For kind == SPEX_LU_FACTORIZATION, Qinv_perm will be NULL, but it will
+    // be generated when the factorization is converted to the updatable form.
+    // For kind == SPEX_CHOLESKY_FACTORIZATION, both Q_perm and Qinv_perm are
+    // NULL.
+    // TODO for QR????
+    //--------------------------------------------------------------------------
+
+    int64_t *P_perm;                     // row permutation
+                                         // should not free by Left_LU_factorize
+    int64_t *Pinv_perm;                  // inverse of row permutation
+
+    int64_t *Q_perm;                     // column permutation
+    int64_t *Qinv_perm;                  // inverse of column permutation
+                                         // should not free by Left_LU_factorize
+
+} SPEX_factorization;
+
+// SPEX_factorization_free frees the SPEX_factorization object.
+SPEX_info SPEX_factorization_free        
+(
+    SPEX_factorization **F, // Factorization to be deleted
+    const SPEX_options *option
+) ;
+
+
+// SPEX_factorize performs SPEX factorization based on the available symbolic
+// analysis S->kind, which should be either LU, Choleksy or QR.
+SPEX_info SPEX_factorize
+(
+    SPEX_factorization **F_handle, // The resulted factorization as specified
+    const SPEX_matrix *A, // Input matrix
+    const SPEX_symbolic_analysis *S, // symbolic analysis
+    const SPEX_options *option  // Control parameters
+) ;
+
+// SPEX_solve solves the linear system Ax=b with available factorization of A.
+SPEX_info SPEX_solve
+(
+    SPEX_matrix **x_handle, // the solution to the system
+    const SPEX_matrix *b,   // the right-hand-side vector
+    const SPEX_factorization *F, // factorization of A
+    const SPEX_options *option  // Control parameters
+) ;
+
+
+/* TODO
+// SPEX_solve solves the linear system Ax=b with available factorization of A.
+SPEX_info SPEX_solve
+(
+    SPEX_matrix **x, // input as the right-hand-side vector, and output with 
+                     // the solution to the system
+    const SPEX_factorization *F, // factorization of A
+    const SPEX_options *option  // Control parameters
+) ;
+*/
+
 
 
 //------------------------------------------------------------------------------
@@ -908,6 +1080,14 @@ SPEX_info SPEX_determine_symmetry
             // the values
     const SPEX_options *option
 );
+
+#if 0
+SPEX_info SPEX_determine_empty_column
+(
+    bool empty_column_exists, //true if A has a column of only 0s
+    SPEX_matrix* A
+);
+#endif
 
 #endif
 

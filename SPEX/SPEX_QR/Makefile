@@ -1,41 +1,68 @@
-#-------------------------------------------------------------------------------
-# SPEX_QR/Makefile: compile and run the demos
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# SPEX_QR/Makefile: compile, install, and run SLIP QR demo and tests
+#------------------------------------------------------------------------------
 
-# SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-# Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-# All Rights Reserved.  See SPEX_Cholesky/License for the license.
+# SPEX_QR: (c) 2021, Chris Lourenco, US Naval Academy, All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
-default: all
+SUITESPARSE ?= $(realpath $(CURDIR)/../..)
+export SUITESPARSE
+
+# default: compile the dynamic library, and run the demos
+default: C
 
 include ../../SuiteSparse_config/SuiteSparse_config.mk
 
-# uncomment for extra error checking:
-#CFLAGS += -Wall -Wextra -Wpedantic -Werror
+# compile the dynamic library, and then run the demos and statement coverage
+demos: all
 
-PATH_TO_SPEX_UTIL=-Wl,-rpath,"../SPEX_Util/Lib/"
-CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -O2
-CF_DEBUG = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -g
-I = -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Util/Include -I../SPEX_Util/Source -I../SPEX_Util/Lib -I./
+# compile the dynamic library only, and then run the demos
+C:
+	( cd Lib ; $(MAKE) )
+	( cd Demo ; $(MAKE) )
 
-LDLIBS += -lm  -lcolamd -lamd -L../SPEX_Util/Lib/ -lspexutil -lgmp -lmpfr -lsuitesparseconfig
-CS = $(LDLIBS)
+# compile the dynamic library, and then run the demos and statement coverage
+all: C cov
 
+# compile the dynamic library only
+library:
+	( cd Lib ; $(MAKE) )
 
-all: SPEX_QR_dense SPEX_QR_dense_debug
+# compile the static library only
+static:
+	( cd Lib ; $(MAKE) static )
 
-SPEX_QR_dense: SPEX_QR_dense.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o SPEX_QR_dense SPEX_QR_dense.c $(CS)
+# statement coverage test
+cov:
+	( cd Tcov ; $(MAKE) )
 
-SPEX_QR_dense_debug: SPEX_QR_dense.c Makefile
-	$(CC) $(LDFLAGS) $(CF_DEBUG) $(I) -o debug_SPEX_QR_dense SPEX_QR_dense.c $(CS)
-
+# remove files not in the distribution, but keep compiled libraries
 clean:
-	- $(RM) *.o SPEX_QR_dense
+	( cd Lib ; $(MAKE) clean )
+	( cd Demo ; $(MAKE) clean )
+	( cd Tcov ; $(MAKE) clean )
+	- ( cd MATLAB/Source ; $(RM) *.o )
+	- ( cd MATLAB    ; $(RM) *.o )
+#	( cd Doc ; $(MAKE) clean )
 
-purge: distclean
+# remove all files not in the distribution
+purge:
+	( cd Lib ; $(MAKE) purge )
+	( cd Demo ; $(MAKE) purge )
+	( cd Tcov ; $(MAKE) purge )
+	- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
+	- ( cd MATLAB    ; $(RM) *.o *.mex* )
+#	( cd Doc ; $(MAKE) clean )
 
-distclean: clean
-	- $(RM) -r SPEX_Chol SPEX_Chol_debug *.a *.dSYM *.obj *.dll
+distclean: purge
+
+# install the library
+install: library
+	( cd Lib ; $(MAKE) install )
+
+# uninstall the library
+uninstall:
+	( cd Lib ; $(MAKE) uninstall )
+

@@ -201,6 +201,7 @@ SPEX_info SPEX_tripread_double
 )
 {
     SPEX_info info ;
+
     if (A_handle == NULL || file == NULL)
     {
         printf ("invalid input\n") ;

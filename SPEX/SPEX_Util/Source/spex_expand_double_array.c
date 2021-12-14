@@ -15,11 +15,16 @@
  *
  */
 
-#define SPEX_FREE_ALL               \
+//TODO change
+ 
+#define SPEX_FREE_WORKSPACE         \
     SPEX_MPZ_CLEAR(gcd);            \
     SPEX_MPZ_CLEAR(one);            \
     SPEX_MPQ_CLEAR(temp);           \
     SPEX_matrix_free(&x3, NULL);    \
+
+#define SPEX_FREE_ALLOCATION       \
+    SPEX_FREE_WORKSPACE            \
 
 #include "spex_util_internal.h"
 
@@ -47,7 +52,7 @@ SPEX_info spex_expand_double_array
     SPEX_info info ;
     // Double precision accurate to about 2e-16. We multiply by 10e17 to convert
     // (overestimate to be safe)
-    double expon = pow(10, 17);
+    double expon = pow(10, 16);
     // Quad precision in case input is huge
     SPEX_matrix* x3 = NULL;
     mpz_t gcd, one; SPEX_MPZ_SET_NULL(gcd); SPEX_MPZ_SET_NULL(one);
@@ -62,13 +67,13 @@ SPEX_info spex_expand_double_array
     SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPFR, n, 1, n,
         false, true, option));
 
-    SPEX_CHECK(SPEX_mpq_set_d(scale, expon));           // scale = 10^17
+    SPEX_CHECK(SPEX_mpq_set_d(scale, expon));           // scale = 10^16
     for (i = 0; i < n; i++)
     {
         // Set x3[i] = x[i]
         SPEX_CHECK(SPEX_mpfr_set_d(x3->x.mpfr[i], x[i], round));
 
-        // x3[i] = x[i] * 10^17
+        // x3[i] = x[i] * 10^16
         SPEX_CHECK(SPEX_mpfr_mul_d(x3->x.mpfr[i], x3->x.mpfr[i], expon, round));
 
         // x_out[i] = x3[i]
@@ -108,7 +113,7 @@ SPEX_info spex_expand_double_array
     if (!nz_found)     // Array is all zeros
     {
         SPEX_mpq_set_z(scale, one);
-        SPEX_FREE_ALL;
+        SPEX_FREE_ALLOCATION;
         return SPEX_OK;
     }
 
@@ -125,7 +130,7 @@ SPEX_info spex_expand_double_array
         SPEX_CHECK(SPEX_mpq_set_z(temp, gcd));
         SPEX_CHECK(SPEX_mpq_div(scale, scale, temp));
     }
-    SPEX_FREE_ALL;
+    SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }
 
