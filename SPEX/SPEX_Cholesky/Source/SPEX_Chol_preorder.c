@@ -30,7 +30,7 @@
 // LU analysis function
 
 # define SPEX_FREE_ALLOCATION             \
-    SPEX_symbolic_analysis_free(&S_handle, option);   \
+    SPEX_symbolic_analysis_free(S_handle, option);   \
 
 #include "spex_chol_internal.h"
 
