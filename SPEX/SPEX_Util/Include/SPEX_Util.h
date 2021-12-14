@@ -404,7 +404,7 @@ SPEX_info SPEX_matrix_copy
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 //------------------------------------------------------------------------------
-// SPEX_LU_analysis: symbolic pre-analysis
+// SPEX_symbolic_analysis: symbolic pre-analysis
 //------------------------------------------------------------------------------
 
 // data structure for symbolic analysis
@@ -925,11 +925,13 @@ SPEX_info SPEX_determine_symmetry
             // the values
 );
 
+#if 0
 SPEX_info SPEX_determine_empty_column
 (
     bool empty_column_exists, //true if A has a column of only 0s
     SPEX_matrix* A
 );
+#endif
 
 #endif
 

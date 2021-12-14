@@ -232,7 +232,7 @@ int main (int argc, char* argv[])
     option->check = true; 
     
     // Solve LDU x = b
-    OK(SPEX_Left_LU_solve(&x, b, F, option));
+    OK(SPEX_Left_LU_solve(&x, F, b, option));
 
     clock_t end_solve = clock();
 

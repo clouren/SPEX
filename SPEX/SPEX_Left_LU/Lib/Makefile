@@ -40,7 +40,6 @@ OBJ = \
      SPEX_Left_LU_backslash.o \
      spex_left_lu_get_nonzero_pivot.o \
      spex_left_lu_reach.o \
-     spex_lu_analyze.o spex_left_lu_factorize.o spex_left_lu_solve.o \
      SPEX_Left_LU_factorize.o     SPEX_Left_LU_solve.o SPEX_LU_analyze.o
      #spex_left_lu_permute_x.o \
 

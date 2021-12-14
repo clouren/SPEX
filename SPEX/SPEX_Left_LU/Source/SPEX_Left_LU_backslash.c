@@ -83,19 +83,19 @@ SPEX_info SPEX_Left_LU_backslash
     // Symbolic Analysis
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_lu_analyze(&S, A, option));
+    SPEX_CHECK(SPEX_LU_analyze(&S, A, option));
 
     //--------------------------------------------------------------------------
     // LU Factorization
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_left_lu_factorize(&F, A, S, option));
+    SPEX_CHECK(SPEX_Left_LU_factorize(&F, A, S, option));
 
     //--------------------------------------------------------------------------
     // Solve
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK (spex_left_lu_solve (&x, b, F, option)) ;
+    SPEX_CHECK (SPEX_Left_LU_solve (&x, F, b, option)) ;
 
     //--------------------------------------------------------------------------
     // Now, x contains the exact solution of the linear system in mpz_t

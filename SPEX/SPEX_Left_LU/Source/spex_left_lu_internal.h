@@ -22,51 +22,6 @@
 //                           Internal Functions
 // ============================================================================
 
-/* Purpose: This function performs the symbolic ordering for unsymmetric
- * matrices.  Currently, there are three options: user-defined order, COLAMD,
- * or AMD.
- */
-
-SPEX_info spex_lu_analyze
-(
-    SPEX_symbolic_analysis** S_handle, // symbolic analysis including
-                                 // column perm. and nnz of L and U
-    const SPEX_matrix *A,        // Input matrix
-    const SPEX_options *option   // Control parameters, if NULL, use default
-);
-
-/* Purpose: This internal function performs the SPEX Left LU factorization, but
- * does not free the row permutation when finished. This factorization is done
- * via n iterations of the sparse REF triangular solve function. The overall
- * factorization is PAQ = LDU The determinant of A can be obtained as
- * determinant = rhos[n-1]
- */
-SPEX_info spex_left_lu_factorize
-(
-    // output:
-    SPEX_factorization **F_handle, // LU factorization
-    // input:
-    const SPEX_matrix *A,      // matrix to be factored
-    const SPEX_symbolic_analysis *S, // symbolic analysis
-    const SPEX_options* option // command options
-);
-
-/* Purpose: This function solves the linear system LD^(-1)U x = b. This is an
- * internal function, please refer to SPEX_Left_LU_solve for user-callable. It
- * essnetially serves as a wrapper for all forward and backward substitution
- * routines. This function always returns the solution matrix x as a mpz_t
- * matrix. If a user desires to have double or mpfr output, they must create
- * a matrix copy.
- */
-SPEX_info spex_left_lu_solve     // solves the linear system LD^(-1)U x = b
-(
-    // Output
-    SPEX_matrix **x_handle,      // rational solution to the system
-    // input:
-    const SPEX_matrix *b,        // right hand side vector
-    const SPEX_factorization* F, // LU factorization
-    const SPEX_options* option   // Command options
-);
 
 /* Purpose: This function performs sparse REF forward substitution. This is
  * essentially the same as the sparse REF triangular solve applied to each

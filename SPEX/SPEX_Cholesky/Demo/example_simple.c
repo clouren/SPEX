@@ -23,7 +23,7 @@
     SPEX_matrix_free(&b, option);   \
     SPEX_matrix_free(&x, option);   \
     SPEX_matrix_free(&x2, option);   \
-    SPEX_FREE(option);   
+    SPEX_FREE(option);                \
     SPEX_finalize();
 
 #include "demos.h"   
