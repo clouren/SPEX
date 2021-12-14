@@ -99,7 +99,8 @@ SPEX_info spex_Chol_Up_Factor
     SPEX_matrix *x = NULL ;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k, sgn;
+    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
+    int sgn;
     size_t size;
 
     // Post & c are arrays used for the construction of the elimination tree
