@@ -115,8 +115,8 @@ int main( int argc, char* argv[] )
     
     clock_t start_sym = clock();
     bool test;
-    //DEMO_OK(SPEX_determine_symmetry(A, 0));    // Determine symmetry just with nonzero pattern
-    DEMO_OK( SPEX_determine_symmetry(A, 1));    // Determine symmetry with nonzero pattern and values
+    //DEMO_OK(SPEX_determine_symmetry(A, 0, option));    // Determine symmetry just with nonzero pattern
+    DEMO_OK( SPEX_determine_symmetry(A, 1, option));    // Determine symmetry with nonzero pattern and values
    
     clock_t end_sym = clock();
     //--------------------------------------------------------------------------
