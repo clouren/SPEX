@@ -42,7 +42,8 @@ SPEX_info spex_Chol_backward_sub
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
     
-    int64_t k, p, j, n = L->n, sgn;
+    int64_t k, p, j, n = L->n;
+    int sgn;
     // Iterate across the RHS vectors
     for (k = 0; k < x->n; k++)
     {
