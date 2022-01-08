@@ -48,10 +48,23 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 {
 
     //--------------------------------------------------------------------------
-    // Declare and initialize workspace
+    // check inputs
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+
+    SPEX_REQUIRE (b,    SPEX_DENSE, SPEX_MPZ) ;
+
+    if (!x_handle || !F)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+    
+    //--------------------------------------------------------------------------
+    // Declare and initialize workspace
+    //--------------------------------------------------------------------------
+
     *x_handle = NULL;
     int64_t n = F->L->n;
 

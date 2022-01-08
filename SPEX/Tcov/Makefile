@@ -69,7 +69,8 @@ CS_Util = \
     SPEX_realloc.o \
     spex_sparse_collapse.o \
     spex_sparse_realloc.o \
-    SPEX_LU_analysis_free.o \
+    SPEX_symbolic_analysis_free.o \
+    SPEX_factorization_free.o \
     SPEX_vector_allocate.o \
     SPEX_vector_realloc.o \
     SPEX_vector_free.o \
@@ -100,14 +101,17 @@ CS_Left_LU = \
     spex_left_lu_get_pivot.o \
     spex_left_lu_get_smallest_pivot.o \
     spex_left_lu_permute_b.o \
-    spex_left_lu_permute_x.o \
     spex_left_lu_reach.o \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_Left_LU_solve.o
+    #spex_left_lu_permute_x.o \
 
 $(CS_Left_LU): ../SPEX_Left_LU/Include/SPEX_Left_LU.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h ../SPEX_Left_LU/Demo/demos.h
 
-.PRECIOUS: SPEX_Left_LU_%.c spex_left_lu_%.c spexlu_demo.c demos.c
+.PRECIOUS: SPEX_LU_%.c SPEX_Left_LU_%.c spex_left_lu_%.c spexlu_demo.c demos.c
+
+SPEX_LU_%.c:
+	- ln -s ../SPEX_Left_LU/Source/$@
 
 SPEX_Left_LU_%.c:
 	- ln -s ../SPEX_Left_LU/Source/$@

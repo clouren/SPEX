@@ -252,6 +252,8 @@ int main( int argc, char* argv[])
             SPEX_MPZ_SET_NULL(mpz2);
             SPEX_MPZ_SET_NULL(mpz3);*/
 
+            SPEX_factorization *F = NULL;
+
             int64_t n=4, numRHS=1, j, nz=11;
             SPEX_options* option ;
 
@@ -607,8 +609,8 @@ int main( int argc, char* argv[])
                         TEST_CHECK(SPEX_matrix_allocate(&b, SPEX_DENSE,
                             SPEX_MPZ, 1, 1, 1, true, true, option));
                         if (pretend_to_fail) break ;
-                        TEST_CHECK_FAILURE(SPEX_Left_LU_solve(NULL, b, A, A, A,
-                            b, NULL, NULL, option), SPEX_INCORRECT_INPUT);
+                        TEST_CHECK_FAILURE(SPEX_Left_LU_solve(NULL, NULL,
+                            b, option), SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         TEST_OK (SPEX_matrix_free (&b, option)) ;
                         if (pretend_to_fail) break ;
@@ -858,8 +860,8 @@ int main( int argc, char* argv[])
                 // failure case
                 if (Ab_type == 1)
                 {
-                    TEST_CHECK_FAILURE(SPEX_Left_LU_factorize(NULL, NULL,
-                        NULL, NULL, A, NULL, NULL), SPEX_INCORRECT_INPUT);
+                    TEST_CHECK_FAILURE(SPEX_Left_LU_factorize(NULL,
+                        A, NULL, NULL), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // incorrect solution type
                     TEST_CHECK_FAILURE(SPEX_Left_LU_backslash(&sol, SPEX_MPZ,
