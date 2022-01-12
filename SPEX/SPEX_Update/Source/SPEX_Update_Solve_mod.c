@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_Solve: find the exact solution for Ax=b
+// SPEX_Update/SPEX_Update_Solve_mod: find the exact solution for Ax=b
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -18,10 +18,9 @@
  *
  * Input/output arguments:
  *
- * x_handle: A pointer to the solution vectors. Memory space will be allocated
- *           for x_handle to store the exact solution of the system
- *
- * b:        Set of RHS vectors
+ * x_handle: On input, it is a dense matrix containing the set of RHS vectors.
+ *           On output, it is overwriten as the solution to LD^(-1)U x_out =
+ *           x_in.
  *
  * F:        SPEX LU factorization in the updatable format
  *
@@ -38,14 +37,11 @@
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
+SPEX_info SPEX_Update_LU_Solve_mod // solves LD^(-1)U x_out = x_in
 (
-    // Output
-    SPEX_matrix **x_handle, // a n*m dense matrix contains the solution to
-                            // the system.
-    // input:
-    SPEX_matrix *b,         // a n*m dense matrix contains the right-hand-side
-                            // vector
+    SPEX_matrix **x_handle, // Input as a n*m dense matrix contains the
+                            // right-hand-side vectora and output as the
+                            // solution to the system. 
     const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
                             // format.
     const SPEX_options* option // Command options

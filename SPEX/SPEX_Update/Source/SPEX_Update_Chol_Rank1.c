@@ -31,18 +31,24 @@
 
 SPEX_info SPEX_Update_Chol_Rank1
 (
-    SPEX_matrix *L,   // n-by-n dynamic_CSC matrix that gives the Cholesky
-                      // factorization
-    SPEX_matrix *rhos,// n-by-1 dense matrix that gives the array of pivots
-    const int64_t *P, // row permutation
-    const int64_t *P_inv,// inverse of row permutation
-    SPEX_vector *w,   // a n-by-1 vector in sparse compressed column form that
-                      // modifies the original matrix A, the resulting A is
-                      // A+sigma*w*w^T. In output, w is updated as the solution
-                      // to L*D^(-1)*w_out = w
-    const int64_t sigma,// a scalar that determines whether this is an update
-                      // or downdate
-    const SPEX_options *option
+    SPEX_factorization *F,  // The SPEX Cholesky factorization of A, including
+                            // L, rhos, P and Pinv. This factorization will be
+                            // modified during the update process. Therefore,
+                            // if this function fails for any reason, the
+                            // returned F should be considered as undefined.
+                            // 
+                            // The rows of L are in the same order as the rows
+                            // of A, while the columns of L are permuted such
+                            // that L->v[j] (i.e., j-th column of L) contains
+                            // the j-th pivot, which would be L->v[j]->x[0],
+                            // (i.e., L->v[j]->i[0] == P[j]).
+    SPEX_matrix *w,         // a n-by-1 dynamic_CSC matrix that contains the
+                            // vector to modify the original matrix A, the
+                            // resulting A is A+sigma*w*w^T. In output, w is
+                            // updated as the solution to L*D^(-1)*w_out = w
+    const int64_t sigma,    // a nonzero scalar that determines whether
+                            // this is an update or downdate
+    const SPEX_options* option // Command options
 )
 {
     //--------------------------------------------------------------------------

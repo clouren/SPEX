@@ -26,43 +26,39 @@
 
 #include "spex_update_internal.h"
 
-#define SL(k) (L->v[(k)]->scale)
-#define SU(k) (UT->v[(k)]->scale)
+#define SL(k) (F->L->v[(k)]->scale)
+#define SU(k) (F->UT->v[(k)]->scale)
 
 SPEX_info SPEX_Update_LU_ColRep
 (
     SPEX_matrix *A,         // n-by-n original matrix in dynamic_CSC form
-    SPEX_matrix *L,         // n-by-n lower triangular factorization of A in
-                            // dynamic_CSC form. The rows of L are in the same
-                            // order as the rows of A, while the columns of L
-                            // are permuted such that L->v[j] (i.e., j-th
-                            // column of L) contains the j-th pivot, which
-                            // would be L->v[j]->x[0], (i.e., L->v[j]->i[0] ==
-                            // P[j]). This matrix will be modified during the
-                            // update process. Therefore, if this function
-                            // fails for any reason, the returned L should be
-                            // considered as undefined.
-    SPEX_matrix *UT,        // The transpose of U in dynamic_CSC form, where U
-                            // is the n-by-n upper triangular factorization of
-                            // A. The columns of U (or the rows of UT) are in
-                            // the same order as the columns of A, while the
-                            // rows of U (or the columns of UT) are permuted
-                            // such that UT->v[j] (i.e., j-th column of UT, or
-                            // j-th row of U) contains the j-th pivot, which
-                            // would be UT->v[j]->x[0], (i.e., UT->v[j]->i[0]
-                            // == Q[j]). This matrix will be modified during
-                            // the update process. Therefore, if this function
-                            // fails for any reason, the returned UT should be
-                            // considered as undefined.
-    SPEX_matrix *rhos,      // n-by-1 dense matrix for the array of pivots
-    int64_t *P,             // Row permutation
-    int64_t *P_inv,         // Inverse of row permutation
-    int64_t *Q,             // Column permutation
-    int64_t *Q_inv,         // Inverse of column permutation
-    SPEX_vector **vk,       // Pointer to the inserted column in the compressed
-                            // column form, the rows of vk are in the same order
-                            // as A. This vector will be swapped with A->v[k]
-                            // in the output upon return, regardless of failure.
+    SPEX_factorization* F,  // The SPEX factorization of A, including L, U,
+                            // rhos, P, Pinv, Q and Qinv. The factorization L
+                            // and UT must be in dynamic_CSC form. The
+                            // factorization will be modified during the update
+                            // process. Therefore, if this function fails for
+                            // any reason, the returned F should be considered
+                            // as undefined.
+                            // 
+                            // The rows of L are in the same order as the rows
+                            // of A, while the columns of L are permuted such
+                            // that L->v[j] (i.e., j-th column of L) contains
+                            // the j-th pivot, which would be L->v[j]->x[0],
+                            // (i.e., L->v[j]->i[0] == P[j]).
+                            //
+                            // U is stored as UT, i.e., U is in CSR format.
+                            // The columns of U (or the rows of UT) are in the
+                            // same order as the columns of A, while the rows
+                            // of U (or the columns of UT) are permuted such
+                            // that UT->v[j] (i.e., j-th column of UT, or j-th
+                            // row of U) contains the j-th pivot, which would
+                            // be UT->v[j]->x[0], (i.e., UT->v[j]->i[0] ==
+                            // Q[j]). 
+    SPEX_matrix *vk,        // Pointer to a single-column dynamic_CSC matrix
+                            // which contains the column to be inserted.
+                            // The rows of vk are in the same order as A. The
+                            // contained vector will be swapped with A->v[k] in
+                            // the output upon return, regardless of failure.
     int64_t k,              // The column index that vk will be inserted
     const SPEX_options *option// Command parameters
 )
@@ -72,24 +68,27 @@ SPEX_info SPEX_Update_LU_ColRep
     //--------------------------------------------------------------------------
     if (!spex_initialized()) {return SPEX_PANIC;}
     SPEX_REQUIRE(A , SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(L , SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(UT, SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
-    if (L->n  != L->m || rhos->m != L->m ||
-        UT->m != L->m || UT->n   != L->m ||
-        A->m  != L->m || A->n    != L->m ||
-        !vk || !(*vk) || (*vk)->nz <= 0 || !((*vk)->x) || !((*vk)->i) ||
-        !P || !P_inv  || !Q || !Q_inv || k < 0 || k >= L->m)
+    SPEX_REQUIRE(vk, SPEX_DYNAMIC_CSC, SPEX_MPZ);
+    if (!F  || A->m != A->n || A->n != F->L->m ||
+        vk->m != A->m || vk->n != 1 || vk->v[0]->nz < 0 ||
+        k < 0 || k >= F->L->m)
     {
         return SPEX_INCORRECT_INPUT;
     }
+    if (vk->v[0]->nz == 0)
+    {
+        return SPEX_SINGULAR;
+    }
+    SPEX_REQUIRE(F->L , SPEX_DYNAMIC_CSC, SPEX_MPZ);
+    SPEX_REQUIRE(F->UT, SPEX_DYNAMIC_CSC, SPEX_MPZ);
+    SPEX_REQUIRE(F->rhos, SPEX_DENSE, SPEX_MPZ);
 
     //--------------------------------------------------------------------------
     // initialize workspace
     //--------------------------------------------------------------------------
     SPEX_info info;
     int sgn_vkk, sgn_vkn, r;
-    int64_t ks, p, i, j, inext, jnext, n = L->n;
+    int64_t ks, p, i, j, inext, jnext, n = F->L->n;
     int64_t *h = NULL, *h_for_vk = NULL, *Lr_offdiag = NULL, *Uc_offdiag = NULL,
         *Uci = NULL, *Ucx = NULL, *map = NULL;
     spex_scattered_vector *Lk_dense_col = NULL, *Uk_dense_row = NULL,
@@ -173,10 +172,10 @@ SPEX_info SPEX_Update_LU_ColRep
     {
         // build Lk_dense_col and Uk_dense_row, remove explicit 0, search for
         // inext and jnext
-        SPEX_CHECK(spex_update_get_scattered_v(&Lk_dense_col, &inext, L->v[k],
-            n, k, P_inv, false, option));
-        SPEX_CHECK(spex_update_get_scattered_v(&Uk_dense_row, &jnext, UT->v[k],
-            n, k, Q_inv, false, option));
+        SPEX_CHECK(spex_update_get_scattered_v(&Lk_dense_col, &inext,
+            F->L->v[k], n, k, P_inv, false, option));
+        SPEX_CHECK(spex_update_get_scattered_v(&Uk_dense_row, &jnext,
+            F->UT->v[k], n, k, Q_inv, false, option));
     }
 
     //--------------------------------------------------------------------------
@@ -189,7 +188,7 @@ SPEX_info SPEX_Update_LU_ColRep
         for (int64_t ii = 0; ii < n; ii++)
         {
             // check if the first entry of all L->v is the pivot
-            if (ii != k && L->v[ii]->i[0] != P[ii])
+            if (ii != k && F->L->v[ii]->i[0] != P[ii])
             {
                 printf("Incorrect col %ld of L\n",ii);
                 SPEX_CHECK(SPEX_PANIC);
@@ -304,7 +303,7 @@ SPEX_info SPEX_Update_LU_ColRep
         // will be ready to be inserted as column k if needed
         //----------------------------------------------------------------------
         SPEX_CHECK(spex_update_triangular_solve(vk_dense, &vk_top, h_for_vk,
-            &last_update, &vk_2ndlastnz, k, L, UT,
+            &last_update, &vk_2ndlastnz, k, F->L, F->UT,
             (const SPEX_matrix*)rhos, P, P_inv));
         SPEX_CHECK(SPEX_mpz_sgn(&sgn_vkk, vk_dense->x[P[k]]));
         SPEX_CHECK(SPEX_mpz_sgn(&sgn_vkn, vk_dense->x[P[n-1]]));
@@ -363,9 +362,9 @@ SPEX_info SPEX_Update_LU_ColRep
             // updated by scaling after CPPU.
             ks = n;
             SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense, h_for_vk,
-                UT, L, (const SPEX_matrix*)rhos, Q, P_inv, k, k, option));
+                UT, F->L, (const SPEX_matrix*)rhos, Q, P_inv, k, k, option));
 
-            SPEX_CHECK(spex_update_cppu(L, UT, rhos, Lk_dense_col,
+            SPEX_CHECK(spex_update_cppu(F->L, UT, rhos, Lk_dense_col,
                 Uk_dense_row, &inext, &jnext, h, Q, Q_inv,
                 P, P_inv, NULL, NULL, 0, k, ks, option));
             break;
@@ -395,15 +394,15 @@ SPEX_info SPEX_Update_LU_ColRep
                 {
 #ifdef SPEX_DEBUG
                     // the first entry should be the corresponding pivot
-                    ASSERT(P_inv[L->v[j]->i[0]] == j);
+                    ASSERT(P_inv[F->L->v[j]->i[0]] == j);
                     int sgn;
-                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->v[j]->x[0]));
+                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, F->L->v[j]->x[0]));
                     ASSERT (sgn != 0);
 #endif
-                    for (p = 1; p < L->v[j]->nz; p++)
+                    for (p = 1; p < F->L->v[j]->nz; p++)
                     {
                         // row index
-                        i = P_inv[L->v[j]->i[p]];
+                        i = P_inv[F->L->v[j]->i[p]];
 
                         // get the last row-wise off-diagonal entries
                         Lr_offdiag[i] = j; // get the column index
@@ -524,19 +523,19 @@ SPEX_info SPEX_Update_LU_ColRep
             if (ks == n-1 && use_col_n == 1)
             {
                 SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense,
-                    h_for_vk, UT, L, (const SPEX_matrix*)rhos, Q, P_inv, k,
+                    h_for_vk, UT, F->L, (const SPEX_matrix*)rhos, Q, P_inv, k,
                     n-1, option));
                 ks = n;
             }
             if (jnext > ks || (ks == n && jnext >= n-1 && sgn_vkk == 0))
             {
-                SPEX_CHECK(spex_update_dppu1(L, UT, rhos, Lk_dense_col,
+                SPEX_CHECK(spex_update_dppu1(F->L, UT, rhos, Lk_dense_col,
                     Uk_dense_row, &inext, h, Q, Q_inv, P, P_inv, k, ks,
                     option));
             }
             else
             {
-                SPEX_CHECK(spex_update_dppu2(L, UT, rhos, Lk_dense_col,
+                SPEX_CHECK(spex_update_dppu2(F->L, UT, rhos, Lk_dense_col,
                     Uk_dense_row, &jnext, h, Q, Q_inv, P, P_inv, k, ks,
                     option));
             }
@@ -550,15 +549,15 @@ SPEX_info SPEX_Update_LU_ColRep
                 {
 #ifdef SPEX_DEBUG
                     // the first entry should be the corresponding pivot
-                    ASSERT(P_inv[L->v[j]->i[0]] == j);
+                    ASSERT(P_inv[F->L->v[j]->i[0]] == j);
                     int sgn;
-                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->v[j]->x[0]));
+                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, F->L->v[j]->x[0]));
                     ASSERT (sgn != 0);
 #endif
-                    for (p = 1; p < L->v[j]->nz; p++)
+                    for (p = 1; p < F->L->v[j]->nz; p++)
                     {
                         // row index
-                        i = P_inv[L->v[j]->i[p]];
+                        i = P_inv[F->L->v[j]->i[p]];
                         if (i > jnext) {continue;}
 
                         // get the last row-wise off-diagonal entries
@@ -615,9 +614,9 @@ SPEX_info SPEX_Update_LU_ColRep
                         // perform diagnal swapping with columns n
                         ks = n;
                         SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense,
-                            h_for_vk, UT, L, (const SPEX_matrix*)rhos, Q,
+                            h_for_vk, UT, F->L, (const SPEX_matrix*)rhos, Q,
                             P_inv, k, n-1, option));
-                        SPEX_CHECK(spex_update_dppu1(L, UT, rhos, Lk_dense_col,
+                        SPEX_CHECK(spex_update_dppu1(F->L, UT, rhos, Lk_dense_col,
                             Uk_dense_row, &inext, h, Q, Q_inv, P,
                             P_inv, k, ks, option));
                         break;
@@ -632,9 +631,9 @@ SPEX_info SPEX_Update_LU_ColRep
                     // column n-1 needs to be performed.
                     ks = n;
                     SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense,
-                        h_for_vk, UT, L, (const SPEX_matrix*)rhos, Q,
+                        h_for_vk, UT, F->L, (const SPEX_matrix*)rhos, Q,
                         P_inv, k, k, option));
-                    SPEX_CHECK(spex_update_cppu(L, UT, rhos, Lk_dense_col,
+                    SPEX_CHECK(spex_update_cppu(F->L, UT, rhos, Lk_dense_col,
                         Uk_dense_row, &inext, &jnext, h, Q, Q_inv, P, P_inv,
                         NULL, NULL, 0, k, ks, option));
                     break;
@@ -662,7 +661,7 @@ SPEX_info SPEX_Update_LU_ColRep
                 // These implicitly include the case of jnext == k+1.
                 // jnext < n holds since jnext == n has been handled,
                 ks = jnext;
-                SPEX_CHECK(spex_update_cppu(L, UT, rhos, Lk_dense_col,
+                SPEX_CHECK(spex_update_cppu(F->L, UT, rhos, Lk_dense_col,
                     Uk_dense_row, &inext, &jnext, h, Q, Q_inv, P, P_inv, Uci,
                     Ucx, Uc_jnext_nz, k, ks, option));
             }
@@ -709,7 +708,7 @@ SPEX_info SPEX_Update_LU_ColRep
 
                 // get ks from the map
                 ks = map[k];
-                SPEX_CHECK(spex_update_dppu1(L, UT, rhos, Lk_dense_col,
+                SPEX_CHECK(spex_update_dppu1(F->L, UT, rhos, Lk_dense_col,
                     Uk_dense_row, &inext, h, Q, Q_inv, P, P_inv, k, ks,
                     option));
             }
@@ -734,7 +733,7 @@ SPEX_info SPEX_Update_LU_ColRep
     if (k == n-1)
     {
         SPEX_CHECK(spex_update_triangular_solve(vk_dense, &vk_top, h_for_vk, 
-            &last_update, NULL /*&vk_2ndlastnz*/, k, L, UT,
+            &last_update, NULL /*&vk_2ndlastnz*/, k, F->L, UT,
             (const SPEX_matrix*)rhos, P, P_inv));
         // check again in case k is initially n-1
         SPEX_CHECK(SPEX_mpz_sgn(&sgn_vkn, vk_dense->x[P[n-1]]));
@@ -743,12 +742,12 @@ SPEX_info SPEX_Update_LU_ColRep
             SPEX_FREE_ALL;
             return SPEX_SINGULAR;
         }
-        SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense, h_for_vk, UT, L,
+        SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense, h_for_vk, UT, F->L,
             (const SPEX_matrix*)rhos, Q, P_inv, k, k, option));
         // sd[n-1]       = L(P(n-1),n-1)
-        SPEX_CHECK(SPEX_mpz_set(sd[n-1],         L->v[n-1]->x[0]));
+        SPEX_CHECK(SPEX_mpz_set(sd[n-1],         F->L->v[n-1]->x[0]));
         // U(n-1,Q(n-1)) = L(P(n-1),n-1)
-        SPEX_CHECK(SPEX_mpz_set(UT->v[n-1]->x[0], L->v[n-1]->x[0]));
+        SPEX_CHECK(SPEX_mpz_set(UT->v[n-1]->x[0], F->L->v[n-1]->x[0]));
         UT->v[n-1]->i[0] = Q[n-1];
         UT->v[n-1]->nz = 1;
     }
@@ -789,7 +788,7 @@ SPEX_info SPEX_Update_LU_ColRep
     bool check = SPEX_OPTION_CHECK (option) ;//TODO is this ok?
     if (check)
     {
-        SPEX_CHECK(spex_update_verify(L, UT, A, h,
+        SPEX_CHECK(spex_update_verify(F->L, UT, A, h,
         (const SPEX_matrix*)rhos, P, Q_inv, option));
     }
 

@@ -18,12 +18,24 @@
  *
  * Input/output arguments:
  *
- * x_handle: A pointer to the solution vectors. Memory space will be allocated
- *           for x_handle to store the exact solution of the system
+ * x_handle: A pointer to the solution vectors. If x_handle = &b, then
+ *           solution of the system will overwrite original b and return it
+ *           as *x_handle. Otherwise, memory space will be allocated for
+ *           x_handle to store the exact solution of the system
  *
  * b:        Set of RHS vectors
  *
- * F:        SPEX LU factorization in the updatable format
+ * L:        Lower triangular matrix. Unmodified on input/output
+ *
+ * UT:       Transpose of upper triangular matrix. Unmodified on input/output
+ *
+ * A_scale:  Scale of the input matrix. Unmodified on input/output
+ *
+ * h:        array of n scalars, each entry should be >= -1
+ *
+ * rhos:     n-by-1 matrix that contains pivots
+ *
+ * P & Q_inv: the permutation vectors. unmodified on input/output.
  *
  * option:   command options
  */
@@ -42,12 +54,22 @@ SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
 (
     // Output
     SPEX_matrix **x_handle, // a n*m dense matrix contains the solution to
-                            // the system.
+                            // the system. If users wish to overwrite the
+                            // solution to the right-hand-side matrix b, this
+                            // can be provided as &b. Otherwise, new space will
+                            // be allocated for x_handle
     // input:
-    SPEX_matrix *b,         // a n*m dense matrix contains the right-hand-side
-                            // vector
-    const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
-                            // format.
+    SPEX_matrix *b,         // a n*m dense matrix contains the right hand
+                            // side vector
+    const SPEX_matrix *L,   // a n*n dynamic_CSC matrix that gives the lower
+                            // triangular matrix
+    const SPEX_matrix *UT,  // a n*n dynamic_CSC matrix that gives the transpose
+                            // of the upper triangular matrix
+    const mpq_t A_scale,    // scale of the input matrix
+    int64_t *h,             // history vector// TODO create a wrapper without h?
+    const SPEX_matrix *rhos,// a n*1 dense matrix that gives the array of pivots
+    const int64_t *P,       // row permutation
+    const int64_t *Q_inv,   // inverse of column permutation
     const SPEX_options* option // Command options
 )
 {
