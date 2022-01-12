@@ -90,6 +90,25 @@
 
 // the default is to free nothing
 // TODO remove this!!! and fix 80char
+
+/* Comment by Tim:  this should not be removed.  The default is that nothing
+needs to be freed.  If you need to define a SPEX_FREE_ALL then it should be
+defined *before* including any other file.  Thus
+
+    #define SPEX_FREE_ALL { free all stuff }
+    #include "this file.h"
+
+then, since SPEC_FREE_ALL is already defined, it isn't #defined below.
+
+Definitions of these macros:
+
+    SPEX_FREE_ALL:  frees everything, including both workspace and the result
+    SPEX_FREE_WORKSPACE or SPEX_FREE_WORK (we should be consistent):
+        frees just the internal workspace of the method, not the
+        final result
+
+*/
+
 #ifndef SPEX_FREE_ALL
 #define SPEX_FREE_ALL
 #endif
