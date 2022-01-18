@@ -196,11 +196,6 @@ typedef struct SPEX_Chol_analysis
                         // After the elimination tree is computed lnz will be exact.
 } SPEX_Chol_analysis;
 
-/* Purpose: Free the SPEX_Chol_analysis data structure */
-void SPEX_Chol_analysis_free
-(
-    SPEX_Chol_analysis** S
-);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

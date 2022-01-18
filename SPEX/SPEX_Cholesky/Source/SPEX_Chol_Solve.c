@@ -11,6 +11,7 @@
 
 #define SPEX_FREE_WORKSPACE        \
     SPEX_matrix_free(&b2, option); \
+    SPEX_matrix_free(&x, option); \
     SPEX_MPQ_CLEAR(scale);         
 
 # define SPEX_FREE_ALLOCATION      \
@@ -140,9 +141,10 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     size_t bitsTemp; //CLUSTER
     int64_t bitsSum=0; //CLUSTER
     // Set x[i] = b2[i]/det
-
+*/
     for (i = 0; i < nz; i++)
     {
+        /*
         bitsTemp=mpz_sizeinbase(b2->x.mpz[i],2); //CLUSTER
         if(bitsTemp>bitsLarge) //CLUSTER
         { 
@@ -153,16 +155,18 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
                 bitsSmall=bitsTemp; //CLUSTER
         }
         bitsSum=bitsSum+(int64_t)bitsTemp; //CLUSTER
-
+*/
         SPEX_CHECK(SPEX_mpq_set_num(x->x.mpq[i], b2->x.mpz[i]));
         /*mpq_t temp;
         mpq_init(temp);
         mpq_set_z(temp,(*det));
         mpq_div(x->x.mpq[i],x->x.mpq[i],temp);*/ //THIS WORKS
+
         //SPEX_CHECK(SPEX_mpq_set_den(x->x.mpq[i], (*det) ));
-        /*SPEX_CHECK(SPEX_mpz_set(mpq_denref(x->x.mpq[i]), (*det)));
-        SPEX_CHECK(SPEX_mpq_canonicalize(x->x.mpq[i])); //remove all common factors //TODO add wrapper DONE
+        SPEX_CHECK(SPEX_mpz_set(mpq_denref(x->x.mpq[i]), (*det)));
+        SPEX_CHECK(SPEX_mpq_canonicalize(x->x.mpq[i])); //remove all common factors 
     }
+    /*
     gmp_printf("%llu, %llu, %llu, ", bitsSmall, bitsLarge, bitsSum); //CLUSTER
     */
     // Allocate memory for x2 which is the permuted version of x
@@ -182,6 +186,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
 
     // Check solution
     // TODO: Shouldnt this be removed if/when Jinhao changes function?
+    //TODO where are we adding this??
     /*if (option->check)
     {
         SPEX_CHECK(SPEX_check_solution(A, x2, b, option));

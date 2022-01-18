@@ -66,12 +66,11 @@ SPEX_info spex_Chol_Up_Factor
     const SPEX_options* option // command options
 )
 {
-    SPEX_info info;
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
     
-    /*if (!L_handle || !S || !option || !A)
+    if (!L_handle || !S || !option || !A)
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -81,14 +80,17 @@ SPEX_info spex_Chol_Up_Factor
 
     // Check the number of nonzeros in A
     int64_t anz;
-    SPEX_CHECK(SPEX_matrix_nnz(&anz, A, option)) ;
+    // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
+    // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
+    SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
+    ASSERT(info == SPEX_OK); //REMINDER in SPEX_CHECK if info!=SPEX_OK it would Free alloc (which is why we can't use SPEX_CHECK here)
+        //TODO remove reminder (but not until there is no chance of making same mistake)
     
     if (anz < 0)
     {
         return SPEX_INCORRECT_INPUT ;
-    }*/
+    }
 
-        
     //--------------------------------------------------------------------------
     // Declare and initialize workspace 
     //--------------------------------------------------------------------------

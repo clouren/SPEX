@@ -64,11 +64,10 @@ SPEX_info spex_Chol_Left_Factor
     const SPEX_options* option // command options
 )
 {
-    SPEX_info info;
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
-    /*if ( !S || !option )
+    if ( !S || !option )
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -77,12 +76,15 @@ SPEX_info spex_Chol_Left_Factor
 
     // Check the number of nonzeros in A
     int64_t anz;
-    SPEX_CHECK(SPEX_matrix_nnz (&anz, A, option)) ;
+    // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
+    // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
+    SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
+    ASSERT(info == SPEX_OK);
     
     if (anz < 0)
     {
         return SPEX_INCORRECT_INPUT;
-    }*/
+    }
        
     //--------------------------------------------------------------------------
     // Declare and initialize workspace 

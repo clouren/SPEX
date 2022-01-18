@@ -50,7 +50,6 @@
  * 
  */
 
-//TODO cooments (like up and left) DONE
 
 SPEX_info SPEX_Chol_Factor      
 (
@@ -156,7 +155,7 @@ SPEX_info SPEX_Chol_Factor
             SPEX_CHECK(spex_Chol_Left_Factor(&(F->L), &(F->rhos), S, A, option));
             break;
         default:
-            return SPEX_INCORRECT_ALGORITHM; //TODO ADD DONE
+            return SPEX_INCORRECT_ALGORITHM; 
     }
     /**/
     memcpy(F->Pinv_perm, S->Pinv_perm, n * sizeof(int64_t)); //TOCHECK

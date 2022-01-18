@@ -17,12 +17,13 @@
     SPEX_matrix_free(&PAP,NULL);         \
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&x,NULL);          \
+    SPEX_symbolic_analysis_free (&S, option); \
     SPEX_factorization_free(&F, option);     \
     SPEX_FREE(option);                  \
     SPEX_finalize();                    \
 }                                       
     //SPEX_symbolic_analysis_free (&S, option); \ //TODO double check because not everything in S is initialized because we don't need everything that gets freed
-
+    //TOASK SPEX_factorization_free(&F, option) does not seem to be freeing rhos and L ???
 #define DEMO_OK(method)                 \
 {                                       \
     ok = method ;                       \

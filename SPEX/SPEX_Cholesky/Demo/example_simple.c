@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 
 //TODO (maybe) change name of folder from SPEX_Cholesky to Cholesky
+//TOASK valgrind: Conditional jump or move depends on uninitialised value(s) ??
 
 /* This example shows how to use SPEX Chol with a given input matrix and a double
    output. The input is read from a file */
@@ -23,7 +24,7 @@
     SPEX_matrix_free(&b, option);   \
     SPEX_matrix_free(&x, option);   \
     SPEX_matrix_free(&x2, option);   \
-    SPEX_FREE(option);   
+    SPEX_FREE(option);   \
     SPEX_finalize();
 
 #include "demos.h"   
