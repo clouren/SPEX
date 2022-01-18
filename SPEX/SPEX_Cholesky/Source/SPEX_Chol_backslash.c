@@ -129,7 +129,7 @@ SPEX_info SPEX_Chol_backslash
     // --------------------------------------------------------------------------
 
     // TODO: Change this determine symmetry routine to check the diagonals as well
-    SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1));
+    SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1, option));
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the 

@@ -217,10 +217,6 @@ typedef struct SPEX_options
 // To free it, simply use SPEX_FREE (*option).
 SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
-// check if SPEX_initialize* has been called
-bool spex_initialized ( void ) ;        // true if called, false if not
-void spex_set_initialized (bool s) ;    // set global initialzed flag to s
-
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix
 //------------------------------------------------------------------------------
@@ -404,7 +400,7 @@ SPEX_info SPEX_matrix_copy
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 //------------------------------------------------------------------------------
-// SPEX_LU_analysis: symbolic pre-analysis
+// SPEX_symbolic_analysis: symbolic pre-analysis
 //------------------------------------------------------------------------------
 
 // data structure for symbolic analysis
@@ -413,11 +409,6 @@ typedef enum
     SPEX_LU_SYMBOLIC_ANALYSIS = 0,                 // LU analysis
     SPEX_CHOLESKY_SYMBOLIC_ANALYSIS = 1,           // Cholesky analysis
     SPEX_QR_SYMBOLIC_ANALYSIS = 2                  // QR analysis
-/* TODO or?
-    SPEX_LU_ANALYSIS = 0,                 // LU analysis
-    SPEX_CHOLESKY_ANALYSIS = 1,           // Cholesky analysis
-    SPEX_QR_ANALYSIS = 2                  // QR analysis
-*/
 }SPEX_symbolic_analysis_kind ;
 
 // This struct stores the results of symbolic analysis
@@ -517,9 +508,6 @@ typedef struct
                                           // factorization.
     SPEX_matrix *rhos;                    // A n-by-1 dense matrix for the
                                           // pivot values
-    // This is only used in the Cholesky factorization
-    int64_t* parent;                     // Elimination tree of target matrix
-                                         // for Cholesky factorization.
 
     //--------------------------------------------------------------------------
     // These are used for QR factorization, but ignored for LU or Cholesky
@@ -927,17 +915,20 @@ SPEX_info SPEX_transpose
 SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
-    bool check_if_numerically_symmetric
+    bool check_if_numerically_symmetric,
             // if true, check A=A' (pattern & values). if false,
             // only check if the pattern of A is symmetric, not
             // the values
+    const SPEX_options* option
 );
 
+#if 0
 SPEX_info SPEX_determine_empty_column
 (
     bool empty_column_exists, //true if A has a column of only 0s
     SPEX_matrix* A
 );
+#endif
 
 #endif
 
