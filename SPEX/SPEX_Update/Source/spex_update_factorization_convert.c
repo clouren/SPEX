@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_factorization_convert.c: convert between updatable
+// SPEX_Update/spex_update_factorization_convert.c: convert between updatable
 // and non-updatable factorization.
 //------------------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-// SPEX_Update_factorization_convert is called either to obtain the updatable
+// spex_update_factorization_convert is called either to obtain the updatable
 // factorization from non-updatable factorization with matrices in any kind or
 // type, or to obtain non-updatable factorization with SPEX_CSC matrices with
 // MPZ entries.

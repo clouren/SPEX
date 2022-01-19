@@ -263,5 +263,67 @@ SPEX_info spex_update_verify
     const SPEX_options *option// command options
 );
 
+//------------------------------------------------------------------------------
+// Function to convert the factorization between the updatable and non-updatable
+// format. To obtain the updatable format, this function will obtain the
+// transpose of U (for LU factorization), permute rows of L and UT, and make
+// sure each column of the matrices have cooresponding pivot as the first
+// entry. To otain the non-updatable format, this function will transpose UT
+// (for LU factorization) and permute rows and L and U.
+//------------------------------------------------------------------------------
+// TODO make internal and check if factorization is updatable in each update function
+
+SPEX_info spex_Update_factorization_convert
+(
+    SPEX_factorization **F_out,// The output factorization with same
+                            // factorization kind as F_in
+    const SPEX_factorization *F_in, // The factorization to be converted
+    const bool updabtable, // true if wish to obtain updatable F.
+    const SPEX_options* option // Command options
+);
+
+
+//------------------------------------------------------------------------------
+// canonicalize a SPEX_DYNAMIC_CSC matrix such that each column of the input
+// matrix have corresponding pivot as the first entry.
+//------------------------------------------------------------------------------
+
+// NOTE: This function is used to canonicalize L or UT before they can be used
+// in any functions in the SPEX_Update library. perm can be NULL if there is
+// no permutation.
+
+SPEX_info spex_update_matrix_canonicalize
+(
+    SPEX_matrix *A,         // the matrix to be canonicalize
+    const int64_t *perm,    // the permuation vector applied on each vector of
+                            // A, considered as identity if input as NULL
+    const SPEX_options *option
+);
+
+//------------------------------------------------------------------------------
+// permute the row indices of each column of a SPEX_DYNAMIC_CSC matrix such that
+// A_out->v[j]->i[p] = perm[A_in->v[j]->i[p]].
+//------------------------------------------------------------------------------
+
+// NOTE: The L and U factorization from SPEX_Left_LU or the L from
+// SPEX_Cholesky are all in SPEX_CSC format, and their columns and rows are
+// permuted to be the same as the permuted matrix A(P,Q), and thus
+// A(P,Q)=LD^(-1)U. However, all Update functions requires A=LD^(-1)U.
+// Therefore, after performing SPEX_matrix_copy to get the L and/or UT
+// SPEX_DYNAMIC_CSC form. Users need to perform this function to permute row
+// indices of L or UT such that A=LD^(-1)U. And when all desired updates are
+// performed and users wish to obtain L and/or U in the same format as those
+// from SPEX_Left_LU or SPEX_Cholesky, this function should be called to
+// perform the inverse of the permutation (before calling SPEX_matrix_copy to
+// obtain L and/or U in the SPEX_CSC format).
+
+SPEX_info spex_update_permute_row
+(
+    SPEX_matrix *A,         // input matrix
+    const int64_t *perm,    // desire permutation to be applied to A, must be
+                            // non-NULL
+    const SPEX_options *option
+);
+
 #endif
 
