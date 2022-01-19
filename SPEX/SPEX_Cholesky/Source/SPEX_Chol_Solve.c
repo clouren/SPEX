@@ -79,6 +79,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     }
     
     int64_t i, j, k, n = F->L->n, nz;
+
     
     // Scale is the scaling factor for the solution vectors.
     // When the forward/backsolve is complete, the entries in
@@ -105,6 +106,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     // Allocate memory for b2
     SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 
                                         b->m*b->n, false, true, option));
+
     // Set b2[i,j] = b[pinv[i],j] to account for permutations applied to A
     for (i = 0; i < b->m; i++)
     {
@@ -114,6 +116,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
                               SPEX_2D(b, i, j, mpz)));
         }
     }
+
     // Forward substitution, b2 = L \ b2. Note that b2 is overwritten    
     SPEX_CHECK(spex_Chol_forward_sub(b2, F->L, F->rhos));
     // Set the value of the determinant det = rhos[n-1] 

@@ -39,11 +39,12 @@
 // change to macro in util (and this will be propagated throughout)
 # define SPEX_FREE_WORKSPACE       \
     SPEX_factorization_free(&F, option);     \
-    //SPEX_symbolic_analysis_free (&S, option);
+    SPEX_symbolic_analysis_free (&S, option);
 
 # define SPEX_FREE_ALLOCATION     \
     SPEX_FREE_WORKSPACE           \
     SPEX_matrix_free(&x, NULL);   \
+    SPEX_matrix_free(&PAP, NULL);
 
 #include "spex_chol_internal.h"
 

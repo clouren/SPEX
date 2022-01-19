@@ -52,9 +52,11 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
     // Get matrix and right hand side file names
     //--------------------------------------------------------------------------
-    char *mat_name, *rhs_name;
+    /**/char *mat_name, *rhs_name;
     mat_name = "../ExampleMats/872.mat.txt";
-    rhs_name = "../ExampleMats/872.mat.soln.txt";
+    rhs_name = "../ExampleMats/872.mat.soln.txt";/**/
+    /*char* mat_name = "../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
+    char* rhs_name = "../ExampleMats/2.mat.soln.txt";*/
     if (argc > 2)
     {
         mat_name = argv[1];
@@ -111,7 +113,6 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-
     //--------------------------------------------------------------------------
     // solve
     //--------------------------------------------------------------------------
@@ -122,7 +123,10 @@ int main (int argc, char **argv)
     option->check = true;
     //option->print_level = 1;
     // Solve the system and give MPQ solution
+    
+
     DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
+    
     
     clock_t end_s = clock();
 
@@ -133,6 +137,11 @@ int main (int argc, char **argv)
     // x2 is a copy of the solution. x2 is a dense matrix with mpfr entries
     DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
     
+    option->print_level = 1;
+    if (option->check)
+    {
+        DEMO_OK(SPEX_check_solution(A, x, b, option));
+    }
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------

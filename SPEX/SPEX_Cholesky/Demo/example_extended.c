@@ -165,6 +165,12 @@ int main( int argc, char* argv[] )
     DEMO_OK( SPEX_Chol_Solve(&x, F, b, option));
     
     clock_t end_solve = clock();
+
+    if (option->check)
+    {
+        DEMO_OK(SPEX_check_solution(A, x, b, option));
+    }
+    
     
     //--------------------------------------------------------------------------
     // Output & Timing Stats

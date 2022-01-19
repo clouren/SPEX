@@ -125,7 +125,7 @@ SPEX_info SPEX_Chol_Factor
     //--------------------------------------------------------------------------
     // Declare memory for rhos, L, and U
     //--------------------------------------------------------------------------
-
+    //TODO these two are not being freed for some reason :/
     // Create rhos, a global dense mpz_t matrix of dimension n*1
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, false, option));
