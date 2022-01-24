@@ -147,7 +147,7 @@ SPEX_info SPEX_Chol_backslash
 
     //TODO:The functions Factor and solve (below) should expect option to be const; DONE
     //TODO: After those changes are done, then the casting (SPEX_options*) needs to be removed from here. DONE
-    SPEX_CHECK(SPEX_Chol_Factor(&F, S,PAP, option));
+    SPEX_CHECK(SPEX_Chol_factor(&F, S,PAP, option));
 
     //--------------------------------------------------------------------------
     // Solve: Solve Ax = b using the REF Cholesky factorization. That is,
@@ -156,7 +156,7 @@ SPEX_info SPEX_Chol_backslash
     // Ax = b stored as a set of numerators and denominators (mpq_t)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_Chol_Solve(&x, F, b, option));
+    SPEX_CHECK(SPEX_Chol_solve(&x, F, b, option));
 
     //--------------------------------------------------------------------------
     // At this point x is stored as mpq_t. If the user desires the output 

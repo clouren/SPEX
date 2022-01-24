@@ -261,7 +261,7 @@ SPEX_info SPEX_Chol_permute_A
  * lower triangular matrix and rhos contains the pivots' values
  * used in the factorization 
  */
-SPEX_info SPEX_Chol_Factor     
+SPEX_info SPEX_Chol_factor     
 (
     // Output
     SPEX_factorization **F_handle, // Cholesky factorization
@@ -287,17 +287,13 @@ SPEX_info SPEX_Chol_Factor
  * On output x contains the rational solution of the system LDL' x = b
  */
 //TODO: Revistit arguments after Jinhaos update. (especially A, A_orig etc.)
-SPEX_info SPEX_Chol_Solve
+SPEX_info SPEX_Chol_solve
 (
     // Output
     SPEX_matrix** x_handle,           // On input: undefined.
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
     // Input
-    //const SPEX_matrix* PAP,           // Input matrix (permuted)
-    //const SPEX_matrix* A,             // Input matrix (unpermuted)
-        // TODO: A_orig is only used for check, the check can be seperated from this function.
-    // So remove A_orig and put it seperately
     const SPEX_factorization *F, // Cholesky factorization
     const SPEX_matrix* b,             // Right hand side vector
     //const SPEX_symbolic_analysis* S,      // Symbolic analysis struct. contains
@@ -307,6 +303,24 @@ SPEX_info SPEX_Chol_Solve
     const SPEX_options* option        // command options
 );
 
+SPEX_info SPEX_Chol_Solve_prev       // solves the linear system LDL' x = b
+(
+    // Output
+    SPEX_matrix** x_handle,           // On input: undefined.
+                                      // On output: Rational solution (SPEX_MPQ)
+                                      // to the system. 
+    // Input
+    const SPEX_matrix* PAP,           // Input matrix (permuted)
+    const SPEX_matrix* A,             // Input matrix (unpermuted)
+    const SPEX_matrix* b,             // Right hand side vector
+    const SPEX_matrix* rhos,          // Pivots' values 
+    const SPEX_matrix* L,             // Lower triangular matrix
+    int64_t* pinv,      // Inverse row/column permutation
+    int64_t* p ,                            // elimination tree of A,  
+                                      // column pointers of L, exact number of
+                                      // nonzeros of L and permutation used
+    const SPEX_options* option        // command options
+);
 
 
 

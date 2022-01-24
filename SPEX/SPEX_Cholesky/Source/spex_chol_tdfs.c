@@ -14,7 +14,7 @@
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
 
-SPEX_info spex_Chol_tdfs 
+SPEX_info spex_chol_tdfs 
 (
     int64_t* k,     // Index (kth node) 
     const int64_t j,// Root node 

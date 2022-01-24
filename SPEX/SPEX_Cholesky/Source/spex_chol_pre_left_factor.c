@@ -36,7 +36,7 @@
  * c:            Column pointers
  * 
  */
-SPEX_info spex_Chol_Pre_Left_Factor
+SPEX_info spex_chol_pre_left_factor
 (
     // Output
     SPEX_matrix** L_handle,       // On output: partial L matrix 
@@ -81,7 +81,7 @@ SPEX_info spex_Chol_Pre_Left_Factor
     for (k = 1; k < n; k++)
     {
         // Obtain nonzero pattern in xi[top..n]
-        SPEX_CHECK(spex_Chol_ereach(&top, xi, A, k, S->parent, c));
+        SPEX_CHECK(spex_chol_ereach(&top, xi, A, k, S->parent, c));
      
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x

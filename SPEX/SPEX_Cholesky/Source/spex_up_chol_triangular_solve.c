@@ -63,7 +63,7 @@ static inline int compare (const void * a, const void * b)
 }
 
 
-SPEX_info spex_Up_Chol_triangular_solve
+SPEX_info spex_up_chol_triangular_solve
 (
     //Output
     int64_t* top_output,               // On input NULL. On output contains the
@@ -111,7 +111,7 @@ SPEX_info spex_Up_Chol_triangular_solve
     // Obtain the nonzero pattern of the kth row of L by analyzing the
     // elimination tree of A. The indices of these nonzeros are stored in
     // xi[top..n-1]
-    SPEX_CHECK(spex_Chol_ereach(&top, xi, A, k, parent, c));
+    SPEX_CHECK(spex_chol_ereach(&top, xi, A, k, parent, c));
     
     // Sort the nonzero pattern using quicksort (reuqired by IPGE unlike in GE)
     qsort(&xi[top], n-top, sizeof(int64_t*), compare); 

@@ -51,7 +51,7 @@
  */
 
 
-SPEX_info SPEX_Chol_Factor      
+SPEX_info SPEX_Chol_factor      
 (
     // Output
     SPEX_factorization **F_handle, // Cholesky factorization
@@ -149,10 +149,10 @@ SPEX_info SPEX_Chol_Factor
     {
         case SPEX_ALGORITHM_DEFAULT:
         case SPEX_CHOL_UP:
-            SPEX_CHECK(spex_Chol_Up_Factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK(spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option));
             break;
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK(spex_Chol_Left_Factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK(spex_chol_left_factor(&(F->L), &(F->rhos), S, A, option));
             break;
         default:
             return SPEX_INCORRECT_ALGORITHM; 

@@ -29,7 +29,7 @@
 
 #include "spex_chol_internal.h"
 
-SPEX_info spex_Chol_forward_sub
+SPEX_info spex_chol_forward_sub
 (
     // Input/Output
     SPEX_matrix* x,              // Right hand side matrix. 

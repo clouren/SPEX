@@ -15,7 +15,7 @@
 #endif
 
 /* Purpose: post order a forest. */
-SPEX_info spex_Chol_post 
+SPEX_info spex_chol_post 
 (
     // Output
     int64_t** post_handle, // On input is NULL. On output is post-order of the forest
@@ -55,7 +55,7 @@ SPEX_info spex_Chol_post
     for (j = 0 ; j < n ; j++)
     {
         if (parent [j] != -1) continue ;    // skip j if it is not a root 
-        SPEX_CHECK(spex_Chol_tdfs (&k, j, head, next, post, stack)) ;
+        SPEX_CHECK(spex_chol_tdfs (&k, j, head, next, post, stack)) ;
     }
     SPEX_free(w);
     (*post_handle) = post;

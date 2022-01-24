@@ -14,7 +14,7 @@
 
 /* Purpose: Compute the elimination tree of A */
 
-SPEX_info spex_Chol_etree 
+SPEX_info spex_chol_etree 
 (
     // Output
     int64_t** tree_handle,      // On output: contains the elimination tree of A

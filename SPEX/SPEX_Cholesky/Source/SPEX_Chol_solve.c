@@ -45,21 +45,18 @@
  * 
  */
 
-SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
+SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
 (
     // Output
     SPEX_matrix** x_handle,           // On input: undefined.
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
     // Input
-    //const SPEX_matrix* PAP,           // Input matrix (permuted)
-    //const SPEX_matrix* A,             // Input matrix (unpermuted)
-    const SPEX_factorization* F,      // Cholesky factorization
-    const SPEX_matrix* b,             // Right hand side vector
-    //const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains
+    const SPEX_factorization* F,      // Cholesky factorization. contains
                                       // elimination tree of A,  
                                       // column pointers of L, exact number of
-                                      // nonzeros of L and permutation used
+                                      // nonzeros of L and permutation used //TOCHECK
+    const SPEX_matrix* b,             // Right hand side vector
     const SPEX_options* option        // command options
 )
 {
@@ -118,7 +115,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     }
 
     // Forward substitution, b2 = L \ b2. Note that b2 is overwritten    
-    SPEX_CHECK(spex_Chol_forward_sub(b2, F->L, F->rhos));
+    SPEX_CHECK(spex_chol_forward_sub(b2, F->L, F->rhos));
     // Set the value of the determinant det = rhos[n-1] 
     det = &(F->rhos->x.mpz[F->L->n-1]);
     size_t bitsDet = mpz_sizeinbase((*det),2); //CLUSTER
@@ -133,7 +130,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     }
     
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
-    SPEX_CHECK(spex_Chol_backward_sub(b2, F->L));
+    SPEX_CHECK(spex_chol_backward_sub(b2, F->L));
 
     // Allocate memory for the (real) solution vector x = b2/det
     SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, b2->m, b->n,

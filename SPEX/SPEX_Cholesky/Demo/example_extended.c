@@ -146,7 +146,7 @@ int main( int argc, char* argv[] )
     
     SPEX_matrix* L2 = NULL;
     SPEX_matrix* rhos2 = NULL;
-    DEMO_OK( SPEX_Chol_Factor(&F, S,PAP, option));
+    DEMO_OK( SPEX_Chol_factor(&F, S,PAP, option));
     
 //    SPEX_matrix_check(L, option);
 //     
@@ -162,7 +162,8 @@ int main( int argc, char* argv[] )
     clock_t start_solve = clock();
     option->check = true;
 
-    DEMO_OK( SPEX_Chol_Solve(&x, F, b, option));
+    //DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
+    DEMO_OK( SPEX_Chol_Solve_prev(&x, PAP, A, b, F->rhos, F->L,  S->Pinv_perm, S->Q_perm, option));
     
     clock_t end_solve = clock();
 
