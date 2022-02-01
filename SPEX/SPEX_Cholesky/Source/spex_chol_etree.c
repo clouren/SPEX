@@ -9,6 +9,17 @@
 
 //------------------------------------------------------------------------------
 
+#define SPEX_FREE_WORK      \
+{                           \
+    SPEX_FREE(w);           \
+}
+
+#define SPEX_FREE_ALL       \
+{                           \
+    SPEX_FREE_WORK ;        \
+    SPEX_FREE(parent);      \
+}
+
 #include "spex_chol_internal.h"
 
 
@@ -24,22 +35,27 @@ SPEX_info spex_chol_etree
 )
 {
     // Check input
-    ASSERT(A->kind == SPEX_CSC);
-    ASSERT(A->type == SPEX_MPZ);
-    ASSERT(A->m >= 0);
-    ASSERT(A->n >= 0);
+    ASSERT (A != NULL) ;
+    ASSERT(A->kind == SPEX_CSC) ;
+    ASSERT(A->type == SPEX_MPZ) ;
+    ASSERT(A->n == A->m);
+    ASSERT (tree_handle != NULL) ;
+    (*tree_handle) = NULL ;
 
     // Declare variables
-    int64_t i, k, p, m, n, inext, *w, *parent, *ancestor, *prev ;
-    m = A->m ; n = A->n ;
-    
+    int64_t i, k, p, n, inext, *w = NULL, *parent = NULL, *ancestor ;
+    n = A->n ;
+
     // Allocate parent
     parent = (int64_t*) SPEX_malloc( n * sizeof(int64_t));
     // Allocate workspace
-    w = (int64_t*) SPEX_malloc( (n+m) * sizeof(int64_t) );
+    w = (int64_t*) SPEX_malloc( n * sizeof(int64_t) );
     if (!parent || !w)
+    {
+        SPEX_FREE_ALL ;
         return SPEX_OUT_OF_MEMORY;
-    ancestor = w ; prev = w + n ;
+    }
+    ancestor = w ;
     for (k = 0 ; k < n ; k++)
     {
         parent [k] = -1 ;                           // node k has no parent yet 
@@ -55,7 +71,7 @@ SPEX_info spex_chol_etree
             }
         }
     }
-    SPEX_FREE(w);
+    SPEX_FREE_WORK ;
     (*tree_handle) = parent;
     return SPEX_OK;
 }

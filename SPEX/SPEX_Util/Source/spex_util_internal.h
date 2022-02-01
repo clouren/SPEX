@@ -95,7 +95,15 @@
 needs to be freed.  If you need to define a SPEX_FREE_ALL then it should be
 defined *before* including any other file.  Thus
 
-    #define SPEX_FREE_ALL { free all stuff }
+    #define SPEX_FREE_WORKSPACE \
+    {                           \
+        free all workspace      \
+    }
+    #define SPEX_FREE_ALL       \
+    {                           \
+        SPEX_FREE_WORKSPACE ;   \
+        free all output objects \
+    }
     #include "this file.h"
 
 then, since SPEC_FREE_ALL is already defined, it isn't #defined below.
@@ -103,31 +111,28 @@ then, since SPEC_FREE_ALL is already defined, it isn't #defined below.
 Definitions of these macros:
 
     SPEX_FREE_ALL:  frees everything, including both workspace and the result
-    SPEX_FREE_WORKSPACE or SPEX_FREE_WORK (we should be consistent):
-        frees just the internal workspace of the method, not the
-        final result
+    SPEX_FREE_WORKSPACE: frees just the internal workspace of the method, not
+    the final result
 
 */
+
+// Frees workspace and memory that would be returned. Only used when there is
+// an error and we need to cleanly close things (like out of memory conditions
+// and failed SPEX_CHECK)
 
 #ifndef SPEX_FREE_ALL
 #define SPEX_FREE_ALL
 #endif
 
-// Frees workspace and memory that would be returned. Only used when there is an error
-// and we need to cleanly close things (like out of memory conditions and failed SPEX_CHECK)
-/*
-#ifndef SPEX_FREE_ALLOCATION
-#define SPEX_FREE_ALLOCATION
-#endif
-*/
-// Frees all workspace (but not memory that was allocated and meant to be returned). Used usually at the end of the function.
-// This workspace mechanism should be used even if the function only has one workspace variable 
-// (it can be risky otherwise with further development)
-/*
+// Frees all workspace (but not memory that was allocated and meant to be
+// returned). Used usually at the end of the function.  This workspace
+// mechanism should be used even if the function only has one workspace
+// variable (it can be risky otherwise with further development)
+
 #ifndef SPEX_FREE_WORKSPACE
 #define SPEX_FREE_WORKSPACE
 #endif
-*/
+
 // Local variables (only declared, allocated and freed inside an if, for example) do not go inside 
 // the workspace
 

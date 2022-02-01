@@ -10,16 +10,19 @@
 //------------------------------------------------------------------------------
 
 #define SPEX_FREE_WORKSPACE         \
+{                                   \
     SPEX_matrix_free(&x, NULL);     \
     SPEX_FREE(c);                   \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
     SPEX_FREE(post);                \
+}
 
-# define SPEX_FREE_ALLOCATION        \
-    SPEX_FREE_WORKSPACE              \
-    //SPEX_factorization_free(&F, option);     
-
+#define SPEX_FREE_ALL               \
+{                                   \
+    SPEX_FREE_WORKSPACE             \
+    SPEX_factorization_free(&F, option);        \
+}
 
 #include "spex_chol_internal.h"  
 
@@ -56,10 +59,11 @@ SPEX_info spex_chol_left_factor
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
     //SPEX_factorization **F_handle,
+
+    // Input
     SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    // Input
     const SPEX_matrix* A,      // Matrix to be factored   
     const SPEX_options* option // command options
 )
