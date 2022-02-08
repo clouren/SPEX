@@ -9,9 +9,10 @@
 
 //------------------------------------------------------------------------------
 
-//TODO spex free alloc DONE
-# define SPEX_FREE_ALLOCATION      \
-    SPEX_matrix_free(pinv, NULL);    //TODO maybe add option so it'll go here
+#define SPEX_FREE_ALL             \
+{                                 \
+    SPEX_matrix_free(pinv, NULL); \
+}
 
 #include "spex_chol_internal.h"
 
@@ -90,6 +91,7 @@ SPEX_info SPEX_Chol_permute_A
         for (t = A->p[j]; t < A->p[j+1]; t++)
         {
             // Set the nonzero value and location of the entries in column k of PAP
+            //(PAP->x.mpz[nz])=(A->x.mpz[t]); //TOASK this does not work, TOCHECK why??
             SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
             // Row i of this nonzero is equal to pinv[A->i[t]]
             PAP->i[nz] = pinv[ A->i[t] ];

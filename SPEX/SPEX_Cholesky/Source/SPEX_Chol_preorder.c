@@ -29,8 +29,10 @@
 // This function is a slightly modified version of SPEX_Left_LU's 
 // LU analysis function
 
-# define SPEX_FREE_ALLOCATION             \
-    SPEX_symbolic_analysis_free(S_handle, option);   \
+# define SPEX_FREE_ALL                             \
+{                                                  \
+    SPEX_symbolic_analysis_free(S_handle, option); \
+}
 
 #include "spex_chol_internal.h"
 
@@ -92,9 +94,7 @@ SPEX_info SPEX_Chol_preorder
     S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
     if (S->Q_perm == NULL)
     {
-        //TODO: Use SPEX_FREE_ALLOCATION mechanism DONE
-        //Is SPEX_Chol_analysis_free(&S) a safe free? Please make sure it is a safe free (meaning that it won't crash if we call it twice; i.e., if we free an already freed or an unallocated stuff)
-        SPEX_FREE_ALLOCATION;  
+        SPEX_FREE_ALL;  
         return SPEX_OUT_OF_MEMORY;
     }
 
@@ -129,8 +129,7 @@ SPEX_info SPEX_Chol_preorder
             if (!A2)
             {
                 // out of memory
-        //TODO: Use SPEX_FREE_ALLOCATION mechanism DONE
-                SPEX_FREE_ALLOCATION;  
+                SPEX_FREE_ALL;  
                 return SPEX_OUT_OF_MEMORY;
             }
             // Initialize S->p as per COLAMD documentation
@@ -157,7 +156,7 @@ SPEX_info SPEX_Chol_preorder
                 colamd_l_report ((SuiteSparse_long *) stats);
                 SPEX_PRINTF ("\nEstimated L and U nonzeros: %" PRId64 "\n", S->lnz);
             }
-            //Note that A2 is a local-to-this-case variable; so it cannot and should not be part of the  SPEX_FREE_WORKSPACE or SPEX_FREE_ALLOCATION mechanisms
+            //Note that A2 is a local-to-this-case variable; so it cannot and should not be part of the  SPEX_FREE_WORKSPACE or SPEX_FREE_ALL mechanisms
             SPEX_FREE(A2);
         }
         break;

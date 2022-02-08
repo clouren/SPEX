@@ -10,9 +10,6 @@
 //------------------------------------------------------------------------------
 
 #include "spex_chol_internal.h"
-#ifndef SPEX_FREE_WORKSPACE
-#define SPEX_FREE_WORKSPACE
-#endif
 
 /* Purpose: post order a forest. */
 SPEX_info spex_chol_post 

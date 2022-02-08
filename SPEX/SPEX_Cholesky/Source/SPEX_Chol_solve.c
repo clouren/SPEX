@@ -10,13 +10,17 @@
 //------------------------------------------------------------------------------
 
 #define SPEX_FREE_WORKSPACE        \
+{                                  \
     SPEX_matrix_free(&b2, option); \
-    SPEX_matrix_free(&x, option); \
-    SPEX_MPQ_CLEAR(scale);         
+    SPEX_matrix_free(&x, option);  \
+    SPEX_MPQ_CLEAR(scale);         \
+}
 
-# define SPEX_FREE_ALLOCATION      \
+# define SPEX_FREE_ALL             \
+{                                  \
     SPEX_FREE_WORKSPACE            \
-    SPEX_matrix_free(&x, NULL);    
+    SPEX_matrix_free(&x, NULL);    \
+}
 
 #include "spex_chol_internal.h"
     
@@ -183,16 +187,8 @@ SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
         }
     }
 
+    //TOASK where are we adding the solution check?
 
-    // Check solution
-    // TODO: Shouldnt this be removed if/when Jinhao changes function?
-    //TODO where are we adding this??
-    /*if (option->check)
-    {
-        SPEX_CHECK(SPEX_check_solution(A, x2, b, option));
-    }
-    */
-    
     //--------------------------------------------------------------------------
     // Scale the solution if necessary.
     //--------------------------------------------------------------------------

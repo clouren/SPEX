@@ -34,7 +34,6 @@ SPEX_info spex_chol_ereach
     ASSERT(A->n >= 0) ;
     ASSERT(A->kind == SPEX_CSC) ;
     ASSERT(A->type == SPEX_MPZ) ;
-    if (!parent || !xi || !w) return (SPEX_INCORRECT_INPUT) ;
     
     // Declare variables
     int64_t i, p, n, len, top ;

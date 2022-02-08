@@ -7,8 +7,6 @@
 // Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-//TODO propagate this to every single file
-
 //------------------------------------------------------------------------------
 
 #ifndef SPEX_CHOLESKY_H
@@ -252,6 +250,20 @@ SPEX_info SPEX_Chol_permute_A
                                // column and inverse row permutations
 );
 
+/* Purpose: Perform the symbolic analysis for the Cholesky factorization, this 
+ * means computing and postordering the elimination tree, getting the column
+ * counts of the SPD matrix A, setting the column pointers and exact number of 
+ * non zeros of L.
+ */
+SPEX_info SPEX_Chol_symbolic_analysis
+(
+    //Output
+    SPEX_symbolic_analysis* S,
+    //Input
+    const SPEX_matrix* A,      // Matrix to be factored   
+    const SPEX_options* option // command options
+);
+
 /* Purpose: Compute the REF Cholesky factorization A = LDL'
  * only appropriate if A is SPD. 
  * On input A contains the user's matrix, option->algo indicates which
@@ -286,7 +298,6 @@ SPEX_info SPEX_Chol_factor
  * and S contains the elimination tree
  * On output x contains the rational solution of the system LDL' x = b
  */
-//TODO: Revistit arguments after Jinhaos update. (especially A, A_orig etc.)
 SPEX_info SPEX_Chol_solve
 (
     // Output
@@ -296,10 +307,6 @@ SPEX_info SPEX_Chol_solve
     // Input
     const SPEX_factorization *F, // Cholesky factorization
     const SPEX_matrix* b,             // Right hand side vector
-    //const SPEX_symbolic_analysis* S,      // Symbolic analysis struct. contains
-                                      // elimination tree of A,  
-                                      // column pointers of L, exact number of
-                                      // nonzeros of L and permutation used
     const SPEX_options* option        // command options
 );
 

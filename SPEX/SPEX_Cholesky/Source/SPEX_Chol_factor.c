@@ -9,8 +9,10 @@
 
 //------------------------------------------------------------------------------
 
-# define SPEX_FREE_ALLOCATION      \
-    SPEX_factorization_free(&F, option);   
+# define SPEX_FREE_ALL                   \
+{                                        \
+    SPEX_factorization_free(&F, option); \
+}
 
 
 #include "spex_chol_internal.h"  
@@ -25,24 +27,15 @@
  * 
  * Input arguments of the function:
  * 
- * L_handle:    A handle to the L matrix. Null on input.
- *              On output, contains a pointer to the L matrix.
+ * F_handle:    A handle to the factorization struct. Null on input.
+ *              On output, contains a pointer to the factorization (this 
+ *              includes matrix L)
  * 
  * S:           Symbolic analysis struct for Cholesky factorization. 
- *              On input it contains information that is not used in this 
- *              function such as the row/column permutation
- *              On output it contains the elimination tree and 
+ *              On input it contains the elimination tree and 
  *              the number of nonzeros in L.
- * 
- * rhos_handle: A handle to the sequence of pivots. NULL on input. 
- *              On output it contains a pointer to the pivots matrix.
  *
  * A:           The user's permuted input matrix
- * 
- * left:        A boolean parameter which tells the function whether it is 
- *              performing a left-looking or up-looking factorization. If this
- *              bool is true, a left-looking factorization
- *              is done, otherwise the up-looking factorization is done.
  * 
  * option:      Command options. Notably, option->chol_type indicates whether
  *              it is performing a left-looking (SPEX_CHOL_LEFT) or up-looking 
@@ -140,6 +133,7 @@ SPEX_info SPEX_Chol_factor
     SPEX_CHECK (SPEX_matrix_allocate(&(F->L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
         false, false, option));
 
+    SPEX_Chol_symbolic_analysis(S,A,option);
 
     //--------------------------------------------------------------------------
     // Call factorization

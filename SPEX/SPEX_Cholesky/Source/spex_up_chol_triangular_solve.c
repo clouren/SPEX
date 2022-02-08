@@ -9,14 +9,14 @@
 
 //------------------------------------------------------------------------------
 
-# define SPEX_FREE_ALLOCATION     \
+# define SPEX_FREE_ALL            \
+{                                 \
     SPEX_matrix_free(&x, NULL);   \
     SPEX_FREE(xi);                \
+}
 
 #include "spex_chol_internal.h"
 
-// TODO mimic comments from left DONE
-//TODO check the 80char thing DONE
 /* Purpose: This function performs the symmetric sparse REF triangular solve for
  * the up-looking Cholesky factorization. i,e, LD x = A(1:k-1, k). At the end of
  * this function, the vector x contains the values of the kth row of the integer-
@@ -84,12 +84,8 @@ SPEX_info spex_up_chol_triangular_solve
 {
     SPEX_info info;
     
-    // TODO: Double check we are checking for ALL null inputs in both Up and Left (i.e., propagate their union) DONE
 
     // check inputs
-    if (!xi || !parent || !c || !h || !L || !A || !rhos || !x)
-        return SPEX_INCORRECT_INPUT;
-    
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(L->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
@@ -209,27 +205,6 @@ SPEX_info spex_up_chol_triangular_solve
                     // Update the history value of x[i]
                     h[i] = j;
                     
-                    // TODO: Make sure the above code works correctly. If so delete this next block
-                    // BLOCK TO DELETE BEGIN
-                    // No previous pivot
-                    //if (j < 1)
-                    //{
-                    //    // x[i] = 0 - lij*x[j]
-                      //  SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));
-                        
-                        // Update the history value of x[i]
-                        //h[i] = j;
-                    //}
-                        
-                    // Previous pivot exists
-                    //else
-                    //{
-                        // x[i] = 0 - lij*x[j] 
-                     //   SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],x->x.mpz[j]));// x[i] = 0 - lij*x[j]
-                      //  SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
-                       // h[i] = j;                  // Entry is up to date
-                    //}
-                    // BLOCK TO DELETE END
                 }
 
                 //----------------------------------------------------------

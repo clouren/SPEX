@@ -21,11 +21,15 @@
  */
 
 #define SPEX_FREE_WORKSPACE      \
+{                                \
     SPEX_matrix_free(&h, NULL);  \
+}
 
-#define SPEX_FREE_ALLOCATION     \
+#define SPEX_FREE_ALL            \
+{                                \
     SPEX_FREE_WORKSPACE          \
     SPEX_matrix_free(&x, NULL);  \
+}
 
 #include "spex_chol_internal.h"
 
@@ -74,7 +78,6 @@ SPEX_info spex_chol_forward_sub
             p = SPEX_2D(h, i, k, int64);
             // If x[i][k] = 0, can skip operations and continue to next i
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, i, k, mpz)));
-            // TODO Please propagate ^ to the other codes. USE WRAPPERS DONE
             if (sgn == 0) continue;
 
             //------------------------------------------------------------------

@@ -36,7 +36,6 @@
 // Routines to compute and postorder the etree
 //------------------------------------------------------------------------------
 
-//TODO fix 80 DONE
 
 /* Purpose: Compute the elimination tree of A */
 SPEX_info spex_chol_etree 

@@ -11,13 +11,12 @@
 //------------------------------------------------------------------------------
 
 
-# define SPEX_FREE_ALLOCATION     \
+# define SPEX_FREE_ALL            \
+{                                 \
     SPEX_matrix_free(&x, NULL);   \
-    SPEX_FREE(xi);                \
+}
 
 #include "spex_chol_internal.h"
-
-//TODO: Please fix the text to fit in 80 columns DONE
 
 /* Purpose: This function performs the REF triangular solve for left-looking
  * REF Cholesky factorization. At iteration k, it solves the linear system 
@@ -95,11 +94,6 @@ SPEX_info spex_left_chol_triangular_solve
     SPEX_info info;
     
     // Input checks
-    if (!xi || !parent || !c || !h || !L || !A || !rhos || !x)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-    
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(L->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
@@ -191,11 +185,11 @@ SPEX_info spex_left_chol_triangular_solve
     // TODO Please do tests to make sure this is correct.
     // If the matrix is not SPD, then the diagonal can become numerically zero. ??? Otherwise, 
     // Even though, it cannot be zero from the beginning as tmus MUST be true: ej^T A ej > 0 
-    if (L->p[k] != k)
+    /*if (L->p[k] != k)
     {
-        SPEX_FREE_ALLOCATION;
+        SPEX_FREE_ALL;
         return SPEX_NOTSPD;
-    }
+    }*/ //NOT CORRECT  TODO FIX
     SPEX_mpz_set_ui(x->x.mpz[k], 0);
         
     

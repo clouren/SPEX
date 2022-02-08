@@ -25,7 +25,6 @@ SPEX_info spex_chol_tdfs
 )
 { 
     int64_t i, p, top = 0 ;
-    if (!head || !next || !post || !stack) return SPEX_INCORRECT_INPUT ;    // check inputs 
     stack [0] = j ;                 // place j on the stack 
     while (top >= 0)                // while (stack is not empty) 
     {

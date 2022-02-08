@@ -9,14 +9,14 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_WORK      \
+#define SPEX_FREE_WORKSPACE \
 {                           \
     SPEX_FREE(w);           \
 }
 
 #define SPEX_FREE_ALL       \
 {                           \
-    SPEX_FREE_WORK ;        \
+    SPEX_FREE_WORKSPACE ;   \
     SPEX_FREE(parent);      \
 }
 
@@ -71,7 +71,7 @@ SPEX_info spex_chol_etree
             }
         }
     }
-    SPEX_FREE_WORK ;
+    SPEX_FREE_WORKSPACE ;
     (*tree_handle) = parent;
     return SPEX_OK;
 }

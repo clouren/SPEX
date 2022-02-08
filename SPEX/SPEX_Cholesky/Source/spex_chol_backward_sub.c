@@ -9,9 +9,10 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALLOCATION     \
+#define SPEX_FREE_ALL            \
+{                                \
     SPEX_matrix_free(&x, NULL);  \
-    return SPEX_OUT_OF_MEMORY    \
+}
     //TOASK why the error message?
 
 #include "spex_chol_internal.h"

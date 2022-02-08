@@ -31,7 +31,6 @@ SPEX_info spex_chol_counts
     SPEX_info info;
     int64_t i, j, k, n, m, J, s, p, q, jleaf, *maxfirst, *prevleaf,
         *ancestor, *head = NULL, *next = NULL, *colcount, *w, *first, *delta ;
-    if (!A || !parent || !post) return (SPEX_INCORRECT_INPUT) ;    /* check inputs */
     m = A->m ; n = A->n ;
     // Can not have negative m or n
     ASSERT(n >= 0) ;

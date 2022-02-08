@@ -10,15 +10,18 @@
 //------------------------------------------------------------------------------
 
 #define SPEX_FREE_WORKSPACE         \
+{                                   \
     SPEX_matrix_free(&x, NULL);     \
-    SPEX_FREE(c);                   \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
-    SPEX_FREE(post);                // TOCHECK all the allocations and the free are driving me crazy
+}
+    // TOCHECK all the allocations and the free are driving me crazy
 
 //TOASK idk if this free F goes here
-# define SPEX_FREE_ALLOCATION        \
+# define SPEX_FREE_ALL               \
+{                                    \
     SPEX_FREE_WORKSPACE              \
+}
     //SPEX_factorization_free(&F, option);    //TOCHECK need to declare F before using the free 
 
 #include "spex_chol_internal.h"  
@@ -69,11 +72,6 @@ SPEX_info spex_chol_up_factor
     // Check inputs
     //--------------------------------------------------------------------------
     
-    if (!L_handle || !S || !option || !A)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-    
     ASSERT(A->type == SPEX_MPZ) ;
     ASSERT(A->kind == SPEX_CSC) ;
 
@@ -98,15 +96,13 @@ SPEX_info spex_chol_up_factor
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
     SPEX_matrix *x = NULL ;
+    //int64_t* c = NULL;
 
     // Declare variables
     int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
     int sgn;
     size_t size;
 
-    // Post & c are arrays used for the construction of the elimination tree
-    int64_t* post = NULL;
-    int64_t* c = NULL;
 
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
@@ -130,22 +126,6 @@ SPEX_info spex_chol_up_factor
     {
         h[i] = -1;
     }
-        
-    // Obtain the elimination tree of A
-    SPEX_CHECK(spex_chol_etree(&S->parent, A));
-    
-    // Postorder the tree of A
-    SPEX_CHECK(spex_chol_post(&post, S->parent, n));
-    
-    // Get the column counts of A
-    SPEX_CHECK(spex_chol_counts(&c, A, S->parent, post));
-    
-    // Get the column pointers of L
-    S->cp = (int64_t*) SPEX_malloc((n+1)*sizeof(int64_t*));
-    SPEX_CHECK(SPEX_cumsum(S->cp, c, n));
-   
-    // Set the exact number of nonzeros in L
-    S->lnz = S->cp[n];
    
     //--------------------------------------------------------------------------
     // Allocate and initialize the workspace x
@@ -211,7 +191,7 @@ SPEX_info spex_chol_up_factor
     // Set the column pointers of L
     for (k = 0; k < n; k++) 
     {
-        L->p[k] = c[k] = S->cp[k];
+        L->p[k] = (S->c)[k] = S->cp[k];
     }
     
 
@@ -226,11 +206,11 @@ SPEX_info spex_chol_up_factor
     {
         // LDx = A(:,k)
         SPEX_CHECK(spex_up_chol_triangular_solve(&top, xi, x, L, A, k, S->parent, 
-                                                 c, rhos, h));
+                                                 (S->c), rhos, h));
   
         // If x[k] is nonzero chose it as pivot. Otherwise, the matrix is 
         // not SPD (indeed, it may even be singular).
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k])); //TODO valgrind says sgn is not initialized, what?
+        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k])); 
         if (sgn != 0)
         {
             SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
@@ -238,9 +218,6 @@ SPEX_info spex_chol_up_factor
         else
         {
             SPEX_FREE_WORKSPACE;
-            // TODO: We need to create the error SPEX_NOTSPD DONE
-            // When this is done we also need to change SPEX_Backslash.c 
-            // so that it correctly classifies what happens.
             return SPEX_NOTSPD; 
         }
             
@@ -255,7 +232,7 @@ SPEX_info spex_chol_up_factor
             if (jnew == k) continue;
             
             // Determine the column where x[j] belongs to
-            p = c[jnew]++;
+            p = (S->c)[jnew]++;
             
             // Place the i index of this nonzero. This should always be k because 
             // at iteration k, the up-looking algorithm computes row k of L
@@ -271,7 +248,7 @@ SPEX_info spex_chol_up_factor
             SPEX_CHECK(SPEX_mpz_set(L->x.mpz[p],x->x.mpz[jnew]));
         }
         // Now, place L(k,k)
-        p = c[k]++;
+        p = (S->c)[k]++;
         L->i[p] = k;
         size = mpz_sizeinbase(x->x.mpz[k], 2);
         SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[p], size+2));

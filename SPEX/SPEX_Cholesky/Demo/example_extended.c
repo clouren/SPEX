@@ -22,7 +22,6 @@
     SPEX_FREE(option);                  \
     SPEX_finalize();                    \
 }                                       
-    //SPEX_symbolic_analysis_free (&S, option); \ //TODO double check because not everything in S is initialized because we don't need everything that gets freed
     //TOASK SPEX_factorization_free(&F, option) does not seem to be freeing rhos and L ???
 #define DEMO_OK(method)                 \
 {                                       \
@@ -136,16 +135,14 @@ int main( int argc, char* argv[] )
     option->print_level = 3;
     option->check = true;
     
-  //SPEX_matrix_check(PAP,option);
+    //DEMO_OK(SPEX_Chol_symbolic_analysis(S,A,option));
 
     //--------------------------------------------------------------------------
     // SPEX Chol Factorization
     //--------------------------------------------------------------------------
+    //option->algo=SPEX_CHOL_LEFT;
     clock_t start_factor = clock();
-    
-    
-    SPEX_matrix* L2 = NULL;
-    SPEX_matrix* rhos2 = NULL;
+
     DEMO_OK( SPEX_Chol_factor(&F, S,PAP, option));
     
 //    SPEX_matrix_check(L, option);
