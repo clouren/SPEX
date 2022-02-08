@@ -150,7 +150,6 @@
 
 // SPEX Utility functions
 #include "SPEX_Util.h"
-#include "spex_util_internal.h"
 
 
 // SPEX Left LU
