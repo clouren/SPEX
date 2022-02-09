@@ -137,11 +137,11 @@ int main (int argc, char **argv)
     // x2 is a copy of the solution. x2 is a dense matrix with mpfr entries
     DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
     
-    option->print_level = 1;
+    /*option->print_level = 1;
     if (option->check)
     {
         DEMO_OK(SPEX_check_solution(A, x, b, option));
-    }
+    }*/
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------

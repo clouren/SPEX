@@ -134,11 +134,15 @@ int main( int argc, char* argv[] )
     DEMO_OK( SPEX_Chol_permute_A(&PAP, A, S));
     option->print_level = 3;
     option->check = true;
-    
-    //DEMO_OK(SPEX_Chol_symbolic_analysis(S,A,option));
 
     //--------------------------------------------------------------------------
-    // SPEX Chol Factorization
+    // Perform the symbolic analyis of  PAP
+    //--------------------------------------------------------------------------
+    
+    DEMO_OK(SPEX_Chol_symbolic_analysis(S,PAP,option));
+
+    //--------------------------------------------------------------------------
+    // Factorize PAP
     //--------------------------------------------------------------------------
     //option->algo=SPEX_CHOL_LEFT;
     clock_t start_factor = clock();
@@ -159,15 +163,15 @@ int main( int argc, char* argv[] )
     clock_t start_solve = clock();
     option->check = true;
 
-    //DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
-    DEMO_OK( SPEX_Chol_Solve_prev(&x, PAP, A, b, F->rhos, F->L,  S->Pinv_perm, S->Q_perm, option));
+    DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
+    //DEMO_OK( SPEX_Chol_Solve_prev(&x, PAP, A, b, F->rhos, F->L,  S->Pinv_perm, S->Q_perm, option));
     
     clock_t end_solve = clock();
 
-    if (option->check)
+    /*if (option->check)
     {
         DEMO_OK(SPEX_check_solution(A, x, b, option));
-    }
+    }*/
     
     
     //--------------------------------------------------------------------------
@@ -190,6 +194,9 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
+    PAP->p_shallow=false;
+    PAP->i_shallow=false; //TOASK should this be here or in the FREE_WORKSPACE macro?
+    //PAP->x_shallow=false; //TODO I need to free the array but not the values :/
     FREE_WORKSPACE;
                  
 }

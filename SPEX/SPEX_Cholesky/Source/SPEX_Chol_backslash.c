@@ -139,7 +139,7 @@ SPEX_info SPEX_Chol_backslash
 
     SPEX_CHECK(SPEX_Chol_permute_A(&PAP, A, S));
 
-    //SPEX_CHECK(SPEX_Chol_symbolic_analysis(S,A,option));
+    SPEX_CHECK(SPEX_Chol_symbolic_analysis(S,PAP,option));
 
 
     //--------------------------------------------------------------------------

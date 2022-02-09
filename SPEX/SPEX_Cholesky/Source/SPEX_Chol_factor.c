@@ -133,7 +133,7 @@ SPEX_info SPEX_Chol_factor
     SPEX_CHECK (SPEX_matrix_allocate(&(F->L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
         false, false, option));
 
-    SPEX_Chol_symbolic_analysis(S,A,option);
+    //SPEX_Chol_symbolic_analysis(S,A,option);
 
     //--------------------------------------------------------------------------
     // Call factorization

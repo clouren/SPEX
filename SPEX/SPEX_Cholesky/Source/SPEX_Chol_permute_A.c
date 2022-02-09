@@ -42,7 +42,10 @@ SPEX_info SPEX_Chol_permute_A
 )
 {
     SPEX_info info;
+
+    //--------------------------------------------------------------------------
     // Check inputs
+    //--------------------------------------------------------------------------
     ASSERT(A != NULL);
     ASSERT(S != NULL);
     ASSERT(PAP_handle != NULL);
@@ -74,7 +77,11 @@ SPEX_info SPEX_Chol_permute_A
 
     // Allocate memory for PAP which is a permuted copy of A
     SPEX_matrix* PAP = NULL;
-    SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
+    //SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
+    SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], true, false, NULL));
+    PAP->p=(int64_t*)SPEX_malloc((n+1)*sizeof(int64_t));
+    PAP->i=(int64_t*)SPEX_malloc((A->p[n])*sizeof(int64_t));
+    PAP->x.mpz=(mpz_t*)SPEX_malloc((A->p[n])*sizeof(mpz_t));
 
     // Set PAP scale
     SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
@@ -91,8 +98,8 @@ SPEX_info SPEX_Chol_permute_A
         for (t = A->p[j]; t < A->p[j+1]; t++)
         {
             // Set the nonzero value and location of the entries in column k of PAP
-            //(PAP->x.mpz[nz])=(A->x.mpz[t]); //TOASK this does not work, TOCHECK why??
-            SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
+            (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t])); 
+            //SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
             // Row i of this nonzero is equal to pinv[A->i[t]]
             PAP->i[nz] = pinv[ A->i[t] ];
             // Move to the next nonzero element of PAP
