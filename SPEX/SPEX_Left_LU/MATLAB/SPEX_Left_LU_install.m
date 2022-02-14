@@ -11,7 +11,7 @@ function SPEX_Left_LU_install(run_demo)
 %
 % See also SPEX_Left_LU_backslash, SPEX_Left_LU_test, SPEX_Left_LU_demo.
 
-% SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+% SPEX_Left_LU: (c) 2019-2022, Chris Lourenco (US Naval Academy), Jinhao Chen,
 % Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 % SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

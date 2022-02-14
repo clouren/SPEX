@@ -3,7 +3,7 @@
 #
 # Makefile for SPEX: SParse EXact linear algebra
 #
-# SPEX (c) 2019-2021 Christopher Lourenco, Timothy Davis, Erick Moreno-Centeno
+# SPEX (c) 2019-2022 Christopher Lourenco, Timothy Davis, Erick Moreno-Centeno
 #                    Jinhao Chen, All rights reserved.
 #
 #-------------------------------------------------------------------------------

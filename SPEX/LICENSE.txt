@@ -6,7 +6,7 @@ found in the lists below.
 
     SPEX Left LU: a Sparse Left-looking Integer-Preserving LU Factorization
 
-    Copyright (c) 2019-2021, Christopher Lourenco, JinHao Chen, Erick Moreno-
+    Copyright (c) 2019-2022, Christopher Lourenco, JinHao Chen, Erick Moreno-
     Centeno, and Timothy A. Davis.
 
     Available at:
