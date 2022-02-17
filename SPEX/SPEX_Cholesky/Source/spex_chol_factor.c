@@ -44,14 +44,14 @@
  */
 
 
-SPEX_info SPEX_Chol_factor      
+SPEX_info spex_chol_factor      
 (
     // Output
     SPEX_factorization **F_handle, // Cholesky factorization
-    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
+    //Input
+    const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    // Input
     const SPEX_matrix* A,      // Matrix to be factored   
     const SPEX_options* option //command options
                                // Notably, option->chol_type indicates whether
@@ -132,8 +132,6 @@ SPEX_info SPEX_Chol_factor
     // memory usage.
     SPEX_CHECK (SPEX_matrix_allocate(&(F->L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
         false, false, option));
-
-    //SPEX_Chol_symbolic_analysis(S,A,option);
 
     //--------------------------------------------------------------------------
     // Call factorization

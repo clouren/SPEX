@@ -37,13 +37,13 @@
 {                                            \
     SPEX_factorization_free(&F, option);     \
     SPEX_symbolic_analysis_free (&S, option);\
+    SPEX_matrix_free(&PAP, NULL);            \
 }
 
 # define SPEX_FREE_ALL            \
 {                                 \
     SPEX_FREE_WORKSPACE           \
     SPEX_matrix_free(&x, NULL);   \
-    SPEX_matrix_free(&PAP, NULL); \
 }
 
 #include "spex_chol_internal.h"
@@ -51,7 +51,6 @@
 SPEX_info SPEX_Chol_backslash
 (
     // Output
-     // Output
     SPEX_matrix** x_handle,       // On input: undefined. 
                                   // On output: final solution vector
     // Input
@@ -117,9 +116,10 @@ SPEX_info SPEX_Chol_backslash
     
     
     //--------------------------------------------------------------------------
-    // Symbolic Analysis: obtain the row/column ordering of A
+    // Preorder: obtain the row/column ordering of A
     //--------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_Chol_preorder(&S, A, option));
+
+    SPEX_CHECK(spex_chol_preorder(&S, A, option));
     
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky.
@@ -129,7 +129,6 @@ SPEX_info SPEX_Chol_backslash
     // If the symmetry check fails, the appropriate error code is returned
     // --------------------------------------------------------------------------
 
-    // TODO: Change this determine symmetry routine to check the diagonals as well
     SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1, option));
 
     //--------------------------------------------------------------------------
@@ -137,18 +136,21 @@ SPEX_info SPEX_Chol_backslash
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_Chol_permute_A(&PAP, A, S));
-
-    SPEX_CHECK(SPEX_Chol_symbolic_analysis(S,PAP,option));
-
+    SPEX_CHECK(spex_chol_permute_A(&PAP, A, S));
 
     //--------------------------------------------------------------------------
-    // SPEX Chol Factorization: Perform the REF Cholesky factorization of 
+    // Symbolic Analysis: compute the elimination tree of A
+    //--------------------------------------------------------------------------
+
+    SPEX_CHECK(spex_chol_symbolic_analysis(S,PAP,option));
+
+    //--------------------------------------------------------------------------
+    // Factorization: Perform the REF Cholesky factorization of 
     // A. By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //-------------------------------------------------------------------------- 
 
-    SPEX_CHECK(SPEX_Chol_factor(&F, S,PAP, option));
+    SPEX_CHECK(spex_chol_factor(&F, S,PAP, option));
 
     //--------------------------------------------------------------------------
     // Solve: Solve Ax = b using the REF Cholesky factorization. That is,

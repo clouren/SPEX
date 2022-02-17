@@ -28,7 +28,7 @@
  *               Contains row/column permutation of A
  * 
  */
-SPEX_info SPEX_Chol_permute_A
+SPEX_info spex_chol_permute_A
 (
     //Output
     SPEX_matrix** PAP_handle,  // On input: undefined

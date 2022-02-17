@@ -222,7 +222,7 @@ SPEX_info SPEX_Chol_backslash
  * On input, S is undefined
  * On output, S contains the row/column permutation of A
  */
-SPEX_info SPEX_Chol_preorder
+/*SPEX_info SPEX_Chol_preorder
 (
     // Output
     SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 
@@ -233,13 +233,13 @@ SPEX_info SPEX_Chol_preorder
     // Input
     const SPEX_matrix* A,           // Input matrix
     const SPEX_options* option      // Control parameters (use default if NULL)
-);
+);*/
 
 /* Purpose: Permute the matrix A and return PAP = PAP' 
  * On input PAP is undefined and A contains the input matrix
  * On output PAP contains the permuted matrix (PAP')
  */
-SPEX_info SPEX_Chol_permute_A
+/*SPEX_info SPEX_Chol_permute_A
 (
     //Output
     SPEX_matrix** PAP_handle,  // On input: undefined
@@ -248,21 +248,21 @@ SPEX_info SPEX_Chol_permute_A
     const SPEX_matrix* A,      // Input matrix
     SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
                                // column and inverse row permutations
-);
+);*/
 
 /* Purpose: Perform the symbolic analysis for the Cholesky factorization, this 
  * means computing and postordering the elimination tree, getting the column
  * counts of the SPD matrix A, setting the column pointers and exact number of 
  * non zeros of L.
  */
-SPEX_info SPEX_Chol_symbolic_analysis
+/*SPEX_info SPEX_Chol_symbolic_analysis
 (
     //Output
     SPEX_symbolic_analysis* S,
     //Input
     const SPEX_matrix* A,      // Matrix to be factored   
     const SPEX_options* option // command options
-);
+);*/
 
 /* Purpose: Compute the REF Cholesky factorization A = LDL'
  * only appropriate if A is SPD. 
@@ -273,7 +273,7 @@ SPEX_info SPEX_Chol_symbolic_analysis
  * lower triangular matrix and rhos contains the pivots' values
  * used in the factorization 
  */
-SPEX_info SPEX_Chol_factor     
+/*SPEX_info SPEX_Chol_factor     
 (
     // Output
     SPEX_factorization **F_handle, // Cholesky factorization
@@ -288,7 +288,7 @@ SPEX_info SPEX_Chol_factor
                                // looking factorization SPEX_CHOL_UP (default)
                                // or left looking factorization SPEX_CHOL_LEFT
                                // is used.
-);
+);*/
 
 /* Purpose: After computing the REF Cholesky factorization A = LDL',
  * this function solves the associated linear system LDL' x = b

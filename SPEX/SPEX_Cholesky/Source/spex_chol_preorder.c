@@ -36,7 +36,7 @@
 
 #include "spex_chol_internal.h"
 
-SPEX_info SPEX_Chol_preorder
+SPEX_info spex_chol_preorder
 (
     // Output
     SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 

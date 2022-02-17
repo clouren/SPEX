@@ -33,12 +33,13 @@ all: install
 OBJ = \
      spex_chol_post.o spex_chol_counts.o spex_chol_pre_left_factor.o \
      spex_chol_ereach.o \
-     SPEX_Chol_solve.o spex_chol_etree.o spex_chol_tdfs.o SPEX_Chol_factor.o \
+     SPEX_Chol_solve.o spex_chol_etree.o spex_chol_tdfs.o spex_chol_factor.o \
      spex_chol_forward_sub.o spex_left_chol_triangular_solve.o \
-     spex_chol_leaf.o spex_chol_backward_sub.o SPEX_Chol_permute_A.o \
+     spex_chol_leaf.o spex_chol_backward_sub.o spex_chol_permute_A.o \
      spex_up_chol_triangular_solve.o  SPEX_Chol_backslash.o \
-     SPEX_Chol_preorder.o spex_chol_up_factor.o spex_chol_left_factor.o \
-     SPEX_Chol_symbolic_analysis.o
+     spex_chol_preorder.o spex_chol_up_factor.o spex_chol_left_factor.o \
+     SPEX_Chol_Solve_prev.o  spex_chol_symbolic_analysis.o SPEX_Chol_analize.o\
+     SPEX_Chol_factorize.o \
 
 $(OBJ): ../Include/SPEX_Chol.h Makefile
 

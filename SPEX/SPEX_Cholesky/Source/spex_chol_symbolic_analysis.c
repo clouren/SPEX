@@ -36,7 +36,7 @@
  * 
  */
 
-SPEX_info SPEX_Chol_symbolic_analysis
+SPEX_info spex_chol_symbolic_analysis
 (
     //Output
     SPEX_symbolic_analysis* S, //Symbolic analysis

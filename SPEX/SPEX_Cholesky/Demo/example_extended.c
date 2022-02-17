@@ -14,7 +14,6 @@
 #define FREE_WORKSPACE                  \
 {                                       \
     SPEX_matrix_free(&A,NULL);          \
-    SPEX_matrix_free(&PAP,NULL);         \
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&x,NULL);          \
     SPEX_symbolic_analysis_free (&S, option); \
@@ -57,7 +56,6 @@ int main( int argc, char* argv[] )
     SPEX_factorization *F = NULL ;
     SPEX_matrix* A = NULL;
     SPEX_matrix* b = NULL;
-    SPEX_matrix* PAP = NULL;
     SPEX_matrix* x = NULL;
     
     // Default options. May be changed in SLIP_LU_config.h
@@ -103,8 +101,8 @@ int main( int argc, char* argv[] )
     //option->order = SPEX_NO_ORDERING;  // No ordering
     option->order = SPEX_AMD;  // AMD
     //option->order = SPEX_COLAMD; // COLAMD
-
-    DEMO_OK(SPEX_Chol_preorder(&S, A, option));    
+    DEMO_OK(SPEX_Chol_analize(&S, A, option));  
+    //DEMO_OK(SPEX_Chol_preorder(&S, A, option));    
     clock_t end_col = clock();
     
     
@@ -113,12 +111,12 @@ int main( int argc, char* argv[] )
     // uncomment the one desired.
     // --------------------------------------------------------------------------
     
-    clock_t start_sym = clock();
+   /* clock_t start_sym = clock();
     bool test;
     //DEMO_OK(SPEX_determine_symmetry(A, 0, option));    // Determine symmetry just with nonzero pattern
     DEMO_OK( SPEX_determine_symmetry(A, 1, option));    // Determine symmetry with nonzero pattern and values
    
-    clock_t end_sym = clock();
+    clock_t end_sym = clock();*/
     //--------------------------------------------------------------------------
     // Permute matrix A, that is set PAP = PAP'
     //--------------------------------------------------------------------------
@@ -131,15 +129,15 @@ int main( int argc, char* argv[] )
     }
     */
     
-    DEMO_OK( SPEX_Chol_permute_A(&PAP, A, S));
+    /*DEMO_OK( spex_chol_permute_A(&PAP, A, S));
     option->print_level = 3;
-    option->check = true;
+    option->check = true;*/
 
     //--------------------------------------------------------------------------
     // Perform the symbolic analyis of  PAP
     //--------------------------------------------------------------------------
     
-    DEMO_OK(SPEX_Chol_symbolic_analysis(S,PAP,option));
+   // DEMO_OK(spex_chol_symbolic_analysis(S,PAP,option));
 
     //--------------------------------------------------------------------------
     // Factorize PAP
@@ -147,8 +145,8 @@ int main( int argc, char* argv[] )
     //option->algo=SPEX_CHOL_LEFT;
     clock_t start_factor = clock();
 
-    DEMO_OK( SPEX_Chol_factor(&F, S,PAP, option));
-    
+    //DEMO_OK( spex_chol_factor(&F, S,PAP, option));
+    DEMO_OK( SPEX_Chol_factorize(&F, S,A, option));
 //    SPEX_matrix_check(L, option);
 //     
      F->L->m = n;
@@ -179,14 +177,12 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     
     double t_col = (double) (end_col-start_col)/CLOCKS_PER_SEC;
-    double t_sym = (double) (end_sym-start_sym)/CLOCKS_PER_SEC;
     double t_factor = (double) (end_factor - start_factor) / CLOCKS_PER_SEC;
     double t_solve =  (double) (end_solve - start_solve) / CLOCKS_PER_SEC;
 
     printf("\nNumber of L nonzeros: \t\t\t%ld",
         (F->L->p[F->L->n]) );
-    printf("\nSymmetry Check time: \t\t\t%lf", t_sym);
-    printf("\nSymbolic analysis time: \t\t%lf", t_col);
+    printf("\nSymbolic Analysis Check time: \t\t\t%lf", t_col);
     printf("\nIP Chol Factorization time: \t\t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);
     
@@ -194,8 +190,8 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
-    PAP->p_shallow=false;
-    PAP->i_shallow=false; //TOASK should this be here or in the FREE_WORKSPACE macro?
+    //PAP->p_shallow=false;
+    //PAP->i_shallow=false; //TOASK should this be here or in the FREE_WORKSPACE macro?
     //PAP->x_shallow=false; //TODO I need to free the array but not the values :/
     FREE_WORKSPACE;
                  
