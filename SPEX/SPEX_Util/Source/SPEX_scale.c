@@ -1,0 +1,72 @@
+//------------------------------------------------------------------------------
+// SPEX_Util/SPEX_scale
+//------------------------------------------------------------------------------
+
+// SPEX_Util: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
+/* Purpose: 
+ *
+ * Input/Output arguments:
+ *
+ */
+
+# define SPEX_FREE_WORKSPACE                 \
+{                                            \
+    SPEX_MPQ_CLEAR(scale);                   \
+}
+
+SPEX_info SPEX_scale
+(
+    // Output
+    SPEX_matrix x,
+    // Input
+    //scale_A, //TOASK is this the best way? Or should it be just scale1 and scale2 and then we change the order dependeing on
+    //scale_b,
+    //bool scale //true scale, false unscale 
+    mpq_t scaling_num, //numerator
+    mpq_t scaling_den, //denominator
+    const SPEX_options* option        // command options
+)
+{
+
+    SPEX_info info;
+
+    // Scale is the scaling factor for the solution vectors.
+    // When the forward/backsolve is complete, the entries in
+    // x are rational, but are solving the scaled linear system
+    // A' x = b' (that is if A had input which was rational or floating point
+    // and had to be converted to integers). Thus, the scale here is used
+    // to convert x into into the actual solution of A x = b. 
+    // Mathematically, scale = PAP->scale / b->scale
+    mpq_t scale;
+    SPEX_MPQ_SET_NULL(scale);
+
+    SPEX_CHECK(SPEX_mpq_init(scale));
+
+    // set the scaling factor scale = scaling_num / scaling_den
+    SPEX_CHECK(SPEX_mpq_div(scale, scaling_num, scaling_den);
+
+    // Apply scaling factor, but ONLY if it is different from a scaling factor
+    // to 1
+    int r;
+    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, scale, 1, 1));
+    if (r != 0)
+    {
+        nz = x->m * x->n;
+        for (i = 0; i < nz; i++)
+        {
+            SPEX_CHECK(SPEX_mpq_mul(x2->x.mpq[i], x2->x.mpq[i], scale));
+        }
+    }
+
+  //--------------------------------------------------------------------------
+  // Free all workspace and return success
+  //--------------------------------------------------------------------------
+  SPEX_FREE_WORKSPACE;
+  return SPEX_OK;
+}
