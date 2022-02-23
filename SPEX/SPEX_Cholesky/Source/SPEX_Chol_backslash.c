@@ -136,7 +136,7 @@ SPEX_info SPEX_Chol_backslash
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_permute_A(&PAP, A, S));
+    SPEX_CHECK(spex_chol_permute_A(&PAP, A, true, S));
 
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of A

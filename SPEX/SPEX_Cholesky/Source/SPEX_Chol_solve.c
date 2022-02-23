@@ -187,17 +187,13 @@ SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
         }
     }
 
-    //TOASK where are we adding the solution check?
-
     //--------------------------------------------------------------------------
     // Scale the solution if necessary.
     //--------------------------------------------------------------------------
 
-    //TODO doublecheck scaling process
     SPEX_CHECK(SPEX_mpq_init(scale));
 
     // set the scaling factor scale = PAP->scale / b->scale
-    //TODO TOASK double check PAP scale is the same thing as F->scale for A
     SPEX_CHECK(SPEX_mpq_div(scale, F->scale_for_A, b->scale));
 
     // Apply scaling factor, but ONLY if it is different from a scaling factor

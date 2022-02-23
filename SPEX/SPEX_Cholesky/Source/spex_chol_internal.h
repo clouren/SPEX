@@ -303,6 +303,8 @@ SPEX_info spex_chol_permute_A
                                // On output: contains the permuted matrix
     //Input
     const SPEX_matrix* A,      // Input matrix
+    const bool numeric,        // True if user wants to permute pattern and 
+                               // numbers, false if only pattern
     SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
                                // column and inverse row permutations
 );

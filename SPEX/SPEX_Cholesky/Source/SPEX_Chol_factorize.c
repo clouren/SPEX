@@ -47,7 +47,7 @@ SPEX_info SPEX_Chol_factorize
     // the symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_permute_A(&PAP, A, S));
+    SPEX_CHECK(spex_chol_permute_A(&PAP, A, true, S));
 
     //--------------------------------------------------------------------------
     // Factorization: Perform the REF Cholesky factorization of 

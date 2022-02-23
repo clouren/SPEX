@@ -35,6 +35,8 @@ SPEX_info spex_chol_permute_A
                                // On output: contains the permuted matrix
     //Input
     const SPEX_matrix* A,      // Input matrix
+    const bool numeric,        // True if user wants to permute pattern and 
+                               // numbers, false if only pattern
     
     //Input/Ouput
     SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
@@ -81,31 +83,56 @@ SPEX_info spex_chol_permute_A
     SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], true, false, NULL));
     PAP->p=(int64_t*)SPEX_malloc((n+1)*sizeof(int64_t));
     PAP->i=(int64_t*)SPEX_malloc((A->p[n])*sizeof(int64_t));
-    PAP->x.mpz=(mpz_t*)SPEX_malloc((A->p[n])*sizeof(mpz_t));
-
-    // Set PAP scale
-    SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
     
-    // Populate the entries in PAP
-    for (k = 0; k < n; k++)
+    if(numeric)
     {
-        // Set the number of nonzeros in the kth column of PAP
-        PAP->p[k] = nz;
-        // Column k of PAP is equal to column S->p[k] of A. j is the starting
-        // point for nonzeros and indices for column S->p[k] of A
-        j = S->Q_perm[k];
-        // Iterate across the nonzeros in column S->p[k]
-        for (t = A->p[j]; t < A->p[j+1]; t++)
+       PAP->x.mpz=(mpz_t*)SPEX_malloc((A->p[n])*sizeof(mpz_t));
+
+        // Set PAP scale
+        SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
+    
+        // Populate the entries in PAP
+        for (k = 0; k < n; k++)
         {
-            // Set the nonzero value and location of the entries in column k of PAP
-            (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t])); 
-            //SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
-            // Row i of this nonzero is equal to pinv[A->i[t]]
-            PAP->i[nz] = pinv[ A->i[t] ];
-            // Move to the next nonzero element of PAP
-            nz++;
+            // Set the number of nonzeros in the kth column of PAP
+            PAP->p[k] = nz;
+            // Column k of PAP is equal to column S->p[k] of A. j is the starting
+            // point for nonzeros and indices for column S->p[k] of A
+            j = S->Q_perm[k];
+            // Iterate across the nonzeros in column S->p[k]
+            for (t = A->p[j]; t < A->p[j+1]; t++)
+            {
+                // Set the nonzero value and location of the entries in column k of PAP
+                (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t])); 
+                //SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
+                // Row i of this nonzero is equal to pinv[A->i[t]]
+                PAP->i[nz] = pinv[ A->i[t] ];
+                // Move to the next nonzero element of PAP
+                nz++;
+            }
         }
     }
+    else
+    {
+        // Populate the entries in PAP
+        for (k = 0; k < n; k++)
+        {
+            // Set the number of nonzeros in the kth column of PAP
+            PAP->p[k] = nz;
+            // Column k of PAP is equal to column S->p[k] of A. j is the starting
+            // point for nonzeros and indices for column S->p[k] of A
+            j = S->Q_perm[k];
+            // Iterate across the nonzeros in column S->p[k]
+            for (t = A->p[j]; t < A->p[j+1]; t++)
+            {
+                // Row i of this nonzero is equal to pinv[A->i[t]]
+                PAP->i[nz] = pinv[ A->i[t] ];
+                // Move to the next nonzero element of PAP
+                nz++;
+            }
+        }
+    } 
+
     // Finalize the last column of PAP
     PAP->p[n] = nz;
 
