@@ -454,6 +454,7 @@ typedef struct
                                          // for Cholesky factorization.
     int64_t* cp;                         // column pointers of L for Cholesky
                                          // factorization.
+    int64_t* c;                          // column counts
 } SPEX_symbolic_analysis ;
 
 // The symbolic analysis object is created by SPEX_symbolic_analyze.
@@ -703,13 +704,25 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 ) ;
 
 
+/* SPEX_scale: 
+ */
+SPEX_info SPEX_scale
+(
+    // Output
+    SPEX_matrix* x,
+    // Input
+    const mpq_t scaling_num, //numerator
+    const mpq_t scaling_den, //denominator
+    const SPEX_options* option        // command options
+);
+
 /* SPEX_check_solution: checks the solution of the linear system.  Performs a
  * quick rational arithmetic check of A*x=b.
  */
 SPEX_info SPEX_check_solution
 (
     const SPEX_matrix *A,          // input matrix
-    const SPEX_matrix *x,          // solution vector
+    SPEX_matrix *x,          // solution vector
     const SPEX_matrix *b,          // right hand side
     const SPEX_options* option           // Command options
 );

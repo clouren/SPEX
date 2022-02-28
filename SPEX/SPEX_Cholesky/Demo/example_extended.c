@@ -160,16 +160,15 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     clock_t start_solve = clock();
     option->check = true;
-
+    printf("b4solve\n");
     DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
-    //DEMO_OK( SPEX_Chol_Solve_prev(&x, PAP, A, b, F->rhos, F->L,  S->Pinv_perm, S->Q_perm, option));
-    
+  
     clock_t end_solve = clock();
 
-    /*if (option->check)
-    {
-        DEMO_OK(SPEX_check_solution(A, x, b, option));
-    }*/
+    printf("b4sol\n");
+    option->print_level = 3;
+    //DEMO_OK(SPEX_scale(x, b->scale, A->scale, option));
+    DEMO_OK(SPEX_check_solution(A, x, b, option));
     
     
     //--------------------------------------------------------------------------

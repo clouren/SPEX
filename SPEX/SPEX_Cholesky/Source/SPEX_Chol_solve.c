@@ -190,8 +190,9 @@ SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
     //--------------------------------------------------------------------------
     // Scale the solution if necessary.
     //--------------------------------------------------------------------------
+    SPEX_CHECK(SPEX_scale(x2, F->scale_for_A, b->scale, option));
 
-    SPEX_CHECK(SPEX_mpq_init(scale));
+    /*SPEX_CHECK(SPEX_mpq_init(scale));
 
     // set the scaling factor scale = PAP->scale / b->scale
     SPEX_CHECK(SPEX_mpq_div(scale, F->scale_for_A, b->scale));
@@ -207,7 +208,8 @@ SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
         {
             SPEX_CHECK(SPEX_mpq_mul(x2->x.mpq[i], x2->x.mpq[i], scale));
         }
-    }
+    }*/
+
     
     // Set output, free memory
     (*x_handle) = x2;
