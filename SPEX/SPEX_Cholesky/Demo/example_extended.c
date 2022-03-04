@@ -17,6 +17,7 @@
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&x,NULL);          \
     SPEX_symbolic_analysis_free (&S, option); \
+    SPEX_matrix_free(&(F->L), option); \
     SPEX_factorization_free(&F, option);     \
     SPEX_FREE(option);                  \
     SPEX_finalize();                    \
@@ -160,12 +161,10 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     clock_t start_solve = clock();
     option->check = true;
-    printf("b4solve\n");
     DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
   
     clock_t end_solve = clock();
 
-    printf("b4sol\n");
     option->print_level = 3;
     //DEMO_OK(SPEX_scale(x, b->scale, A->scale, option));
     DEMO_OK(SPEX_check_solution(A, x, b, option));
@@ -181,7 +180,7 @@ int main( int argc, char* argv[] )
 
     printf("\nNumber of L nonzeros: \t\t\t%ld",
         (F->L->p[F->L->n]) );
-    printf("\nSymbolic Analysis Check time: \t\t\t%lf", t_col);
+    printf("\nSymbolic Analysis Check time: \t\t%lf", t_col);
     printf("\nIP Chol Factorization time: \t\t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);
     

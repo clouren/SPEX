@@ -17,6 +17,8 @@
 
 # define SPEX_FREE_WORKSPACE                 \
 {                                            \
+    PAP->p_shallow=false; \
+    PAP->i_shallow=false; \
     SPEX_matrix_free(&PAP, NULL); \
 }
 
@@ -71,8 +73,6 @@ SPEX_info SPEX_Chol_analize
     // Free all workspace and return success
     //--------------------------------------------------------------------------
     (*S_handle) = S;
-    PAP->p_shallow=false;
-    PAP->i_shallow=false;
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }

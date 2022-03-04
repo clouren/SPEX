@@ -75,6 +75,12 @@ SPEX_info spex_chol_permute_A
         index = S->Q_perm[k];
         pinv[index] = k;
     }
+
+    //TODO maybe there is a more elegant way? this happens because otherwise we never free the Pinv created in analysis
+    /*if((S->Pinv_perm)!=NULL)
+    { 
+        SPEX_FREE(S->Pinv_perm);
+    }*/ //using this makes example simple fail because of memory error
     S->Pinv_perm=pinv;
 
     // Allocate memory for PAP which is a permuted copy of A
