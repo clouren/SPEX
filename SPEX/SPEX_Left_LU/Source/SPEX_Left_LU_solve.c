@@ -30,7 +30,7 @@
 #define SPEX_FREE_WORKSPACE             \
     SPEX_matrix_free (&b2, NULL) ;      \
 
-#define SPEX_FREE_ALLOCATION            \
+#define SPEX_FREE_ALL            \
     SPEX_FREE_WORKSPACE                 \
     SPEX_matrix_free (&x, NULL) ;
 
