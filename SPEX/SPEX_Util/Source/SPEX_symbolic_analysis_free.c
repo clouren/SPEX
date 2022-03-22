@@ -27,6 +27,7 @@ SPEX_info SPEX_symbolic_analysis_free
 
     if ((S != NULL) && (*S != NULL))
     {
+
         SPEX_FREE((*S)->P_perm);
         SPEX_FREE((*S)->Pinv_perm);
         SPEX_FREE((*S)->Q_perm);
@@ -34,7 +35,8 @@ SPEX_info SPEX_symbolic_analysis_free
 
         SPEX_FREE((*S)->parent);
         SPEX_FREE((*S)->cp);
-        SPEX_FREE (*S) ;
+        SPEX_FREE((*S)->c);
+        SPEX_FREE (*S);
     }
 
     return (SPEX_OK) ;

@@ -95,6 +95,7 @@ SPEX_info spex_chol_factor
     {
         return SPEX_OUT_OF_MEMORY;
     }
+    SPEX_CHECK(SPEX_factorization_create(&F,option));
     // set factorization kind
     F->kind = SPEX_CHOLESKY_FACTORIZATION;
 

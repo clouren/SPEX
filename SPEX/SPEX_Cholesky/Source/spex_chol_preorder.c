@@ -50,6 +50,8 @@ SPEX_info spex_chol_preorder
 )
 {
 
+    SPEX_info info;
+
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
@@ -87,6 +89,7 @@ SPEX_info spex_chol_preorder
     // Allocate memory for S
     S = (SPEX_symbolic_analysis*) SPEX_malloc(sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
+    SPEX_CHECK(SPEX_symbolic_analysis_create(&S,option));
 
     S->kind = SPEX_CHOLESKY_SYMBOLIC_ANALYSIS ;
 
@@ -97,6 +100,7 @@ SPEX_info spex_chol_preorder
         SPEX_FREE_ALL;  
         return SPEX_OUT_OF_MEMORY;
     }
+    S->Pinv_perm=NULL; //TODO this goes in construct remove!!
 
     //Check which ordering to use.
     SPEX_col_order order = SPEX_OPTION_ORDER(option);

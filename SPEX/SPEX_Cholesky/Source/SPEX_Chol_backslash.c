@@ -147,6 +147,9 @@ SPEX_info SPEX_Chol_backslash
 
     SPEX_CHECK(spex_chol_symbolic_analysis(S,PAP,option));
 
+    //((S)->P_perm)=NULL;
+    //((S)->Qinv_perm)=NULL;//TODO move to function
+
     //--------------------------------------------------------------------------
     // Factorization: Perform the REF Cholesky factorization of 
     // A. By default, up-looking Cholesky factorization is done; however,

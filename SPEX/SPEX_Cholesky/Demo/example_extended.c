@@ -17,7 +17,7 @@
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&x,NULL);          \
     SPEX_symbolic_analysis_free (&S, option); \
-    SPEX_matrix_free(&(F->L), option); \
+    SPEX_matrix_free(&((F)->L), option); \
     SPEX_factorization_free(&F, option);     \
     SPEX_FREE(option);                  \
     SPEX_finalize();                    \
@@ -188,10 +188,6 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
-    //PAP->p_shallow=false;
-    //PAP->i_shallow=false; //TOASK should this be here or in the FREE_WORKSPACE macro?
-    //PAP->x_shallow=false; //TODO I need to free the array but not the values :/
     FREE_WORKSPACE;
-                 
 }
     

@@ -37,7 +37,7 @@ SPEX_info SPEX_Chol_analize
     SPEX_info info;
 
     SPEX_matrix* PAP = NULL;
-    SPEX_symbolic_analysis *S = NULL; //TOASK not sure this is the right way to do this
+    SPEX_symbolic_analysis *S = NULL;
 
 
     //--------------------------------------------------------------------------

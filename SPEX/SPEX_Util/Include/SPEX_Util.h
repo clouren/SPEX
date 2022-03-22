@@ -457,7 +457,12 @@ typedef struct
     int64_t* c;                          // column counts
 } SPEX_symbolic_analysis ;
 
-// The symbolic analysis object is created by SPEX_symbolic_analyze.
+// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+SPEX_info SPEX_symbolic_analysis_create
+(
+    SPEX_symbolic_analysis **S, // Structure to be created
+    const SPEX_options *option
+);
 
 // SPEX_symbolic_analysis_free frees the SPEX_symbolic_analysis object.
 SPEX_info SPEX_symbolic_analysis_free        
@@ -539,6 +544,13 @@ typedef struct
                                          // should not free by Left_LU_factorize
 
 } SPEX_factorization;
+
+// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+SPEX_info SPEX_factorization_create
+(
+    SPEX_factorization **F, // Structure to be created
+    const SPEX_options *option
+);
 
 // SPEX_factorization_free frees the SPEX_factorization object.
 SPEX_info SPEX_factorization_free        

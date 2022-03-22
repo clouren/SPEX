@@ -45,6 +45,7 @@ SPEX_info SPEX_Chol_factorize
     SPEX_matrix* PAP = NULL;
     SPEX_factorization *F = NULL ;
 
+
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the row/column ordering from 
     // the symbolic analysis step to get the permuted matrix PAP.

@@ -9,10 +9,10 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALL             \
+/*#define SPEX_FREE_ALL             \
 {                                 \
     SPEX_matrix_free(pinv, NULL); \
-}
+}*/
 
 #include "spex_chol_internal.h"
 
@@ -61,27 +61,31 @@ SPEX_info spex_chol_permute_A
 
     // Create indices and pinv, the inverse row permutation
     int64_t j, k, t, index, nz = 0, n = A->n;
-    int64_t* pinv = NULL;
+    //int64_t* pinv = NULL;
 
     // Allocate pinv
-    pinv = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
-    if (!pinv)
+    if (!(S->Pinv_perm))
     {
-        return SPEX_OUT_OF_MEMORY;
+        S->Pinv_perm = (int64_t*)SPEX_calloc(n, sizeof(int64_t));
+        if(!(S->Pinv_perm))
+        {
+            return SPEX_OUT_OF_MEMORY;
+        }
     }
     // Populate pinv
     for (k = 0; k < n; k++)
     {
         index = S->Q_perm[k];
-        pinv[index] = k;
+        S->Pinv_perm[index] = k;
     }
+
 
     //TODO maybe there is a more elegant way? this happens because otherwise we never free the Pinv created in analysis
     /*if((S->Pinv_perm)!=NULL)
     { 
         SPEX_FREE(S->Pinv_perm);
     }*/ //using this makes example simple fail because of memory error
-    S->Pinv_perm=pinv;
+    //S->Pinv_perm=pinv; //TODO should be a full copy
 
     // Allocate memory for PAP which is a permuted copy of A
     SPEX_matrix* PAP = NULL;
@@ -112,7 +116,7 @@ SPEX_info spex_chol_permute_A
                 (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t])); 
                 //SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
                 // Row i of this nonzero is equal to pinv[A->i[t]]
-                PAP->i[nz] = pinv[ A->i[t] ];
+                PAP->i[nz] = S->Pinv_perm[ A->i[t] ];
                 // Move to the next nonzero element of PAP
                 nz++;
             }
@@ -132,7 +136,7 @@ SPEX_info spex_chol_permute_A
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
                 // Row i of this nonzero is equal to pinv[A->i[t]]
-                PAP->i[nz] = pinv[ A->i[t] ];
+                PAP->i[nz] = S->Pinv_perm[ A->i[t] ];
                 // Move to the next nonzero element of PAP
                 nz++;
             }
