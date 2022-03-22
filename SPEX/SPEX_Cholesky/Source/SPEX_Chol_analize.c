@@ -17,6 +17,7 @@
 
 # define SPEX_FREE_WORKSPACE                 \
 {                                            \
+    /* FIXME */ \
     PAP->p_shallow=false; \
     PAP->i_shallow=false; \
     SPEX_matrix_free(&PAP, NULL); \

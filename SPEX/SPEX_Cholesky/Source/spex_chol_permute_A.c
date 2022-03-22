@@ -124,6 +124,9 @@ SPEX_info spex_chol_permute_A
     }
     else
     {
+
+        PAP->x.mpz= NULL ;
+
         // Populate the entries in PAP
         for (k = 0; k < n; k++)
         {
