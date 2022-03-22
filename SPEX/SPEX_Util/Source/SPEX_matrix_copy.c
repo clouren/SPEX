@@ -33,7 +33,7 @@ SPEX_info SPEX_matrix_copy
     // inputs, not modified:
     SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic_CSC
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
-    SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
+    const SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
     const SPEX_options *option
 )
 {
@@ -138,7 +138,7 @@ SPEX_info SPEX_matrix_copy
                     }
 
                     // C->p = cumulative sum of W
-                    SPEX_cumsum (C->p, W, n) ;
+                    SPEX_cumsum (C->p, W, n, option) ;
 
                     // build the matrix
                     switch (C->type)

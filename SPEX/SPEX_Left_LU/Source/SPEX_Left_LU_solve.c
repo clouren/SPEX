@@ -61,6 +61,10 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
         return SPEX_INCORRECT_INPUT;
     }
     
+    SPEX_REQUIRE (F->L,    SPEX_CSC,   SPEX_MPZ) ;
+    SPEX_REQUIRE (F->U,    SPEX_CSC,   SPEX_MPZ) ;
+    SPEX_REQUIRE (F->rhos, SPEX_DENSE, SPEX_MPZ) ;
+    
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
@@ -87,7 +91,7 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     // b2 = b2 * det, where det=rhos[n-1]
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_matrix_mul(b2, F->rhos->x.mpz[n-1]));
+    SPEX_CHECK(SPEX_matrix_mul(b2, F->rhos->x.mpz[n-1], option));
 
     //--------------------------------------------------------------------------
     // b2 = U\b2, via back substitution

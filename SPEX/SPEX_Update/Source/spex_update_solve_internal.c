@@ -50,7 +50,7 @@
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
+SPEX_info spex_update_solve_internal// solves Ax = b via REF LU factorization of A
 (
     // Output
     SPEX_matrix **x_handle, // a n*m dense matrix contains the solution to

@@ -1,0 +1,33 @@
+symbolic cholesky 
+structral matrix
+
+combine SPEX_TBD with SPEX_backslash
+unify all interface for similar functionality
+update makefile to generate one single .so
+paper info for SPEX Left LU
+
+// LU Chol QR auto
+SPEX_backslash(x, SPEX_type, A, b, option) or SPEX_backslash(x, SPEX_type, A, b, algo, option) // option should be const here
+SPEX_analyze(S, A, kind, option)
+-combine algo, SPEX_factorization_kind and SPEX_symbolic_analysis_kind
+
+move spex_check_solution to Tcov
+
+-bool updatable in the SPEX_factorization
+
+-bi-directional conversion between updatable and mpz csc non-updatable
+
+*SPEX_matrix_copy const A
+
+*SPEX_update_solve assume updatable?
+
+user guide
+
+
+
+
+
+
+
+
+do the shallow copy of all mpz values for updatable-static conversion

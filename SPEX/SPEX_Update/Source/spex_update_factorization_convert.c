@@ -19,18 +19,19 @@
 // entry. To otain the non-updatable format, this function will transpose UT
 // (for LU factorization) and permute rows and L and U.
 
+#define SPEX_FREE_ALL             \
+    SPEX_FREE(Qinv);              \
+    SPEX_matrix_free(&L, option); \
+    SPEX_matrix_free(&U, option); \
+    SPEX_matrix_free(&Mat, option);
+
 
 #include "spex_update_internal.h"
 
-#define SPEX_FREE_ALL   \
-    SPEX_factorization_free(&F, option);
-
-SPEX_info SPEX_Update_factorization_convert
+SPEX_info spex_update_factorization_convert
 (
-    SPEX_factorization **F_out,// The output factorization with same
-                            // factorization kind as F_in
-    const SPEX_factorization *F_in, // The factorization to be converted
-    const bool updabtable, // true if wish to obtain updatable F.
+    SPEX_factorization *F, // The factorization to be converted
+    const bool updatable, // true if wish to obtain updatable F.
     const SPEX_options* option // Command options
 )  
 {
@@ -39,130 +40,92 @@ SPEX_info SPEX_Update_factorization_convert
     //--------------------------------------------------------------------------
     if (!spex_initialized()) {return SPEX_PANIC;}
     
-    if (!F_out || !F_in ||
-        (F_in->kind != SPEX_LU_FACTORIZATION &&
-         F_in->kind != SPEX_CHOLESKY_FACTORIZATION))
+    if (!F ||
+        (F->kind != SPEX_LU_FACTORIZATION &&
+         F->kind != SPEX_CHOLESKY_FACTORIZATION))
     {
         return SPEX_INCORRECT_INPUT;
     }
-
-    (*F_out) = NULL;
 
     //--------------------------------------------------------------------------
     // initialize workspace
     //--------------------------------------------------------------------------
     SPEX_info info;
-    SPEX_factorization *F = NULL;
-    int64_t i, n = F_in->L->n;
+    int64_t i, n = F->L->n;
+    int64_t *Qinv = NULL;
+    SPEX_matrix *L = NULL, *U = NULL, *Mat = NULL;
 
     //--------------------------------------------------------------------------
-    // allocate memory space for the factorization
+    // obtain Qinv_perm for updatable LU factorization
     //--------------------------------------------------------------------------
-    F = (SPEX_factorization*) SPEX_calloc(1, sizeof(SPEX_factorization));
-    if (F == NULL)
+    if (F->kind == SPEX_LU_FACTORIZATION && updatable)
     {
-        return SPEX_OUT_OF_MEMORY;
-    }
-    // set factorization kind
-    F->kind = F_in->kind;
-    // Allocate and set scale_for_A
-    SPEX_CHECK(SPEX_mpq_init(F->scale_for_A));
-    SPEX_CHECK(SPEX_mpq_set (F->scale_for_A, F_in->scale_for_A));
-
-    //--------------------------------------------------------------------------
-    // row permutations
-    //--------------------------------------------------------------------------
-    F->P_perm    = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-    F->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-
-    if (!(F->P_perm) || !(F->Pinv_perm))
-    {
-        SPEX_FREE_ALL;
-        return SPEX_OUT_OF_MEMORY;
-    }
-
-    memcpy(F->P_perm,    F_in->P_perm,     n * sizeof(int64_t));
-    memcpy(F->Pinv_perm, F_in->Pinv_perm,  n * sizeof(int64_t));
-
-    //--------------------------------------------------------------------------
-    // obtain column permutations for LU factorization
-    //--------------------------------------------------------------------------
-    if (F->kind == SPEX_LU_FACTORIZATION)
-    {
-        F->Q_perm    = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-        if (!(F->Q_perm))
+        Qinv = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+        if (!Qinv)
         {
             SPEX_FREE_ALL;
             return SPEX_OUT_OF_MEMORY;
         }
-        memcpy(F->Q_perm,    F_in->Q_perm,     n * sizeof(int64_t));
-
-        // obtain Qinv_perm only for updatable LU factorization
-        if (updatable)
+        for (i = 0; i < n; i++)
         {
-            // generate Qinv_perm for F
-            F->Qinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-            if (!(F->Qinv_perm))
-            {
-                SPEX_FREE_ALL;
-                return SPEX_OUT_OF_MEMORY;
-            }
-            for (i = 0; i < n; i++)
-            {
-                F->Qinv_perm[F->Q_perm[i]] = i;
-            }
+            Qinv[F->Q_perm[i]] = i;
         }
+        SPEX_FREE(F->Qinv_perm); // clear whatever is there just in case
+        F->Qinv_perm = Qinv;
+        Qinv = NULL;
     }
 
     //--------------------------------------------------------------------------
-    // Create rhos, a global dense mpz_t matrix of dimension n*1
-    //--------------------------------------------------------------------------
-    SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
-        false, false, option));
-    // copy rhos
-    for (i = 0; i < n; i++)
-    {
-        SPEX_CHECK(SPEX_mpz_set(SPEX_1D(F->rhos,    i, mpz),
-                                SPEX_1D(F_in->rhos, i, mpz));
-    }
-
-    //--------------------------------------------------------------------------
-    // obtain the desired format of matrices
+    // obtain the desired format of L and/or U
     //--------------------------------------------------------------------------
     if (updatable)
     {
-        SPEX_CHECK(SPEX_matrix_copy(&(F->L), SPEX_DYNAMIC_CSC, SPEX_MPZ,
-            F_in->L, option));
-        SPEX_CHECK(SPEX_Update_permute_row(F->L, F->P_perm, option));
-        SPEX_CHECK(SPEX_Update_matrix_canonicalize(F->L, F->P_perm, option));
+        SPEX_CHECK(SPEX_matrix_copy(&L, SPEX_DYNAMIC_CSC, SPEX_MPZ,
+            F->L, option));
+        SPEX_CHECK(spex_update_permute_row(L, F->P_perm, option));
+        SPEX_CHECK(spex_update_matrix_canonicalize(L, F->P_perm, option));
+        // replace the original L
+        SPEX_CHECK(SPEX_matrix_free(&(F->L), option));
+        F->L = L;
+        L = NULL;
+
         if (F->kind == SPEX_LU_FACTORIZATION)
         {
-            SPEX_matrix *UT = NULL;
-            SPEX_CHECK(SPEX_transpose(&UT, F->U, option));
-            SPEX_CHECK(SPEX_matrix_copy(&(F->U), SPEX_DYNAMIC_CSC, SPEX_MPZ,
-                UT, option));
-            SPEX_CHECK(SPEX_matrix_free(&UT, option));
-            SPEX_CHECK(SPEX_Update_permute_row(F->U, F->Q_perm, option));
-            SPEX_CHECK(SPEX_Update_matrix_canonicalize(F->U, F->Q_perm,
+            // TODO do the shallow copy of all mpz values
+            SPEX_CHECK(SPEX_transpose(&Mat, F->U, option));
+            SPEX_CHECK(SPEX_matrix_copy(&U, SPEX_DYNAMIC_CSC, SPEX_MPZ,
+                Mat, option));
+            SPEX_CHECK(spex_update_permute_row(U, F->Q_perm, option));
+            SPEX_CHECK(spex_update_matrix_canonicalize(U, F->Q_perm,
                 option));
+            // replace the original U
+            SPEX_CHECK(SPEX_matrix_free(&(F->U), option));
+            F->U = U;
+            U = NULL;
         }
     }
     else
     {
-        SPEX_CHECK(SPEX_matrix_copy(&(F->L), SPEX_CSC, SPEX_MPZ,
-            F_in->L, option));
-        SPEX_CHECK(SPEX_Update_permute_row(F->L, F->Pinv_perm, option));
+        SPEX_CHECK(SPEX_matrix_copy(&L, SPEX_CSC, SPEX_MPZ, F->L, option));
+        SPEX_CHECK(spex_update_permute_row(L, F->Pinv_perm, option));
+        // replace the original L
+        SPEX_CHECK(SPEX_matrix_free(&(F->L), option));
+        F->L = L;
+        L = NULL;
+
         if (F->kind == SPEX_LU_FACTORIZATION)
         {
-            SPEX_matrix *U_CSC = NULL;
-            SPEX_CHECK(SPEX_matrix_copy(&U_CSC, SPEX_CSC, SPEX_MPZ,
+            SPEX_CHECK(SPEX_matrix_copy(&Mat, SPEX_CSC, SPEX_MPZ,
                 F->U, option));
-            SPEX_CHECK(SPEX_transpose(&(F->U), U_CSC, option));
-            SPEX_CHECK(SPEX_matrix_free(&U_CSC, option));
-            SPEX_CHECK(SPEX_Update_permute_row(F->U, F->Qinv_perm, option));
+            SPEX_CHECK(SPEX_transpose(&U, Mat, option));
+            SPEX_CHECK(spex_update_permute_row(U, F->Qinv_perm, option));
+            // replace the original U
+            SPEX_CHECK(SPEX_matrix_free(&(F->U), option));
+            F->U = U;
+            U = NULL;
         }
     }
 
-    (*F_out) = F;
+    SPEX_FREE_ALL;
     return SPEX_OK;
 }

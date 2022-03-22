@@ -25,41 +25,23 @@
     SPEX_matrix_free(&Prob_A, option);           \
     SPEX_matrix_free(&Prob_c, option);           \
     SPEX_matrix_free(&tempA, option);            \
-    SPEX_matrix_free(&L1, option);               \
-    SPEX_matrix_free(&U1, option);               \
-    SPEX_matrix_free(&rhos, option);             \
     SPEX_matrix_free(&A1, option);               \
     SPEX_matrix_free (&x1, option);              \
-    SPEX_matrix_free(&rhos2, option);            \
-    SPEX_matrix_free(&rhos3, option);            \
-    SPEX_matrix_free(&L2, option);               \
-    SPEX_matrix_free(&U2, option);               \
     SPEX_matrix_free(&A2, option);               \
     SPEX_matrix_free(&b, option);                \
     SPEX_matrix_free(&b_dbl, option);            \
     SPEX_matrix_free(&c, option);                \
+    SPEX_matrix_free(&c_sol, option);                \
     SPEX_matrix_free(&x2, option);               \
     SPEX_matrix_free(&y, option);                \
-    SPEX_matrix_free(&L3, option);               \
-    SPEX_matrix_free(&U3, option);               \
+    SPEX_matrix_free(&y_sol, option);                \
     SPEX_matrix_free(&A3, option);               \
-    SPEX_vector_free(&vk, option);               \
-    SPEX_vector_free(&vk3, option);              \
-    SPEX_LU_analysis_free(&analysis, option);    \
+    SPEX_matrix_free(&vk, option);               \
+    SPEX_symbolic_analysis_free(&analysis, option);    \
     SPEX_FREE(option);                           \
     mpz_clear(z); mpz_clear(minz); mpz_clear(tmpz);\
     mpq_clear(minq); mpq_clear(tmpq); mpq_clear(obj_mpq);\
-    SPEX_FREE(P1_inv);                           \
-    SPEX_FREE(P);                                \
-    SPEX_FREE(P_inv);                            \
-    SPEX_FREE(Q);                                \
-    SPEX_FREE(Q_inv);                            \
-    SPEX_FREE(P3);                               \
-    SPEX_FREE(P3_inv);                           \
-    SPEX_FREE(Q3);                               \
-    SPEX_FREE(Q3_inv);                           \
     SPEX_FREE(basis);                            \
-    SPEX_FREE(h);                                \
     SPEX_FREE(used_as_basis);                    \
     SPEX_FREE(col_val);                          \
     SPEX_FREE(col_ind);                          \
@@ -98,18 +80,16 @@ int main( int argc, char* argv[])
     double z0 = 0;
     SPEX_options* option = NULL;
     SPEX_matrix *Prob_A = NULL, *Prob_c = NULL, *tempA = NULL, * b_dbl = NULL;
-    SPEX_matrix *L1 = NULL, *U1 = NULL, *rhos = NULL, *A1 = NULL, *x1 = NULL;
-    SPEX_matrix *rhos2 = NULL, *rhos3 = NULL;
-    SPEX_matrix *L2 = NULL, *U2 = NULL, *A2 = NULL;
-    SPEX_matrix *b = NULL, *c = NULL,  *x2 = NULL, *y = NULL;
-    SPEX_matrix *L3 = NULL, *U3 = NULL, *A3 = NULL;
-    SPEX_vector *tmpv, *vk = NULL, *vk3 = NULL;
+    SPEX_matrix *A1 = NULL, *x1 = NULL;
+    SPEX_matrix *A2 = NULL, *A3 = NULL;
+    SPEX_matrix *b = NULL, *c = NULL,  *x2 = NULL, *y = NULL, *c_sol = NULL,
+                *y_sol = NULL;
+    SPEX_vector *tmpv;
+    SPEX_matrix *vk = NULL;
     mpz_t z, minz, tmpz;
     mpq_t minq, tmpq, obj_mpq;
-    SPEX_LU_analysis* analysis = NULL;
-    int64_t *P1_inv = NULL, *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL;
-    int64_t *P3 = NULL, *P3_inv = NULL, *Q3 = NULL, *Q3_inv = NULL;
-    int64_t *basis = NULL, *h = NULL, *used_as_basis = NULL;
+    SPEX_symbolic_analysis* analysis = NULL;
+    int64_t *basis = NULL, *used_as_basis = NULL;
     double *col_val = NULL;
     int *col_ind = NULL;
     clock_t start_llu, start_luu, end_llu, end_luu, start1, end1, start2, end2,

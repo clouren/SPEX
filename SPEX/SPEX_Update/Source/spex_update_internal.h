@@ -253,13 +253,9 @@ SPEX_info spex_update_backward_sub  // performs sparse REF backward substitution
 // verify if A=LD^(-1)U
 SPEX_info spex_update_verify
 (
-    const SPEX_matrix *L,     // lower triangular matrix
-    const SPEX_matrix *U,     // upper triangular matrix
+    const SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix *A,     // Input matrix
     int64_t *h,            // history vector
-    const SPEX_matrix *rhos,// array of scaled pivots
-    const int64_t *P,      // row permutation
-    const int64_t *Q_inv,  // inverse of column permutation
     const SPEX_options *option// command options
 );
 
@@ -271,14 +267,12 @@ SPEX_info spex_update_verify
 // entry. To otain the non-updatable format, this function will transpose UT
 // (for LU factorization) and permute rows and L and U.
 //------------------------------------------------------------------------------
-// TODO make internal and check if factorization is updatable in each update function
 
-SPEX_info spex_Update_factorization_convert
+SPEX_info spex_update_factorization_convert
 (
-    SPEX_factorization **F_out,// The output factorization with same
+    SPEX_factorization *F,// The output factorization with same
                             // factorization kind as F_in
-    const SPEX_factorization *F_in, // The factorization to be converted
-    const bool updabtable, // true if wish to obtain updatable F.
+    const bool updatable, // true if wish to obtain updatable F.
     const SPEX_options* option // Command options
 );
 

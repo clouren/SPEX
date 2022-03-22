@@ -188,51 +188,7 @@ SPEX_info SPEX_Left_LU_backslash
     const SPEX_options* option
 ) ;
 
-#if 0
-//TODO delete
-// SPEX_Left_LU_factorize performs the SPEX Left LU factorization. 
-// This factorization is done via n iterations of the sparse REF 
-// triangular solve function. The overall factorization is 
-// PAQ = LDU.  The determinant can be obtained as rhos->x.mpz[n-1].
-// 
-//  L: undefined on input, created on output
-//  U: undefined on input, created on output
-//  rhos: undefined on input, created on output
-//  pinv: undefined on input, created on output
-// 
-//  A: input only, not modified
-//  S: input only, not modified
-//  option: input only, not modified
-SPEX_info SPEX_Left_LU_factorize
-(
-    // output:
-    SPEX_matrix **L_handle,     // lower triangular matrix
-    SPEX_matrix **U_handle,     // upper triangular matrix
-    SPEX_matrix **rhos_handle,  // sequence of pivots
-    int64_t **pinv_handle,      // inverse row permutation
-    // input:
-    const SPEX_matrix *A,       // matrix to be factored
-    const SPEX_LU_analysis *S,  // column permutation and estimates
-                                // of nnz in L and U 
-    const SPEX_options* option
-) ;
 
-// SPEX_Left_LU_solve solves the linear system LD^(-1)U x = b.
-SPEX_info SPEX_Left_LU_solve         // solves the linear system LD^(-1)U x = b
-(
-    // Output
-    SPEX_matrix **X_handle,     // rational solution to the system
-    // input:
-    const SPEX_matrix *b,       // right hand side vector
-    const SPEX_matrix *A,       // Input matrix
-    const SPEX_matrix *L,       // lower triangular matrix
-    const SPEX_matrix *U,       // upper triangular matrix
-    const SPEX_matrix *rhos,    // sequence of pivots
-    const SPEX_LU_analysis *S,  // symbolic analysis struct
-    const int64_t *pinv,        // inverse row permutation
-    const SPEX_options* option
-) ;
-#endif
 SPEX_info SPEX_Left_LU_factorize
 (
     // output:

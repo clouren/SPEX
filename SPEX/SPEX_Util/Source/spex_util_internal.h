@@ -506,7 +506,7 @@ SPEX_info spex_cast_array
     SPEX_type xtype,        // type of X
     int64_t n,              // size of Y and X
     mpq_t y_scale,          // scale factor applied if y is mpz_t
-    mpq_t x_scale,          // scale factor applied if x is mpz_t
+    const mpq_t x_scale,          // scale factor applied if x is mpz_t
     const SPEX_options *option
 ) ;
 
@@ -514,7 +514,7 @@ SPEX_info spex_cast_matrix
 (
     SPEX_matrix **Y_handle,     // nz-by-1 dense matrix to create
     SPEX_type Y_type,           // type of Y
-    SPEX_matrix *A,             // matrix with nz entries
+    const SPEX_matrix *A,             // matrix with nz entries
     const SPEX_options *option
 ) ;
 

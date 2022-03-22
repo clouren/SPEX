@@ -123,8 +123,10 @@
 // This function performs LU update for column replacement. The matrices in the
 // input factorization can be any type and/or kind and does not have to be in
 // updatable format. The function will always first check if the factorization
-// is updatable and perform necessary conversion if needed. L and U in
-// the output factorization will be updatable.
+// is updatable and perform necessary conversion if needed. L and U in the
+// output factorization will be updatable. The factorization will be modified
+// during the update process.  Therefore, if this function fails for any
+// reason, the returned F should be considered as undefined.
 //
 // The matrix A is not modified during the update. If the updated A is
 // needed, user can use the follow code if A is in SPEX_dynamic_CSC form.
@@ -182,6 +184,7 @@ SPEX_info SPEX_Update_Chol_Rank1
 // Function for solving LD^(-1)Ux =b
 //------------------------------------------------------------------------------
 
+// TODO make this internal? so that we can assume F is updatable
 // NOTE: the requirement for L and UT is exactly same as other functions in
 // SPEX_Update, which requires the pivot of L->v[j] or UT->v[j] be the
 // first entry correspondingly.
@@ -189,10 +192,10 @@ SPEX_info SPEX_Update_Chol_Rank1
 SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
 (
     // Output
-    SPEX_matrix **x_handle, // a n*m dense matrix contains the solution to
+    SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
                             // the system. 
     // input:
-    SPEX_matrix *b,         // a n*m dense matrix contains the right-hand-side
+    const SPEX_matrix *b,         // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
                             // format.
@@ -205,39 +208,13 @@ SPEX_info SPEX_Update_Chol_Solve // solves Ax = b via REF LU factorization of A
     SPEX_matrix **x_handle, // a n*m dense matrix contains the solution to
                             // the system. 
     // input:
-    SPEX_matrix *b,         // a n*m dense matrix contains the right-hand-side
+    const SPEX_matrix *b,         // a n*m dense matrix contains the right-hand-side
                             // vector
     const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
                             // format.
     const SPEX_options* option // Command options
 );
 
-#if 0
-// SPEX_Update_LU_Solve_mod is similar to SPEX_UPdate_LU_Solve, which is used
-// to solve LD^(-1)Ux=b. The only difference is that SPEX_Update_LU_Solve_mod
-// will overwrite the solution to the right-hand-side matrix b. If any failure
-// occures, each entry value of b should be considered as undefined.
-// TODO do it for all other solvers?
-
-SPEX_info SPEX_Update_LU_Solve_mod // solves LD^(-1)U x_out = x_in
-(
-    SPEX_matrix **x_handle, // Input as a n*m dense matrix contains the
-                            // right-hand-side vectora and output as the
-                            // solution to the system. 
-    const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
-                            // format.
-    const SPEX_options* option // Command options
-);
-SPEX_info SPEX_Update_Chol_Solve_mod // solves LD^(-1)U x_out = x_in
-(
-    SPEX_matrix **x_handle, // Input as a n*m dense matrix contains the
-                            // right-hand-side vectora and output as the
-                            // solution to the system. 
-    const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
-                            // format.
-    const SPEX_options* option // Command options
-);
-#endif
 
 #endif
 

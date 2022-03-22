@@ -48,7 +48,7 @@ SPEX_info spex_cast_array
     SPEX_type xtype,        // type of X
     int64_t n,              // size of Y and X
     mpq_t y_scale,          // scale factor applied if Y is mpz_t
-    mpq_t x_scale,          // scale factor applied if x is mpz_t
+    const mpq_t x_scale,          // scale factor applied if x is mpz_t
     const SPEX_options *option// Command options. If NULL, set to default values
 )
 {

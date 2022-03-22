@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_Solve: find the exact solution for Ax=b
+// SPEX_Update/SPEX_Update_LU_Solve: find the exact solution for Ax=b with the
+// the updatable LU factorizaiton of A.
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -29,25 +30,24 @@
  */
 
 #define SPEX_FREE_WORK                  \
+    SPEX_FREE(h);                       \
     SPEX_vector_free(&v, option);
 
 #define SPEX_FREE_ALL                   \
     SPEX_FREE_WORK                      \
-    if (overwrite_b)  {(*x_handle) = x;}\
-    else {SPEX_matrix_free (&x, option);}
+    SPEX_matrix_free (&x, option);
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
+SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
 (
     // Output
-    SPEX_matrix **x_handle, // a n*m dense matrix contains the solution to
+    SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    SPEX_matrix *b,         // a n*m dense matrix contains the right-hand-side
+    const SPEX_matrix *b,         // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
-                            // format.
+    const SPEX_factorization *F,// The SPEX LU factorization in updatable form
     const SPEX_options* option // Command options
 )
 {
@@ -56,28 +56,26 @@ SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
     // check inputs
     //--------------------------------------------------------------------------
 
-    SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
-    SPEX_REQUIRE(L,  SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(UT, SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
     SPEX_REQUIRE(b,    SPEX_DENSE, SPEX_MPZ);
-    if (!x_handle || !h || !P || !Q_inv ||
-        rhos->m != L->m || L->n  != L->m ||
-        UT->m   != L->m || UT->n != L->m || L->m != b->m)
+    if (!x_handle || !F || F->L->m != b->m)
     {
         return SPEX_INCORRECT_INPUT;
     }
+    *x_handle = NULL;
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
 
+    SPEX_info info ;
+    SPEX_matrix *L = F->L, *UT = F->U, *rhos = F->rhos;
+    int64_t *P = F->P_perm, *Q_inv = F->Qinv_perm;
     int64_t i, j, n = L->n;
-    bool overwrite_b = (*x_handle == b); // indicate if b will be overwriten
+    int64_t *h = NULL;                   // history vector
+    SPEX_vector *v = NULL;               // temp mpz vector 
     SPEX_matrix *x = NULL;               // final solution
-    SPEX_vector *v = NULL;
 
     // allocate space for v and initialize
     v = (SPEX_vector*) SPEX_malloc(sizeof(SPEX_vector));
@@ -96,30 +94,30 @@ SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
         return SPEX_OUT_OF_MEMORY;
     }
 
-    //--------------------------------------------------------------------------
-    // allocate space for x if needed
-    //--------------------------------------------------------------------------
-    if (overwrite_b)
+    // allocate space for h
+    h = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
+    if (h == NULL)
     {
-        x = b;
-        b = NULL;
+        SPEX_vector_free(&v, option);
+        return SPEX_OUT_OF_MEMORY;
     }
-    else
-    {
-        *x_handle = NULL;
-        // make a copy of b as x
-        SPEX_CHECK(SPEX_matrix_copy(&x, SPEX_DENSE, SPEX_MPZ, b, option));
-    }
+
+    // make a copy of b as x
+    //SPEX_CHECK(SPEX_matrix_copy(&x, SPEX_DENSE, SPEX_MPZ, b, option));
+    // allocate space for x
+    SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
+        false, true, option));
+    SPEX_CHECK(SPEX_mpq_set(x->scale, b->scale));
 
     //--------------------------------------------------------------------------
     // solve each column of b seperately
     //--------------------------------------------------------------------------
     for (j = 0; j < x->n; j++)
     {
-        // swap entries in j-th column of x with v
+        // copy entries in j-th column of b with v
         for (i = 0; i < n; i++)
         {
-            SPEX_CHECK(SPEX_mpz_swap(v->x[i], x->x.mpz[i+n*j]));
+            SPEX_CHECK(SPEX_mpz_set(v->x[i], b->x.mpz[i+n*j]));
         }
 
         // solve y for LD^(-1)y(P)=b, via forward substitution
@@ -143,7 +141,7 @@ SPEX_info SPEX_Update_Solve // solves Ax = b via REF LU factorization of A
     SPEX_CHECK(SPEX_mpz_mul(SPEX_MPQ_NUM(x->scale),
                             SPEX_MPQ_NUM(x->scale), rhos->x.mpz[n-1]));
     SPEX_CHECK(SPEX_mpq_canonicalize(x->scale));
-    SPEX_CHECK(SPEX_mpq_div(x->scale, x->scale, A_scale));
+    SPEX_CHECK(SPEX_mpq_div(x->scale, x->scale, F->scale_for_A));
 
     //--------------------------------------------------------------------------
     // free workspace and return result

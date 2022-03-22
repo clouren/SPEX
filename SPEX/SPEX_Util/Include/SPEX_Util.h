@@ -92,7 +92,6 @@
 #include <mpfr.h>
 #include <math.h>
 #include <time.h>
-#include <stdint.h>
 #include <inttypes.h>
 #include <assert.h>
 #include "SuiteSparse_config.h"
@@ -370,7 +369,7 @@ SPEX_type ;
 typedef struct
 {
     SPEX_kind kind ;    // CSC, triplet, dense or dynamic_CSC
-    SPEX_type type ;    // mpz, mpq, mpfr, int64, or fp64 (double)
+    SPEX_type type ;    // mpz, mpq, mpfr, int64, or fp64 (double)// TODO add noval
                         // NOTE: entries of dynamic_CSC matrix must be mpz type.
 
     int64_t m ;         // number of rows
@@ -389,7 +388,7 @@ typedef struct
 
     int64_t nzmax ;     // size of A->i, A->j, and A->x.
     int64_t nz ;        // # nonzeros in a triplet matrix .
-                        // Ignored for CSC or dense matrices.
+                        // Ignored for CSC, dense or dynamic_CSC matrices.
 
     int64_t *p ;        // if CSC: column pointers, an array size is n+1.
                         // if triplet or dense: A->p is NULL.
@@ -534,7 +533,7 @@ SPEX_info SPEX_matrix_copy
     // inputs, not modified:
     SPEX_kind C_kind,       // C->kind: CSC, triplet, or dense
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
-    SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
+    const SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
     const SPEX_options *option
 ) ;
 
@@ -644,9 +643,43 @@ typedef enum
     SPEX_QR_FACTORIZATION = 2             // QR factorization
 }SPEX_factorization_kind ;
 
+// For each kind of the factorization, if user wishes to perform factorization
+// update, then it must be in updatable format. This requires all the following
+// conditions to be met.
+//
+// 1. Both L and U are stored as SPEX_dynamic_CSC. However, U in the updatable
+//    factorization is actually the transpose of U, since U will be updated
+//    one row at a time.
+// 2. A = LD^(-1)U, which means L and U are properly permuted. Specifically, the
+//    rows of L are in the same order as the rows of A, while the columns of L
+//    are permuted such that L->v[j] (i.e., j-th column of L) contains the j-th
+//    pivot, which would be L->v[j]->x[0], (i.e., L->v[j]->i[0] == P[j]).
+//    Similarly, The columns of U (or the rows of UT) are in the same order as
+//    the columns of A, while the rows of U (or the columns of UT) are permuted
+//    such that UT->v[j] (i.e., j-th column of UT, or j-th row of U) contains
+//    the j-th pivot, which would be UT->v[j]->x[0], (i.e., UT->v[j]->i[0] ==
+//    Q[j]).
+//
+// NOTE: The package does not provide user-callable functions to perform
+// conversion between updatable and non-updatable factorization. However, all
+// functions that would require updable format would check the input
+// factorization and perform conversion automatically. If this happens, the
+// output factorization will become updatable. Generally, the conversion from
+// updatable factorization to non-updatable factorization is not needed in the
+// real-world application.
+//
+// Although the components of the factorization structure is accessible for
+// user, user should never try to modify individual component without fully
+// understanding. This would cause undefined behavior.
+
 typedef struct
 {
     SPEX_factorization_kind kind;         // LU, Cholesky, QR factorization
+    bool updatable;                       // flag to denote if this
+                                          // factorization is in the updatable
+                                          // format.
+
+
 
     mpq_t scale_for_A;                    // the scale of the target matrix
 
@@ -676,7 +709,7 @@ typedef struct
     // These are currently used only for LU or Cholesky factorization.
     // One or more of these permutations could be NULL for some
     // SPEX_factorization_kind. Specifically,
-    // For kind == SPEX_LU_FACTORIZATION, Qinv_perm will be NULL, but it will
+    // For kind == SPEX_LU_FACTORIZATION, Qinv_perm can be NULL, but it will
     // be generated when the factorization is converted to the updatable form.
     // For kind == SPEX_CHOLESKY_FACTORIZATION, both Q_perm and Qinv_perm are
     // NULL.
@@ -684,12 +717,10 @@ typedef struct
     //--------------------------------------------------------------------------
 
     int64_t *P_perm;                     // row permutation
-                                         // should not free by Left_LU_factorize
     int64_t *Pinv_perm;                  // inverse of row permutation
 
     int64_t *Q_perm;                     // column permutation
     int64_t *Qinv_perm;                  // inverse of column permutation
-                                         // should not free by Left_LU_factorize
 
 } SPEX_factorization;
 
@@ -853,8 +884,8 @@ SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
 SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 (
     SPEX_matrix *x,         // matrix to be multiplied
-    const mpz_t scalar      // scalar to multiply by
-    // TODO option as input?
+    const mpz_t scalar,     // scalar to multiply by
+    const SPEX_options* option  // Command options
 ) ;
 
 
@@ -866,7 +897,7 @@ SPEX_info SPEX_check_solution
     const SPEX_matrix *A,          // input matrix
     const SPEX_matrix *x,          // solution vector
     const SPEX_matrix *b,          // right hand side
-    const SPEX_options* option           // Command options
+    const SPEX_options* option     // Command options
 );
 
 /* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
@@ -876,8 +907,8 @@ SPEX_info SPEX_cumsum
 (
     int64_t *p,          // vector to store the sum of c
     int64_t *c,          // vector which is summed
-    int64_t n           // size of c
-    // TODO option as input?
+    int64_t n,           // size of c
+    const SPEX_options* option   // Command options
 );
 
 
@@ -1061,7 +1092,7 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 /* WARNING: These functions have not been test covered!*/
 
 
-/* Purpose: This function sets C = A' 
+/* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
  */
 SPEX_info SPEX_transpose

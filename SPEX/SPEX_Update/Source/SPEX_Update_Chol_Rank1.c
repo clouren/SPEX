@@ -10,12 +10,15 @@
 
 // Purpose: This function is used to perform Cholesky rank-1 update for
 // A' = A + sigma*w*w^T, where A' and A are n-by-n matrix, w is n-by-1 vector
-// and sigma is a scalor (positive for update and negative for downdate). L
-// is the given Cholesky factorization for A such that A = L*D^(-1)*L^T. sd is
-// the diagonal of L, P is the given row permutation for the Cholesky
-// factorization such that L(P,:) is a lower triangular matrix, and P_inv is
-// the inverse of P. The result of of this function will have L, w updated as
-// L_out*D^(-1)*L_out^T = A' and L*D^(-1)*w_out = w.
+// and sigma is a scalor (positive for update and negative for downdate).  The
+// matrices in the input factorization can be any type and/or kind and does not
+// have to be in updatable format. The function will always first check if the
+// factorization is updatable and perform necessary conversion if needed. L in
+// the output factorization will become updatable.
+// 
+// The matrix A is not modified during the update. If the updated A is needed,
+// user can compute A = A + sigma*w*wT BEFORE using this function (since w
+// will be modified).
 
 #define SPEX_FREE_ALL               \
     spex_scattered_vector_free(&w_dense, option); \
@@ -36,12 +39,6 @@ SPEX_info SPEX_Update_Chol_Rank1
                             // modified during the update process. Therefore,
                             // if this function fails for any reason, the
                             // returned F should be considered as undefined.
-                            // 
-                            // The rows of L are in the same order as the rows
-                            // of A, while the columns of L are permuted such
-                            // that L->v[j] (i.e., j-th column of L) contains
-                            // the j-th pivot, which would be L->v[j]->x[0],
-                            // (i.e., L->v[j]->i[0] == P[j]).
     SPEX_matrix *w,         // a n-by-1 dynamic_CSC matrix that contains the
                             // vector to modify the original matrix A, the
                             // resulting A is A+sigma*w*w^T. In output, w is
@@ -55,27 +52,34 @@ SPEX_info SPEX_Update_Chol_Rank1
     // check inputs
     //--------------------------------------------------------------------------
     if (!spex_initialized()) {return SPEX_PANIC;}
-    SPEX_REQUIRE(L, SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
-    if (!P || !P_inv || !w ||
-        w->nz < 0 || (w->nz > 0 && (!(w->x) || !(w->i))) ||
-        L->n != L->m || L->n != rhos->m || sigma == 0)
+    SPEX_REQUIRE(w , SPEX_DYNAMIC_CSC, SPEX_MPZ);
+    if (!F || sigma == 0 ||
+        w->m != F->L->m || w->n != 1 || w->v[0]->nz < 0 ||
+        (w->v[0]->nz > 0 && (!(w->v[0]->x) || !(w->v[0]->i))))
     {
         return SPEX_INCORRECT_INPUT;
     }
 
     // if w is a zero vector, no need to perform any update
-    if (w->nz == 0) {return SPEX_OK;}
+    if (w->v[0]->nz == 0) {return SPEX_OK;}
+
+    // make sure F is updatable
+    if (!(F->updatable))
+    {
+        spex_update_factorization_convert(F, true, option);
+    }
 
     //--------------------------------------------------------------------------
     // initialize workspace
     //--------------------------------------------------------------------------
     SPEX_info info;
+    SPEX_matrix *L = F->L;
+    int64_t *P = F->P_perm, *P_inv = F->Pinv_perm;
     int sgn;
     int64_t i, j, p, n = L->n, w_top = 0;
     int64_t *h = NULL;
     spex_scattered_vector *w_dense = NULL;
-    mpz_t *sd = rhos->x.mpz;
+    mpz_t *sd = F->rhos->x.mpz;
     mpq_t sd_ratio;// = sd_new/sd_old
     mpq_t tmpq, pending_scale;
     mpz_t tmpz;
@@ -111,8 +115,8 @@ SPEX_info SPEX_Update_Chol_Rank1
     // initialize for the loop
     //--------------------------------------------------------------------------
     // get the scattered form of w
-    SPEX_CHECK(spex_update_get_scattered_v(&w_dense, NULL, w, n, n, NULL, false,
-        option));
+    SPEX_CHECK(spex_update_get_scattered_v(&w_dense, NULL, w->v[0], n, n, NULL,
+        false, option));
     // sd1_old = 1
     SPEX_CHECK(SPEX_mpz_set_ui(sd1_old, 1));
     // sd_ratio = 1
@@ -384,19 +388,19 @@ SPEX_info SPEX_Update_Chol_Rank1
     // construct w from w_dense
     //--------------------------------------------------------------------------
     // reallocate w if needed
-    if (w_dense->nz > w->nzmax)
+    if (w_dense->nz > w->v[0]->nzmax)
     {
-        SPEX_CHECK(SPEX_vector_realloc(w, w_dense->nz, option));
+        SPEX_CHECK(SPEX_vector_realloc(w->v[0], w_dense->nz, option));
     }
     int64_t w_nz = 0;
     for (p = 0; p < w_dense->nz; p++)
     {
         i = w_dense->i[p];
-        SPEX_CHECK(SPEX_mpz_swap(w->x[w_nz], w_dense->x[i]));
-        w->i[w_nz] = i;
+        SPEX_CHECK(SPEX_mpz_swap(w->v[0]->x[w_nz], w_dense->x[i]));
+        w->v[0]->i[w_nz] = i;
         w_nz++;
     }
-    w->nz = w_nz;
+    w->v[0]->nz = w_nz;
 
     SPEX_FREE_ALL;
     return SPEX_OK;

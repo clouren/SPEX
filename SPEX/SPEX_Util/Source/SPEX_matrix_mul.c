@@ -19,7 +19,8 @@
 SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 (
     SPEX_matrix *x,         // matrix to be multiplied
-    const mpz_t scalar      // scalar to multiply by
+    const mpz_t scalar,     // scalar to multiply by
+    const SPEX_options* option   // Command options
 )
 {
 

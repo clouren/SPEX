@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_permute_row.c: permute row indices of a matrix.
+// SPEX_Update/spex_update_permute_row.c: permute row indices of a matrix.
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
@@ -8,12 +8,12 @@
 
 //------------------------------------------------------------------------------
 
-// SPEX_Update_permute_row is called to permute the row indices of all columns
+// spex_update_permute_row is called to permute the row indices of all columns
 // of a given SPEX_matrix A.
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_permute_row
+SPEX_info spex_update_permute_row
 (
     SPEX_matrix *A,     // input matrix
     const int64_t *perm,// desire permutation to be applied to A, must be

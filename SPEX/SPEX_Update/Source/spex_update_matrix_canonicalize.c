@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_matrix_canonicalize.c: canonicalize a SPEX_matrix
+// SPEX_Update/spex_update_matrix_canonicalize.c: canonicalize a SPEX_matrix
 // matrix such that the pivot of the vector is found as the first entry of the
 // nnz list.
 //------------------------------------------------------------------------------
@@ -10,13 +10,13 @@
 
 //------------------------------------------------------------------------------
 
-// SPEX_Update_matrix_canonicalize is called to canonicalize a SPEX_matrix
+// spex_update_matrix_canonicalize is called to canonicalize a SPEX_matrix
 // matrix in SPEX_DYNAMIC_CSC format, such that the pivot of the vector is
 // found as the first entry of the nnz list.
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_matrix_canonicalize
+SPEX_info spex_update_matrix_canonicalize
 (
     SPEX_matrix *A,       // the matrix to be canonicalize
     const int64_t *perm,  // the permuation vector applied on each vector of A,

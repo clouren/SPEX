@@ -20,18 +20,14 @@
 
 SPEX_info spex_update_verify
 (
-    const SPEX_matrix *L,     // lower triangular matrix
-    const SPEX_matrix *U,     // upper triangular matrix
+    const SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix *A,     // Input matrix
     int64_t *h,            // history vector
-    const SPEX_matrix *rhos,// array of scaled pivots
-    const int64_t *P,      // row permutation
-    const int64_t *Q_inv,  // inverse of column permutation
     const SPEX_options *option// command options
 )
 {
     SPEX_info info;
-    int64_t tmp, i, n = L->n;
+    int64_t tmp, i, n = F->L->n;
     int sgn;
     mpq_t x_scale; SPEX_MPQ_SET_NULL(x_scale);
     SPEX_matrix *b = NULL; // the dense right-hand-side matrix to be generated
@@ -60,8 +56,7 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     // solve LD^(-1)Ux = b for x
     // -------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_Update_Solve(&x, b, L, U, A->scale, h, rhos, P,
-        Q_inv, option));
+    SPEX_CHECK(SPEX_Update_LU_Solve(&x, b, F, option));
 
     // -------------------------------------------------------------------------
     // compute b2 = A*x
@@ -91,7 +86,7 @@ SPEX_info spex_update_verify
     // b2->scale = rhos[n-1]
     SPEX_CHECK(SPEX_mpq_div(b2->scale, b2->scale, b->scale));
 #ifdef SPEX_DEBUG
-    SPEX_CHECK(SPEX_mpq_cmp_z(&sgn, b2->scale, rhos->x.mpz[n-1]));
+    SPEX_CHECK(SPEX_mpq_cmp_z(&sgn, b2->scale, F->rhos->x.mpz[n-1]));
     ASSERT(sgn == 0);
 #endif
     for (i = 0; i < n; i++)

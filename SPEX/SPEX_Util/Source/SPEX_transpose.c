@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_transpose: Transpose a matrix
+// SPEX_Util/SPEX_transpose: Transpose a CSC matrix
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -17,7 +17,7 @@
 
 #include "spex_util_internal.h"
 
-/* Purpose: This function sets C = A'
+/* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
  */
 SPEX_info SPEX_transpose
@@ -62,7 +62,7 @@ SPEX_info SPEX_transpose
     }
 
     // Compute row pointers
-    SPEX_cumsum (C->p, w, m) ;
+    SPEX_cumsum (C->p, w, m, option) ;
     // Populate C
     for (j = 0 ; j < n ; j++)
     {
