@@ -1,13 +1,38 @@
-symbolic cholesky 
-structral matrix
+symbolic cholesky : DONE, but need to merge it
 
-combine SPEX_TBD with SPEX_backslash
+structral matrix: 
+    (1) SPEX_kind, SPEX_type: unchanged, just A->x is NULL, only internal
+        (USE THIS)
+    (2) SPEX_type of "structural" (NOT THIS ONE)
+
+delete SPEX_TBD
+
 unify all interface for similar functionality
+    check on merge
+
 update makefile to generate one single .so
-paper info for SPEX Left LU
+    single user SPEX.h
+    TODO
+
+check names of user-visible functions, be consistent
+
+never change user's "option" struct
 
 // LU Chol QR auto
-SPEX_backslash(x, SPEX_type, A, b, option) or SPEX_backslash(x, SPEX_type, A, b, algo, option) // option should be const here
+NO: SPEX_Backslash(x, SPEX_type, A, b)
+
+OK: SPEX_Backslash(x, SPEX_type, A, b, option)
+
+NO: SPEX_Backslash(x, SPEX_type, A, b, algo, option), do not use this
+
+TODO: consistent name scheme. SPEX_all_lower_case ?
+    SPEX_left_lu_...
+    SPEX_chol_...
+
+TODO: merge Developemental and InitMerge branches
+
+--- Mar 22, 2022
+
 SPEX_analyze(S, A, kind, option)
 -combine algo, SPEX_factorization_kind and SPEX_symbolic_analysis_kind
 
@@ -25,9 +50,11 @@ user guide
 
 
 
+cmake
 
 
 
 
 
 do the shallow copy of all mpz values for updatable-static conversion
+
