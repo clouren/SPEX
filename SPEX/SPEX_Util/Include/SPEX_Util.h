@@ -201,9 +201,6 @@ typedef struct SPEX_options
                            // SPEX Left LU), 3: all, with matrices and results
     int32_t prec ;         // Precision used to output file if MPFR is chosen
     mpfr_rnd_t round ;     // Type of MPFR rounding used
-    bool check ;           // Set true if the solution to the system should be
-                           // checked.  Intended for debugging only; SPEX is
-                           // guaranteed to return the exact solution.
     SPEX_factorization_algorithm algo ; // parameter which tells the function
                            // whether it is performing a left-looking (2) or
                            // up-looking (3) factorization in case of Cholesky

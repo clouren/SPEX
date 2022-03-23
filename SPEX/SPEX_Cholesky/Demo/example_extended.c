@@ -160,7 +160,7 @@ int main( int argc, char* argv[] )
     // Solve linear system
     //--------------------------------------------------------------------------
     clock_t start_solve = clock();
-    option->check = true;
+    //option->check = true;
     DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
   
     clock_t end_solve = clock();

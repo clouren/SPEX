@@ -37,9 +37,6 @@
 {                                            \
     SPEX_factorization_free(&F, option);     \
     SPEX_symbolic_analysis_free (&S, option);\
-    /* bad: FIXME */ \
-    PAP->p_shallow=false; \
-    PAP->i_shallow=false; \
     SPEX_FREE (PAP->x.mpz); \
     SPEX_matrix_free(&PAP, NULL);            \
 }

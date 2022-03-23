@@ -104,7 +104,7 @@ int main (void)
    
     // SPEX Left LU has an optional check, to enable it, one can set the following
     // parameter to be true.
-    option->check = true;
+    //option->check = true;
     // Solve the system and give double solution
     OK(SPEX_Left_LU_backslash( &x, SPEX_FP64, A, b, option));
          

@@ -120,7 +120,7 @@ int main (int argc, char **argv)
     
     // SPEX Cholesky has an optional check, to enable it, one can set the following
     // parameter to be true.
-    option->check = true;
+    //option->check = true;
     //option->print_level = 1;
     // Solve the system and give MPQ solution
     

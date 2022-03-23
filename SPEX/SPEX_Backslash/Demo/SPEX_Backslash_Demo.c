@@ -112,7 +112,7 @@ int main( int argc, char* argv[] )
     clock_t start = clock();
     
     option->print_level = 0;
-    option->check = true;
+    //option->check = true;
     
     DEMO_OK( SPEX_Backslash(&x, SPEX_FP64, A, b, option));
     

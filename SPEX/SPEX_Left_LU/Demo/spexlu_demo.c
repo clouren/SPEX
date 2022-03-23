@@ -229,7 +229,7 @@ int main (int argc, char* argv[])
     // 
     // To enable said check, the following bool is set to true
     //
-    option->check = true; 
+    //option->check = true; 
     
     // Solve LDU x = b
     OK(SPEX_Left_LU_solve(&x, F, b, option));

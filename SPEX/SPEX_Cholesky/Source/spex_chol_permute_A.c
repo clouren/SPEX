@@ -93,6 +93,8 @@ SPEX_info spex_chol_permute_A
     SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], true, false, NULL));
     PAP->p=(int64_t*)SPEX_malloc((n+1)*sizeof(int64_t));
     PAP->i=(int64_t*)SPEX_malloc((A->p[n])*sizeof(int64_t));
+    PAP->p_shallow = false ;
+    PAP->i_shallow = false ; //TODO FIXME still feels like patchwork, figure out why
     
     if(numeric)
     {
@@ -126,6 +128,7 @@ SPEX_info spex_chol_permute_A
     {
 
         PAP->x.mpz= NULL ;
+        PAP->x_shallow = true ;
 
         // Populate the entries in PAP
         for (k = 0; k < n; k++)
