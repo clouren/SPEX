@@ -10,12 +10,17 @@
 //------------------------------------------------------------------------------
 
 #define SPEX_FREE_WORKSPACE        \
+{                                  \
     SPEX_matrix_free(&b2, option); \
-    SPEX_MPQ_CLEAR(scale);         
+    SPEX_matrix_free(&x, option);  \
+    SPEX_MPQ_CLEAR(scale);         \
+}
 
-# define SPEX_FREE_ALLOCATION      \
+# define SPEX_FREE_ALL             \
+{                                  \
     SPEX_FREE_WORKSPACE            \
-    SPEX_matrix_free(&x, NULL);    
+    SPEX_matrix_free(&x, NULL);    \
+}
 
 #include "spex_chol_internal.h"
     
@@ -44,21 +49,18 @@
  * 
  */
 
-SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
+SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
 (
     // Output
     SPEX_matrix** x_handle,           // On input: undefined.
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
     // Input
-    //const SPEX_matrix* PAP,           // Input matrix (permuted)
-    //const SPEX_matrix* A,             // Input matrix (unpermuted)
-    const SPEX_factorization* F,      // Cholesky factorization
-    const SPEX_matrix* b,             // Right hand side vector
-    //const SPEX_Chol_analysis* S,      // Symbolic analysis struct. contains
+    const SPEX_factorization* F,      // Cholesky factorization. contains
                                       // elimination tree of A,  
                                       // column pointers of L, exact number of
-                                      // nonzeros of L and permutation used
+                                      // nonzeros of L and permutation used //TOCHECK
+    const SPEX_matrix* b,             // Right hand side vector
     const SPEX_options* option        // command options
 )
 {
@@ -78,6 +80,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     }
     
     int64_t i, j, k, n = F->L->n, nz;
+
     
     // Scale is the scaling factor for the solution vectors.
     // When the forward/backsolve is complete, the entries in
@@ -104,6 +107,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     // Allocate memory for b2
     SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 
                                         b->m*b->n, false, true, option));
+
     // Set b2[i,j] = b[pinv[i],j] to account for permutations applied to A
     for (i = 0; i < b->m; i++)
     {
@@ -113,8 +117,9 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
                               SPEX_2D(b, i, j, mpz)));
         }
     }
+
     // Forward substitution, b2 = L \ b2. Note that b2 is overwritten    
-    SPEX_CHECK(spex_Chol_forward_sub(b2, F->L, F->rhos));
+    SPEX_CHECK(spex_chol_forward_sub(b2, F->L, F->rhos));
     // Set the value of the determinant det = rhos[n-1] 
     det = &(F->rhos->x.mpz[F->L->n-1]);
     size_t bitsDet = mpz_sizeinbase((*det),2); //CLUSTER
@@ -129,7 +134,7 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     }
     
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
-    SPEX_CHECK(spex_Chol_backward_sub(b2, F->L));
+    SPEX_CHECK(spex_chol_backward_sub(b2, F->L));
 
     // Allocate memory for the (real) solution vector x = b2/det
     SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, b2->m, b->n,
@@ -140,9 +145,10 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
     size_t bitsTemp; //CLUSTER
     int64_t bitsSum=0; //CLUSTER
     // Set x[i] = b2[i]/det
-
+*/
     for (i = 0; i < nz; i++)
     {
+        /*
         bitsTemp=mpz_sizeinbase(b2->x.mpz[i],2); //CLUSTER
         if(bitsTemp>bitsLarge) //CLUSTER
         { 
@@ -153,16 +159,18 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
                 bitsSmall=bitsTemp; //CLUSTER
         }
         bitsSum=bitsSum+(int64_t)bitsTemp; //CLUSTER
-
+*/
         SPEX_CHECK(SPEX_mpq_set_num(x->x.mpq[i], b2->x.mpz[i]));
         /*mpq_t temp;
         mpq_init(temp);
         mpq_set_z(temp,(*det));
         mpq_div(x->x.mpq[i],x->x.mpq[i],temp);*/ //THIS WORKS
+
         //SPEX_CHECK(SPEX_mpq_set_den(x->x.mpq[i], (*det) ));
-        /*SPEX_CHECK(SPEX_mpz_set(mpq_denref(x->x.mpq[i]), (*det)));
-        SPEX_CHECK(SPEX_mpq_canonicalize(x->x.mpq[i])); //remove all common factors //TODO add wrapper DONE
+        SPEX_CHECK(SPEX_mpz_set(mpq_denref(x->x.mpq[i]), (*det)));
+        SPEX_CHECK(SPEX_mpq_canonicalize(x->x.mpq[i])); //remove all common factors 
     }
+    /*
     gmp_printf("%llu, %llu, %llu, ", bitsSmall, bitsLarge, bitsSum); //CLUSTER
     */
     // Allocate memory for x2 which is the permuted version of x
@@ -179,24 +187,14 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
         }
     }
 
-
-    // Check solution
-    // TODO: Shouldnt this be removed if/when Jinhao changes function?
-    /*if (option->check)
-    {
-        SPEX_CHECK(SPEX_check_solution(A, x2, b, option));
-    }
-    */
-    
     //--------------------------------------------------------------------------
     // Scale the solution if necessary.
     //--------------------------------------------------------------------------
+    SPEX_CHECK(SPEX_scale(x2, F->scale_for_A, b->scale, option));
 
-    //TODO doublecheck scaling process
-    SPEX_CHECK(SPEX_mpq_init(scale));
+    /*SPEX_CHECK(SPEX_mpq_init(scale));
 
     // set the scaling factor scale = PAP->scale / b->scale
-    //TODO TOASK double check PAP scale is the same thing as F->scale for A
     SPEX_CHECK(SPEX_mpq_div(scale, F->scale_for_A, b->scale));
 
     // Apply scaling factor, but ONLY if it is different from a scaling factor
@@ -210,7 +208,8 @@ SPEX_info SPEX_Chol_Solve       // solves the linear system LDL' x = b
         {
             SPEX_CHECK(SPEX_mpq_mul(x2->x.mpq[i], x2->x.mpq[i], scale));
         }
-    }
+    }*/
+
     
     // Set output, free memory
     (*x_handle) = x2;

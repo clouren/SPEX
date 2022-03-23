@@ -12,7 +12,7 @@
 /* Purpose: This function permutes a dense matrix A as A = P*A.
  */
 
-#define SPEX_FREE_ALLOCATION \
+#define SPEX_FREE_ALL \
     SPEX_matrix_free (&Atmp, NULL) ;
 
 #include "spex_util_internal.h"

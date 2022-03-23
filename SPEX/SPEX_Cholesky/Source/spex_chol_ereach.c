@@ -15,7 +15,7 @@
  * of L using the elimination tree. It finds the nonzero pattern of row k of L
  * and uses the upper triangular part of A(:,k) */
    
-SPEX_info spex_Chol_ereach 
+SPEX_info spex_chol_ereach 
 (
     // Output
     int64_t* top_handle,    // On output: starting point of nonzero pattern
@@ -34,7 +34,6 @@ SPEX_info spex_Chol_ereach
     ASSERT(A->n >= 0) ;
     ASSERT(A->kind == SPEX_CSC) ;
     ASSERT(A->type == SPEX_MPZ) ;
-    if (!parent || !xi || !w) return (SPEX_INCORRECT_INPUT) ;
     
     // Declare variables
     int64_t i, p, n, len, top ;

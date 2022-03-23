@@ -14,7 +14,7 @@
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
 
-SPEX_info spex_Chol_tdfs 
+SPEX_info spex_chol_tdfs 
 (
     int64_t* k,     // Index (kth node) 
     const int64_t j,// Root node 
@@ -25,7 +25,6 @@ SPEX_info spex_Chol_tdfs
 )
 { 
     int64_t i, p, top = 0 ;
-    if (!head || !next || !post || !stack) return SPEX_INCORRECT_INPUT ;    // check inputs 
     stack [0] = j ;                 // place j on the stack 
     while (top >= 0)                // while (stack is not empty) 
     {

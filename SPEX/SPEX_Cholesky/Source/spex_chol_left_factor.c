@@ -10,17 +10,17 @@
 //------------------------------------------------------------------------------
 
 #define SPEX_FREE_WORKSPACE         \
+{                                   \
     SPEX_matrix_free(&x, NULL);     \
-    SPEX_FREE(c);                   \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
-    SPEX_FREE(post);                \
+}
 
-# define SPEX_FREE_ALLOCATION        \
-    SPEX_FREE_WORKSPACE              \
-    //SPEX_factorization_free(&F, option);     
-
-
+#define SPEX_FREE_ALL               \
+{                                   \
+    SPEX_FREE_WORKSPACE             \
+}
+    //SPEX_factorization_free(&F, option);   
 #include "spex_chol_internal.h"  
 
 /* Purpose: This function performs the left-looking REF Cholesky factorization.
@@ -50,39 +50,38 @@
  * 
  */
 
-SPEX_info spex_Chol_Left_Factor      
+SPEX_info spex_chol_left_factor      
 (
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
     //SPEX_factorization **F_handle,
+
+    // Input
     SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    // Input
     const SPEX_matrix* A,      // Matrix to be factored   
     const SPEX_options* option // command options
 )
 {
-    SPEX_info info;
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
-    /*if ( !S || !option )
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
     // Check the number of nonzeros in A
     int64_t anz;
-    SPEX_CHECK(SPEX_matrix_nnz (&anz, A, option)) ;
+    // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
+    // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
+    SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
+    ASSERT(info == SPEX_OK);
     
     if (anz < 0)
     {
         return SPEX_INCORRECT_INPUT;
-    }*/
+    }
        
     //--------------------------------------------------------------------------
     // Declare and initialize workspace 
@@ -98,10 +97,11 @@ SPEX_info spex_Chol_Left_Factor
     int sgn;
     size_t size;
 
+    /* TODO delete
     // Post and c are used to compute the elimination tree
     int64_t* post = NULL;
     int64_t* c = NULL;
-
+    */
     
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
@@ -125,15 +125,17 @@ SPEX_info spex_Chol_Left_Factor
         h[i] = -1;
     }
 
-        
+
+    //SPEX_Chol_symbolic_analysis(S,A,option);
+    /*    
     // Obtain the elimination tree of A
-    SPEX_CHECK(spex_Chol_etree(&S->parent, A));
+    SPEX_CHECK(spex_chol_etree(&S->parent, A));
     
     // Postorder the elimination tree of A
-    SPEX_CHECK( spex_Chol_post(&post, S->parent, n));
+    SPEX_CHECK( spex_chol_post(&post, S->parent, n));
     
     // Get the column counts of A
-    SPEX_CHECK( spex_Chol_counts(&c, A, S->parent, post));
+    SPEX_CHECK( spex_chol_counts(&c, A, S->parent, post));
     
     // Set the column pointers of L
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
@@ -141,7 +143,7 @@ SPEX_info spex_Chol_Left_Factor
    
     // Set the exact number of nonzeros in L
     S->lnz = S->cp[n];
-   
+   */
     //--------------------------------------------------------------------------
     // Allocate and initialize the workspace x
     //--------------------------------------------------------------------------
@@ -202,12 +204,12 @@ SPEX_info spex_Chol_Left_Factor
     // a more efficient method to allocate these values is done inside the 
     // factorization to reduce memory usage.
     
-    SPEX_CHECK(spex_Chol_Pre_Left_Factor(&(L), xi, A, S, c));
+    SPEX_CHECK(spex_chol_pre_left_factor(&(L), xi, A, S, (S->c))); //TODO change input of function, maybe
         
     // Set the column pointers of L
     for (k = 0; k < n; k++)
     {
-        L->p[k] = c[k] = S->cp[k];
+        L->p[k] = (S->c)[k] = (S->cp)[k];
     }
     
 
@@ -221,8 +223,8 @@ SPEX_info spex_Chol_Left_Factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_Left_Chol_triangular_solve(&top, x, xi, L, A, k, rhos,
-                                                    h, S->parent, c));
+        SPEX_CHECK(spex_left_chol_triangular_solve(&top, x, xi, L, A, k, rhos,
+                                                    h, S->parent, (S->c)));
 
         // Set the pivot element If this element is equal to zero, no pivot
         // element exists and the matrix is either not SPD or singular

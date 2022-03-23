@@ -36,10 +36,9 @@
 // Routines to compute and postorder the etree
 //------------------------------------------------------------------------------
 
-//TODO fix 80 DONE
 
 /* Purpose: Compute the elimination tree of A */
-SPEX_info spex_Chol_etree 
+SPEX_info spex_chol_etree 
 (
     // Output
     int64_t** tree_handle,      // On output: contains the elimination tree of A
@@ -49,7 +48,7 @@ SPEX_info spex_Chol_etree
 );
 
 /* Purpose: post order a forest */
-SPEX_info spex_Chol_post 
+SPEX_info spex_chol_post 
 (
     // Output
     int64_t** post_handle, // On output: post-order of the forest
@@ -60,7 +59,7 @@ SPEX_info spex_Chol_post
 );
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
-SPEX_info spex_Chol_tdfs 
+SPEX_info spex_chol_tdfs 
 (
     int64_t* k,     // Index (kth node) 
     const int64_t j,// Root node
@@ -76,7 +75,7 @@ SPEX_info spex_Chol_tdfs
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j) 
    Used to determine Column counts of cholesky factor*/
-SPEX_info spex_Chol_leaf
+SPEX_info spex_chol_leaf
 (
     int64_t* lca_handle,    // Least common ancestor (jprev,j) 
     const int64_t i,        // Index (subtree i)
@@ -93,7 +92,7 @@ SPEX_info spex_Chol_leaf
 /* Purpose: Obtain the column counts of an SPD matrix for Cholesky factorization
  * This is a modified version of Csparse's cs_chol_counts function
  */
-SPEX_info spex_Chol_counts
+SPEX_info spex_chol_counts
 (
     // Output
     int64_t** c_handle,     // On ouptut: column counts
@@ -116,7 +115,7 @@ SPEX_info spex_Chol_counts
  * On output, xi[top_handle..n-1] contains the nonzero pattern of the 
  * kth row of L (or the kth column of L')
  */
-SPEX_info spex_Chol_ereach 
+SPEX_info spex_chol_ereach 
 (
     // Output
     int64_t* top_handle,    // On output: starting point of nonzero pattern
@@ -141,7 +140,7 @@ SPEX_info spex_Chol_ereach
 
 /* Purpose: Perform the up-looking Cholesky factorization 
  */
-SPEX_info spex_Chol_Up_Factor      
+SPEX_info spex_chol_up_factor      
 (
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
@@ -156,7 +155,7 @@ SPEX_info spex_Chol_Up_Factor
 
 /* Purpose: Perform the left-looking Cholesky factorization
  */
-SPEX_info spex_Chol_Left_Factor      
+SPEX_info spex_chol_left_factor      
 (
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
@@ -175,7 +174,7 @@ SPEX_info spex_Chol_Left_Factor
  * On output, L_handle is allocated to contain the nonzero pattern of L and 
  * memory for the values.
  */
-SPEX_info spex_Chol_Pre_Left_Factor
+SPEX_info spex_chol_pre_left_factor
 (
     // Output
     SPEX_matrix** L_handle,       // On output: partial L matrix 
@@ -193,7 +192,7 @@ SPEX_info spex_Chol_Pre_Left_Factor
 /* Purpose: This function performs the symmetric sparse REF triangular solve.
  * i.e.,(LD) x = A(:,k). 
  */
-SPEX_info spex_Left_Chol_triangular_solve
+SPEX_info spex_left_chol_triangular_solve
 (
     //Output
     int64_t* top_output,     // On output: the beginning of nonzero pattern of
@@ -225,7 +224,7 @@ SPEX_info spex_Left_Chol_triangular_solve
  * (LD) x = A(1:k-1,k). 
  * At the given iteration k it computes the k-th column of L' (k-th row of L)
  */
-SPEX_info spex_Up_Chol_triangular_solve 
+SPEX_info spex_up_chol_triangular_solve 
 (
     //Output
     int64_t* top_output,               // On input NULL. On output contains the
@@ -252,7 +251,7 @@ SPEX_info spex_Up_Chol_triangular_solve
  * On output, x contains the solution to LD x = x
  * Note that this function assumes that x is stored as a dense matrix
  */
-SPEX_info spex_Chol_forward_sub
+SPEX_info spex_chol_forward_sub
 (
     // Input/Output
     SPEX_matrix* x,              // Right hand side matrix. 
@@ -268,12 +267,81 @@ SPEX_info spex_Chol_forward_sub
  * REF Cholesky factor of A.
  * On output, x is the solution to the linear system Ax = (det A)b.
  */
-SPEX_info spex_Chol_backward_sub
+SPEX_info spex_chol_backward_sub
 (
     // Input/Output
     SPEX_matrix* x,         // Solution vector
     // Input
     const SPEX_matrix* L    // REF Cholesky factor of A
+);
+
+/* Purpose: Matrix preordering for integer-preserving Cholesky factorization.
+ * On input, S is undefined
+ * On output, S contains the row/column permutation of A
+ */
+SPEX_info spex_chol_preorder
+(
+    // Output
+    SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 
+                                    // On input: undefined
+                                    // On output: contains the 
+                                    // row/column permutation and its
+                                    // inverse.
+    // Input
+    const SPEX_matrix* A,           // Input matrix
+    const SPEX_options* option      // Control parameters (use default if NULL)
+);
+
+/* Purpose: Permute the matrix A and return PAP = PAP' 
+ * On input PAP is undefined and A contains the input matrix
+ * On output PAP contains the permuted matrix (PAP')
+ */
+SPEX_info spex_chol_permute_A
+(
+    //Output
+    SPEX_matrix** PAP_handle,  // On input: undefined
+                               // On output: contains the permuted matrix
+    //Input
+    const SPEX_matrix* A,      // Input matrix
+    const bool numeric,        // True if user wants to permute pattern and 
+                               // numbers, false if only pattern
+    SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
+                               // column and inverse row permutations
+);
+
+SPEX_info spex_chol_symbolic_analysis
+(
+    //Output
+    SPEX_symbolic_analysis* S,
+    //Input
+    const SPEX_matrix* A,      // Matrix to be factored   
+    const SPEX_options* option // command options
+);
+
+/* Purpose: Compute the REF Cholesky factorization A = LDL'
+ * only appropriate if A is SPD. 
+ * On input A contains the user's matrix, option->algo indicates which
+ * factorization algorithm is used; up-looking (default) or left-looking
+ * On output, L contains the REF Cholesky factor of A, rhos contains
+ * the REF Cholesky pivot elements and S contains the elimination tree
+ * lower triangular matrix and rhos contains the pivots' values
+ * used in the factorization 
+ */
+SPEX_info spex_chol_factor     
+(
+    // Output
+    SPEX_factorization **F_handle, // Cholesky factorization
+    // Input
+    const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
+                               // elimination tree of A, column pointers of L, 
+                               // exact number of nonzeros of L and permutation
+                               // used.
+    const SPEX_matrix* A,      // Matrix to be factored
+    const SPEX_options* option // Command options
+                               // Notably, option->algo indicates whether up 
+                               // looking factorization SPEX_CHOL_UP (default)
+                               // or left looking factorization SPEX_CHOL_LEFT
+                               // is used.
 );
 
 #endif

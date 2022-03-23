@@ -15,7 +15,7 @@
  * On output, the index of kth pivot is returned.
  */
 
-#define SPEX_FREE_ALLOCATION    \
+#define SPEX_FREE_ALL    \
     SPEX_MPZ_CLEAR(small);
 
 #include "spex_left_lu_internal.h"

@@ -9,9 +9,10 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALLOCATION     \
+#define SPEX_FREE_ALL            \
+{                                \
     SPEX_matrix_free(&x, NULL);  \
-    return SPEX_OUT_OF_MEMORY    \
+}
     //TOASK why the error message?
 
 #include "spex_chol_internal.h"
@@ -23,7 +24,7 @@
  * of the system Ax = (det A)*b L is the lower triangular REF Cholesky factor of
  * A. It is not modified on input/output
  */
-SPEX_info spex_Chol_backward_sub 
+SPEX_info spex_chol_backward_sub 
 (
     // Output
     SPEX_matrix* x,         // Solution vector to A x = det(A) * b

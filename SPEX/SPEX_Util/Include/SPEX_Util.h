@@ -454,9 +454,15 @@ typedef struct
                                          // for Cholesky factorization.
     int64_t* cp;                         // column pointers of L for Cholesky
                                          // factorization.
+    int64_t* c;                          // column counts
 } SPEX_symbolic_analysis ;
 
-// The symbolic analysis object is created by SPEX_symbolic_analyze.
+// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+SPEX_info SPEX_symbolic_analysis_create
+(
+    SPEX_symbolic_analysis **S, // Structure to be created
+    const SPEX_options *option
+);
 
 // SPEX_symbolic_analysis_free frees the SPEX_symbolic_analysis object.
 SPEX_info SPEX_symbolic_analysis_free        
@@ -538,6 +544,13 @@ typedef struct
                                          // should not free by Left_LU_factorize
 
 } SPEX_factorization;
+
+// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+SPEX_info SPEX_factorization_create
+(
+    SPEX_factorization **F, // Structure to be created
+    const SPEX_options *option
+);
 
 // SPEX_factorization_free frees the SPEX_factorization object.
 SPEX_info SPEX_factorization_free        
@@ -703,13 +716,25 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 ) ;
 
 
+/* SPEX_scale: 
+ */
+SPEX_info SPEX_scale
+(
+    // Output
+    SPEX_matrix* x,
+    // Input
+    const mpq_t scaling_num, //numerator
+    const mpq_t scaling_den, //denominator
+    const SPEX_options* option        // command options
+);
+
 /* SPEX_check_solution: checks the solution of the linear system.  Performs a
  * quick rational arithmetic check of A*x=b.
  */
 SPEX_info SPEX_check_solution
 (
     const SPEX_matrix *A,          // input matrix
-    const SPEX_matrix *x,          // solution vector
+    SPEX_matrix *x,          // solution vector
     const SPEX_matrix *b,          // right hand side
     const SPEX_options* option           // Command options
 );

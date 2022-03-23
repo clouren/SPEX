@@ -17,7 +17,7 @@
  * On output, the index of the largest pivot is returned.
  */
 
-#define SPEX_FREE_ALLOCATION   \
+#define SPEX_FREE_ALL   \
     SPEX_MPZ_CLEAR(big);
 
 #include "spex_left_lu_internal.h"

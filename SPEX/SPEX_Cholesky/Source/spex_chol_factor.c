@@ -9,8 +9,10 @@
 
 //------------------------------------------------------------------------------
 
-# define SPEX_FREE_ALLOCATION      \
-    SPEX_factorization_free(&F, option);   
+# define SPEX_FREE_ALL                   \
+{                                        \
+    SPEX_factorization_free(&F, option); \
+}
 
 
 #include "spex_chol_internal.h"  
@@ -25,24 +27,15 @@
  * 
  * Input arguments of the function:
  * 
- * L_handle:    A handle to the L matrix. Null on input.
- *              On output, contains a pointer to the L matrix.
+ * F_handle:    A handle to the factorization struct. Null on input.
+ *              On output, contains a pointer to the factorization (this 
+ *              includes matrix L)
  * 
  * S:           Symbolic analysis struct for Cholesky factorization. 
- *              On input it contains information that is not used in this 
- *              function such as the row/column permutation
- *              On output it contains the elimination tree and 
+ *              On input it contains the elimination tree and 
  *              the number of nonzeros in L.
- * 
- * rhos_handle: A handle to the sequence of pivots. NULL on input. 
- *              On output it contains a pointer to the pivots matrix.
  *
  * A:           The user's permuted input matrix
- * 
- * left:        A boolean parameter which tells the function whether it is 
- *              performing a left-looking or up-looking factorization. If this
- *              bool is true, a left-looking factorization
- *              is done, otherwise the up-looking factorization is done.
  * 
  * option:      Command options. Notably, option->chol_type indicates whether
  *              it is performing a left-looking (SPEX_CHOL_LEFT) or up-looking 
@@ -50,16 +43,15 @@
  * 
  */
 
-//TODO cooments (like up and left) DONE
 
-SPEX_info SPEX_Chol_Factor      
+SPEX_info spex_chol_factor      
 (
     // Output
     SPEX_factorization **F_handle, // Cholesky factorization
-    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
+    //Input
+    const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    // Input
     const SPEX_matrix* A,      // Matrix to be factored   
     const SPEX_options* option //command options
                                // Notably, option->chol_type indicates whether
@@ -103,6 +95,7 @@ SPEX_info SPEX_Chol_Factor
     {
         return SPEX_OUT_OF_MEMORY;
     }
+    SPEX_CHECK(SPEX_factorization_create(&F,option));
     // set factorization kind
     F->kind = SPEX_CHOLESKY_FACTORIZATION;
 
@@ -126,7 +119,6 @@ SPEX_info SPEX_Chol_Factor
     //--------------------------------------------------------------------------
     // Declare memory for rhos, L, and U
     //--------------------------------------------------------------------------
-
     // Create rhos, a global dense mpz_t matrix of dimension n*1
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, false, option));
@@ -141,7 +133,6 @@ SPEX_info SPEX_Chol_Factor
     SPEX_CHECK (SPEX_matrix_allocate(&(F->L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
         false, false, option));
 
-
     //--------------------------------------------------------------------------
     // Call factorization
     //--------------------------------------------------------------------------
@@ -150,16 +141,16 @@ SPEX_info SPEX_Chol_Factor
     {
         case SPEX_ALGORITHM_DEFAULT:
         case SPEX_CHOL_UP:
-            SPEX_CHECK(spex_Chol_Up_Factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK(spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option));
             break;
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK(spex_Chol_Left_Factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK(spex_chol_left_factor(&(F->L), &(F->rhos), S, A, option));
             break;
         default:
-            return SPEX_INCORRECT_ALGORITHM; //TODO ADD DONE
+            return SPEX_INCORRECT_ALGORITHM; 
     }
     /**/
-    memcpy(F->Pinv_perm, S->Pinv_perm, n * sizeof(int64_t)); //TOCHECK
+    memcpy(F->Pinv_perm, S->Pinv_perm, n * sizeof(int64_t));
 
     //--------------------------------------------------------------------------
     // Set outputs, return ok
