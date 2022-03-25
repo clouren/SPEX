@@ -117,23 +117,6 @@ SPEX_info spex_chol_factor
 
 
     //--------------------------------------------------------------------------
-    // Declare memory for rhos, L, and U
-    //--------------------------------------------------------------------------
-    // Create rhos, a global dense mpz_t matrix of dimension n*1
-    SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
-        false, false, option));
-
-    // Allocate L without initializing each entry.
-    // L is allocated to have nnz(L) which is estimated by the symbolic
-    // analysis. However, unlike traditional matrix allocation, the second
-    // boolean parameter here is set to false, so the individual values of
-    // L are not allocated. Instead, a more efficient method to
-    // allocate these values is done in the factorization to reduce
-    // memory usage.
-    SPEX_CHECK (SPEX_matrix_allocate(&(F->L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
-        false, false, option));
-
-    //--------------------------------------------------------------------------
     // Call factorization
     //--------------------------------------------------------------------------
 
