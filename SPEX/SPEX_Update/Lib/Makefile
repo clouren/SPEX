@@ -21,9 +21,10 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 # SPEX_CHOLMOD depends on SuiteSparse_config, M, GMP, and MPFR
-LDLIBS += -lspexutil -lsuitesparseconfig -lm -lgmp -lmpfr
+LDLIBS += -lspexutil -lspexleftlu -lsuitesparseconfig -lm -lgmp -lmpfr
 
-C = $(CC) $(CF) -I../Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
+C = $(CC) $(CF) -I../Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Source
+
 
 all: install
 

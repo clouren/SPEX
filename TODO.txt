@@ -48,6 +48,7 @@ move spex_check_solution to Tcov
 
 user guide
 
+merge branches
 
 
 cmake
@@ -56,5 +57,5 @@ cmake
 
 
 
-do the shallow copy of all mpz values for updatable-static conversion
+
 

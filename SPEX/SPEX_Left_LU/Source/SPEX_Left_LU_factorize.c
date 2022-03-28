@@ -27,8 +27,8 @@
     SPEX_FREE(h);                   \
     SPEX_FREE(pivs);                \
 
-#define SPEX_FREE_ALLOCATION        \
-    SPEX_FREE_WORK                  \
+#define SPEX_FREE_ALL               \
+    SPEX_FREE_WORKSPACE;            \
     SPEX_factorization_free(&F, option);
 
 #include "spex_left_lu_internal.h"

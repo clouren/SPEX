@@ -45,9 +45,10 @@ SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    const SPEX_matrix *b,         // a m*n dense matrix contains the right-hand-side
+    const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_factorization *F,// The SPEX LU factorization in updatable form
+    SPEX_factorization *F,// The SPEX LU factorization in updatable form
+    const bool transpose,   // whether computing Ax=b or ATx=b
     const SPEX_options* option // Command options
 )
 {
@@ -56,6 +57,7 @@ SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
     // check inputs
     //--------------------------------------------------------------------------
 
+    SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     SPEX_REQUIRE(b,    SPEX_DENSE, SPEX_MPZ);
@@ -64,18 +66,49 @@ SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
         return SPEX_INCORRECT_INPUT;
     }
     *x_handle = NULL;
+    
+    if (!(F->updatable))
+    {
+        if (!transpose)
+        {
+            // perform normal Left LU solve for static factorization
+            info = SPEX_Left_LU_solve(x_handle,
+                (const SPEX_factorization*) F, b, option);
+            return info;
+        }
+        else
+        {
+            // convert to updatable format if wish to compute ATx=b
+            info = spex_update_factorization_convert(F, option);
+            if (info != SPEX_OK) return info;
+        }
+    }
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
 
-    SPEX_info info ;
-    SPEX_matrix *L = F->L, *UT = F->U, *rhos = F->rhos;
-    int64_t *P = F->P_perm, *Q_inv = F->Qinv_perm;
-    int64_t i, j, n = L->n;
+    SPEX_matrix *L, *UT, *rhos = F->rhos;
+    int64_t *P, *Q_inv;
+    int64_t i, j, n = F->L->n;
     int64_t *h = NULL;                   // history vector
     SPEX_vector *v = NULL;               // temp mpz vector 
     SPEX_matrix *x = NULL;               // final solution
+
+    if (!transpose)
+    {
+        L = F->L;
+        UT = F->U;
+        P = F->P_perm;
+        Q_inv = F->Qinv_perm;
+    }
+    else
+    {
+        L = F->U;
+        UT = F->L;
+        P = F->Q_perm;
+        Q_inv = F->Pinv_perm;
+    }
 
     // allocate space for v and initialize
     v = (SPEX_vector*) SPEX_malloc(sizeof(SPEX_vector));

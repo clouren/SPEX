@@ -60,7 +60,7 @@ SPEX_info SPEX_LU_analyze
     S = (SPEX_symbolic_analysis*) SPEX_calloc(1,
         sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
-    S->kind = SPEX_LU_SYMBOLIC_ANALYSIS;
+    S->kind = SPEX_LU_FACTORIZATION;
 
     // Allocate memory for column permutation
     S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));

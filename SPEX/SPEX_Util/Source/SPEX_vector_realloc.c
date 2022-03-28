@@ -65,6 +65,8 @@ SPEX_info SPEX_vector_realloc
 
     if (old_size < new_size)
     {
+        // cannot combine into single loop since all newly allocated mpz must
+        // be set to NULL first in case of failure
         for (p = old_size ; p < new_size ; p++)
         {
             SPEX_MPZ_SET_NULL (v->x[p]) ;

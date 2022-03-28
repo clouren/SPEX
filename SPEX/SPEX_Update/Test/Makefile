@@ -17,10 +17,9 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O
-I = -I../Include -I../Lib -I../../../SuiteSparse_config -I../../SPEX_Util/Include -I../../SPEX_Util/Lib -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Lib -I../../SPEX_Cholesky/Include -I../../SPEX_Cholesky/Lib -I../../../lib -I/opt/ibm/ILOG/CPLEX_Studio201/cplex/include -L/opt/ibm/ILOG/CPLEX_Studio201/cplex/bin/x86-64_linux/
-#-L/opt/ibm/ILOG/CPLEX_Studio201/cplex/lib/x86-64_linux/static_pic
+I = -I../Include -I../Lib -I../../../SuiteSparse_config -I../../SPEX_Util/Include -I../../SPEX_Util/Lib -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Lib -I../../SPEX_Cholesky/Include -I../../SPEX_Cholesky/Lib -I../../../lib #-I../../../COLAMD/Include -I../../../AMD/Include
 
-LDLIBS += -lm -lgmp -lsuitesparseconfig -lspexutil -lspexupdate -lspexleftlu -lspexchol -lglpk -lcplex2010
+LDLIBS += -lm -lgmp -lmpfr -lsuitesparseconfig -lspexutil -lspexupdate -lspexleftlu -lspexchol -lglpk #-lcolamd -lamd
 
 all: lib ptest
 	- ./ptest
@@ -31,11 +30,11 @@ runchol: lib chol
 lib:
 	( cd ../Lib ; $(MAKE) )
 
-cptest: lib cplex_ptest.c cplex_test.c cplex_test.h Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o cplex_ptest cplex_ptest.c cplex_test.c $(LDLIBS)
-
 ptest: lib ptest.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o ptest ptest.c test.c $(LDLIBS)
+
+openfile: lib openfile.c test.c test.h Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o openfile openfile.c test.c $(LDLIBS)
 
 chol: lib cholupdate.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o cholupdate cholupdate.c test.c $(LDLIBS)

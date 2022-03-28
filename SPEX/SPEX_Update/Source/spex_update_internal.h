@@ -19,6 +19,7 @@
 #define SPEX_UPDATE_INTERNAL_H
 
 #include "spex_util_internal.h"
+#include "SPEX_Left_LU.h"
 #include "SPEX_Update.h"
 
 #ifdef SPEX_DEBUG
@@ -253,7 +254,7 @@ SPEX_info spex_update_backward_sub  // performs sparse REF backward substitution
 // verify if A=LD^(-1)U
 SPEX_info spex_update_verify
 (
-    const SPEX_factorization *F,// LU factorization of A
+    SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix *A,     // Input matrix
     int64_t *h,            // history vector
     const SPEX_options *option// command options
@@ -272,7 +273,6 @@ SPEX_info spex_update_factorization_convert
 (
     SPEX_factorization *F,// The output factorization with same
                             // factorization kind as F_in
-    const bool updatable, // true if wish to obtain updatable F.
     const SPEX_options* option // Command options
 );
 
@@ -289,9 +289,8 @@ SPEX_info spex_update_factorization_convert
 SPEX_info spex_update_matrix_canonicalize
 (
     SPEX_matrix *A,         // the matrix to be canonicalize
-    const int64_t *perm,    // the permuation vector applied on each vector of
+    const int64_t *perm     // the permuation vector applied on each vector of
                             // A, considered as identity if input as NULL
-    const SPEX_options *option
 );
 
 //------------------------------------------------------------------------------
@@ -314,9 +313,8 @@ SPEX_info spex_update_matrix_canonicalize
 SPEX_info spex_update_permute_row
 (
     SPEX_matrix *A,         // input matrix
-    const int64_t *perm,    // desire permutation to be applied to A, must be
+    const int64_t *perm     // desire permutation to be applied to A, must be
                             // non-NULL
-    const SPEX_options *option
 );
 
 #endif

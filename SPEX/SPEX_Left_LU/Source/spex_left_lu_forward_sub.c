@@ -19,7 +19,7 @@
  * On output, the SPEX_matrix* x structure is modified.
  */
 
-#define SPEX_FREE_ALLOCATION    \
+#define SPEX_FREE_ALL           \
     SPEX_matrix_free(&h, NULL)  ;
 
 #include "spex_left_lu_internal.h"

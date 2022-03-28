@@ -56,8 +56,8 @@ int64_t init_basis[27]={27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 62, 61, 
 int main( int argc, char* argv[])
 {
     //char *prob_name = "lp_80bau3b";
-    char *prob_name = "lp_25fv47";//5.5018458883E+03
-    //char *prob_name = "lp_afiro"; // optimal: -4.6475314E+02
+    //char *prob_name = "lp_25fv47";//5.5018458883E+03
+    char *prob_name = "lp_afiro"; // optimal: -4.6475314E+02
     //char *prob_name = "aa5";
     if (argc >= 2)
     {

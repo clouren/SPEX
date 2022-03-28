@@ -20,7 +20,7 @@
 
 SPEX_info spex_update_verify
 (
-    const SPEX_factorization *F,// LU factorization of A
+    SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix *A,     // Input matrix
     int64_t *h,            // history vector
     const SPEX_options *option// command options
@@ -56,7 +56,7 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     // solve LD^(-1)Ux = b for x
     // -------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_Update_LU_Solve(&x, b, F, option));
+    SPEX_CHECK(SPEX_Update_LU_Solve(&x, b, F, false, option));
 
     // -------------------------------------------------------------------------
     // compute b2 = A*x

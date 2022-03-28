@@ -51,6 +51,7 @@ SPEX_info SPEX_Update_Chol_Rank1
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
+    SPEX_info info;
     if (!spex_initialized()) {return SPEX_PANIC;}
     SPEX_REQUIRE(w , SPEX_DYNAMIC_CSC, SPEX_MPZ);
     if (!F || sigma == 0 ||
@@ -66,13 +67,13 @@ SPEX_info SPEX_Update_Chol_Rank1
     // make sure F is updatable
     if (!(F->updatable))
     {
-        spex_update_factorization_convert(F, true, option);
+        info = spex_update_factorization_convert(F, option);
+        if (info != SPEX_OK) return info;
     }
 
     //--------------------------------------------------------------------------
     // initialize workspace
     //--------------------------------------------------------------------------
-    SPEX_info info;
     SPEX_matrix *L = F->L;
     int64_t *P = F->P_perm, *P_inv = F->Pinv_perm;
     int sgn;

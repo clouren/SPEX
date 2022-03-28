@@ -9,15 +9,23 @@
 
 //------------------------------------------------------------------------------
 
-// spex_update_factorization_convert is called either to obtain the updatable
-// factorization from non-updatable factorization with matrices in any kind or
-// type, or to obtain non-updatable factorization with SPEX_CSC matrices with
-// MPZ entries.
+// spex_update_factorization_convert is called to make conversion between the
+// updatable factorization (MPZ & DYNAMIC_CSC) and non-updatable MPZ & CSC
+// factorization. That is, when the input factorization is updatable with MPZ
+// entries and DYNAMIC_CSC kind, the returned factorization will be
+// non-updatable with MPZ entries and CSC kind. While if the input
+// factorization is in non-updatable format with MPZ entries and CSC kind, the
+// returned factorization will be updatable with MPZ entries and DYNAMIC_CSC
+// kind. If the matrices of the factorization are in kinds other than CSC or
+// DYNAMIC_CSC, or in types other than MPZ, the function return INCORRECT_INPUT
+// error.
 // To obtain the updatable format, this function will obtain the
 // transpose of U (for LU factorization), permute rows of L and UT, and make
 // sure each column of the matrices have cooresponding pivot as the first
 // entry. To otain the non-updatable format, this function will transpose UT
 // (for LU factorization) and permute rows and L and U.
+// If the function return unsuccessfully, the factorization should be considered
+// as undefined.
 
 #define SPEX_FREE_ALL             \
     SPEX_FREE(Qinv);              \
@@ -31,18 +39,18 @@
 SPEX_info spex_update_factorization_convert
 (
     SPEX_factorization *F, // The factorization to be converted
-    const bool updatable, // true if wish to obtain updatable F.
     const SPEX_options* option // Command options
 )  
 {
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
-    if (!spex_initialized()) {return SPEX_PANIC;}
-    
-    if (!F ||
+    if (!F || F->L->type != SPEX_MPZ ||
+        (F->L->kind != SPEX_CSC && F->L->kind != SPEX_DYNAMIC_CSC) ||
         (F->kind != SPEX_LU_FACTORIZATION &&
-         F->kind != SPEX_CHOLESKY_FACTORIZATION))
+         F->kind != SPEX_CHOLESKY_FACTORIZATION) ||
+        (F->kind == SPEX_LU_FACTORIZATION && (F->U->type != SPEX_MPZ ||
+         (F->U->kind != SPEX_CSC && F->U->kind != SPEX_DYNAMIC_CSC))))
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -55,10 +63,13 @@ SPEX_info spex_update_factorization_convert
     int64_t *Qinv = NULL;
     SPEX_matrix *L = NULL, *U = NULL, *Mat = NULL;
 
+    // update the updatable flag
+    F->updatable = !(F->updatable);
+
     //--------------------------------------------------------------------------
     // obtain Qinv_perm for updatable LU factorization
     //--------------------------------------------------------------------------
-    if (F->kind == SPEX_LU_FACTORIZATION && updatable)
+    if (F->kind == SPEX_LU_FACTORIZATION && F->updatable)
     {
         Qinv = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
         if (!Qinv)
@@ -78,12 +89,12 @@ SPEX_info spex_update_factorization_convert
     //--------------------------------------------------------------------------
     // obtain the desired format of L and/or U
     //--------------------------------------------------------------------------
-    if (updatable)
+    if (F->updatable)
     {
         SPEX_CHECK(SPEX_matrix_copy(&L, SPEX_DYNAMIC_CSC, SPEX_MPZ,
             F->L, option));
-        SPEX_CHECK(spex_update_permute_row(L, F->P_perm, option));
-        SPEX_CHECK(spex_update_matrix_canonicalize(L, F->P_perm, option));
+        SPEX_CHECK(spex_update_permute_row(L, F->P_perm));
+        SPEX_CHECK(spex_update_matrix_canonicalize(L, F->P_perm));
         // replace the original L
         SPEX_CHECK(SPEX_matrix_free(&(F->L), option));
         F->L = L;
@@ -95,9 +106,8 @@ SPEX_info spex_update_factorization_convert
             SPEX_CHECK(SPEX_transpose(&Mat, F->U, option));
             SPEX_CHECK(SPEX_matrix_copy(&U, SPEX_DYNAMIC_CSC, SPEX_MPZ,
                 Mat, option));
-            SPEX_CHECK(spex_update_permute_row(U, F->Q_perm, option));
-            SPEX_CHECK(spex_update_matrix_canonicalize(U, F->Q_perm,
-                option));
+            SPEX_CHECK(spex_update_permute_row(U, F->Q_perm));
+            SPEX_CHECK(spex_update_matrix_canonicalize(U, F->Q_perm));
             // replace the original U
             SPEX_CHECK(SPEX_matrix_free(&(F->U), option));
             F->U = U;
@@ -107,7 +117,7 @@ SPEX_info spex_update_factorization_convert
     else
     {
         SPEX_CHECK(SPEX_matrix_copy(&L, SPEX_CSC, SPEX_MPZ, F->L, option));
-        SPEX_CHECK(spex_update_permute_row(L, F->Pinv_perm, option));
+        SPEX_CHECK(spex_update_permute_row(L, F->Pinv_perm));
         // replace the original L
         SPEX_CHECK(SPEX_matrix_free(&(F->L), option));
         F->L = L;
@@ -118,7 +128,7 @@ SPEX_info spex_update_factorization_convert
             SPEX_CHECK(SPEX_matrix_copy(&Mat, SPEX_CSC, SPEX_MPZ,
                 F->U, option));
             SPEX_CHECK(SPEX_transpose(&U, Mat, option));
-            SPEX_CHECK(spex_update_permute_row(U, F->Qinv_perm, option));
+            SPEX_CHECK(spex_update_permute_row(U, F->Qinv_perm));
             // replace the original U
             SPEX_CHECK(SPEX_matrix_free(&(F->U), option));
             F->U = U;

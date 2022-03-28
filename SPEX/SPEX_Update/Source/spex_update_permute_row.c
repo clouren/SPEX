@@ -16,9 +16,8 @@
 SPEX_info spex_update_permute_row
 (
     SPEX_matrix *A,     // input matrix
-    const int64_t *perm,// desire permutation to be applied to A, must be
+    const int64_t *perm // desire permutation to be applied to A, must be
                         // non-NULL
-    const SPEX_options *option
 )
 {
     // check inputs

@@ -826,15 +826,15 @@ SPEX_info SPEX_mmread
     SPEX_FREE(I);                 \
     SPEX_FREE(J);                 \
     SPEX_FREE(X);                 \
+    SPEX_matrix_free(&MA_CSC, option);\
+    SPEX_matrix_free(&Mb, option);\
+    SPEX_matrix_free(&Mc, option);\
     if (File != NULL) fclose(File);\
 }
 
 #define MY_FREE_ALL               \
 {                                 \
     MY_FREE_WORK;                 \
-    SPEX_matrix_free(&MA_CSC, option);\
-    SPEX_matrix_free(&Mb, option);\
-    SPEX_matrix_free(&Mc, option);\
 }
 
 #define OK1(method)               \
@@ -1329,11 +1329,21 @@ SPEX_info SPEX_construct_LP
         glp_set_row_bnds(LP, i+1, GLP_FX, MY_MAT_X(Mb, i), 0.0);
     }
 
+    // convert to mpz matrices
+    OK1(SPEX_matrix_copy(A_handle, SPEX_CSC,   SPEX_MPZ, MA_CSC, option)); 
+    OK1(SPEX_matrix_copy(c_handle, SPEX_DENSE, SPEX_MPZ, Mc, option));
+    // convert to double matrix if needed
+    if (Mb->type != SPEX_FP64)
+    {
+        OK1(SPEX_matrix_copy(b_handle, SPEX_DENSE, SPEX_FP64, Mb, option));
+    }
+    else
+    {
+        *b_handle = Mb;
+        Mb = NULL;
+    }
+
     // free the workspace
     MY_FREE_WORK;
-
-    *A_handle = MA_CSC;
-    *b_handle = Mb;
-    *c_handle = Mc;
     return SPEX_OK;
 }

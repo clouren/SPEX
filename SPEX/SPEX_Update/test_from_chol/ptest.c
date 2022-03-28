@@ -37,10 +37,12 @@
     SPEX_matrix_free(&y_sol, option);            \
     SPEX_matrix_free(&A3, option);               \
     SPEX_matrix_free(&vk, option);               \
+    SPEX_factorization_free(&F1, option);        \
+    SPEX_factorization_free(&F2, option);        \
     SPEX_symbolic_analysis_free(&analysis, option);    \
     SPEX_FREE(option);                           \
-    mpz_clear(z); mpz_clear(minz); mpz_clear(tmpz);\
-    mpq_clear(minq); mpq_clear(tmpq1); mpq_clear(obj_mpq);\
+    mpz_clear(z); mpz_clear(tmpz);               \
+    mpq_clear(minq); mpq_clear(tmpq1);           \
     mpq_clear(tmpq2);mpq_clear(maxq);            \
     SPEX_FREE(basis);                            \
     SPEX_FREE(used_as_basis);                    \
@@ -87,8 +89,8 @@ int main( int argc, char* argv[])
     SPEX_matrix *vk = NULL;
     SPEX_vector *tmpv;
     SPEX_factorization *F1 = NULL, *F2 = NULL;
-    mpz_t z, minz, tmpz;
-    mpq_t minq, maxq, tmpq1, tmpq2, obj_mpq;
+    mpz_t z, tmpz;
+    mpq_t minq, maxq, tmpq1, tmpq2;
     SPEX_symbolic_analysis* analysis = NULL;
     int64_t *basis = NULL, *used_as_basis = NULL;
     double *col_val = NULL;
@@ -105,13 +107,11 @@ int main( int argc, char* argv[])
     parm.it_lim = 1;
     OK(SPEX_create_default_options(&option));
     OK(SPEX_mpz_init(z));
-    OK(SPEX_mpz_init(minz));
     OK(SPEX_mpz_init(tmpz));
     OK(SPEX_mpq_init(minq));
     OK(SPEX_mpq_init(maxq));
     OK(SPEX_mpq_init(tmpq1));
     OK(SPEX_mpq_init(tmpq2));
-    OK(SPEX_mpq_init(obj_mpq));
 
     //--------------------------------------------------------------------------
     // open output file
@@ -126,7 +126,7 @@ int main( int argc, char* argv[])
     }
 #endif
 
-    sprintf(file_name, "%s_chol.txt",prob_name);
+    sprintf(file_name, "Results/LPnetlib/%s_chol.txt",prob_name);
     result_file = fopen(file_name, "w");
     if (result_file == NULL)
     {
@@ -138,7 +138,7 @@ int main( int argc, char* argv[])
     //--------------------------------------------------------------------------
     // read in matrix
     //--------------------------------------------------------------------------
-    sprintf(file_name, "Test/TestMats/LPnetlib/%s/%s",prob_name,prob_name);
+    sprintf(file_name, "TestMats/LPnetlib/%s/%s",prob_name,prob_name);
     // read matrix A, arrays b, lb, ub and c to LP
     z0 = 0;
     OK(SPEX_construct_LP(LP, &Prob_A, &b_dbl, &Prob_c, &z0, file_name, option));
@@ -352,14 +352,12 @@ int main( int argc, char* argv[])
              OK(SPEX_mpq_div(tmpq1, tmpq1, x1->scale));
                 diff = fabs(mpq_get_d(tmpq1)-xi);
                 //diff = fabs(mpq_get_d(x1->x.mpq[i])-xi);
-    GOTCHA;
                 if (diff > 1e-5)
                 {
                     if (diff > max_diff) max_diff = diff;
                     printf("big difference in solution! x[%ld]=%lf!=%lf\n",
                         j, mpq_get_d(x1->x.mpq[i]), xi);
                 }
-    GOTCHA;
                 /*else
                 {
                     printf("x[%ld]=%lf==%lf\n",
@@ -376,7 +374,6 @@ int main( int argc, char* argv[])
                 }
             }
         }
-    GOTCHA;
         if (max_diff > 0) printf("max difference in solution is %f\n",max_diff);
 
         // perform another iteration of simplex if needed
@@ -398,7 +395,6 @@ int main( int argc, char* argv[])
             break;
         }
     }
-    GOTCHA;
     SPEX_FREE(col_val);
     SPEX_FREE(col_ind);
     printf("preprocess finished\n");
@@ -410,7 +406,6 @@ int main( int argc, char* argv[])
         return 0;
     }
 
-    GOTCHA;
 #if 0
     for (i = 0; i < n; i++)
     {
@@ -478,12 +473,10 @@ int main( int argc, char* argv[])
     OK(SPEX_matrix_allocate(&y, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
         option));
 
-    GOTCHA;
     if (mpq_equal(Prob_A->scale, b->scale) == 0)
     {
         gmp_printf("A_scale(%Qd) != b_scale(%Qd)\n", Prob_A->scale, b->scale);
     }
-    GOTCHA;
     int64_t new_col = 0, iter = 0;
     k = 0;
     while (iter < 100)
@@ -492,15 +485,12 @@ int main( int argc, char* argv[])
         size_t U1_sum_size = 0, U2_sum_size = 0, U3_sum_size = 0,
                L1_sum_size = 0, L2_sum_size = 0, L3_sum_size = 0, s;
         t_solve = 0;
-    GOTCHA;
         start1 = clock();
         start2 = clock();
         // solve for x_basic
         OK(SPEX_matrix_free (&x2, option));
-    GOTCHA;
         OK(SPEX_Update_LU_Solve(&x2, b, F1, option));
         end2 = clock();
-    GOTCHA;
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
         // reset objective value z = 0
@@ -524,9 +514,7 @@ int main( int argc, char* argv[])
                 OK(SPEX_mpz_addmul(z, c->x.mpz[i], x2->x.mpz[i]));
 
                 OK(SPEX_mpq_set_z(tmpq1, x2->x.mpz[i]));
-    GOTCHA;
                 OK(SPEX_mpq_div(tmpq1, tmpq1, x2->scale));
-    GOTCHA;
 #if 1
                 if (mpz_sgn(x2->x.mpz[i]) * mpq_sgn(x2->scale) < 0)
                 {
@@ -554,12 +542,9 @@ int main( int argc, char* argv[])
         OK(SPEX_mpq_set(c->scale, Prob_c->scale));
 
         // compute the real objective value with scales applied
-    GOTCHA;
         OK(SPEX_mpq_set_z(tmpq1, z));
         OK(SPEX_mpq_div(tmpq1, tmpq1, x2->scale));
-    GOTCHA;
         OK(SPEX_mpq_div(tmpq1, tmpq1, Prob_c->scale));
-    GOTCHA;
         //OK(SPEX_gmp_printf("obj value = %Qd\n",tmpq1));
         printf("obj value = %f\n", mpq_get_d(tmpq1)+z0);
 
@@ -639,7 +624,6 @@ int main( int argc, char* argv[])
             OK(SPEX_mpz_set(vk->v[0]->x[i], SPEX_1D(Prob_A, p, mpz)));
             i++;
         }
-        vk->nz = i;
         // set y->scale = Prob_A->scale
         OK(SPEX_mpq_set(y->scale, Prob_A->scale));
 #if 0

@@ -17,9 +17,9 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O
-I = -I../Include -I../Lib -I../../../SuiteSparse_config -I../../SPEX_Util/Include -I../../SPEX_Util/Lib -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Lib -I../../SPEX_Cholesky/Include -I../../SPEX_Cholesky/Lib -I../../../lib
+I = -I../Include -I../Lib -I../../../SuiteSparse_config -I../../SPEX_Util/Include -I../../SPEX_Util/Lib -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Lib -I../../SPEX_Cholesky/Include -I../../SPEX_Cholesky/Lib -I../../../lib #-I../../../COLAMD/Include -I../../../AMD/Include
 
-LDLIBS += -lm -l:libgmp.so.10.4.1 -l:libmpfr.so.6.1.0 -lsuitesparseconfig -lspexutil -lspexupdate -lspexleftlu -lspexchol -lglpk
+LDLIBS += -lm -lgmp -lmpfr -lsuitesparseconfig -lspexutil -lspexupdate -lspexleftlu -lspexchol -lglpk #-lcolamd -lamd
 
 all: lib ptest
 	- ./ptest

@@ -1,0 +1,110 @@
+%%MatrixMarket matrix coordinate integer general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/LPnetlib/lpi_bgprtr
+% name: LPnetlib/lpi_bgprtr
+% [Netlib LP problem bgprtr: minimize c'*x, where Ax=b, lo<=x<=hi]
+% id: 706
+% date: 1993
+% author: L. Schrage
+% ed: J. Chinneck
+% fields: title name A b id aux kind date author ed notes
+% aux: c lo hi z0
+% kind: linear programming problem
+%-------------------------------------------------------------------------------
+% notes:
+% An infeasible Netlib LP problem, in lp/infeas.  For more information        
+% send email to netlib@ornl.gov with the message:                             
+%                                                                             
+% 	send index from lp                                                         
+% 	send readme from lp/infeas                                                 
+%                                                                             
+% The lp/infeas directory contains infeasible linear programming test problems
+% collected by John W. Chinneck, Carleton Univ, Ontario Canada.  The following
+% are relevant excerpts from lp/infeas/readme (by John W. Chinneck):          
+%                                                                             
+% PROBLEM DESCRIPTION                                                         
+% -------------------                                                         
+%                                                                             
+% BGPRTR is a small model for a multiproduct, multiperiod production          
+% scheduling model.  One right hand side has been altered to make it          
+% infeasible.                                                                 
+% Contributor:  Linus Schrage, University of Chicago and LINDO Systems Inc.   
+%                                                                             
+% Name       Rows   Cols   Nonzeros Bounds      Notes                         
+% bgprtr       21     34       90                                             
+%                                                                             
+% Added to Netlib on Sept. 19, 1993                                           
+%                                                                             
+%-------------------------------------------------------------------------------
+20 40 70
+3 1 1
+4 2 1
+5 3 1
+6 4 1
+7 5 1
+8 6 1
+1 7 1
+13 7 1
+2 8 1
+14 8 1
+1 9 1
+15 9 1
+2 10 1
+16 10 1
+7 11 1
+9 11 -1
+8 12 1
+11 12 -1
+7 13 1
+10 13 -1
+8 14 1
+12 14 -1
+9 15 -1
+11 16 -1
+10 17 -1
+12 18 -1
+17 19 1
+20 19 -1
+18 20 1
+18 21 -1
+19 21 1
+20 22 1
+1 23 -1
+2 24 -1
+17 25 1
+18 25 -1
+18 26 1
+19 27 1
+20 27 -1
+20 28 1
+13 29 1
+14 29 -1
+14 30 1
+15 31 1
+16 31 -1
+16 32 1
+3 33 900
+9 33 6
+13 33 -1
+17 33 1
+3 34 90
+17 34 -1
+4 35 900
+11 35 6
+14 35 -1
+18 35 1
+4 36 90
+18 36 -1
+5 37 600
+10 37 6
+15 37 -1
+19 37 1
+5 38 60
+19 38 -1
+6 39 600
+12 39 6
+16 39 -1
+20 39 1
+6 40 60
+20 40 -1

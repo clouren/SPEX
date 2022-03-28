@@ -19,9 +19,8 @@
 SPEX_info spex_update_matrix_canonicalize
 (
     SPEX_matrix *A,       // the matrix to be canonicalize
-    const int64_t *perm,  // the permuation vector applied on each vector of A,
+    const int64_t *perm   // the permuation vector applied on each vector of A,
                           // considered as identity if input as NULL
-    const SPEX_options *option
 )
 {
     // check inputs

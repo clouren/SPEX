@@ -23,7 +23,7 @@
     SPEX_MPQ_CLEAR(temp);           \
     SPEX_matrix_free(&x3, NULL);    \
 
-#define SPEX_FREE_ALLOCATION       \
+#define SPEX_FREE_ALL              \
     SPEX_FREE_WORKSPACE            \
 
 #include "spex_util_internal.h"
@@ -113,7 +113,7 @@ SPEX_info spex_expand_double_array
     if (!nz_found)     // Array is all zeros
     {
         SPEX_mpq_set_z(scale, one);
-        SPEX_FREE_ALLOCATION;
+        SPEX_FREE_ALL;
         return SPEX_OK;
     }
 

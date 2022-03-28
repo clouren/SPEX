@@ -68,7 +68,7 @@
  */
 
 
-#define SPEX_FREE_ALLOCATION            \
+#define SPEX_FREE_ALL                   \
     SPEX_matrix_free (&x, NULL) ;
 
 #include "spex_left_lu_internal.h"

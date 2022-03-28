@@ -197,8 +197,9 @@ SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
     // input:
     const SPEX_matrix *b,         // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
+    SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
                             // format.
+    const bool transpose,   // whether computing Ax=b or ATx=b
     const SPEX_options* option // Command options
 );
 

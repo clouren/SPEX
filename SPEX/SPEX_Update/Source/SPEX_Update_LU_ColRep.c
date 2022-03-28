@@ -58,6 +58,7 @@ SPEX_info SPEX_Update_LU_ColRep
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
+    SPEX_info info;
     if (!spex_initialized()) {return SPEX_PANIC;}
     SPEX_REQUIRE(vk, SPEX_DYNAMIC_CSC, SPEX_MPZ);
     if (!F || k < 0 || k >= F->L->m ||
@@ -74,13 +75,13 @@ SPEX_info SPEX_Update_LU_ColRep
     // make sure F is updatable
     if (!(F->updatable))
     {
-        spex_update_factorization_convert(F, true, option);
+        info = spex_update_factorization_convert(F, option);
+        if (info != SPEX_OK) return info;
     }
 
     //--------------------------------------------------------------------------
     // initialize workspace
     //--------------------------------------------------------------------------
-    SPEX_info info;
     int sgn_vkk, sgn_vkn, r;
     SPEX_matrix *L = F->L, *UT = F->U, *rhos = F->rhos;
     int64_t ks, p, i, j, inext, jnext, n = L->n;

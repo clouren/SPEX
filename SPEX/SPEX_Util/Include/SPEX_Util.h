@@ -551,31 +551,29 @@ SPEX_info SPEX_matrix_copy
 // To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
-
+typedef enum
+{
+    SPEX_LU_FACTORIZATION = 0,            // LU factorization
+    SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
+    SPEX_QR_FACTORIZATION = 2             // QR factorization
+}SPEX_factorization_kind ;
 //------------------------------------------------------------------------------
 // SPEX_symbolic_analysis: symbolic pre-analysis
 //------------------------------------------------------------------------------
 
-// data structure for symbolic analysis
-typedef enum
-{
-    SPEX_LU_SYMBOLIC_ANALYSIS = 0,                 // LU analysis
-    SPEX_CHOLESKY_SYMBOLIC_ANALYSIS = 1,           // Cholesky analysis
-    SPEX_QR_SYMBOLIC_ANALYSIS = 2                  // QR analysis
-}SPEX_symbolic_analysis_kind ;
 
 // This struct stores the results of symbolic analysis
 
 typedef struct
 {
-    SPEX_symbolic_analysis_kind kind;             // LU, Cholesky or QR analysis
+    SPEX_factorization_kind kind;             // LU, Cholesky or QR analysis
 
     //--------------------------------------------------------------------------
     // The permutations of the matrix that are found during the symbolic
     // analysis process.  One or more of these permutations could be NULL for
     // some SPEX_symbolic_analysis_kind. Specifically,
-    // For kind == SPEX_LU_ANALYSIS, only Q_perm is not NULL.
-    // For kind == SPEX_CHOLESKY_ANALYSIS, both Q_perm and Qinv_perm are
+    // For kind == SPEX_LU_FACTORIZATION, only Q_perm is not NULL.
+    // For kind == SPEX_CHOLESKY_FACTORIZATION, both Q_perm and Qinv_perm are
     // NULL.
     // TODO for QR????
     //--------------------------------------------------------------------------
@@ -592,13 +590,13 @@ typedef struct
     //--------------------------------------------------------------------------
 
     int64_t lnz ;                        // Approximate number of nonzeros in L.
-                                         // Available only for SPEX_LU_analysis
-                                         // or SPEX_CHOLESKY_analysis.
+                                         // Available only for SPEX_LU_FACTORIZATION
+                                         // or SPEX_CHOLESKY_FACTORIZATION.
     int64_t unz ;                        // Approximate number of nonzeros in U.
                                          // lnz and unz are used to allocate
                                          // the initial space for L and U; the
                                          // space is reallocated as needed.
-                                         // Available only for SPEX_LU_analysis.
+                                         // Available only for SPEX_LU_FACTORIZATION.
 
     //--------------------------------------------------------------------------
     // These are only used in the Cholesky analysis process
@@ -627,7 +625,7 @@ SPEX_info SPEX_symbolic_analyze
 (
     SPEX_symbolic_analysis **S_handle, // symbolic analysis
     const SPEX_matrix *A, // Input matrix
-    const SPEX_symbolic_analysis_kind kind, // LU, Cholesky or QR analysis
+    const SPEX_factorization_kind kind, // LU, Cholesky or QR analysis
     const SPEX_options *option  // Control parameters
 ) ;
 
@@ -636,12 +634,7 @@ SPEX_info SPEX_symbolic_analyze
 // SPEX_factorization: data structure for factorization
 //------------------------------------------------------------------------------
 // data structure for factorization
-typedef enum
-{
-    SPEX_LU_FACTORIZATION = 0,            // LU factorization
-    SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
-    SPEX_QR_FACTORIZATION = 2             // QR factorization
-}SPEX_factorization_kind ;
+
 
 // For each kind of the factorization, if user wishes to perform factorization
 // update, then it must be in updatable format. This requires all the following
