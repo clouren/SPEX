@@ -54,6 +54,12 @@ merge branches
 cmake
 
 
+------------
+delete SPEX_factorization_create and SPEX_symbolic_analysis_create
+
+do we really need SPEX_scale? unify the output of SPEX_***_solve
+
+
 
 
 
