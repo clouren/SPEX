@@ -1,0 +1,72 @@
+        -:    0:Source:spex_left_lu_permute_b.c
+        -:    0:Graph:spex_left_lu_permute_b.gcno
+        -:    0:Data:spex_left_lu_permute_b.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Left_LU/spex_permute_b: permute b, as b = P'*b
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function permutes b for forward substitution.
+        -:   12: * That is, b = P'*b.
+        -:   13: */
+        -:   14:
+        -:   15:#define SPEX_FREE_ALL \
+        -:   16:    SPEX_matrix_free (&b, NULL) ;
+        -:   17:
+        -:   18:#include "spex_left_lu_internal.h"
+        -:   19:
+      395:   20:SPEX_info spex_left_lu_permute_b
+        -:   21:(
+        -:   22:    SPEX_matrix **b_handle,     // permuted RHS vector
+        -:   23:    const SPEX_matrix *b2,      // unpermuted RHS vector (not modified)
+        -:   24:    const int64_t *pinv,        // inverse row permutation
+        -:   25:    const SPEX_options* option
+        -:   26:)
+        -:   27:{
+        -:   28:
+        -:   29:    //--------------------------------------------------------------------------
+        -:   30:    // check inputs
+        -:   31:    //--------------------------------------------------------------------------
+        -:   32:
+        -:   33:    SPEX_info info ;
+     395*:   34:    SPEX_REQUIRE (b2, SPEX_DENSE, SPEX_MPZ) ;
+        -:   35:
+     395*:   36:    if (b_handle == NULL || !pinv) {return SPEX_INCORRECT_INPUT;}
+      395:   37:    (*b_handle) = NULL ;
+        -:   38:
+        -:   39:    //--------------------------------------------------------------------------
+        -:   40:    // b(pinv) = b2
+        -:   41:    //--------------------------------------------------------------------------
+        -:   42:
+      395:   43:    int64_t m = b2->m ;
+      395:   44:    int64_t n = b2->n ;
+        -:   45:
+        -:   46:    // allocate x
+      395:   47:    SPEX_matrix *b = NULL ;
+      395:   48:    SPEX_CHECK (SPEX_matrix_allocate (&b, SPEX_DENSE, SPEX_MPZ, m, n,
+        -:   49:        0, false, true, option)) ;
+        -:   50:
+        -:   51:    // Set b = P'*b2
+     2182:   52:    for (int64_t i = 0 ; i < m ; i++)
+        -:   53:    {
+     3700:   54:        for (int64_t j = 0 ; j < n ; j++)
+        -:   55:        {
+     1853:   56:            SPEX_CHECK(SPEX_mpz_set(SPEX_2D(b,  pinv[i], j, mpz),
+        -:   57:                                    SPEX_2D(b2,   i,     j, mpz)));
+        -:   58:        }
+        -:   59:    }
+        -:   60:
+        -:   61:    //--------------------------------------------------------------------------
+        -:   62:    // return result
+        -:   63:    //--------------------------------------------------------------------------
+        -:   64:
+      331:   65:    (*b_handle) = b ;
+      331:   66:    return SPEX_OK;
+        -:   67:}
+        -:   68:

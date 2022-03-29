@@ -1102,7 +1102,7 @@ SPEX_info SPEX_determine_symmetry
             // if true, check A=A' (pattern & values). if false,
             // only check if the pattern of A is symmetric, not
             // the values
-    const SPEX_options *option
+    const SPEX_options* option
 );
 
 #if 0

@@ -1,0 +1,32 @@
+        -:    0:Source:SPEX_finalize.c
+        -:    0:Graph:SPEX_finalize.gcno
+        -:    0:Data:SPEX_finalize.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_finalize: finalize SPEX
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:// SPEX_finalize frees the working environment for SPEX library.
+        -:   12:
+        -:   13:#include "spex_util_internal.h"
+        -:   14:
+    22128:   15:SPEX_info SPEX_finalize
+        -:   16:(
+        -:   17:    void
+        -:   18:)
+        -:   19:{
+   22128*:   20:    if (!spex_initialized ( )) { return (SPEX_PANIC) ; }
+        -:   21:
+    22128:   22:    SPEX_mpfr_free_cache ( ) ;    // Free mpfr internal cache
+    22128:   23:    spex_gmp_finalize ( ) ;       // Reset GMP memory variables
+        -:   24:
+    22128:   25:    spex_set_initialized (false) ;
+    22128:   26:    return (SPEX_OK) ;
+        -:   27:}
+        -:   28:

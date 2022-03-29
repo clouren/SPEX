@@ -1,0 +1,73 @@
+        -:    0:Source:spex_left_lu_permute_x.c
+        -:    0:Graph:spex_left_lu_permute_x.gcno
+        -:    0:Data:spex_left_lu_permute_x.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Left_LU/spex_left_lu_permute_x: permute x, as x = Q*x
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function permutes x to get it back in its original form.
+        -:   12: * That is, x = Q*x.
+        -:   13: */
+        -:   14:
+        -:   15:#define SPEX_FREE_ALL \
+        -:   16:    SPEX_matrix_free (&x, NULL) ;
+        -:   17:
+        -:   18:#include "spex_left_lu_internal.h"
+        -:   19:
+      157:   20:SPEX_info spex_left_lu_permute_x
+        -:   21:(
+        -:   22:    SPEX_matrix **x_handle,     // permuted Solution vector
+        -:   23:    SPEX_matrix *x2,            // unpermuted Solution vector (not modified)
+        -:   24:    SPEX_LU_analysis *S,        // symbolic analysis with the column ordering Q
+        -:   25:    const SPEX_options* option
+        -:   26:)
+        -:   27:{
+        -:   28:
+        -:   29:    //--------------------------------------------------------------------------
+        -:   30:    // check inputs
+        -:   31:    //--------------------------------------------------------------------------
+        -:   32:
+        -:   33:    SPEX_info info ;
+     157*:   34:    SPEX_REQUIRE (x2, SPEX_DENSE, SPEX_MPQ) ;
+        -:   35:
+     157*:   36:    if (x_handle == NULL || !S || !S->q) {return SPEX_INCORRECT_INPUT;}
+      157:   37:    (*x_handle) = NULL ;
+        -:   38:
+        -:   39:    //--------------------------------------------------------------------------
+        -:   40:    // x (q) = x2
+        -:   41:    //--------------------------------------------------------------------------
+        -:   42:
+      157:   43:    int64_t *q = S->q ;     // column permutation
+      157:   44:    int64_t m = x2->m ;
+      157:   45:    int64_t n = x2->n ;
+        -:   46:
+        -:   47:    // allocate x
+      157:   48:    SPEX_matrix *x = NULL ;
+      157:   49:    SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, m, n,
+        -:   50:        0, false, true, option)) ;
+        -:   51:
+        -:   52:    // Set x = Q*x2
+      962:   53:    for (int64_t i = 0 ; i < m ; i++)
+        -:   54:    {
+     1748:   55:        for (int64_t j = 0 ; j < n ; j++)
+        -:   56:        {
+      883:   57:            SPEX_CHECK(SPEX_mpq_set(SPEX_2D(x,  q[i], j, mpq),
+        -:   58:                                    SPEX_2D(x2,   i,  j, mpq)));
+        -:   59:        }
+        -:   60:    }
+        -:   61:
+        -:   62:    //--------------------------------------------------------------------------
+        -:   63:    // return result
+        -:   64:    //--------------------------------------------------------------------------
+        -:   65:
+       81:   66:    (*x_handle) = x ;
+       81:   67:    return SPEX_OK;
+        -:   68:}
+        -:   69:

@@ -1,0 +1,41 @@
+        -:    0:Source:SPEX_cumsum.c
+        -:    0:Graph:SPEX_cumsum.gcno
+        -:    0:Data:SPEX_cumsum.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_cumsum: cumulative sum
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
+        -:   12: * in to c.  This function is lightly modified from CSparse.
+        -:   13: */
+        -:   14:
+        -:   15:#include "spex_util_internal.h"
+        -:   16:
+     9766:   17:SPEX_info SPEX_cumsum
+        -:   18:(
+        -:   19:    int64_t *p,          // vector to store the sum of c
+        -:   20:    int64_t *c,          // vector which is summed
+        -:   21:    int64_t n            // size of c
+        -:   22:)
+        -:   23:{
+    9766*:   24:    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+        -:   25:
+    9766*:   26:    if (!p || !c) return SPEX_INCORRECT_INPUT;
+        -:   27:    ASSERT(n >= 0);    
+     9766:   28:    int64_t i, nz = 0 ;
+    50288:   29:    for (i = 0 ; i < n ; i++)
+        -:   30:    {
+    40522:   31:        p [i] = nz ;
+    40522:   32:        nz += c [i] ;
+    40522:   33:        c [i] = p [i] ;
+        -:   34:    }
+     9766:   35:    p [n] = nz ;
+     9766:   36:    return SPEX_OK ;
+        -:   37:}

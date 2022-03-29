@@ -1,0 +1,84 @@
+        -:    0:Source:SPEX_vector_realloc.c
+        -:    0:Graph:SPEX_vector_realloc.gcno
+        -:    0:Data:SPEX_vector_realloc.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_vector_realloc: realloc the space for a SPEX_vector object
+        -:    3:// to given new size.
+        -:    4://------------------------------------------------------------------------------
+        -:    5:
+        -:    6:// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+        -:    7:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    8:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    9:
+        -:   10://------------------------------------------------------------------------------
+        -:   11:
+        -:   12:/* Purpose: This function realloc a SPEX_vector to given size. It will
+        -:   13: * initialize/allocate for the mpz entries.
+        -:   14: */
+        -:   15:
+        -:   16:#include "spex_util_internal.h"
+        -:   17:
+   321557:   18:SPEX_info SPEX_vector_realloc
+        -:   19:(
+        -:   20:    SPEX_vector* v,         // the vector to be expanded
+        -:   21:    const int64_t new_size, // desired new size for v
+        -:   22:    const SPEX_options *option
+        -:   23:)
+        -:   24:{
+        -:   25:    SPEX_info info;
+  321557*:   26:    if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
+        -:   27:
+   321557:   28:    int64_t p, old_size = v->nzmax ;
+   321557:   29:    if (old_size == new_size) {return SPEX_OK;}
+        -:   30:
+        -:   31:    //--------------------------------------------------------------------------
+        -:   32:    // free mpz entries before shrinking the mpz vector
+        -:   33:    //--------------------------------------------------------------------------
+        -:   34:
+   277990:   35:    if (old_size > new_size)
+        -:   36:    {
+   231258:   37:        for (p = new_size; p < old_size; p++)
+        -:   38:        {
+   153300:   39:            if (v->x[p] != NULL)
+        -:   40:            {
+   153300:   41:                SPEX_MPZ_CLEAR(v->x[p]);
+        -:   42:            }
+        -:   43:        }
+        -:   44:    }
+        -:   45:
+        -:   46:    //--------------------------------------------------------------------------
+        -:   47:    // expand the size of v->x and v->i to new_size
+        -:   48:    //--------------------------------------------------------------------------
+        -:   49:
+        -:   50:    bool okx, oki ;
+   277990:   51:    v->x = (mpz_t *)
+   277990:   52:        SPEX_realloc (new_size, old_size, sizeof (mpz_t), v->x, &okx) ;
+   277990:   53:    v->i = (int64_t *)
+   277990:   54:        SPEX_realloc (new_size, old_size, sizeof (int64_t), v->i, &oki) ;
+   277990:   55:    if (!oki || !okx)
+        -:   56:    {
+     1006:   57:        return (SPEX_OUT_OF_MEMORY) ;
+        -:   58:    }
+        -:   59:
+   276984:   60:    v->nzmax = new_size ;
+        -:   61:
+        -:   62:    //--------------------------------------------------------------------------
+        -:   63:    // set newly allocated mpz entries to NULL and initialize if required
+        -:   64:    //--------------------------------------------------------------------------
+        -:   65:
+   276984:   66:    if (old_size < new_size)
+        -:   67:    {
+  1006823:   68:        for (p = old_size ; p < new_size ; p++)
+        -:   69:        {
+   807797:   70:            SPEX_MPZ_SET_NULL (v->x[p]) ;
+        -:   71:        }
+        -:   72:
+  1001709:   73:        for (p = old_size ; p < new_size ; p++)
+        -:   74:        {
+   804477:   75:            SPEX_CHECK(SPEX_mpz_init (v->x[p])) ;
+        -:   76:        }
+        -:   77:    }
+        -:   78:
+   275190:   79:    return (SPEX_OK) ;
+        -:   80:}

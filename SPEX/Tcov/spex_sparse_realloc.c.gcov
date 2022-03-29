@@ -1,0 +1,64 @@
+        -:    0:Source:spex_sparse_realloc.c
+        -:    0:Graph:spex_sparse_realloc.gcno
+        -:    0:Data:spex_sparse_realloc.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/spex_sparse_realloc: double the space for a sparse mpz matrix
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function expands a CSC SPEX_matrix by doubling its size. This
+        -:   12: * version merely expands x and i and does not initialize/allocate the values!
+        -:   13: * The only purpose of this function is for the factorization, it does not work
+        -:   14: * for general sparse matrices
+        -:   15: */
+        -:   16:
+        -:   17:#include "spex_util_internal.h"
+        -:   18:
+      950:   19:SPEX_info spex_sparse_realloc
+        -:   20:(
+        -:   21:    SPEX_matrix* A // the matrix to be expanded
+        -:   22:)
+        -:   23:{
+        -:   24:
+        -:   25:    //--------------------------------------------------------------------------
+        -:   26:    // check inputs
+        -:   27:    //--------------------------------------------------------------------------
+        -:   28:
+     950*:   29:    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
+        -:   30:
+        -:   31:    //--------------------------------------------------------------------------
+        -:   32:    // double the size of A->x and A->i
+        -:   33:    //--------------------------------------------------------------------------
+        -:   34:
+      950:   35:    int64_t nzmax = A->nzmax ;
+        -:   36:
+        -:   37:    bool okx, oki ;
+      950:   38:    A->x.mpz = (mpz_t *)
+      950:   39:        SPEX_realloc (2*nzmax, nzmax, sizeof (mpz_t), A->x.mpz, &okx) ;
+      950:   40:    A->i = (int64_t *)
+      950:   41:        SPEX_realloc (2*nzmax, nzmax, sizeof (int64_t), A->i, &oki) ;
+      950:   42:    if (!oki || !okx)
+        -:   43:    {
+       20:   44:        return (SPEX_OUT_OF_MEMORY) ;
+        -:   45:    }
+        -:   46:
+      930:   47:    A->nzmax = 2*nzmax ;
+        -:   48:
+        -:   49:    //--------------------------------------------------------------------------
+        -:   50:    // set newly allocated mpz entries to NULL
+        -:   51:    //--------------------------------------------------------------------------
+        -:   52:
+     8365:   53:    for (int64_t p = nzmax ; p < 2*nzmax ; p++)
+        -:   54:    {
+     7435:   55:        SPEX_MPZ_SET_NULL (A->x.mpz [p]) ;
+        -:   56:    }
+        -:   57:
+      930:   58:    return (SPEX_OK) ;
+        -:   59:}
+        -:   60:

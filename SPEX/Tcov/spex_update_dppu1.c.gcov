@@ -1,0 +1,631 @@
+        -:    0:Source:spex_update_dppu1.c
+        -:    0:Graph:spex_update_dppu1.gcno
+        -:    0:Data:spex_update_dppu1.gcda
+        -:    0:Runs:3
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Update/spex_update_dppu1.c: perform diagonal permutation pivot update
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
+        -:    6:// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
+        -:    7:// SPEX_Update/License for the license.
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:// Purpose: This function is called to perform diagonal permutation pivot update
+        -:   12:// when the submatrix (formed by rows and columns k to ks) has the following
+        -:   13:// pattern
+        -:   14://       x 0 0 0 0       <- row k
+        -:   15://       0 x . . 0
+        -:   16://       0 . x . 0
+        -:   17://       0 . . x 0
+        -:   18://       . 0 0 0 x       <- row ks
+        -:   19:// The caller of this function always finds the biggest index from k+1:n-1 as ks
+        -:   20:// such that the submatrix has the above pattern. The patterns of ks+1 row and
+        -:   21:// column are unkown but must have at least one nonzero in U(k:ks,ks+1) or
+        -:   22:// L(ks+1, k+1:ks).
+        -:   23://
+        -:   24:// This function will swap rows and columns k and ks in L and U. Noted that the
+        -:   25:// rows of L and columns of U are permuted implicitly via the permutation
+        -:   26:// matrices based on P and Q.
+        -:   27:
+        -:   28:#define SPEX_FREE_ALL                \
+        -:   29:    SPEX_MPZ_CLEAR(Lksk);            \
+        -:   30:    SPEX_MPQ_CLEAR(pending_scale);   \
+        -:   31:    SPEX_MPZ_CLEAR(tmpz);
+        -:   32:
+        -:   33:#include "spex_update_internal.h"
+        -:   34:
+        -:   35:#define SL(k) (L->v[(k)]->scale)
+        -:   36:#define SU(k) (U->v[(k)]->scale)
+        -:   37:
+      891:   38:SPEX_info spex_update_dppu1
+        -:   39:(
+        -:   40:    SPEX_matrix *L,     // matrix L
+        -:   41:    SPEX_matrix *U,     // matrix U
+        -:   42:    SPEX_matrix *rhos,// array of scaled pivots
+        -:   43:    spex_scattered_vector *Lk_dense_col,// scattered column k of L
+        -:   44:    spex_scattered_vector *Uk_dense_row,// scattered column k of U
+        -:   45:    int64_t *inext,  // the index of first off-diag entry in col k of L
+        -:   46:    int64_t *h,      // allocated vector that can be used for history vector.
+        -:   47:                     // All entries are maintained to be >= -1
+        -:   48:    int64_t *Q,      // column permutation
+        -:   49:    int64_t *Q_inv,  // inverse of column permutation
+        -:   50:    int64_t *P,      // row permutation
+        -:   51:    int64_t *P_inv,  // inverse of row permutation
+        -:   52:    const int64_t k,   // current column index 0 <= k < n
+        -:   53:    const int64_t ks,  // index of the diagonal to be swapped with, [0,n)
+        -:   54:    const SPEX_options *option
+        -:   55:)
+        -:   56:{
+        -:   57:    // initialize workspace
+        -:   58:    SPEX_info info;
+        -:   59:    int sgn, Lksk_sgn;
+      891:   60:    int64_t pk, ck, pks, cks, j, n = U->n;
+      891:   61:    int64_t Qk = Q[k], Pk = P[k], Qks, Pks;
+      891:   62:    mpz_t *sd = rhos->x.mpz;
+        -:   63:    SPEX_vector *v;
+        -:   64:
+        -:   65:    mpq_t pending_scale;
+      891:   66:    SPEX_MPQ_SET_NULL(pending_scale);
+      891:   67:    mpz_t Lksk, tmpz; SPEX_MPZ_SET_NULL(Lksk); SPEX_MPZ_SET_NULL(tmpz);
+     891*:   68:    SPEX_CHECK(SPEX_mpq_init(pending_scale));
+     879*:   69:    SPEX_CHECK(SPEX_mpz_init(Lksk));
+     873*:   70:    SPEX_CHECK(SPEX_mpz_init(tmpz));
+        -:   71:
+        -:   72:    // -------------------------------------------------------------------------
+        -:   73:    // handle the special case when swapping with the inserted column. Since it
+        -:   74:    // is only in the k-th IPGE iteration, there is no need to perform
+        -:   75:    // backtracking for the inserted column. Therefore, only need to perform
+        -:   76:    // backtracking for U(n-1, Q(n-1)).
+        -:   77:    // -------------------------------------------------------------------------
+      867:   78:    if (ks == n)
+        -:   79:    {
+        5:   80:        Qks = Q[n-1];
+        5:   81:        Pks = P[n-1];
+        -:   82:
+        -:   83:#ifdef SPEX_DEBUG
+        -:   84:        // U(k,Q(ks)) must be nnz, otherwise it would cause singularity, since
+        -:   85:        // U(k,Q(k+1:n)) will be all zeros
+        -:   86:        SPEX_CHECK(SPEX_mpz_sgn(&sgn, Uk_dense_row->x[Qks]));
+        -:   87:        ASSERT(sgn != 0);
+        -:   88:#endif
+        -:   89:
+        -:   90:        // ---------------------------------------------------------------------
+        -:   91:        // backtrack U(n-1,Q(n-1)) which is initially sd[n-1] with pending
+        -:   92:        // scalors applied
+        -:   93:        // ---------------------------------------------------------------------
+        5:   94:        if (k > 0)
+        -:   95:        {
+       4*:   96:            SPEX_CHECK(SPEX_mpz_mul(U->v[n-1]->x[0], sd[n-1], sd[k-1]));
+        -:   97:        }
+        -:   98:        else
+        -:   99:        {
+       1*:  100:            SPEX_CHECK(SPEX_mpz_set(U->v[n-1]->x[0], sd[n-1]));
+        -:  101:        }
+        -:  102:
+        -:  103:        // L(P[ks],k) should be found at L(P[n-1],k) instead
+       5*:  104:        SPEX_CHECK(SPEX_mpz_sgn(&(Lksk_sgn), Lk_dense_col->x[Pks]));
+        -:  105:#ifdef SPEX_DEBUG
+        -:  106:        printf("using dppu1 swapping k(%ld) and n(%ld), L(ks,k)%s=0\n",k,ks,Lksk_sgn==0?"=":"!");
+        -:  107:#endif
+        5:  108:        if (Lksk_sgn == 0)
+        -:  109:        {
+       3*:  110:            SPEX_CHECK(SPEX_mpz_divexact(U->v[n-1]->x[0],
+        -:  111:                                         U->v[n-1]->x[0], sd[n-2]));
+        -:  112:        }
+        -:  113:        else
+        -:  114:        {
+       2*:  115:            SPEX_CHECK(SPEX_mpz_fdiv_q(U->v[n-1]->x[0],
+        -:  116:                                       U->v[n-1]->x[0], sd[n-2]));
+        -:  117:            // L(P(n-1),k) = L(P(n-1),k)*S(1,k), which should be integer
+       2*:  118:            SPEX_CHECK(SPEX_mpz_divexact(Lk_dense_col->x[Pks],
+        -:  119:                       Lk_dense_col->x[Pks], SPEX_MPQ_DEN(SL(k))));
+       2*:  120:            SPEX_CHECK(SPEX_mpz_mul(Lk_dense_col->x[Pks],
+        -:  121:                       Lk_dense_col->x[Pks], SPEX_MPQ_NUM(SL(k))));
+        -:  122:
+        -:  123:            // tmpz = ceil(U(k,Q(n-1))*L(P(n-1),k)/U(k,Q(k))
+       2*:  124:            SPEX_CHECK(SPEX_mpz_mul(tmpz, Uk_dense_row->x[Qks],
+        -:  125:                                    Lk_dense_col->x[Pks]));
+       2*:  126:            SPEX_CHECK(SPEX_mpz_cdiv_q(tmpz, tmpz, Uk_dense_row->x[Qk]));
+        -:  127:
+        -:  128:            // U(n-1,Q(n-1)) = U(n-1,Q(n-1))+tmpz
+       2*:  129:            SPEX_CHECK(SPEX_mpz_add(U->v[n-1]->x[0], U->v[n-1]->x[0], tmpz));
+        -:  130:
+        -:  131:            // reset Lk_dense_col->x[P[n-1]]=0
+       2*:  132:            SPEX_CHECK(SPEX_mpz_set_ui(Lk_dense_col->x[Pks], 0));
+        -:  133:        }
+        -:  134:        // S(2,n-1) is considered as 1 beyond this point, even though it is
+        -:  135:        // not explicit set to 1 here. It will be updated after calling this
+        -:  136:        // function.
+        -:  137:
+        -:  138:        // ---------------------------------------------------------------------
+        -:  139:        // scale entries in frames k+1:n-2
+        -:  140:        // ---------------------------------------------------------------------
+        -:  141:        // since the value in Uk_dense_row[Q[k]] will not be used, we use it to
+        -:  142:        // hold the original value of sd[k] before swapping columns and rows of
+        -:  143:        // k and n-1. Then we set sd[k] to the new pivot of column k of L
+        -:  144:        // vk[P[k]], which is keep as first entry in the nnz list.
+       5*:  145:        SPEX_CHECK(SPEX_mpz_swap(Uk_dense_row->x[Qk], sd[k]));
+       5*:  146:        SPEX_CHECK(SPEX_mpz_set(sd[k], L->v[k]->x[0]));
+        -:  147:
+        5:  148:        if (n > k+2) // n-1 > k+1
+        -:  149:        {
+        -:  150:            // pending_scale = sd(k)/Uk_dense_row[Q[k]]
+       2*:  151:            SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[k]));
+       2*:  152:            SPEX_CHECK(SPEX_mpq_set_den(pending_scale, Uk_dense_row->x[Qk]));
+       2*:  153:            SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
+        -:  154:
+        4:  155:            for (j = k+1; j < n-1; j++)
+        -:  156:            {
+        -:  157:                // S(:,k+1:n-2) = S(:,k+1:n-2)*pending_scale;
+       2*:  158:                SPEX_CHECK(SPEX_mpq_mul(SL(j), SL(j), pending_scale));
+       2*:  159:                SPEX_CHECK(SPEX_mpq_mul(SU(j), SU(j), pending_scale));
+        -:  160:                // sd(k+1:n-2) = sd(k+1:n-2)*pending_scale;
+       2*:  161:                SPEX_CHECK(SPEX_mpz_divexact(sd[j],
+        -:  162:                                        sd[j], SPEX_MPQ_DEN(pending_scale)));
+       2*:  163:                SPEX_CHECK(SPEX_mpz_mul(sd[j],
+        -:  164:                                        sd[j], SPEX_MPQ_NUM(pending_scale)));
+        -:  165:            }
+        -:  166:        }
+        -:  167:
+        -:  168:        // ---------------------------------------------------------------------
+        -:  169:        // Columns of k and n will be swapped after calling this function, we
+        -:  170:        // only need to swap rows of k and n-1
+        -:  171:        // ---------------------------------------------------------------------
+        -:  172:        // swap rows k and n-1 of U           % O(1) time
+        5:  173:        v = U->v[k];       U->v[k] = U->v[n-1];    U->v[n-1] = v;
+        -:  174:
+        -:  175:        // update row permutation to swap rows of L implicitly
+        5:  176:        P[k] = Pks;          P[n-1] = Pk;
+        5:  177:        P_inv[Pks] = k;   P_inv[Pk] = n-1;
+        -:  178:
+        -:  179:        // ---------------------------------------------------------------------
+        -:  180:        // In order to get sd(n-1), we just need to apply skip scale for
+        -:  181:        // U(k, Q[n-1]) and perform IPGE update. Then use it to update
+        -:  182:        // L(P[n-1],n-1), U(n-1,Q[n-1]) and S for frame n-1
+        -:  183:        // ---------------------------------------------------------------------
+        -:  184:        // get the scale for IPGE update: pending_scale = sd(n-2)/sd(k-1);
+       5*:  185:        SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[n-2]));
+        5:  186:        if (k > 0)
+        -:  187:        {
+       4*:  188:            SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[k-1]));
+       4*:  189:            SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
+        -:  190:        }
+        -:  191:        // pending_scale *= S(2,n-1), which was S(2,k) before swapping
+       5*:  192:        SPEX_CHECK(SPEX_mpq_mul(pending_scale, pending_scale, SU(n-1)));
+        -:  193:
+        -:  194:        // sd[n-1] = U(k, Q[n-1]) * pending_scale
+       5*:  195:        SPEX_CHECK(SPEX_mpz_swap(sd[n-1], Uk_dense_row->x[Qks]));
+       5*:  196:        SPEX_CHECK(SPEX_mpz_divexact(sd[n-1], sd[n-1],
+        -:  197:                                     SPEX_MPQ_DEN(pending_scale)));
+       5*:  198:        SPEX_CHECK(SPEX_mpz_mul(sd[n-1], sd[n-1],
+        -:  199:                                     SPEX_MPQ_NUM(pending_scale)));
+        -:  200:
+        -:  201:        // set U(n-1,Q(n-1))=L(P(n-1),n-1)=sd[n-1]
+       5*:  202:        SPEX_CHECK(SPEX_mpz_set (L->v[n-1]->x[0], sd[n-1]));
+       5*:  203:        SPEX_CHECK(SPEX_mpz_set (U->v[n-1]->x[0], sd[n-1]));
+        5:  204:        U->v[n-1]->i[0] = Qks;
+        5:  205:        U->v[n-1]->nz = 1;
+        5:  206:        L->v[n-1]->i[0] = Pk;
+        5:  207:        L->v[n-1]->nz = 1;
+        -:  208:
+        -:  209:        // S(:,n-1) = [1;1]
+       5*:  210:        SPEX_CHECK(SPEX_mpq_set_ui(SL(n-1), 1, 1));
+       5*:  211:        SPEX_CHECK(SPEX_mpq_set_ui(SU(n-1), 1, 1));
+        -:  212:
+        -:  213:        // reset nnz entries in Uk_dense_row to 0
+       5*:  214:        SPEX_CHECK(SPEX_mpz_set_ui(Uk_dense_row->x[Qk], 0));
+       5*:  215:        SPEX_CHECK(SPEX_mpz_set_ui(Uk_dense_row->x[Qks], 0));
+        -:  216:
+        5:  217:        SPEX_FREE_ALL;
+        5:  218:        return SPEX_OK;
+        -:  219:    }
+        -:  220:
+      862:  221:    Qks = Q[ks];
+      862:  222:    Pks = P[ks];
+        -:  223:    // -------------------------------------------------------------------------
+        -:  224:    // perform backtracking for row ks of U
+        -:  225:    // -------------------------------------------------------------------------
+        -:  226:    // find the scale for backtracking: pending_scale = sd(k-1)/sd(ks-1)
+      862:  227:    if (k == 0)
+        -:  228:    {
+       2*:  229:        SPEX_CHECK(SPEX_mpq_set_ui(pending_scale, 1, 1));
+        -:  230:    }
+        -:  231:    else
+        -:  232:    {
+     860*:  233:        SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[k-1]));
+        -:  234:    }
+     862*:  235:    SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[ks-1]));
+        -:  236:    // remove common factor in mpq_den and mpq_num
+     862*:  237:    SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
+        -:  238:
+        -:  239:    // S(:, ks) = pending_scale*S(:,ks)
+      862:  240:    SPEX_CHECK(SPEX_mpq_mul(SL(ks), SL(ks), pending_scale));
+      860:  241:    SPEX_CHECK(SPEX_mpq_mul(SU(ks), SU(ks), pending_scale));
+        -:  242:
+     856*:  243:    SPEX_CHECK(SPEX_mpz_sgn(&(Lksk_sgn), Lk_dense_col->x[Pks]));
+        -:  244:#ifdef SPEX_DEBUG
+        -:  245:        printf("using dppu1 swapping k(%ld) and ks(%ld), L(ks,k)%s=0\n",k,ks,Lksk_sgn==0?"=":"!");
+        -:  246:#endif
+      856:  247:    if (Lksk_sgn == 0) // L(P(ks),k) == 0
+        -:  248:    {
+        -:  249:        ASSERT (*inext != ks);
+        -:  250:        // sd(ks) = sd(ks)*pending_scale
+     853*:  251:        SPEX_CHECK(SPEX_mpz_divexact(sd[ks],
+        -:  252:                                     sd[ks], SPEX_MPQ_DEN(pending_scale)));
+      853:  253:        SPEX_CHECK(SPEX_mpz_mul(sd[ks], sd[ks], SPEX_MPQ_NUM(pending_scale)));
+        -:  254:    }
+        -:  255:    else
+        -:  256:    {
+        -:  257:        ASSERT (*inext == ks);
+        -:  258:        // assign Lksk = L(P(ks),k)*S(1,k), which should be integer
+       3*:  259:        SPEX_CHECK(SPEX_mpz_divexact(Lksk, Lk_dense_col->x[Pks],
+        -:  260:                                     SPEX_MPQ_DEN(SL(k))));
+       3*:  261:        SPEX_CHECK(SPEX_mpz_mul(Lksk, Lksk, SPEX_MPQ_NUM(SL(k))));
+        -:  262:
+        -:  263:        // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+        -:  264:        // backtracking jumbled sparse row ks of U using scattered row k of U.
+        -:  265:        // Assuming explicit zeros in U(ks, :) resulted from exact cancellation
+        -:  266:        // in IPGE update were not removed (SLIP LU keeps those zeros in output
+        -:  267:        // L and U), nonzero pattern of U(k,Q(k+1:n+1)) should be a subset of
+        -:  268:        // U(ks,:).
+        -:  269:        // However, we remove every explicit zero we found for both IPGE and
+        -:  270:        // backtracking. We will need to insert new entry to row ks after
+        -:  271:        // backtracking. To this end, we need to iterate across all nonzeros
+        -:  272:        // in Uk_dense_row to find if any column index of nonzero is untouched,
+        -:  273:        // then a new nonzero should be added.
+        -:  274:        // U(ks,cks) = U(k,cks)*Lksk/U(k,Q(k))
+        -:  275:        // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+        3:  276:        int64_t count = 0; // # of nnz in row k of U, explicit zeros excluded
+       14:  277:        for (pk = 0; pk < Uk_dense_row->nz; pk++)
+        -:  278:        {
+       11:  279:            ck = Uk_dense_row->i[pk];
+      11*:  280:            SPEX_CHECK(SPEX_mpz_sgn (&sgn, Uk_dense_row->x[ck]));
+       11:  281:            if (sgn != 0)
+        -:  282:            {
+       11:  283:                h[ck] = -2;
+       11:  284:                count ++;
+        -:  285:            }
+        -:  286:        }
+        -:  287:        // exclude diagonal
+        3:  288:        h[Qk] = -1;
+        3:  289:        count --;
+        -:  290:
+        -:  291:        // start backtracking
+        3:  292:        pks = 0;
+       12:  293:        while (pks < U->v[ks]->nz)
+        -:  294:        {
+        -:  295:            // column index in row ks of U
+        9:  296:            cks = U->v[ks]->i[pks];
+        -:  297:
+        -:  298:            // U(ks,cks) = U(ks,cks)*S(2,ks)+U(k,cks)*Lksk/U(k,Q(k))
+        9:  299:            if (h[cks] == -2)  // U(k,cks) != 0
+        -:  300:            {
+        -:  301:                // tmpz = ceil(U(k,cks)*Lksk/U(k,Q(k))
+       4*:  302:                SPEX_CHECK(SPEX_mpz_mul(tmpz, Uk_dense_row->x[cks], Lksk));
+       4*:  303:                SPEX_CHECK(SPEX_mpz_cdiv_q(tmpz, tmpz, Uk_dense_row->x[Qk]));
+        -:  304:
+        -:  305:                // U(ks,cks) = floor(U(ks,cks)*S(2,ks))
+       4*:  306:                SPEX_CHECK(SPEX_mpz_mul(U->v[ks]->x[pks], U->v[ks]->x[pks],
+        -:  307:                                        SPEX_MPQ_NUM(SU(ks))));
+       4*:  308:                SPEX_CHECK(SPEX_mpz_fdiv_q(U->v[ks]->x[pks], U->v[ks]->x[pks],
+        -:  309:                                        SPEX_MPQ_DEN(SU(ks))));
+        -:  310:
+        -:  311:                // U(ks,cks) = U(ks,cks)+tmpz
+       4*:  312:                SPEX_CHECK(SPEX_mpz_add(U->v[ks]->x[pks],
+        -:  313:                                        U->v[ks]->x[pks], tmpz));
+        -:  314:
+        4:  315:                h[cks] = -1;
+        4:  316:                count--;
+        -:  317:
+        -:  318:                // remove this entry if it becomes zero
+       4*:  319:                SPEX_CHECK(SPEX_mpz_sgn(&sgn, U->v[ks]->x[pks]));
+        4:  320:                if (sgn == 0)
+        -:  321:                {
+        1:  322:                    U->v[ks]->nz --;
+        1:  323:                    U->v[ks]->i[pks] = U->v[ks]->i[U->v[ks]->nz];
+       1*:  324:                    SPEX_CHECK(SPEX_mpz_swap(U->v[ks]->x[pks],
+        -:  325:                                             U->v[ks]->x[U->v[ks]->nz]));
+        1:  326:                    continue;
+        -:  327:                }
+        -:  328:            }
+        -:  329:            else           // U(k,cks) == 0
+        -:  330:            {
+        -:  331:                // U(ks,cks) = U(ks,cks)*S(2,ks)
+       5*:  332:                SPEX_CHECK(SPEX_mpz_divexact(U->v[ks]->x[pks], U->v[ks]->x[pks],
+        -:  333:                                        SPEX_MPQ_DEN(SU(ks))));
+       5*:  334:                SPEX_CHECK(SPEX_mpz_mul(U->v[ks]->x[pks], U->v[ks]->x[pks],
+        -:  335:                                        SPEX_MPQ_NUM(SU(ks))));
+        -:  336:
+        -:  337:                // update sd[ks] = U(ks, Q(ks))
+        5:  338:                if (cks == Qks)
+        -:  339:                {
+       3*:  340:                    SPEX_CHECK(SPEX_mpz_set(sd[ks], U->v[ks]->x[pks]));
+        -:  341:                }
+        -:  342:            }
+        8:  343:            pks ++;
+        -:  344:        }
+        -:  345:        // continue backtracking for potential fillin
+        3:  346:        if (count > 0)
+        -:  347:        {
+        -:  348:            // allocate additional space if needed
+        2:  349:            if (U->v[ks]->nz+count > U->v[ks]->nzmax)
+        -:  350:            {
+       2*:  351:                SPEX_CHECK(SPEX_vector_realloc(U->v[ks], U->v[ks]->nz+count,
+        -:  352:                    option));
+        -:  353:            }
+        2:  354:            pks = U->v[ks]->nz;
+       10:  355:            for (pk = 0; count > 0 && pk < Uk_dense_row->nz; pk++)
+        -:  356:            {
+        8:  357:                ck = Uk_dense_row->i[pk];
+        8:  358:                if (h[ck] == -2)
+        -:  359:                {
+        4:  360:                    U->v[ks]->i[pks] = ck;
+        -:  361:                    // U(ks,ck) = U(k,ck)*Lksk/U(k,Q(k))
+       4*:  362:                    SPEX_CHECK(SPEX_mpz_mul(U->v[ks]->x[pks],
+        -:  363:                        Uk_dense_row->x[ck], Lksk));
+       4*:  364:                    SPEX_CHECK(SPEX_mpz_divexact(U->v[ks]->x[pks],
+        -:  365:                        U->v[ks]->x[pks], Uk_dense_row->x[Qk]));
+        4:  366:                    pks++;
+        -:  367:
+        4:  368:                    h[ck] = -1;
+        4:  369:                    count--;
+        -:  370:                }
+        -:  371:            }
+        2:  372:            U->v[ks]->nz = pks;
+        -:  373:        }
+        -:  374:
+        -:  375:        // reset S(2,ks)
+       3*:  376:        SPEX_CHECK(SPEX_mpq_set_ui(SU(ks), 1, 1));
+        -:  377:
+        -:  378:        // Mathematically, we should insert new entry at U(ks, Q[k]) and swap
+        -:  379:        // its value with Lksk. However, since the value of this entry will not
+        -:  380:        // be used beyond this point, and column Q[k] of U will be deleted when
+        -:  381:        // finished, we will skipped adding U(ks, Q[k]) here.
+        -:  382:    }
+        -:  383:    
+        -:  384:    // ------------------------------------------------------------------------
+        -:  385:    // swap rows and columns of k and ks
+        -:  386:    // ------------------------------------------------------------------------
+        -:  387:    // swap columns k and ks of L        % O(1) time
+      854:  388:    v = L->v[k];       L->v[k] = L->v[ks];    L->v[ks] = v;
+        -:  389:    // swap rows k and ks of U           % O(1) time
+      854:  390:    v = U->v[k];       U->v[k] = U->v[ks];    U->v[ks] = v;
+        -:  391:
+        -:  392:    // update row/column permutation to swap rows of L and cols of U implicitly
+      854:  393:    Q[k] = Qks;           Q[ks] = Qk;
+      854:  394:    Q_inv[Qks] = k;   Q_inv[Qk] = ks;
+      854:  395:    P[k] = Pks;           P[ks] = Pk;
+      854:  396:    P_inv[Pks] = k;   P_inv[Pk] = ks;
+        -:  397:
+        -:  398:    // swap entries in sd
+     854*:  399:    SPEX_CHECK(SPEX_mpz_swap(sd[k], sd[ks]));
+        -:  400:
+        -:  401:    // ------------------------------------------------------------------------
+        -:  402:    // scale entries in frames k+1:ks-1
+        -:  403:    // ------------------------------------------------------------------------
+      854:  404:    if (ks > k+1)
+        -:  405:    {
+        -:  406:        // get the scale for entries between frames k and ks % O(1) time
+        -:  407:        // pending_scale = sd(k)/sd (ks);
+     105*:  408:        SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[k]));
+     105*:  409:        SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[ks]));
+     105*:  410:        SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
+        -:  411:
+      206:  412:        for (j = k+1; j < ks; j++)
+        -:  413:        {
+        -:  414:            // S(:,k+1:ks-1) = S(:,k+1:ks-1)*pending_scale;
+      105:  415:            SPEX_CHECK(SPEX_mpq_mul(SL(j), SL(j), pending_scale));
+      103:  416:            SPEX_CHECK(SPEX_mpq_mul(SU(j), SU(j), pending_scale));
+        -:  417:            // sd(k+1:ks-1) = sd(k+1:ks-1)*pending_scale;
+     101*:  418:            SPEX_CHECK(SPEX_mpz_divexact(sd[j],
+        -:  419:                                    sd[j], SPEX_MPQ_DEN(pending_scale)));
+     101*:  420:            SPEX_CHECK(SPEX_mpz_mul(sd[j],
+        -:  421:                                    sd[j], SPEX_MPQ_NUM(pending_scale)));
+        -:  422:        }
+        -:  423:    }
+        -:  424:
+        -:  425:    // ------------------------------------------------------------------------
+        -:  426:    // perform IPGE for frame ks, whose entries are in Lk_dense_col and
+        -:  427:    // Uk_dense_row.
+        -:  428:    // NOTE: in the last iteration, i.e., swapping column k with last column,
+        -:  429:    // the IPGE update column k of L is useless, since the updated column will
+        -:  430:    // be deleted and replaced. Therefore, its IPGE update in the last
+        -:  431:    // iteration can be treated same as row k of U for better efficiency.
+        -:  432:    // ------------------------------------------------------------------------
+        -:  433:    // If this is the last iteration, then we don't need to perform the
+        -:  434:    // remaining IPGE update, since L(:,k) will be deleted and updated with
+        -:  435:    // inserted column.
+        -:  436:    // However, the current heurestic used in SPEX_Update_LU_ColRep will always
+        -:  437:    // handle such case with cppu instead. In case the heurestic is changed in
+        -:  438:    // the furture, and thus this case become possible for dppu1 (the following
+        -:  439:    // assert is triggered), enable the following if clause.
+        -:  440:    ASSERT(ks != n-1); // This is used to detect if this case becomes possible.
+        -:  441:    /*if (ks == n-1)
+        -:  442:    {
+        -:  443:        SPEX_FREE_ALL;
+        -:  444:        return SPEX_OK;
+        -:  445:    }*/
+        -:  446:
+        -:  447:    // Since L(P[ks],k) will be 0 after swapping, the IPGE update for row k of
+        -:  448:    // U can be done by multiplying with sd(ks-1)/sd(k-1).
+        -:  449:    // get the scale for IPGE update: pending_scale = sd(ks-1)/sd (k-1);
+     850*:  450:    SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[ks-1]));
+      850:  451:    if (k > 0)
+        -:  452:    {
+     848*:  453:        SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[k-1]));
+     848*:  454:        SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
+        -:  455:    }
+        -:  456:    // S(2, ks) = S(2, ks)*pending_scale
+      850:  457:    SPEX_CHECK(SPEX_mpq_mul(SU(ks), SU(ks), pending_scale));
+        -:  458:
+        -:  459:    // sd(ks) = sd(ks)*pending_scale;
+     842*:  460:    SPEX_CHECK(SPEX_mpz_divexact(sd[ks], sd[ks], SPEX_MPQ_DEN(pending_scale)));
+      842:  461:    SPEX_CHECK(SPEX_mpz_mul(sd[ks], sd[ks], SPEX_MPQ_NUM(pending_scale)));
+        -:  462:
+      838:  463:    if (Lksk_sgn == 0)
+        -:  464:    {
+      835:  465:        if (Lk_dense_col->nz == 1)
+        -:  466:        {
+      265:  467:            SPEX_FREE_ALL;
+      265:  468:            return SPEX_OK;
+        -:  469:        }
+        -:  470:        // IPGE update for col k of L can be achieved by setting
+        -:  471:        // S(1, ks) = S(1, ks)*pending_scale
+      570:  472:        SPEX_CHECK(SPEX_mpq_mul(SL(ks), SL(ks), pending_scale));
+        -:  473:    }
+        -:  474:    else
+        -:  475:    {
+        3:  476:        Pk = Pks;  // Pk = P[k]
+        -:  477:        // L(ck,ks) = (L(ck,ks)*L(P(k),k)-L(ck,k)*L(P(k),ks))/sd(k-1);
+        -:  478:        // This IPGE euqation indicates that using L(P(k), ks) without applying
+        -:  479:        // any pending scale factor to could keep it in the same pending scale
+        -:  480:        // factor as the rest of entries in column k of L.  Therefore, the
+        -:  481:        // skipped scaling for col k of L can still be skipped when performing
+        -:  482:        // IPGE update. However, the result could be then non-integer. To avoid
+        -:  483:        // that, we first set
+        -:  484:        // S(1,ks) = S(1,ks)/sd[k-1]
+        3:  485:        if (k > 0)
+        -:  486:        {
+       1*:  487:            SPEX_CHECK(SPEX_mpz_mul(SPEX_MPQ_DEN(SL(ks)),
+        -:  488:                                    SPEX_MPQ_DEN(SL(ks)), sd[k-1]));
+       1*:  489:            SPEX_CHECK(SPEX_mpq_canonicalize(SL(ks)));
+        -:  490:        }
+        -:  491:
+        -:  492:        // In addition, we will skip applying pending scale to column k of L.
+        -:  493:        // According to the IPGE update equation, we can see that the scale for
+        -:  494:        // column ks of L S(1, ks) needs to multiply with S(1,k) after the IPGE
+        -:  495:        // update.  We will do it in advance at this point before performing
+        -:  496:        // the IPGE update, and divide all entries in column ks of L by the
+        -:  497:        // denominator of S(1,ks), which will keep the result still in the
+        -:  498:        // integer domain and also make it as small as possible.
+        -:  499:        // S(1,ks) = S(1,ks)*S(1,k)
+       3*:  500:        SPEX_CHECK(SPEX_mpq_mul(SL(ks), SL(ks), SL(k)));
+        -:  501:
+        -:  502:        // initialize history vector
+       12:  503:        for (pks = 0; pks < Lk_dense_col->nz; pks++)
+        -:  504:        {
+        9:  505:            cks = Lk_dense_col->i[pks];
+        -:  506:            // formally, we should set h[cks] = SPEX_FLIP(k-1), so we will know
+        -:  507:            // the entries in L(:,ks) are in (k-1)-th IPGE iteration. However,
+        -:  508:            // since we need to perform only one IPGE iteration, we just need
+        -:  509:            // to know whether the corresponding entry is updated. Therefore,
+        -:  510:            // the initialization for history vector is set as
+        9:  511:            h[cks] = -2; // only entry in the nnz patter has h < -1
+        -:  512:        }
+        -:  513:        // # of nnz in column ks of L
+        3:  514:        int64_t Lks_nz = Lk_dense_col->nz;
+        -:  515:
+        -:  516:        // finish the IPGE update by performing
+        -:  517:        // L(ck,ks) = L(ck,ks)*L(P(k),k)-L(ck,k)*L(P(k),ks))
+        -:  518:        // NOTE: This will cause fillin in the ks(th) column of L,
+        -:  519:        //       Since there is no subset relation between nnz pattern in
+        -:  520:        //       L(:,ks) and L(:, k). Both could have explicit zero(s).
+        -:  521:        //       L(:,k) can be jumbled.
+        3:  522:        *inext = n;
+       10:  523:        for (pk = 1 /*exclude L(P[k],k)*/; pk < L->v[k]->nz; pk++)
+        -:  524:        {
+       7*:  525:            SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->v[k]->x[pk]));
+       7*:  526:            if (sgn == 0)  {continue;}// skip if L(ck, k) == 0
+        -:  527:
+        -:  528:            // row index in column k of L
+        7:  529:            ck = L->v[k]->i[pk];
+        -:  530:
+       7*:  531:            SPEX_CHECK(SPEX_mpz_sgn(&sgn, Lk_dense_col->x[ck]));
+        7:  532:            if (sgn != 0) // L(ck, ks) != 0
+        -:  533:            {
+        -:  534:                // L(ck, ks) = L(ck, ks) * L(P[k], k)
+       1*:  535:                SPEX_CHECK(SPEX_mpz_mul(Lk_dense_col->x[ck],
+        -:  536:                                        Lk_dense_col->x[ck],
+        -:  537:                                        L->v[k]->x[0]));
+        -:  538:            }
+        6:  539:            else if (h[ck] >= -1) // this entry was not in nnz pattern
+        -:  540:            {
+        -:  541:                // insert new entry in the nonzero pattern
+        -:  542:                ASSERT(Lks_nz <= Lk_dense_col->nzmax);
+        6:  543:                Lk_dense_col->i[Lks_nz] = ck;
+        6:  544:                Lks_nz++;
+        -:  545:            }
+       7*:  546:            SPEX_CHECK(SPEX_mpz_submul(Lk_dense_col->x[ck],
+        -:  547:                                       Lk_dense_col->x[Pk], L->v[k]->x[pk]));
+       7*:  548:            SPEX_CHECK(SPEX_mpz_sgn(&sgn, Lk_dense_col->x[ck]));
+        7:  549:            if (sgn != 0) // L(ck, ks) != 0
+        -:  550:            {
+       6*:  551:                SPEX_CHECK(SPEX_mpz_divexact(Lk_dense_col->x[ck],
+        -:  552:                                             Lk_dense_col->x[ck],
+        -:  553:                                             SPEX_MPQ_DEN(SL(ks))));
+        -:  554:
+        -:  555:                // check if this will be the first off diagonal entry in L(P,ks)
+        6:  556:                int64_t real_ck = P_inv[ck];
+        6:  557:                if (real_ck < *inext)
+        -:  558:                {
+        -:  559:                    ASSERT(real_ck > ks);
+        -:  560:                    // inext is the row index of the found first off-diagonal
+        -:  561:                    // entry in L(P,ks)
+        2:  562:                    *inext = real_ck;
+        -:  563:                }
+        -:  564:            }
+        -:  565:            
+        -:  566:            // update h[ck] to mark Lk_dense_col[ck] need no further update
+        7:  567:            h[ck] = -1;
+        -:  568:        }
+        3:  569:        pks = 0;
+       18:  570:        while (pks < Lks_nz)       // iterate across all nnz
+        -:  571:        {
+        -:  572:            // row index in column ks of L
+       15:  573:            cks = Lk_dense_col->i[pks];
+        -:  574:
+       15:  575:            if (h[cks] < -1) //only need to update entries that were not updated
+        -:  576:            {
+        -:  577:                // reset history vector to any value >= -1
+        8:  578:                h[cks] = -1;
+        -:  579:                // L(P(k), ks) should be removed from nnz pattern
+        8:  580:                if (cks == Pk)
+        -:  581:                {
+        -:  582:                    // update the number of nnz
+        3:  583:                    Lks_nz--;
+        -:  584:                    // move the row index of last nonzero to current position
+        3:  585:                    Lk_dense_col->i[pks] = Lk_dense_col->i[Lks_nz];
+       3*:  586:                    SPEX_CHECK(SPEX_mpz_set_ui(Lk_dense_col->x[cks], 0));
+        3:  587:                    continue;
+        -:  588:                }
+        -:  589:
+       5*:  590:                SPEX_CHECK(SPEX_mpz_sgn(&sgn, Lk_dense_col->x[cks]));
+        5:  591:                if (sgn != 0) // L(cks, ks) != 0
+        -:  592:                {
+        -:  593:                    // L(cks,ks) = (L(cks,ks)*L(P(k),k))/den(S(1,ks));
+       5*:  594:                    SPEX_CHECK(SPEX_mpz_mul(Lk_dense_col->x[cks],
+        -:  595:                                            Lk_dense_col->x[cks],
+        -:  596:                                            L->v[k]->x[0]));
+       5*:  597:                    SPEX_CHECK(SPEX_mpz_divexact(Lk_dense_col->x[cks],
+        -:  598:                                            Lk_dense_col->x[cks],
+        -:  599:                                            SPEX_MPQ_DEN(SL(ks))));
+        -:  600:                    // check if this will be the 1st off-diag entry in L(P,ks)
+        5:  601:                    int64_t real_cks = P_inv[cks];
+        5:  602:                    if (real_cks < *inext && real_cks > ks)
+        -:  603:                    {
+        -:  604:                        // inext is the row index of the found first
+        -:  605:                        // off-diagonal entry in L(P,ks)
+        1:  606:                        *inext = real_cks;
+        -:  607:                    }
+        -:  608:                }
+        -:  609:            }
+       12:  610:            pks++;
+        -:  611:        }
+        -:  612:        // update the number of nnz
+        3:  613:        Lk_dense_col->nz = Lks_nz;
+        -:  614:        
+        -:  615:        // skip the rest of IPGE iterations
+        -:  616:        // pending_scale = sd(ks-1)/sd(k);
+       3*:  617:        SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[ks-1]));
+       3*:  618:        SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[k]));
+       3*:  619:        SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
+        -:  620:        // set denominator of S(1,ks) = 1
+       3*:  621:        SPEX_CHECK(SPEX_mpz_set_ui(SPEX_MPQ_DEN(SL(ks)), 1));
+        -:  622:        // S(2, ks) = S(2, ks)*pending_scale;
+       3*:  623:        SPEX_CHECK(SPEX_mpq_mul(SL(ks), SL(ks), pending_scale));
+        -:  624:    }
+      567:  625:    SPEX_FREE_ALL;
+      567:  626:    return SPEX_OK;
+        -:  627:}

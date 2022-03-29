@@ -1,0 +1,35 @@
+        -:    0:Source:SPEX_vector_free.c
+        -:    0:Graph:SPEX_vector_free.gcno
+        -:    0:Data:SPEX_vector_free.gcda
+        -:    0:Runs:9
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Util/SPEX_vector_free.c: free a vector.
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Util: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:// Purpose: This function is called to delete a vector.
+        -:   12:
+        -:   13:
+        -:   14:#include "spex_util_internal.h"
+        -:   15:
+   250871:   16:SPEX_info SPEX_vector_free
+        -:   17:(
+        -:   18:    SPEX_vector **v,  // vector to be deleted
+        -:   19:    const SPEX_options *option
+        -:   20:)
+        -:   21:{
+  250871*:   22:    if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
+   250871:   23:    if(v == NULL || (*v) == NULL) {return SPEX_OK;}
+   234517:   24:    spex_delete_mpz_array(&((*v)->x), (*v)->nzmax);
+   234517:   25:    SPEX_MPQ_CLEAR((*v)->scale);
+   234517:   26:    SPEX_FREE((*v)->i);
+   234517:   27:    SPEX_FREE(*v);
+        -:   28:
+   234517:   29:    return SPEX_OK;
+        -:   30:}
+        -:   31:

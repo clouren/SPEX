@@ -1,0 +1,74 @@
+        -:    0:Source:spex_left_lu_get_nonzero_pivot.c
+        -:    0:Graph:spex_left_lu_get_nonzero_pivot.gcno
+        -:    0:Data:spex_left_lu_get_nonzero_pivot.gcda
+        -:    0:Runs:6
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Left_LU/spex_left_lu_get_nonzero_pivot: find a nonzero pivot in a column
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+        -:    6:// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+        -:    7:// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:/* Purpose: This function obtains the first eligible nonzero pivot
+        -:   12: * This is enabled if the user sets option->pivot = SPEX_FIRST_NONZERO
+        -:   13: *
+        -:   14: * Note: This pivoting scheme is NOT recommended for SPEX Left LU.  It is provided
+        -:   15: * for comparison with other pivoting options.
+        -:   16: *
+        -:   17: * On output, the kth pivot is returned.
+        -:   18: */
+        -:   19:
+        -:   20:#include "spex_left_lu_internal.h"
+        -:   21:
+      498:   22:SPEX_info spex_left_lu_get_nonzero_pivot // find the first eligible nonzero pivot
+        -:   23:(
+        -:   24:    int64_t *pivot,         // the index of first eligible nonzero pivot
+        -:   25:    SPEX_matrix* x,         // kth column of L and U
+        -:   26:    int64_t* pivs,          // vector indicating which rows are pivotal
+        -:   27:    int64_t n,              // size of x
+        -:   28:    int64_t top,            // nonzero pattern is located in xi[top..n-1]
+        -:   29:    int64_t* xi             // nonzero pattern of x
+        -:   30:)
+        -:   31:{
+        -:   32:
+        -:   33:    //--------------------------------------------------------------------------
+        -:   34:    // check inputs
+        -:   35:    //--------------------------------------------------------------------------
+        -:   36:
+     498*:   37:    SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
+        -:   38:
+        -:   39:    SPEX_info info ;
+     498*:   40:    if (!pivs || !xi || !pivot) {return SPEX_INCORRECT_INPUT;}
+        -:   41:
+        -:   42:    //--------------------------------------------------------------------------
+        -:   43:    // initializations
+        -:   44:    //--------------------------------------------------------------------------
+        -:   45:
+      498:   46:    (*pivot) = -1; // used later to check for singular matrix
+        -:   47:
+        -:   48:    //--------------------------------------------------------------------------
+        -:   49:    // Iterate across the nonzeros in x
+        -:   50:    //--------------------------------------------------------------------------
+        -:   51:
+     8031:   52:    for (int64_t i = top; i < n; i++)
+        -:   53:    {
+        -:   54:        // inew is the location of the ith nonzero
+     7710:   55:        int64_t inew = xi[i];
+        -:   56:        // check if x[inew] is an eligible pivot
+        -:   57:        int sgn ;
+    7887*:   58:        SPEX_CHECK (SPEX_mpz_sgn (&sgn, x->x.mpz[inew])) ;
+     7710:   59:        if (sgn != 0 && pivs [inew] < 0)
+        -:   60:        {
+      177:   61:            (*pivot) = inew;
+        -:   62:            // End the loop
+      177:   63:            return SPEX_OK;
+        -:   64:        }
+        -:   65:    }
+        -:   66:
+        -:   67:    // return error code since no qualified pivot found
+      321:   68:    return SPEX_SINGULAR;
+        -:   69:}
+        -:   70:

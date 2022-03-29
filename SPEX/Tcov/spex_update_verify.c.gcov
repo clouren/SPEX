@@ -1,0 +1,134 @@
+        -:    0:Source:spex_update_verify.c
+        -:    0:Graph:spex_update_verify.gcno
+        -:    0:Data:spex_update_verify.gcda
+        -:    0:Runs:3
+        -:    1://------------------------------------------------------------------------------
+        -:    2:// SPEX_Update/spex_update_verify.c: verify if A=LD^(-1)U
+        -:    3://------------------------------------------------------------------------------
+        -:    4:
+        -:    5:// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
+        -:    6:// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
+        -:    7:// SPEX_Update/License for the license.
+        -:    8:
+        -:    9://------------------------------------------------------------------------------
+        -:   10:
+        -:   11:// Purpose: This function is to verify if A=L(P,:)D^(-1)U(:,Q)
+        -:   12:
+        -:   13:#define SPEX_FREE_ALL                 \
+        -:   14:    SPEX_matrix_free(&b, option);     \
+        -:   15:    SPEX_matrix_free(&x, option);     \
+        -:   16:    SPEX_matrix_free(&b2, option);    \
+        -:   17:    SPEX_MPQ_CLEAR(x_scale);
+        -:   18:
+        -:   19:#include "spex_update_internal.h"
+        -:   20:
+     3386:   21:SPEX_info spex_update_verify
+        -:   22:(
+        -:   23:    const SPEX_matrix *L,     // lower triangular matrix
+        -:   24:    const SPEX_matrix *U,     // upper triangular matrix
+        -:   25:    const SPEX_matrix *A,     // Input matrix
+        -:   26:    int64_t *h,            // history vector
+        -:   27:    const SPEX_matrix *rhos,// array of scaled pivots
+        -:   28:    const int64_t *P,      // row permutation
+        -:   29:    const int64_t *Q_inv,  // inverse of column permutation
+        -:   30:    const SPEX_options *option// command options
+        -:   31:)
+        -:   32:{
+        -:   33:    SPEX_info info;
+     3386:   34:    int64_t tmp, i, n = L->n;
+        -:   35:    int sgn;
+     3386:   36:    mpq_t x_scale; SPEX_MPQ_SET_NULL(x_scale);
+     3386:   37:    SPEX_matrix *b = NULL; // the dense right-hand-side matrix to be generated
+     3386:   38:    SPEX_matrix *x = NULL; // the dense solution matrix to be generated
+     3386:   39:    SPEX_matrix *b2 = NULL; // the dense matrix to store the result of A*x
+        -:   40:
+    3386*:   41:    SPEX_CHECK(SPEX_mpq_init(x_scale));
+    3366*:   42:    SPEX_CHECK(SPEX_mpq_set_ui(x_scale, 1, 1));
+     3366:   43:    SPEX_CHECK(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
+        -:   44:        true, option));
+     3266:   45:    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
+        -:   46:        true, option));
+        -:   47:
+        -:   48:    // -------------------------------------------------------------------------
+        -:   49:    // generate random right-hand-size vector
+        -:   50:    // -------------------------------------------------------------------------
+        -:   51:    // initialize random number generator
+     3166:   52:    int seed = 10;
+     3166:   53:    srand(seed);
+    22114:   54:    for (i = 0; i < n; i++)
+        -:   55:    {
+    18948:   56:        tmp = i+1;//rand(); //TODO
+   18948*:   57:        SPEX_CHECK(SPEX_mpz_set_si(b->x.mpz[i], tmp));
+        -:   58:    }
+        -:   59:
+        -:   60:    // -------------------------------------------------------------------------
+        -:   61:    // solve LD^(-1)Ux = b for x
+        -:   62:    // -------------------------------------------------------------------------
+     3166:   63:    SPEX_CHECK(SPEX_Update_Solve(&x, b, L, U, A->scale, h, rhos, P,
+        -:   64:        Q_inv, option));
+        -:   65:
+        -:   66:    // -------------------------------------------------------------------------
+        -:   67:    // compute b2 = A*x
+        -:   68:    // -------------------------------------------------------------------------
+    18987:   69:    for (i = 0; i < n; i++)
+        -:   70:    {
+   16286*:   71:        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[i]));
+    16286:   72:        if (sgn == 0) { continue;}
+        -:   73:
+    95152:   74:        for (int64_t p = 0; p < A->v[i]->nz; p++)
+        -:   75:        {
+    81337:   76:            int64_t j = A->v[i]->i[p];
+        -:   77:            // b2[j] += x[i]*A(j,i)
+    81337:   78:            SPEX_CHECK(SPEX_mpz_addmul(b2->x.mpz[j],
+        -:   79:                x->x.mpz[i], A->v[i]->x[p]));
+        -:   80:        }
+        -:   81:    }
+        -:   82:    // update b2->scale = x->scale*A->scale
+     2701:   83:    SPEX_CHECK(SPEX_mpq_mul(b2->scale, x->scale, A->scale));
+        -:   84:
+        -:   85:    // -------------------------------------------------------------------------
+        -:   86:    // check if b2 == b
+        -:   87:    // -------------------------------------------------------------------------
+        -:   88:    // set b2->scale = b2->scale/b->scale since we only want to compare the
+        -:   89:    // integer values b2*b->scale and b*b->scale. b*b->scale are the values
+        -:   90:    // stored in b->v->x. It can be shown that the resulted
+        -:   91:    // b2->scale = rhos[n-1]
+    2681*:   92:    SPEX_CHECK(SPEX_mpq_div(b2->scale, b2->scale, b->scale));
+        -:   93:#ifdef SPEX_DEBUG
+        -:   94:    SPEX_CHECK(SPEX_mpq_cmp_z(&sgn, b2->scale, rhos->x.mpz[n-1]));
+        -:   95:    ASSERT(sgn == 0);
+        -:   96:#endif
+    18700:   97:    for (i = 0; i < n; i++)
+        -:   98:    {
+        -:   99:        // set b2[i] = b2[i]/rhos[n-1] = b2[i]/b2->scale
+        -:  100:        // This division will be exact since b are integers
+   16038*:  101:        SPEX_CHECK(SPEX_mpz_divexact(b2->x.mpz[i],
+        -:  102:                                     b2->x.mpz[i], SPEX_MPQ_NUM(b2->scale)));
+        -:  103:
+   16038*:  104:        SPEX_CHECK(SPEX_mpz_cmp(&sgn, b2->x.mpz[i], b->x.mpz[i]));
+    16038:  105:        if (sgn != 0)
+        -:  106:        {
+       19:  107:            info = SPEX_INCORRECT;
+       19:  108:            break;
+        -:  109:        }
+        -:  110:    }
+        -:  111:
+        -:  112:    //--------------------------------------------------------------------------
+        -:  113:    // Print info
+        -:  114:    //--------------------------------------------------------------------------
+        -:  115:
+    2681*:  116:    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
+     2681:  117:    if (info == SPEX_OK)
+        -:  118:    {
+     2662:  119:        SPEX_PR1 ("Factorization is verified to be correct and exact.\n") ;
+        -:  120:    }
+       19:  121:    else if (info == SPEX_INCORRECT)
+        -:  122:    {
+        -:  123:        // This can never happen.
+       19:  124:        SPEX_PR1 ("ERROR! Factorization is wrong. This is a bug; please "
+        -:  125:                  "contact the authors of SPEX.\n") ;
+        -:  126:    }
+        -:  127:
+     2681:  128:    SPEX_FREE_ALL;
+     2681:  129:    return info;
+        -:  130:}
