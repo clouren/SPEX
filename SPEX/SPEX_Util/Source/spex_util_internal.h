@@ -386,10 +386,6 @@ bool spex_initialized ( void ) ;        // true if called, false if not
 void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 
 
-// check if SPEX_initialize* has been called
-bool spex_initialized ( void ) ;        // true if called, false if not
-void spex_set_initialized (bool s) ;    // set global initialzed flag to s
-
 //------------------------------------------------------------------------------
 // spex_create_mpfr_array: create a 1D mpfr_t array
 //------------------------------------------------------------------------------
