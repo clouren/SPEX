@@ -202,10 +202,6 @@ typedef struct SPEX_options
                            // SPEX Left LU), 3: all, with matrices and results
     int32_t prec ;         // Precision used to output file if MPFR is chosen
     mpfr_rnd_t round ;     // Type of MPFR rounding used
-    bool check ;           // Set true if users wish to check the solution to
-                           // the system or verify the resulted factorization.
-                           // Intended for debugging only; SPEX is guaranteed
-                           // to be exact and correct.
     SPEX_factorization_algorithm algo ; // parameter which tells the function
                            // whether it is performing a left-looking (2) or
                            // up-looking (3) factorization in case of Cholesky
@@ -605,9 +601,15 @@ typedef struct
                                          // for Cholesky factorization.
     int64_t* cp;                         // column pointers of L for Cholesky
                                          // factorization.
+    int64_t* c;                          // column counts
 } SPEX_symbolic_analysis ;
 
-// The symbolic analysis object is created by SPEX_symbolic_analyze.
+// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+/*SPEX_info SPEX_symbolic_analysis_create
+(
+    SPEX_symbolic_analysis **S, // Structure to be created
+    const SPEX_options *option
+);*/
 
 // SPEX_symbolic_analysis_free frees the SPEX_symbolic_analysis object.
 SPEX_info SPEX_symbolic_analysis_free        
@@ -616,18 +618,6 @@ SPEX_info SPEX_symbolic_analysis_free
     const SPEX_options *option
 ) ;
 
-// SPEX_symbolic_analyze performs the symbolic ordering and analysis for
-// specified kind. The pre-ordering method is specified in the option.
-// For the pre-ordering for LU factorization, there are three options:
-// no ordering, COLAMD, and AMD.
-// TODO? For the pre-ordering for Cholesky factorization, 
-SPEX_info SPEX_symbolic_analyze
-(
-    SPEX_symbolic_analysis **S_handle, // symbolic analysis
-    const SPEX_matrix *A, // Input matrix
-    const SPEX_factorization_kind kind, // LU, Cholesky or QR analysis
-    const SPEX_options *option  // Control parameters
-) ;
 
 
 //------------------------------------------------------------------------------
@@ -717,6 +707,13 @@ typedef struct
 
 } SPEX_factorization;
 
+// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+/*SPEX_info SPEX_factorization_create
+(
+    SPEX_factorization **F, // Structure to be created
+    const SPEX_options *option
+);*/
+
 // SPEX_factorization_free frees the SPEX_factorization object.
 SPEX_info SPEX_factorization_free        
 (
@@ -725,36 +722,6 @@ SPEX_info SPEX_factorization_free
 ) ;
 
 
-// SPEX_factorize performs SPEX factorization based on the available symbolic
-// analysis S->kind, which should be either LU, Choleksy or QR.
-SPEX_info SPEX_factorize
-(
-    SPEX_factorization **F_handle, // The resulted factorization as specified
-    const SPEX_matrix *A, // Input matrix
-    const SPEX_symbolic_analysis *S, // symbolic analysis
-    const SPEX_options *option  // Control parameters
-) ;
-
-// SPEX_solve solves the linear system Ax=b with available factorization of A.
-SPEX_info SPEX_solve
-(
-    SPEX_matrix **x_handle, // the solution to the system
-    const SPEX_matrix *b,   // the right-hand-side vector
-    const SPEX_factorization *F, // factorization of A
-    const SPEX_options *option  // Control parameters
-) ;
-
-
-/* TODO
-// SPEX_solve solves the linear system Ax=b with available factorization of A.
-SPEX_info SPEX_solve
-(
-    SPEX_matrix **x, // input as the right-hand-side vector, and output with 
-                     // the solution to the system
-    const SPEX_factorization *F, // factorization of A
-    const SPEX_options *option  // Control parameters
-) ;
-*/
 
 
 
@@ -882,13 +849,25 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 ) ;
 
 
+/* SPEX_scale: 
+ */
+SPEX_info SPEX_scale
+(
+    // Output
+    SPEX_matrix* x,
+    // Input
+    const mpq_t scaling_num, //numerator
+    const mpq_t scaling_den, //denominator
+    const SPEX_options* option        // command options
+);
+
 /* SPEX_check_solution: checks the solution of the linear system.  Performs a
  * quick rational arithmetic check of A*x=b.
  */
 SPEX_info SPEX_check_solution
 (
     const SPEX_matrix *A,          // input matrix
-    const SPEX_matrix *x,          // solution vector
+    SPEX_matrix *x,          // solution vector
     const SPEX_matrix *b,          // right hand side
     const SPEX_options* option     // Command options
 );

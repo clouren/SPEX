@@ -1,1 +1,0 @@
-../SPEX_Update/Demo/simple_rand.c

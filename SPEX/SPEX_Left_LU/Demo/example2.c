@@ -107,7 +107,7 @@ int main (int argc, char **argv)
     
     // SPEX Left LU has an optional check, to enable it, one can set the following
     // parameter to be true.
-    option->check = true;
+    //option->check = true;
    
     // Solve the system and give MPQ solution
     OK(SPEX_Left_LU_backslash( &x, SPEX_MPQ, A, b, option));

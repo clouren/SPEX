@@ -31,13 +31,15 @@ C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I
 all: install
 
 OBJ = \
-     SPEX_Chol_analysis_free.o spex_Chol_post.o spex_Chol_counts.o spex_Chol_Pre_Left_Factor.o \
-     spex_Chol_ereach.o \
-     SPEX_Chol_Solve.o spex_Chol_etree.o spex_Chol_tdfs.o SPEX_Chol_Factor.o \
-     spex_Chol_forward_sub.o spex_Left_Chol_triangular_solve.o \
-     spex_Chol_leaf.o spex_Chol_backward_sub.o SPEX_Chol_permute_A.o \
-     spex_Up_Chol_triangular_solve.o  SPEX_Chol_backslash.o \
-     SPEX_Chol_preorder.o spex_Chol_Up_Factor.o spex_Chol_Left_Factor.o
+     spex_chol_post.o spex_chol_counts.o spex_chol_pre_left_factor.o \
+     spex_chol_ereach.o \
+     SPEX_Chol_solve.o spex_chol_etree.o spex_chol_tdfs.o spex_chol_factor.o \
+     spex_chol_forward_sub.o spex_left_chol_triangular_solve.o \
+     spex_chol_leaf.o spex_chol_backward_sub.o spex_chol_permute_A.o \
+     spex_up_chol_triangular_solve.o  SPEX_Chol_backslash.o \
+     spex_chol_preorder.o spex_chol_up_factor.o spex_chol_left_factor.o \
+     spex_chol_symbolic_analysis.o SPEX_Chol_analize.o\
+     SPEX_Chol_factorize.o \
 
 $(OBJ): ../Include/SPEX_Chol.h Makefile
 

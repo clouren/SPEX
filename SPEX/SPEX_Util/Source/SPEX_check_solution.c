@@ -23,7 +23,7 @@
 SPEX_info SPEX_check_solution
 (
     const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *x,         // Solution vectors
+    SPEX_matrix *x,         // Solution vectors //removing const
     const SPEX_matrix *b,         // Right hand side vectors
     const SPEX_options* option    // Command options
 )
@@ -50,6 +50,13 @@ SPEX_info SPEX_check_solution
     SPEX_CHECK (SPEX_mpq_init(temp));
     SPEX_CHECK (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
         b->nzmax, false, true, option));
+
+    //--------------------------------------------------------------------------
+    // first we must "un-scale" the solution since solve returns the scaled 
+    // solution
+    //--------------------------------------------------------------------------
+
+    SPEX_CHECK(SPEX_scale(x, b->scale, A->scale, option));
 
     //--------------------------------------------------------------------------
     // perform SPEX_mpq_addmul in loops to compute b2 = A*x

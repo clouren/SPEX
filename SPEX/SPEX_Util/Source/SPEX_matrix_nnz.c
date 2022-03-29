@@ -85,6 +85,7 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
         default:
             return (SPEX_INCORRECT_INPUT) ;
     }
+
     return ((*nnz < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
 }
 

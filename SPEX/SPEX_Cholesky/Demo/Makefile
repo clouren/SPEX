@@ -27,7 +27,7 @@ CS = ../Lib/libspexchol.a $(LDLIBS)
 all: lib example_extended example_extended_debug example_simple forCluster_extended
 	- ./example_simple
 	- ./example_extended
-	- ./forCluster_extended f ../ExampleMats/2.mat.txt s
+	#- ./forCluster_extended f ../ExampleMats/2.mat.txt s
 	- echo "WARNING: Remember to remove the -g for test and releases in the Lib/Makefile"
 
 lib:
@@ -40,10 +40,10 @@ example_extended_debug: lib example_extended.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_extended_debug example_extended.c demos.c $(CS)
 
 example_simple: lib example_simple.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example_simple example_simple.c demos.c $(CS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_simple example_simple.c demos.c $(CS)
 
-forCluster_extended: lib forCluster_extended.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o forCluster_extended forCluster_extended.c demos.c $(CS)
+#forCluster_extended: lib forCluster_extended.c Makefile
+#	$(CC) $(LDFLAGS) $(CF) $(I) -o forCluster_extended forCluster_extended.c demos.c $(CS)
 
 clean:
 	- $(RM) *.o

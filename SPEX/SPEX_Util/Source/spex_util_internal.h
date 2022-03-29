@@ -105,7 +105,7 @@ defined *before* including any other file.  Thus
         free all output objects \
     }
     #include "this file.h"
-    
+
 then, since SPEC_FREE_ALL is already defined, it isn't #defined below.
 
 Definitions of these macros:
@@ -113,7 +113,7 @@ Definitions of these macros:
     SPEX_FREE_ALL:  frees everything, including both workspace and the result
     SPEX_FREE_WORKSPACE: frees just the internal workspace of the method, not
     the final result
-    
+
 */
 
 // Frees workspace and memory that would be returned. Only used when there is

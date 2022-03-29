@@ -26,7 +26,7 @@ CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 # SPEX_Util depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
-
+CF += -g #Util in debugmode
 C = $(CC) $(CF) -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config
 
 all: install
@@ -42,6 +42,8 @@ OBJ = \
     spex_delete_mpz_array.o spex_dynamic_to_CSC_mpz.o spex_CSC_mpz_to_dynamic.o \
     SPEX_vector_free.o SPEX_vector_allocate.o SPEX_vector_realloc.o \
     SPEX_symbolic_analysis_free.o  SPEX_factorization_free.o
+    SPEX_scale.o \
+    #SPEX_symbolic_analysis_create.o SPEX_factorization_create.o
     #SPEX_determine_empty_column.o \
 
 $(OBJ): ../Include/SPEX_Util.h ../Source/spex_util_internal.h Makefile
