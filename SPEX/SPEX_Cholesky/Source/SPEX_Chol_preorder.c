@@ -86,7 +86,7 @@ SPEX_info SPEX_Chol_preorder
     S = (SPEX_symbolic_analysis*) SPEX_malloc(sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
 
-    S->kind = SPEX_CHOLESKY_SYMBOLIC_ANALYSIS ;
+    S->kind = SPEX_CHOLESKY_FACTORIZATION ;
 
     // Allocate memory for column permutation
     S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
