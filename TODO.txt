@@ -55,7 +55,7 @@ cmake
 
 
 ------------
-delete SPEX_factorization_create and SPEX_symbolic_analysis_create
+delete SPEX_factorization_create.c and SPEX_symbolic_analysis_create.c and SPE.c
 
 do we really need SPEX_scale? unify the output of SPEX_***_solve
 

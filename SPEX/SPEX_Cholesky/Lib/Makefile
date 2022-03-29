@@ -38,7 +38,7 @@ OBJ = \
      spex_chol_leaf.o spex_chol_backward_sub.o spex_chol_permute_A.o \
      spex_up_chol_triangular_solve.o  SPEX_Chol_backslash.o \
      spex_chol_preorder.o spex_chol_up_factor.o spex_chol_left_factor.o \
-     spex_chol_symbolic_analysis.o SPEX_Chol_analize.o\
+     spex_chol_symbolic_analysis.o SPEX_Chol_analyze.o\
      SPEX_Chol_factorize.o \
 
 $(OBJ): ../Include/SPEX_Chol.h Makefile

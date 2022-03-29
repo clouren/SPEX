@@ -41,7 +41,7 @@ OBJ = \
     SPEX_transpose.o SPEX_determine_symmetry.o\
     spex_delete_mpz_array.o spex_dynamic_to_CSC_mpz.o spex_CSC_mpz_to_dynamic.o \
     SPEX_vector_free.o SPEX_vector_allocate.o SPEX_vector_realloc.o \
-    SPEX_symbolic_analysis_free.o  SPEX_factorization_free.o
+    SPEX_symbolic_analysis_free.o  SPEX_factorization_free.o \
     SPEX_scale.o \
     #SPEX_symbolic_analysis_create.o SPEX_factorization_create.o
     #SPEX_determine_empty_column.o \

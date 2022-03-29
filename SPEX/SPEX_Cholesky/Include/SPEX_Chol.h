@@ -291,7 +291,7 @@ SPEX_info SPEX_Chol_backslash
                                // is used.
 );*/
 
-SPEX_info SPEX_Chol_analize
+SPEX_info SPEX_Chol_analyze
 (
     // Output
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure 

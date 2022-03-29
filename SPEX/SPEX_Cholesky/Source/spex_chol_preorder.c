@@ -87,7 +87,7 @@ SPEX_info spex_chol_preorder
     SPEX_matrix_nnz(&anz, A, option);   
 
     // Allocate memory for S    
-    S = (SPEX_symbolic_analysis*) SPEX_calloc(sizeof(SPEX_symbolic_analysis));
+    S = (SPEX_symbolic_analysis*) SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
     /* TODO delete
     S = (SPEX_symbolic_analysis*) SPEX_malloc(sizeof(SPEX_symbolic_analysis));

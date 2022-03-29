@@ -72,7 +72,7 @@ SPEX_info spex_chol_symbolic_analysis
     
     // Set the column pointers of L
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
-    SPEX_CHECK( SPEX_cumsum(S->cp, (S->c), n));
+    SPEX_CHECK( SPEX_cumsum(S->cp, (S->c), n, option));
    
     // Set the exact number of nonzeros in L
     S->lnz = S->cp[n];
