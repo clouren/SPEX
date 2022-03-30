@@ -39,7 +39,11 @@
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
+SPEX_info SPEX_Update_Solve    // solves Ax = b via REF LU or Chol of A
+
+SPEX_info SPEX_Update_TSolve   // solves A'x = b via REF LU or Chol of A
+
+SPEX_info spex_update_solve // solves Ax = b or A'x=b via LU or Chol
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
@@ -47,7 +51,7 @@ SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
     // input:
     const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    SPEX_factorization *F,// The SPEX LU factorization in updatable form
+    SPEX_factorization *F,// The SPEX LU or Chol factorization in updatable form
     const bool transpose,   // whether computing Ax=b or ATx=b
     const SPEX_options* option // Command options
 )
@@ -66,9 +70,20 @@ SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
         return SPEX_INCORRECT_INPUT;
     }
     *x_handle = NULL;
-    
+
+    // in SPEX_LU_solve:
+    if ((F->updatable))
+    {
+        {
+            // convert to static format
+            info = spex_update_factorization_convert(F, option);
+            if (info != SPEX_OK) return info;
+        }
+    }
+
     if (!(F->updatable))
     {
+    #if 0
         if (!transpose)
         {
             // perform normal Left LU solve for static factorization
@@ -77,6 +92,7 @@ SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
             return info;
         }
         else
+    #endif
         {
             // convert to updatable format if wish to compute ATx=b
             info = spex_update_factorization_convert(F, option);

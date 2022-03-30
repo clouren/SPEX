@@ -103,7 +103,7 @@ SPEX_info SPEX_Update_LU_ColRep
     Uci        = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
     Ucx        = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
     map        = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
-    if (!h || !h_for_vk || !Uci || !Ucx || !map)
+    if (!h || !h_for_vk || !Uci || !Ucx || !map || !Uc_offdiag || !Lr_offdiag)
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
