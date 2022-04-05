@@ -11,7 +11,7 @@
 
 // spex_update_matrix_convert converts either F->L or F->U between CSC MPZ
 // matrix and DYNAMIC_CSC MPZ matrix. This function is only called by
-// spex_update_factorization_convert, and the updatable flag of the input
+// SPEX_Update_factorization_convert, and the updatable flag of the input
 // factorization is always set to its complement, which indicates the expected
 // result of the conversion. To be more specific, the result of the function is
 // listed as follows:
@@ -33,7 +33,7 @@
 // which means that U will be firstly transposed to UT, and then the
 // permutation of the rows of UT will be reset with F->Qinv_perm.
 //
-// If the function returns with any error, 
+// If the function returns with any error, the original F becomes undefined.
 
 #define SPEX_FREE_ALL                \
 {                                    \

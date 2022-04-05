@@ -53,8 +53,10 @@ SPEX_info SPEX_Update_Chol_Rank1
     //--------------------------------------------------------------------------
     SPEX_info info;
     if (!spex_initialized()) {return SPEX_PANIC;}
+
     SPEX_REQUIRE(w , SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    if (!F || sigma == 0 ||
+
+    if (!F || F->kind != SPEX_CHOLESKY_FACTORIZATION || sigma == 0 ||
         w->m != F->L->m || w->n != 1 || w->v[0]->nz < 0 ||
         (w->v[0]->nz > 0 && (!(w->v[0]->x) || !(w->v[0]->i))))
     {
@@ -67,7 +69,7 @@ SPEX_info SPEX_Update_Chol_Rank1
     // make sure F is updatable
     if (!(F->updatable))
     {
-        info = spex_update_factorization_convert(F, option);
+        info = SPEX_Update_factorization_convert(F, option);
         if (info != SPEX_OK) return info;
     }
 

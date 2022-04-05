@@ -60,8 +60,10 @@ SPEX_info SPEX_Update_LU_ColRep
     //--------------------------------------------------------------------------
     SPEX_info info;
     if (!spex_initialized()) {return SPEX_PANIC;}
+
     SPEX_REQUIRE(vk, SPEX_DYNAMIC_CSC, SPEX_MPZ);
-    if (!F || k < 0 || k >= F->L->m ||
+
+    if (!F || F->kind != SPEX_LU_FACTORIZATION || k < 0 || k >= F->L->m ||
         vk->m != F->L->m || vk->n != 1 || vk->v[0]->nz < 0 ||
         (vk->v[0]->nz > 0 && (!(vk->v[0]->x) || !(vk->v[0]->i))))
     {
@@ -75,7 +77,7 @@ SPEX_info SPEX_Update_LU_ColRep
     // make sure F is updatable
     if (!(F->updatable))
     {
-        info = spex_update_factorization_convert(F, option);
+        info = SPEX_Update_factorization_convert(F, option);
         if (info != SPEX_OK) return info;
     }
 

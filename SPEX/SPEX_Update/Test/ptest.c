@@ -41,7 +41,7 @@
     SPEX_factorization_free(&F2, option);        \
     SPEX_symbolic_analysis_free(&analysis, option);    \
     SPEX_FREE(option);                           \
-    mpz_clear(z); mpz_clear(tmpz);               \
+    mpq_clear(obj); mpz_clear(tmpz);             \
     mpq_clear(minq); mpq_clear(tmpq1);           \
     mpq_clear(tmpq2);mpq_clear(maxq);            \
     SPEX_FREE(basis);                            \
@@ -89,8 +89,8 @@ int main( int argc, char* argv[])
     SPEX_matrix *vk = NULL;
     SPEX_vector *tmpv;
     SPEX_factorization *F1 = NULL, *F2 = NULL;
-    mpz_t z, tmpz;
-    mpq_t minq, maxq, tmpq1, tmpq2;
+    mpz_t tmpz;
+    mpq_t obj, minq, maxq, tmpq1, tmpq2;
     SPEX_symbolic_analysis* analysis = NULL;
     int64_t *basis = NULL, *used_as_basis = NULL;
     double *col_val = NULL;
@@ -106,8 +106,8 @@ int main( int argc, char* argv[])
     glp_init_smcp(&parm);
     parm.it_lim = 1;
     OK(SPEX_create_default_options(&option));
-    OK(SPEX_mpz_init(z));
     OK(SPEX_mpz_init(tmpz));
+    OK(SPEX_mpq_init(obj));
     OK(SPEX_mpq_init(minq));
     OK(SPEX_mpq_init(maxq));
     OK(SPEX_mpq_init(tmpq1));
@@ -489,12 +489,12 @@ int main( int argc, char* argv[])
         start2 = clock();
         // solve for x_basic
         OK(SPEX_matrix_free (&x2, option));
-        OK(SPEX_Update_LU_Solve(&x2, b, F1, false, option));
+        OK(SPEX_Update_solve(&x2, F1, b, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
-        // reset objective value z = 0
-        OK(SPEX_mpz_set_ui(z, 0));
+        // reset objective value = 0
+        OK(SPEX_mpq_set_ui(obj, 0, 1));
         for (i = 0; i < n; i++)
         {
             j = basis[i];
@@ -510,21 +510,20 @@ int main( int argc, char* argv[])
                 // build vector c
                 OK(SPEX_mpz_set(c->x.mpz[i], Prob_c->x.mpz[j]));
 
-                // compute objective value z
-                OK(SPEX_mpz_addmul(z, c->x.mpz[i], x2->x.mpz[i]));
+                // compute objective value
+                OK(SPEX_mpq_set_z(tmpq1, c->x.mpz[i]));
+                OK(SPEX_mpq_mul(tmpq1, tmpq1, x2->x.mpq[i]));
+                OK(SPEX_mpz_add(obj, obj, tmpq1));
 
-                OK(SPEX_mpq_set_z(tmpq1, x2->x.mpz[i]));
-                OK(SPEX_mpq_div(tmpq1, tmpq1, x2->scale));
 #if 1
-                if (mpz_sgn(x2->x.mpz[i]) * mpq_sgn(x2->scale) < 0)
+                if (mpq_sgn(x2->x.mpq[i]) < 0)
                 {
-                    printf("x[%ld]=%lf<0 %d %d\n",j,mpq_get_d(tmpq1),
-                        mpz_sgn(x2->x.mpz[i]), mpq_sgn(x2->scale));
-                    gmp_printf("exact x[%ld]=%Qd\n",j,tmpq1);
+                    printf("x[%ld]=%lf<0 %d %d\n",j,mpq_get_d(x2->x.mpq[i]));
+                    gmp_printf("exact x[%ld]=%Qd\n",j,x2->x.mpq[i]);
                     //OK(SPEX_PANIC);
                 }
 #else
-                SPEX_gmp_printf("%ld xz[%ld]= %Qd \n",i,j,tmpq1);
+                SPEX_gmp_printf("%ld xz[%ld]= %Qd \n",i,j,x2->x.mpq[i]);
 #endif
             }
         }
@@ -541,12 +540,10 @@ int main( int argc, char* argv[])
         // set c->scale = Prob_c->scale
         OK(SPEX_mpq_set(c->scale, Prob_c->scale));
 
-        // compute the real objective value with scales applied
-        OK(SPEX_mpq_set_z(tmpq1, z));
-        OK(SPEX_mpq_div(tmpq1, tmpq1, x2->scale));
-        OK(SPEX_mpq_div(tmpq1, tmpq1, Prob_c->scale));
-        //OK(SPEX_gmp_printf("obj value = %Qd\n",tmpq1));
-        printf("obj value = %f\n", mpq_get_d(tmpq1)+z0);
+        // compute the real objective value with c->scale applied
+        OK(SPEX_mpq_div(obj, obj, Prob_c->scale));
+        //OK(SPEX_gmp_printf("obj value = %Qd\n",obj));
+        printf("obj value = %f\n", mpq_get_d(obj)+z0);
 
         //----------------------------------------------------------------------
         // find the entering variable
@@ -554,7 +551,7 @@ int main( int argc, char* argv[])
         // solve A'*c_sol = c for updated coefficient for objective function
         SPEX_matrix_free(&c_sol, option);
         start2 = clock();
-        OK(SPEX_Update_LU_Solve(&c_sol, c, F1, true, option));
+        OK(SPEX_Update_tsolve(&c_sol, F1, c, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
@@ -669,7 +666,7 @@ int main( int argc, char* argv[])
         // solve for Ay_sol = y
         SPEX_matrix_free(&y_sol, option);
         start2 = clock();
-        OK(SPEX_Update_LU_Solve(&y_sol, y, F1, false, option));
+        OK(SPEX_Update_solve(&y_sol, F1, y, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 

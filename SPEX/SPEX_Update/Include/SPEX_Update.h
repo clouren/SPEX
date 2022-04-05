@@ -181,41 +181,61 @@ SPEX_info SPEX_Update_Chol_Rank1
 );
 
 //------------------------------------------------------------------------------
-// Function for solving LD^(-1)Ux =b
+// Function for solving A*x =b via LU or Cholesky factorization
 //------------------------------------------------------------------------------
 
-// TODO make this internal? so that we can assume F is updatable
 // NOTE: the requirement for L and UT is exactly same as other functions in
 // SPEX_Update, which requires the pivot of L->v[j] or UT->v[j] be the
 // first entry correspondingly.
 
-SPEX_info SPEX_Update_LU_Solve // solves Ax = b via REF LU factorization of A
+SPEX_info SPEX_Update_solve // solves Ax = b via LU or Cholesky factorization
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
-                            // the system. 
+                            // the system.
     // input:
-    const SPEX_matrix *b,         // a m*n dense matrix contains the right-hand-side
+    SPEX_factorization *F,  // The SPEX LU or Cholesky factorization
+    const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
-                            // format.
-    const bool transpose,   // whether computing Ax=b or ATx=b
     const SPEX_options* option // Command options
 );
 
-SPEX_info SPEX_Update_Chol_Solve // solves Ax = b via REF LU factorization of A
+//------------------------------------------------------------------------------
+// Function for solving A^T*x =b via LU or Cholesky factorization of A
+//------------------------------------------------------------------------------
+SPEX_info SPEX_Update_tsolve // solves A^T*x = b
 (
     // Output
-    SPEX_matrix **x_handle, // a n*m dense matrix contains the solution to
-                            // the system. 
+    SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
+                            // the system.
     // input:
-    const SPEX_matrix *b,         // a n*m dense matrix contains the right-hand-side
+    SPEX_factorization *F,  // The SPEX LU or Cholesky factorization of A
+    const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_factorization *F,// The SPEX LU factorization in dynamic_CSC
-                            // format.
     const SPEX_options* option // Command options
 );
+//------------------------------------------------------------------------------
+// Function for converting factorization between updatable (with L and/or U as
+// dynamic_CSC MPZ matrices) and non-updatable (with L and/or U as CSC MPZ
+// matrices) formats.
+//------------------------------------------------------------------------------
 
+// NOTE: if F->updatable == false upon input, F->L (and F->U if exists) must be
+// CSC MPZ matrix, otherwise, SPEX_INCORRECT_INPUT will be returned. Likewise,
+// if F->updatable == true upon input, F->L (and F->U if exists) must be
+// dynamic_CSC MPZ matrix. In addition, both F->L and F->U (if exists) must not
+// be shallow matrices. All SPEX functions output either of these two formats
+// and non-shallow. Therefore, these input requirements can be met easily if
+// users do not try to modify any individual component of F.  The conversion is
+// done in place and F->updatable will be set to its complement upon output. In
+// case of any error, the returned factorization should be considered as
+// undefined.
+
+SPEX_info SPEX_Update_factorization_convert
+(
+    SPEX_factorization *F,  // The factorization to be converted
+    const SPEX_options* option // Command options
+);
 
 #endif
 

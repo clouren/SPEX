@@ -36,13 +36,14 @@ OBJ = \
     SPEX_Update_LU_ColRep.o \
     spex_update_dppu1.o\
     spex_update_dppu2.o\
-    spex_update_finalize_and_insert_vk.o   SPEX_Update_Solve.o \
+    spex_update_finalize_and_insert_vk.o \
+    SPEX_Update_solve.o SPEX_Update_tsolve.o spex_update_solve_internal.o \
     spex_update_triangular_solve.o \
     spex_update_forward_sub.o \
-    spex_update_verify.o \
     SPEX_Update_Chol_Rank1.o \
-    spex_update_permute_row.o spex_update_matrix_canonicalize.o \
-    spex_update_factorization_convert.o spex_update_matrix_convert.o
+    SPEX_Update_factorization_convert.o spex_update_matrix_convert.o
+    #spex_update_permute_row.o spex_update_verify.o \
+    #spex_update_matrix_canonicalize.o \
 
 
 $(OBJ): ../Include/SPEX_Update.h ../Source/spex_update_internal.h Makefile

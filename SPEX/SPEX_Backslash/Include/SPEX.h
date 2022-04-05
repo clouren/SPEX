@@ -1175,12 +1175,16 @@ SPEX_info SPEX_Left_LU_factorize
     const SPEX_options* option // command options
 );
 
+// Note: F can be non-updatable but will be converted if that happens, which
+//       makes the input F not 'const' while only its format but not values may
+//       be changed.
+
 SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
     SPEX_matrix **x_handle,  // rational solution to the system
     // input:
-    const SPEX_factorization* F, // LU factorization
+    SPEX_factorization* F, // LU factorization
     const SPEX_matrix *b,   // right hand side vector
     const SPEX_options* option // Command options
 );
@@ -1330,6 +1334,10 @@ SPEX_info SPEX_Chol_factorize
  * and S contains the elimination tree
  * On output x contains the rational solution of the system LDL' x = b
  */
+// Note: F can be non-updatable but will be converted if that happens, which
+//       makes the input F not 'const' while only its format but not values may
+//       be changed.
+
 SPEX_info SPEX_Chol_solve
 (
     // Output
@@ -1337,7 +1345,7 @@ SPEX_info SPEX_Chol_solve
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
     // Input
-    const SPEX_factorization *F,      // Cholesky factorization
+    SPEX_factorization *F,      // Cholesky factorization
     const SPEX_matrix* b,             // Right hand side vector
     const SPEX_options* option        // command options
 );
@@ -1440,11 +1448,12 @@ SPEX_info SPEX_Update_Chol_rank1
 
 //------------------------------------------------------------------------------
 // Function for solving Ax = b with updatable LU or Cholesky factorization
+// of matrix A
 //------------------------------------------------------------------------------
 
-// NOTE: the requirement for L and UT is exactly same as other functions in
-// SPEX_Update, which requires the pivot of L->v[j] or UT->v[j] be the
-// first entry correspondingly.
+// Note: F can be non-updatable but will be converted if that happens, which
+//       makes the input F not 'const' while only its format but not values may
+//       be changed.
 
 SPEX_info SPEX_Update_solve // solves Ax = b via REF LU factorization of A
 (
@@ -1461,11 +1470,12 @@ SPEX_info SPEX_Update_solve // solves Ax = b via REF LU factorization of A
 
 //------------------------------------------------------------------------------
 // Function for solving A^Tx = b with updatable LU or Cholesky factorization
+// of matrix A
 //------------------------------------------------------------------------------
 
-// NOTE: the requirement for L and UT is exactly same as other functions in
-// SPEX_Update, which requires the pivot of L->v[j] or UT->v[j] be the
-// first entry correspondingly.
+// Note: F can be non-updatable but will be converted if that happens, which
+//       makes the input F not 'const' while only its format but not values may
+//       be changed.
 
 SPEX_info SPEX_Update_tsolve // solves Ax = b via REF LU factorization of A
 (

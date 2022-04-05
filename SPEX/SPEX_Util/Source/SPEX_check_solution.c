@@ -24,7 +24,7 @@
 SPEX_info SPEX_check_solution
 (
     const SPEX_matrix *A,         // Input matrix
-    SPEX_matrix *x,         // Solution vectors //removing const
+    const SPEX_matrix *x,         // Solution vectors
     const SPEX_matrix *b,         // Right hand side vectors
     const SPEX_options* option    // Command options
 )
@@ -111,7 +111,6 @@ SPEX_info SPEX_check_solution
             SPEX_CHECK(SPEX_mpq_set_z(temp, SPEX_2D(b, i, j, mpz)));
 
             // set check false if b!=b2
-            int r ;
             SPEX_CHECK(SPEX_mpq_equal(&r, temp, SPEX_2D(b2, i, j, mpq)));
             if (r == 0)
             {

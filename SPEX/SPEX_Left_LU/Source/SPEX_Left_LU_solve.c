@@ -27,7 +27,7 @@
  */
 
 #define SPEX_FREE_WORKSPACE             \
-    SPEX_matrix_free (&b2, NULL) ;      \
+    SPEX_matrix_free (&b2, NULL) ;
 
 #define SPEX_FREE_ALL                   \
     SPEX_FREE_WORKSPACE                 \
@@ -55,6 +55,15 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 
     SPEX_REQUIRE (F->kind, ... ) ;  // TODO
     if F is updatable, call SPEX_Update_solve ...
+    if ((F->updatable))
+    {
+        {
+            // convert to static format
+            info = spex_update_factorization_convert(F, option);
+            if (info != SPEX_OK) return info;
+        }
+    }
+
 
     SPEX_REQUIRE (b,    SPEX_DENSE, SPEX_MPZ) ;
 
@@ -73,7 +82,6 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 
     *x_handle = NULL;
     int64_t n = F->L->n;
-    mpq_t scale; SPEX_MPQ_SET_NULL(scale);
 
     SPEX_matrix *x = NULL;   // final solution
     SPEX_matrix *b2 = NULL;  // permuted b
@@ -105,10 +113,9 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     // x = Q*b2*scale
     //--------------------------------------------------------------------------
     // set scale = b->scale * rhos[n-1] / A_scale
-    SPEX_CHECK(SPEX_mpq_init(scale));
-    SPEX_CHECK(SPEX_mpq_set_z(scale, F->rhos->x.mpz[n-1]));
-    SPEX_CHECK(SPEX_mpq_mul(scale, scale, b->scale));
-    SPEX_CHECK(SPEX_mpq_div(scale, scale, F->scale_for_A));
+    SPEX_CHECK(SPEX_mpq_set_z(b2->scale, F->rhos->x.mpz[n-1]));
+    SPEX_CHECK(SPEX_mpq_mul(b2->scale, b2->scale, b->scale));
+    SPEX_CHECK(SPEX_mpq_div(b2->scale, b2->scale, F->scale_for_A));
 
     // allocate space for x as dense MPQ matrix
     SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
@@ -123,10 +130,9 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
             SPEX_CHECK(SPEX_mpq_set_z(SPEX_2D(x,  qi, j, mpq),
                                       SPEX_2D(b2,  i, j, mpz)));
             SPEX_CHECK(SPEX_mpq_div(SPEX_2D(x,  qi, j, mpq),
-                                    SPEX_2D(x,  qi, j, mpq), scale));
+                                    SPEX_2D(x,  qi, j, mpq), b2->scale));
         }
     }
-    SPEX_matrix_free (&b2, NULL) ;
 
     //--------------------------------------------------------------------------
     // free workspace and return result

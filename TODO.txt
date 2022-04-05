@@ -76,6 +76,33 @@ no assign for P_perm in spex_chol_factor
 
 bug in spex_chol_ereach:
 
+SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
+
+SPEX_info SPEX_Chol_solve
+(
+    // Output
+    SPEX_matrix** x_handle,           // On input: undefined.
+                                      // On output: Rational solution (SPEX_MPQ)
+                                      // to the system. 
+    // Input
+    const SPEX_factorization *F,      // Cholesky factorization<------------------
+    const SPEX_matrix* b,             // Right hand side vector
+    const SPEX_options* option        // command options
+);
+vs
+SPEX_info SPEX_Update_solve // solves Ax = b via REF LU factorization of A
+(
+    // Output
+    SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
+                            // the system. 
+    // input:
+    SPEX_factorization *F,  // The LU or Cholesky factorization<------------------
+    const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
+                            // vector
+    const SPEX_options* option // Command options
+);
+
+
 inconsistence between SPEX_matrix_mul and SPEX_matrix_div
 
 
