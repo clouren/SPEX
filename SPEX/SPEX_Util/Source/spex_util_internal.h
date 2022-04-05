@@ -225,13 +225,13 @@ void spex_gmp_failure (int status) ;
 //  SPEX_TOL_SMALLEST = 3,          Diagonal pivoting with tolerance for small
 //  SPEX_TOL_LARGEST = 4,           Diagonal pivoting with tolerance for large
 //  SPEX_LARGEST = 5                Largest pivot
-#define SPEX_DEFAULT_PIVOT SPEX_TOL_SMALLEST
+#define SPEX_DEFAULT_PIVOT SPEX_SMALLEST
 
 // Column ordering used.
 //  SPEX_NO_ORDERING = 0,           None: Not recommended for sparse matrices
 //  SPEX_COLAMD = 1,                COLAMD: Default
 //  SPEX_AMD = 2                    AMD
-#define SPEX_DEFAULT_ORDER SPEX_COLAMD
+#define SPEX_DEFAULT_ORDER SPEX_COLAMD  /* FIXME */
 
 // Defines printing to be done
 #define SPEX_DEFAULT_PRINT_LEVEL 0

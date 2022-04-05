@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // SPEX_Left_LU/SPEX_Left_LU_factorize: exact sparse LU factorization
 //------------------------------------------------------------------------------
 
@@ -171,6 +171,7 @@ SPEX_info SPEX_Left_LU_factorize
     // bound.  It is still possible that more bits will be required which is
     // correctly handled internally.
     int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n))) ;
+    // FIXME: check estimate (paranoia)
 
     // Create x, a global dense mpz_t matrix of dimension n*1. Unlike rhos, the
     // second boolean parameter is set to false to avoid initializing

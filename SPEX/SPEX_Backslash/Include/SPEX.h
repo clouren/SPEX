@@ -125,14 +125,15 @@ typedef enum
     SPEX_OUT_OF_MEMORY = -1,      // out of memory
     SPEX_SINGULAR = -2,           // the input matrix A is singular
     SPEX_INCORRECT_INPUT = -3,    // one or more input arguments are incorrect
-    SPEX_INCORRECT = -4,          // The solution is incorrect
+//  SPEX_INCORRECT = -4,          // The solution is incorrect
     SPEX_UNSYMMETRIC = -5,        // The input matrix is unsymmetric
     SPEX_NOTSPD = -6,             // The input matrix is not SPD
                                   // UNSYMMETRIC and NOTSPD are used for
                                   // Cholesky factorization
     SPEX_INCORRECT_ALGORITHM = -7,// The algorithm is not compatible with 
                                   // the factorization
-    SPEX_PANIC = -8               // SPEX used without proper initialization
+    SPEX_PANIC = -8               // SPEX used without proper initialization,
+                                  // or other unrecoverable error
 }
 SPEX_info ;
 
@@ -140,52 +141,55 @@ SPEX_info ;
 // Pivot scheme codes
 //------------------------------------------------------------------------------
 
+#define SPEX_DEFAULT 0
+
 // A code in SPEX_options to tell SPEX what type of pivoting to use for pivoting
 // in unsymmetric LU factorization.
 
 typedef enum
 {
-    SPEX_SMALLEST = 0,      // Smallest pivot
+    SPEX_SMALLEST = SPEX_DEFAULT,      // Smallest pivot (the default method)
     SPEX_DIAGONAL = 1,      // Diagonal pivoting
     SPEX_FIRST_NONZERO = 2, // First nonzero per column chosen as pivot
     SPEX_TOL_SMALLEST = 3,  // Diagonal pivoting with tol for smallest pivot.
-                            //   (Default)
     SPEX_TOL_LARGEST = 4,   // Diagonal pivoting with tol. for largest pivot
     SPEX_LARGEST = 5        // Largest pivot
 }
 SPEX_pivot ;
 
 //------------------------------------------------------------------------------
-// Column ordering scheme codes
+// Fill-reducing ordering scheme codes
 //------------------------------------------------------------------------------
 
-// A code in SPEX_options to tell SPEX which column ordering to used prior to 
-// exact factorization
+// A code in SPEX_options to tell SPEX which fill-reducing ordering to used
+// prior to exact factorization
 
 typedef enum
 {
-    SPEX_NO_ORDERING = 0,   // None: A is factorized as-is
-    SPEX_COLAMD = 1,        // COLAMD: Default
-    SPEX_AMD = 2            // AMD
+    SPEX_DEFAULT_ORDERING = SPEX_DEFAULT ;  // Default: colamd for LU
+                            // AMD for Cholesky
+    SPEX_NO_ORDERING = 1,   // None: A is factorized as-is
+    SPEX_COLAMD = 2,        // COLAMD: Default for LU
+    SPEX_AMD = 3            // AMD: Default for Cholesky
 }
-SPEX_col_order ;
+SPEX_preorder ;    // FIXME: propagate
 
 //------------------------------------------------------------------------------
-// Factorization type codes //TODO we need to change the word type (maybe "direction"?)
+// Factorization type codes
 //------------------------------------------------------------------------------
 
-// A code in SPEX_options to tell SPEX which "direction" to use when computing 
-// the exact factorization
+// A code in SPEX_options to tell SPEX which factorization algorithm to use 
 
 typedef enum
 {
-    SPEX_ALGORITHM_DEFAULT = 0,    // Defaults: Left for LU, Up for Chol, Gram for QR looking LU factorization //TODO maybe rename default...
+    SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
+                         // Up for Chol, Gram for QR
     SPEX_LU_LEFT = 1,    // Left looking LU factorization
     SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
     SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
     SPEX_QR_GRAM = 4     // Default factorization for QR
 }
-SPEX_factorization_algorithm ; //TODO rename SPEX_factorization_algorithm and Propagate
+SPEX_factorization_algorithm ;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -198,20 +202,16 @@ SPEX_factorization_algorithm ; //TODO rename SPEX_factorization_algorithm and Pr
 typedef struct SPEX_options
 {
     SPEX_pivot pivot ;     // row pivoting scheme used.
-    SPEX_col_order order ; // column ordering scheme used
+    SPEX_preorder order ;  // column ordering scheme used
     double tol ;           // tolerance for the row-pivotin methods
                            // SPEX_TOL_SMALLEST and SPEX_TOL_LARGEST
     int print_level ;      // 0: print nothing, 1: just errors,
-                           // 2: terse (basic stats from COLAMD/AMD and
-                           // SPEX Left LU), 3: all, with matrices and results
-    int32_t prec ;         // Precision used to output file if MPFR is chosen
+                           // 2: terse (basic stats from COLAMD/AMD and the
+                           // factorization), 3: all, with matrices and results
+    uint64_t prec ;        // Precision for MPFR
     mpfr_rnd_t round ;     // Type of MPFR rounding used
     SPEX_factorization_algorithm algo ; // parameter which tells the function
-                           // whether it is performing a left-looking (2) or
-                           // up-looking (3) factorization in case of Cholesky
-                           // left looking LU (1) or if it is doing Gram-Schmidt
-                           // (4). The Default (0) is up looking for Cholesky, 
-                           // left looking for LU and Gram-Schmidt for QR
+                           // which factorization algorithm to use
 } SPEX_options ;
 
 // Purpose: Create SPEX_options object with default parameters
@@ -894,7 +894,7 @@ SPEX_info SPEX_gmp_fscanf (FILE *fp, const char *format, ... ) ;
 
 SPEX_info SPEX_mpz_init (mpz_t x) ;
 
-SPEX_info SPEX_mpz_init2(mpz_t x, const size_t size) ;
+SPEX_info SPEX_mpz_init2(mpz_t x, const uint64_t size) ;
 
 SPEX_info SPEX_mpz_set (mpz_t x, const mpz_t y) ;
 

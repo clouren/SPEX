@@ -138,6 +138,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     int64_t i, j, p, pend ;
     int64_t* work = NULL;   // used for checking duplicates for CSC and triplet
     uint64_t prec = SPEX_OPTION_PREC (option);
+    // paranoia:  check prec here: cast to mprf_prec_t, and back, assert
+    // equality, if not equal then return SPEX_PANIC
     mpz_t q, r;
     SPEX_MPZ_SET_NULL(q);
     SPEX_MPZ_SET_NULL(r);
