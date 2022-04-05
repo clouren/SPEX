@@ -317,5 +317,13 @@ SPEX_info spex_update_permute_row
                             // non-NULL
 );
 
+SPEX_info spex_update_matrix_convert
+(
+    SPEX_factorization *F,       // converted CSC matrix
+                                 // identity matrix if input as NULL
+    const bool convertL,         // true if B->v[i] is the i-th col of B.
+                                 // Otherwise, B->v[i] is the i-th row of B
+    const SPEX_options *option
+);
 #endif
 

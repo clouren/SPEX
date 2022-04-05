@@ -32,10 +32,24 @@
 // from Dynamic_CSC MPZ matrix to CSC MPZ matrix in a non-updatable format,
 // which means that U will be firstly transposed to UT, and then the
 // permutation of the rows of UT will be reset with F->Qinv_perm.
+//
+// If the function returns with any error, 
 
 #define SPEX_FREE_ALL                \
+{                                    \
     SPEX_FREE(rowcount);             \
-    SPEX_matrix_free(&M, option);
+    SPEX_FREE(Mp);                   \
+    SPEX_FREE(Mi);                   \
+    spex_delete_mpz_array(&Mx, nnz); \
+    if (Mv != NULL)                  \
+    {                                \
+        for (i = 0; i < n; i++)      \
+        {                            \
+            SPEX_vector_free(&(Mv[i]), option);\
+        }                            \
+        SPEX_FREE(Mv);               \
+    }                                \
+}
 
 #include "spex_update_internal.h"
 
@@ -49,18 +63,29 @@ SPEX_info spex_update_matrix_convert
 )
 {
     SPEX_info info;
-    SPEX_matrix *M = NULL, *L = F->L, *U = F->U;
-    int64_t i, j, p, m = L->m, n = L->n, Mp;
-    int64_t *rowcount = NULL;
+    SPEX_matrix *L = F->L, *U = F->U;
+    SPEX_vector **Mv = NULL;
+    mpz_t *Mx = NULL;
+    int64_t i, j, p, m = L->m, n = L->n, mp, nnz = 0;
+    int64_t *rowcount = NULL, *Mp = NULL, *Mi = NULL;
     bool found_diag = false;
 
     if (F->updatable)
     {
         //----------------------------------------------------------------------
-        // allocate M as DYNAMIC_CSC MPZ matrix, which contains n empty vectors
+        // allocate an array of n vetors to construct the DYNAMIC_CSC MPZ matrix
         //----------------------------------------------------------------------
-        SPEX_CHECK(SPEX_matrix_allocate(&M, SPEX_DYNAMIC_CSC, SPEX_MPZ, m, n,
-            0, false, true, option));
+        Mv = (SPEX_vector**) SPEX_calloc(n, sizeof(SPEX_vector*)); 
+        if (!Mv) 
+        { 
+            SPEX_FREE_ALL ;
+            return SPEX_OUT_OF_MEMORY; 
+        } 
+         
+        for (int64_t i = 0; i < n; i++) 
+        {
+            SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option)); 
+        } 
         if (convertL)
         {
             int64_t *Lp = L->p, *perm = F->P_perm;
@@ -69,40 +94,44 @@ SPEX_info spex_update_matrix_convert
             //------------------------------------------------------------------
             for (j = 0; j < n; j++)
             {
-                // reallocate space for each column of A
-                SPEX_CHECK(SPEX_vector_realloc(M->v[j], Lp[j+1]-Lp[j], option));
-                Mp = 0;
+                // reallocate space for each column vector Mv[j]
+                SPEX_CHECK(SPEX_vector_realloc(Mv[j], Lp[j+1]-Lp[j], option));
+                mp = 0;
                 found_diag = false;
                 for (p = Lp[j]; p < Lp[j+1]; p++)
                 {
                     i = L->i[p];
                     // permute entry indices
-                    M->v[j]->i[Mp] = perm[i];
-                    // M->v[j]->x[Mp] = L->x[p]
-                    SPEX_CHECK(SPEX_mpz_swap(M->v[j]->x[Mp], L->x.mpz[p]));
+                    Mv[j]->i[mp] = perm[i];
+                    // Mv[j]->x[mp] = L->x[p]
+                    SPEX_CHECK(SPEX_mpz_swap(Mv[j]->x[mp], L->x.mpz[p]));
 
                     // make sure the first entry is the diagonal
                     if (!found_diag && i == j)
                     {
                         found_diag = true;
-                        if (Mp != 0)
+                        if (mp != 0)
                         {
-                            SPEX_CHECK(SPEX_mpz_swap(M->v[j]->x[0],
-                                                     M->v[j]->x[Mp]));
-                            M->v[j]->i[Mp] = M->v[j]->i[0];
-                            M->v[j]->i[0] = perm[i];
+                            SPEX_CHECK(SPEX_mpz_swap(Mv[j]->x[0],
+                                                     Mv[j]->x[mp]));
+                            Mv[j]->i[mp] = Mv[j]->i[0];
+                            Mv[j]->i[0] = perm[i];
                         }
                     }
 
-                    Mp++;
+                    mp++;
                 }
-                M->v[j]->nz = Mp;
+                Mv[j]->nz = mp;
             }
 
-            // replace original L matrix with M
-            SPEX_CHECK(SPEX_matrix_free(&(F->L), option));
-            F->L = M;
-            M = NULL;
+            // update components of L
+            L->kind = SPEX_DYNAMIC_CSC;// type remains SPEX_MPZ
+            SPEX_FREE(L->p);
+            SPEX_FREE(L->i);
+            spex_delete_mpz_array(&(L->x.mpz), L->nzmax);
+            L->nzmax = 0;// reset nzmax
+            L->v = Mv; // replace with Mv
+            Mv = NULL;
         }
         else
         {
@@ -122,47 +151,51 @@ SPEX_info spex_update_matrix_convert
                 rowcount[ U->i[p] ]++ ;
             }
 
-            // reallocate space for each column of M
+            // reallocate space for each column vector Mv[i]
             for (i = 0; i < m; i++)
             {
-                SPEX_CHECK(SPEX_vector_realloc(M->v[i], rowcount[i], option));
+                SPEX_CHECK(SPEX_vector_realloc(Mv[i], rowcount[i], option));
             }
 
-            // construct M from U
+            // construct Mv from U
             for (j = 0; j < n; j++)
             {
                 found_diag = false;
                 for (p = Up[j]; p < Up[j+1]; p++)
                 {
                     i = U->i[p];
-                    Mp = M->v[i]->nz++;
-                    M->v[i]->i[Mp] = perm[j] ;
-                    // M->v[i]->x[Mp] = U->x[p]
-                    SPEX_CHECK(SPEX_mpz_swap(M->v[i]->x[Mp], U->x.mpz[p]));
+                    mp = Mv[i]->nz++;
+                    Mv[i]->i[mp] = perm[j] ;
+                    // Mv[i]->x[mp] = U->x[p]
+                    SPEX_CHECK(SPEX_mpz_swap(Mv[i]->x[mp], U->x.mpz[p]));
 
                     // make sure the first entry is the diagonal
                     if (!found_diag && i == j)
                     {
                         found_diag = true;
-                        if (Mp != 0)
+                        if (mp != 0)
                         {
-                            SPEX_CHECK(SPEX_mpz_swap(M->v[i]->x[0],
-                                                     M->v[i]->x[Mp]));
-                            M->v[i]->i[Mp] = M->v[i]->i[0];
-                            M->v[i]->i[0] = perm[j];
+                            SPEX_CHECK(SPEX_mpz_swap(Mv[i]->x[0],
+                                                     Mv[i]->x[mp]));
+                            Mv[i]->i[mp] = Mv[i]->i[0];
+                            Mv[i]->i[0] = perm[j];
                         }
                     }
                 }
             }
-            // replace original U matrix with M
-            SPEX_CHECK(SPEX_matrix_free(&(F->U), option));
-            F->U = M;
-            M = NULL;
+
+            // update components of U
+            U->kind = SPEX_DYNAMIC_CSC;// type remains SPEX_MPZ
+            SPEX_FREE(U->p);
+            SPEX_FREE(U->i);
+            spex_delete_mpz_array(&(U->x.mpz), U->nzmax);
+            U->nzmax = 0;// reset nzmax
+            U->v = Mv; // replace with Mv
+            Mv = NULL;
         }
     }
     else // convert to non-updatable format (CSC MPZ)
     {
-        int64_t nnz = 0;
         int sgn;
         if (convertL)
         {
@@ -176,20 +209,26 @@ SPEX_info spex_update_matrix_convert
                 nnz += L->v[j]->nz;
             }
 
-            // allocate space for M
-            SPEX_CHECK(SPEX_matrix_allocate(&M, SPEX_CSC, SPEX_MPZ, m, n, nnz,
-                false, true, option));
+            // allocate space for Mi, Mp and Mx
+            Mp = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t)) ;
+            Mi = (int64_t *) SPEX_calloc (nnz, sizeof (int64_t)) ;
+            Mx = spex_create_mpz_array (nnz) ;
+            if (!Mp || !Mi || !Mx)
+            {
+                SPEX_FREE_ALL;
+                return SPEX_OUT_OF_MEMORY;
+            }
 
-            // initialize for M and construct M from L
-            nnz = 0;
-            M->p[0] = 0;
+            // construct Mi, Mp and Mx from L
+            mp = 0;
+            Mp[0] = 0;
             for (j = 0 ; j < n ; j++)
             {
                 SPEX_CHECK(SPEX_mpq_cmp_ui(&sgn, L->v[j]->scale, 1, 1));
                 for (p = 0 ; p < L->v[j]->nz ; p++)
                 {
                     i = L->v[j]->i[p];
-                    M->i[nnz] = perm[i] ;
+                    Mi[mp] = perm[i] ;
                     if (sgn != 0) // scale != 1
                     {
                         // apply scale to L->v[j]->x[p]
@@ -198,16 +237,23 @@ SPEX_info spex_update_matrix_convert
                         SPEX_CHECK(SPEX_mpz_mul(L->v[j]->x[p],
                             L->v[j]->x[p], SPEX_MPQ_NUM(L->v[j]->scale))) ;
                     }
-                    SPEX_CHECK(SPEX_mpz_swap(M->x.mpz[nnz], L->v[j]->x[p])) ;
-                    nnz++;
+                    SPEX_CHECK(SPEX_mpz_swap(Mx[mp], L->v[j]->x[p])) ;
+                    mp++;
                 }
-                M->p[j+1] = nnz;
+                Mp[j+1] = mp;
             }
 
-            // replace original L matrix with M
-            SPEX_CHECK(SPEX_matrix_free(&(F->L), option));
-            F->L = M;
-            M = NULL;
+            // update components of L
+            L->kind = SPEX_CSC;// type remains SPEX_MPZ
+            L->p = Mp;     Mp = NULL;
+            L->i = Mi;     Mi = NULL;
+            L->x.mpz = Mx; Mx = NULL;
+            L->nzmax = nnz;// update nzmax
+            for (i = 0; i < n; i++)
+            {
+                SPEX_vector_free(&(L->v[i]), option);
+            }
+            SPEX_FREE(L->v);
         }
         else
         {
@@ -233,22 +279,28 @@ SPEX_info spex_update_matrix_convert
                 }
             }
 
-            // allocate space for M
-            SPEX_CHECK(SPEX_matrix_allocate(&M, SPEX_CSC, SPEX_MPZ, m, n, nnz,
-                false, true, option));
+            // allocate space for Mi, Mp and Mx
+            Mp = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t)) ;
+            Mi = (int64_t *) SPEX_calloc (nnz, sizeof (int64_t)) ;
+            Mx = spex_create_mpz_array (nnz) ;
+            if (!Mp || !Mi || !Mx)
+            {
+                SPEX_FREE_ALL;
+                return SPEX_OUT_OF_MEMORY;
+            }
 
             // compute cumulative sum of rowcount to get the col pointer
-            SPEX_CHECK(SPEX_cumsum(M->p, rowcount, m));
+            SPEX_CHECK(SPEX_cumsum(Mp, rowcount, m, option));
 
-            // construct M from U
+            // construct Mi, Mp and Mx from U
             for (i = 0 ; i < n ; i++)
             {
                 SPEX_CHECK(SPEX_mpq_cmp_ui(&sgn, U->v[i]->scale, 1, 1));
                 for (p = 0 ; p < U->v[i]->nz ; p++)
                 {
                     j = U->v[i]->i[p];
-                    Mp = rowcount[j];
-                    M->i[ Mp ] = perm[i] ;
+                    mp = rowcount[j];
+                    Mi[ mp ] = perm[i] ;
                     if (sgn != 0) // scale != 1
                     {
                         // apply scale to U->v[i]->x[p]
@@ -257,15 +309,22 @@ SPEX_info spex_update_matrix_convert
                         SPEX_CHECK(SPEX_mpz_mul(U->v[i]->x[p],
                             U->v[i]->x[p], SPEX_MPQ_NUM(U->v[i]->scale))) ;
                     }
-                    SPEX_CHECK(SPEX_mpz_swap(M->x.mpz[Mp], U->v[i]->x[p])) ;
+                    SPEX_CHECK(SPEX_mpz_swap(Mx[mp], U->v[i]->x[p])) ;
                     rowcount[j] ++;
                 }
             }
 
-            // replace original U matrix with M
-            SPEX_CHECK(SPEX_matrix_free(&(F->U), option));
-            F->U = M;
-            M = NULL;
+            // update components of U
+            U->kind = SPEX_CSC;// type remains SPEX_MPZ
+            U->p = Mp;     Mp = NULL;
+            U->i = Mi;     Mi = NULL;
+            U->x.mpz = Mx; Mx = NULL;
+            U->nzmax = nnz;// update nzmax
+            for (i = 0; i < n; i++)
+            {
+                SPEX_vector_free(&(U->v[i]), option);
+            }
+            SPEX_FREE(U->v);
         }
     }
 

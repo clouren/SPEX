@@ -16,6 +16,7 @@
 
 #define SPEX_FREE_ALL                       \
     SPEX_MPQ_CLEAR(temp);                   \
+    SPEX_MPQ_CLEAR(scale);                  \
     SPEX_matrix_free(&b2, NULL);
 
 #include "spex_util_internal.h"
@@ -46,20 +47,17 @@ SPEX_info SPEX_check_solution
     int64_t p, j, i ;
     SPEX_matrix *b2 = NULL;   // b2 stores the solution of A*x
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
+    mpq_t scale; SPEX_MPQ_SET_NULL(scale);
 
     SPEX_CHECK (SPEX_mpq_init(temp));
+    SPEX_CHECK(SPEX_mpq_init(scale));
     SPEX_CHECK (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
         b->nzmax, false, true, option));
 
-    //--------------------------------------------------------------------------
-    // first we must "un-scale" the solution since solve returns the scaled 
-    // solution
-    //--------------------------------------------------------------------------
-
-    SPEX_CHECK(SPEX_scale(x, b->scale, A->scale, option));
 
     //--------------------------------------------------------------------------
-    // perform SPEX_mpq_addmul in loops to compute b2 = A*x
+    // perform SPEX_mpq_addmul in loops to compute b2 = A'*x, where A' is the
+    // scaled matrix with all entries in integer
     //--------------------------------------------------------------------------
 
     for (j = 0; j < b->n; j++)
@@ -80,6 +78,24 @@ SPEX_info SPEX_check_solution
                 SPEX_CHECK(SPEX_mpq_add(SPEX_2D(b2, A->i[p], j, mpq),
                                         SPEX_2D(b2, A->i[p], j, mpq),temp));
             }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Apply scales of A and b to b2 before comparing the b2 with scaled b'
+    //--------------------------------------------------------------------------
+
+    SPEX_CHECK(SPEX_mpq_div(scale, b->scale, A->scale));
+
+    // Apply scaling factor, but ONLY if it is not 1
+    int r;
+    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, scale, 1, 1));
+    if (r != 0)
+    {
+        nz = x->m * x->n;
+        for (i = 0; i < nz; i++)
+        {
+            SPEX_CHECK(SPEX_mpq_mul(b2->x.mpq[i], b2->x.mpq[i], scale));
         }
     }
 

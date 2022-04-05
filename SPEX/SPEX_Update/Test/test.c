@@ -1347,3 +1347,165 @@ SPEX_info SPEX_construct_LP
     MY_FREE_WORK;
     return SPEX_OK;
 }
+
+SPEX_info SPEX_A_plus_vvT
+(
+    SPEX_matrix *A0,
+    const SPEX_matrix *M,
+    const int64_t j
+)
+{
+    int64_t p, pj, pi, j1, i1, target, target_sym;
+    SPEX_info info;
+
+    for (pj = M->p[j]; pj < M->p[j+1]; pj++)
+    {
+        j1 = M->i[pj];
+
+        target = -1;
+        for (p = 0; p < A0->v[j1]->nz; p++)
+        {
+            if (A0->v[j1]->i[p] == j1) {target = p; break;}
+        }
+        if (target == -1)
+        {
+            target = A0->v[j1]->nz;
+            A0->v[j1]->i[target] = j1;
+            A0->v[j1]->nz++;
+        }
+        OK(SPEX_mpz_addmul(A0->v[j1]->x[target],
+                           SPEX_1D(M, pj, mpz),
+                           SPEX_1D(M, pj, mpz)));
+
+        for (pi = pj+1; pi < M->p[j+1]; pi++)
+        {
+            i1 = M->i[pi];
+
+            target = -1;
+            for (p = 0; p < A0->v[j1]->nz; p++)
+            {
+                if (A0->v[j1]->i[p] == i1) {target = p; break;}
+            }
+            if (target == -1)
+            {
+                target = A0->v[j1]->nz;
+                A0->v[j1]->i[target] = i1;
+                A0->v[j1]->nz++;
+                target_sym = A0->v[i1]->nz;
+                A0->v[i1]->i[target_sym] = j1;
+                A0->v[i1]->nz++;
+            }
+            else
+            {
+                target_sym = -1;
+                for (p = 0; p < A0->v[i1]->nz; p++)
+                {
+                    if (A0->v[i1]->i[p] == j1) {target_sym = p; break;}
+               }
+                if (target_sym == -1)
+                {
+                    printf("this shouldn't happen, ");
+                    printf("have fun finding the bug\n");
+                    return 0;
+                }
+            }
+            info = SPEX_mpz_addmul(A0->v[j1]->x[target],
+                               SPEX_1D(M, pj, mpz),
+                               SPEX_1D(M, pi, mpz));
+            if (info != SPEX_OK) return info;
+            info = SPEX_mpz_set(A0->v[i1]->x[target_sym],
+                            A0->v[j1]->x[target]);
+            if (info != SPEX_OK) return info;
+        }
+    }
+    return SPEX_OK;
+}
+
+SPEX_info SPEX_matrix_equal
+(
+    bool *Isequal,
+    const SPEX_matrix *L1,
+    const SPEX_matrix *L_update,
+    const int64_t *P_update
+)
+{
+    *Isequal = false;
+    int64_t i, j, p, pi, n = L1->m;
+    int sgn;
+    SPEX_info info;
+    mpz_t tmpz, tmpz1;
+    info = SPEX_mpz_init(tmpz);
+    if (info != SPEX_OK) return info;
+    info = SPEX_mpz_init(tmpz1);
+    if (info != SPEX_OK)
+    {
+        mpz_clear(tmpz);
+        return info;
+    }
+
+    for (j = 0; j < n; j++)
+    {
+        for (p = L1->p[j]; p < L1->p[j+1]; p++)
+        {
+            i = L1->i[p];
+            //gmp_printf("%ld %Zd\n",i, L1->x.mpz[p]);
+            info = SPEX_mpz_sgn(&sgn, L1->x.mpz[p]);
+            if (info != SPEX_OK)
+            {
+                mpz_clear(tmpz);
+                mpz_clear(tmpz1);
+                return info;
+            }
+            if (sgn == 0) {continue;}
+
+            bool found = false;
+            for (pi = 0; pi < L_update->v[j]->nz; pi++)
+            {
+                //printf("P[%ld]=%ld %ld\n",i, P_update[i],
+                //    L_update->v[j]->i[pi]);
+                if (L_update->v[j]->i[pi] == P_update[i])
+                {
+                    mpq_get_num(tmpz1, L_update->v[j]->scale);
+                    mpz_mul(tmpz, L_update->v[j]->x[pi], tmpz1);
+                    mpq_get_den(tmpz1, L_update->v[j]->scale);
+                    mpz_divexact(tmpz, tmpz, tmpz1);
+                    info = SPEX_mpz_cmp(&sgn, tmpz, L1->x.mpz[p]);
+                    if (info != SPEX_OK)
+                    {
+                        mpz_clear(tmpz);
+                        mpz_clear(tmpz1);
+                        return info;
+                    }
+                    if (sgn != 0)
+                    {
+                        printf("found different value for L(%ld, %ld)\n",
+                            i, j);
+                        gmp_printf("factor: %Zd\nupdate: %Zd\n",
+                            L1->x.mpz[p], tmpz);
+                        gmp_printf("update: %Zd\nscale:%Qd\n",
+                            L_update->v[j]->x[pi],
+                            L_update->v[j]->scale);
+                        *Isequal = false;
+                        mpz_clear(tmpz);
+                        mpz_clear(tmpz1);
+                        return SPEX_OK;
+                    }
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                printf("failed to find corresponding L(%ld, %ld)\n", i, j);
+                *Isequal = false;
+                mpz_clear(tmpz);
+                mpz_clear(tmpz1);
+                return SPEX_OK;
+            }
+        }
+    }
+    *Isequal = true;
+    mpz_clear(tmpz);
+    mpz_clear(tmpz1);
+    return SPEX_OK;
+}

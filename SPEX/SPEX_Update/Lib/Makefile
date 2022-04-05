@@ -42,7 +42,7 @@ OBJ = \
     spex_update_verify.o \
     SPEX_Update_Chol_Rank1.o \
     spex_update_permute_row.o spex_update_matrix_canonicalize.o \
-    spex_update_factorization_convert.o
+    spex_update_factorization_convert.o spex_update_matrix_convert.o
 
 
 $(OBJ): ../Include/SPEX_Update.h ../Source/spex_update_internal.h Makefile

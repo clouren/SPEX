@@ -59,6 +59,13 @@ delete SPEX_factorization_create.c and SPEX_symbolic_analysis_create.c and SPE.c
 
 do we really need SPEX_scale? unify the output of SPEX_***_solve
 
+analysis and factorization for cholesky only have P_perm and Pinv_perm
+check spex_chol_factor and spex_chol_preorder etc.
+no assign for P_perm in spex_chol_factor
+
+bug in spex_chol_ereach:
+
+
 
 
 

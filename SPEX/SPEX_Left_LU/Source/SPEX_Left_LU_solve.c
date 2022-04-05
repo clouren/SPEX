@@ -8,10 +8,9 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function solves the linear system LD^(-1)U x = b. This is an
- * internal function, please refer to SPEX_Left_LU_solve for user-callable. It
+/* Purpose: This function solves the linear system LD^(-1)U x = b. It
  * essnetially serves as a wrapper for all forward and backward substitution
- * routines. This function always returns the solution matrix x as a mpz_t
+ * routines. This function always returns the solution matrix x as a mpq_t
  * matrix. If a user desires to have double or mpfr output, they must create
  * a matrix copy.
  *
@@ -71,6 +70,7 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 
     *x_handle = NULL;
     int64_t n = F->L->n;
+    mpq_t scale; SPEX_MPQ_SET_NULL(scale);
 
     SPEX_matrix *x = NULL;   // final solution
     SPEX_matrix *b2 = NULL;  // permuted b
@@ -99,23 +99,31 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     SPEX_CHECK(spex_left_lu_back_sub(F->U, b2));
 
     //--------------------------------------------------------------------------
-    // x = Q*b2
+    // x = Q*b2*scale
     //--------------------------------------------------------------------------
+    // set scale = b->scale * rhos[n-1] / A_scale
+    SPEX_CHECK(SPEX_mpq_init(scale));
+    SPEX_CHECK(SPEX_mpq_set_z(scale, F->rhos->x.mpz[n-1]));
+    SPEX_CHECK(SPEX_mpq_mul(scale, scale, b->scale));
+    SPEX_CHECK(SPEX_mpq_div(scale, scale, F->scale_for_A));
 
-    // TODO rename the following function?
-    // it would be more efficient to just perform swapping
-    SPEX_CHECK (spex_left_lu_permute_b (&x, b2, F->Q_perm, option)) ;
+    // allocate space for x as dense MPQ matrix
+    SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
+        0, false, true, option));
+
+    // obtain x from permuted b2 with scale applied
+    for (int64_t i = 0 ; i < b->m ; i++)
+    {
+        int64_t qi = F->Q_perm[i];
+        for (int64_t j = 0 ; j < b->n ; j++)
+        {
+            SPEX_CHECK(SPEX_mpq_set_z(SPEX_2D(x,  qi, j, mpq),
+                                      SPEX_2D(b2,  i, j, mpz)));
+            SPEX_CHECK(SPEX_mpq_div(SPEX_2D(x,  qi, j, mpq),
+                                    SPEX_2D(x,  qi, j, mpq), scale));
+        }
+    }
     SPEX_matrix_free (&b2, NULL) ;
-
-    //--------------------------------------------------------------------------
-    // Update the scale properly
-    //--------------------------------------------------------------------------
-    // set x->scale = b->scale * rhos[n-1] / A_scale
-    SPEX_CHECK(SPEX_mpq_set(x->scale, b->scale));
-    SPEX_CHECK(SPEX_mpz_mul(SPEX_MPQ_NUM(x->scale),
-                            SPEX_MPQ_NUM(x->scale), F->rhos->x.mpz[n-1]));
-    SPEX_CHECK(SPEX_mpq_canonicalize(x->scale));
-    SPEX_CHECK(SPEX_mpq_div(x->scale, x->scale, F->scale_for_A));
 
     //--------------------------------------------------------------------------
     // free workspace and return result

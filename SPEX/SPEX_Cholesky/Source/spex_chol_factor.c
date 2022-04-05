@@ -112,6 +112,13 @@ SPEX_info spex_chol_factor
     F->Q_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
 
 
+    if (!(F->Pinv_perm) || !(F->P_perm) || !(F->Q_perm))
+    {
+        // out of memory: free everything and return
+        SPEX_FREE_ALL  ;
+        return SPEX_OUT_OF_MEMORY;
+    }
+
     // copy column permutation from symbolic analysis to factorization
     memcpy(F->Q_perm, S->Q_perm, n * sizeof(int64_t));
 

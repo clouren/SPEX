@@ -130,3 +130,19 @@ SPEX_info SPEX_construct_LP
     char *file_name,
     SPEX_options *option
 );
+
+
+SPEX_info SPEX_A_plus_vvT
+(
+    SPEX_matrix *A0,
+    const SPEX_matrix *M,
+    const int64_t j
+);
+
+SPEX_info SPEX_matrix_equal
+(
+    bool *Isequal,
+    const SPEX_matrix *L1,
+    const SPEX_matrix *L_update,
+    const int64_t *P_update
+);
