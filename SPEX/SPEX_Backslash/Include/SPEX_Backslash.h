@@ -183,7 +183,7 @@ SPEX_info SPEX_Backslash
 
 /* Purpose: Modify the options struct based on the chosen factorization
  */
-SPEX_info spex_backslash_set_defaults
+SPEX_info spex_backslash_set_defaults   // TODO: broken
 (
     SPEX_options* option,
     bool lu

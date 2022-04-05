@@ -53,6 +53,9 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
+    SPEX_REQUIRE (F->kind, ... ) ;  // TODO
+    if F is updatable, call SPEX_Update_solve ...
+
     SPEX_REQUIRE (b,    SPEX_DENSE, SPEX_MPZ) ;
 
     if (!x_handle || !F)

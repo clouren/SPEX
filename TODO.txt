@@ -15,6 +15,7 @@ update makefile to generate one single .so
     TODO
 
 check names of user-visible functions, be consistent
+    later
 
 never change user's "option" struct
 
@@ -30,21 +31,31 @@ TODO: consistent name scheme. SPEX_all_lower_case ?
     SPEX_chol_...
 
 TODO: merge Developemental and InitMerge branches
+    in progress -> Developmental
+    create a single SPEX.h, has everying in it
 
 --- Mar 22, 2022
 
-SPEX_analyze(S, A, kind, option)
--combine algo, SPEX_factorization_kind and SPEX_symbolic_analysis_kind
+NO: SPEX_analyze(S, A, kind, option)
+    -combine algo, SPEX_factorization_kind and SPEX_symbolic_analysis_kind
 
 move spex_check_solution to Tcov
 
 -bool updatable in the SPEX_factorization
 
--bi-directional conversion between updatable and mpz csc non-updatable
+-BI-directional conversion between updatable and mpz csc non-updatable
+    the whole Factorization, not a matrix
+
+LU and (QR?) solvers should be able to solve A^Tx=b
+
+    F = lu (A)
+    solve A'*x = b
+    solve A*x = b
+    both
 
 *SPEX_matrix_copy const A
 
-*SPEX_update_solve assume updatable?
+*SPEX_update_solve assume updatable? NO, if not updatable, call SPEX_Left_LU_solve
 
 user guide
 
@@ -59,13 +70,13 @@ delete SPEX_factorization_create.c and SPEX_symbolic_analysis_create.c and SPE.c
 
 do we really need SPEX_scale? unify the output of SPEX_***_solve
 
-analysis and factorization for cholesky only have P_perm and Pinv_perm
+analysis and factorization for cholesky should only have P_perm and Pinv_perm
 check spex_chol_factor and spex_chol_preorder etc.
 no assign for P_perm in spex_chol_factor
 
 bug in spex_chol_ereach:
 
-
+inconsistence between SPEX_matrix_mul and SPEX_matrix_div
 
 
 
