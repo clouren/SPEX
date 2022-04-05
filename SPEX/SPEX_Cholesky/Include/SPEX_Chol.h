@@ -171,7 +171,8 @@
 #define SPEX_CHOL_VERSION_MINOR 0
 #define SPEX_CHOL_VERSION_SUB   1
 
-
+//TODO consistency on * data types
+//TODO check comments: what is on input/what is on output
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -201,7 +202,8 @@ SPEX_info SPEX_Chol_backslash
  * counts of the SPD matrix A, setting the column pointers and exact number of 
  * non zeros of L.
  */
-SPEX_info SPEX_Chol_analize
+
+SPEX_info SPEX_Chol_analyze
 (
     // Output
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure 

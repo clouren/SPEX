@@ -23,19 +23,20 @@ SPEX_info spex_update_finalize_and_insert_vk
     spex_scattered_vector *vk_dense, //scattered version of the solution for
                       // LDx=v using the first k-1 columns of L
     int64_t *h,       // history vector for vk_dense
-    SPEX_mat *U,      // matrix U
-    SPEX_mat *L,      // matrix L
-    const mpz_t *sd,  // array of scaled pivots
+    SPEX_matrix *U,      // matrix U
+    SPEX_matrix *L,      // matrix L
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *Q, // the column permutation
     const int64_t *P_inv,// inverse of row permutation
     const int64_t k,  // the column index in L that vk_dense will be inserted
     const int64_t diag,// the index of entry in vk_dense that will be diagonal
-    const mpq_t one   // a const mpq number, just to avoid constantly alloc
+    const SPEX_options *option
 )
 {
     SPEX_info info;
     int64_t i, p = 0, real_i, vk_nz = vk_dense->nz, Lk_nz;
     int sgn;
+    mpz_t *sd = rhos->x.mpz;
 
     // move entries to U
     while(p < vk_nz)
@@ -49,7 +50,7 @@ SPEX_info spex_update_finalize_and_insert_vk
             {
                 // insert vk_dense->x[i] to U(P_inv[i],Q[k]) by swapping
                 SPEX_CHECK(spex_update_insert_new_entry(vk_dense->x[i],
-                    U->v[real_i], U->v[real_i]->scale, Q[k], one));
+                    U->v[real_i], U->v[real_i]->scale, Q[k], option));
                 // vk_dense->x[i] = 0
                 SPEX_CHECK(SPEX_mpz_set_ui(vk_dense->x[i], 0));
             }
@@ -65,7 +66,7 @@ SPEX_info spex_update_finalize_and_insert_vk
     // check if L->v[k] needs more space for all remaining entries
     if (vk_nz > L->v[k]->nzmax)
     {
-        SPEX_CHECK(SPEX_vector_realloc(L->v[k], vk_nz));
+        SPEX_CHECK(SPEX_vector_realloc(L->v[k], vk_nz, option));
     }
 
     // move the remaining nonzero entries to L->v[k]

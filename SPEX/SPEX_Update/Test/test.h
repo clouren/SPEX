@@ -119,20 +119,30 @@ SPEX_info SPEX_mmread
     SPEX_options *option
 );
 
-// load constraint matrix to the LP problem
-SPEX_info SPEX_load_matrix_to_LP
-(
-    SPEX_matrix *A, 
-    glp_prob *LP
-);
-
 // read the remaining component (b, lb, ub and c) to finish constructing LP
-void SPEX_construct_LP
+SPEX_info SPEX_construct_LP
 (
     glp_prob *LP,
     SPEX_matrix **A_handle,
     SPEX_matrix **b_handle,
     SPEX_matrix **c_handle,
+    double *z0_handle,
     char *file_name,
     SPEX_options *option
+);
+
+
+SPEX_info SPEX_A_plus_vvT
+(
+    SPEX_matrix *A0,
+    const SPEX_matrix *M,
+    const int64_t j
+);
+
+SPEX_info SPEX_matrix_equal
+(
+    bool *Isequal,
+    const SPEX_matrix *L1,
+    const SPEX_matrix *L_update,
+    const int64_t *P_update
 );

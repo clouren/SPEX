@@ -31,9 +31,9 @@ SPEX_info SPEX_matrix_copy
 (
     SPEX_matrix **C_handle, // matrix to create (never shallow)
     // inputs, not modified:
-    SPEX_kind C_kind,       // C->kind: CSC, triplet, or dense
+    SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic_CSC
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
-    SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
+    const SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
     const SPEX_options *option
 )
 {
@@ -54,10 +54,12 @@ SPEX_info SPEX_matrix_copy
     ASSERT( nz >= 0);
     if (C_handle == NULL || nz < 0 ||
       //checked in SPEX_matrix_nnz
-      //A == NULL || A->kind < SPEX_CSC || A->kind > SPEX_DENSE ||
+      //A == NULL || A->kind < SPEX_CSC || A->kind > SPEX_DYNAMIC_CSC ||
         A->type < SPEX_MPZ || A->type > SPEX_FP64  ||
-        C_kind  < SPEX_CSC || C_kind  > SPEX_DENSE ||
-        C_type  < SPEX_MPZ || C_type  > SPEX_FP64)
+        C_kind  < SPEX_CSC || C_kind  > SPEX_DYNAMIC_CSC ||
+        C_type  < SPEX_MPZ || C_type  > SPEX_FP64 ||
+        (A->kind == SPEX_DYNAMIC_CSC && A->type != SPEX_MPZ) ||
+        (C_kind  == SPEX_DYNAMIC_CSC && C_type  != SPEX_MPZ))
     {
         return (SPEX_INCORRECT_INPUT) ;
     }
@@ -135,7 +137,7 @@ SPEX_info SPEX_matrix_copy
                     }
 
                     // C->p = cumulative sum of W
-                    SPEX_cumsum (C->p, W, n) ;
+                    SPEX_cumsum (C->p, W, n, option) ;
 
                     // build the matrix
                     switch (C->type)
@@ -274,12 +276,14 @@ SPEX_info SPEX_matrix_copy
                                 C->p [j] = nz ;
                                 for (int64_t i = 0 ; i < m ; i++)
                                 {
-                                    SPEX_CHECK( SPEX_mpz_sgn( &s, Y->x.mpz[ i + j*A->m]));
+                                    SPEX_CHECK( SPEX_mpz_sgn( &s,
+                                        Y->x.mpz[ i + j*A->m]));
                                     if (s != 0)
                                     {
                                         C->i [nz] = i ;
-                                        SPEX_CHECK( SPEX_mpz_set ( SPEX_1D (C, nz, mpz),
-                                                                   Y->x.mpz[ i + j*A->m] ));
+                                        SPEX_CHECK( SPEX_mpz_set (
+                                            SPEX_1D (C, nz, mpz),
+                                            Y->x.mpz[ i + j*A->m] ));
                                         nz++ ;
                                     }
                                 }
@@ -366,6 +370,28 @@ SPEX_info SPEX_matrix_copy
                 }
                 break ;
 
+                //--------------------------------------------------------------
+                // A is dynamic_CSC, C is CSC
+                //--------------------------------------------------------------
+
+                case SPEX_DYNAMIC_CSC:
+                {
+                    // convert A to a SPEX_CSC x SPEX_MPZ matrix T
+                    SPEX_CHECK(spex_dynamic_to_CSC_mpz(&T, A, nz, option));
+
+                    if (C_type == SPEX_MPZ)
+                    {
+                        C = T;
+                        T = NULL;
+                    }
+                    else
+                    {
+                        SPEX_CHECK (SPEX_matrix_copy (&C, SPEX_CSC, C_type,
+                            T, option)) ;
+                    }
+                    SPEX_matrix_free (&T, option) ;
+                }
+                break;
             }
 
         }
@@ -446,6 +472,21 @@ SPEX_info SPEX_matrix_copy
                 }
                 break ;
 
+                //--------------------------------------------------------------
+                // A is dynamic_CSC, C is triplet
+                //--------------------------------------------------------------
+
+                case SPEX_DYNAMIC_CSC:
+                {
+                    // convert A to a SPEX_CSC x SPEX_MPZ matrix T
+                    SPEX_CHECK(spex_dynamic_to_CSC_mpz(&T, A, nz, option));
+
+                    SPEX_CHECK (SPEX_matrix_copy (&C, SPEX_TRIPLET, C_type,
+                        T, option)) ;
+                    SPEX_matrix_free (&T, option) ;
+                }
+                break;
+
             }
 
         }
@@ -458,10 +499,6 @@ SPEX_info SPEX_matrix_copy
         case SPEX_DENSE:
         {
 
-            // allocate C
-            SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
-                m, n, nz, false, true, option)) ;
-
             switch (A->kind)
             {
 
@@ -471,6 +508,10 @@ SPEX_info SPEX_matrix_copy
 
                 case SPEX_CSC:
                 {
+                    // allocate C
+                    SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
+                        m, n, nz, false, true, option)) ;
+
                     // Y = typecast the values of A into the type of C
                     SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option)) ;
                     
@@ -555,6 +596,10 @@ SPEX_info SPEX_matrix_copy
 
                 case SPEX_TRIPLET:
                 {
+                    // allocate C
+                    SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
+                        m, n, nz, false, true, option)) ;
+
                     // Y = typecast the values of A into the type of C
                     SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option)) ;
 
@@ -627,12 +672,78 @@ SPEX_info SPEX_matrix_copy
 
                 case SPEX_DENSE:
                 {
+                    // allocate C
+                    SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
+                        m, n, nz, false, true, option)) ;
+
                     // copy and typecast A->x into C->x
                     SPEX_CHECK (spex_cast_array (SPEX_X (C), C->type,
                         SPEX_X (A), A->type, nz, C->scale, A->scale, option)) ;
                 }
                 break ;
 
+                //--------------------------------------------------------------
+                // A is dynamic_CSC, C is dense
+                //--------------------------------------------------------------
+
+                case SPEX_DYNAMIC_CSC:
+                {
+                    // convert A to a SPEX_CSC x SPEX_MPZ matrix T
+                    SPEX_CHECK(spex_dynamic_to_CSC_mpz(&T, A, nz, option));
+
+                    SPEX_CHECK (SPEX_matrix_copy (&C, SPEX_DENSE, C_type,
+                        T, option)) ;
+                    SPEX_matrix_free (&T, option) ;
+                }
+                break;
+
+            }
+
+        }
+        break ;
+
+        //----------------------------------------------------------------------
+        // C is dynamic_CSC
+        //----------------------------------------------------------------------
+
+        case SPEX_DYNAMIC_CSC:
+        {
+            if (A->kind != SPEX_DYNAMIC_CSC)
+            {
+                if (A->kind == SPEX_CSC && A->type == SPEX_MPZ)
+                {
+                    // A is already a CSC x MPZ matrix
+                    SPEX_CHECK(spex_CSC_mpz_to_dynamic(&C, A, option));
+                }
+                else
+                {
+                    // convert A to a SPEX_CSC x SPEX_MPZ matrix T
+                    SPEX_CHECK (SPEX_matrix_copy (&T, SPEX_CSC, SPEX_MPZ,
+                        A, option)) ;
+                    SPEX_CHECK(spex_CSC_mpz_to_dynamic(&C, T, option));
+                    SPEX_matrix_free (&T, option) ;
+                }
+            }
+            else // make a exact same copy
+            {
+                // allocate space for C
+                SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DYNAMIC_CSC,
+                    C_type, m, n, 0, false, true, option)) ;
+                // copy A->x into C->x
+                for (int64_t j = 0; j < n; j++)
+                {
+                    int64_t Aj_nz = A->v[j]->nz;
+                    // reallocate space for each column of C
+                    SPEX_CHECK(SPEX_vector_realloc(C->v[j], Aj_nz, option));
+                    memcpy (C->v[j]->i, A->v[j]->i, Aj_nz*sizeof (int64_t));
+
+                    for (int64_t p = 0; p < Aj_nz; p++)
+                    {
+                        SPEX_CHECK(SPEX_mpz_set(C->v[j]->x[p],
+                            A->v[j]->x[p]));
+                    }
+                    C->v[j]->nz = Aj_nz;
+                }
             }
 
         }

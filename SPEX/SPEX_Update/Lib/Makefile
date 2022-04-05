@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX_LU_Update/Lib/Makefile
+# SPEX_Update/Lib/Makefile
 #-------------------------------------------------------------------------------
 
 # To just compile the library, do:
@@ -21,9 +21,10 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 # SPEX_CHOLMOD depends on SuiteSparse_config, M, GMP, and MPFR
-LDLIBS += -lspexutil -lsuitesparseconfig -lm -lgmp -lmpfr
+LDLIBS += -lspexutil -lspexleftlu -lsuitesparseconfig -lm -lgmp -lmpfr
 
-C = $(CC) $(CF) -I../Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
+C = $(CC) $(CF) -I../Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Source
+
 
 all: install
 
@@ -33,21 +34,16 @@ OBJ = \
     spex_update_insert_new_entry.o \
     spex_update_ipge.o \
     SPEX_Update_LU_ColRep.o \
-    SPEX_delete_mpz_array.o\
-    SPEX_create_mpz_array.o\
-    SPEX_mat_alloc.o \
-    spex_update_dppu1.o                    SPEX_mat_free.o \
+    spex_update_dppu1.o\
     spex_update_dppu2.o\
-    spex_update_finalize_and_insert_vk.o   SPEX_Update_Solve.o \
+    spex_update_finalize_and_insert_vk.o \
+    SPEX_Update_solve.o SPEX_Update_tsolve.o spex_update_solve_internal.o \
     spex_update_triangular_solve.o \
-    spex_update_find_next_nz.o             SPEX_vector_alloc.o \
-    spex_update_forward_sub.o              SPEX_vector_free.o \
-    SPEX_vector_realloc.o \
-    spex_update_verify.o \
-    SPEX_mat_to_CSC.o               SPEX_CSC_to_mat.o\
-    SPEX_mat_canonicalize.o\
-    SPEX_Update_Chol_Rank1.o
-#    spex_delete_scattered_vector.o  spex_create_scattered_vector.o \
+    spex_update_forward_sub.o \
+    SPEX_Update_Chol_Rank1.o \
+    SPEX_Update_factorization_convert.o spex_update_matrix_convert.o
+    #spex_update_permute_row.o spex_update_verify.o \
+    #spex_update_matrix_canonicalize.o \
 
 
 $(OBJ): ../Include/SPEX_Update.h ../Source/spex_update_internal.h Makefile

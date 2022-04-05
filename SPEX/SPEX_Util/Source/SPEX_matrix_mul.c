@@ -19,7 +19,8 @@
 SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 (
     SPEX_matrix *x,         // matrix to be multiplied
-    const mpz_t scalar      // scalar to multiply by
+    const mpz_t scalar,     // scalar to multiply by
+    const SPEX_options* option   // Command options
 )
 {
 
@@ -30,6 +31,7 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 
     SPEX_info info ;
     SPEX_REQUIRE_TYPE (x, SPEX_MPZ) ;
+    if (x->kind == SPEX_DYNAMIC_CSC) return (SPEX_INCORRECT_INPUT);
 
     //--------------------------------------------------------------------------
     // x = x * scalar

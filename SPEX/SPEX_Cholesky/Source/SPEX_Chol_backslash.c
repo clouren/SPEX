@@ -128,7 +128,8 @@ SPEX_info SPEX_Chol_backslash
     // In addition, the symmetry check also checks that no diagonal entry is zero;
     // as otherwise this indicates that the matrix is not SPD (even if symmetric)
     // If the symmetry check fails, the appropriate error code is returned
-    // --------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
 
     SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1, option));
 

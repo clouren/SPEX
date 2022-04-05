@@ -102,7 +102,7 @@ int main( int argc, char* argv[] )
     //option->order = SPEX_NO_ORDERING;  // No ordering
     option->order = SPEX_AMD;  // AMD
     //option->order = SPEX_COLAMD; // COLAMD
-    DEMO_OK(SPEX_Chol_analize(&S, A, option));  
+    DEMO_OK(SPEX_Chol_analyze(&S, A, option));  
     //DEMO_OK(SPEX_Chol_preorder(&S, A, option));    
     clock_t end_col = clock();
     

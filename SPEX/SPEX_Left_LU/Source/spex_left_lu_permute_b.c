@@ -12,7 +12,7 @@
  * That is, b = P'*b.
  */
 
-#define SPEX_FREE_ALL \
+#define SPEX_FREE_ALL        \
     SPEX_matrix_free (&b, NULL) ;
 
 #include "spex_left_lu_internal.h"

@@ -23,6 +23,10 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
 (
     spex_scattered_vector *sv_x,// the scattered version of solution for LDx=v,
                         // using the first k-1 columns of L
+    int64_t *x_top,     // P_inv[sv_x->i[0...(*x_top)]] <= (*last_update), that
+                        // is, sv_x->i[0...(*x_top)] give the indices of all
+                        // entries that are up-to-date. However, this is updated
+                        // only when i_2ndlast is requested.
     int64_t *h,         // history vector for x
     int64_t *last_update,// the number of finished IPGE iterations, which is
                         // also the number of columns in L used last time
@@ -31,45 +35,36 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
                         // could be NULL if not needed
     const int64_t k,    // compute x up to k-th IPGE iteration, that is, using
                         // the first k-1 columns of L
-    const SPEX_mat *L,  // matrix L
-    const SPEX_mat *U,  // matrix U
-    const mpz_t *sd,    // array of scaled pivots
+    const SPEX_matrix *L,  // matrix L
+    const SPEX_matrix *U,  // matrix U
+    const SPEX_matrix *rhos,// array of scaled pivots
     const int64_t *P,   // row permutation
     const int64_t *P_inv// inverse of row permutation
 )
 {
-    if (!sv_x || !h || !last_update || !L || !P || !P_inv || !sd)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
     SPEX_info info;
     int sgn;
     int64_t j;
     int64_t n = sv_x->nzmax;
 
-    // there is no nnz in vk(P[last_update,n-2]), so proceed only when k=n-1
-    if (i_2ndlast != NULL && *i_2ndlast == -1 && k != n-1)
+    // there is no nnz in vk(P[last_update,n-2])
+    if (i_2ndlast != NULL && *i_2ndlast == -1)
     {
         return SPEX_OK;    
     }
 
     if (*last_update < k-1)
     {
-        // TODO iterate sorted nnz pattern?
+        // iterate across each entry
         for (j = *last_update+1; j < k; j++)
         {
             // skip if x(P[j]) == 0
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[P[j]]));
             if (sgn == 0)       {continue; }
 
-            // TODO add this to all caller of spex_ipge,
-            // but no need to update spex_ipge
-            // check if the first entry is the corresponding pivot
-            ASSERT(L->v[j]->i[0] == P[j]);
             // perform j-th IPGE update for x
             SPEX_CHECK(spex_update_ipge(sv_x, h, i_2ndlast, L->v[j], P,
-                P_inv, sd, j));
+                P_inv, rhos, j));
         }
         *last_update = k-1;
 
@@ -81,7 +76,7 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
             {
                 int64_t p, real_j;
                 *i_2ndlast = -1;
-                for (p = 0; p < sv_x->nz;)
+                for (p = *x_top; p < sv_x->nz;)
                 {
                     j = sv_x->i[p];
                     real_j = P_inv[j];
@@ -89,7 +84,10 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
                     // skip entries above k-th row
                     if (real_j <= *last_update)
                     {
-                        // TODO move these entries before sv_top
+                        // move these entries before x_top
+                        sv_x->i[p] = sv_x->i[*x_top];
+                        sv_x->i[*x_top] = j;
+                        (*x_top)++;
                         p++;
                         continue;
                     }

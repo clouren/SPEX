@@ -35,7 +35,7 @@
     SPEX_factorization_free(&F, option);     \
     SPEX_symbolic_analysis_free (&S, option);
 
-# define SPEX_FREE_ALL       \
+# define SPEX_FREE_ALL              \
     SPEX_FREE_WORKSPACE             \
     SPEX_matrix_free(&x, NULL);     \
 
@@ -46,7 +46,7 @@ SPEX_info SPEX_Left_LU_backslash
     // Output
     SPEX_matrix **X_handle,       // Final solution vector
     // Input
-    SPEX_type type,               // Type of output desired. Must be SPEX_MPZ,
+    SPEX_type type,               // Type of output desired. Must be
                                   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix *A,         // Input matrix
     const SPEX_matrix *b,         // Right hand side vector(s)
@@ -98,11 +98,11 @@ SPEX_info SPEX_Left_LU_backslash
     SPEX_CHECK (SPEX_Left_LU_solve (&x, F, b, option)) ;
 
     //--------------------------------------------------------------------------
-    // Now, x contains the exact solution of the linear system in mpz_t
+    // Now, x contains the exact solution of the linear system in mpq_t
     // precision set the output.
     //--------------------------------------------------------------------------
 
-    if (type == SPEX_MPZ)
+    if (type == SPEX_MPQ)
     {
         (*X_handle) = x ;
     }

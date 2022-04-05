@@ -10,14 +10,18 @@
 
 // Purpose: This function is used to perform Cholesky rank-1 update for
 // A' = A + sigma*w*w^T, where A' and A are n-by-n matrix, w is n-by-1 vector
-// and sigma is a scalor (positive for update and negative for downdate). L
-// is the given Cholesky factorization for A such that A = L*D^(-1)*L^T. sd is
-// the diagonal of L, P is the given row permutation for the Cholesky
-// factorization such that L(P,:) is a lower triangular matrix, and P_inv is
-// the inverse of P. The result of of this function will have L, w updated as
-// L_out*D^(-1)*L_out^T = A' and L*D^(-1)*w_out = w.
+// and sigma is a scalor (positive for update and negative for downdate).  The
+// matrices in the input factorization can be any type and/or kind and does not
+// have to be in updatable format. The function will always first check if the
+// factorization is updatable and perform necessary conversion if needed. L in
+// the output factorization will become updatable.
+// 
+// The matrix A is not modified during the update. If the updated A is needed,
+// user can compute A = A + sigma*w*wT BEFORE using this function (since w
+// will be modified).
 
 #define SPEX_FREE_ALL               \
+    spex_scattered_vector_free(&w_dense, option); \
     SPEX_FREE(h);                   \
     SPEX_MPQ_CLEAR(sd_ratio);       \
     SPEX_MPQ_CLEAR(pending_scale);  \
@@ -30,19 +34,55 @@
 
 SPEX_info SPEX_Update_Chol_Rank1
 (
-     SPEX_mat *L,
-     mpz_t *sd,
-     int64_t *P,
-     int64_t *P_inv,
-     SPEX_vector *w,
-     int64_t sigma
+    SPEX_factorization *F,  // The SPEX Cholesky factorization of A, including
+                            // L, rhos, P and Pinv. This factorization will be
+                            // modified during the update process. Therefore,
+                            // if this function fails for any reason, the
+                            // returned F should be considered as undefined.
+    SPEX_matrix *w,         // a n-by-1 dynamic_CSC matrix that contains the
+                            // vector to modify the original matrix A, the
+                            // resulting A is A+sigma*w*w^T. In output, w is
+                            // updated as the solution to L*D^(-1)*w_out = w
+    const int64_t sigma,    // a nonzero scalar that determines whether
+                            // this is an update or downdate
+    const SPEX_options* option // Command options
 )
 {
-    // initialize workspace
+    //--------------------------------------------------------------------------
+    // check inputs
+    //--------------------------------------------------------------------------
     SPEX_info info;
+    if (!spex_initialized()) {return SPEX_PANIC;}
+
+    SPEX_REQUIRE(w , SPEX_DYNAMIC_CSC, SPEX_MPZ);
+
+    if (!F || F->kind != SPEX_CHOLESKY_FACTORIZATION || sigma == 0 ||
+        w->m != F->L->m || w->n != 1 || w->v[0]->nz < 0 ||
+        (w->v[0]->nz > 0 && (!(w->v[0]->x) || !(w->v[0]->i))))
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+
+    // if w is a zero vector, no need to perform any update
+    if (w->v[0]->nz == 0) {return SPEX_OK;}
+
+    // make sure F is updatable
+    if (!(F->updatable))
+    {
+        info = SPEX_Update_factorization_convert(F, option);
+        if (info != SPEX_OK) return info;
+    }
+
+    //--------------------------------------------------------------------------
+    // initialize workspace
+    //--------------------------------------------------------------------------
+    SPEX_matrix *L = F->L;
+    int64_t *P = F->P_perm, *P_inv = F->Pinv_perm;
     int sgn;
     int64_t i, j, p, n = L->n, w_top = 0;
     int64_t *h = NULL;
+    spex_scattered_vector *w_dense = NULL;
+    mpz_t *sd = F->rhos->x.mpz;
     mpq_t sd_ratio;// = sd_new/sd_old
     mpq_t tmpq, pending_scale;
     mpz_t tmpz;
@@ -74,12 +114,20 @@ SPEX_info SPEX_Update_Chol_Rank1
         h[i] = -1;
     }
 
+    //--------------------------------------------------------------------------
     // initialize for the loop
+    //--------------------------------------------------------------------------
+    // get the scattered form of w
+    SPEX_CHECK(spex_update_get_scattered_v(&w_dense, NULL, w->v[0], n, n, NULL,
+        false, option));
     // sd1_old = 1
     SPEX_CHECK(SPEX_mpz_set_ui(sd1_old, 1));
     // sd_ratio = 1
     SPEX_CHECK(SPEX_mpq_set_ui(sd_ratio, 1, 1));
+
+    //--------------------------------------------------------------------------
     // update column j of L
+    //--------------------------------------------------------------------------
     for (j = 0; j < n; j++)
     {
         int64_t Pj = P[j], hj = h[Pj], hi;
@@ -91,7 +139,7 @@ SPEX_info SPEX_Update_Chol_Rank1
         // pending_scale = sd_ratio *S(j)
         SPEX_CHECK(SPEX_mpq_mul(pending_scale, sd_ratio, L->v[j]->scale));
 
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, w->x[Pj]));
+        SPEX_CHECK(SPEX_mpz_sgn(&sgn, w_dense->x[Pj]));
         if (sgn != 0)// w[P[j]] != 0
         {
             // check if history update is needed for w[P[j]]
@@ -99,15 +147,18 @@ SPEX_info SPEX_Update_Chol_Rank1
             {
                 // perform history update
                 // w[P[j]] = w[P[j]] * sd_new[j-1]/sd_new[h[P[j]]]
-                SPEX_CHECK(SPEX_mpz_mul(w->x[Pj], w->x[Pj], sd[j-1]));
+                SPEX_CHECK(SPEX_mpz_mul(w_dense->x[Pj],
+                                        w_dense->x[Pj], sd[j-1]));
                 if (hj > -1)
                 {
-                    SPEX_CHECK(SPEX_mpz_divexact(w->x[Pj], w->x[Pj], sd[hj]));
+                    SPEX_CHECK(SPEX_mpz_divexact(w_dense->x[Pj],
+                                                 w_dense->x[Pj], sd[hj]));
                 }
             }
 
             // tmpq = sigma*w[P[j]]*w[P[j]]/(sd_old[j]*sd_old[j-1])
-            SPEX_CHECK(SPEX_mpz_mul   (SPEX_MPQ_NUM(tmpq), w->x[Pj], w->x[Pj]));
+            SPEX_CHECK(SPEX_mpz_mul   (SPEX_MPQ_NUM(tmpq),
+                                       w_dense->x[Pj], w_dense->x[Pj]));
             SPEX_CHECK(SPEX_mpz_mul_si(SPEX_MPQ_NUM(tmpq),
                                        SPEX_MPQ_NUM(tmpq), sigma));
             SPEX_CHECK(SPEX_mpz_mul   (SPEX_MPQ_DEN(tmpq), sd0_old, sd1_old));
@@ -115,6 +166,12 @@ SPEX_info SPEX_Update_Chol_Rank1
 
             // sd_ratio += tmpq, which gives sd_new[j]/sd_old[j]
             SPEX_CHECK(SPEX_mpq_add(sd_ratio, sd_ratio, tmpq));
+            SPEX_CHECK(SPEX_mpq_sgn(&sgn, sd_ratio));
+            if (sgn == 0)
+            {
+                SPEX_FREE_ALL;
+                return SPEX_SINGULAR;
+            }
 
             // update sd_new[j] as sd_old[j]*sd_ratio
             SPEX_CHECK(SPEX_mpz_divexact(sd[j], sd[j], SPEX_MPQ_DEN(sd_ratio)));
@@ -132,7 +189,7 @@ SPEX_info SPEX_Update_Chol_Rank1
             {
                 i = L->v[j]->i[p];
                 hi = h[i];
-                SPEX_CHECK(SPEX_mpz_sgn(&sgn, w->x[i]));
+                SPEX_CHECK(SPEX_mpz_sgn(&sgn, w_dense->x[i]));
                 if (sgn == 0) // w[i] == 0
                 {
                     SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->v[j]->x[p]));
@@ -149,15 +206,23 @@ SPEX_info SPEX_Update_Chol_Rank1
                     // perform IPGE to update w using updated L(i,j). Since w[i]
                     // is zero, this could be a fill-in.
                     // w[i] = -L(i,j)*w[P[j]]/sd_new[j-1]
-                    SPEX_CHECK(SPEX_mpz_submul(w->x[i],
-                                               w->x[Pj], L->v[j]->x[p]));
+                    SPEX_CHECK(SPEX_mpz_submul(w_dense->x[i],
+                                               w_dense->x[Pj], L->v[j]->x[p]));
                     if (j != 0)
                     {
-                        SPEX_CHECK(SPEX_mpz_divexact(w->x[i], w->x[i],sd[j-1]));
+                        SPEX_CHECK(SPEX_mpz_divexact(w_dense->x[i],
+                                               w_dense->x[i], sd[j-1]));
                     }
-                    // add this entry to nnz pattern of w
-                    w->i[w->nz] = i;
-                    w->nz++;
+                    // add this entry to nnz pattern of w if this was not in
+                    // the nnz pattern. w_dense initially has no explicit zero.
+                    // Therefore, any explicit zero found in the nnz
+                    // pattern of w_dense must have hi > -1 (i.e., at least
+                    // updated once).
+                    if (hi == -1)
+                    {
+                        w_dense->i[w_dense->nz] = i;
+                        w_dense->nz++;
+                    }
                 }
                 else // w[i] != 0
                 {
@@ -166,17 +231,20 @@ SPEX_info SPEX_Update_Chol_Rank1
                     {
                         // perform history update
                         // w[i] = w[i] * sd_new[j-1]/sd_new[h[i]]
-                        SPEX_CHECK(SPEX_mpz_mul(w->x[i], w->x[i], sd[j-1]));
+                        SPEX_CHECK(SPEX_mpz_mul(w_dense->x[i],
+                                                w_dense->x[i], sd[j-1]));
                         if (hi > -1)
                         {
-                            SPEX_CHECK(SPEX_mpz_divexact(w->x[i],
-                                                         w->x[i], sd[hi]));
+                            SPEX_CHECK(SPEX_mpz_divexact(w_dense->x[i],
+                                                w_dense->x[i], sd[hi]));
                         }
                     }
 
                     // tmpz = sigma*w[i]*w[P[j]]
-                    SPEX_CHECK(SPEX_mpz_mul(tmpz, w->x[i], w->x[Pj]));
+                    SPEX_CHECK(SPEX_mpz_mul(tmpz, w_dense->x[i],
+                                            w_dense->x[Pj]));
                     SPEX_CHECK(SPEX_mpz_mul_si(tmpz, tmpz, sigma));
+//#if 0
 #ifdef SPEX_DEBUG
                     // tmpz /= sd_old[j-1]
                     mpq_t r1, r2; mpq_init(r1); mpq_init(r2);
@@ -185,11 +253,11 @@ SPEX_info SPEX_Update_Chol_Rank1
                     mpq_set_den(r1, sd0_old);
                     mpq_canonicalize(r1);
 
-                    SPEX_CHECK(SPEX_mpz_mul(L->v[j]->x[i],
-                                            L->v[j]->x[i],
+                    SPEX_CHECK(SPEX_mpz_mul(L->v[j]->x[p],
+                                            L->v[j]->x[p],
                                             SPEX_MPQ_NUM(pending_scale)));
-                    mpz_cdiv_qr(L->v[j]->x[i], SPEX_MPQ_NUM(r2),
-                                L->v[j]->x[i], SPEX_MPQ_DEN(pending_scale));
+                    mpz_cdiv_qr(L->v[j]->x[p], SPEX_MPQ_NUM(r2),
+                                L->v[j]->x[p], SPEX_MPQ_DEN(pending_scale));
                     mpq_set_den(r2, SPEX_MPQ_DEN(pending_scale));
                     mpq_canonicalize(r2);
                     mpq_neg(r2, r2);
@@ -206,15 +274,15 @@ SPEX_info SPEX_Update_Chol_Rank1
                     SPEX_CHECK(SPEX_mpz_fdiv_q(tmpz, tmpz, sd0_old));
 
                     // L(i,j) *= sd_ratio
-                    SPEX_CHECK(SPEX_mpz_mul(L->v[j]->x[i],
-                                            L->v[j]->x[i],
+                    SPEX_CHECK(SPEX_mpz_mul(L->v[j]->x[p],
+                                            L->v[j]->x[p],
                                             SPEX_MPQ_NUM(pending_scale)));
-                    SPEX_CHECK(SPEX_mpz_cdiv_q(L->v[j]->x[i],
-                                            L->v[j]->x[i],
+                    SPEX_CHECK(SPEX_mpz_cdiv_q(L->v[j]->x[p],
+                                            L->v[j]->x[p],
                                             SPEX_MPQ_DEN(pending_scale)));
 #endif
-                    SPEX_CHECK(SPEX_mpz_add(L->v[j]->x[i],
-                                            L->v[j]->x[i], tmpz));
+                    SPEX_CHECK(SPEX_mpz_add(L->v[j]->x[p],
+                                            L->v[j]->x[p], tmpz));
 
                     // ---------------------------------------------------------
                     // perform IPGE to update w using updated L(i,j).
@@ -230,13 +298,15 @@ SPEX_info SPEX_Update_Chol_Rank1
                     }
 
                     // w[i] = w[i]*sd_new[j]
-                    SPEX_CHECK(SPEX_mpz_mul(w->x[i], w->x[i], sd[j]));
+                    SPEX_CHECK(SPEX_mpz_mul(w_dense->x[i],
+                                            w_dense->x[i], sd[j]));
                     // w[i] = (w[i]-L(i,j)*w[P[j]])/sd_new[j-1]
-                    SPEX_CHECK(SPEX_mpz_submul(w->x[i],
-                                            w->x[Pj], L->v[j]->x[p]));
+                    SPEX_CHECK(SPEX_mpz_submul(w_dense->x[i],
+                                            w_dense->x[Pj], L->v[j]->x[p]));
                     if (j != 0)
                     {
-                        SPEX_CHECK(SPEX_mpz_divexact(w->x[i], w->x[i],sd[j-1]));
+                        SPEX_CHECK(SPEX_mpz_divexact(w_dense->x[i],
+                                            w_dense->x[i],sd[j-1]));
                     }
                 }
                 h[i] = j;
@@ -245,14 +315,14 @@ SPEX_info SPEX_Update_Chol_Rank1
             // iterate across all nnz in w to check if fillin should be added
             // to L->v[j]
             int64_t Lj_nz = L->v[j]->nz;
-            for (p = w_top; p < w->nz; p++)
+            for (p = w_top; p < w_dense->nz; p++)
             {
-                i = w->i[p];
+                i = w_dense->i[p];
                 hi = h[i];
                 if (P_inv[i] <= j)
                 {
-                    w->i[p] = w->i[w_top];
-                    w->i[w_top] = i;
+                    w_dense->i[p] = w_dense->i[w_top];
+                    w_dense->i[w_top] = i;
                     w_top++;
                     continue;
                 }
@@ -264,27 +334,32 @@ SPEX_info SPEX_Update_Chol_Rank1
                 }
                 else if (h[i] != j) // this is a fillin to L->v[j]
                 {
-                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, w->x[i]));
+                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, w_dense->x[i]));
                     if (sgn == 0) {continue;}
 
                     // perform history update to w[i]
-                    // w[i] = w[i]*sd_new[j-1]/sd_new[h[i]]
-                    SPEX_CHECK(SPEX_mpz_mul(w->x[i], w->x[i], sd[j-1]));
-                    if (hi > -1)
+                    if (hi < j-1)
                     {
-                        SPEX_CHECK(SPEX_mpz_divexact(w->x[i], w->x[i], sd[hi]));
+                        // w[i] = w[i]*sd_new[j-1]/sd_new[h[i]]
+                        SPEX_CHECK(SPEX_mpz_mul(w_dense->x[i],
+                                                w_dense->x[i], sd[j-1]));
+                        if (hi > -1)
+                        {
+                            SPEX_CHECK(SPEX_mpz_divexact(w_dense->x[i],
+                                                w_dense->x[i], sd[hi]));
+                        }
                     }
 
                     // allocate extra space if needed
                     if (Lj_nz == L->v[j]->nzmax)
                     {
                         SPEX_CHECK(SPEX_vector_realloc(L->v[j],
-                            SPEX_MIN(n, 2*(L->v[j]->nzmax))));
+                            SPEX_MIN(n, 2*(L->v[j]->nzmax)), option));
                     }
 
                     // L(i,j) = sigma*w[P[j]]*w[i]/sd_old[j-1]
                     SPEX_CHECK(SPEX_mpz_mul   (L->v[j]->x[Lj_nz],
-                                               w->x[Pj], w->x[i]));
+                                               w_dense->x[Pj], w_dense->x[i]));
                     SPEX_CHECK(SPEX_mpz_mul_si(L->v[j]->x[Lj_nz],
                                                L->v[j]->x[Lj_nz], sigma));
                     SPEX_CHECK(SPEX_mpz_divexact(L->v[j]->x[Lj_nz],
@@ -295,8 +370,10 @@ SPEX_info SPEX_Update_Chol_Rank1
 
                     // w[i] can be efficiently updated as
                     // w[i] = w[i]*sd_old[j]/sd_old[j-1]
-                    SPEX_CHECK(SPEX_mpz_mul(w->x[i], w->x[i], sd1_old));
-                    SPEX_CHECK(SPEX_mpz_divexact(w->x[i], w->x[i], sd0_old));
+                    SPEX_CHECK(SPEX_mpz_mul(w_dense->x[i],
+                                            w_dense->x[i], sd1_old));
+                    SPEX_CHECK(SPEX_mpz_divexact(w_dense->x[i],
+                                            w_dense->x[i], sd0_old));
                     h[i] = j;
                 }
             }
@@ -309,6 +386,24 @@ SPEX_info SPEX_Update_Chol_Rank1
             SPEX_CHECK(SPEX_mpz_mul     (sd[j], sd[j], SPEX_MPQ_NUM(sd_ratio)));
         }
     }
+
+    //--------------------------------------------------------------------------
+    // construct w from w_dense
+    //--------------------------------------------------------------------------
+    // reallocate w if needed
+    if (w_dense->nz > w->v[0]->nzmax)
+    {
+        SPEX_CHECK(SPEX_vector_realloc(w->v[0], w_dense->nz, option));
+    }
+    int64_t w_nz = 0;
+    for (p = 0; p < w_dense->nz; p++)
+    {
+        i = w_dense->i[p];
+        SPEX_CHECK(SPEX_mpz_swap(w->v[0]->x[w_nz], w_dense->x[i]));
+        w->v[0]->i[w_nz] = i;
+        w_nz++;
+    }
+    w->v[0]->nz = w_nz;
 
     SPEX_FREE_ALL;
     return SPEX_OK;

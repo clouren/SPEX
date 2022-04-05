@@ -95,7 +95,7 @@ SPEX_info spex_chol_factor
     {
         return SPEX_OUT_OF_MEMORY;
     }
-    SPEX_CHECK(SPEX_factorization_create(&F,option));
+    //SPEX_CHECK(SPEX_factorization_create(&F,option));
     // set factorization kind
     F->kind = SPEX_CHOLESKY_FACTORIZATION;
 
@@ -111,6 +111,13 @@ SPEX_info spex_chol_factor
     // column permutation, to be copied from S->Q_perm
     F->Q_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
 
+
+    if (!(F->Pinv_perm) || !(F->P_perm) || !(F->Q_perm))
+    {
+        // out of memory: free everything and return
+        SPEX_FREE_ALL  ;
+        return SPEX_OUT_OF_MEMORY;
+    }
 
     // copy column permutation from symbolic analysis to factorization
     memcpy(F->Q_perm, S->Q_perm, n * sizeof(int64_t));

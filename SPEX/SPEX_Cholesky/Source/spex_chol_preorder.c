@@ -31,7 +31,7 @@
 
 # define SPEX_FREE_ALL                             \
 {                                                  \
-    SPEX_symbolic_analysis_free(S_handle, option); \
+    SPEX_symbolic_analysis_free(&S, option); \
 }
 
 #include "spex_chol_internal.h"
@@ -86,12 +86,16 @@ SPEX_info spex_chol_preorder
     int64_t anz; // Number of nonzeros in A
     SPEX_matrix_nnz(&anz, A, option);   
 
-    // Allocate memory for S
+    // Allocate memory for S    
+    S = (SPEX_symbolic_analysis*) SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
+    if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
+    /* TODO delete
     S = (SPEX_symbolic_analysis*) SPEX_malloc(sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
-    SPEX_CHECK(SPEX_symbolic_analysis_create(&S,option));
+    //SPEX_CHECK(SPEX_symbolic_analysis_create(&S,option));
+    */
 
-    S->kind = SPEX_CHOLESKY_SYMBOLIC_ANALYSIS ;
+    S->kind = SPEX_CHOLESKY_FACTORIZATION ;
 
     // Allocate memory for column permutation
     S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));

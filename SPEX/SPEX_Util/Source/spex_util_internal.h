@@ -387,7 +387,7 @@ void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 
 
 //------------------------------------------------------------------------------
-// mpfr_vector: a 1D mpfr_t array
+// spex_create_mpfr_array: create a 1D mpfr_t array
 //------------------------------------------------------------------------------
 
 // Creates a simple 1D array, where A[i] is an entry of type mpfr_t.
@@ -398,6 +398,10 @@ mpfr_t* spex_create_mpfr_array
     int64_t n,     // size of the array
     const SPEX_options* option
 );
+
+//------------------------------------------------------------------------------
+// spex_create_mpq_array: Creates a 1D array, whose entries are all mpq_t type.
+//------------------------------------------------------------------------------
 
 // Creates a simple 1D array, where A[i] is an entry of type mpq_t.
 
@@ -411,7 +415,7 @@ mpq_t* spex_create_mpq_array
 
 
 //------------------------------------------------------------------------------
-// mpz_vector: a 1D mpz_t array
+// spex_create_mpz_array: create a 1D mpz_t array
 //------------------------------------------------------------------------------
 
 // Creates a simple 1D array, where A[i] is an entry of type mpz_t.
@@ -423,6 +427,22 @@ mpz_t* spex_create_mpz_array
 (
     int64_t n              // Size of x
 );
+
+
+//------------------------------------------------------------------------------
+// spex_delete_mpz_array: delete a 1D mpz_t array
+//------------------------------------------------------------------------------
+
+// Delete a simple 1D array, where A[i] is an entry of type mpz_t.
+
+/* Purpose: This function deletes a mpz array of size n
+ */
+void spex_delete_mpz_array
+(
+    mpz_t **x,      // mpz array to be deleted
+    int64_t n       // Size of x
+);
+
 
 
 /* Purpose: This function converts a double array of size n to an appropriate
@@ -510,7 +530,7 @@ SPEX_info spex_cast_array
     SPEX_type xtype,        // type of X
     int64_t n,              // size of Y and X
     mpq_t y_scale,          // scale factor applied if y is mpz_t
-    mpq_t x_scale,          // scale factor applied if x is mpz_t
+    const mpq_t x_scale,          // scale factor applied if x is mpz_t
     const SPEX_options *option
 ) ;
 
@@ -518,9 +538,24 @@ SPEX_info spex_cast_matrix
 (
     SPEX_matrix **Y_handle,     // nz-by-1 dense matrix to create
     SPEX_type Y_type,           // type of Y
-    SPEX_matrix *A,             // matrix with nz entries
+    const SPEX_matrix *A,             // matrix with nz entries
     const SPEX_options *option
 ) ;
+
+SPEX_info spex_CSC_mpz_to_dynamic
+(
+    SPEX_matrix **A_handle,       // converted SPEX_mat matrix
+    const SPEX_matrix *B,         // original matrix
+    const SPEX_options *option
+);
+
+SPEX_info spex_dynamic_to_CSC_mpz
+(
+    SPEX_matrix **A_handle,       // converted CSC matrix
+    const SPEX_matrix *B,         // original matrix
+    const int64_t nnz,            // number of nonzeros in B
+    const SPEX_options *option
+);
 
 /* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
  * size of x and i. so that they only take up the number of elements in the

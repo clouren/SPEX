@@ -1,0 +1,15 @@
+%%MatrixMarket matrix array real general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/LPnetlib/lpi_galenet
+% name: LPnetlib/lpi_galenet : b matrix
+%-------------------------------------------------------------------------------
+8 1
+20
+20
+20
+0
+0
+10
+20
+30

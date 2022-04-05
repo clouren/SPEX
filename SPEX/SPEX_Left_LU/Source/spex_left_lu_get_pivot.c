@@ -24,7 +24,7 @@
  * On output, the pivs, rhos, pinv, and row_perm arrays are all modified.
  */
 
-#define SPEX_FREE_ALL    \
+#define SPEX_FREE_ALL           \
     SPEX_MPQ_CLEAR (tol) ;      \
     SPEX_MPQ_CLEAR (ratio) ;
 

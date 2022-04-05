@@ -70,6 +70,7 @@
 //------------------------------------------------------------------------------
 // global variables
 //------------------------------------------------------------------------------
+// TODO this is not thread-safe
 
 jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
 int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in SPEX_gmp_list
@@ -80,6 +81,7 @@ int64_t spex_gmp_ntrials = -1 ; // number of malloc's allowed (for
                                 // testing only): -1 means unlimited.
 
 mpz_t  *spex_gmpz_archive  = NULL ;    // current mpz object
+mpz_t  *spex_gmpz_archive2 = NULL ;    // current second mpz object
 mpq_t  *spex_gmpq_archive  = NULL ;    // current mpq object
 mpfr_t *spex_gmpfr_archive = NULL ;    // current mpfr object
 
@@ -108,6 +110,7 @@ bool spex_gmp_init ( )
 void spex_gmp_finalize ( )
 {
     spex_gmpz_archive = NULL ;
+    spex_gmpz_archive2 = NULL ;
     spex_gmpq_archive = NULL ;
     spex_gmpfr_archive = NULL ;
     spex_gmp_nmalloc = 0 ;
@@ -613,6 +616,9 @@ SPEX_info SPEX_mpfr_printf
 //------------------------------------------------------------------------------
 
 /* Purpose: Safely initialize an mpz_t number */
+// NOTE: This function never returns out-of-memory error with GMP-6.2.1 or
+//       later versions (since there will be no memory allocation). But it could
+//       return such error for GMP-6.1.2 or ealier versions.
 
 SPEX_info SPEX_mpz_init
 (
@@ -960,6 +966,35 @@ SPEX_info SPEX_mpz_cdiv_q
         return SPEX_PANIC;
     }
     mpz_cdiv_q (q, n, d) ;
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK) ;
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpz_cdiv_qr
+//------------------------------------------------------------------------------
+
+/* Purpose: Safe version of dividing n by d, forming a quotient q and/or
+ * remainder r.
+ * cdiv rounds q up towards +infinity, and r will have the opposite sign to d.
+ * The c stands for “ceil”. That is, q = ceil(n/d)
+ */
+
+SPEX_info SPEX_mpz_cdiv_qr
+(
+    mpz_t q,
+    mpz_t r,
+    const mpz_t n,
+    const mpz_t d
+)
+{
+    SPEX_GMPZ_WRAPPER_START2 (q, r) ;
+    if (mpz_sgn(d)==0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return SPEX_PANIC;
+    }
+    mpz_cdiv_qr (q, r, n, d) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }

@@ -27,8 +27,8 @@
     SPEX_FREE(h);                   \
     SPEX_FREE(pivs);                \
 
-#define SPEX_FREE_ALL        \
-    SPEX_FREE_WORKSPACE;                  \
+#define SPEX_FREE_ALL               \
+    SPEX_FREE_WORKSPACE;            \
     SPEX_factorization_free(&F, option);
 
 #include "spex_left_lu_internal.h"
@@ -48,6 +48,9 @@ SPEX_info SPEX_Left_LU_factorize
     // check inputs
     //--------------------------------------------------------------------------
 
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+
+    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
     int64_t anz;
     // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
     // is not NULL, so SPEX_matrix_nnz must return SPEX_OK

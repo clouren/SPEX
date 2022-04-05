@@ -1,0 +1,192 @@
+%%MatrixMarket matrix coordinate integer general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/LPnetlib/lpi_woodinfe
+% name: LPnetlib/lpi_woodinfe
+% [Netlib LP problem woodinfe: minimize c'*x, where Ax=b, lo<=x<=hi]
+% id: 731
+% date: 1989
+% author: H. Greenberg
+% ed: J. Chinneck
+% fields: title name A b id aux kind date author ed notes
+% aux: c lo hi z0
+% kind: linear programming problem
+%-------------------------------------------------------------------------------
+% notes:
+% An infeasible Netlib LP problem, in lp/infeas.  For more information        
+% send email to netlib@ornl.gov with the message:                             
+%                                                                             
+% 	send index from lp                                                         
+% 	send readme from lp/infeas                                                 
+%                                                                             
+% The lp/infeas directory contains infeasible linear programming test problems
+% collected by John W. Chinneck, Carleton Univ, Ontario Canada.  The following
+% are relevant excerpts from lp/infeas/readme (by John W. Chinneck):          
+%                                                                             
+% In the following, IIS stands for Irreducible Infeasible Subsystem, a set    
+% of constraints which is itself infeasible, but becomes feasible when any    
+% one member is removed.  Isolating an IIS from within the larger set of      
+% constraints defining the model is one analysis approach.                    
+%                                                                             
+% PROBLEM DESCRIPTION                                                         
+% -------------------                                                         
+%                                                                             
+% FOREST6, WOODINFE:  very small problems derived from network-based          
+% forestry models.  The IIS in FOREST6 includes most of the rows.             
+% WOODINFE is the example problem discussed in detail in Greenberg [1993],    
+% and has a very small IIS.  Contributor:  H.J.  Greenberg, University of     
+% Colorado at Denver.                                                         
+%                                                                             
+% Name       Rows   Cols   Nonzeros Bounds      Notes                         
+% woodinfe     36     89      209   B                                         
+%                                                                             
+%                                                                             
+% REFERENCES                                                                  
+% ----------                                                                  
+%                                                                             
+% H.J.  Greenberg (1993).  "A Computer-Assisted Analysis System for           
+% Mathematical Programming Models and Solutions:  A User's Guide for          
+% ANALYZE", Kluwer Academic Publishers, Boston.                               
+%                                                                             
+%-------------------------------------------------------------------------------
+35 89 140
+1 1 1
+3 2 1
+5 3 1
+7 4 1
+9 5 1
+1 6 1
+3 7 1
+5 8 1
+12 9 1
+14 10 1
+17 11 1
+19 12 1
+21 13 1
+23 14 1
+25 15 1
+27 16 1
+31 17 1
+34 18 1
+2 19 -1
+4 20 -1
+6 21 -1
+8 22 -1
+10 23 -1
+11 24 -1
+13 25 -1
+15 26 -1
+16 27 -1
+18 28 -1
+20 29 -1
+22 30 -1
+24 31 -1
+26 32 -1
+28 33 -1
+29 34 -1
+30 35 -1
+32 36 -1
+33 37 -1
+35 38 -1
+1 39 -1
+4 39 1
+19 40 -1
+22 40 1
+1 41 -1
+6 41 1
+19 42 -1
+24 42 1
+1 43 -1
+8 43 1
+19 44 -1
+26 44 1
+1 45 -1
+10 45 1
+19 46 -1
+28 46 1
+2 47 1
+3 47 -1
+11 48 1
+12 48 -1
+20 49 1
+21 49 -1
+3 50 -1
+6 50 1
+12 51 -1
+15 51 1
+21 52 -1
+24 52 1
+3 53 -1
+8 53 1
+12 54 -1
+16 54 1
+21 55 -1
+26 55 1
+2 56 1
+5 56 -1
+11 57 1
+14 57 -1
+20 58 1
+23 58 -1
+29 59 1
+31 59 -1
+4 60 1
+5 60 -1
+13 61 1
+14 61 -1
+22 62 1
+23 62 -1
+30 63 1
+31 63 -1
+5 64 -1
+8 64 1
+14 65 -1
+16 65 1
+23 66 -1
+26 66 1
+31 67 -1
+33 67 1
+2 68 1
+7 68 -1
+20 69 1
+25 69 -1
+4 70 1
+7 70 -1
+22 71 1
+25 71 -1
+6 72 1
+7 72 -1
+24 73 1
+25 73 -1
+2 74 1
+9 74 -1
+11 75 1
+17 75 -1
+20 76 1
+27 76 -1
+29 77 1
+34 77 -1
+4 78 1
+9 78 -1
+13 79 1
+17 79 -1
+22 80 1
+27 80 -1
+30 81 1
+34 81 -1
+6 82 1
+9 82 -1
+15 83 1
+17 83 -1
+24 84 1
+27 84 -1
+32 85 1
+34 85 -1
+8 86 1
+9 86 -1
+16 87 1
+17 87 -1
+26 88 1
+27 88 -1
+33 89 1
+34 89 -1

@@ -1,0 +1,18 @@
+%%MatrixMarket matrix array real general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/LPnetlib/lpi_itest6
+% name: LPnetlib/lpi_itest6 : b matrix
+%-------------------------------------------------------------------------------
+11 1
+10000
+90000
+10000
+50000
+87000
+50000
+10000
+300000
+5000
+4500
+80000

@@ -23,7 +23,7 @@
     SPEX_MPQ_CLEAR(temp);           \
     SPEX_matrix_free(&x3, NULL);    \
 
-#define SPEX_FREE_ALL       \
+#define SPEX_FREE_ALL              \
     SPEX_FREE_WORKSPACE            \
 
 #include "spex_util_internal.h"

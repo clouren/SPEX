@@ -38,10 +38,12 @@ OBJ = \
     spex_expand_double_array.o SPEX_gmp.o SPEX_matrix_copy.o SPEX_matrix_check.o spex_cast_matrix.o \
     spex_expand_mpfr_array.o SPEX_initialize.o SPEX_matrix_free.o SPEX_check_solution.o SPEX_finalize.o  \
     spex_expand_mpq_array.o SPEX_initialize_expert.o SPEX_matrix_nnz.o SPEX_create_default_options.o  \
-    SPEX_transpose.o SPEX_determine_symmetry.o \
-    SPEX_symbolic_analysis_free.o SPEX_factorization_free.o \
+    SPEX_transpose.o SPEX_determine_symmetry.o\
+    spex_delete_mpz_array.o spex_dynamic_to_CSC_mpz.o spex_CSC_mpz_to_dynamic.o \
+    SPEX_vector_free.o SPEX_vector_allocate.o SPEX_vector_realloc.o \
+    SPEX_symbolic_analysis_free.o  SPEX_factorization_free.o \
     SPEX_scale.o \
-    SPEX_symbolic_analysis_create.o SPEX_factorization_create.o
+    #SPEX_symbolic_analysis_create.o SPEX_factorization_create.o
     #SPEX_determine_empty_column.o \
 
 $(OBJ): ../Include/SPEX_Util.h ../Source/spex_util_internal.h Makefile

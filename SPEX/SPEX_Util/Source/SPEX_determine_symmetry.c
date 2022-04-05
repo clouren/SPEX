@@ -49,7 +49,7 @@ SPEX_info SPEX_determine_symmetry
     // Declare matrix T
     SPEX_matrix *T = NULL, *R = NULL ;
     // T = A'
-    SPEX_CHECK( SPEX_transpose(&T, A));
+    SPEX_CHECK( SPEX_transpose(&T, A, option));
 
     // Check if column pointers are the same
     for (j = 0; j <= A->n; j++)
@@ -63,7 +63,7 @@ SPEX_info SPEX_determine_symmetry
     }
 
     // R = T'
-    SPEX_CHECK( SPEX_transpose(&R, T));
+    SPEX_CHECK( SPEX_transpose(&R, T, option));
     // then compare R and T
 
     // Check if i values are the same

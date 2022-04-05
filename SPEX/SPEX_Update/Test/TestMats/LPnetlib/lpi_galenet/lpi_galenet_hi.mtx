@@ -1,0 +1,21 @@
+%%MatrixMarket matrix array real general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/LPnetlib/lpi_galenet
+% name: LPnetlib/lpi_galenet : hi matrix
+%-------------------------------------------------------------------------------
+14 1
+1e308
+1e308
+1e308
+1e308
+1e308
+1e308
+30
+20
+10
+10
+10
+2
+20
+30

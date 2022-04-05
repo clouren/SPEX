@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_transpose: Transpose a matrix
+// SPEX_Util/SPEX_transpose: Transpose a CSC matrix
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -8,58 +8,70 @@
 
 //------------------------------------------------------------------------------
 
-// TODO Delete me for release
+#define SPEX_FREE_WORK       \
+    SPEX_FREE(w);
 
-#define FREE_WORKSPACE  \
-    SPEX_FREE(w);       \
+#define SPEX_FREE_ALL        \
+    SPEX_FREE_WORK;          \
+    SPEX_matrix_free(&C, option);
 
 #include "spex_util_internal.h"
-    
-/* Purpose: This function sets C = A' 
+
+/* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
  */
 SPEX_info SPEX_transpose
 (
     SPEX_matrix **C_handle,     // C = A'
-    SPEX_matrix *A              // Matrix to be transposed
+    SPEX_matrix *A,             // Matrix to be transposed
+    const SPEX_options *option
 )
 {
     SPEX_info info;
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
     // Check input
-    ASSERT(A->kind == SPEX_CSC);
-    if (!C_handle) 
-        return SPEX_INCORRECT_INPUT;
-    
+    SPEX_REQUIRE_KIND (A, SPEX_CSC);
+    if (!C_handle)       { return SPEX_INCORRECT_INPUT;}
+
     // Declare workspace and C
     int64_t* w = NULL;
     SPEX_matrix* C = NULL;
-    // C is also CSC and its type is the same as A
-    SPEX_CHECK(SPEX_matrix_allocate(&C, SPEX_CSC, A->type, A->n, A->m, A->p[A->n], false, true, NULL));
+    int64_t nz;                            // Number of nonzeros in A
     int64_t p, q, j, n, m;
-    m = A->m ; n = A->n ; 
-    
+    info = SPEX_matrix_nnz(&nz, A, option);
+    if (info != SPEX_OK) {return info;}
+    m = A->m ; n = A->n ;
     ASSERT( m >= 0);
     ASSERT( n >= 0);
+
+    // C is also CSC and its type is the same as A
+    SPEX_CHECK(SPEX_matrix_allocate(&C, SPEX_CSC, A->type, n, m, nz,
+        false, true, option));
+
     // Declare workspace
     w = (int64_t*) SPEX_calloc(m, sizeof(int64_t));
     if (!w)
     {
-        SPEX_matrix_free(&C, NULL);
+        SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
     // Compute row counts
-    for (p = 0 ; p < A->p [n] ; p++) w [A->i [p]]++ ;
+    for (p = 0 ; p < nz ; p++)
+    {
+        w [A->i [p]]++ ;
+    }
+
     // Compute row pointers
-    SPEX_cumsum (C->p, w, m) ;
+    SPEX_cumsum (C->p, w, m, option) ;
     // Populate C
     for (j = 0 ; j < n ; j++)
     {
         for (p = A->p [j] ; p < A->p [j+1] ; p++)
         {
             q = w [A->i [p]]++;
-            C->i [q] = j ;                 // place A(i,j) as entry C(j,i) 
-            // Place the values. The way values are set are based on the type of A
-            // TODO is there a better way to do this?
+            C->i [q] = j ;                 // place A(i,j) as entry C(j,i)
+
+            // assign C->x[q] = A->x[p]
             if (A->type == SPEX_MPZ)
             {
                 SPEX_CHECK(SPEX_mpz_set(C->x.mpz[q], A->x.mpz[p]));
@@ -70,18 +82,22 @@ SPEX_info SPEX_transpose
             }
             else if (A->type == SPEX_MPFR)
             {
-                SPEX_CHECK(SPEX_mpfr_set(C->x.mpfr[q], A->x.mpfr[p], SPEX_DEFAULT_MPFR_ROUND));
+                SPEX_CHECK(SPEX_mpfr_set(C->x.mpfr[q], A->x.mpfr[p],
+                    SPEX_OPTION_ROUND(option)));
             }
             else if (A->type == SPEX_INT64)
             {
                 C->x.int64[q] = A->x.int64[p];
             }
             else
+            {
                 C->x.fp64[q] = A->x.fp64[p];
+            }
         }
     }
-    C->p[m] = A->p[n];
+    SPEX_CHECK(SPEX_mpq_set(C->scale, A->scale));
+
     (*C_handle) = C;
-    FREE_WORKSPACE;
+    SPEX_FREE_WORK;
     return SPEX_OK;
 }

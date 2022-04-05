@@ -32,9 +32,19 @@ SPEX_info SPEX_LU_analyze
     const SPEX_options *option   // Control parameters, if NULL, use default
 )
 {
+    //--------------------------------------------------------------------------
+    // check inputs
+    //--------------------------------------------------------------------------
+    if (!spex_initialized()) return SPEX_PANIC;
 
-    // inputs have been checked in SPEX_symbolic_analyze
-    (*S_handle) = NULL ;
+    // A can have any data type, but must be in sparse CSC format
+    SPEX_REQUIRE_KIND (A, SPEX_CSC) ;
+    
+    if (!S_handle || A->n != A->m)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+    (*S_handle) = NULL;
 
     //--------------------------------------------------------------------------
     // allocate symbolic analysis object
@@ -50,7 +60,7 @@ SPEX_info SPEX_LU_analyze
     S = (SPEX_symbolic_analysis*) SPEX_calloc(1,
         sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
-    S->kind = SPEX_LU_SYMBOLIC_ANALYSIS;
+    S->kind = SPEX_LU_FACTORIZATION;
 
     // Allocate memory for column permutation
     S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));

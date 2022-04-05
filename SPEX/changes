@@ -1,0 +1,47 @@
+NOTE: changes with * are needed to be done for resubmission of SPEX_Left_LU ACT
+TOMS paper
+-----------------------------------changes--------------------------------------
+
+1) update SPEX_matrix to have SPEX_DYNAMIC_CSC type
+       - update SPEX_matrix_* functions
+
+2) add SPEX_vector_*.c, spex_dynamic_to_CSC_mpz.c, spex_CSC_mpz_to_dynamic.c
+   and spex_delete_mpz_array.c
+       - change SPEX_Left_LU/Tcov/Makefile accordingly
+       - combine SPEX_Left_LU/Tcov and SPEX_Update/Tcov as Tcov under SPEX/SPEX/
+
+3) add SPEX_options *option as input for SPEX_determine_symmetry, SPEX_transpose
+       - update caller SPEX_Cholesky/Source/SPEX_Chol_backslash.c and
+         SPEX_Cholesky/Demo/SPEX_Chol.c accordingly
+
+4*) add check for "divide by 0" for mpz_divexact
+
+5*) move spex_initialized and spex_set_initialized to spex_util_internal.h
+
+6) rename SPEX_matrix_canonicalize and SPEX_permute_row
+      - need discussion about where to put them<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+7) update spex_chol_internal to include spex_util_internal
+
+8) update SPEX_gmp.h to allow implement wrapper for SPEX_mpz_cdiv_qr
+
+9*) fix bugs for spex_expand_mpfr_array and spex_expand_double_array
+
+10*) optimize spex_expand_mpq_array, no need to allocate those memory space
+
+-----------------------------------TODO-----------------------------------------
+
+1*) add option as input for SPEX_cumsum, SPEX_matrix_mul for consistency
+
+2) higher-level data structure for factorization
+
+3) determine symmetry
+
+
+
+------------------------discuss with Dr. Davis----------------------------------
+
+1) rename SPEX_matrix_canonicalize and SPEX_permute_row
+      - need discussion about where to put them
+
+2) README.md primary author
