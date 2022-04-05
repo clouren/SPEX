@@ -34,6 +34,9 @@ SPEX_info SPEX_Chol_analize
 
     SPEX_info info;
 
+    //TODO input check
+    //SPEX_REQUIRE_kind()
+
     SPEX_matrix* PAP = NULL;
     SPEX_symbolic_analysis *S = NULL;
 

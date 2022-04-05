@@ -15,14 +15,11 @@
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
 }
-    // TOCHECK all the allocations and the free are driving me crazy
 
-//TOASK idk if this free F goes here
 # define SPEX_FREE_ALL               \
 {                                    \
     SPEX_FREE_WORKSPACE              \
 }
-    //SPEX_factorization_free(&F, option);    //TOCHECK need to declare F before using the free 
 
 #include "spex_chol_internal.h"  
 
