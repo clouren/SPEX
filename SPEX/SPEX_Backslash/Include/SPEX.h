@@ -368,9 +368,9 @@ SPEX_type ;
 
 typedef struct
 {
-    SPEX_kind kind ;    // CSC, triplet, dense or dynamic_CSC
+    SPEX_kind kind ;    // CSC, triplet, dense or SPEX_DYNAMIC_CSC
     SPEX_type type ;    // mpz, mpq, mpfr, int64, or fp64 (double)
-                        // NOTE: entries of dynamic_CSC matrix must be mpz type.
+                        // NOTE: entries of SPEX_DYNAMIC_CSC matrix must be mpz type.
 
     int64_t m ;         // number of rows
     int64_t n ;         // number of columns
@@ -383,12 +383,12 @@ typedef struct
 
     //--------------------------------------------------------------------------
     // these are used for CSC, triplet or dense matrix, but ignored for
-    // dynamic_CSC matrix
+    // SPEX_DYNAMIC_CSC matrix
     //--------------------------------------------------------------------------
 
     int64_t nzmax ;     // size of A->i, A->j, and A->x.
     int64_t nz ;        // # nonzeros in a triplet matrix .
-                        // Ignored for CSC, dense or dynamic_CSC matrices.
+                        // Ignored for CSC, dense or SPEX_DYNAMIC_CSC matrices.
 
     int64_t *p ;        // if CSC: column pointers, an array size is n+1.
                         // if triplet or dense: A->p is NULL.
@@ -413,11 +413,11 @@ typedef struct
     bool x_shallow ;    // if true, A->x.type is shallow.
 
     //--------------------------------------------------------------------------
-    // This component is only used for dynamic_CSC matrix, and ignored for CSC,
+    // This component is only used for SPEX_DYNAMIC_CSC matrix, and ignored for CSC,
     // triplet and dense matrix.
     //--------------------------------------------------------------------------
 
-    SPEX_vector **v;    // If dynamic_CSC: array of size n, each entry of this
+    SPEX_vector **v;    // If SPEX_DYNAMIC_CSC: array of size n, each entry of this
                         // array is a dynamic column vector.
                         // Neither A->v nor any vector A->v[j] are shallow.
 } SPEX_matrix ;
@@ -438,22 +438,22 @@ typedef struct
 SPEX_info SPEX_matrix_allocate
 (
     SPEX_matrix **A_handle, // matrix to allocate
-    SPEX_kind kind,         // CSC, triplet, dense or dynamic_CSC
+    SPEX_kind kind,         // CSC, triplet, dense or SPEX_DYNAMIC_CSC
     SPEX_type type,         // mpz, mpq, mpfr, int64, or double
     int64_t m,              // # of rows
     int64_t n,              // # of columns
     int64_t nzmax,          // max # of entries
     bool shallow,           // if true, matrix is shallow.  A->p, A->i, A->j,
                             // A->x are all returned as NULL and must be set
-                            // by the caller.  All A->*_shallow are returned
-                            // as true. Ignored for dynamic_CSC kind matrix.
+                            // by the caller.  All A->*_shallow are returned as
+                            // true. Ignored for SPEX_DYNAMIC_CSC kind matrix.
     bool init,              // If true, and the data types are mpz, mpq, or
                             // mpfr, the entries of A->x are initialized (using
                             // the appropriate SPEX_mp*_init function). If
                             // false, the mpz, mpq, and mpfr arrays are
                             // allocated but not initialized. Meaningless for
                             // data types FP64 or INT64. Ignored if kind is
-                            // dynamic_CSC or shallow is true.
+                            // SPEX_DYNAMIC_CSC or shallow is true.
     const SPEX_options *option
 ) ;
 
@@ -488,7 +488,7 @@ SPEX_info SPEX_matrix_copy
 (
     SPEX_matrix **C_handle, // matrix to create (never shallow)
     // inputs, not modified:
-    SPEX_kind C_kind,       // C->kind: CSC, triplet, or dense
+    SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
     const SPEX_matrix *A,   // matrix to make a copy of (may be shallow)
     const SPEX_options *option
@@ -589,53 +589,32 @@ SPEX_info SPEX_symbolic_analysis_free
 //------------------------------------------------------------------------------
 // SPEX_factorization: data structure for factorization
 //------------------------------------------------------------------------------
-// data structure for factorization
 
+// The SPEX_factorization object holds an LU, Cholesky, or QR numerical
+// factorization, in either static or updatable form.
 
-// For each kind of the factorization, if user wishes to perform factorization
-// update, then it must be in updatable format, with updatable = true. This
-// requires all the following conditions to be met.
-//
-// 1. Both L and U are stored as SPEX_dynamic_CSC. However, U in the updatable
-//    factorization is actually the transpose of U, since U will be updated
-//    one row at a time.
-// 2. A = LD^(-1)U, which means L and U are properly permuted. Specifically, the
-//    rows of L are in the same order as the rows of A, while the columns of L
-//    are permuted such that L->v[j] (i.e., j-th column of L) contains the j-th
-//    pivot, which would be L->v[j]->x[0], (i.e., L->v[j]->i[0] == P[j]).
-//    Similarly, The columns of U (or the rows of UT) are in the same order as
-//    the columns of A, while the rows of U (or the columns of UT) are permuted
-//    such that UT->v[j] (i.e., j-th column of UT, or j-th row of U) contains
-//    the j-th pivot, which would be UT->v[j]->x[0], (i.e., UT->v[j]->i[0] ==
-//    Q[j]).
-//
-// Due to these non-trivial conditions, users cannot simply perform
-// SPEX_matrix_copy to obtain L and/or U in SPEX_DYNAMIC_CSC MPZ format and
-// claim it is updatable, and vice versa. In order to convert between updatable
-// and non-updatable (static) factorization, user should call
-// SPEX_update_factorization_convert, which performs in-place bi-directional
-// conversion. In addition, all functions that would require updable format
-// would check the input factorization and perform conversion automatically. If
-// this happens, the output factorization will become updatable.
-//
-// Although the components of the factorization structure is accessible for
-// user, user should never try to modify individual component without fully
-// understanding. This would cause undefined behavior.
+// The components of the factorization structure are accessible to the user
+// application.  However, they should only be modified by calling SPEX_*
+// methods.  Changing them directly can lead to undefined behavior.
 
 typedef struct
 {
     SPEX_factorization_kind kind;         // LU, Cholesky, QR factorization
-    bool updatable;                       // flag to denote if this
-                                          // factorization is in the updatable
-                                          // format.
 
-
+    bool updatable; // flag to denote if this
+                    // factorization is in the updatable format.  To convert
+    // between updatable and non-updatable (static) factorization, user should
+    // call SPEX_Update_factorization_convert, which performs in-place
+    // bi-directional conversion. In addition, all functions that require the
+    // updatable format check the input factorization and convert it
+    // automatically. If this happens, the output factorization becomes
+    // updatable.
 
     mpq_t scale_for_A;                    // the scale of the target matrix
 
     //--------------------------------------------------------------------------
     // These are used for LU or Cholesky factorization, but ignored for QR
-    // factorization. Check L->kind to see if the factorization is updatable.
+    // factorization.
     //--------------------------------------------------------------------------
 
     SPEX_matrix *L;                       // The lower-triangular matrix from LU
@@ -648,7 +627,7 @@ typedef struct
 
     //--------------------------------------------------------------------------
     // These are used for QR factorization, but ignored for LU or Cholesky
-    // factorization. Check L->kind to see if the factorization is updatable
+    // factorization.
     //--------------------------------------------------------------------------
 
     SPEX_matrix *Q;                       // The orthogonal matrix from QR
@@ -795,6 +774,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
  * it by an mpz_t constant storing the solution in a mpq_t dense SPEX_matrix
  * array. 
  */
+// FIXME: does this need to be user-callable?
 SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
 (
     SPEX_matrix **x2_handle,    // x2 = x/scalar
@@ -805,6 +785,7 @@ SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
 
 /* Purpose: This function multiplies matrix x a scalar
  */
+// FIXME: does this need to be user-callable?
 SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 (
     SPEX_matrix *x,         // matrix to be multiplied
@@ -886,7 +867,7 @@ SPEX_info SPEX_determine_empty_column
 // allocated by that function.  The list is started fresh each time a GMP
 // function is called.  If any allocation fails, the NULL pointer is not
 // returned to GMP.  Instead, all allocated blocks in the list are freed,
-// and spex_gmp_allocate returns directly to wrapper.
+// and spex_gmp_allocate returns directly to the wrapper.
 
 SPEX_info SPEX_mpfr_asprintf (char **str, const char *format, ... ) ;
 
@@ -1151,17 +1132,17 @@ SPEX_info SPEX_Left_LU_backslash
     SPEX_type type,               // Type of output desired:
                                   // Must be SPEX_MPQ, SPEX_MPFR,
                                   // or SPEX_FP64
-    const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *b,         // Right hand side vector(s)
+    const SPEX_matrix *A,         // Input matrix, must be static CSC MPZ
+    const SPEX_matrix *b,         // Right hand side vector(s), ... TODO
     const SPEX_options* option
 ) ;
 
-
+// FIXME: rename SPEX_Left_LU_analyze?
 SPEX_info SPEX_LU_analyze
 (
     SPEX_symbolic_analysis** S_handle, // symbolic analysis including
                                  // column perm. and nnz of L and U
-    const SPEX_matrix *A,        // Input matrix
+    const SPEX_matrix *A,        // Input matrix, must be static CSC
     const SPEX_options *option   // Control parameters, if NULL, use default
 );
 
@@ -1170,21 +1151,22 @@ SPEX_info SPEX_Left_LU_factorize
     // output:
     SPEX_factorization **F_handle, // LU factorization
     // input:
-    const SPEX_matrix *A,      // matrix to be factored
+    const SPEX_matrix *A,      // matrix to be factored, must be static CSC MPZ
     const SPEX_symbolic_analysis *S, // symbolic analysis
     const SPEX_options* option // command options
 );
-
-// Note: F can be non-updatable but will be converted if that happens, which
-//       makes the input F not 'const' while only its format but not values may
-//       be changed.
 
 SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
     SPEX_matrix **x_handle,  // rational solution to the system
+    // input/output:
+    SPEX_factorization *F,  // The non-updatable LU factorization.
+                            // Mathematically, F is unchanged.  However, if F
+                            // is updatable on input, it is converted to
+                            // non-updatable.  If F is already non-updatable,
+                            // it is not modified.
     // input:
-    SPEX_factorization* F, // LU factorization
     const SPEX_matrix *b,   // right hand side vector
     const SPEX_options* option // Command options
 );
@@ -1334,9 +1316,6 @@ SPEX_info SPEX_Chol_factorize
  * and S contains the elimination tree
  * On output x contains the rational solution of the system LDL' x = b
  */
-// Note: F can be non-updatable but will be converted if that happens, which
-//       makes the input F not 'const' while only its format but not values may
-//       be changed.
 
 SPEX_info SPEX_Chol_solve
 (
@@ -1344,8 +1323,13 @@ SPEX_info SPEX_Chol_solve
     SPEX_matrix** x_handle,           // On input: undefined.
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
-    // Input
-    SPEX_factorization *F,      // Cholesky factorization
+    // input/output:
+    SPEX_factorization *F,  // The non-updatable Cholesky factorization.
+                            // Mathematically, F is unchanged.  However, if F
+                            // is updatable on input, it is converted to
+                            // non-updatable.  If F is already non-updatable,
+                            // it is not modified.
+    // input:
     const SPEX_matrix* b,             // Right hand side vector
     const SPEX_options* option        // command options
 );
@@ -1357,10 +1341,10 @@ SPEX_info SPEX_Chol_solve
 //------------------------------------------------------------------------------
 
 
-// This portion of SPEX library update a exact Cholesky factorization PAQ = LDL^T
-// exactly when A is changed as A' = A+sigma*w*w^T, or a exact LU factorization
-// PAQ = LDU when A is changed with a single column.
-// This code accompanies the paper
+// This portion of SPEX library update a exact Cholesky factorization PAQ =
+// LDL^T exactly when A is changed as A' = A+sigma*w*w^T, or a exact LU
+// factorization PAQ = LDU when A is changed with a single column.  This code
+// accompanies the paper
 
 
 //    The theory associated with this software can be found in the paper
@@ -1395,8 +1379,12 @@ SPEX_info SPEX_Chol_solve
 // reason, the returned F should be considered as undefined.
 //
 // The matrix A is not modified during the update. If the updated A is
-// needed, user can use the follow code if A is in SPEX_dynamic_CSC form.
+// needed, user can use the follow code if A is in SPEX_DYNAMIC_CSC form.
+// SPEX_matrix_copy can be used to convert A to/from SPEX_DYNAMIC_CSC.
 //
+// SPEX_matrix_colrep (A, k, vk, option)
+//      require A and vk to be SPEX_DYNAMIC_CSC (only MPZ)
+//      require A to be m-by-n, vk of size m-by-1
 //       SPEX_vector *Vtmp = A->v[k];
 //       A->v[k] = vk->v[0];
 //       vk->v[0] = Vtmp;
@@ -1409,7 +1397,7 @@ SPEX_info SPEX_Update_LU_colrep
                             // Therefore, if this function fails for any
                             // reason, the returned F should be considered as
                             // undefined.
-    SPEX_matrix *vk,        // Pointer to a n-by-1 dynamic_CSC matrix
+    SPEX_matrix *vk,        // Pointer to a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix
                             // which contains the column to be inserted.
                             // The rows of vk are in the same order as A.
     int64_t k,              // The column index that vk will be inserted, 0<=k<n
@@ -1420,15 +1408,23 @@ SPEX_info SPEX_Update_LU_colrep
 // Rank-1 Cholesky update/downdate
 //------------------------------------------------------------------------------
 
-// This function performs rank-1 Cholersky update/downdate. The matrices in the
+// This function performs rank-1 Cholesky update/downdate. The matrices in the
 // input factorization can be any type and/or kind and does not have to be in
 // updatable format. The function will always first check if the factorization
 // is updatable and perform necessary conversion if needed. L in the output
 // factorization will become updatable.
 // 
 // The matrix A is not modified during the update. If the updated A is needed,
-// user can compute A = A + sigma*w*wT BEFORE using this function (since w
-// will be modified).
+// user can compute A = A + sigma*w*w' BEFORE using this function (since w
+// will be modified). TODO: describe how to do this.
+
+// TODO: do we need these? Just for MPZ?  What data formats?
+// formats: static CSC, dynamic CSC, and dense
+// data types: MPZ, others?
+
+    // C=A*B, C=alpha*A+beta*B, ...
+    // C += sigma*w*w' (just dynamic CSC)
+    // C = A'   SPEX_transpose (just static CSC, but all types)
 
 SPEX_info SPEX_Update_Chol_rank1
 (
@@ -1437,9 +1433,9 @@ SPEX_info SPEX_Update_Chol_rank1
                             // modified during the update process. Therefore,
                             // if this function fails for any reason, the
                             // returned F should be considered as undefined.
-    SPEX_matrix *w,         // a n-by-1 dynamic_CSC matrix that contains the
-                            // vector to modify the original matrix A, the
-                            // resulting A is A+sigma*w*w^T. In output, w is
+    SPEX_matrix *w,         // a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix with
+                            // the vector to modify the original matrix A, the
+                            // resulting A is A+sigma*w*w'. In output, w is
                             // updated as the solution to L*D^(-1)*w_out = w
     const int64_t sigma,    // a nonzero scalar that determines whether
                             // this is an update or downdate
@@ -1451,17 +1447,18 @@ SPEX_info SPEX_Update_Chol_rank1
 // of matrix A
 //------------------------------------------------------------------------------
 
-// Note: F can be non-updatable but will be converted if that happens, which
-//       makes the input F not 'const' while only its format but not values may
-//       be changed.
-
-SPEX_info SPEX_Update_solve // solves Ax = b via REF LU factorization of A
+SPEX_info SPEX_Update_solve // solve via updatable LU or Cholesky factorization
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
                             // the system. 
+    // input/output:
+    SPEX_factorization *F,  // The updatable LU or Cholesky factorization.
+                            // Mathematically, F is unchanged.  However, if
+                            // F is not updatable on input, it is converted
+                            // to updatable.  If F is already updatable, it is
+                            // not modified.
     // input:
-    SPEX_factorization *F,  // The updatable LU or Cholesky factorization
     const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options* option // Command options
@@ -1473,17 +1470,18 @@ SPEX_info SPEX_Update_solve // solves Ax = b via REF LU factorization of A
 // of matrix A
 //------------------------------------------------------------------------------
 
-// Note: F can be non-updatable but will be converted if that happens, which
-//       makes the input F not 'const' while only its format but not values may
-//       be changed.
-
-SPEX_info SPEX_Update_tsolve // solves Ax = b via REF LU factorization of A
+SPEX_info SPEX_Update_tsolve // solve via updatable LU or Cholesky factorization
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
                             // the system. 
+    // input/output:
+    SPEX_factorization *F,  // The updatable LU or Cholesky factorization.
+                            // Mathematically, F is unchanged.  However, if
+                            // F is not updatable on input, it is converted
+                            // to updatable.  If F is already updatable, it is
+                            // not modified.
     // input:
-    SPEX_factorization *F,  // The updatable LU or Cholesky factorization
     const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options* option // Command options
@@ -1492,20 +1490,41 @@ SPEX_info SPEX_Update_tsolve // solves Ax = b via REF LU factorization of A
 
 //------------------------------------------------------------------------------
 // Function for converting factorization between updatable (with L and/or U as
-// dynamic_CSC MPZ matrices) and non-updatable (with L and/or U as CSC MPZ
+// SPEX_DYNAMIC_CSC MPZ matrices) and non-updatable (with L and/or U as CSC MPZ
 // matrices) formats.
 //------------------------------------------------------------------------------
 
 // NOTE: if F->updatable == false upon input, F->L (and F->U if exists) must be
 // CSC MPZ matrix, otherwise, SPEX_INCORRECT_INPUT will be returned. Likewise,
 // if F->updatable == true upon input, F->L (and F->U if exists) must be
-// dynamic_CSC MPZ matrix. In addition, both F->L and F->U (if exists) must not
-// be shallow matrices. All SPEX functions output either of these two formats
-// and non-shallow. Therefore, these input requirements can be met easily if
-// users do not try to modify any individual component of F.  The conversion is
-// done in place and F->updatable will be set to its complement upon output. In
-// case of any error, the returned factorization should be considered as
-// undefined.
+// SPEX_DYNAMIC_CSC MPZ matrix. In addition, both F->L and F->U (if exists)
+// must not be shallow matrices. All SPEX functions output either of these two
+// formats and non-shallow. Therefore, these input requirements can be met
+// easily if users do not try to modify any individual component of F.  The
+// conversion is done in place and F->updatable will be set to its complement
+// upon output. In case of any error, the returned factorization should be
+// considered as undefined.
+
+// For each kind of the factorization, if user wishes to perform factorization
+// update, then it must be in updatable format, with updatable = true. This
+// requires all the following conditions to be met.
+//
+// 1. Both L and U are stored as SPEX_DYNAMIC_CSC. However, U in the updatable
+//    factorization is actually the transpose of U, since U will be updated
+//    one row at a time.
+// 2. A = LD^(-1)U, which means L and U are properly permuted. Specifically, the
+//    rows of L are in the same order as the rows of A, while the columns of L
+//    are permuted such that L->v[j] (i.e., j-th column of L) contains the j-th
+//    pivot, which would be L->v[j]->x[0], (i.e., L->v[j]->i[0] == P[j]).
+//    Similarly, The columns of U (or the rows of UT) are in the same order as
+//    the columns of A, while the rows of U (or the columns of UT) are permuted
+//    such that UT->v[j] (i.e., j-th column of UT, or j-th row of U) contains
+//    the j-th pivot, which would be UT->v[j]->x[0], (i.e., UT->v[j]->i[0] ==
+//    Q[j]).
+//
+// Due to these non-trivial conditions, users cannot simply perform
+// SPEX_matrix_copy to obtain L and/or U in SPEX_DYNAMIC_CSC MPZ format and
+// claim it is updatable, and vice versa.
 
 SPEX_info SPEX_Update_factorization_convert
 (
