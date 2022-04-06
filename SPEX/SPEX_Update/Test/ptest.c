@@ -31,8 +31,8 @@
     SPEX_matrix_free(&b, option);                \
     SPEX_matrix_free(&b_dbl, option);            \
     SPEX_matrix_free(&c, option);                \
-    SPEX_matrix_free(&c_sol, option);            \
-    SPEX_matrix_free(&x2, option);               \
+    SPEX_matrix_free(&c_new, option);            \
+    SPEX_matrix_free(&basic_sol, option);        \
     SPEX_matrix_free(&y, option);                \
     SPEX_matrix_free(&y_sol, option);            \
     SPEX_matrix_free(&A3, option);               \
@@ -84,8 +84,8 @@ int main( int argc, char* argv[])
     SPEX_options* option = NULL;
     SPEX_matrix *Prob_A = NULL, *Prob_c = NULL, *tempA = NULL, * b_dbl = NULL;
     SPEX_matrix *A1 = NULL, *x1 = NULL, *A2 = NULL, *A3 = NULL;
-    SPEX_matrix *b = NULL, *c = NULL,  *x2 = NULL, *y = NULL, *c_sol = NULL,
-                *y_sol = NULL;
+    SPEX_matrix *b = NULL, *c = NULL,  *basic_sol = NULL, *y = NULL,
+                *c_new = NULL, *y_sol = NULL;
     SPEX_matrix *vk = NULL;
     SPEX_vector *tmpv;
     SPEX_factorization *F1 = NULL, *F2 = NULL;
@@ -473,10 +473,6 @@ int main( int argc, char* argv[])
     OK(SPEX_matrix_allocate(&y, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
         option));
 
-    if (mpq_equal(Prob_A->scale, b->scale) == 0)
-    {
-        gmp_printf("A_scale(%Qd) != b_scale(%Qd)\n", Prob_A->scale, b->scale);
-    }
     int64_t new_col = 0, iter = 0;
     k = 0;
     while (iter < 100)
@@ -488,8 +484,8 @@ int main( int argc, char* argv[])
         start1 = clock();
         start2 = clock();
         // solve for x_basic
-        OK(SPEX_matrix_free (&x2, option));
-        OK(SPEX_Update_solve(&x2, F1, b, option));
+        OK(SPEX_matrix_free (&basic_sol, option));
+        OK(SPEX_Update_solve(&basic_sol, F1, b, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
@@ -512,18 +508,18 @@ int main( int argc, char* argv[])
 
                 // compute objective value
                 OK(SPEX_mpq_set_z(tmpq1, c->x.mpz[i]));
-                OK(SPEX_mpq_mul(tmpq1, tmpq1, x2->x.mpq[i]));
-                OK(SPEX_mpz_add(obj, obj, tmpq1));
+                OK(SPEX_mpq_mul(tmpq1, tmpq1, basic_sol->x.mpq[i]));
+                OK(SPEX_mpq_add(obj, obj, tmpq1));
 
 #if 1
-                if (mpq_sgn(x2->x.mpq[i]) < 0)
+                if (mpq_sgn(basic_sol->x.mpq[i]) < 0)
                 {
-                    printf("x[%ld]=%lf<0 %d %d\n",j,mpq_get_d(x2->x.mpq[i]));
-                    gmp_printf("exact x[%ld]=%Qd\n",j,x2->x.mpq[i]);
+                    printf("x[%ld]=%lf<0\n",j,mpq_get_d(basic_sol->x.mpq[i]));
+                    gmp_printf("exact x[%ld]=%Qd\n",j,basic_sol->x.mpq[i]);
                     //OK(SPEX_PANIC);
                 }
 #else
-                SPEX_gmp_printf("%ld xz[%ld]= %Qd \n",i,j,x2->x.mpq[i]);
+                SPEX_gmp_printf("%ld xz[%ld]= %Qd \n",i,j,basic_sol->x.mpq[i]);
 #endif
             }
         }
@@ -548,39 +544,37 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         // find the entering variable
         //----------------------------------------------------------------------
-        // solve A'*c_sol = c for updated coefficient for objective function
-        SPEX_matrix_free(&c_sol, option);
+        // solve A'*c_new = c for updated coefficient for objective function
+        SPEX_matrix_free(&c_new, option);
         start2 = clock();
-        OK(SPEX_Update_tsolve(&c_sol, F1, c, option));
+        OK(SPEX_Update_tsolve(&c_new, F1, c, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
         new_col = -1;
-#if 0
         // find the most positive coefficient since we want to min obj
-        OK(SPEX_mpq_set_ui(maxq, 0, 1));
+        OK(SPEX_mpq_set_ui(maxq, 0, 1));// maxq = 0
         for (j = 0; j < Prob_A->n; j++)
         {
             if (used_as_basis[j] >= 0) {continue;} // skip basis variables
 
-            // compute tmpz = -c[j]+c_new'*A(:,j)
-            OK(SPEX_mpz_set_ui(tmpz, 0));
-            // iterate across nnz in column j of A
+            // compute -c[j]+c_new'*A(:,j)
+            OK(SPEX_mpq_set_ui(tmpq1, 0, 1));
+            // iterate across nnz in column j of A to get tmpq1 = c_new'*A(:,j)
             for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
             {
                 i = Prob_A->i[p];
-                OK(SPEX_mpz_addmul(tmpz, Prob_A->x.mpz[p], c_sol->x.mpz[i]));
+                OK(SPEX_mpq_set_z(tmpq2, Prob_A->x.mpz[p]));
+                OK(SPEX_mpq_mul(tmpq2, tmpq2, c_new->x.mpq[i]));
+                OK(SPEX_mpq_add(tmpq1, tmpq1, tmpq2));
             }
-            // use exact comparison
-            // tmpq1 = c_new'*A(:,j)
-            OK(SPEX_mpq_set_z(tmpq1, tmpz));
             OK(SPEX_mpq_div(tmpq1, tmpq1, Prob_A->scale));
-            OK(SPEX_mpq_div(tmpq1, tmpq1,  c_sol->scale));
             // tmpq2 = c[j]
             OK(SPEX_mpq_set_z(tmpq2, Prob_c->x.mpz[j]));
             OK(SPEX_mpq_div(tmpq2, tmpq2, Prob_c->scale));
             // tmpq1 = tmpq1 - tmpq2
             mpq_sub(tmpq1, tmpq1, tmpq2);
+            // use exact comparison
             OK(SPEX_mpq_cmp(&sgn, tmpq1, maxq));
             if (sgn > 0)
             {
@@ -588,35 +582,6 @@ int main( int argc, char* argv[])
                 new_col = j;
             }
         }
-#else
-        double mind = 0.0, tmpd = 0.0;
-        for (j = 0; j < Prob_A->n; j++)
-        {
-            if (used_as_basis[j] >= 0) {continue;} // skip basis variables
-
-            // compute tmpz = -c[j]+c_new'*A(:,j)
-            OK(SPEX_mpz_set_ui(tmpz, 0));
-            // iterate across nnz in column j of A
-            for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
-            {
-                i = Prob_A->i[p];
-                OK(SPEX_mpz_addmul(tmpz, Prob_A->x.mpz[p], c_sol->x.mpz[i]));
-            }
-            OK(SPEX_mpq_set_z(tmpq1, tmpz));
-            OK(SPEX_mpq_div(tmpq1, tmpq1, Prob_A->scale));
-            OK(SPEX_mpq_div(tmpq1, tmpq1,  c_sol->scale));
-            tmpd = mpq_get_d(tmpq1);
-            OK(SPEX_mpq_set_z(tmpq1, Prob_c->x.mpz[j]));
-            OK(SPEX_mpq_div(tmpq1, tmpq1, Prob_c->scale));
-            tmpd = tmpd - mpq_get_d(tmpq1);
-            if (tmpd > mind)//TODO
-            {
-                mind = tmpd;
-                new_col = j;
-            }
-        }
-
-#endif
 
         if (new_col == -1)
         {
@@ -672,39 +637,39 @@ int main( int argc, char* argv[])
 
         // perform ratio test to find existing variable
         k = -1;
-        int sd_sgn = mpz_sgn(F1->rhos->x.mpz[n-1]);
         for (i = 0; i < n; i++)
         {
-            int y_sgn = mpz_sgn(y_sol->x.mpz[i]) * sd_sgn;
-
-            if (y_sgn > 0)
+            if (mpq_sgn(y_sol->x.mpq[i]) > 0)
             {
-                if (mpz_sgn(x2->x.mpz[i]) == 0)
+                if (mpq_sgn(basic_sol->x.mpq[i]) == 0)
                 {
                     k = i;
                     printf("found 0!! This update won't improve obj value\n");
                     break;
                 }
 
-                OK(SPEX_mpq_set_num(tmpq1, x2->x.mpz[i]));
-                OK(SPEX_mpq_set_den(tmpq1, y_sol->x.mpz[i]));
-                OK(SPEX_mpq_canonicalize(tmpq1));
-                OK(SPEX_mpq_mul(tmpq1, tmpq1, y_sol->scale));
-                OK(SPEX_mpq_div(tmpq1, tmpq1, x2->scale));
-                        //printf(" x/y=%f \n",mpq_get_d(tmpq1));
+                // basic_sol[i] = basic_sol[i]/y_sol[i] (it's ok to modify
+                // basic_sol here since it will be deleted/updated in next loop)
+                OK(SPEX_mpq_div(basic_sol->x.mpq[i], basic_sol->x.mpq[i],
+                                y_sol->x.mpq[i]));
+                // printf(" x/y=%f \n",mpq_get_d(basic_sol->x.mpq[i]));
                 if (k == -1)
                 {
-                    OK(SPEX_mpq_set(minq, tmpq1));
+                    OK(SPEX_mpq_set(minq, basic_sol->x.mpq[i]));
                     k = i;
                 }
                 else
                 {
-                    OK(SPEX_mpq_cmp(&sgn, tmpq1, minq));
+                    OK(SPEX_mpq_cmp(&sgn, basic_sol->x.mpq[i], minq));
                     if (sgn < 0)
                     {
-                        //OK(SPEX_gmp_printf("%Qd <%Qd\n",tmpq1,minq));
-                        //printf("%f < %f\n",mpq_get_d(tmpq1),mpq_get_d(minq));
-                        OK(SPEX_mpq_set(minq, tmpq1));
+                        /*
+                        OK(SPEX_gmp_printf("%Qd <%Qd\n",basic_sol->x.mpq[i],
+                                           minq));
+                        printf("%f < %f\n",mpq_get_d(basic_sol->x.mpq[i]),
+                                           mpq_get_d(minq));
+                        */
+                        OK(SPEX_mpq_set(minq, basic_sol->x.mpq[i]));
                         k = i;
                     }
                 }

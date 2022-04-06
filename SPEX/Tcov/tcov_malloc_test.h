@@ -119,5 +119,21 @@ int spex_gmp_realloc_test
     size_t old_size,
     size_t new_size
 );
+
+SPEX_info spex_check_solution
+(
+    const SPEX_matrix *A,         // Input matrix
+    const SPEX_matrix *x,         // Solution vectors
+    const SPEX_matrix *b,         // Right hand side vectors
+    const SPEX_options* option    // Command options
+);
+
+SPEX_info spex_update_verify
+(
+    SPEX_factorization *F,// LU factorization of A
+    const SPEX_matrix *A,     // Input matrix
+    int64_t *h,            // history vector
+    const SPEX_options *option// command options
+);
 #endif
 
