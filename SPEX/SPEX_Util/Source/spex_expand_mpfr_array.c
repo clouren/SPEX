@@ -57,6 +57,8 @@ SPEX_info spex_expand_mpfr_array
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
 
     uint64_t prec = SPEX_OPTION_PREC (option) ;
+    // paranoia:  check prec here: cast to mprf_prec_t, and back, assert
+    // equality, if not equal then return SPEX_PANIC
     mpfr_rnd_t round = SPEX_OPTION_ROUND (option) ;
 
     SPEX_CHECK(SPEX_mpq_init(temp));

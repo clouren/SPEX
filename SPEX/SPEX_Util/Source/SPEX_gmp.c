@@ -640,9 +640,13 @@ SPEX_info SPEX_mpz_init
 SPEX_info SPEX_mpz_init2
 (
     mpz_t x,                // Number to be initialized
-    const size_t size       // size of the number
+    const uint64_t size     // size of the number
 )
 {
+    // FIXME
+    // paranoia:  cast size to mp_bitcnt_t and back to uint64, assert equality,
+    // return SPEX_PANIC
+
     SPEX_GMPZ_WRAPPER_START (x) ;
     mpz_init2 (x, (mp_bitcnt_t) size) ;
     SPEX_GMP_WRAPPER_FINISH ;
@@ -1657,11 +1661,15 @@ SPEX_info SPEX_mpq_sgn
 SPEX_info SPEX_mpfr_init2
 (
     mpfr_t x,       // Floating point number to initialize
-    uint64_t size    // # of bits in x
+    const uint64_t size    // # of bits in x
 )
 {
+    // FIXME
+    // paranoia:  cast size to mpfr_prec_t and back to uint64, assert equality,
+    // in debug mode
+
     SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_init2 (x, (unsigned long int) size) ;
+    mpfr_init2 (x, (mpfr_prec_t) size) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }

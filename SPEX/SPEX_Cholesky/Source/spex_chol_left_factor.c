@@ -145,6 +145,7 @@ SPEX_info spex_chol_left_factor
     // bound.  It is still possible that more bits will be required which is
     // correctly handled internally.
     int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n))) ;
+    // FIXME: paranoia
     
     // Create x, a "global" dense mpz_t matrix of dimension n*1 (i.e., it is 
     // used as workspace re-used at each iteration). The second boolean
@@ -230,7 +231,8 @@ SPEX_info spex_chol_left_factor
             {
                 // Find the size of x[j]
                 size = mpz_sizeinbase(x->x.mpz[jnew],2);
-                    
+                // FIXME: paranoia on size+2
+
                 // GMP manual: Allocated size should be size+2
                 SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
                 
