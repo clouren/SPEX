@@ -179,8 +179,7 @@ SPEX_info spex_check_solution
     SPEX_CHECK(SPEX_mpq_cmp_ui(&r, scale, 1, 1));
     if (r != 0)
     {
-        nz = x->m * x->n;
-        for (i = 0; i < nz; i++)
+        for (i = 0; i < b2->m*b2->n; i++)
         {
             SPEX_CHECK(SPEX_mpq_mul(b2->x.mpq[i], b2->x.mpq[i], scale));
         }
@@ -255,7 +254,6 @@ SPEX_info spex_update_verify
 (
     SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix *A,     // Input matrix
-    int64_t *h,            // history vector
     const SPEX_options *option// command options
 )
 {

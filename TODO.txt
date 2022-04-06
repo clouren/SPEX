@@ -76,7 +76,7 @@ no assign for P_perm in spex_chol_factor
 
 bug in spex_chol_ereach:
 
-SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
+naming: SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
 
 SPEX_info SPEX_Chol_solve
 (

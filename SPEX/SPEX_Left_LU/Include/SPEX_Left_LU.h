@@ -203,8 +203,13 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
     SPEX_matrix **x_handle,  // rational solution to the system
+    // input/output:
+    SPEX_factorization *F,  // The non-updatable LU factorization.
+                            // Mathematically, F is unchanged.  However, if F
+                            // is updatable on input, it is converted to
+                            // non-updatable.  If F is already non-updatable,
+                            // it is not modified.
     // input:
-    const SPEX_factorization* F, // LU factorization
     const SPEX_matrix *b,   // right hand side vector
     const SPEX_options* option // Command options
 );

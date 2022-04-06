@@ -177,6 +177,7 @@ int main( int argc, char* argv[])
                 //--------------------------------------------------------------
 
                 SPEX_options* option = NULL;
+                SPEX_factorization *F = NULL;
                 SPEX_matrix *L = NULL, *U = NULL, *A = NULL, *tmpA = NULL,
                             *UT = NULL;
                 SPEX_vector *vk = NULL;
@@ -541,11 +542,11 @@ int main( int argc, char* argv[])
                 for (int64_t inner = 0; inner < max_inner_loop &&
                     !pretend_to_fail; inner++)
                 {
-                    option->check = (inner == 0) ? true: false;
                     if (test_type == 0)
                     {
-                        info = SPEX_Update_LU_ColRep(A, L, U, rhos, P, P_inv, Q,
-                            Q_inv, &vk, k, option);
+                        info = SPEX_Update_LU_ColRep(F, vk, k, option);
+                        //info = SPEX_Update_LU_ColRep(A, L, U, rhos, P, P_inv, Q,
+                          //  Q_inv, &vk, k, option);
                     }
                     else if (test_type == 1)
                     {
@@ -560,8 +561,8 @@ int main( int argc, char* argv[])
                         // always shrink vk
                         TEST_CHECK(SPEX_vector_realloc(vk, vk->nz, option));
                         if (pretend_to_fail) {break;}
-                        info = SPEX_Update_Chol_Rank1(L, rhos, P, P_inv, vk,
-                            sigma, option);
+                        info = SPEX_Update_Chol_Rank1(F, vk, sigma, option);
+                        //(L, rhos, P, P_inv, vk, sigma, option);
                     }
                         
                     if (info == SPEX_SINGULAR)
@@ -622,18 +623,11 @@ int main( int argc, char* argv[])
                     }
                 }
 
-                // permute U
-                TEST_CHECK(SPEX_Update_permute_row(U, Q_inv, option));
-                if (pretend_to_fail) {continue;}
-                // make a CSC copy of U
-                TEST_CHECK(SPEX_matrix_copy(&tmpA, SPEX_CSC, SPEX_MPZ, U,
-                    option));
-                if (pretend_to_fail) {continue;}
                 // print U which will apply scale in each vector
-                TEST_CHECK(SPEX_matrix_check(U, option));
+                TEST_CHECK(SPEX_matrix_check(F->U, option));
                 if (pretend_to_fail) {continue;}
-                // get the transpose of U as new UT
-                TEST_CHECK(SPEX_transpose(&UT, tmpA, option));
+                // get the static F
+                TEST_CHECK(SPEX_Update_factorization_convert(F, option));
                 if (pretend_to_fail) {continue;}
 
                 if (read_matrix)
@@ -687,11 +681,11 @@ int main( int argc, char* argv[])
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // fail SPEX_Update_Solve
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_Solve(NULL, rhos, L,
-                        U, tmpq, NULL, rhos, NULL, NULL, option),
-                        SPEX_INCORRECT_INPUT);
+                    TEST_CHECK_FAILURE(SPEX_Update_solve(NULL, NULL, NULL,
+                        option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
+#if 0
                     // intentionally incorrect use of matrix_canonicalize
                     // to produce a bad L so as to fail spex_update_ipge, which
                     // is called by SPEX_Update_Solve
@@ -717,9 +711,10 @@ int main( int argc, char* argv[])
                         if (pretend_to_fail) {break;}
                     }
                     if (pretend_to_fail) {continue;}
-                    TEST_CHECK_FAILURE(SPEX_Update_Solve(&b, b, L, U, A->scale,
-                        h, rhos, P, Q_inv, option), SPEX_INCORRECT_INPUT);
+                    TEST_CHECK_FAILURE(SPEX_Update_solve(&b_sol, F, b, option),
+                        SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
+#endif
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // test and fail SPEX_matrix_check
@@ -823,9 +818,9 @@ int main( int argc, char* argv[])
                     // fake P and Q_inv
                     P[0] = 0;
                     Q_inv[0] = 0;
-
-                    TEST_CHECK_FAILURE(spex_update_verify(L, U, A, h,
-                        rhos, P, Q_inv, option), SPEX_INCORRECT);
+                    // FIXME move
+                    TEST_CHECK_FAILURE(spex_update_verify(F, A, option),
+                        SPEX_INCORRECT);
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -842,15 +837,14 @@ int main( int argc, char* argv[])
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // fail SPEX_Update_LU_ColRep
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_LU_ColRep(A, L, U,
-                        rhos, NULL, NULL, NULL, NULL, NULL, k, option),
-                        SPEX_INCORRECT_INPUT);
+                    TEST_CHECK_FAILURE(SPEX_Update_LU_ColRep(NULL, NULL, k,
+                        option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // fail SPEX_Update_Chol_Rank1
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_Chol_Rank1(L, rhos, NULL,
+                    TEST_CHECK_FAILURE(SPEX_Update_Chol_Rank1(
                         NULL, NULL, 1, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
                 }

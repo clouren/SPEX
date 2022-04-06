@@ -21,7 +21,10 @@
  *
  * b:        Set of RHS vectors
  *
- * F:        LU factorization of A. Unmodified on input/output
+ * F:        LU factorization of A. Mathematically, F is unchanged.
+ *           However, if F is updatable on input, it is converted to
+ *           non-updatable.  If F is already non-updatable,
+ *           it is not modified.
  *
  * option:   command options
  */
@@ -39,8 +42,13 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
     SPEX_matrix **x_handle,  // rational solution to the system
+    // input/output:
+    SPEX_factorization *F,  // The non-updatable LU factorization.
+                            // Mathematically, F is unchanged.  However, if F
+                            // is updatable on input, it is converted to
+                            // non-updatable.  If F is already non-updatable,
+                            // it is not modified.
     // input:
-    const SPEX_factorization* F, // LU factorization
     const SPEX_matrix *b,   // right hand side vector
     const SPEX_options* option // Command options
 )
@@ -53,28 +61,24 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
-    SPEX_REQUIRE (F->kind, ... ) ;  // TODO
-    if F is updatable, call SPEX_Update_solve ...
-    if ((F->updatable))
-    {
-        {
-            // convert to static format
-            info = spex_update_factorization_convert(F, option);
-            if (info != SPEX_OK) return info;
-        }
-    }
-
-
     SPEX_REQUIRE (b,    SPEX_DENSE, SPEX_MPZ) ;
 
-    if (!x_handle || !F)
+    if (!x_handle || !F || F->kind != SPEX_LU_FACTORIZATION)
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
-    SPEX_REQUIRE (F->L,    SPEX_CSC,   SPEX_MPZ) ;
-    SPEX_REQUIRE (F->U,    SPEX_CSC,   SPEX_MPZ) ;
-    SPEX_REQUIRE (F->rhos, SPEX_DENSE, SPEX_MPZ) ;
+
+    // convert factorization if F is updatable
+    if (F->updatable)
+    {
+        // convert to static format
+        info = SPEX_Update_factorization_convert(F, option);
+        if (info != SPEX_OK) return info;
+    }
+    // check components of F in debug mode
+    ASSERT_MATRIX (F->L,    SPEX_CSC,   SPEX_MPZ) ;
+    ASSERT_MATRIX (F->U,    SPEX_CSC,   SPEX_MPZ) ;
+    ASSERT_MATRIX (F->rhos, SPEX_DENSE, SPEX_MPZ) ;
     
     //--------------------------------------------------------------------------
     // Declare and initialize workspace

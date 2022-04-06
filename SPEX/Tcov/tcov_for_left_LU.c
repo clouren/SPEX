@@ -833,16 +833,9 @@ int main( int argc, char* argv[])
 		TEST_CHECK(SPEX_Left_LU_backslash(&sol, SPEX_MPQ, A, b,option));
                 if (pretend_to_fail) continue ;
 
-		if (Ab_type == 4)
-                {
-                    // This would return SPEX_INCORRECT since sol has been
-                    // scaled down so that sol->scale = 1. Therefore sol is
-                    // solution for original unscaled Ax=b, while this is
-                    // checking if x is the solution for scaled Ax=b
-                    TEST_CHECK_FAILURE(SPEX_check_solution(A, sol, b, option),
-                        SPEX_INCORRECT);
-                    if (pretend_to_fail) continue ;
-                }
+                // perform solution check if user wish to do so
+                TEST_CHECK(spex_check_solution(A, sol, b, option));
+                if (pretend_to_fail) continue ;
 
             }
             else

@@ -221,7 +221,7 @@ SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
 //------------------------------------------------------------------------------
 // SPEX_vector: a compressed sparse vector data structure used to form
-// the dynamic matrix.
+// the SPEX_DYNAMIC_CSC matrix.
 // This is only used publicly when calling the functions in SPEX_Update
 // to construct the vector to modify original matrix A, (either w for
 // A'=A+sigma*w*w^T in rank-1 update/downdate or vk to be swapped with A->v[k]
@@ -571,6 +571,7 @@ typedef struct
 } SPEX_symbolic_analysis ;
 
 // SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+// TODO delete? created by Lorena
 /*SPEX_info SPEX_symbolic_analysis_create
 (
     SPEX_symbolic_analysis **S, // Structure to be created
@@ -654,6 +655,7 @@ typedef struct
 } SPEX_factorization;
 
 // SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
+// TODO delete? created by Lorena
 /*SPEX_info SPEX_factorization_create
 (
     SPEX_factorization **F, // Structure to be created
