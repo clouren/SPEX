@@ -108,17 +108,6 @@ int main( int argc, char* argv[] )
     
     
     //--------------------------------------------------------------------------
-    // Determine if A is indeed symmetric. If so, we try Cholesky
-    // uncomment the one desired.
-    // --------------------------------------------------------------------------
-    
-   /* clock_t start_sym = clock();
-    bool test;
-    //DEMO_OK(SPEX_determine_symmetry(A, 0, option));    // Determine symmetry just with nonzero pattern
-    DEMO_OK( SPEX_determine_symmetry(A, 1, option));    // Determine symmetry with nonzero pattern and values
-   
-    clock_t end_sym = clock();*/
-    //--------------------------------------------------------------------------
     // Permute matrix A, that is set PAP = PAP'
     //--------------------------------------------------------------------------
     /*
