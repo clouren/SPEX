@@ -36,6 +36,8 @@ run: runtests
 
 all: test4llu SPEXLLU test4luu SPEXLUU
 
+#-------------------------------------------------------------------------------
+
 CS_Tcov = tcov_malloc_test.o
 
 $(CS_Tcov): tcov_malloc_test.h
@@ -44,7 +46,6 @@ CS_Util = \
     SPEX_calloc.o \
     spex_cast_array.o \
     spex_cast_matrix.o \
-    SPEX_check_solution.o \
     SPEX_create_default_options.o \
     spex_create_mpfr_array.o \
     spex_create_mpq_array.o \
@@ -89,6 +90,8 @@ SPEX_%.c:
 spex_%.c:
 	- ln -s ../SPEX_Util/Source/$@
 
+#-------------------------------------------------------------------------------
+
 CS_Left_LU = \
     SPEX_LU_analyze.o \
     SPEX_Left_LU_backslash.o \
@@ -125,29 +128,26 @@ spexlu_demo.c:
 demos.c:
 	- ln -s ../SPEX_Left_LU/Demo/$@
 
-test4llu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) tcov_for_left_LU.c demos.c
-	$(CC) $(LDFLAGS) tcov_for_left_LU.c demos.c $(CFLAGS) -o tcov_for_left_LU $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(LDLIBS)
-
-SPEXLLU: $(CS_Util) $(CS_Left_LU) spexlu_demo.c demos.c
-	$(CC) $(LDFLAGS) spexlu_demo.c demos.c $(CFLAGS) -o spexlu_demo $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(LDLIBS)
+#-------------------------------------------------------------------------------
 
 CS_Update = \
-    spex_update_get_scattered_v.o \
+    spex_update_backward_sub.o \
+    SPEX_Update_Chol_Rank1.o \
     spex_update_cppu.o \
     spex_update_dppu1.o \
     spex_update_dppu2.o \
+    SPEX_Update_factorization_convert.o \
+    spex_update_finalize_and_insert_vk.o \
+    spex_update_forward_sub.o \
+    spex_update_get_scattered_v.o \
     spex_update_insert_new_entry.o \
     spex_update_ipge.o \
-    spex_update_finalize_and_insert_vk.o \
-    spex_update_triangular_solve.o \
-    spex_update_backward_sub.o \
-    spex_update_forward_sub.o \
-    spex_update_verify.o \
     SPEX_Update_LU_ColRep.o \
-    SPEX_Update_Solve.o \
-    SPEX_Update_permute_row.o \
-    SPEX_Update_matrix_canonicalize.o \
-    SPEX_Update_Chol_Rank1.o \
+    spex_update_matrix_convert.o\
+    SPEX_Update_solve.o \
+    SPEX_Update_tsolve.o \
+    spex_update_solve_internal.o \
+    spex_update_triangular_solve.o
 
 
 $(CS_Update): ../SPEX_Update/Include/SPEX_Update.h ../SPEX_Update//Source/spex_update_internal.h
@@ -166,11 +166,22 @@ LU_update_demo.c:
 simple_rand.c:
 	- ln -s ../SPEX_Update/Demo/$@
 
-test4luu: $(CS_Tcov) $(CS_Util) $(CS_Update) tcov_for_update.c simple_rand.c
-	$(CC) $(LDFLAGS) tcov_for_update.c simple_rand.c $(CFLAGS) -o tcov_for_update $(CS_Tcov) $(CS_Util) $(CS_Update) $(LDLIBS)
+#-------------------------------------------------------------------------------
 
-SPEXLUU: $(CS_Util) $(CS_Update) LU_update_demo.c
-	$(CC) $(LDFLAGS) LU_update_demo.c $(CFLAGS) -o LU_update_demo $(CS_Util) $(CS_Update) $(LDLIBS)
+test4llu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_left_LU.c demos.c
+	$(CC) $(LDFLAGS) tcov_for_left_LU.c demos.c $(CFLAGS) -o tcov_for_left_LU $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
+
+SPEXLLU: $(CS_Util) $(CS_Left_LU) $(CS_Update) spexlu_demo.c demos.c
+	$(CC) $(LDFLAGS) spexlu_demo.c demos.c $(CFLAGS) -o spexlu_demo $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
+
+
+test4luu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_update.c simple_rand.c
+	$(CC) $(LDFLAGS) tcov_for_update.c simple_rand.c $(CFLAGS) -o tcov_for_update $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
+
+SPEXLUU: $(CS_Util) $(CS_Left_LU) $(CS_Update) LU_update_demo.c
+	$(CC) $(LDFLAGS) LU_update_demo.c $(CFLAGS) -o LU_update_demo $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
+
+#-------------------------------------------------------------------------------
 
 # run all statement coverage tests
 runtests: runtests4llu runtests4luu
@@ -190,6 +201,8 @@ runtests4luu: all
 	- ./tcov_for_update 0 0 25 > test_for_update2.out
 	- ./tcov_for_update 1 6 > test_for_update3.out
 	- #./LU_update_demo
+
+#-------------------------------------------------------------------------------
 
 # To run with valgrind:
 V = valgrind #--leak-check=full

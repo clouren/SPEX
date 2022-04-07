@@ -132,7 +132,6 @@ SPEX_info spex_update_verify
 (
     SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix *A,     // Input matrix
-    int64_t *h,            // history vector
     const SPEX_options *option// command options
 );
 #endif

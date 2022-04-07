@@ -251,14 +251,6 @@ SPEX_info spex_update_backward_sub  // performs sparse REF backward substitution
     const int64_t *Q_inv    // inverse of column permutation
 );
 
-// verify if A=LD^(-1)U
-SPEX_info spex_update_verify
-(
-    SPEX_factorization *F,// LU factorization of A
-    const SPEX_matrix *A,     // Input matrix
-    int64_t *h,            // history vector
-    const SPEX_options *option// command options
-);
 
 SPEX_info spex_update_solve_internal
 (

@@ -214,9 +214,6 @@ void spex_gmp_failure (int status) ;
 // tolerance pivoting based method
 #define SPEX_DEFAULT_TOL 1
 
-// Check parameter. If this = 1 then the solution to the system is checked
-// for accuracy
-#define SPEX_DEFAULT_CHECK false
 
 // Pivoting scheme used for SPEX Left LU.
 //  SPEX_SMALLEST = 0,              Smallest pivot

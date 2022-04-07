@@ -59,6 +59,7 @@ int main( int argc, char* argv[])
     int64_t m, n, nz, i, j;
     SPEX_options* option = NULL;
 
+    SPEX_factorization *F = NULL;
     SPEX_matrix *L = NULL, *U = NULL, *A = NULL, *T = NULL;
     SPEX_matrix *rhos = NULL;
     int64_t *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL, *mark = NULL;
@@ -170,8 +171,7 @@ int main( int argc, char* argv[])
         j = col_index[k];
         printf("-----------------------------------------------\n");
         printf("j = %ld\n", j);
-        info = SPEX_Update_LU_ColRep(A, L, U, rhos, P, P_inv, Q, Q_inv,
-	    &(T->v[Q_for_T[j]]), j, option);
+        info = SPEX_Update_LU_ColRep(F, &(T->v[Q_for_T[j]]), j, option);
         if (info != SPEX_OK)
         {
             printf("k=%ld\n",k);
@@ -197,8 +197,7 @@ int main( int argc, char* argv[])
         printf("j = %ld mark=%ld found_index = %ld\n", j, mark[j],found_index);
 
 
-        info = SPEX_Update_LU_ColRep(A, L, U, rhos, P, P_inv, Q, Q_inv,
-	    &(T->v[Q_for_T[j]]), j, option);
+        info = SPEX_Update_LU_ColRep(F, &(T->v[Q_for_T[j]]), j, option);
         if (info != SPEX_SINGULAR && info != SPEX_OK)
         {
             FREE_WORKSPACE;
