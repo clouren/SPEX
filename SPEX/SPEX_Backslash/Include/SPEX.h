@@ -295,8 +295,8 @@ SPEX_info SPEX_vector_free
 //------------------------------------------------------------------------------
 
 // SPEX uses a single matrix data type, SPEX_matrix, which can be held in
-// one of three kinds of formats:  sparse CSC (compressed sparse column),
-// sparse triplet, and dense:
+// one of four kinds of formats:  sparse CSC (compressed sparse column),
+// sparse triplet, dense, and sparse dynamic CSC.
 
 typedef enum
 {
@@ -322,8 +322,11 @@ typedef enum
 }
 SPEX_type ;
 
-// This gives a total of 16 different matrix types.  Not all functions accept
-// all 16 matrices types, however.
+// This gives a total of 16 different matrix types:
+// (sparse CSC, triplet, dense) x (5 data types) = 15 formats,
+// plus the sparse dynamic CSC format (only in MPZ).
+
+// Not all functions accept all 16 matrices types, however.
 
 // Suppose A is an m-by-n matrix with nz <= nzmax entries.
 // The p, i, j, and x components are defined as:
@@ -1420,12 +1423,14 @@ SPEX_info SPEX_Update_LU_colrep
 // user can compute A = A + sigma*w*w' BEFORE using this function (since w
 // will be modified). TODO: describe how to do this.
 
-// TODO: do we need these? Just for MPZ?  What data formats?
-// formats: static CSC, dynamic CSC, and dense
+// TODO: do we need these as user-callable methods? Just for MPZ?  What data
+// formats?  formats: static CSC, dynamic CSC, and dense.
 // data types: MPZ, others?
 
     // C=A*B, C=alpha*A+beta*B, ...
     // C += sigma*w*w' (just dynamic CSC)
+    // C = A(p,p)   symmetric permutation (user-callable)
+    // C = A(p,q)   unsymmetric permutation
     // C = A'   SPEX_transpose (just static CSC, but all types)
 
 SPEX_info SPEX_Update_Chol_rank1
