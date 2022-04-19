@@ -71,6 +71,7 @@ SPEX_info spex_chol_permute_A
     //int64_t* pinv = NULL;
 
     // FIXME: this should not be here; S should be read-only
+    // move to spex_chol_preorder
     // Allocate pinv
     if (!(S->Pinv_perm))
     {

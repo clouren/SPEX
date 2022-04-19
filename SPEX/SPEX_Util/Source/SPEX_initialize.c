@@ -40,6 +40,9 @@ SPEX_info SPEX_initialize ( void )
 {
     if (spex_initialized ( )) return (SPEX_PANIC) ;
 
+    // SPEX requires GMP to support bit counts that are 64-bit integers
+    if (sizeof (mp_bitcnt_t) < sizeof (uint64_t)) return (SPEX_PANIC) ;
+
     mp_set_memory_functions (spex_gmp_allocate, spex_gmp_reallocate,
         spex_gmp_free) ;
 
