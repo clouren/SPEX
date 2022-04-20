@@ -21,6 +21,13 @@
  * 
  * S:            Symbolic analysis struct for Cholesky factorization. 
  *               Contains row/column permutation of A
+
+ FIXME: why pass in S?  Why not pass in both the permutation P and
+ its inverse?  If the inverse passed in is a NULL pointer, then
+ compute it, use it, then discard it.  Also, why are both permutations
+ Q_perm and Pinv_perm needed?  Only Pinv_perm is required.  See cs_symperm in
+ CSparse.  Finally, we should use P_perm not Q_perm.
+
  * 
  */
 //TODO move input/output around
@@ -59,7 +66,8 @@ SPEX_info spex_chol_permute_A
     int64_t j, k, t, index, nz = 0, n = A->n;
     //int64_t* pinv = NULL;
 
-    //this needs to go out somewhere in analize
+    // FIXME: this should not be here; S should be read-only
+    // move to spex_chol_preorder
     // Allocate pinv
     if (!(S->Pinv_perm))
     {
@@ -73,6 +81,9 @@ SPEX_info spex_chol_permute_A
     for (k = 0; k < n; k++)
     {
         index = S->P_perm[k];
+        // FIXME: this should not be here; S should be read-only,
+        // and S->Pinv_perm should only be computed once.  If this function
+        // is called twice, it recomputes S->Pinv_perm every time.
         S->Pinv_perm[index] = k;
     }
 
@@ -92,6 +103,8 @@ SPEX_info spex_chol_permute_A
     PAP->i=(int64_t*)SPEX_malloc((A->p[n])*sizeof(int64_t));
     PAP->p_shallow = false ;
     PAP->i_shallow = false ; //TODO FIXME still feels like patchwork, figure out why
+
+    // FIXME: PAP->x.mpz is a different kind of shallow
     
     if(numeric)
     {
@@ -105,6 +118,7 @@ SPEX_info spex_chol_permute_A
         {
             // Set the number of nonzeros in the kth column of PAP
             PAP->p[k] = nz;
+            // FIXME: old comment here, out of date:
             // Column k of PAP is equal to column S->p[k] of A. j is the starting
             // point for nonzeros and indices for column S->p[k] of A
             j = S->P_perm[k];
@@ -112,6 +126,8 @@ SPEX_info spex_chol_permute_A
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
                 // Set the nonzero value and location of the entries in column k of PAP
+                // NOTE: this is shallow.   Provide option for a deep copy of the values?
+                // FIXME: call an mpz_* function to do the pointer assignment?
                 (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t])); 
                 //SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
                 // Row i of this nonzero is equal to pinv[A->i[t]]

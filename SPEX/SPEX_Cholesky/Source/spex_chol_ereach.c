@@ -54,6 +54,7 @@ SPEX_info spex_chol_ereach
         for (len = 0 ; !SPEX_MARKED(w,i) ; i = parent[i]) // traverse up etree
         {
         // TODO bug: parent[i] could be -1
+            ASSERT (i >= 0 && i < n) ;
             xi[len++] = i ;           // L(k,i) is nonzero 
             SPEX_MARK(w, i) ;        // mark i as visited 
         }

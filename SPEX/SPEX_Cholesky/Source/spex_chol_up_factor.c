@@ -188,6 +188,7 @@ SPEX_info spex_chol_up_factor
     // Set the column pointers of L
     for (k = 0; k < n; k++) 
     {
+        // FIXME remove S->c from S
         L->p[k] = (S->c)[k] = S->cp[k];
     }
     
