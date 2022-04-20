@@ -21,7 +21,7 @@
     SPEX_FREE_WORKSPACE            \
     SPEX_matrix_free(&x, NULL);    \
 }
-
+//TODO maybe have a separate "clusterVersion" for all the prints, so they are def not in the release version
 #include "spex_chol_internal.h"
     
 /* Purpose: This function solves the linear system LDL' x = b.
@@ -72,8 +72,8 @@ SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
     ASSERT(!x_handle);
     ASSERT(b->type == SPEX_MPZ);
     ASSERT(b->kind == SPEX_DENSE);
+    ASSERT(F->kind==SPEX_CHOLESKY_FACTORIZATION);
 
-    //TOASK do we want to check the type and kind of things inside F??
     if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {
         return SPEX_INCORRECT_INPUT;
@@ -182,7 +182,7 @@ SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
     {
         for (j = 0; j < x->n; j++)
         {
-            SPEX_CHECK(SPEX_mpq_set(SPEX_2D(x2, F->Q_perm[i], j, mpq), SPEX_2D(x, i,
+            SPEX_CHECK(SPEX_mpq_set(SPEX_2D(x2, F->P_perm[i], j, mpq), SPEX_2D(x, i,
                                                                     j, mpq)));
         }
     }
@@ -192,25 +192,6 @@ SPEX_info SPEX_Chol_solve       // solves the linear system LDL' x = b
     //--------------------------------------------------------------------------
     SPEX_CHECK(SPEX_scale(x2, F->scale_for_A, b->scale, option));
 
-    /*SPEX_CHECK(SPEX_mpq_init(scale));
-
-    // set the scaling factor scale = PAP->scale / b->scale
-    SPEX_CHECK(SPEX_mpq_div(scale, F->scale_for_A, b->scale));
-
-    // Apply scaling factor, but ONLY if it is different from a scaling factor
-    // to 1
-    int r;
-    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, scale, 1, 1));
-    if (r != 0)
-    {
-        nz = x->m * x->n;
-        for (i = 0; i < nz; i++)
-        {
-            SPEX_CHECK(SPEX_mpq_mul(x2->x.mpq[i], x2->x.mpq[i], scale));
-        }
-    }*/
-
-    
     // Set output, free memory
     (*x_handle) = x2;
     SPEX_FREE_WORKSPACE;

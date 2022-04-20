@@ -13,7 +13,6 @@
 {                                \
     SPEX_matrix_free(&x, NULL);  \
 }
-    //TOASK why the error message?
 
 #include "spex_chol_internal.h"
 

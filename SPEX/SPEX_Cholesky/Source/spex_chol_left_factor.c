@@ -20,7 +20,7 @@
 {                                   \
     SPEX_FREE_WORKSPACE             \
 }
-    //SPEX_factorization_free(&F, option);   
+
 #include "spex_chol_internal.h"  
 
 /* Purpose: This function performs the left-looking REF Cholesky factorization.
@@ -55,10 +55,9 @@ SPEX_info spex_chol_left_factor
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    //SPEX_factorization **F_handle,
 
     // Input
-    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix* A,      // Matrix to be factored   
@@ -97,12 +96,6 @@ SPEX_info spex_chol_left_factor
     int sgn;
     size_t size;
 
-    /* TODO delete
-    // Post and c are used to compute the elimination tree
-    int64_t* post = NULL;
-    int64_t* c = NULL;
-    */
-    
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
     // vector which is repeatedly passed into the triangular
@@ -186,7 +179,7 @@ SPEX_info spex_chol_left_factor
     // a more efficient method to allocate these values is done inside the 
     // factorization to reduce memory usage.
     
-    SPEX_CHECK(spex_chol_pre_left_factor(&(L), xi, A, S, (S->c))); //TODO change input of function, maybe
+    SPEX_CHECK(spex_chol_pre_left_factor(&(L), xi, A, S)); 
         
     // Set the column pointers of L
     for (k = 0; k < n; k++)

@@ -42,7 +42,7 @@
  *              factorization (SPEX_CHOL_UP) (default)
  * 
  */
-
+//TOASK should this purpose be here?
 
 SPEX_info spex_chol_factor      
 (
@@ -105,14 +105,11 @@ SPEX_info spex_chol_factor
 
     // Inverse pivot ordering
     F->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-    // Actual row permutation, the inverse of pinv. This
-    // is used for sorting
+    // row/column permutation, to be copied from S->P_perm
     F->P_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-    // column permutation, to be copied from S->Q_perm
-    F->Q_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
 
 
-    if (!(F->Pinv_perm) || !(F->P_perm) || !(F->Q_perm))
+    if (!(F->Pinv_perm) || !(F->P_perm))
     {
         // out of memory: free everything and return
         SPEX_FREE_ALL  ;
@@ -120,7 +117,7 @@ SPEX_info spex_chol_factor
     }
 
     // copy column permutation from symbolic analysis to factorization
-    memcpy(F->Q_perm, S->Q_perm, n * sizeof(int64_t));
+    memcpy(F->P_perm, S->P_perm, n * sizeof(int64_t));
 
 
     //--------------------------------------------------------------------------

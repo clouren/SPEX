@@ -81,10 +81,7 @@ SPEX_info SPEX_Chol_backslash
     {
         return SPEX_INCORRECT_INPUT;
     }
-    /*if (!(*x_handle) || !A || !b || !option) //TOASK it gives me error when using this :/
-    {
-        return SPEX_INCORRECT_INPUT;
-    }*/
+
     if (!A || !b || !option)
     {
         return SPEX_INCORRECT_INPUT;
@@ -101,9 +98,6 @@ SPEX_info SPEX_Chol_backslash
     ASSERT(b->type == SPEX_MPZ);
     ASSERT(b->kind == SPEX_DENSE);
 
-    ASSERT(A->n >= 0);
-    ASSERT(A->m >= 0);
-    ASSERT(A->n == A->m);
     if (A->n == 0 || A->m == 0 || A->n != A->m)
     {
         return SPEX_INCORRECT_INPUT;
@@ -145,9 +139,6 @@ SPEX_info SPEX_Chol_backslash
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_chol_symbolic_analysis(S,PAP,option));
-
-    //((S)->P_perm)=NULL;
-    //((S)->Qinv_perm)=NULL;//TODO move to function
 
     //--------------------------------------------------------------------------
     // Factorization: Perform the REF Cholesky factorization of 

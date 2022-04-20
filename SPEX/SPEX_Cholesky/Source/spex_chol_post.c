@@ -15,7 +15,8 @@
 SPEX_info spex_chol_post 
 (
     // Output
-    int64_t** post_handle, // On input is NULL. On output is post-order of the forest
+    int64_t** post_handle, // On output: post-order of the forest
+                           // On input: undefied
     // Input
     const int64_t* parent, // Parent[j] is parent of node j in forest
     const int64_t n        // Number of nodes in the forest

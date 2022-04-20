@@ -9,11 +9,6 @@
 
 //------------------------------------------------------------------------------
 
-/*#define SPEX_FREE_ALL             \
-{                                 \
-    SPEX_matrix_free(pinv, NULL); \
-}*/
-
 #include "spex_chol_internal.h"
 
 /* Purpose: Given the row/column permutation P stored in S, permute the matrix
@@ -28,6 +23,7 @@
  *               Contains row/column permutation of A
  * 
  */
+//TODO move input/output around
 SPEX_info spex_chol_permute_A
 (
     //Output
@@ -39,7 +35,7 @@ SPEX_info spex_chol_permute_A
                                // numbers, false if only pattern
     
     //Input/Ouput
-    SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
+    SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains 
                                // row/column permutations
 )
 {
@@ -63,6 +59,7 @@ SPEX_info spex_chol_permute_A
     int64_t j, k, t, index, nz = 0, n = A->n;
     //int64_t* pinv = NULL;
 
+    //this needs to go out somewhere in analize
     // Allocate pinv
     if (!(S->Pinv_perm))
     {
@@ -75,7 +72,7 @@ SPEX_info spex_chol_permute_A
     // Populate pinv
     for (k = 0; k < n; k++)
     {
-        index = S->Q_perm[k];
+        index = S->P_perm[k];
         S->Pinv_perm[index] = k;
     }
 
@@ -110,7 +107,7 @@ SPEX_info spex_chol_permute_A
             PAP->p[k] = nz;
             // Column k of PAP is equal to column S->p[k] of A. j is the starting
             // point for nonzeros and indices for column S->p[k] of A
-            j = S->Q_perm[k];
+            j = S->P_perm[k];
             // Iterate across the nonzeros in column S->p[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
@@ -137,7 +134,7 @@ SPEX_info spex_chol_permute_A
             PAP->p[k] = nz;
             // Column k of PAP is equal to column S->p[k] of A. j is the starting
             // point for nonzeros and indices for column S->p[k] of A
-            j = S->Q_perm[k];
+            j = S->P_perm[k];
             // Iterate across the nonzeros in column S->p[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {

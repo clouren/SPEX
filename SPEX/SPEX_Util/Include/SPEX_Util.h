@@ -864,14 +864,14 @@ SPEX_info SPEX_scale
 /* SPEX_check_solution: checks the solution of the linear system.  Performs a
  * quick rational arithmetic check of A*x=b.
  */
- /*
+ /**/
 SPEX_info SPEX_check_solution
 (
     const SPEX_matrix *A,          // input matrix
     SPEX_matrix *x,          // solution vector
     const SPEX_matrix *b,          // right hand side
     const SPEX_options* option     // Command options
-);*/
+);/**/
 
 /* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
  * into c.  This function is lightly modified from CSparse.

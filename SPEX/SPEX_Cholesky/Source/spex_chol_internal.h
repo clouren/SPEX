@@ -44,7 +44,7 @@ SPEX_info spex_chol_etree
     int64_t** tree_handle,      // On output: contains the elimination tree of A
                                 // On input: undefined.
     // Input
-    const SPEX_matrix* A        // Input matrix (must be SPD). Note to compute
+    const SPEX_matrix* A        // Input matrix (must be SPD)
 );
 
 /* Purpose: post order a forest */
@@ -52,10 +52,10 @@ SPEX_info spex_chol_post
 (
     // Output
     int64_t** post_handle, // On output: post-order of the forest
-                           // On input: undefied
+                           // On input: undefined
     // Input
-    const int64_t* parent,       // Parent[j] is parent of node j in forest
-    const int64_t n              // Number of nodes in the forest
+    const int64_t* parent, // Parent[j] is parent of node j in forest
+    const int64_t n        // Number of nodes in the forest
 );
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
@@ -138,14 +138,13 @@ SPEX_info spex_chol_ereach
 //------------------------------------------------------------------------------
 
 
-/* Purpose: Perform the up-looking Cholesky factorization 
- */
+/* Purpose: Perform the up-looking Cholesky factorization */
 SPEX_info spex_chol_up_factor      
 (
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -153,14 +152,13 @@ SPEX_info spex_chol_up_factor
     const SPEX_options* option // command options
 );
 
-/* Purpose: Perform the left-looking Cholesky factorization
- */
+/* Purpose: Perform the left-looking Cholesky factorization*/
 SPEX_info spex_chol_left_factor      
 (
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -182,11 +180,10 @@ SPEX_info spex_chol_pre_left_factor
     // Input
     int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix* A,         // Input Matrix
-    const SPEX_symbolic_analysis* S,  // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis* S // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
-    int64_t* c                    // Column pointers
 );
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve.
@@ -271,6 +268,9 @@ SPEX_info spex_chol_backward_sub
 (
     // Input/Output
     SPEX_matrix* x,         // Solution vector
+                            // On input: scaled solution of LD x = b
+                            // On output: solution to the linear system 
+                            // Ax = (det A)b
     // Input
     const SPEX_matrix* L    // REF Cholesky factor of A
 );
@@ -282,7 +282,7 @@ SPEX_info spex_chol_backward_sub
 SPEX_info spex_chol_preorder
 (
     // Output
-    SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 
+    SPEX_symbolic_analysis** S_handle,// Symbolic analysis data structure 
                                     // On input: undefined
                                     // On output: contains the 
                                     // row/column permutation and its
@@ -305,16 +305,22 @@ SPEX_info spex_chol_permute_A
     const SPEX_matrix* A,      // Input matrix
     const bool numeric,        // True if user wants to permute pattern and 
                                // numbers, false if only pattern
-    SPEX_symbolic_analysis* S      // Symbolic analysis struct that contains 
+    SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains 
                                // column and inverse row permutations
 );
+
+/* Purpose: Computes the elimination tree of matrix A
+*/ 
 
 SPEX_info spex_chol_symbolic_analysis
 (
     //Output
-    SPEX_symbolic_analysis* S,
+    SPEX_symbolic_analysis* S, // Symbolic analysis
+                               // On input: null
+                               // On output: contains elimination tree
+
     //Input
-    const SPEX_matrix* A,      // Matrix to be factored   
+    const SPEX_matrix* A,      // Matrix to be analyzed  
     const SPEX_options* option // command options
 );
 
