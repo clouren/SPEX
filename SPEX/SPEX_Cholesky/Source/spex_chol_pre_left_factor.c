@@ -56,7 +56,10 @@ SPEX_info spex_chol_pre_left_factor
     ASSERT(A->type == SPEX_MPZ);
     
     int64_t  top, k, j, jnew, n = A->n;
+    int64_t* c;
     ASSERT(n >= 0);
+    
+    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
     //--------------------------------------------------------------------------
     // Declare memory for L 
     //--------------------------------------------------------------------------
@@ -66,11 +69,11 @@ SPEX_info spex_chol_pre_left_factor
     SPEX_matrix_allocate(&L, SPEX_CSC, SPEX_MPZ, n, n, S->lnz, false, false, NULL);
     for (k = 0; k < n; k++)
     {
-        L->p[k] = (S->c)[k] = S->cp[k];
+        L->p[k] = c[k] = S->cp[k];
     }
         
     L->i[0] = 0;
-    (S->c)[0]++;
+    c[0]++;
 
     //--------------------------------------------------------------------------
     // Iterations 1:n-1 
@@ -78,7 +81,7 @@ SPEX_info spex_chol_pre_left_factor
     for (k = 1; k < n; k++)
     {
         // Obtain nonzero pattern in xi[top..n]
-        SPEX_CHECK(spex_chol_ereach(&top, xi, A, k, S->parent, (S->c)));
+        SPEX_CHECK(spex_chol_ereach(&top, xi, A, k, S->parent, c));
      
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x
@@ -88,11 +91,11 @@ SPEX_info spex_chol_pre_left_factor
         {
             jnew = xi[j];
             if (jnew == k) continue;
-            p = (S->c)[jnew]++;
+            p = c[jnew]++;
             // Place the i location of the L->nz nonzero
             L->i[p] = k;
         }
-        p = (S->c)[k]++;
+        p = c[k]++;
         L->i[p] = k;
     }
     // Finalize L->p

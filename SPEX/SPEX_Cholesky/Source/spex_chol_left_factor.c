@@ -89,12 +89,15 @@ SPEX_info spex_chol_left_factor
     SPEX_matrix *rhos = NULL ;
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
+    int64_t *c;
     SPEX_matrix *x = NULL ;
 
     // Declare variables
     int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
     int sgn;
     size_t size;
+    
+    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
 
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
@@ -184,7 +187,7 @@ SPEX_info spex_chol_left_factor
     // Set the column pointers of L
     for (k = 0; k < n; k++)
     {
-        L->p[k] = (S->c)[k] = (S->cp)[k];
+        L->p[k] = c[k] = (S->cp)[k];
     }
     
 
@@ -199,7 +202,7 @@ SPEX_info spex_chol_left_factor
     {
         // LDx = A(:,k)
         SPEX_CHECK(spex_left_chol_triangular_solve(&top, x, xi, L, A, k, rhos,
-                                                    h, S->parent, (S->c)));
+                                                    h, S->parent, c));
 
         // Set the pivot element If this element is equal to zero, no pivot
         // element exists and the matrix is either not SPD or singular

@@ -59,6 +59,7 @@ SPEX_info spex_chol_symbolic_analysis
 
     int64_t n = A->n;
     int64_t* post = NULL;
+    int64_t* c;
 
     // Obtain the elimination tree of A
     SPEX_CHECK(spex_chol_etree(&S->parent, A));
@@ -67,12 +68,11 @@ SPEX_info spex_chol_symbolic_analysis
     SPEX_CHECK( spex_chol_post(&post, S->parent, n));
     
     // Get the column counts of A
-    SPEX_CHECK( spex_chol_counts(&(S->c), A, S->parent, post));
-    //S->c=c;
+    SPEX_CHECK( spex_chol_counts(&c, A, S->parent, post));
     
     // Set the column pointers of L
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
-    SPEX_CHECK( SPEX_cumsum(S->cp, (S->c), n, option));
+    SPEX_CHECK( SPEX_cumsum(S->cp, c, n, option));
    
     // Set the exact number of nonzeros in L
     S->lnz = S->cp[n];

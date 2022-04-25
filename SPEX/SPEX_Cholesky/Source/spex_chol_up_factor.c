@@ -93,13 +93,14 @@ SPEX_info spex_chol_up_factor
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
     SPEX_matrix *x = NULL ;
-    //int64_t* c = NULL;
+    int64_t* c = NULL;
 
     // Declare variables
     int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
     int sgn;
     size_t size;
-
+    
+    c = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
 
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
@@ -188,8 +189,7 @@ SPEX_info spex_chol_up_factor
     // Set the column pointers of L
     for (k = 0; k < n; k++) 
     {
-        // FIXME remove S->c from S
-        L->p[k] = (S->c)[k] = S->cp[k];
+        L->p[k] = c[k] = S->cp[k];
     }
     
 
@@ -204,7 +204,7 @@ SPEX_info spex_chol_up_factor
     {
         // LDx = A(:,k)
         SPEX_CHECK(spex_up_chol_triangular_solve(&top, xi, x, L, A, k, S->parent, 
-                                                 (S->c), rhos, h));
+                                                 c, rhos, h));
   
         // If x[k] is nonzero chose it as pivot. Otherwise, the matrix is 
         // not SPD (indeed, it may even be singular).
@@ -230,7 +230,7 @@ SPEX_info spex_chol_up_factor
             if (jnew == k) continue;
             
             // Determine the column where x[j] belongs to
-            p = (S->c)[jnew]++;
+            p = c[jnew]++;
             
             // Place the i index of this nonzero. This should always be k because 
             // at iteration k, the up-looking algorithm computes row k of L
@@ -246,7 +246,7 @@ SPEX_info spex_chol_up_factor
             SPEX_CHECK(SPEX_mpz_set(L->x.mpz[p],x->x.mpz[jnew]));
         }
         // Now, place L(k,k)
-        p = (S->c)[k]++;
+        p = c[k]++;
         L->i[p] = k;
         size = mpz_sizeinbase(x->x.mpz[k], 2);
         SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[p], size+2));
