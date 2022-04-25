@@ -66,35 +66,6 @@ SPEX_info spex_chol_permute_A
     int64_t j, k, t, index, nz = 0, n = A->n;
     //int64_t* pinv = NULL;
 
-    // FIXME: this should not be here; S should be read-only
-    // move to spex_chol_preorder
-    // Allocate pinv
-    if (!(S->Pinv_perm))
-    {
-        S->Pinv_perm = (int64_t*)SPEX_calloc(n, sizeof(int64_t));
-        if(!(S->Pinv_perm))
-        {
-            return SPEX_OUT_OF_MEMORY;
-        }
-    }
-    // Populate pinv
-    for (k = 0; k < n; k++)
-    {
-        index = S->P_perm[k];
-        // FIXME: this should not be here; S should be read-only,
-        // and S->Pinv_perm should only be computed once.  If this function
-        // is called twice, it recomputes S->Pinv_perm every time.
-        S->Pinv_perm[index] = k;
-    }
-
-
-    //TODO maybe there is a more elegant way? this happens because otherwise we never free the Pinv created in analysis
-    /*if((S->Pinv_perm)!=NULL)
-    { 
-        SPEX_FREE(S->Pinv_perm);
-    }*/ //using this makes example simple fail because of memory error
-    //S->Pinv_perm=pinv; //TODO should be a full copy
-
     // Allocate memory for PAP which is a permuted copy of A
     SPEX_matrix* PAP = NULL;
     //SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
