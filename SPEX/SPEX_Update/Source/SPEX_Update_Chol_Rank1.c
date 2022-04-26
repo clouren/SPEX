@@ -69,7 +69,7 @@ SPEX_info SPEX_Update_Chol_Rank1
     // make sure F is updatable
     if (!(F->updatable))
     {
-        info = SPEX_Update_factorization_convert(F, option);
+        info = SPEX_factorization_convert(F, option);
         if (info != SPEX_OK) return info;
     }
 

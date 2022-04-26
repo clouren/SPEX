@@ -721,6 +721,28 @@ SPEX_info SPEX_factorization_free
     const SPEX_options *option
 ) ;
 
+//------------------------------------------------------------------------------
+// Function for converting factorization between updatable (with L and/or U as
+// dynamic_CSC MPZ matrices) and non-updatable (with L and/or U as CSC MPZ
+// matrices) formats.
+//------------------------------------------------------------------------------
+
+// NOTE: if F->updatable == false upon input, F->L (and F->U if exists) must be
+// CSC MPZ matrix, otherwise, SPEX_INCORRECT_INPUT will be returned. Likewise,
+// if F->updatable == true upon input, F->L (and F->U if exists) must be
+// dynamic_CSC MPZ matrix. In addition, both F->L and F->U (if exists) must not
+// be shallow matrices. All SPEX functions output either of these two formats
+// and non-shallow. Therefore, these input requirements can be met easily if
+// users do not try to modify any individual component of F.  The conversion is
+// done in place and F->updatable will be set to its complement upon output. In
+// case of any error, the returned factorization should be considered as
+// undefined.
+
+SPEX_info SPEX_factorization_convert
+(
+    SPEX_factorization *F,  // The factorization to be converted
+    const SPEX_options* option // Command options
+);
 
 
 

@@ -214,6 +214,7 @@ SPEX_info SPEX_Update_tsolve // solves A^T*x = b
                             // vector
     const SPEX_options* option // Command options
 );
+
 //------------------------------------------------------------------------------
 // Function for converting factorization between updatable (with L and/or U as
 // dynamic_CSC MPZ matrices) and non-updatable (with L and/or U as CSC MPZ
@@ -230,12 +231,12 @@ SPEX_info SPEX_Update_tsolve // solves A^T*x = b
 // done in place and F->updatable will be set to its complement upon output. In
 // case of any error, the returned factorization should be considered as
 // undefined.
-
+/*
 SPEX_info SPEX_Update_factorization_convert
 (
     SPEX_factorization *F,  // The factorization to be converted
     const SPEX_options* option // Command options
-);
+);*/
 
 #endif
 

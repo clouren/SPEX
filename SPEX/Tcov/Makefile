@@ -79,6 +79,8 @@ CS_Util = \
     spex_CSC_mpz_to_dynamic.o \
     spex_delete_mpz_array.o \
     SPEX_determine_symmetry.o SPEX_transpose.o \
+    SPEX_factorization_convert.o \
+    spex_matrix_convert.o\
 
 $(CS_Util): ../SPEX_Util/Include/SPEX_Util.h ../SPEX_Util/Source/spex_util_internal.h
 
@@ -136,14 +138,12 @@ CS_Update = \
     spex_update_cppu.o \
     spex_update_dppu1.o \
     spex_update_dppu2.o \
-    SPEX_Update_factorization_convert.o \
     spex_update_finalize_and_insert_vk.o \
     spex_update_forward_sub.o \
     spex_update_get_scattered_v.o \
     spex_update_insert_new_entry.o \
     spex_update_ipge.o \
     SPEX_Update_LU_ColRep.o \
-    spex_update_matrix_convert.o\
     SPEX_Update_solve.o \
     SPEX_Update_tsolve.o \
     spex_update_solve_internal.o \

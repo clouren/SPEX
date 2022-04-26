@@ -278,7 +278,7 @@ int main( int argc, char* argv[])
 
     // allocate Pinv and P
     F_update->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-    F_update->P_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+    F_update->P_perm    = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
 
     if (!(F_update->Pinv_perm) || !(F_update->P_perm))
     {
