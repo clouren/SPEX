@@ -82,7 +82,7 @@ SPEX_info spex_matrix_convert
             return SPEX_OUT_OF_MEMORY; 
         } 
          
-        for (int64_t i = 0; i < n; i++) 
+        for (i = 0; i < n; i++) 
         {
             SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option)); 
         } 

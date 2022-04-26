@@ -75,7 +75,7 @@
     TEST_OK(SPEX_matrix_free(&b, option));       \
     TEST_OK(SPEX_matrix_free(&UT, option));      \
     TEST_OK(SPEX_matrix_free(&tmpA, option));    \
-    TEST_OK(SPEX_vector_free(&vk, option));      \
+    TEST_OK(SPEX_matrix_free(&vk, option));      \
     TEST_OK(SPEX_matrix_free(&rhos, option));    \
     SPEX_FREE(h);                                \
     SPEX_FREE(P);                                \
@@ -179,8 +179,7 @@ int main( int argc, char* argv[])
                 SPEX_options* option = NULL;
                 SPEX_factorization *F = NULL;
                 SPEX_matrix *L = NULL, *U = NULL, *A = NULL, *tmpA = NULL,
-                            *UT = NULL;
-                SPEX_vector *vk = NULL;
+                            *UT = NULL, *vk = NULL;
                 SPEX_matrix *rhos = NULL, *b = NULL;
                 int64_t *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL;
                 int64_t *h = NULL;

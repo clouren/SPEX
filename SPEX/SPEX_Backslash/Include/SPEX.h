@@ -570,7 +570,7 @@ typedef struct
                                     // for Cholesky factorization.
     int64_t* cp;                    // column pointers of L for Cholesky
                                     // factorization.
-    int64_t* c;                     // column counts (FIXME: remove this)
+    int64_t* c;                     // column counts
 } SPEX_symbolic_analysis ;
 
 // SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.

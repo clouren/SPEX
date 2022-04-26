@@ -252,8 +252,6 @@ int main( int argc, char* argv[])
             SPEX_MPZ_SET_NULL(mpz2);
             SPEX_MPZ_SET_NULL(mpz3);*/
 
-            SPEX_factorization *F = NULL;
-
             int64_t n=4, numRHS=1, j, nz=11;
             SPEX_options* option ;
 
