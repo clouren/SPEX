@@ -9,10 +9,30 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: 
+/* Purpose: This function performs the integer preserving Cholesky factorization.
+ * First it permutes the input matrix according to the symbolic analysis.
+ * It allows either the left-looking or up-looking integer-preserving Cholesky
+ * factorization. In order to compute the L matrix, it performs n iterations of
+ * a sparse REF symmetric triangular solve function. The overall factorization
+ * is PAP' = LDL'
+ * 
+ * 
+ * Input arguments of the function:
+ * 
+ * F_handle:    A handle to the factorization struct. Null on input.
+ *              On output, contains a pointer to the factorization (this 
+ *              includes matrix L)
+ * 
+ * S:           Symbolic analysis struct for Cholesky factorization. 
+ *              On input it contains the elimination tree and 
+ *              the number of nonzeros in L.
  *
- * Input/Output arguments:
- *
+ * A:           The user's input matrix
+ * 
+ * option:      Command options. Notably, option->chol_type indicates whether
+ *              it is performing a left-looking (SPEX_CHOL_LEFT) or up-looking 
+ *              factorization (SPEX_CHOL_UP) (default)
+ * 
  */
 
 # define SPEX_FREE_WORKSPACE                 \
@@ -43,6 +63,8 @@ SPEX_info SPEX_Chol_factorize
     SPEX_matrix* PAP = NULL;
     SPEX_factorization *F = NULL ;
 
+    //TOASK assert?require?
+    ASSERT(S->kind==SPEX_CHOLESKY_FACTORIZATION);
 
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the row/column ordering from 

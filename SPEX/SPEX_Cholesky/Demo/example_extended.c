@@ -94,7 +94,7 @@ int main( int argc, char* argv[] )
         DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
     
     //--------------------------------------------------------------------------
-    // Perform Ordering of A
+    // Perform Analysis of A
     //--------------------------------------------------------------------------
     clock_t start_col = clock();
         
@@ -107,27 +107,6 @@ int main( int argc, char* argv[] )
     clock_t end_col = clock();
     
     
-    //--------------------------------------------------------------------------
-    // Permute matrix A, that is set PAP = PAP'
-    //--------------------------------------------------------------------------
-    /*
-    pinv = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
-    for (k = 0; k < n; k++)
-    {
-        index = S->q[k];
-        pinv[index] = k;
-    }
-    */
-    
-    /*DEMO_OK( spex_chol_permute_A(&PAP, A, S));
-    option->print_level = 3;
-    option->check = true;*/
-
-    //--------------------------------------------------------------------------
-    // Perform the symbolic analyis of  PAP
-    //--------------------------------------------------------------------------
-    
-   // DEMO_OK(spex_chol_symbolic_analysis(S,PAP,option));
 
     //--------------------------------------------------------------------------
     // Factorize PAP
@@ -135,10 +114,9 @@ int main( int argc, char* argv[] )
     //option->algo=SPEX_CHOL_LEFT;
     clock_t start_factor = clock();
 
-    //DEMO_OK( spex_chol_factor(&F, S,PAP, option));
+
     DEMO_OK( SPEX_Chol_factorize(&F, S,A, option));
-//    SPEX_matrix_check(L, option);
-//     
+  
      F->L->m = n;
 //     
      clock_t end_factor = clock();
@@ -149,15 +127,15 @@ int main( int argc, char* argv[] )
     // Solve linear system
     //--------------------------------------------------------------------------
     clock_t start_solve = clock();
-    //option->check = true;
+
     DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
-  
+
     clock_t end_solve = clock();
 
     option->print_level = 3;
     //DEMO_OK(SPEX_scale(x, b->scale, A->scale, option));
     DEMO_OK(SPEX_check_solution(A, x, b, option));
-    
+    printf("afterCheck");
     
     //--------------------------------------------------------------------------
     // Output & Timing Stats

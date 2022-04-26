@@ -9,10 +9,22 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: 
- *
- * Input/Output arguments:
- *
+/* Purpose: perform the symbolic analysis for the Cholesky factorization, this 
+ * means computing and postordering the elimination tree, getting the column
+ * counts of the SPD matrix A, setting the column pointers and exact number of 
+ * non zeros of L.
+ * 
+ * Input arguments of the function:
+ * 
+ * S:           Symbolic analysis struct for Cholesky factorization. 
+ *              On input it's NULL
+ *              On output it contains he row/column permutation, the elimination
+ *              tree, and the number of nonzeros in L.
+ * 
+ * A:           The user's input matrix
+ * 
+ * option:      Command options
+ * 
  */
 
 # define SPEX_FREE_WORKSPACE                 \
@@ -33,9 +45,6 @@ SPEX_info SPEX_Chol_analyze
 {
 
     SPEX_info info;
-
-    //TODO input check
-    //SPEX_REQUIRE_kind()
 
     SPEX_matrix* PAP = NULL;
     SPEX_symbolic_analysis *S = NULL;

@@ -44,11 +44,10 @@ SPEX_info spex_chol_pre_left_factor
     // Input
     int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix* A,         // Input Matrix
-    const SPEX_symbolic_analysis* S,  // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis* S  // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
-    int64_t* c                    // Column pointers
 )
 {
     // Input check

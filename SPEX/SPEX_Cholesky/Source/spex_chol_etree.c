@@ -24,6 +24,7 @@
 
 
 /* Purpose: Compute the elimination tree of A */
+//TOASK why do some functions have long "purpose" and other short "purpose"?
 
 SPEX_info spex_chol_etree 
 (
@@ -31,7 +32,7 @@ SPEX_info spex_chol_etree
     int64_t** tree_handle,      // On output: contains the elimination tree of A
                                 // On input: undefined.
     // Input
-    const SPEX_matrix* A        // Input matrix (must be SPD). Note to compute
+    const SPEX_matrix* A        // Input matrix (must be SPD).
 )
 {
     // Check input

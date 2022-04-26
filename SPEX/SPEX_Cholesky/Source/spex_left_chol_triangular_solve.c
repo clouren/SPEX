@@ -189,7 +189,7 @@ SPEX_info spex_left_chol_triangular_solve
     {
         SPEX_FREE_ALL;
         return SPEX_NOTSPD;
-    }*/ //NOT CORRECT  TODO FIX
+    }*/ //NOT CORRECT  FIXME
     SPEX_mpz_set_ui(x->x.mpz[k], 0);
         
     

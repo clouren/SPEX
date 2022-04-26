@@ -517,10 +517,11 @@ SPEX_info SPEX_mpfr_asprintf (char **str, const char *format, ... )
 //------------------------------------------------------------------------------
 
 /* Safely free a string allocated by SPEX_mpfr_asprintf. */
-/* DONT TRY TO FREE NULL PONITER USING THIS FUNCTION*/
 
 SPEX_info SPEX_mpfr_free_str (char *str)
 {
+    if (str == NULL) return (SPEX_OK) ;     // nothing to do
+
     // Start the GMP wrapper
     SPEX_GMP_WRAPPER_START ;
 
@@ -643,10 +644,6 @@ SPEX_info SPEX_mpz_init2
     const uint64_t size     // size of the number
 )
 {
-    // FIXME
-    // paranoia:  cast size to mp_bitcnt_t and back to uint64, assert equality,
-    // return SPEX_PANIC
-
     SPEX_GMPZ_WRAPPER_START (x) ;
     mpz_init2 (x, (mp_bitcnt_t) size) ;
     SPEX_GMP_WRAPPER_FINISH ;
@@ -1664,10 +1661,10 @@ SPEX_info SPEX_mpfr_init2
     const uint64_t size    // # of bits in x
 )
 {
-    // FIXME
-    // paranoia:  cast size to mpfr_prec_t and back to uint64, assert equality,
-    // in debug mode
+    // ensure the mpfr number is not too big
+    if (size > MPFR_PREC_MAX/2) return (SPEX_PANIC) ;
 
+    // initialize the mpfr number
     SPEX_GMPFR_WRAPPER_START (x) ;
     mpfr_init2 (x, (mpfr_prec_t) size) ;
     SPEX_GMP_WRAPPER_FINISH ;

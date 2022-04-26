@@ -637,6 +637,7 @@ SPEX_info spex_sparse_realloc
     ASSERT_KIND (A,required_kind) ;                     \
     ASSERT_TYPE (A,required_type) ;
 
+
 #endif
 
 

@@ -57,7 +57,7 @@ SPEX_info spex_chol_up_factor
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
     // Input/Output
-    SPEX_symbolic_analysis* S,     // Symbolic analysis struct containing the
+    SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     // Input
@@ -188,6 +188,7 @@ SPEX_info spex_chol_up_factor
     // Set the column pointers of L
     for (k = 0; k < n; k++) 
     {
+        // FIXME remove S->c from S
         L->p[k] = (S->c)[k] = S->cp[k];
     }
     

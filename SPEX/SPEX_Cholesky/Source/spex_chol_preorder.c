@@ -78,7 +78,7 @@ SPEX_info spex_chol_preorder
     //--------------------------------------------------------------------------
 
     SPEX_symbolic_analysis* S = NULL;
-    int64_t i, n = A->n;
+    int64_t i, k, index, n = A->n;
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
 
     ASSERT(n >= 0); // Dimension can't be negative
@@ -89,22 +89,16 @@ SPEX_info spex_chol_preorder
     // Allocate memory for S    
     S = (SPEX_symbolic_analysis*) SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
-    /* TODO delete
-    S = (SPEX_symbolic_analysis*) SPEX_malloc(sizeof(SPEX_symbolic_analysis));
-    if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
-    //SPEX_CHECK(SPEX_symbolic_analysis_create(&S,option));
-    */
 
     S->kind = SPEX_CHOLESKY_FACTORIZATION ;
 
-    // Allocate memory for column permutation
-    S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
-    if (S->Q_perm == NULL)
+    // Allocate memory for row/column permutation
+    S->P_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
+    if (S->P_perm == NULL)
     {
         SPEX_FREE_ALL;  
         return SPEX_OUT_OF_MEMORY;
     }
-    S->Pinv_perm=NULL; //TODO this goes in construct remove!!
 
     //Check which ordering to use.
     SPEX_col_order order = SPEX_OPTION_ORDER(option);
@@ -118,7 +112,7 @@ SPEX_info spex_chol_preorder
         {
             for (i = 0; i < n+1; i++)
             {
-                S->Q_perm[i] = i;
+                S->P_perm[i] = i;
             }
             // Very crude estimate for number of L and U nonzeros
             S->lnz = 10*anz;
@@ -143,7 +137,7 @@ SPEX_info spex_chol_preorder
             // Initialize S->p as per COLAMD documentation
             for (i = 0; i < n+1; i++)
             {
-                S->Q_perm[i] = A->p[i];
+                S->P_perm[i] = A->p[i];
             }
             // Initialize A2 per COLAMD documentation
             for (i = 0; i < anz; i++)
@@ -152,7 +146,7 @@ SPEX_info spex_chol_preorder
             }
             int64_t stats[COLAMD_STATS];
             colamd_l(n, n, Alen, (SuiteSparse_long *) A2,
-                (SuiteSparse_long *) S->Q_perm, (double *) NULL,
+                (SuiteSparse_long *) S->P_perm, (double *) NULL,
                 (SuiteSparse_long *) stats);
             // estimate for lnz and unz
             S->lnz = 10*anz;
@@ -164,7 +158,8 @@ SPEX_info spex_chol_preorder
                 colamd_l_report ((SuiteSparse_long *) stats);
                 SPEX_PRINTF ("\nEstimated L and U nonzeros: %" PRId64 "\n", S->lnz);
             }
-            //Note that A2 is a local-to-this-case variable; so it cannot and should not be part of the  SPEX_FREE_WORKSPACE or SPEX_FREE_ALL mechanisms
+            //Note that A2 is a local-to-this-case variable; so it cannot and should 
+            //not be part of the  SPEX_FREE_WORKSPACE or SPEX_FREE_ALL mechanisms
             SPEX_FREE(A2);
         }
         break;
@@ -182,7 +177,7 @@ SPEX_info spex_chol_preorder
             double Info [AMD_INFO];
             // Perform AMD
             amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-            (SuiteSparse_long *) S->Q_perm, Control, Info) ;
+            (SuiteSparse_long *) S->P_perm, Control, Info) ;
              S->lnz = Info[AMD_LNZ];        // Exact number of nonzeros for Cholesky
              if (pr > 0)   // Output AMD info if desired
              {
@@ -215,6 +210,24 @@ SPEX_info spex_chol_preorder
     {
         S->lnz += n;
     }
+
+    //
+    // Allocate pinv
+    S->Pinv_perm = (int64_t*)SPEX_calloc(n, sizeof(int64_t));
+    if(!(S->Pinv_perm))
+    {
+        return SPEX_OUT_OF_MEMORY;
+    }
+    // Populate pinv
+    for (k = 0; k < n; k++)
+    {
+        index = S->P_perm[k];
+        // FIXME: this should not be here; S should be read-only,
+        // and S->Pinv_perm should only be computed once.  If this function
+        // is called twice, it recomputes S->Pinv_perm every time.
+        S->Pinv_perm[index] = k;
+    }
+
 
     //--------------------------------------------------------------------------
     // return result
