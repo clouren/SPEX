@@ -19,8 +19,6 @@
  * by the solution x.
  */
 
-# define SPEX_FREE_ALL            \
-    SPEX_matrix_free(&bx, NULL);   \
 
 #include "spex_left_lu_internal.h"
 

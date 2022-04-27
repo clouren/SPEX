@@ -180,6 +180,8 @@ SPEX_preorder ;    // FIXME: propagate
 
 // A code in SPEX_options to tell SPEX which factorization algorithm to use 
 
+// TODO: document this, only used within a given solver
+
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
@@ -501,14 +503,16 @@ SPEX_info SPEX_matrix_copy
 // SPEX_matrix macros
 //------------------------------------------------------------------------------
 
+// FIXME: move this to internal only
+
 // These macros simplify the access to entries in a SPEX_matrix.
 // The type parameter is one of: mpq, mpz, mpfr, int64, or fp64.
 
 // To access the kth entry in a SPEX_matrix using 1D linear addressing,
-// in any matrix kind (CSC, triplet, or dense), in any type:
+// in any matrix kind (CSC, triplet, or dense, but not dynamic), in any type:
 #define SPEX_1D(A,k,type) ((A)->x.type [k])
 
-// To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
+// To access the (i,j)th entry in a 2D dense SPEX_matrix, in any type:
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 //------------------------------------------------------------------------------
@@ -526,6 +530,10 @@ typedef enum
 //------------------------------------------------------------------------------
 
 // This struct stores the results of symbolic analysis
+
+// TODO: document this:
+
+// This object is constructed by SPEX_Chol_analyze, SPEX_Left_LU_analyze, ...
 
 typedef struct
 {
@@ -570,16 +578,10 @@ typedef struct
                                     // for Cholesky factorization.
     int64_t* cp;                    // column pointers of L for Cholesky
                                     // factorization.
-    int64_t* c;                     // column counts (FIXME: remove this)
+
 } SPEX_symbolic_analysis ;
 
-// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
-// TODO delete? created by Lorena
-/*SPEX_info SPEX_symbolic_analysis_create
-(
-    SPEX_symbolic_analysis **S, // Structure to be created
-    const SPEX_options *option
-);*/
+// HERE:
 
 // SPEX_symbolic_analysis_free frees the SPEX_symbolic_analysis object.
 SPEX_info SPEX_symbolic_analysis_free        
@@ -600,6 +602,8 @@ SPEX_info SPEX_symbolic_analysis_free
 // The components of the factorization structure are accessible to the user
 // application.  However, they should only be modified by calling SPEX_*
 // methods.  Changing them directly can lead to undefined behavior.
+
+// TODO: list the methods that create this object: SPEX_Chol_factorize, ...
 
 typedef struct
 {
@@ -630,12 +634,13 @@ typedef struct
                                           // pivot values
 
     //--------------------------------------------------------------------------
-    // These are used for QR factorization, but ignored for LU or Cholesky
-    // factorization.
+    // FUTURE: These are used for QR factorization, but ignored for LU or
+    // Cholesky factorization.
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *Q;                       // The orthogonal matrix from QR
-    SPEX_matrix *R;                       // The upper triangular matrix from QR
+//  FUTURE:
+//  SPEX_matrix *Q;                       // The orthogonal matrix from QR
+//  SPEX_matrix *R;                       // The upper triangular matrix from QR
 
     //--------------------------------------------------------------------------
     // The permutations of the matrix that are used during the factorization.
@@ -646,7 +651,6 @@ typedef struct
     // be generated when the factorization is converted to the updatable form.
     // For kind == SPEX_CHOLESKY_FACTORIZATION, both Q_perm and Qinv_perm are
     // NULL.
-    // TODO for QR????
     //--------------------------------------------------------------------------
 
     int64_t *P_perm;                     // row permutation
@@ -656,14 +660,6 @@ typedef struct
     int64_t *Qinv_perm;                  // inverse of column permutation
 
 } SPEX_factorization;
-
-// SPEX_symbolic_analysis_create creates the SPEX_symbolic_analysis object.
-// TODO delete? created by Lorena
-/*SPEX_info SPEX_factorization_create
-(
-    SPEX_factorization **F, // Structure to be created
-    const SPEX_options *option
-);*/
 
 // SPEX_factorization_free frees the SPEX_factorization object.
 SPEX_info SPEX_factorization_free        
@@ -742,7 +738,7 @@ void *SPEX_realloc      // pointer to reallocated block, or original block
 ) ;
 
 //------------------------------------------------------------------------------
-// SPEX memory environment routines
+// SPEX environment routines
 //------------------------------------------------------------------------------
 
 // SPEX_initialize: initializes the working evironment for SPEX library.
@@ -766,6 +762,30 @@ SPEX_info SPEX_initialize_expert
 // called as the last SPEX_* function called.
 SPEX_info SPEX_finalize (void) ;
 
+//------------------------------------------------------------------------------
+// SPEX matrix utilities
+//------------------------------------------------------------------------------
+
+// TODO: do we need these as user-callable methods? Just for MPZ?  What data
+// formats?  formats: static CSC, dynamic CSC, and dense.
+// data types: MPZ, others?
+
+    // matrix mult: C=A*B
+    // matrix add:  C=alpha*A+beta*B, or just C=A+B
+    // matrix apply:  C = f(A): div, mul, negate
+    // C = A(p,q)   unsymmetric permutation
+
+    // we have:
+    // C += sigma*w*w' (just dynamic CSC)
+    // C = A(p,p)   symmetric permutation (user-callable) shallow!!
+    // C = A'   SPEX_transpose (just static CSC, but all data types)
+
+// GraphBLAS: 16 matrix types, for 13 built-in types
+//  (sparse, hypersparse, bitmap, full) x (iso or non-iso) x (by row or by col)
+//  x (bool, int8, uint8, ... float, double, ..., user-defined)
+//  C<M> += A*B
+//  * semiring
+//  +=
 
 // SPEX_matrix_check: check and print a SPEX_sparse matrix
 SPEX_info SPEX_matrix_check     // returns a SPEX status code
@@ -803,6 +823,7 @@ SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
 /* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
  * into c.  This function is lightly modified from CSparse.
  */
+ // FIXME: should not be user-callable
 SPEX_info SPEX_cumsum
 (
     int64_t *p,          // vector to store the sum of c

@@ -51,9 +51,9 @@
     }                                \
 }
 
-#include "spex_update_internal.h"
+#include "spex_util_internal.h"
 
-SPEX_info spex_update_matrix_convert
+SPEX_info spex_matrix_convert
 (
     SPEX_factorization *F,       // converted CSC matrix
                                  // identity matrix if input as NULL
@@ -82,7 +82,7 @@ SPEX_info spex_update_matrix_convert
             return SPEX_OUT_OF_MEMORY; 
         } 
          
-        for (int64_t i = 0; i < n; i++) 
+        for (i = 0; i < n; i++) 
         {
             SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option)); 
         } 

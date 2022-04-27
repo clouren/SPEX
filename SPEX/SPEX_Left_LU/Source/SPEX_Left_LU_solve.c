@@ -72,7 +72,7 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     if (F->updatable)
     {
         // convert to static format
-        info = SPEX_Update_factorization_convert(F, option);
+        info = SPEX_factorization_convert(F, option);
         if (info != SPEX_OK) return info;
     }
     // check components of F in debug mode

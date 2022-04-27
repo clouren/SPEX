@@ -42,9 +42,9 @@
     SPEX_FREE(Qinv);
 
 
-#include "spex_update_internal.h"
+#include "spex_util_internal.h"
 
-SPEX_info SPEX_Update_factorization_convert
+SPEX_info SPEX_factorization_convert
 (
     SPEX_factorization *F, // The factorization to be converted
     const SPEX_options* option // Command options
@@ -98,12 +98,12 @@ SPEX_info SPEX_Update_factorization_convert
     // obtain the desired format of L and/or U
     //--------------------------------------------------------------------------
     // convert matrix L
-    SPEX_CHECK(spex_update_matrix_convert(F, true, option));
+    SPEX_CHECK(spex_matrix_convert(F, true, option));
 
     if (F->kind == SPEX_LU_FACTORIZATION)
     {
         // convert matrix U
-        SPEX_CHECK(spex_update_matrix_convert(F, false, option));
+        SPEX_CHECK(spex_matrix_convert(F, false, option));
     }
 
     SPEX_FREE_ALL;

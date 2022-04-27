@@ -103,6 +103,7 @@ int spex_gmp_realloc_test
  * within SPEX are gauranteed to be exact.
  */
 
+#undef SPEX_FREE_ALL
 #define SPEX_FREE_ALL                       \
     SPEX_MPQ_CLEAR(temp);                   \
     SPEX_MPQ_CLEAR(scale);                  \
@@ -243,6 +244,7 @@ SPEX_info spex_check_solution
  */
 
 
+#undef SPEX_FREE_ALL
 #define SPEX_FREE_ALL                 \
     SPEX_matrix_free(&b, option);     \
     SPEX_matrix_free(&x, option);     \
@@ -268,7 +270,7 @@ SPEX_info spex_update_verify
     SPEX_CHECK(SPEX_mpq_init(temp));
     SPEX_CHECK(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
         true, option));
-    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
+    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, n, 1, n, false,
         true, option));
 
     // -------------------------------------------------------------------------

@@ -62,8 +62,10 @@ int main( int argc, char* argv[])
     SPEX_factorization *F = NULL;
     SPEX_matrix *L = NULL, *U = NULL, *A = NULL, *T = NULL;
     SPEX_matrix *rhos = NULL;
+    SPEX_matrix *vk = NULL;
     int64_t *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL, *mark = NULL;
     int64_t tmpi;
+    SPEX_vector *vtemp = NULL;
     /*mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
     OK(SPEX_mpz_init(tmpz));
     mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);
@@ -126,6 +128,8 @@ int main( int argc, char* argv[])
         true, option));
     OK(SPEX_matrix_allocate(&A, SPEX_DYNAMIC_CSC, SPEX_MPZ, m, n, 0, false,
         true, option));
+    OK(SPEX_matrix_allocate(&vk, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, 1, 0, false,
+        true, option));
     OK(SPEX_matrix_allocate(&rhos, SPEX_DENSE, SPEX_MPZ, n, 1,
 	n, false, true, option));
     P     = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
@@ -171,12 +175,15 @@ int main( int argc, char* argv[])
         j = col_index[k];
         printf("-----------------------------------------------\n");
         printf("j = %ld\n", j);
-        info = SPEX_Update_LU_ColRep(F, &(T->v[Q_for_T[j]]), j, option);
+        vtemp = vk->v[0]; vk->v[0] = T->v[Q_for_T[j]]; T->v[Q_for_T[j]] = vtemp;
+        info = SPEX_Update_LU_ColRep(F, vk, j, option);
         if (info != SPEX_OK)
         {
             printf("k=%ld\n",k);
             return 0;
         }
+        //vtemp = vk->v[0];   vk->v[0] = A->v[j];  A->v[j] = vtemp;
+        // FIXME update T as well
 
         mark[j] = k;
     }
@@ -197,7 +204,8 @@ int main( int argc, char* argv[])
         printf("j = %ld mark=%ld found_index = %ld\n", j, mark[j],found_index);
 
 
-        info = SPEX_Update_LU_ColRep(F, &(T->v[Q_for_T[j]]), j, option);
+        vtemp = vk->v[0]; vk->v[0] = T->v[Q_for_T[j]]; T->v[Q_for_T[j]] = vtemp;
+        info = SPEX_Update_LU_ColRep(F, vk, j, option);
         if (info != SPEX_SINGULAR && info != SPEX_OK)
         {
             FREE_WORKSPACE;
@@ -213,6 +221,8 @@ int main( int argc, char* argv[])
             printf("resulting singular matrix with column %ld\n",j);
             mark[j] = -found_index;
         }
+        //vtemp = vk->v[0];   vk->v[0] = A->v[j];  A->v[j] = vtemp;
+        // FIXME update T as well
 
     /*    for (i = 0; i < n; i++)
         {

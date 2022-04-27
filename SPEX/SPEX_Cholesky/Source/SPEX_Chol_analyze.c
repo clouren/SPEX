@@ -45,6 +45,8 @@ SPEX_info SPEX_Chol_analyze
 {
 
     SPEX_info info;
+    
+    SPEX_REQUIRE_KIND(A, SPEX_CSC);
 
     SPEX_matrix* PAP = NULL;
     SPEX_symbolic_analysis *S = NULL;

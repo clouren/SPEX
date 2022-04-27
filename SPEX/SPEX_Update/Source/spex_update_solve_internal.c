@@ -66,7 +66,7 @@ SPEX_info spex_update_solve_internal
     if (!(F->updatable))
     {
         // convert to updatable format if wish to compute ATx=b
-        info = SPEX_Update_factorization_convert(F, option);
+        info = SPEX_factorization_convert(F, option);
         if (info != SPEX_OK) return info;
     }
 

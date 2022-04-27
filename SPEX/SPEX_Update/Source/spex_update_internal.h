@@ -288,7 +288,7 @@ SPEX_info spex_update_solve_internal
 //     1. the inverse of the permutation
 //     2. call SPEX_matrix_copy to obtain L and/or U in the SPEX_CSC format.
 
-
+/*
 SPEX_info spex_update_matrix_convert
 (
     SPEX_factorization *F,       // converted CSC matrix
@@ -296,6 +296,6 @@ SPEX_info spex_update_matrix_convert
     const bool convertL,         // true if B->v[i] is the i-th col of B.
                                  // Otherwise, B->v[i] is the i-th row of B
     const SPEX_options *option
-);
+);*/
 #endif
 
