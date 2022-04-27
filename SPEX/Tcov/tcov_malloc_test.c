@@ -270,7 +270,7 @@ SPEX_info spex_update_verify
     SPEX_CHECK(SPEX_mpq_init(temp));
     SPEX_CHECK(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
         true, option));
-    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
+    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, n, 1, n, false,
         true, option));
 
     // -------------------------------------------------------------------------
