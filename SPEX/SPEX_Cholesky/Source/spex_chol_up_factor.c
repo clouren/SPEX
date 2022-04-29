@@ -113,7 +113,7 @@ SPEX_info spex_chol_up_factor
     // for the triangular solve.
     xi = (int64_t*) SPEX_malloc(2*n*sizeof(int64_t));
 
-    if (!h || !xi)
+    if (!h || !xi || !c)
     {
         SPEX_FREE_WORKSPACE;
         return SPEX_OUT_OF_MEMORY;

@@ -78,6 +78,13 @@ SPEX_info spex_chol_pre_left_factor
     // Allocate L  
     SPEX_matrix* L = NULL;
     SPEX_matrix_allocate(&L, SPEX_CSC, SPEX_MPZ, n, n, S->lnz, false, false, NULL);
+    
+    if (!L|| !c)
+    {
+        SPEX_FREE_WORKSPACE;
+        return SPEX_OUT_OF_MEMORY;
+    }
+    
     for (k = 0; k < n; k++)
     {
         L->p[k] = c[k] = S->cp[k];
