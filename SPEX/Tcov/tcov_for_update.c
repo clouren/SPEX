@@ -73,10 +73,10 @@
     TEST_OK(SPEX_matrix_free(&U, option));       \
     TEST_OK(SPEX_matrix_free(&A, option));       \
     TEST_OK(SPEX_matrix_free(&b, option));       \
+    TEST_OK(SPEX_matrix_free(&b_sol, option));   \
     TEST_OK(SPEX_matrix_free(&tmpA, option));    \
     TEST_OK(SPEX_matrix_free(&vk, option));      \
     TEST_OK(SPEX_matrix_free(&rhos, option));    \
-    SPEX_FREE(h);                                \
     SPEX_FREE(P);                                \
     SPEX_FREE(P_inv);                            \
     SPEX_FREE(Q);                                \
@@ -179,10 +179,10 @@ int main( int argc, char* argv[])
 
                 SPEX_options* option = NULL;
                 SPEX_factorization *F = NULL;
-                SPEX_matrix *A = NULL, *tmpA = NULL, *vk = NULL, *b = NULL;
+                SPEX_matrix *A = NULL, *tmpA = NULL, *vk = NULL;
+                SPEX_matrix *b = NULL, *b_sol = NULL;
                 SPEX_matrix *L = NULL, *U = NULL, *rhos = NULL;
                 int64_t *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL;
-                int64_t *h = NULL;
                 mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
                 mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);
                 FILE *mat_file = NULL;
@@ -271,9 +271,11 @@ int main( int argc, char* argv[])
                     {
                         s = fscanf(mat_file, "%"PRId64" %"PRId64" %"PRId64"\n",
                             &i, &j, &tmp);
-                        if (feof(mat_file) || s < 3)
+                        if ((feof(mat_file) && (ai != Anz-1 || vk_nz != 0)) ||
+                            s < 3)
                         {
                             printf ("premature end-of-file\n") ;
+                            printf("%d  ",s);GOTCHA;
                             SPEX_FREE_ALL;
                             return 0;
                         }
@@ -296,6 +298,7 @@ int main( int argc, char* argv[])
                     }
                     if (pretend_to_fail) {continue;}
 
+printf("%ld\n", vk_nz);GOTCHA;
                     for (j = 0; j < vk_nz && !pretend_to_fail; j++)
                     {
                         s = fscanf(mat_file, "%"PRId64" %"PRId64"\n", &i, &tmp);
@@ -575,9 +578,53 @@ int main( int argc, char* argv[])
                         F->Pinv_perm = P_inv;
                         F->Q_perm = Q;
                         F->Qinv_perm = Q_inv;
+
+                        // get non-updatable F
+                        TEST_CHECK(SPEX_factorization_convert(F, false,
+                            option));
+                        if (pretend_to_fail) {continue;}
+                        SPEX_FREE(Q_inv);
+                        F->Qinv_perm = Q_inv;
+
+                        // permute first vector of L and U
+                        int64_t Lp = -1, Up = -1, tmp;
+                        for (i = 0; i < An; i++)
+                        {
+                            if (F->L->p[i+1] - F->L->p[i] > 1)
+                            {
+                                Lp = F->L->p[i];
+                                break;
+                            }
+                        }
+                        for (i = 1; i < An; i++)
+                        {
+                            if (F->U->p[i+1] - F->U->p[i] > 1)
+                            {
+                                Up = F->U->p[i+1]-1;
+                                break;
+                            }
+                        }
+                        if (Lp != -1)
+                        {
+                            tmp = F->L->i[Lp];
+                            F->L->i[Lp] = F->L->i[Lp+1];
+                            F->L->i[Lp+1] = tmp;
+                            TEST_CHECK(SPEX_mpz_swap(F->L->x.mpz[Lp],
+                                F->L->x.mpz[Lp+1]));
+                            if (pretend_to_fail) {continue;}
+                        }
+                        if (Up != -1)
+                        {
+                            tmp = F->U->i[Up];
+                            F->U->i[Up] = F->U->i[Up-1];
+                            F->U->i[Up-1] = tmp;
+                            TEST_CHECK(SPEX_mpz_swap(F->U->x.mpz[Up],
+                                F->U->x.mpz[Up-1]));
+                            if (pretend_to_fail) {continue;}
+                        }
+
                         info = SPEX_Update_LU_ColRep(F, vk, k, option);
-                        //info = SPEX_Update_LU_ColRep(A, L, U, rhos, P, P_inv, Q,
-                          //  Q_inv, &vk, k, option);
+                        Q_inv = F->Qinv_perm;
                     }
                     else if (test_type == 1)
                     {
@@ -593,12 +640,18 @@ int main( int argc, char* argv[])
                         }
                         printf("performing Chol rank-1 %s\n", sigma < 0 ?
                             "downdate" : "update");
+
                         // always shrink vk
-                        // TODO delete?
-                        /*TEST_CHECK(SPEX_vector_realloc(vk, vk->nz, option));
-                        if (pretend_to_fail) {break;}*/
+                        TEST_CHECK(SPEX_vector_realloc(vk->v[0], vk->v[0]->nz,
+                            option));
+                        if (pretend_to_fail) {break;}
+
+                        // get non-updatable F
+                        TEST_CHECK(SPEX_factorization_convert(F, false,
+                            option));
+                        if (pretend_to_fail) {continue;}
+
                         info = SPEX_Update_Chol_Rank1(F, vk, sigma, option);
-                        //(L, rhos, P, P_inv, vk, sigma, option);
                     }
                         
                     if (info == SPEX_SINGULAR)
@@ -613,6 +666,14 @@ int main( int argc, char* argv[])
                         if (pretend_to_fail) {break;}
                     }
 
+                    if (test_type == 0)
+                    {
+                        TEST_CHECK(SPEX_Update_matrix_colrep(A, vk, k, option));
+                        if (pretend_to_fail) {continue;}
+                        TEST_CHECK(spex_update_verify(F, A, option));
+                        if (pretend_to_fail) {continue;}
+                    }
+
                     // randomly generate a new vk and perform another update
                     if (read_matrix)       { break; }
 
@@ -620,11 +681,10 @@ int main( int argc, char* argv[])
                     MY_PR("k=%ld;%%1-based, for matlab code\nvk=[",
                         k+1);
 
-                    // TODO delete?
-                    /*if (test_type == 1)
+                    if (test_type == 1)
                     {
                         // reallocate An space for vk
-                        TEST_CHECK(SPEX_vector_realloc(vk, An, option));
+                        TEST_CHECK(SPEX_vector_realloc(vk->v[0], An, option));
                         if (pretend_to_fail) {break;}
                     }
                     vk_nz = 0;
@@ -632,9 +692,9 @@ int main( int argc, char* argv[])
                     {
                         if (i == k || simple_rand() > SIMPLE_RAND_MAX/2)
                         {
-                            TEST_CHECK(SPEX_mpz_set_si(vk->x[vk_nz], 1));
+                            TEST_CHECK(SPEX_mpz_set_si(vk->v[0]->x[vk_nz], 1));
                             if (pretend_to_fail) {break;}
-                            vk->i[vk_nz] = i;
+                            vk->v[0]->i[vk_nz] = i;
                             vk_nz++;
                             MY_PR("1 ");
                         }
@@ -645,7 +705,7 @@ int main( int argc, char* argv[])
                     }
                     if (pretend_to_fail) {break;}
                     MY_PR("]';\n\n\n");
-                    vk->nz = vk_nz;*/
+                    vk->v[0]->nz = vk_nz;
                 }
                 if (pretend_to_fail) {continue;}
                 if (got_singular_matrix)
@@ -660,20 +720,21 @@ int main( int argc, char* argv[])
                     }
                 }
 
-                // FIXME
-                //print U which will apply scale in each vector
-                /*TEST_CHECK(SPEX_matrix_check(F->U, option));
+                // test SPEX_matrix_check for out of memory error
+                TEST_CHECK(SPEX_matrix_check(U, option));
                 if (pretend_to_fail) {continue;}
-                // get the static F
-                TEST_CHECK(SPEX_factorization_convert(F, option));
-                if (pretend_to_fail) {continue;}*/
 
+                // All tests below won't be triggered for out_of_memory error
                 if (read_matrix)
                 {
                     //----------------------------------------------------------
                     // test some other functions
                     //----------------------------------------------------------
-                    // test SPEX_matrix_copy and SPEX_transpose
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // test SPEX_matrix_copy
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    TEST_CHECK(SPEX_mpq_set_ui(A->v[0]->scale, 4, 1));
+                    if (pretend_to_fail) {continue;}
                     for (int kind = 0; kind < 4 && !pretend_to_fail; kind++)
                     {
                         int max_type = 5;
@@ -691,15 +752,17 @@ int main( int argc, char* argv[])
                                 (SPEX_type) type, A, option));
                             if (pretend_to_fail) {break;}
 
+#if 0
                             if (kind == 0)
                             {
                                 // if kind == SPEX_CSC, transpose the resulted
                                 // matrix
                                 TEST_OK(SPEX_matrix_free(&A, option));
                                 if (pretend_to_fail) {break;}
-                                TEST_CHECK(SPEX_transpose(&A, tmpA, option));
-                                if (pretend_to_fail) {break;}
+                                //TEST_CHECK(SPEX_transpose(&A, tmpA, option));
+                                //if (pretend_to_fail) {break;}
                             }
+#endif
 
                             // convert tmpA back to original A
                             TEST_OK(SPEX_matrix_free(&A, option));
@@ -713,33 +776,11 @@ int main( int argc, char* argv[])
                     }
                     if (pretend_to_fail) {continue;}
 
-                    //----------------------------------------------------------
-                    // failure cases
-                    //----------------------------------------------------------
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_Update_Solve
+                    // test SPEX_Left_LU_solve, SPEX_Update_solve and
+                    // SPEX_Update_tsolve
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_solve(NULL, NULL, NULL,
-                        option), SPEX_INCORRECT_INPUT);
-                    if (pretend_to_fail) {continue;}
-
-#if 0
-                    // intentionally incorrect use of matrix_canonicalize
-                    // to produce a bad L so as to fail spex_update_ipge, which
-                    // is called by SPEX_Update_Solve
-                    TEST_CHECK(SPEX_Update_matrix_canonicalize(L, Q_inv,
-                        option));
-                    if (pretend_to_fail) {continue;}
-                    // make the permutation broken
-                    int64_t P0 = P[0]; P[0] = P[1]; P[1] = P0;
-
-                    // use SPEX_Update_Solve
-                    h = (int64_t*) SPEX_malloc(An*sizeof(int64_t));
-                    if (h == NULL)
-                    {
-                        TEST_CHECK(SPEX_OUT_OF_MEMORY);
-                        continue;
-                    }
+                    // allocate b so as to use solver functions
                     TEST_CHECK(SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ,
                         An, 1, An, false, true, option));
                     if (pretend_to_fail) {continue;}
@@ -749,10 +790,85 @@ int main( int argc, char* argv[])
                         if (pretend_to_fail) {break;}
                     }
                     if (pretend_to_fail) {continue;}
+
+                    TEST_CHECK(SPEX_Left_LU_solve(&b_sol, F, b, option));
+                    if (pretend_to_fail) {continue;}
+                    TEST_OK(SPEX_matrix_free(&b_sol, option));
+                    if (pretend_to_fail) {continue;}
+
+                    TEST_CHECK(SPEX_Update_solve(&b_sol, F, b, option));
+                    if (pretend_to_fail) {continue;}
+                    TEST_OK(SPEX_matrix_free(&b_sol, option));
+                    if (pretend_to_fail) {continue;}
+
+                    TEST_CHECK(SPEX_Update_tsolve(&b_sol, F, b, option));
+                    if (pretend_to_fail) {continue;}
+                    TEST_OK(SPEX_matrix_free(&b_sol, option));
+                    if (pretend_to_fail) {continue;}
+
+                    F->kind = SPEX_CHOLESKY_FACTORIZATION;
+                    TEST_CHECK(SPEX_Update_solve(&b_sol, F, b, option));
+                    if (pretend_to_fail) {continue;}
+                    TEST_OK(SPEX_matrix_free(&b_sol, option));
+                    if (pretend_to_fail) {continue;}
+                    F->kind = SPEX_LU_FACTORIZATION;
+
+
+                    //----------------------------------------------------------
+                    // failure cases
+                    //----------------------------------------------------------
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // fail SPEX_Update_LU_ColRep
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    TEST_CHECK_FAILURE(SPEX_Update_LU_ColRep(F, vk, -1,
+                        option), SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // fail SPEX_Update_Chol_Rank1
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    TEST_CHECK_FAILURE(SPEX_Update_Chol_Rank1(F, vk, 0,
+                        option), SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // fail SPEX_Update_matrix_colrep
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    TEST_CHECK_FAILURE(SPEX_Update_matrix_colrep(A, vk, -1,
+                        option), SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // fail SPEX_factorization_convert
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    F->kind = SPEX_QR_FACTORIZATION;
+                    TEST_CHECK_FAILURE(SPEX_factorization_convert(F, true,
+                        option), SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->kind = SPEX_LU_FACTORIZATION;
+
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // fail SPEX_Update_tsolve and SPEX_Update_solve
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // case 1: make the permutation broken so as to fail
+                    // spex_update_ipge, which is called by SPEX_Update_solve
+                    int64_t P0 = P[0]; P[0] = P[1]; P[1] = P0;
+                    // get the static F
                     TEST_CHECK_FAILURE(SPEX_Update_solve(&b_sol, F, b, option),
                         SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
-#endif
+                    TEST_OK(SPEX_matrix_free(&b_sol, option));
+                    if (pretend_to_fail) {continue;}
+
+                    // case 2: input NULL pointer(s)
+                    TEST_CHECK_FAILURE(SPEX_Update_tsolve(NULL, NULL, NULL,
+                        option), SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_Update_solve(NULL, F, b,
+                        option), SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+
+                    // case 
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // test and fail SPEX_matrix_check
@@ -799,72 +915,6 @@ int main( int argc, char* argv[])
                     TEST_CHECK_FAILURE(SPEX_matrix_check(L, option),
                         SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
-
-                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail spex_update_verify
-                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // free L, U and A and reconstruct them as 1-by-1 matrix
-                    TEST_OK(SPEX_matrix_free(&L, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_OK(SPEX_matrix_free(&U, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_OK(SPEX_matrix_free(&A, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_OK(SPEX_matrix_free(&rhos, option));
-                    if (pretend_to_fail) {continue;}
-
-                    // U = one(1,1)
-                    TEST_CHECK(SPEX_matrix_allocate(&U, SPEX_DYNAMIC_CSC,
-                        SPEX_MPZ, 1, 1, 0, false, true, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_CHECK(SPEX_vector_realloc(U->v[0], 1, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_CHECK(SPEX_mpz_set_ui(U->v[0]->x[0], 1));
-                    if (pretend_to_fail) {continue;}
-                    U->v[0]->i[0] = 0;
-                    U->v[0]->nz = 1;
-
-                    // L = one(1,1)
-                    TEST_CHECK(SPEX_matrix_allocate(&L, SPEX_DYNAMIC_CSC,
-                        SPEX_MPZ, 1, 1, 0, false, true, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_CHECK(SPEX_vector_realloc(L->v[0], 1, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_CHECK(SPEX_mpz_set_ui(L->v[0]->x[0], 1));
-                    if (pretend_to_fail) {continue;}
-                    L->v[0]->i[0] = 0;
-                    L->v[0]->nz = 1;
-
-                    // A = one(1,1)*2
-                    TEST_CHECK(SPEX_matrix_allocate(&A, SPEX_DYNAMIC_CSC,
-                        SPEX_MPZ, 1, 1, 0, false, true, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_CHECK(SPEX_vector_realloc(A->v[0], 1, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_CHECK(SPEX_mpz_set_ui(A->v[0]->x[0], 2));
-                    if (pretend_to_fail) {continue;}
-                    A->v[0]->i[0] = 0;
-                    A->v[0]->nz = 1;
-                    GOTCHA;
-
-                    // rhos = ones (1,1)
-                    TEST_CHECK(SPEX_matrix_allocate(&rhos, SPEX_DENSE,
-                        SPEX_MPZ, 1, 1, 1, false, true, option));
-                    if (pretend_to_fail) {continue;}
-                    TEST_CHECK(SPEX_mpz_set_ui(rhos->x.mpz[0], 1));
-                    if (pretend_to_fail) {continue;}
-                    GOTCHA;
-
-                    // fake P and Q_inv
-                    P[0] = 0;
-                    Q_inv[0] = 0;
-                    // FIXME move
-                    F->L = L; F->U = U; F->rhos = rhos;
-                    F->P_perm = P; F->Qinv_perm = Q_inv;
-                    TEST_CHECK_FAILURE(spex_update_verify(F, A, option),
-                        SPEX_INCORRECT);
-                    if (pretend_to_fail) {continue;}
-                    GOTCHA;
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // fail SPEX_vector_allocate

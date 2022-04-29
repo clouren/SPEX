@@ -21,6 +21,7 @@
 // will be modified).
 
 #define SPEX_FREE_ALL               \
+{                                   \
     spex_scattered_vector_free(&w_dense, option); \
     SPEX_FREE(h);                   \
     SPEX_MPQ_CLEAR(sd_ratio);       \
@@ -28,7 +29,8 @@
     SPEX_MPQ_CLEAR(tmpq);           \
     SPEX_MPZ_CLEAR(sd0_old);        \
     SPEX_MPZ_CLEAR(sd1_old);        \
-    SPEX_MPZ_CLEAR(tmpz);
+    SPEX_MPZ_CLEAR(tmpz);           \
+}
 
 #include "spex_update_internal.h"
 
@@ -44,7 +46,8 @@ SPEX_info SPEX_Update_Chol_Rank1
                             // resulting A is A+sigma*w*w^T. In output, w is
                             // updated as the solution to L*D^(-1)*w_out = w
     const int64_t sigma,    // a nonzero scalar that determines whether
-                            // this is an update or downdate
+                            // this is an update (sigma > 0) or downdate
+                            // (sigma < 0).
     const SPEX_options* option // Command options
 )
 {
@@ -67,11 +70,8 @@ SPEX_info SPEX_Update_Chol_Rank1
     if (w->v[0]->nz == 0) {return SPEX_OK;}
 
     // make sure F is updatable
-    if (!(F->updatable))
-    {
-        info = SPEX_factorization_convert(F, option);
-        if (info != SPEX_OK) return info;
-    }
+    info = SPEX_factorization_convert(F, true, option);
+    if (info != SPEX_OK) return info;
 
     //--------------------------------------------------------------------------
     // initialize workspace

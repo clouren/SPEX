@@ -16,6 +16,12 @@
 // SPEX_matrix_check, if desired.  If the input matrix A is not valid, results
 // are undefined.
 
+// SPEX supports 16 matrix formats:  15 of them are all combinations of
+// (CSC, triplet, dense) x (mpz, mpq, mpfr, int64, double).  The 16th format
+// is dynamic CSC, which can only be mpz.  This function can convert an input
+// matrix A in any of these 16 formats, into an output matrix C in any of the
+// 16 supported formats.
+
 #define SPEX_FREE_WORK                  \
     SPEX_matrix_free (&T, option) ;     \
     SPEX_matrix_free (&Y, option) ;     \

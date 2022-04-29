@@ -24,6 +24,7 @@
 //       vk->v[0] = Vtmp;
 
 #define SPEX_FREE_ALL                \
+{                                    \
     SPEX_FREE(h);                    \
     SPEX_FREE(h_for_vk);             \
     SPEX_FREE(map);                  \
@@ -33,7 +34,8 @@
     SPEX_FREE(Ucx);                  \
     spex_scattered_vector_free(&Lk_dense_col, option);\
     spex_scattered_vector_free(&Uk_dense_row, option);\
-    spex_scattered_vector_free(&vk_dense, option);
+    spex_scattered_vector_free(&vk_dense, option);      \
+}
 
 #include "spex_update_internal.h"
 
@@ -75,11 +77,8 @@ SPEX_info SPEX_Update_LU_ColRep
     }
 
     // make sure F is updatable
-    if (!(F->updatable))
-    {
-        info = SPEX_factorization_convert(F, option);
-        if (info != SPEX_OK) return info;
-    }
+    info = SPEX_factorization_convert(F, true, option);
+    if (info != SPEX_OK) return info;
 
     //--------------------------------------------------------------------------
     // initialize workspace

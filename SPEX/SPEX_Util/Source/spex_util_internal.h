@@ -554,39 +554,6 @@ SPEX_info spex_dynamic_to_CSC_mpz
     const SPEX_options *option
 );
 
-//------------------------------------------------------------------------------
-// convert matrix between updatable and non-updatable format
-//------------------------------------------------------------------------------
-
-// NOTE: The L and U factorization from SPEX_Left_LU or the L from
-// SPEX_Cholesky are all in SPEX_CSC format, and their columns and rows are
-// permuted to be the same as the permuted matrix A(P,Q), and thus
-// A(P,Q)=LD^(-1)U. However, all Update functions requires A=LD^(-1)U. This is
-// the function to perform the coversion for L and U so that it meet the
-// requirement for Update function and vice versa. Although the exact steps are
-// slightly different, the overall result are equivalent to the following:
-//
-// To get updatable (dynamic_CSC MPZ) from non-updatable (CSC MPZ) matrix:
-//     1. performing SPEX_matrix_copy to get the L and/or UT
-//     SPEX_DYNAMIC_CSC form.
-//     2. permute row indices of L or UT such that A=LD^(-1)U, or equivalently
-//     A_out->v[j]->i[p] = perm[A_in->v[j]->i[p]], where A is either L or U.
-//     3. canonicalize a SPEX_DYNAMIC_CSC matrix such that each column of the
-//     input matrix have corresponding pivot as the first entry.
-//
-// To get non-updatable (CSC MPZ) from updatable (dynamic_CSC MPZ) matrix:
-//     1. the inverse of the permutation
-//     2. call SPEX_matrix_copy to obtain L and/or U in the SPEX_CSC format.
-
-
-SPEX_info spex_matrix_convert
-(
-    SPEX_factorization *F,       // converted CSC matrix
-                                 // identity matrix if input as NULL
-    const bool convertL,         // true if B->v[i] is the i-th col of B.
-                                 // Otherwise, B->v[i] is the i-th row of B
-    const SPEX_options *option
-);
 
 /* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
  * size of x and i. so that they only take up the number of elements in the
@@ -636,7 +603,20 @@ SPEX_info spex_sparse_realloc
 #define ASSERT_MATRIX(A,required_kind,required_type)    \
     ASSERT_KIND (A,required_kind) ;                     \
     ASSERT_TYPE (A,required_type) ;
+    
+//------------------------------------------------------------------------------
+// SPEX_matrix macros
+//------------------------------------------------------------------------------
 
+// These macros simplify the access to entries in a SPEX_matrix.
+// The type parameter is one of: mpq, mpz, mpfr, int64, or fp64.
+
+// To access the kth entry in a SPEX_matrix using 1D linear addressing,
+// in any matrix kind (CSC, triplet, or dense), in any type:
+#define SPEX_1D(A,k,type) ((A)->x.type [k])
+
+// To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
+#define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 #endif
 

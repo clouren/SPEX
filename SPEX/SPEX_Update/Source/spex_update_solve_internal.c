@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_Solve_internal: find the exact solution for Ax=b with the
-// the updatable LU factorizaiton of A.
+// SPEX_Update/spex_update_solve_internal: find the exact solution for Ax=b
+// with the the updatable LU factorization of A.
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -17,20 +17,24 @@
  * x_handle: A pointer to the solution vectors. Memory space will be allocated
  *           for x_handle to store the exact solution of the system
  *
- * b:        Set of RHS vectors
- *
  * F:        SPEX LU or Cholesky factorization
+ *
+ * b:        Set of RHS vectors
  *
  * option:   command options
  */
 
 #define SPEX_FREE_WORK                  \
+{                                       \
     SPEX_FREE(h);                       \
-    SPEX_vector_free(&v, option);
+    SPEX_vector_free(&v, option);       \
+}
 
 #define SPEX_FREE_ALL                   \
+{                                       \
     SPEX_FREE_WORK                      \
-    SPEX_matrix_free (&x, option);
+    SPEX_matrix_free (&x, option);      \
+}
 
 #include "spex_update_internal.h"
 
@@ -40,9 +44,9 @@ SPEX_info spex_update_solve_internal
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
                             // the system.
     // input:
+    SPEX_factorization *F,  // The SPEX LU or Cholesky factorization
     const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    SPEX_factorization *F,  // The SPEX LU or Cholesky factorization
     const bool transpose,   // whether computing Ax=b or ATx=b
     const SPEX_options* option // Command options
 )
@@ -63,12 +67,9 @@ SPEX_info spex_update_solve_internal
     }
     *x_handle = NULL;
     
-    if (!(F->updatable))
-    {
-        // convert to updatable format if wish to compute ATx=b
-        info = SPEX_factorization_convert(F, option);
-        if (info != SPEX_OK) return info;
-    }
+    // convert F to updatable format
+    info = SPEX_factorization_convert(F, true, option);
+    if (info != SPEX_OK) return info;
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace

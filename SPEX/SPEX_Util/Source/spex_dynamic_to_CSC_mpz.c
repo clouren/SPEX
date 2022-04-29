@@ -21,7 +21,8 @@
 SPEX_info spex_dynamic_to_CSC_mpz
 (
     SPEX_matrix **A_handle,       // converted CSC matrix
-    const SPEX_matrix *B,         // original matrix
+    // input:
+    const SPEX_matrix *B,         // original matrix (not modified)
     const int64_t nnz,            // number of nonzeros in B
     const SPEX_options *option
 )

@@ -9,8 +9,9 @@
 
 //------------------------------------------------------------------------------
 
-// spex_CSC_mpz_to_dynamic create a SPEX_matrix A of dynamic_CSC from the given SPEX_matrix B which is
-// in Compressed Sparse Column (CSC) format with entries in mpz_t type.
+// spex_CSC_mpz_to_dynamic create a SPEX_matrix A of dynamic_CSC from the given
+// SPEX_matrix B which is in Compressed Sparse Column (CSC) format with entries
+// in mpz_t type.
 
 #define SPEX_FREE_ALL                \
     SPEX_matrix_free(&A, option);
@@ -20,7 +21,8 @@
 SPEX_info spex_CSC_mpz_to_dynamic
 (
     SPEX_matrix **A_handle,      // converted SPEX_matrix of dynamic_CSC
-    const SPEX_matrix *B,         // original matrix
+    // input:
+    const SPEX_matrix *B,         // original matrix (unmodified)
     const SPEX_options *option
 )
 {

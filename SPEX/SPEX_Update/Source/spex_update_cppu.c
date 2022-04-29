@@ -25,9 +25,11 @@
 // of U are permuted implicitly via the permutation matrix based on Q.
 
 #define SPEX_FREE_ALL                \
+{                                    \
     SPEX_MPZ_CLEAR(Uiks);            \
     SPEX_MPQ_CLEAR(pending_scale);   \
-    SPEX_MPZ_CLEAR(tmpz);
+    SPEX_MPZ_CLEAR(tmpz);            \
+}
 
 #include "spex_update_internal.h"
 

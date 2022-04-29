@@ -41,7 +41,7 @@ OBJ = \
     spex_update_triangular_solve.o \
     spex_update_forward_sub.o \
     SPEX_Update_Chol_Rank1.o \
-    SPEX_Update_factorization_convert.o spex_update_matrix_convert.o
+    SPEX_Update_factorization_convert.o
     #spex_update_permute_row.o spex_update_verify.o \
     #spex_update_matrix_canonicalize.o \
 

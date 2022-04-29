@@ -25,7 +25,9 @@
 // matrices based on P and Q.
 
 #define SPEX_FREE_ALL                \
-    SPEX_MPQ_CLEAR(pending_scale);
+{                                    \
+    SPEX_MPQ_CLEAR(pending_scale);   \
+}
 
 #include "spex_update_internal.h"
 

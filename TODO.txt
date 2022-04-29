@@ -78,7 +78,7 @@ naming: SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
 
 Where to put update_convert
 
-
+spex_CSC_mpz_to_dynamic.c spex_dynamic_to_CSC_mpz.c SPEX_factorization_convert.c SPEX_factorization_free.c SPEX_matrix_convert.c SPEX_vector_allocate.c SPEX_vector_free.c SPEX_vector_realloc.c
 
 
 

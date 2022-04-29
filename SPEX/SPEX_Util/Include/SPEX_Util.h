@@ -739,12 +739,10 @@ SPEX_info SPEX_factorization_free
 
 SPEX_info SPEX_factorization_convert
 (
-    SPEX_factorization *F,  // The factorization to be converted
+    SPEX_factorization *F, // The factorization to be converted
+    bool updatable, // if true, make F updatable. false: make non-updatable
     const SPEX_options* option // Command options
-);
-
-
-
+) ;
 
 //------------------------------------------------------------------------------
 // Memory management
