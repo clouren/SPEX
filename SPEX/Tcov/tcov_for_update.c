@@ -580,7 +580,8 @@ printf("%ld\n", vk_nz);GOTCHA;
                         F->Qinv_perm = Q_inv;
 
                         // get non-updatable F
-                        TEST_CHECK(SPEX_factorization_convert(F, option));
+                        TEST_CHECK(SPEX_factorization_convert(F, false,
+                            option));
                         if (pretend_to_fail) {continue;}
                         SPEX_FREE(Q_inv);
                         F->Qinv_perm = Q_inv;
@@ -646,7 +647,8 @@ printf("%ld\n", vk_nz);GOTCHA;
                         if (pretend_to_fail) {break;}
 
                         // get non-updatable F
-                        TEST_CHECK(SPEX_factorization_convert(F, option));
+                        TEST_CHECK(SPEX_factorization_convert(F, false,
+                            option));
                         if (pretend_to_fail) {continue;}
 
                         info = SPEX_Update_Chol_Rank1(F, vk, sigma, option);
@@ -840,8 +842,8 @@ printf("%ld\n", vk_nz);GOTCHA;
                     // fail SPEX_factorization_convert
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     F->kind = SPEX_QR_FACTORIZATION;
-                    TEST_CHECK_FAILURE(SPEX_factorization_convert(F, option),
-                        SPEX_INCORRECT_INPUT);
+                    TEST_CHECK_FAILURE(SPEX_factorization_convert(F, true,
+                        option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
                     F->kind = SPEX_LU_FACTORIZATION;
 

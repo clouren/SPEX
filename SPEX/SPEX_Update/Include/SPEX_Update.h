@@ -190,7 +190,8 @@ SPEX_info SPEX_Update_Chol_Rank1
                             // resulting A is A+sigma*w*w^T. In output, w is
                             // updated as the solution to L*D^(-1)*w_out = w
     const int64_t sigma,    // a nonzero scalar that determines whether
-                            // this is an update or downdate
+                            // this is an update (sigma > 0) or downdate
+                            // (sigma < 0).
     const SPEX_options* option // Command options
 );
 

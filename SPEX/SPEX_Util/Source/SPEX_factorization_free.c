@@ -33,9 +33,6 @@ SPEX_info SPEX_factorization_free
         SPEX_matrix_free(&((*F)->U), option);
         SPEX_matrix_free(&((*F)->rhos), option);
 
-        SPEX_matrix_free(&((*F)->Q), option);
-        SPEX_matrix_free(&((*F)->R), option);
-
         SPEX_FREE((*F)->P_perm);
         SPEX_FREE((*F)->Pinv_perm);
         SPEX_FREE((*F)->Q_perm);

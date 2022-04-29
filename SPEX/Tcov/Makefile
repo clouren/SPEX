@@ -79,7 +79,6 @@ CS_Util = \
     spex_delete_mpz_array.o \
     SPEX_determine_symmetry.o SPEX_transpose.o \
     SPEX_factorization_convert.o \
-    spex_matrix_convert.o\
     # SPEX_matrix_div.o \
 
 $(CS_Util): ../SPEX_Util/Include/SPEX_Util.h ../SPEX_Util/Source/spex_util_internal.h

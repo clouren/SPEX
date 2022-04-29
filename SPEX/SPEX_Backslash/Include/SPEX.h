@@ -489,6 +489,12 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 
 // SPEX_matrix_copy: make a copy of a SPEX_matrix, into another kind and type.
 
+// SPEX supports 16 matrix formats:  15 of them are all combinations of
+// (CSC, triplet, dense) x (mpz, mpq, mpfr, int64, double).  The 16th format
+// is dynamic CSC, which can only be mpz.  This function can convert an input
+// matrix A in any of these 16 formats, into an output matrix C in any of the
+// 16 supported formats.
+
 SPEX_info SPEX_matrix_copy
 (
     SPEX_matrix **C_handle, // matrix to create (never shallow)
@@ -651,6 +657,12 @@ SPEX_info SPEX_factorization_free
 (
     SPEX_factorization **F, // Factorization to be deleted
     const SPEX_options *option
+) ;
+
+SPEX_info SPEX_factorization_check
+(
+    SPEX_factorization *F, // The factorization to check
+    const SPEX_options* option
 ) ;
 
 
@@ -1451,7 +1463,8 @@ SPEX_info SPEX_Update_Chol_rank1
                             // resulting A is A+sigma*w*w'. In output, w is
                             // updated as the solution to L*D^(-1)*w_out = w
     const int64_t sigma,    // a nonzero scalar that determines whether
-                            // this is an update or downdate
+                            // this is an update (sigma > 0) or downdate
+                            // (sigma < 0).
     const SPEX_options* option // Command options
 );
 
@@ -1582,5 +1595,6 @@ SPEX_info SPEX_Backslash
     const SPEX_matrix *b,         // Right hand side vector(s)
     SPEX_options* option    // Command options
 );
+
 #endif
 

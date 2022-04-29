@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 /* Purpose: This function solves the linear system A^T*x = b via LU or Cholesky
- * factorization of A. It essnetially serves as a wrapper for all forward and
+ * factorization of A. It essentially serves as a wrapper for all forward and
  * backward substitution routines. This function always returns the solution
  * matrix x as a mpq_t matrix. If a user desires to have other entry type,
  * simple call SPEX_matrix_copy.
@@ -20,9 +20,9 @@
  * x_handle: A pointer to the solution vectors. Memory space will be allocated
  *           for x_handle to store the exact solution of the system
  *
- * b:        Set of RHS vectors
- *
  * F:        SPEX LU or Cholesky factorization of A
+ *
+ * b:        Set of RHS vectors
  *
  * option:   command options
  */
@@ -41,5 +41,5 @@ SPEX_info SPEX_Update_tsolve // solves A^T*x = b
     const SPEX_options* option // Command options
 )
 {
-    return spex_update_solve_internal(x_handle, b, F, true, option);
+    return spex_update_solve_internal(x_handle, F, b, true, option);
 }

@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 /* Purpose: This function performs sparse REF backward substitution, solving
- * the system Ux = b. x is internally multiplied by the determinant of A to
+ * the system UQx = b. x is internally multiplied by the determinant of A to
  * maintain integral. In addition, x is also permuted by Q. Therefore the
  * real solution should be found as x(i) = x(Q_inv(i))/det(A).
  *
