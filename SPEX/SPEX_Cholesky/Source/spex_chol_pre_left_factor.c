@@ -12,6 +12,17 @@
 
 #include "spex_chol_internal.h"
 
+//TODO doublecheck valgrind
+#define SPEX_FREE_WORKSPACE         \
+{                                   \
+    SPEX_FREE(c);                   \
+}
+
+# define SPEX_FREE_ALL               \
+{                                    \
+    SPEX_FREE_WORKSPACE              \
+}
+
 /* Purpose: This function performs a symbolic left-looking factorization.
  * It allocates the memory for the L matrix and determines the full nonzero
  * pattern of L

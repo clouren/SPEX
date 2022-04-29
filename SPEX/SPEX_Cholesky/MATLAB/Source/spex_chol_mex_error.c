@@ -38,6 +38,15 @@ void spex_chol_mex_error
         case SPEX_INCORRECT :            // The solution is incorrect
             SPEX_finalize ( ) ;
             mexErrMsgTxt ("result invalid") ;
+            
+        case SPEX_UNSYMMETRIc:          // the input matrix A is unsymmetric
+            SPEX_finalize();
+            mexErrMsgTxt("input matrix is unsymmetric");
+            
+        case SPEX_NOTSPD :             // the input matrix A is not spd
+            SPEX_finalize ( ) ;
+            mexErrMsgTxt ("input matrix is not spd") ;
+
 
         case SPEX_PANIC :                // SPEX_LU used without proper initialization
             SPEX_finalize ( ) ;

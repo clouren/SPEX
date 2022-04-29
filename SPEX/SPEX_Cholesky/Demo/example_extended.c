@@ -135,7 +135,6 @@ int main( int argc, char* argv[] )
     option->print_level = 3;
     //DEMO_OK(SPEX_scale(x, b->scale, A->scale, option));
     DEMO_OK(SPEX_check_solution(A, x, b, option));
-    printf("afterCheck");
     
     //--------------------------------------------------------------------------
     // Output & Timing Stats

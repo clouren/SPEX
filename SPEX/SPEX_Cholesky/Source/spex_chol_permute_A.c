@@ -40,9 +40,7 @@ SPEX_info spex_chol_permute_A
     const SPEX_matrix* A,      // Input matrix
     const bool numeric,        // True if user wants to permute pattern and 
                                // numbers, false if only pattern
-    
-    //Input/Ouput
-    SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains 
+    const SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains 
                                // row/column permutations
 )
 {

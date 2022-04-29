@@ -14,6 +14,7 @@
     SPEX_matrix_free(&x, NULL);     \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
+    SPEX_FREE(c);                   \
 }
 
 # define SPEX_FREE_ALL               \
@@ -56,11 +57,10 @@ SPEX_info spex_chol_up_factor
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
-    // Input/Output
-    SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
+    // Input
+    const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    // Input
     const SPEX_matrix* A,      // Matrix to be factored   
     const SPEX_options* option // command options
 )

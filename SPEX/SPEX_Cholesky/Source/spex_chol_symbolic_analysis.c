@@ -11,6 +11,12 @@
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
     SPEX_FREE(post);                \
+    SPEX_FREE(c);                   \
+}
+
+# define SPEX_FREE_ALL               \
+{                                    \
+    SPEX_FREE_WORKSPACE              \
 }
 
 #include "spex_chol_internal.h"  
