@@ -38,8 +38,6 @@
 // case of any error, the returned factorization should be considered as
 // undefined.
 
-#define SPEX_FREE_ALL             \
-    SPEX_FREE(Qinv);
 
 
 #include "spex_util_internal.h"
@@ -54,11 +52,12 @@ SPEX_info SPEX_factorization_convert
     // check inputs
     //--------------------------------------------------------------------------
     if (!spex_initialized()) {return SPEX_PANIC;}
-    if (!F || F->L->type != SPEX_MPZ ||
+    if (!F || !(F->P_perm) || !(F->Pinv_perm) || F->L->type != SPEX_MPZ ||
         (F->L->kind != SPEX_CSC && F->L->kind != SPEX_DYNAMIC_CSC) ||
         (F->kind != SPEX_LU_FACTORIZATION &&
          F->kind != SPEX_CHOLESKY_FACTORIZATION) ||
-        (F->kind == SPEX_LU_FACTORIZATION && (F->U->type != SPEX_MPZ ||
+        (F->kind == SPEX_LU_FACTORIZATION && (!(F->Q_perm) ||
+         (F->updatable && !(F->Qinv_perm)) || F->U->type != SPEX_MPZ ||
          (F->U->kind != SPEX_CSC && F->U->kind != SPEX_DYNAMIC_CSC))))
     {
         return SPEX_INCORRECT_INPUT;
@@ -69,29 +68,35 @@ SPEX_info SPEX_factorization_convert
     //--------------------------------------------------------------------------
     SPEX_info info;
     int64_t i, n = F->L->n;
-    int64_t *Qinv = NULL;
 
     // update the updatable flag
     F->updatable = !(F->updatable);
 
     //--------------------------------------------------------------------------
-    // obtain Qinv_perm for updatable LU factorization
+    // obtain/update Qinv_perm for updatable LU factorization
     //--------------------------------------------------------------------------
     if (F->kind == SPEX_LU_FACTORIZATION && F->updatable)
     {
-        Qinv = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-        if (!Qinv)
+        // FIXME is this ok?
+        // Although Qinv_perm is NULL when F is created by factorizing matrix,
+        // where F is initially not updatable, Qinv_perm is then created when
+        // converted to updatable format and not deleted even when converted
+        // back to non-updatable from updatable format.
+
+        // Allocate space for Qinv_perm if it was NULL. Otherwise, Qinv_perm
+        // is re-usable since the size is never changed.
+        if (!(F->Qinv_perm))
         {
-            SPEX_FREE_ALL;
-            return SPEX_OUT_OF_MEMORY;
+            F->Qinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+            if (!(F->Qinv_perm))
+            {
+                return SPEX_OUT_OF_MEMORY;
+            }
         }
         for (i = 0; i < n; i++)
         {
-            Qinv[F->Q_perm[i]] = i;
+            F->Qinv_perm[F->Q_perm[i]] = i;
         }
-        SPEX_FREE(F->Qinv_perm); // clear whatever is there just in case
-        F->Qinv_perm = Qinv;
-        Qinv = NULL;
     }
 
     //--------------------------------------------------------------------------
@@ -106,6 +111,5 @@ SPEX_info SPEX_factorization_convert
         SPEX_CHECK(spex_matrix_convert(F, false, option));
     }
 
-    SPEX_FREE_ALL;
     return SPEX_OK;
 }

@@ -274,7 +274,7 @@ SPEX_info spex_matrix_convert
                 nnz += U->v[i]->nz;
                 for (p = 0 ; p < U->v[i]->nz; p++)
                 {
-                    j = U->v[i]->i[p];
+                    j = perm[U->v[i]->i[p]];
                     rowcount [j]++ ;
                 }
             }
@@ -298,9 +298,9 @@ SPEX_info spex_matrix_convert
                 SPEX_CHECK(SPEX_mpq_cmp_ui(&sgn, U->v[i]->scale, 1, 1));
                 for (p = 0 ; p < U->v[i]->nz ; p++)
                 {
-                    j = U->v[i]->i[p];
-                    mp = rowcount[j];
-                    Mi[ mp ] = perm[i] ;
+                    j = perm[U->v[i]->i[p]];
+                    mp = rowcount[j] ++;
+                    Mi[ mp ] = i ;
                     if (sgn != 0) // scale != 1
                     {
                         // apply scale to U->v[i]->x[p]
@@ -310,7 +310,6 @@ SPEX_info spex_matrix_convert
                             U->v[i]->x[p], SPEX_MPQ_NUM(U->v[i]->scale))) ;
                     }
                     SPEX_CHECK(SPEX_mpz_swap(Mx[mp], U->v[i]->x[p])) ;
-                    rowcount[j] ++;
                 }
             }
 

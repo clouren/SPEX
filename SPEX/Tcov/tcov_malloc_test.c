@@ -295,7 +295,7 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     for (i = 0; i < n; i++)
     {
-        SPEX_CHECK(SPEX_mpz_sgn(&r, x->x.mpz[i]));
+        SPEX_CHECK(SPEX_mpq_sgn(&r, x->x.mpq[i]));
         if (r == 0) { continue;}
 
         for (int64_t p = 0; p < A->v[i]->nz; p++)

@@ -63,7 +63,6 @@ CS_Util = \
     SPEX_matrix_allocate.o \
     SPEX_matrix_check.o \
     SPEX_matrix_copy.o \
-    SPEX_matrix_div.o \
     SPEX_matrix_free.o \
     SPEX_matrix_mul.o \
     SPEX_matrix_nnz.o \
@@ -81,6 +80,7 @@ CS_Util = \
     SPEX_determine_symmetry.o SPEX_transpose.o \
     SPEX_factorization_convert.o \
     spex_matrix_convert.o\
+    # SPEX_matrix_div.o \
 
 $(CS_Util): ../SPEX_Util/Include/SPEX_Util.h ../SPEX_Util/Source/spex_util_internal.h
 
@@ -144,6 +144,7 @@ CS_Update = \
     spex_update_insert_new_entry.o \
     spex_update_ipge.o \
     SPEX_Update_LU_ColRep.o \
+    SPEX_Update_matrix_colrep.o \
     SPEX_Update_solve.o \
     SPEX_Update_tsolve.o \
     spex_update_solve_internal.o \
@@ -198,7 +199,7 @@ runtests4llu: all
 # only run test for SPEX_Update
 runtests4luu: all
 	- ./tcov_for_update 0 6 > test_for_update1.out
-	- ./tcov_for_update 0 0 25 > test_for_update2.out
+	- ./tcov_for_update 0 0 26 > test_for_update2.out
 	- ./tcov_for_update 1 6 > test_for_update3.out
 	- #./LU_update_demo
 

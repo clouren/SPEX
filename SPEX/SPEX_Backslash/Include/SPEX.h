@@ -499,21 +499,6 @@ SPEX_info SPEX_matrix_copy
     const SPEX_options *option
 ) ;
 
-//------------------------------------------------------------------------------
-// SPEX_matrix macros
-//------------------------------------------------------------------------------
-
-// FIXME: move this to internal only
-
-// These macros simplify the access to entries in a SPEX_matrix.
-// The type parameter is one of: mpq, mpz, mpfr, int64, or fp64.
-
-// To access the kth entry in a SPEX_matrix using 1D linear addressing,
-// in any matrix kind (CSC, triplet, or dense, but not dynamic), in any type:
-#define SPEX_1D(A,k,type) ((A)->x.type [k])
-
-// To access the (i,j)th entry in a 2D dense SPEX_matrix, in any type:
-#define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 //------------------------------------------------------------------------------
 // SPEX symbolic analysis and factorization
