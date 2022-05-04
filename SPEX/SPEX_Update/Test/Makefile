@@ -21,7 +21,11 @@ I = -I../Include -I../Lib -I../../../SuiteSparse_config -I../../SPEX_Util/Includ
 
 LDLIBS += -lm -lgmp -lmpfr -lsuitesparseconfig -lspexutil -lspexupdate -lspexleftlu -lspexchol -lglpk #-lcolamd -lamd
 
-all: lib ptest
+all: lib ptest chol
+	- ./ptest lp_afiro
+	- ./cholupdate lp_afiro
+
+runtest: lib ptest
 	- ./ptest
 
 runchol: lib chol

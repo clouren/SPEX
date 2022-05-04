@@ -59,8 +59,8 @@ int64_t init_basis[27]={27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 62, 61, 
 int main( int argc, char* argv[])
 {
     //char *prob_name = "lp_80bau3b";
-    //char *prob_name = "lp_25fv47";//5.5018458883E+03
-    char *prob_name = "lp_afiro"; // optimal: -4.6475314E+02
+    char *prob_name = "lp_25fv47";//5.5018458883E+03
+    //char *prob_name = "lp_afiro"; // optimal: -4.6475314E+02
     //char *prob_name = "aa5";
     if (argc >= 2)
     {
@@ -346,10 +346,7 @@ int main( int argc, char* argv[])
             {
                 j= j-n;
                 double xi    = glp_get_col_prim(LP, j+1);
-             OK(SPEX_mpq_set_z(tmpq1, x1->x.mpz[i]));
-             OK(SPEX_mpq_div(tmpq1, tmpq1, x1->scale));
-                diff = fabs(mpq_get_d(tmpq1)-xi);
-                //diff = fabs(mpq_get_d(x1->x.mpq[i])-xi);
+                diff = fabs(mpq_get_d(x1->x.mpq[i])-xi);
                 if (diff > 1e-5)
                 {
                     if (diff > max_diff) max_diff = diff;
@@ -362,8 +359,7 @@ int main( int argc, char* argv[])
                         j, mpq_get_d(x1->x.mpq[i]), xi);
                 }*/
 
-                if (mpq_get_d(tmpq1) < 0)
-                //if (mpq_get_d(x1->x.mpq[i]) < 0)
+                if (mpq_get_d(x1->x.mpq[i]) < 0)
                 {
                     gmp_printf("infeasible solution: x[%ld]=%Qd\n",j,
                         x1->x.mpq[i]);

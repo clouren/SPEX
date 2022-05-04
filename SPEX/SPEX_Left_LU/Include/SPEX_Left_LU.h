@@ -145,14 +145,6 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <gmp.h>
-#include <mpfr.h>
-#include "SuiteSparse_config.h"
 #include "SPEX_Util.h"
 
 //------------------------------------------------------------------------------

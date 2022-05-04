@@ -146,24 +146,8 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// Standard C libraries
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
-// GMP and MPFR
-#include <gmp.h>
-#include <mpfr.h>
-
 // SPEX Utility functions
 #include "SPEX_Util.h"
-
-// SuiteSparse headers
-#include "SuiteSparse_config.h"
-#include "colamd.h"
-#include "amd.h"
 
 // Current version of the code
 #define SPEX_CHOL_VERSION "0.0.1"

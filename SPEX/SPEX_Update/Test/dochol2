@@ -1,0 +1,12 @@
+#!/bin/sh
+
+./cholupdate lp_adlittle > Outputs/CholUpdate/lp_adlittle_chol.out
+./cholupdate lp_ship08l > Outputs/CholUpdate/lp_ship08l_chol.out
+./cholupdate lp_grow22 > Outputs/CholUpdate/lp_grow22_chol.out
+./cholupdate lp_agg2 > Outputs/CholUpdate/lp_agg2_chol.out
+./cholupdate lp_pds_06 > Outputs/CholUpdate/lp_pds_06_chol.out
+./cholupdate lp_sc50a > Outputs/CholUpdate/lp_sc50a_chol.out
+./cholupdate lp_share2b > Outputs/CholUpdate/lp_share2b_chol.out
+./cholupdate lp_ship08s > Outputs/CholUpdate/lp_ship08s_chol.out
+./cholupdate lp_standgub > Outputs/CholUpdate/lp_standgub_chol.out
+./cholupdate lp_greenbea > Outputs/CholUpdate/lp_greenbea_chol.out
