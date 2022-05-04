@@ -792,43 +792,6 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 ) ;
 
 
-/* Purpose: This function takes as input a mpz_t SPEX_matrix and divides
- * it by an mpz_t constant storing the solution in a mpq_t dense SPEX_matrix
- * array. 
- */
-// FIXME: does this need to be user-callable?
-SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
-(
-    SPEX_matrix **x2_handle,    // x2 = x/scalar
-    SPEX_matrix* x,             // input vector x
-    const mpz_t scalar,         // the scalar
-    const SPEX_options *option
-) ;
-
-/* Purpose: This function multiplies matrix x a scalar
- */
-// FIXME: does this need to be user-callable?
-SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
-(
-    SPEX_matrix *x,         // matrix to be multiplied
-    const mpz_t scalar,     // scalar to multiply by
-    const SPEX_options* option  // Command options
-) ;
-
-
-
-/* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
- * into c.  This function is lightly modified from CSparse.
- */
- // FIXME: should not be user-callable
-SPEX_info SPEX_cumsum
-(
-    int64_t *p,          // vector to store the sum of c
-    int64_t *c,          // vector which is summed
-    int64_t n,           // size of c
-    const SPEX_options* option   // Command options
-);
-
 /* WARNING: These functions have not been test covered!*/
 
 /* SPEX_scale: 

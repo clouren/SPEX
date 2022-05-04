@@ -24,7 +24,7 @@ LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -L../../SPEX_Util/
 CS = ../Lib/libspexchol.a $(LDLIBS)
 
 
-all: lib example_extended example_extended_debug example_simple forCluster_extended
+all: lib example_extended example_extended_debug example_simple #forCluster_extended
 	- ./example_simple
 	- ./example_extended
 	#- ./forCluster_extended f ../ExampleMats/2.mat.txt s

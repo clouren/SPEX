@@ -103,7 +103,7 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     // b2 = b2 * det, where det=rhos[n-1]
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_matrix_mul(b2, F->rhos->x.mpz[n-1], option));
+    SPEX_CHECK(spex_matrix_mul(b2, F->rhos->x.mpz[n-1]));
 
     //--------------------------------------------------------------------------
     // b2 = U\b2, via back substitution

@@ -44,7 +44,7 @@ cov:
 clean:
 	( cd Lib ; $(MAKE) clean )
 	( cd Demo ; $(MAKE) clean )
-	( cd Tcov ; $(MAKE) clean )
+	#( cd Tcov ; $(MAKE) clean )
 	- ( cd MATLAB/Source ; $(RM) *.o )
 	- ( cd MATLAB    ; $(RM) *.o )
 #	( cd Doc ; $(MAKE) clean )
@@ -53,7 +53,7 @@ clean:
 purge:
 	( cd Lib ; $(MAKE) purge )
 	( cd Demo ; $(MAKE) purge )
-	( cd Tcov ; $(MAKE) purge )
+	#( cd Tcov ; $(MAKE) purge )
 	- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
 	- ( cd MATLAB    ; $(RM) *.o *.mex* )
 #	( cd Doc ; $(MAKE) clean )

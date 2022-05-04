@@ -143,7 +143,7 @@ SPEX_info SPEX_matrix_copy
                     }
 
                     // C->p = cumulative sum of W
-                    SPEX_cumsum (C->p, W, n, option) ;
+                    spex_cumsum (C->p, W, n) ;
 
                     // build the matrix
                     switch (C->type)

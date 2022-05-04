@@ -26,9 +26,6 @@
     SPEX_matrix_free(&A0, option);               \
     SPEX_matrix_free(&w, option);                \
     SPEX_symbolic_analysis_free(&analysis, option);\
-    SPEX_factorization_free(&F1, option);        \
-    SPEX_factorization_free(&F2, option);        \
-    SPEX_factorization_free(&F3, option);        \
     SPEX_factorization_free(&F_update, option);  \
     SPEX_factorization_free(&Ftmp, option);      \
     SPEX_FREE(option);                           \
@@ -67,8 +64,7 @@ int main( int argc, char* argv[])
     int sgn;
     SPEX_options *option = NULL;
     SPEX_symbolic_analysis *analysis = NULL;
-    SPEX_factorization *F1 = NULL, *F2 = NULL, *F3 = NULL, *F_update = NULL,
-                *Ftmp = NULL;
+    SPEX_factorization *F_update = NULL, *Ftmp = NULL;
     SPEX_matrix *Prob_A = NULL, *Prob_b = NULL, *Prob_c = NULL;
     SPEX_matrix *A1 = NULL, *A2 = NULL, *A3 = NULL;
     SPEX_matrix *A0 = NULL, *w = NULL;
@@ -141,7 +137,6 @@ int main( int argc, char* argv[])
         if (basis[i] < n && glp_get_mat_row(LP, basis[i]+1, NULL, NULL) != 0)
         {
             //printf("basis[%ld]=%ld\n",i,basis[i]);
-            GOTCHA;
             return 0;;
         }
 #endif
@@ -199,7 +194,6 @@ int main( int argc, char* argv[])
     }
     OK(SPEX_mpq_mul(A0->scale, Prob_A->scale, Prob_A->scale));
     OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A0, option));
-    GOTCHA;
 
     //--------------------------------------------------------------------------
     // find the most sparse and dense vectors from remaining cols
@@ -245,63 +239,29 @@ int main( int argc, char* argv[])
     printf("time to compute BB^T: %lf\n", (double) (end - start)/CLOCKS_PER_SEC);
 
     //--------------------------------------------------------------------------
-    // perform Cholesky factorization for A1, A2, A3 with same pre-ordering
+    // perform Cholesky factorization for A1 and use it as the initial input for
+    // Cholesky update
     //--------------------------------------------------------------------------
     printf("compute initial Cholesky factorization for A....\n");
     option->algo = SPEX_CHOL_LEFT;// or SPEX_CHOL_UP
-    GOTCHA;
     OK(SPEX_Chol_analyze(&analysis, A1, option));
-    GOTCHA;
-    OK(SPEX_Chol_factorize(&F1, analysis, A1, option));
-    GOTCHA;
-    OK(SPEX_Chol_factorize(&F2, analysis, A2, option));
-    GOTCHA;
-    OK(SPEX_Chol_factorize(&F3, analysis, A3, option));
-    GOTCHA;
+    OK(SPEX_Chol_factorize(&F_update, analysis, A1, option));
+    //OK(SPEX_factorization_convert(F_update, true, option));
 
     //--------------------------------------------------------------------------
-    // generate initial inputs for LU update
-    //--------------------------------------------------------------------------
-    printf("generating inputs for Cholesky rank-1 update....\n");
-    // make a copy of F1 as F_update without converting to updatable
-    F_update = (SPEX_factorization*) SPEX_calloc(1, sizeof(SPEX_factorization));
-    if (F_update == NULL)
-    {
-        FREE_WORKSPACE  ;
-        return 0;
-    }
-    // set factorization kind
-    F_update->kind = SPEX_CHOLESKY_FACTORIZATION;
-    // Allocate and set scale_for_A
-    OK(SPEX_mpq_init(F_update->scale_for_A));
-    OK(SPEX_mpq_set (F_update->scale_for_A, F1->scale_for_A));
-
-    // allocate Pinv and P
-    F_update->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-    F_update->P_perm    = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-
-    if (!(F_update->Pinv_perm) || !(F_update->P_perm))
-    {
-        // out of memory: free everything and return
-        FREE_WORKSPACE  ;
-        return 0;
-    }
-
-    // copy column permutation, rhos and L from F1
-    memcpy(F_update->P_perm,    F1->P_perm,    n * sizeof(int64_t));
-    memcpy(F_update->Pinv_perm, F1->Pinv_perm, n * sizeof(int64_t));
-    OK(SPEX_matrix_copy(&F_update->rhos, SPEX_DENSE, SPEX_MPZ, F1->rhos,
-        option));
-    OK(SPEX_matrix_copy(&F_update->L, SPEX_CSC, SPEX_MPZ, F1->L, option));
-
     // allocate space for scattered vector w
+    //--------------------------------------------------------------------------
     OK(SPEX_matrix_allocate(&w, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, 1, 0, false,
         true, option));
     OK(SPEX_vector_realloc(w->v[0], n, option));
 
+    bool Is_correct;
+    size_t s, L_sum_size = 0, L_update_sum_size = 0, L_sum_size_iter2;
+    int64_t L_nnz, L_update_nnz = 0, L_nnz_iter2;
+    double t2_iter2;
+    //option->print_level = 1;
     for (int iter = 0; iter < 4; iter++)
     {
-    GOTCHA;
         if (iter < 2) sigma = 1; // the first two iterations are updates
         else sigma = -1;// while the last two iterations are downdates
 
@@ -315,7 +275,7 @@ int main( int argc, char* argv[])
         j = 0;
         for (p = Prob_A->p[new_col]; p < Prob_A->p[new_col+1]; p++)
         {
-            OK(SPEX_mpz_set(w->v[0]->x[j], SPEX_1D(Prob_A, p, mpz)));
+            OK(SPEX_mpz_set(w->v[0]->x[j], Prob_A->x.mpz[p]));
             w->v[0]->i[j] = Prob_A->i[p];
             j++;
         }
@@ -357,32 +317,45 @@ int main( int argc, char* argv[])
         }
         end2 = clock();
 
-        bool Isequal;
-        size_t s, L_sum_size = 0, L_update_sum_size = 0;
-        int64_t L_nnz, L_update_nnz = 0;
-        SPEX_matrix *L;
         if (iter == 0 || iter == 2)
         {
-            L = F2->L;
+            OK(MY_update_verify(&Is_correct, F_update, A2, option));
         }
         else if (iter == 1)
         {
-            L = F3->L;
+            OK(MY_update_verify(&Is_correct, F_update, A3, option));
         }
         else // if(iter == 3)
         {
-            L = F1->L;
+            OK(MY_update_verify(&Is_correct, F_update, A1, option));
         }
-        SPEX_matrix_equal(&Isequal, L, F_update->L, F_update->P_perm);
-        if (!Isequal) return 0;
+        // L = F1->L // or F2->L or F3->L
+        //SPEX_matrix_equal(&Isequal, L, F_update->L, F_update->P_perm);
+        if (!Is_correct) return 0;
 
-        for (p = 0; p < L->p[n]; p++)
+        L_sum_size = 0;
+        if (iter != 2)
         {
-            OK(SPEX_mpz_sizeinbase(&s, L->x.mpz[p], 2));
-            L_sum_size += s;
+            L_nnz = Ftmp->L->p[n];
+            for (p = 0; p < L_nnz; p++)
+            {
+                OK(SPEX_mpz_sizeinbase(&s, Ftmp->L->x.mpz[p], 2));
+                L_sum_size += s;
+            }
+            if (iter == 0)
+            {
+                L_nnz_iter2 = L_nnz;
+                L_sum_size_iter2 = L_sum_size;
+            }
         }
-        L_nnz = L->p[n];
+        else
+        {
+            L_nnz = L_nnz_iter2;
+            L_sum_size = L_sum_size_iter2;
+        }
 
+        L_update_nnz = 0;
+        L_update_sum_size = 0;
         for (i = 0; i < n; i++)
         {
             L_update_nnz += F_update->L->v[i]->nz;
@@ -398,6 +371,8 @@ int main( int argc, char* argv[])
         // Timing stats
         double t1 = (double) (end1 - start1)/CLOCKS_PER_SEC;
         double t2 = (double) (end2 - start2) / CLOCKS_PER_SEC;
+        if (iter == 0) t2_iter2 = t2;
+        if (iter == 2) t2 = t2_iter2;
 
         printf("test succeeded!!");
         printf("\n\t\t time \t\tL_nnz \tsum(Lb)");

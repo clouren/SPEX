@@ -9,33 +9,43 @@
 
 //------------------------------------------------------------------------------
 
-// SPEX_factorization_convert is called to make conversion between the
-// updatable factorization (MPZ & DYNAMIC_CSC) and non-updatable MPZ & CSC
-// factorization. That is, when the input factorization is updatable with MPZ
-// entries and DYNAMIC_CSC kind, the returned factorization will be
-// non-updatable with MPZ entries and CSC kind. While if the input
-// factorization is in non-updatable format with MPZ entries and CSC kind, the
-// returned factorization will be updatable with MPZ entries and DYNAMIC_CSC
-// kind. If the matrices of the factorization are in kinds other than CSC or
-// DYNAMIC_CSC, or in types other than MPZ, the function return INCORRECT_INPUT
-// error.
-// To obtain the updatable format, this function will obtain the
-// transpose of U (for LU factorization), permute rows of L and UT, and make
-// sure each column of the matrices have cooresponding pivot as the first
-// entry. To otain the non-updatable format, this function will transpose UT
-// (for LU factorization) and permute rows and L and U.
-// If the function return unsuccessfully, the returned factorization should be
-// considered as undefined.
+// The L and U factorization from SPEX_Left_LU or the L from SPEX_Cholesky are
+// all in SPEX_CSC format, and their columns and rows are permuted to be the
+// same as the permuted matrix A(P,Q), and thus A(P,Q)=LD^(-1)U. However, all
+// Update functions requires A=LD^(-1)U with L and/or U in SPEX_DYNAMIC_CSC
+// format. This is the function to perform the in-place coversion for L and U
+// so that it meet the requirement for Update function and vice versa.  If
+// updatable == false, the returned factorization will be non-updatable with
+// MPZ entries and CSC kind. Otherwise (updatable == true), the returned
+// factorization will be updatable with MPZ entries and DYNAMIC_CSC kind.
+//
+// To help understand the process of the conversion, the steps to obtain a deep
+// copy of converted factorization is provided below, which is slightly
+// different from what is done in this function to obtain an in-place
+// conversion:
+//
+// To get updatable (dynamic_CSC MPZ) from non-updatable (CSC MPZ) matrix:
+//     1. performing SPEX_matrix_copy to get the L and/or UT (needs additional
+//     transpose before copy) SPEX_DYNAMIC_CSC form.
+//     2. permute row indices of L or UT such that A=LD^(-1)U, or equivalently
+//     A_out->v[j]->i[p] = perm[A_in->v[j]->i[p]], where A is either L or U.
+//     3. canonicalize a SPEX_DYNAMIC_CSC matrix such that each column of
+//     the input matrix have corresponding pivot as the first entry.
+//
+// To get non-updatable (CSC MPZ) from updatable (dynamic_CSC MPZ) matrix:
+//     1. un-permute L and/or U by performing the inverse of the permutation.
+//     2. call SPEX_matrix_copy to obtain L and/or U in the SPEX_CSC format, and
+//     call SPEX_transpose for U if exists
 //
 // NOTE: if F->updatable == false upon input, F->L (and F->U if exists) must be
 // CSC MPZ matrix, otherwise, SPEX_INCORRECT_INPUT will be returned. Likewise,
 // if F->updatable == true upon input, F->L (and F->U if exists) must be
 // dynamic_CSC MPZ matrix. In addition, both F->L and F->U (if exists) must not
-// be shallow matrices. All SPEX functions output either of these two formats
-// and non-shallow. Therefore, these input requirements can be met easily if
-// users do not try to modify any individual component of F.  The conversion is
-// done in place.  In case of any error, the returned factorization should be
-// considered as undefined.
+// be shallow matrices. All SPEX functions output F with matrices in either of
+// these two formats and non-shallow. Therefore, these input requirements can
+// be met easily if users do not try to modify any individual component of F.
+// The conversion is done in place.  In case of any error, the returned
+// factorization should be considered as undefined.
 
 #define SPEX_FREE_ALL                \
 {                                    \
@@ -64,9 +74,6 @@ SPEX_info SPEX_factorization_convert
 {
 
     SPEX_info info;
-    SPEX_vector **Mv = NULL;
-    mpz_t *Mx = NULL;
-    int64_t *rowcount = NULL, *Mp = NULL, *Mi = NULL;
 
     //--------------------------------------------------------------------------
     // check inputs
@@ -103,14 +110,17 @@ SPEX_info SPEX_factorization_convert
 
     SPEX_matrix *L = F->L, *U = F->U;
     int64_t i, j, p, m = L->m, n = L->n, mp, nnz = 0;
+    SPEX_vector **Mv = NULL;
+    mpz_t *Mx = NULL;
+    int64_t *rowcount = NULL, *Mp = NULL, *Mi = NULL;
 
     // update the updatable flag
-    F->updatable = !(F->updatable);
+    F->updatable = updatable;
 
     //--------------------------------------------------------------------------
     // obtain/update Qinv_perm for updatable LU factorization
     //--------------------------------------------------------------------------
-    if (F->kind == SPEX_LU_FACTORIZATION && F->updatable)
+    if (F->kind == SPEX_LU_FACTORIZATION && updatable)
     {
         // Although Qinv_perm is NULL when F is created by factorizing matrix,
         // where F is initially not updatable, Qinv_perm is then created when
@@ -137,53 +147,30 @@ SPEX_info SPEX_factorization_convert
     // obtain the desired format of L and/or U
     //--------------------------------------------------------------------------
 
-    // This method converts either F->L or F->U between CSC MPZ
+    // The following converts either F->L or F->U between CSC MPZ
     // matrix and DYNAMIC_CSC MPZ matrix.
 
-    // if F->updatable is now true: This function converts F->L
-    // from CSC MPZ matrix to Dynamic_CSC MPZ matrix in an updatable format,
-    // which means that rows of L will be properly permuted with F->P_perm and
-    // the first entry of each column of L will be the corresponding diagonal. 
-    // This function converts F->U
-    // from CSC MPZ matrix to Dynamic_CSC MPZ matrix in an updatable format,
-    // which means that U will be firstly transposed to UT, and then the rows
-    // of UT will be properly permuted  with F->Q_perm, and the first entry of
-    // each column of UT will be the corresponding diagonal.
+    // if updatable == true: This function converts F->L from CSC MPZ matrix to
+    // Dynamic_CSC MPZ matrix in an updatable format, which means that rows of
+    // L will be properly permuted with F->P_perm and the first entry of each
+    // column of L will be the corresponding diagonal.  If F is an LU
+    // factorization, then F->U will be also converted from CSC MPZ matrix to
+    // Dynamic_CSC MPZ matrix in an updatable format, which means that U will
+    // be firstly transposed to UT, and then the rows of UT will be properly
+    // permuted  with F->Q_perm, and the first entry of each column of UT will
+    // be the corresponding diagonal.
 
-    // if F->updatable is now false: This function converts F->L from
-    // Dynamic_CSC MPZ matrix to CSC MPZ matrix in a non-updatable format,
-    // which means that the permutation of the rows of L will be reset with
-    // F->Pinv_perm.  This function converts F->U from Dynamic_CSC MPZ matrix
+    // if updatable == false: This function converts F->L from Dynamic_CSC MPZ
+    // matrix to CSC MPZ matrix in a non-updatable format, which means that the
+    // permutation of the rows of L will be reset with F->Pinv_perm.  If F is
+    // an LU factorization, F->U is also converted from Dynamic_CSC MPZ matrix
     // to CSC MPZ matrix in a non-updatable format, which means that U will be
     // firstly transposed to UT, and then the permutation of the rows of UT
     // will be reset with F->Qinv_perm.
-    //
-    // If the function returns with any error, the original F becomes
-    // undefined.
 
-    // NOTE: The L and U factorization from SPEX_Left_LU or the L from
-    // SPEX_Cholesky are all in SPEX_CSC format, and their columns and rows are
-    // permuted to be the same as the permuted matrix A(P,Q), and thus
-    // A(P,Q)=LD^(-1)U. However, all Update functions requires A=LD^(-1)U. This
-    // is the function to perform the coversion for L and U so that it meet the
-    // requirement for Update function and vice versa. Although the exact steps
-    // are slightly different, the overall result are equivalent to the
-    // following:
-    //
-    // To get updatable (dynamic_CSC MPZ) from non-updatable (CSC MPZ) matrix:
-    //     1. performing SPEX_matrix_copy to get the L and/or UT
-    //     SPEX_DYNAMIC_CSC form.
-    //     2. permute row indices of L or UT such that A=LD^(-1)U, or
-    //     equivalently A_out->v[j]->i[p] = perm[A_in->v[j]->i[p]], where A is
-    //     either L or U.
-    //     3. canonicalize a SPEX_DYNAMIC_CSC matrix such that each column of
-    //     the input matrix have corresponding pivot as the first entry.
-    //
-    // To get non-updatable (CSC MPZ) from updatable (dynamic_CSC MPZ) matrix:
-    //     1. the inverse of the permutation
-    //     2. call SPEX_matrix_copy to obtain L and/or U in the SPEX_CSC format.
+    int64_t *perm;
 
-    if (F->updatable)
+    if (updatable)
     {
 
         //----------------------------------------------------------------------
@@ -209,15 +196,14 @@ SPEX_info SPEX_factorization_convert
         // convert L from CSC MPZ to DYNAMIC_CSC MPZ
         //------------------------------------------------------------------
 
-        bool found_diag = false;
-
-        int64_t *Lp = L->p, *perm = F->P_perm;
+        int64_t *Lp = L->p;
+        perm = F->P_perm;
         for (j = 0; j < n; j++)
         {
             // reallocate space for each column vector Mv[j]
             SPEX_CHECK(SPEX_vector_realloc(Mv[j], Lp[j+1]-Lp[j], option));
             mp = 0;
-            found_diag = false;
+            bool found_diag = false;
             for (p = Lp[j]; p < Lp[j+1]; p++)
             {
                 i = L->i[p];
@@ -259,7 +245,25 @@ SPEX_info SPEX_factorization_convert
 
         if (F->kind == SPEX_LU_FACTORIZATION)
         {
-            int64_t *Up = U->p, *perm = F->Q_perm;
+            int64_t *Up = U->p;
+            perm = F->Q_perm;
+
+            //------------------------------------------------------------------
+            // allocate an array of n vetors to construct the DYNAMIC_CSC MPZ
+            // matrix
+            //------------------------------------------------------------------
+            Mv = (SPEX_vector**) SPEX_calloc(n, sizeof(SPEX_vector*)); 
+            if (!Mv) 
+            { 
+                SPEX_FREE_ALL ;
+                return SPEX_OUT_OF_MEMORY; 
+            } 
+             
+            for (i = 0; i < n; i++) 
+            {
+                SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option)); 
+            }
+
             //------------------------------------------------------------------
             // transpose U and convert it from CSC MPZ to DYNAMIC_CSC MPZ
             //------------------------------------------------------------------
@@ -284,7 +288,6 @@ SPEX_info SPEX_factorization_convert
             // construct Mv from U
             for (j = 0; j < n; j++)
             {
-                found_diag = false;
                 for (p = Up[j]; p < Up[j+1]; p++)
                 {
                     i = U->i[p];
@@ -293,18 +296,11 @@ SPEX_info SPEX_factorization_convert
                     // Mv[i]->x[mp] = U->x[p]
                     SPEX_CHECK(SPEX_mpz_swap(Mv[i]->x[mp], U->x.mpz[p]));
 
-                    // make sure the first entry is the diagonal
-                    if (!found_diag && i == j)
-                    {
-                        found_diag = true;
-                        if (mp != 0)
-                        {
-                            SPEX_CHECK(SPEX_mpz_swap(Mv[i]->x[0],
-                                                     Mv[i]->x[mp]));
-                            Mv[i]->i[mp] = Mv[i]->i[0];
-                            Mv[i]->i[0] = perm[j];
-                        }
-                    }
+                    // Given U in CSC, getting UT in CSC is equivalent to
+                    // obtaining U in CSR. Therefore, the pivot entry of j-th
+                    // column of U (in CSC) is always the first entry
+                    // being inserted to the j-th row of U (in CSR).
+                    ASSERT(i == j && mp == 0);
                 }
             }
 
@@ -331,7 +327,7 @@ SPEX_info SPEX_factorization_convert
         // convert L from DYNAMIC_CSC MPZ to CSC MPZ
         //------------------------------------------------------------------
 
-        int64_t *perm = F->Pinv_perm;
+        perm = F->Pinv_perm;
         // compute number of nonzero in L
         for (j = 0; j < n; j++)
         {
@@ -390,7 +386,7 @@ SPEX_info SPEX_factorization_convert
 
         if (F->kind == SPEX_LU_FACTORIZATION)
         {
-            int64_t *perm = F->Qinv_perm;
+            perm = F->Qinv_perm;
             //------------------------------------------------------------------
             // transpose U and convert it from DYNAMIC_CSC MPZ to CSC MPZ
             //------------------------------------------------------------------
@@ -423,7 +419,7 @@ SPEX_info SPEX_factorization_convert
             }
 
             // compute cumulative sum of rowcount to get the col pointer
-            SPEX_CHECK(SPEX_cumsum(Mp, rowcount, m, option));
+            SPEX_CHECK(spex_cumsum(Mp, rowcount, m));
 
             // construct Mi, Mp and Mx from U
             for (i = 0 ; i < n ; i++)

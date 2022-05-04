@@ -533,19 +533,7 @@ SPEX_info SPEX_matrix_copy
     const SPEX_options *option
 ) ;
 
-//------------------------------------------------------------------------------
-// SPEX_matrix macros
-//------------------------------------------------------------------------------
 
-// These macros simplify the access to entries in a SPEX_matrix.
-// The type parameter is one of: mpq, mpz, mpfr, int64, or fp64.
-
-// To access the kth entry in a SPEX_matrix using 1D linear addressing,
-// in any matrix kind (CSC, triplet, or dense), in any type:
-#define SPEX_1D(A,k,type) ((A)->x.type [k])
-
-// To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
-#define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 typedef enum
 {
@@ -846,26 +834,6 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 ) ;
 
 
-/* Purpose: This function takes as input a mpz_t SPEX_matrix and divides
- * it by an mpz_t constant storing the solution in a mpq_t dense SPEX_matrix
- * array. 
- */
-SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
-(
-    SPEX_matrix **x2_handle,    // x2 = x/scalar
-    SPEX_matrix* x,             // input vector x
-    const mpz_t scalar,         // the scalar
-    const SPEX_options *option
-) ;
-
-/* Purpose: This function multiplies matrix x a scalar
- */
-SPEX_info SPEX_matrix_mul   // multiplies x by a scalar
-(
-    SPEX_matrix *x,         // matrix to be multiplied
-    const mpz_t scalar,     // scalar to multiply by
-    const SPEX_options* option  // Command options
-) ;
 
 
 /* SPEX_scale: 
@@ -880,28 +848,6 @@ SPEX_info SPEX_scale
     const SPEX_options* option        // command options
 );
 
-/* SPEX_check_solution: checks the solution of the linear system.  Performs a
- * quick rational arithmetic check of A*x=b.
- */
- /**/
-SPEX_info SPEX_check_solution
-(
-    const SPEX_matrix *A,          // input matrix
-    SPEX_matrix *x,          // solution vector
-    const SPEX_matrix *b,          // right hand side
-    const SPEX_options* option     // Command options
-);/**/
-
-/* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
- * into c.  This function is lightly modified from CSparse.
- */
-SPEX_info SPEX_cumsum
-(
-    int64_t *p,          // vector to store the sum of c
-    int64_t *c,          // vector which is summed
-    int64_t n,           // size of c
-    const SPEX_options* option   // Command options
-);
 
 
 //------------------------------------------------------------------------------

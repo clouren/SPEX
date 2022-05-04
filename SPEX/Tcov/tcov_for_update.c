@@ -275,7 +275,6 @@ int main( int argc, char* argv[])
                             s < 3)
                         {
                             printf ("premature end-of-file\n") ;
-                            printf("%d  ",s);GOTCHA;
                             SPEX_FREE_ALL;
                             return 0;
                         }
@@ -298,7 +297,6 @@ int main( int argc, char* argv[])
                     }
                     if (pretend_to_fail) {continue;}
 
-printf("%ld\n", vk_nz);GOTCHA;
                     for (j = 0; j < vk_nz && !pretend_to_fail; j++)
                     {
                         s = fscanf(mat_file, "%"PRId64" %"PRId64"\n", &i, &tmp);
@@ -670,7 +668,9 @@ printf("%ld\n", vk_nz);GOTCHA;
                     {
                         TEST_CHECK(SPEX_Update_matrix_colrep(A, vk, k, option));
                         if (pretend_to_fail) {continue;}
-                        TEST_CHECK(spex_update_verify(F, A, option));
+                        bool Is_correct;
+                        TEST_CHECK(spex_update_verify(&Is_correct, F, A,
+                            option));
                         if (pretend_to_fail) {continue;}
                     }
 

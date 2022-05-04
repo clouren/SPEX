@@ -62,7 +62,7 @@ SPEX_info SPEX_transpose
     }
 
     // Compute row pointers
-    SPEX_cumsum (C->p, w, m, option) ;
+    spex_cumsum (C->p, w, m) ;
     // Populate C
     for (j = 0 ; j < n ; j++)
     {

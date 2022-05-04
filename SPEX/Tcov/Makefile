@@ -50,7 +50,7 @@ CS_Util = \
     spex_create_mpfr_array.o \
     spex_create_mpq_array.o \
     spex_create_mpz_array.o \
-    SPEX_cumsum.o \
+    spex_cumsum.o \
     spex_expand_double_array.o \
     spex_expand_mpfr_array.o \
     spex_expand_mpq_array.o \
@@ -64,7 +64,7 @@ CS_Util = \
     SPEX_matrix_check.o \
     SPEX_matrix_copy.o \
     SPEX_matrix_free.o \
-    SPEX_matrix_mul.o \
+    spex_matrix_mul.o \
     SPEX_matrix_nnz.o \
     SPEX_realloc.o \
     spex_sparse_collapse.o \
@@ -79,7 +79,6 @@ CS_Util = \
     spex_delete_mpz_array.o \
     SPEX_determine_symmetry.o SPEX_transpose.o \
     SPEX_factorization_convert.o \
-    # SPEX_matrix_div.o \
 
 $(CS_Util): ../SPEX_Util/Include/SPEX_Util.h ../SPEX_Util/Source/spex_util_internal.h
 
@@ -150,7 +149,7 @@ CS_Update = \
     spex_update_triangular_solve.o
 
 
-$(CS_Update): ../SPEX_Update/Include/SPEX_Update.h ../SPEX_Update//Source/spex_update_internal.h
+$(CS_Update): ../SPEX_Update/Include/SPEX_Update.h ../SPEX_Update/Source/spex_update_internal.h
 
 .PRECIOUS: SPEX_Update_%.c spex_update_%.c LU_update_demo.c
 

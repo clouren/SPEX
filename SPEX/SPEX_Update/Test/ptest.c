@@ -234,11 +234,9 @@ int main( int argc, char* argv[])
                 // update the SPEX matrices
                 for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
                 {
-                    OK(SPEX_mpz_neg(SPEX_1D(Prob_A, p, mpz),
-                        SPEX_1D(Prob_A, p, mpz)));
+                    OK(SPEX_mpz_neg(Prob_A->x.mpz[p], Prob_A->x.mpz[p]));
                 }
-                OK(SPEX_mpz_neg(SPEX_1D(Prob_c, j, mpz),
-                    SPEX_1D(Prob_c, j, mpz)));
+                OK(SPEX_mpz_neg(Prob_c->x.mpz[j], Prob_c->x.mpz[j]));
             }
         }
         if (illegal_count > 0)
@@ -309,7 +307,7 @@ int main( int argc, char* argv[])
                 for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
                 {
                     A2->v[i]->i[nz] = Prob_A->i[p];
-                    OK(SPEX_mpz_set(A2->v[i]->x[nz], SPEX_1D(Prob_A, p, mpz)));
+                    OK(SPEX_mpz_set(A2->v[i]->x[nz], Prob_A->x.mpz[p]));
                     nz++;
                 }
                 A2->v[i]->nz = nz;
@@ -610,11 +608,11 @@ int main( int argc, char* argv[])
         {
             j = Prob_A->i[p];
             // dense y
-            OK(SPEX_mpz_set(y->x.mpz[j], SPEX_1D(Prob_A, p, mpz)));
+            OK(SPEX_mpz_set(y->x.mpz[j], Prob_A->x.mpz[p]));
 
             // sparse vk
             vk->v[0]->i[i] = j;
-            OK(SPEX_mpz_set(vk->v[0]->x[i], SPEX_1D(Prob_A, p, mpz)));
+            OK(SPEX_mpz_set(vk->v[0]->x[i], Prob_A->x.mpz[p]));
             i++;
         }
         // set y->scale = Prob_A->scale

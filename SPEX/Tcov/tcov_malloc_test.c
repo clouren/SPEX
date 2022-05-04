@@ -111,7 +111,8 @@ int spex_gmp_realloc_test
 
 SPEX_info spex_check_solution
 (
-    const SPEX_matrix *A,         // Input matrix
+    bool *Is_correct,             // if the solution is correct
+    const SPEX_matrix *A,         // Input matrix of CSC MPZ
     const SPEX_matrix *x,         // Solution vectors
     const SPEX_matrix *b,         // Right hand side vectors
     const SPEX_options* option    // Command options
@@ -189,7 +190,7 @@ SPEX_info spex_check_solution
     //--------------------------------------------------------------------------
     // check if b==b2
     //--------------------------------------------------------------------------
-
+    *Is_correct = true;
     for (j = 0; j < b->n; j++)
     {
         for (i = 0; i < b->m; i++)
@@ -201,7 +202,7 @@ SPEX_info spex_check_solution
             SPEX_CHECK(SPEX_mpq_equal(&r, temp, SPEX_2D(b2, i, j, mpq)));
             if (r == 0)
             {
-                info = SPEX_INCORRECT;
+                *Is_correct = false;
                 j = b->n;
                 break;
             }
@@ -213,11 +214,11 @@ SPEX_info spex_check_solution
     //--------------------------------------------------------------------------
 
     int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
-    if (info == SPEX_OK)
+    if (*Is_correct)
     {
         SPEX_PR1 ("Solution is verified to be exact.\n") ;
     }
-    else if (info == SPEX_INCORRECT)
+    else
     {
         // This can never happen.
         SPEX_PR1 ("ERROR! Solution is wrong. This is a bug; please "
@@ -229,7 +230,7 @@ SPEX_info spex_check_solution
     //--------------------------------------------------------------------------
 
     SPEX_FREE_ALL;
-    return info;
+    return SPEX_OK;
 }
 
 //------------------------------------------------------------------------------
@@ -254,8 +255,9 @@ SPEX_info spex_check_solution
 
 SPEX_info spex_update_verify
 (
-    SPEX_factorization *F,// LU factorization of A
-    const SPEX_matrix *A,     // Input matrix
+    bool *Is_correct,         // if the factorization is correct
+    SPEX_factorization *F,    // LU factorization of A
+    const SPEX_matrix *A,     // Input matrix of SPEX_DYNAMIC_CSC MPZ
     const SPEX_options *option// command options
 )
 {
@@ -302,6 +304,7 @@ SPEX_info spex_update_verify
         {
             int64_t j = A->v[i]->i[p];
             SPEX_CHECK(SPEX_mpq_set_z(temp, A->v[i]->x[p]));
+            SPEX_CHECK(SPEX_mpq_mul(temp, temp, A->v[i]->scale));
             // b2[j] += x[i]*A(j,i)
             SPEX_CHECK(SPEX_mpq_mul(temp, temp, x->x.mpq[i]));
             SPEX_CHECK(SPEX_mpq_add(b2->x.mpq[j], b2->x.mpq[j], temp));
@@ -325,6 +328,7 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     // check if b2 == b
     // -------------------------------------------------------------------------
+    *Is_correct = true;
     for (i = 0; i < n; i++)
     {
         // temp = b[i] (correct b)
@@ -334,7 +338,7 @@ SPEX_info spex_update_verify
         SPEX_CHECK(SPEX_mpq_equal(&r, temp, b2->x.mpq[i]));
         if (r == 0)
         {
-            info = SPEX_INCORRECT;
+            *Is_correct = false;
             break;
         }
     }
@@ -344,11 +348,11 @@ SPEX_info spex_update_verify
     //--------------------------------------------------------------------------
 
     int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
-    if (info == SPEX_OK)
+    if (*Is_correct)
     {
         SPEX_PR1 ("Factorization is verified to be correct and exact.\n") ;
     }
-    else if (info == SPEX_INCORRECT)
+    else
     {
         // This can never happen.
         SPEX_PR1 ("ERROR! Factorization is wrong. This is a bug; please "
@@ -356,5 +360,5 @@ SPEX_info spex_update_verify
     }
 
     SPEX_FREE_ALL;
-    return info;
+    return SPEX_OK;
 }

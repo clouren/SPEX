@@ -1,0 +1,225 @@
+#-------------------------------------------------------------------------------
+# SPEX/build/Makefile
+#
+# SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.
+# All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+#-------------------------------------------------------------------------------
+
+# To just compile the library, do:
+#       make
+#
+# To run a demo using the library
+#       cd ../Demo ; make
+
+LIBRARY = libspex
+VERSION = 1.1.0
+SO_VERSION = 1
+
+default: library
+
+SUITESPARSE ?= $(realpath $(CURDIR)/../..)
+include ../../SuiteSparse_config/SuiteSparse_config.mk
+
+# uncomment for extra error checking:
+CFLAGS += -Wall -Wextra -Wpedantic -Werror
+
+# SPEX_Left LU depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
+LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
+
+C = $(CC) $(CF) -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config
+
+all: install
+
+#-------------------------------------------------------------------------------
+
+OBJ_UTIL = \
+    SPEX_calloc.o \
+    spex_cast_array.o \
+    spex_cast_matrix.o \
+    SPEX_create_default_options.o \
+    spex_create_mpfr_array.o \
+    spex_create_mpq_array.o \
+    spex_create_mpz_array.o \
+    SPEX_cumsum.o \
+    spex_expand_double_array.o \
+    spex_expand_mpfr_array.o \
+    spex_expand_mpq_array.o \
+    SPEX_finalize.o \
+    SPEX_free.o \
+    SPEX_gmp.o \
+    SPEX_initialize.o \
+    SPEX_initialize_expert.o \
+    SPEX_malloc.o \
+    SPEX_matrix_allocate.o \
+    SPEX_matrix_check.o \
+    SPEX_matrix_copy.o \
+    SPEX_matrix_free.o \
+    SPEX_matrix_mul.o \
+    SPEX_matrix_nnz.o \
+    SPEX_realloc.o \
+    spex_sparse_collapse.o \
+    spex_sparse_realloc.o \
+    SPEX_symbolic_analysis_free.o \
+    SPEX_factorization_free.o \
+    SPEX_vector_allocate.o \
+    SPEX_vector_realloc.o \
+    SPEX_vector_free.o \
+    spex_dynamic_to_CSC_mpz.o \
+    spex_CSC_mpz_to_dynamic.o \
+    spex_delete_mpz_array.o \
+    SPEX_determine_symmetry.o SPEX_transpose.o \
+    SPEX_factorization_convert.o \
+    # SPEX_matrix_div.o \
+
+$(OBJ_UTIL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h Makefile
+
+SPEX_%.o: ../SPEX_Util/Source/SPEX_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h
+	$(C) $(I) -c $<
+
+spex_%.o: ../SPEX_Util/Source/spex_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h
+	$(C) $(I) -c $<
+
+#-------------------------------------------------------------------------------
+
+OBJ_LEFTLU = \
+    SPEX_LU_analyze.o \
+    SPEX_Left_LU_backslash.o \
+    spex_left_lu_back_sub.o \
+    spex_left_lu_dfs.o \
+    SPEX_Left_LU_factorize.o \
+    spex_left_lu_forward_sub.o \
+    spex_left_lu_get_largest_pivot.o \
+    spex_left_lu_get_nonzero_pivot.o \
+    spex_left_lu_get_pivot.o \
+    spex_left_lu_get_smallest_pivot.o \
+    spex_left_lu_permute_b.o \
+    spex_left_lu_reach.o \
+    spex_left_lu_ref_triangular_solve.o \
+    SPEX_Left_LU_solve.o
+    #spex_left_lu_permute_x.o \
+
+
+$(OBJ_LEFTLU): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h Makefile
+
+SPEX_LU_%.o: ../SPEX_Left_LU/Source/SPEX_LU_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h
+	$(C) $(I) -c $<
+
+SPEX_Left_LU_%.o: ../SPEX_Left_LU/Source/SPEX_Left_LU_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h
+	$(C) $(I) -c $<
+
+spex_left_lu_%.o: ../SPEX_Left_LU/Source/spex_left_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h
+	$(C) $(I) -c $<
+
+#-------------------------------------------------------------------------------
+
+OBJ_CHOL = \
+    SPEX_Chol_analyze.o \
+    SPEX_Chol_backslash.o \
+    spex_chol_backward_sub.o \
+    spex_chol_counts.o \
+    spex_chol_ereach.o \
+    spex_chol_etree.o \
+    spex_chol_factor.o \
+    SPEX_Chol_factorize.o \
+    spex_chol_forward_sub.o \
+    spex_chol_leaf.o \
+    spex_chol_left_factor.p \
+    spex_chol_permute_A.o \
+    spex_chol_post.o \
+    spex_chol_pre_left_factor.o \
+    spex_chol_preorder.o \
+    SPEX_Chol_solve.o \
+    spex_chol_symbolic_analysis.o \
+    spex_chol_tdfs.o \
+    spex_chol_up_factor.o \
+    spex_left_chol_triangular_solve.o \
+    spex_up_chol_triangular_solve.o
+
+$(OBJ_CHOL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky//Source/spex_chol_internal.h Makefile
+
+SPEX_Chol_%.o: ../SPEX_Cholesky/Source/SPEX_Chol_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_chol_internal.h
+	$(C) $(I) -c $<
+
+spex_chol_%.o: ../SPEX_Cholesky/Source/spex_chol_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_chol_internal.h
+	$(C) $(I) -c $<
+
+#-------------------------------------------------------------------------------
+
+OBJ_UPADATE = \
+    spex_update_backward_sub.o \
+    SPEX_Update_Chol_Rank1.o \
+    spex_update_cppu.o \
+    spex_update_dppu1.o \
+    spex_update_dppu2.o \
+    spex_update_finalize_and_insert_vk.o \
+    spex_update_forward_sub.o \
+    spex_update_get_scattered_v.o \
+    spex_update_insert_new_entry.o \
+    spex_update_ipge.o \
+    SPEX_Update_LU_ColRep.o \
+    SPEX_Update_matrix_colrep.o \
+    SPEX_Update_solve.o \
+    SPEX_Update_tsolve.o \
+    spex_update_solve_internal.o \
+    spex_update_triangular_solve.o
+
+
+$(OBJ_UPDATE): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update//Source/spex_update_internal.h Makefile
+
+SPEX_Update_%.o: ../SPEX_Update/Source/SPEX_Update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+	$(C) $(I) -c $<
+
+spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+	$(C) $(I) -c $<
+
+#-------------------------------------------------------------------------------
+# Create the bin
+#-------------------------------------------------------------------------------
+
+library:
+	$(MAKE) install INSTALL=$(SUITESPARSE)
+
+static: $(AR_TARGET)
+
+$(AR_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL)
+	$(ARCHIVE) $@ $^
+	- $(RANLIB) $(AR_TARGET)
+
+#-------------------------------------------------------------------------------
+# install (shared C version only)
+#-------------------------------------------------------------------------------
+
+# install SPEX
+install: $(AR_TARGET) $(INSTALL_LIB)/$(SO_TARGET)
+
+$(INSTALL_LIB)/$(SO_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL)
+	@mkdir -p $(INSTALL_LIB)
+	@mkdir -p $(INSTALL_INCLUDE)
+	@mkdir -p $(INSTALL_DOC)
+	$(CC) $(SO_OPTS) $^ -o $@ $(LDLIBS)
+	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_PLAIN) )
+	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_MAIN) )
+	$(CP) ../SPEX_Backslash/Include/SPEX.h $(INSTALL_INCLUDE)
+	chmod 644 $(INSTALL_INCLUDE)/SPEX.h
+
+# uninstall SPEX
+uninstall:
+	$(RM) $(INSTALL_LIB)/$(SO_TARGET)
+	$(RM) $(INSTALL_LIB)/$(SO_PLAIN)
+	$(RM) $(INSTALL_LIB)/$(SO_MAIN)
+	$(RM) $(INSTALL_INCLUDE)/SPEX.h
+
+#-------------------------------------------------------------------------------
+# Remove all but the files in the original distribution
+#-------------------------------------------------------------------------------
+
+clean:
+	- $(RM) -r $(CLEAN)
+
+purge: distclean
+
+distclean: clean
+	- $(RM) -r $(PURGE)
+

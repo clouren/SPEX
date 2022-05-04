@@ -134,7 +134,10 @@ int main( int argc, char* argv[] )
 
     option->print_level = 3;
     //DEMO_OK(SPEX_scale(x, b->scale, A->scale, option));
-    DEMO_OK(SPEX_check_solution(A, x, b, option));
+    // FIXME do not use SPEX_check_solution in demo to make user think that is
+    // required. This function is now moved to Tcov/tcov_malloc_test.c. Call
+    // this function when performing test coverage. 
+    //DEMO_OK(SPEX_check_solution(A, x, b, option));
     
     //--------------------------------------------------------------------------
     // Output & Timing Stats

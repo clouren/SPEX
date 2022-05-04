@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 
 
-#include "spex_chol_internal.h"
-
 //TODO doublecheck valgrind
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
@@ -21,7 +19,11 @@
 # define SPEX_FREE_ALL               \
 {                                    \
     SPEX_FREE_WORKSPACE              \
+    SPEX_matrix_free(&L, NULL);      \
 }
+
+#include "spex_chol_internal.h"
+
 
 /* Purpose: This function performs a symbolic left-looking factorization.
  * It allocates the memory for the L matrix and determines the full nonzero
@@ -67,21 +69,23 @@ SPEX_info spex_chol_pre_left_factor
     ASSERT(A->type == SPEX_MPZ);
     
     int64_t  top, k, j, jnew, n = A->n;
-    int64_t* c;
+    int64_t* c = NULL;
+    SPEX_matrix* L = NULL;
     ASSERT(n >= 0);
     
-    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
     //--------------------------------------------------------------------------
-    // Declare memory for L 
+    // Declare memory for L and c
     //--------------------------------------------------------------------------
-       
+
     // Allocate L  
-    SPEX_matrix* L = NULL;
-    SPEX_matrix_allocate(&L, SPEX_CSC, SPEX_MPZ, n, n, S->lnz, false, false, NULL);
-    
-    if (!L|| !c)
+    SPEX_CHECK(SPEX_matrix_allocate(&L, SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
+        false, false, NULL));
+
+    // Allocate c  
+    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
+    if (!c)
     {
-        SPEX_FREE_WORKSPACE;
+        SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
     
@@ -119,5 +123,7 @@ SPEX_info spex_chol_pre_left_factor
     // Finalize L->p
     L->p[n] = S->lnz;
     (*L_handle) = L;
+
+    SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }
