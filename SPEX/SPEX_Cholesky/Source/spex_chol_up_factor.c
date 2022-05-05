@@ -96,7 +96,7 @@ SPEX_info spex_chol_up_factor
     int64_t* c = NULL;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
+    int64_t n = A->n, top, i, j, jnew, k;//col, loc, lnz = 0, unz = 0
     int sgn;
     size_t size;
     

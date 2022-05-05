@@ -3,8 +3,8 @@
 // and non-updatable factorization.
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_Util: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Chris Lourenco
+// (US Naval Academy), Erick Moreno-Centeno, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -28,7 +28,7 @@
 //     1. performing SPEX_matrix_copy to get the L and/or UT (needs additional
 //     transpose before copy) SPEX_DYNAMIC_CSC form.
 //     2. permute row indices of L or UT such that A=LD^(-1)U, or equivalently
-//     A_out->v[j]->i[p] = perm[A_in->v[j]->i[p]], where A is either L or U.
+//     A_out->v[j]->i[p] = perm[A_in->v[j]->i[p]], where A is either L or UT.
 //     3. canonicalize a SPEX_DYNAMIC_CSC matrix such that each column of
 //     the input matrix have corresponding pivot as the first entry.
 //

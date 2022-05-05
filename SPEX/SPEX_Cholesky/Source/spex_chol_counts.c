@@ -9,6 +9,17 @@
 
 //------------------------------------------------------------------------------
 
+#define SPEX_FREE_WORKSPACE    \
+{                              \
+    SPEX_FREE(w);              \
+}
+
+#define SPEX_FREE_ALL          \
+{                              \
+    SPEX_FREE_WORKSPACE;       \
+    SPEX_FREE(colcount);       \
+}
+
 #include "spex_chol_internal.h"
 
 #define HEAD(k,j) ( j)
@@ -29,18 +40,27 @@ SPEX_info spex_chol_counts
 )
 {
     SPEX_info info;
-    int64_t i, j, k, n, m, J, s, p, q, jleaf, *maxfirst, *prevleaf,
-        *ancestor, *head = NULL, *next = NULL, *colcount, *w, *first, *delta ;
-    m = A->m ; n = A->n ;
+    int64_t i, j, k, n, J, s, p, q, jleaf, *colcount = NULL, *w = NULL;
+    // Auxiliary variables
+    int64_t  *maxfirst, *prevleaf, *ancestor, *first, *delta ;
+    // FIXME currently unused variables
+    //int64_t m = A->m, *head = NULL, *next = NULL ;
+    n = A->n ;
     // Can not have negative m or n
     ASSERT(n >= 0) ;
-    ASSERT(m >= 0) ;
+    //ASSERT(m >= 0) ;FIXME
     // Size of workspace
     s = 4*n ;
     // Allocate result in delta
-    delta = colcount = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
+    colcount = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
     // Create a workspace of size s
     w = (int64_t*) SPEX_malloc (s* sizeof (int64_t)) ;
+    if (colcount == NULL || w == NULL)
+    {
+        SPEX_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
+    }
+    delta = colcount;
     ancestor = w ; maxfirst = w+n ; prevleaf = w+2*n ; first = w+3*n ;
     // Clear workspace
     for (k = 0 ; k < s ; k++)
@@ -97,7 +117,7 @@ SPEX_info spex_chol_counts
             colcount[parent[j]] += colcount[j] ;
         }
     }
-    SPEX_FREE(w);
     (*c_handle) = colcount;
+    SPEX_FREE_WORKSPACE;
     return SPEX_OK;    
 } 

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data\
+// SPEX_Chol/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data
 //                                type
 //------------------------------------------------------------------------------
 
@@ -33,15 +33,15 @@
  *              factorization. If NULL on input, default values are used.
  */
 
-# define SPEX_FREE_WORKSPACE                 \
+#define SPEX_FREE_WORKSPACE                 \
 {                                            \
     SPEX_factorization_free(&F, option);     \
     SPEX_symbolic_analysis_free (&S, option);\
-    SPEX_FREE (PAP->x.mpz); \
+    SPEX_FREE (PAP->x.mpz);                  \
     SPEX_matrix_free(&PAP, NULL);            \
 }
 
-# define SPEX_FREE_ALL            \
+#define SPEX_FREE_ALL            \
 {                                 \
     SPEX_FREE_WORKSPACE           \
     SPEX_matrix_free(&x, NULL);   \

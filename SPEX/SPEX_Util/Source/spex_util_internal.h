@@ -146,7 +146,7 @@ Definitions of these macros:
     }                           \
 }
 
-#include "SPEX_Util.h"
+#include "SPEX.h"
 
 //------------------------------------------------------------------------------
 // printing control
@@ -571,6 +571,18 @@ SPEX_info spex_sparse_collapse
 SPEX_info spex_sparse_realloc
 (
     SPEX_matrix* A // the matrix to be expanded
+);
+
+/* Purpose: This function gets a copy of a row-wise permuted dense matrix as
+ * A_out = P*A_in.
+ */
+
+SPEX_info spex_permute_dense_matrix
+(
+    SPEX_matrix **A_handle,     // permuted A
+    const SPEX_matrix *A_in,    // unpermuted A (not modified)
+    const int64_t *P,           // row permutation
+    const SPEX_options* option
 );
 
 /* Purpose: This function multiplies matrix x a scalar

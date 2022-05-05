@@ -17,8 +17,6 @@
 
 // Definition of SPEX macros, SPEX data structures, etc
 #include "spex_util_internal.h"
-// SPEX Chol user callable routines
-#include "SPEX_Chol.h"
 
 // ============================================================================
 //                           Internal Functions

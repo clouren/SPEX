@@ -45,7 +45,7 @@ SPEX_info spex_chol_forward_sub
 )
 {
     SPEX_info info;
-    int64_t  i, j, p, k, n = L->n, m, mnew;
+    int64_t  i, p, k, n = L->n, m, mnew;
     
     ASSERT(n >= 0);
     ASSERT(L->n == x->m);

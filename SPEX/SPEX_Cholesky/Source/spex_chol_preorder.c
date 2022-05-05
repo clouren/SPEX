@@ -50,7 +50,7 @@ SPEX_info spex_chol_preorder
 )
 {
 
-    SPEX_info info;
+    //SPEX_info info;
 
     //--------------------------------------------------------------------------
     // Check inputs
@@ -101,7 +101,7 @@ SPEX_info spex_chol_preorder
     }
 
     //Check which ordering to use.
-    SPEX_col_order order = SPEX_OPTION_ORDER(option);
+    SPEX_preorder order = SPEX_OPTION_ORDER(option);
     switch(order)
     {
         case SPEX_NO_ORDERING:
@@ -185,7 +185,8 @@ SPEX_info spex_chol_preorder
                  amd_l_control(Control);
                  amd_l_info(Info);
              }
-             double flops=A->n + Info[AMD_NDIV] +2*Info [AMD_NMULTSUBS_LDL]; //n + ndiv + 2*nmultsubs_ldl //CLUSTER
+             //FIXME unused variables (commented by Jinhao)
+             //double flops=A->n + Info[AMD_NDIV] +2*Info [AMD_NMULTSUBS_LDL]; //n + ndiv + 2*nmultsubs_ldl //CLUSTER
              //printf("%f, %d, ",flops, S->lnz); //CLUSTER
         }
         break;
@@ -222,9 +223,6 @@ SPEX_info spex_chol_preorder
     for (k = 0; k < n; k++)
     {
         index = S->P_perm[k];
-        // FIXME: this should not be here; S should be read-only,
-        // and S->Pinv_perm should only be computed once.  If this function
-        // is called twice, it recomputes S->Pinv_perm every time.
         S->Pinv_perm[index] = k;
     }
 

@@ -118,6 +118,7 @@ SPEX_info spex_chol_factor
 
     // copy column permutation from symbolic analysis to factorization
     memcpy(F->P_perm, S->P_perm, n * sizeof(int64_t));
+    memcpy(F->Pinv_perm, S->Pinv_perm, n * sizeof(int64_t));
 
 
     //--------------------------------------------------------------------------
@@ -137,7 +138,6 @@ SPEX_info spex_chol_factor
             return SPEX_INCORRECT_ALGORITHM; 
     }
     /**/
-    memcpy(F->Pinv_perm, S->Pinv_perm, n * sizeof(int64_t));
 
     //--------------------------------------------------------------------------
     // Set outputs, return ok

@@ -28,7 +28,7 @@ CFLAGS += -Wall -Wextra -Wpedantic -Werror
 # SPEX_Left LU depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
 
-C = $(CC) $(CF) -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config
+C = $(CC) $(CF) -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Util/Source -I../SPEX_Left_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source
 
 all: install
 
@@ -42,7 +42,7 @@ OBJ_UTIL = \
     spex_create_mpfr_array.o \
     spex_create_mpq_array.o \
     spex_create_mpz_array.o \
-    SPEX_cumsum.o \
+    spex_cumsum.o \
     spex_expand_double_array.o \
     spex_expand_mpfr_array.o \
     spex_expand_mpq_array.o \
@@ -56,8 +56,9 @@ OBJ_UTIL = \
     SPEX_matrix_check.o \
     SPEX_matrix_copy.o \
     SPEX_matrix_free.o \
-    SPEX_matrix_mul.o \
+    spex_matrix_mul.o \
     SPEX_matrix_nnz.o \
+    spex_permute_dense_matrix.o \
     SPEX_realloc.o \
     spex_sparse_collapse.o \
     spex_sparse_realloc.o \
@@ -71,7 +72,7 @@ OBJ_UTIL = \
     spex_delete_mpz_array.o \
     SPEX_determine_symmetry.o SPEX_transpose.o \
     SPEX_factorization_convert.o \
-    # SPEX_matrix_div.o \
+    # spex_matrix_div.o \
 
 $(OBJ_UTIL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h Makefile
 
@@ -94,7 +95,6 @@ OBJ_LEFTLU = \
     spex_left_lu_get_nonzero_pivot.o \
     spex_left_lu_get_pivot.o \
     spex_left_lu_get_smallest_pivot.o \
-    spex_left_lu_permute_b.o \
     spex_left_lu_reach.o \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_Left_LU_solve.o
@@ -125,7 +125,7 @@ OBJ_CHOL = \
     SPEX_Chol_factorize.o \
     spex_chol_forward_sub.o \
     spex_chol_leaf.o \
-    spex_chol_left_factor.p \
+    spex_chol_left_factor.o \
     spex_chol_permute_A.o \
     spex_chol_post.o \
     spex_chol_pre_left_factor.o \
@@ -134,8 +134,8 @@ OBJ_CHOL = \
     spex_chol_symbolic_analysis.o \
     spex_chol_tdfs.o \
     spex_chol_up_factor.o \
-    spex_left_chol_triangular_solve.o \
-    spex_up_chol_triangular_solve.o
+    spex_chol_left_triangular_solve.o \
+    spex_chol_up_triangular_solve.o
 
 $(OBJ_CHOL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky//Source/spex_chol_internal.h Makefile
 

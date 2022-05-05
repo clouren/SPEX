@@ -8,7 +8,7 @@
 
 #-------------------------------------------------------------------------------
 
-default: run
+default: cov
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 include ../../SuiteSparse_config/SuiteSparse_config.mk
@@ -19,11 +19,10 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wall -W -Wshadow -Wmissing-prototypes -Wstrict-prototypes \
         -Wredundant-decls -Wnested-externs -Wdisabled-optimization -std=c99 \
         -Wno-unused-parameter \
-	-I../SPEX_Util/Include/ -I../SPEX_Util/Source/ \
-	-I../SPEX_Left_LU/Include -I../SPEX_Left_LU/Source \
-	-I../SPEX_Left_LU/Demo \
-	-I../SPEX_Update/Include -I../SPEX_Update/Source \
-	-I../SPEX_Update/Demo \
+	-I../SPEX_Backslash/Include/ \
+	-I../SPEX_Util/Source/ \
+	-I../SPEX_Left_LU/Source -I../SPEX_Left_LU/Demo \
+	-I../SPEX_Update/Source  -I../SPEX_Update/Demo \
         -I../../SuiteSparse_config -I../../COLAMD/Include \
 	-I../../AMD/Include \
         -DSPEX_GMP_LIST_INIT=2 #-DSPEX_DEBUG
@@ -31,7 +30,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig
 
 # run all statement coverage tests, and then check for 100% coverage
-run: runtests
+cov: runtests
 	./covall
 
 all: test4llu SPEXLLU test4luu SPEXLUU
@@ -66,6 +65,7 @@ CS_Util = \
     SPEX_matrix_free.o \
     spex_matrix_mul.o \
     SPEX_matrix_nnz.o \
+    spex_permute_dense_matrix.o \
     SPEX_realloc.o \
     spex_sparse_collapse.o \
     spex_sparse_realloc.o \
@@ -80,7 +80,7 @@ CS_Util = \
     SPEX_determine_symmetry.o SPEX_transpose.o \
     SPEX_factorization_convert.o \
 
-$(CS_Util): ../SPEX_Util/Include/SPEX_Util.h ../SPEX_Util/Source/spex_util_internal.h
+$(CS_Util): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h
 
 .PRECIOUS: SPEX_%.c spex_%.c
 
@@ -103,13 +103,12 @@ CS_Left_LU = \
     spex_left_lu_get_nonzero_pivot.o \
     spex_left_lu_get_pivot.o \
     spex_left_lu_get_smallest_pivot.o \
-    spex_left_lu_permute_b.o \
     spex_left_lu_reach.o \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_Left_LU_solve.o
     #spex_left_lu_permute_x.o \
 
-$(CS_Left_LU): ../SPEX_Left_LU/Include/SPEX_Left_LU.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h ../SPEX_Left_LU/Demo/demos.h
+$(CS_Left_LU): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h ../SPEX_Left_LU/Demo/demos.h
 
 .PRECIOUS: SPEX_LU_%.c SPEX_Left_LU_%.c spex_left_lu_%.c spexlu_demo.c demos.c
 
@@ -149,7 +148,7 @@ CS_Update = \
     spex_update_triangular_solve.o
 
 
-$(CS_Update): ../SPEX_Update/Include/SPEX_Update.h ../SPEX_Update/Source/spex_update_internal.h
+$(CS_Update): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
 
 .PRECIOUS: SPEX_Update_%.c spex_update_%.c LU_update_demo.c
 

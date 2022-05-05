@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/spex_permute_dense_matrix_row: permute rows of a dense matrix A,
-// as A = P*A
+// SPEX_Util/spex_permute_dense_matrix: permute rows of a dense matrix A,
+// as A_out = P*A_in
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -9,8 +9,8 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function permutes a dense matrix A as A = P*A.
-copied from SPEX_Left_LU/Sourse/spex_left_lu_permute_b.c
+/* Purpose: This function gets a copy of a row-wise permuted dense matrix as
+ * A_out = P*A_in.
  */
 
 #define SPEX_FREE_ALL        \
@@ -18,10 +18,10 @@ copied from SPEX_Left_LU/Sourse/spex_left_lu_permute_b.c
 
 #include "spex_util_internal.h"
 
-SPEX_info spex_permute_dense_matrix_row
+SPEX_info spex_permute_dense_matrix
 (
     SPEX_matrix **A_handle,     // permuted A
-    const SPEX_matrix *A,       // unpermuted A (not modified)
+    const SPEX_matrix *A_in,    // unpermuted A (not modified)
     const int64_t *P,           // row permutation
     const SPEX_options* option
 )
@@ -32,7 +32,7 @@ SPEX_info spex_permute_dense_matrix_row
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    SPEX_REQUIRE (A, SPEX_DENSE, SPEX_MPZ) ;
+    SPEX_REQUIRE (A_in, SPEX_DENSE, SPEX_MPZ) ;
 
     if (A_handle == NULL || !P) {return SPEX_INCORRECT_INPUT;}
     (*A_handle) = NULL ;
@@ -41,8 +41,8 @@ SPEX_info spex_permute_dense_matrix_row
     // b(pinv) = b2
     //--------------------------------------------------------------------------
 
-    int64_t m = A->m ;
-    int64_t n = A->n ;
+    int64_t m = A_in->m ;
+    int64_t n = A_in->n ;
 
     // allocate x
     SPEX_matrix *Atmp = NULL ;
@@ -55,7 +55,7 @@ SPEX_info spex_permute_dense_matrix_row
         for (int64_t j = 0 ; j < n ; j++)
         {
             SPEX_CHECK(SPEX_mpz_set(SPEX_2D(Atmp,  P[i], j, mpz),
-                                    SPEX_2D(A,      i,   j, mpz)));
+                                    SPEX_2D(A_in,    i , j, mpz)));
         }
     }
 

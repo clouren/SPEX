@@ -26,14 +26,14 @@ extern int64_t malloc_count ;
 
 #define SPEX_PRINT_INFO(info)                                               \
 {                                                                           \
-    printf ("file %s line %d: ", __FILE__, __LINE__) ;                  \
+    printf ("file %s line %d: ", __FILE__, __LINE__) ;                      \
     switch(info)                                                            \
     {                                                                       \
         case SPEX_OK:              printf("SPEX_OK\n");            break;   \
         case SPEX_OUT_OF_MEMORY:   printf("OUT OF MEMORY\n");      break;   \
         case SPEX_SINGULAR:        printf("Matrix is SINGULAR\n"); break;   \
         case SPEX_INCORRECT_INPUT: printf("INCORRECT INPUT\n");    break;   \
-        case SPEX_INCORRECT:       printf("SPEX_INCORRECT\n");     break;   \
+        case SPEX_PANIC:           printf("SPEX_PANIC\n");         break;   \
         default:                   printf("unknown!\n");                    \
     }                                                                       \
 }

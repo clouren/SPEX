@@ -166,13 +166,13 @@ SPEX_pivot ;
 
 typedef enum
 {
-    SPEX_DEFAULT_ORDERING = SPEX_DEFAULT ;  // Default: colamd for LU
+    SPEX_DEFAULT_ORDERING = SPEX_DEFAULT,   // Default: colamd for LU
                             // AMD for Cholesky
     SPEX_NO_ORDERING = 1,   // None: A is factorized as-is
     SPEX_COLAMD = 2,        // COLAMD: Default for LU
     SPEX_AMD = 3            // AMD: Default for Cholesky
 }
-SPEX_preorder ;    // FIXME: propagate
+SPEX_preorder ;
 
 //------------------------------------------------------------------------------
 // Factorization type codes
@@ -665,6 +665,29 @@ SPEX_info SPEX_factorization_check
     const SPEX_options* option
 ) ;
 
+//------------------------------------------------------------------------------
+// Function for converting factorization between updatable (with L and/or U as
+// dynamic_CSC MPZ matrices) and non-updatable (with L and/or U as CSC MPZ
+// matrices) formats.
+//------------------------------------------------------------------------------
+
+// NOTE: if F->updatable == false upon input, F->L (and F->U if exists) must be
+// CSC MPZ matrix, otherwise, SPEX_INCORRECT_INPUT will be returned. Likewise,
+// if F->updatable == true upon input, F->L (and F->U if exists) must be
+// dynamic_CSC MPZ matrix. In addition, both F->L and F->U (if exists) must not
+// be shallow matrices. All SPEX functions output either of these two formats
+// and non-shallow. Therefore, these input requirements can be met easily if
+// users do not try to modify any individual component of F.  The conversion is
+// done in place and F->updatable will be set to its complement upon output. In
+// case of any error, the returned factorization should be considered as
+// undefined.
+
+SPEX_info SPEX_factorization_convert
+(
+    SPEX_factorization *F, // The factorization to be converted
+    bool updatable, // if true, make F updatable. false: make non-updatable
+    const SPEX_options* option // Command options
+) ;
 
 //------------------------------------------------------------------------------
 // Memory management
@@ -793,18 +816,6 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
 
 /* WARNING: These functions have not been test covered!*/
-
-/* SPEX_scale: 
- */
-SPEX_info SPEX_scale
-(
-    // Output
-    SPEX_matrix* x,
-    // Input
-    const mpq_t scaling_num, //numerator
-    const mpq_t scaling_den, //denominator
-    const SPEX_options* option        // command options
-);
 
 
 /* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
@@ -1375,7 +1386,7 @@ SPEX_info SPEX_Chol_solve
 //       A->v[k] = vk->v[0];
 //       vk->v[0] = Vtmp;
 
-SPEX_info SPEX_Update_LU_colrep
+SPEX_info SPEX_Update_LU_ColRep
 (
     SPEX_factorization* F,  // The SPEX factorization of A, including L, U,
                             // rhos, P, Pinv, Q and Qinv. The factorization
@@ -1386,6 +1397,20 @@ SPEX_info SPEX_Update_LU_colrep
     SPEX_matrix *vk,        // Pointer to a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix
                             // which contains the column to be inserted.
                             // The rows of vk are in the same order as A.
+    int64_t k,              // The column index that vk will be inserted, 0<=k<n
+    const SPEX_options *option// Command parameters
+);
+
+
+// This function swaps a specified column of a given m-by-n matrix
+// with the column from a m-by-1 matrix. Both matrices must be of
+// SPEX_DYNAMIC_CSC SPEX_MPZ. On ouput, both matrices are modified.
+
+SPEX_info SPEX_Update_matrix_colrep// performs column replacement
+(
+    SPEX_matrix *A,         // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
+    SPEX_matrix *vk,        // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
+                            // the column vector to replace the k-th column of A
     int64_t k,              // The column index that vk will be inserted, 0<=k<n
     const SPEX_options *option// Command parameters
 );
@@ -1414,7 +1439,7 @@ SPEX_info SPEX_Update_LU_colrep
     // C = A(p,q)   unsymmetric permutation
     // C = A'   SPEX_transpose (just static CSC, but all types)
 
-SPEX_info SPEX_Update_Chol_rank1
+SPEX_info SPEX_Update_Chol_Rank1
 (
     SPEX_factorization *F,  // The SPEX Cholesky factorization of A, including
                             // L, rhos, P and Pinv. This factorization will be

@@ -52,7 +52,7 @@ flags = 'CFLAGS=''-std=c99 -fPIC''';
 libs = '-L../../lib -lgmp -lmpfr -lamd -lcolamd -lsuitesparseconfig' ;
 
 % Path to headers
-includes = '-ISource/ -I../Source/ -I../Include/ -I../../SPEX_Util/Include -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Source';
+includes = '-ISource/ -I../Source/ -I../../SPEX_Backslash/Include -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Source';
 
 % verbose = ' -v '
 verbose = '' ;

@@ -115,7 +115,7 @@ int main( int argc, char* argv[] )
     clock_t start_factor = clock();
 
 
-    DEMO_OK( SPEX_Chol_factorize(&F, S,A, option));
+    DEMO_OK( SPEX_Chol_factorize(&F, A, S, option));
   
      F->L->m = n;
 //     
@@ -133,7 +133,6 @@ int main( int argc, char* argv[] )
     clock_t end_solve = clock();
 
     option->print_level = 3;
-    //DEMO_OK(SPEX_scale(x, b->scale, A->scale, option));
     // FIXME do not use SPEX_check_solution in demo to make user think that is
     // required. This function is now moved to Tcov/tcov_malloc_test.c. Call
     // this function when performing test coverage. 

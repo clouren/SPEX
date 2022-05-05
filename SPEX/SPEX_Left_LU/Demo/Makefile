@@ -17,10 +17,9 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O
-I = -I../Include -I../Source -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Util/Lib
+I = -I../../../include
 
-LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspexleftlu \
-    -lspexutil
+LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspex
 
 all: lib example example2 spexlu_demo spexlu_doub_demo
 	- ./example
@@ -28,12 +27,12 @@ all: lib example example2 spexlu_demo spexlu_doub_demo
 	- ./spexlu_demo
 
 lib:
-	( cd ../Lib ; $(MAKE) )
+	( cd ../../build ; $(MAKE) )
 
 example: lib example.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o example example.c $(LDLIBS)
 
-example2: lib example2.c Makefile
+example2: lib example2.c demos.h demos.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o example2 example2.c demos.c $(LDLIBS)
 
 spexlu_demo: lib spexlu_demo.c demos.h demos.c Makefile

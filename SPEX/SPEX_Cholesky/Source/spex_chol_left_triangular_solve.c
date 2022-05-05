@@ -103,7 +103,7 @@ SPEX_info spex_chol_left_triangular_solve
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
    
-    int64_t j, jnew, i, inew, p, m, top, n, col;
+    int64_t j, i, p, m, top, n;// jnew, inew, col
     int sgn;
     
     // row_top is the start of the nonzero pattern obtained after analyzing the

@@ -91,7 +91,7 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     // b2 (Pinv_perm) = b
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK (spex_left_lu_permute_b (&b2, b, F->Pinv_perm, option)) ;
+    SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option)) ;
 
     //--------------------------------------------------------------------------
     // b2 = L\b2, via forward substitution
@@ -111,7 +111,7 @@ SPEX_info SPEX_Left_LU_solve     // solves the linear system LD^(-1)U x = b
     SPEX_CHECK(spex_left_lu_back_sub(F->U, b2));
 
     //--------------------------------------------------------------------------
-    // x = Q*b2*scale
+    // x = Q*b2/scale
     //--------------------------------------------------------------------------
     // set scale = b->scale * rhos[n-1] / A_scale
     SPEX_CHECK(SPEX_mpq_set_z(b2->scale, F->rhos->x.mpz[n-1]));

@@ -1,6 +1,5 @@
 #------------------------------------------------------------------------------
-# SPEX_LU_Update/Makefile: compile, install, and run SPEX_LU_Update demo
-# and tests
+# SPEX_LU_Update/Makefile: run SPEX_LU_Update demo and tests
 #------------------------------------------------------------------------------
 
 # SPEX_LU_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -12,33 +11,17 @@
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 #export SUITESPARSE
 
-# default: compile the dynamic library, and run the demos
-default: C
+# default: run the demos
+default: demos
 
 include ../../SuiteSparse_config/SuiteSparse_config.mk
 
-# compile the dynamic library, and then run the demos and statement coverage
-demos: all
-
-# compile the dynamic library only, and then run the demos
-C:
-	( cd Lib ; $(MAKE) )
+# run the demos
+demos:
 	#( cd Demo ; $(MAKE) )
-
-# compile the dynamic library, and then run the demos and statement coverage
-all: C cov
-
-# compile the dynamic library only
-library:
-	( cd Lib ; $(MAKE) )
-
-# compile the static library only
-static:
-	( cd Lib ; $(MAKE) static )
 
 # remove files not in the distribution, but keep compiled libraries
 clean:
-	( cd Lib ; $(MAKE) clean )
 	( cd Demo ; $(MAKE) clean )
 	#( cd Test ; $(MAKE) clean )
 	#- ( cd MATLAB/Source ; $(RM) *.o )
@@ -47,7 +30,6 @@ clean:
 
 # remove all files not in the distribution
 purge:
-	( cd Lib ; $(MAKE) purge )
 	( cd Demo ; $(MAKE) purge )
 	#( cd Test ; $(MAKE) purge )
 	#- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
@@ -55,12 +37,3 @@ purge:
 	#( cd Doc ; $(MAKE) clean )
 
 distclean: purge
-
-# install the library
-install: library
-	( cd Lib ; $(MAKE) install )
-
-# uninstall the library
-uninstall:
-	( cd Lib ; $(MAKE) uninstall )
-
