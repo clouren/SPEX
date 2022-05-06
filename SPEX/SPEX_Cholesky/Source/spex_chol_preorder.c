@@ -97,7 +97,7 @@ SPEX_info spex_chol_preorder
     switch(order)
     {
         default:
-        case SPEX_ORDER_DEFAULT:
+        case SPEX_DEFAULT:
         case SPEX_AMD:
         // ---AMD ordering is used (DEFAULT)---
         // S->p is set to AMD's column ordering on A.
@@ -118,7 +118,7 @@ SPEX_info spex_chol_preorder
                  amd_l_control(Control);
                  amd_l_info(Info);
              }
-             double flops=A->n + Info[AMD_NDIV] +2*Info [AMD_NMULTSUBS_LDL]; //n + ndiv + 2*nmultsubs_ldl //CLUSTER
+             //double flops=A->n + Info[AMD_NDIV] +2*Info [AMD_NMULTSUBS_LDL]; //n + ndiv + 2*nmultsubs_ldl //CLUSTER
              //printf("%f, %d, ",flops, S->lnz); //CLUSTER
         }
         break;

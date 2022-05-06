@@ -228,7 +228,7 @@ void spex_gmp_failure (int status) ;
 //  SPEX_NO_ORDERING = 0,           None: Not recommended for sparse matrices
 //  SPEX_COLAMD = 1,                COLAMD: Default
 //  SPEX_AMD = 2                    AMD
-#define SPEX_DEFAULT_ORDER SPEX_ORDER_DEFAULT
+#define SPEX_DEFAULT_ORDER SPEX_DEFAULT_ORDERING
 
 // Defines printing to be done
 #define SPEX_DEFAULT_PRINT_LEVEL 0
