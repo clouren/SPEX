@@ -3,8 +3,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -59,8 +59,8 @@ int64_t init_basis[27]={27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 62, 61, 
 int main( int argc, char* argv[])
 {
     //char *prob_name = "lp_80bau3b";
-    //char *prob_name = "lp_25fv47";//5.5018458883E+03
-    char *prob_name = "lp_afiro"; // optimal: -4.6475314E+02
+    char *prob_name = "lp_25fv47";//5.5018458883E+03
+    //char *prob_name = "lp_afiro"; // optimal: -4.6475314E+02
     //char *prob_name = "aa5";
     if (argc >= 2)
     {
@@ -234,11 +234,9 @@ int main( int argc, char* argv[])
                 // update the SPEX matrices
                 for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
                 {
-                    OK(SPEX_mpz_neg(SPEX_1D(Prob_A, p, mpz),
-                        SPEX_1D(Prob_A, p, mpz)));
+                    OK(SPEX_mpz_neg(Prob_A->x.mpz[p], Prob_A->x.mpz[p]));
                 }
-                OK(SPEX_mpz_neg(SPEX_1D(Prob_c, j, mpz),
-                    SPEX_1D(Prob_c, j, mpz)));
+                OK(SPEX_mpz_neg(Prob_c->x.mpz[j], Prob_c->x.mpz[j]));
             }
         }
         if (illegal_count > 0)
@@ -309,7 +307,7 @@ int main( int argc, char* argv[])
                 for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
                 {
                     A2->v[i]->i[nz] = Prob_A->i[p];
-                    OK(SPEX_mpz_set(A2->v[i]->x[nz], SPEX_1D(Prob_A, p, mpz)));
+                    OK(SPEX_mpz_set(A2->v[i]->x[nz], Prob_A->x.mpz[p]));
                     nz++;
                 }
                 A2->v[i]->nz = nz;
@@ -348,10 +346,7 @@ int main( int argc, char* argv[])
             {
                 j= j-n;
                 double xi    = glp_get_col_prim(LP, j+1);
-             OK(SPEX_mpq_set_z(tmpq1, x1->x.mpz[i]));
-             OK(SPEX_mpq_div(tmpq1, tmpq1, x1->scale));
-                diff = fabs(mpq_get_d(tmpq1)-xi);
-                //diff = fabs(mpq_get_d(x1->x.mpq[i])-xi);
+                diff = fabs(mpq_get_d(x1->x.mpq[i])-xi);
                 if (diff > 1e-5)
                 {
                     if (diff > max_diff) max_diff = diff;
@@ -364,8 +359,7 @@ int main( int argc, char* argv[])
                         j, mpq_get_d(x1->x.mpq[i]), xi);
                 }*/
 
-                if (mpq_get_d(tmpq1) < 0)
-                //if (mpq_get_d(x1->x.mpq[i]) < 0)
+                if (mpq_get_d(x1->x.mpq[i]) < 0)
                 {
                     gmp_printf("infeasible solution: x[%ld]=%Qd\n",j,
                         x1->x.mpq[i]);
@@ -610,11 +604,11 @@ int main( int argc, char* argv[])
         {
             j = Prob_A->i[p];
             // dense y
-            OK(SPEX_mpz_set(y->x.mpz[j], SPEX_1D(Prob_A, p, mpz)));
+            OK(SPEX_mpz_set(y->x.mpz[j], Prob_A->x.mpz[p]));
 
             // sparse vk
             vk->v[0]->i[i] = j;
-            OK(SPEX_mpz_set(vk->v[0]->x[i], SPEX_1D(Prob_A, p, mpz)));
+            OK(SPEX_mpz_set(vk->v[0]->x[i], Prob_A->x.mpz[p]));
             i++;
         }
         // set y->scale = Prob_A->scale

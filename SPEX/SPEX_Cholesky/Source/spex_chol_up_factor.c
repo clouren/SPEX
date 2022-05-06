@@ -96,7 +96,7 @@ SPEX_info spex_chol_up_factor
     int64_t* c = NULL;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
+    int64_t n = A->n, top, i, j, jnew, k;//col, loc, lnz = 0, unz = 0
     int sgn;
     size_t size;
     
@@ -203,7 +203,7 @@ SPEX_info spex_chol_up_factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_up_chol_triangular_solve(&top, xi, x, L, A, k, S->parent, 
+        SPEX_CHECK(spex_chol_up_triangular_solve(&top, xi, x, L, A, k, S->parent, 
                                                  c, rhos, h));
   
         // If x[k] is nonzero chose it as pivot. Otherwise, the matrix is 

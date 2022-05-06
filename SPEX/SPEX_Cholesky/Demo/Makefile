@@ -16,34 +16,32 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 # uncomment for extra error checking:
 #CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
-PATH_TO_SPEX_UTIL=-Wl,-rpath,"../../SPEX_Util/Lib/"
-CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -O
-I = -I../Include -I../Source -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Util/Lib
+CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O
+I = -I../../../include
 
-LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -L../../SPEX_Util/Lib/ -lspexutil 
-CS = ../Lib/libspexchol.a $(LDLIBS)
+LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspex
 
 
-all: lib example_extended example_extended_debug example_simple forCluster_extended
+all: lib example_extended example_extended_debug example_simple #forCluster_extended
 	- ./example_simple
 	- ./example_extended
 	#- ./forCluster_extended f ../ExampleMats/2.mat.txt s
 	- echo "WARNING: Remember to remove the -g for test and releases in the Lib/Makefile"
 
 lib:
-	( cd ../Lib ; $(MAKE) )
+	( cd ../../build ; $(MAKE) )
 
-example_extended: lib example_extended.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example_extended example_extended.c demos.c $(CS)
+example_extended: lib example_extended.c demos.h demos.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o example_extended example_extended.c demos.c $(LDLIBS)
 
 example_extended_debug: lib example_extended.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_extended_debug example_extended.c demos.c $(CS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_extended_debug example_extended.c demos.c $(LDLIBS)
 
 example_simple: lib example_simple.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_simple example_simple.c demos.c $(CS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_simple example_simple.c demos.c $(LDLIBS)
 
 #forCluster_extended: lib forCluster_extended.c Makefile
-#	$(CC) $(LDFLAGS) $(CF) $(I) -o forCluster_extended forCluster_extended.c demos.c $(CS)
+#	$(CC) $(LDFLAGS) $(CF) $(I) -o forCluster_extended forCluster_extended.c demos.c $(LDLIBS)
 
 clean:
 	- $(RM) *.o

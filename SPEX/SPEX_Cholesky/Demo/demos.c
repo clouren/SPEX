@@ -323,7 +323,7 @@ SPEX_info SPEX_read_dense
     {
         for (int64_t j = 0; j < ncols; j++)
         {
-            info = SPEX_gmp_fscanf(file, "%Zd", &(SPEX_2D(A, i, j, mpz)));
+            info = SPEX_gmp_fscanf(file, "%Zd", &(A->x.mpz[i+j*nrows]));
             if (info != SPEX_OK)
             {
                 printf("\n\nhere at i = %"PRId64" and j = %"PRId64"", i, j);

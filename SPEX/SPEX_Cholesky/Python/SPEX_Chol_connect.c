@@ -78,7 +78,7 @@ SPEX_info SPEX_python_backslash
     
     SPEX_options *option = NULL;
     SPEX_create_default_options(&option); //TOFREE opitons
-    SPEX_col_order order_in = ordering;
+    SPEX_preorder order_in = ordering;
     option->order = ordering; 
 
     //--------------------------------------------------------------------------
@@ -199,7 +199,7 @@ void python_backslash_double
     
     SPEX_options *option = NULL;
     SPEX_create_default_options(&option); 
-    SPEX_col_order order_in = ordering;
+    SPEX_preorder order_in = ordering;
     option->order = ordering; 
     
     //--------------------------------------------------------------------------

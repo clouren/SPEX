@@ -4,8 +4,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -19,8 +19,6 @@
 #define SPEX_UPDATE_INTERNAL_H
 
 #include "spex_util_internal.h"
-#include "SPEX_Left_LU.h"
-#include "SPEX_Update.h"
 
 #ifdef SPEX_DEBUG
 // redefine SPEX_CHECK to print the file name and line

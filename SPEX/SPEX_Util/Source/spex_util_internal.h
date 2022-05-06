@@ -146,7 +146,7 @@ Definitions of these macros:
     }                           \
 }
 
-#include "SPEX_Util.h"
+#include "SPEX.h"
 
 //------------------------------------------------------------------------------
 // printing control
@@ -571,6 +571,36 @@ SPEX_info spex_sparse_collapse
 SPEX_info spex_sparse_realloc
 (
     SPEX_matrix* A // the matrix to be expanded
+);
+
+/* Purpose: This function gets a copy of a row-wise permuted dense matrix as
+ * A_out = P*A_in.
+ */
+
+SPEX_info spex_permute_dense_matrix
+(
+    SPEX_matrix **A_handle,     // permuted A
+    const SPEX_matrix *A_in,    // unpermuted A (not modified)
+    const int64_t *P,           // row permutation
+    const SPEX_options* option
+);
+
+/* Purpose: This function multiplies matrix x a scalar
+ */
+SPEX_info spex_matrix_mul   // multiplies x by a scalar
+(
+    SPEX_matrix *x,         // matrix to be multiplied
+    const mpz_t scalar      // scalar to multiply by
+) ;
+
+/* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
+ * into c.  This function is lightly modified from CSparse.
+ */
+SPEX_info spex_cumsum
+(
+    int64_t *p,          // vector to store the sum of c
+    int64_t *c,          // vector which is summed
+    int64_t n            // size of c
 );
 
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type

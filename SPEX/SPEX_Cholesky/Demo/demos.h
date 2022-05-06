@@ -8,10 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Chol.h"
-#include <time.h>
-#include <stdint.h>
-#include <inttypes.h>
+#include "SPEX.h"
 
 #define SPEX_MIN(a,b) (((a) < (b)) ? (a) : (b))
 /* Purpose: This processes the command line for user specified options */

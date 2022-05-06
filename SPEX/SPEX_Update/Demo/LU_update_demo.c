@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_CHOLMOD/Demo/LU_update_demo.c: demo for SPEX_CHOLMOD library
+// SPEX_Update/Demo/LU_update_demo.c: demo for SPEX_Update library
 //------------------------------------------------------------------------------
 
-// SPEX_CHOLMOD: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_CHOLMOD/License for the license.
+// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
+// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 

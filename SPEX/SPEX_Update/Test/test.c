@@ -3,8 +3,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -1348,11 +1348,14 @@ SPEX_info SPEX_construct_LP
     return SPEX_OK;
 }
 
+
+// function to compute A = A+v*v^T
+
 SPEX_info SPEX_A_plus_vvT
 (
-    SPEX_matrix *A0,
-    const SPEX_matrix *M,
-    const int64_t j
+    SPEX_matrix *A0, // m-by-n SPEX_DYNAMIC_CSC matrix as A
+    const SPEX_matrix *M, // m-by-k SPEX_CSC matrix, whose j-th column is v
+    const int64_t j // j-th column of M is used as v
 )
 {
     int64_t p, pj, pi, j1, i1, target, target_sym;
@@ -1373,9 +1376,7 @@ SPEX_info SPEX_A_plus_vvT
             A0->v[j1]->i[target] = j1;
             A0->v[j1]->nz++;
         }
-        OK(SPEX_mpz_addmul(A0->v[j1]->x[target],
-                           SPEX_1D(M, pj, mpz),
-                           SPEX_1D(M, pj, mpz)));
+        OK(SPEX_mpz_addmul(A0->v[j1]->x[target], M->x.mpz[pj], M->x.mpz[pj]));
 
         for (pi = pj+1; pi < M->p[j+1]; pi++)
         {
@@ -1410,8 +1411,7 @@ SPEX_info SPEX_A_plus_vvT
                 }
             }
             info = SPEX_mpz_addmul(A0->v[j1]->x[target],
-                               SPEX_1D(M, pj, mpz),
-                               SPEX_1D(M, pi, mpz));
+                               M->x.mpz[pj], M->x.mpz[pi]);
             if (info != SPEX_OK) return info;
             info = SPEX_mpz_set(A0->v[i1]->x[target_sym],
                             A0->v[j1]->x[target]);
@@ -1507,5 +1507,138 @@ SPEX_info SPEX_matrix_equal
     *Isequal = true;
     mpz_clear(tmpz);
     mpz_clear(tmpz1);
+    return SPEX_OK;
+}
+
+//------------------------------------------------------------------------------
+// spex_update_verify.c: verify if A=LD^(-1)U after factorization update
+//------------------------------------------------------------------------------
+
+/* Purpose: This function is to verify if A=L(P,:)D^(-1)U(:,Q) after
+ * factorization update. This is done by solving LD^(-1)U*x=b via the updated
+ * factorization, and check if A*x=b holds rational-arthmetically. This
+ * function is provided here only used for debugging purposes, as the routines
+ * within SPEX are gauranteed to be exact.
+ */
+
+
+#undef MY_FREE_ALL
+#define MY_FREE_ALL                   \
+{                                     \
+    SPEX_matrix_free(&b, option);     \
+    SPEX_matrix_free(&x, option);     \
+    SPEX_matrix_free(&b2, option);    \
+    mpq_clear(temp);                  \
+}
+
+
+SPEX_info MY_update_verify
+(
+    bool *Is_correct,     // if the factorization is correct
+    SPEX_factorization *F,// LU factorization of A
+    const SPEX_matrix *A,     // Input matrix of CSC MPZ
+    const SPEX_options *option// command options
+)
+{
+    SPEX_info info;
+    int64_t tmp, i, n = F->L->n;
+    int r;
+    mpq_t temp;
+    SPEX_matrix *b = NULL; // the dense right-hand-side matrix to be generated
+    SPEX_matrix *x = NULL; // the dense solution matrix to be generated
+    SPEX_matrix *b2 = NULL; // the dense matrix to store the result of A*x
+
+    OK1(SPEX_mpq_init(temp));
+    OK1(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
+        true, option));
+    OK1(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, n, 1, n, false,
+        true, option));
+
+    // -------------------------------------------------------------------------
+    // generate random right-hand-size vector
+    // -------------------------------------------------------------------------
+    // initialize random number generator
+    int seed = 10;
+    srand(seed);
+    for (i = 0; i < n; i++)
+    {
+        tmp = i+1;//rand(); //TODO
+        OK1(SPEX_mpz_set_si(b->x.mpz[i], tmp));
+    }
+
+    // -------------------------------------------------------------------------
+    // solve LD^(-1)Ux = b for x
+    // -------------------------------------------------------------------------
+    OK1(SPEX_Update_solve(&x, F, b, option));
+
+    // -------------------------------------------------------------------------
+    // compute b2 = A*x
+    // -------------------------------------------------------------------------
+    for (i = 0; i < n; i++)
+    {
+        OK1(SPEX_mpq_sgn(&r, x->x.mpq[i]));
+        if (r == 0) { continue;}
+
+        for (int64_t p = A->p[i]; p < A->p[i+1]; p++)
+        {
+            int64_t j = A->i[p];
+            OK1(SPEX_mpq_set_z(temp, A->x.mpz[p]));
+            // b2[j] += x[i]*A(j,i)
+            OK1(SPEX_mpq_mul(temp, temp, x->x.mpq[i]));
+            OK1(SPEX_mpq_add(b2->x.mpq[j], b2->x.mpq[j], temp));
+        }
+    }
+    //--------------------------------------------------------------------------
+    // Apply scales of A and b to b2 before comparing the b2 with scaled b'
+    //--------------------------------------------------------------------------
+    OK1(SPEX_mpq_div(temp, b->scale, A->scale));
+
+    // Apply scaling factor, but ONLY if it is not 1
+    OK1(SPEX_mpq_cmp_ui(&r, temp, 1, 1));
+    if (r != 0)
+    {
+        for (i = 0; i < n; i++)
+        {
+            OK1(SPEX_mpq_mul(b2->x.mpq[i], b2->x.mpq[i], temp));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // check if b2 == b
+    // -------------------------------------------------------------------------
+    *Is_correct = true;
+    for (i = 0; i < n; i++)
+    {
+        // temp = b[i] (correct b)
+        OK1(SPEX_mpq_set_z(temp, b->x.mpz[i]));
+
+        // set check false if b!=b2
+        OK1(SPEX_mpq_equal(&r, temp, b2->x.mpq[i]));
+        if (r == 0)
+        {
+            *Is_correct = false;
+            break;
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Print result
+    //--------------------------------------------------------------------------
+
+    if (option->print_level >= 1)
+    {
+        if (!(*Is_correct))
+        {
+            // This can never happen.
+            printf ("ERROR! Factorization is wrong. This is a bug; please "
+                      "contact the authors of SPEX.\n") ;
+        }
+        else
+        {
+            printf ("Factorization is verified to be correct and exact.\n") ;
+        }
+    }
+
+    MY_FREE_ALL;
     return SPEX_OK;
 }

@@ -1,10 +1,10 @@
 #-------------------------------------------------------------------------------
-# SPEX_LU_Update/Test/Makefile: compile and run SPEX_LU_update performance test 
+# SPEX_Update/Test/Makefile: compile and run SPEX_update performance test 
 #-------------------------------------------------------------------------------
 
-# SPEX_LU_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-# Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-# SPEX_LU_Update/License for the license.
+# SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
+# Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 #-------------------------------------------------------------------------------
 
@@ -21,7 +21,11 @@ I = -I../Include -I../Lib -I../../../SuiteSparse_config -I../../SPEX_Util/Includ
 
 LDLIBS += -lm -lgmp -lmpfr -lsuitesparseconfig -lspexutil -lspexupdate -lspexleftlu -lspexchol -lglpk #-lcolamd -lamd
 
-all: lib ptest
+all: lib ptest chol
+	- ./ptest lp_afiro
+	- ./cholupdate lp_afiro
+
+runtest: lib ptest
 	- ./ptest
 
 runchol: lib chol

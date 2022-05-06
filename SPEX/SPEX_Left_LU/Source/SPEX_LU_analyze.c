@@ -76,7 +76,7 @@ SPEX_info SPEX_LU_analyze
     // in A. This is a very crude estimate on the nnz(L) and nnz(U)
     //--------------------------------------------------------------------------
 
-    SPEX_col_order order = SPEX_OPTION_ORDER (option) ;
+    SPEX_preorder order = SPEX_OPTION_ORDER (option) ;
     int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
 
     if (order == SPEX_NO_ORDERING)

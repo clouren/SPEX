@@ -17,8 +17,6 @@
 
 // Definition of SPEX macros, SPEX data structures, etc
 #include "spex_util_internal.h"
-// SPEX Chol user callable routines
-#include "SPEX_Chol.h"
 
 // ============================================================================
 //                           Internal Functions
@@ -189,7 +187,7 @@ SPEX_info spex_chol_pre_left_factor
 /* Purpose: This function performs the symmetric sparse REF triangular solve.
  * i.e.,(LD) x = A(:,k). 
  */
-SPEX_info spex_left_chol_triangular_solve
+SPEX_info spex_chol_left_triangular_solve
 (
     //Output
     int64_t* top_output,     // On output: the beginning of nonzero pattern of
@@ -221,7 +219,7 @@ SPEX_info spex_left_chol_triangular_solve
  * (LD) x = A(1:k-1,k). 
  * At the given iteration k it computes the k-th column of L' (k-th row of L)
  */
-SPEX_info spex_up_chol_triangular_solve 
+SPEX_info spex_chol_up_triangular_solve 
 (
     //Output
     int64_t* top_output,               // On input NULL. On output contains the

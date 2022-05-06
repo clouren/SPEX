@@ -58,7 +58,7 @@ SPEX_info spex_chol_permute_A
     }     
 
     // Create indices and pinv, the inverse row permutation
-    int64_t j, k, t, index, nz = 0, n = A->n;
+    int64_t j, k, t, nz = 0, n = A->n;
     //int64_t* pinv = NULL;
 
     // Allocate memory for PAP which is a permuted copy of A

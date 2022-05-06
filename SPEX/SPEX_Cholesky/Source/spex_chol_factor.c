@@ -111,7 +111,8 @@ SPEX_info spex_chol_factor
     // Copy row/column permutation from symbolic analysis to factorization
     memcpy(F->P_perm, S->P_perm, n*sizeof(int64_t));
     memcpy(F->Pinv_perm, S->Pinv_perm, n*sizeof(int64_t));
-    
+
+
     //--------------------------------------------------------------------------
     // Call factorization
     //--------------------------------------------------------------------------

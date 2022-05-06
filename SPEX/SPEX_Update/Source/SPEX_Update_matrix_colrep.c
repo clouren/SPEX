@@ -4,8 +4,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
-// Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
@@ -26,8 +26,6 @@ SPEX_info SPEX_Update_matrix_colrep// performs column replacement
     const SPEX_options *option// Command parameters
 )
 {
-    SPEX_info info ;
-
     SPEX_REQUIRE(A , SPEX_DYNAMIC_CSC, SPEX_MPZ);
     SPEX_REQUIRE(vk, SPEX_DYNAMIC_CSC, SPEX_MPZ);
     if (A->m != vk->m || k < 0 || k >= A->n || vk->n != 1)

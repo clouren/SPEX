@@ -45,7 +45,7 @@ SPEX_info spex_chol_preorder
 )
 {
 
-    SPEX_info info;
+    //SPEX_info info;
 
     //--------------------------------------------------------------------------
     // Check inputs
@@ -93,7 +93,7 @@ SPEX_info spex_chol_preorder
     }
 
     //Check which ordering to use.
-    SPEX_col_order order = SPEX_OPTION_ORDER(option);
+    SPEX_preorder order = SPEX_OPTION_ORDER(option);
     switch(order)
     {
         default:
@@ -182,8 +182,7 @@ SPEX_info spex_chol_preorder
             SPEX_FREE(A2);
         }
         break;
-
-    }
+    }//end switch(order)
 
     //--------------------------------------------------------------------------
     // Make sure appropriate space is allocated. It is possible to return

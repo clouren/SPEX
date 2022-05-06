@@ -3,8 +3,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX_Update/License for the license.
+// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 #include <ctype.h>
@@ -145,4 +145,12 @@ SPEX_info SPEX_matrix_equal
     const SPEX_matrix *L1,
     const SPEX_matrix *L_update,
     const int64_t *P_update
+);
+
+SPEX_info MY_update_verify
+(
+    bool *Is_correct,     // if the factorization is correct
+    SPEX_factorization *F,// LU factorization of A
+    const SPEX_matrix *A,     // Input matrix
+    const SPEX_options *option// command options
 );

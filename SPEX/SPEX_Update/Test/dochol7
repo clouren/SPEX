@@ -1,0 +1,11 @@
+#!/bin/sh
+
+./cholupdate lp_beaconfd > Outputs/CholUpdate/lp_beaconfd_chol.out
+./cholupdate lp_scfxm3 > Outputs/CholUpdate/lp_scfxm3_chol.out
+./cholupdate lp_osa_30 > Outputs/CholUpdate/lp_osa_30_chol.out
+./cholupdate lp_lotfi > Outputs/CholUpdate/lp_lotfi_chol.out
+./cholupdate lp_sctap3 > Outputs/CholUpdate/lp_sctap3_chol.out
+./cholupdate lp_bore3d > Outputs/CholUpdate/lp_bore3d_chol.out
+./cholupdate lp_ship04l > Outputs/CholUpdate/lp_ship04l_chol.out
+./cholupdate lp_truss > Outputs/CholUpdate/lp_truss_chol.out
+./cholupdate lp_modszk1 > Outputs/CholUpdate/lp_modszk1_chol.out

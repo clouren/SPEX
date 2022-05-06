@@ -94,7 +94,7 @@ SPEX_info spex_chol_left_factor
     SPEX_matrix *x = NULL ;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, col, loc, lnz = 0, unz = 0, jnew, k;
+    int64_t n = A->n, top, i, j, lnz = 0, jnew, k;// col, loc, unz = 0
     int sgn;
     size_t size;
     
@@ -202,7 +202,7 @@ SPEX_info spex_chol_left_factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_left_chol_triangular_solve(&top, x, xi, L, A, k, rhos,
+        SPEX_CHECK(spex_chol_left_triangular_solve(&top, x, xi, L, A, k, rhos,
                                                     h, S->parent, c));
 
         // Set the pivot element If this element is equal to zero, no pivot

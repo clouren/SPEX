@@ -16,7 +16,6 @@
 #define SPEX_LEFT_LU_INTERNAL_H
 
 #include "spex_util_internal.h"
-#include "SPEX_Left_LU.h"
 
 // ============================================================================
 //                           Internal Functions
@@ -135,17 +134,6 @@ SPEX_info spex_left_lu_get_smallest_pivot
     int64_t* xi             // nonzero pattern of x
 );
 
-
-/* Purpose: This function permutes b for forward substitution.
- * That is, b = P'*b.
- */
-SPEX_info spex_left_lu_permute_b
-(
-    SPEX_matrix **b_handle,     // permuted RHS vector
-    const SPEX_matrix *b2,      // unpermuted RHS vector (not modified)
-    const int64_t *pinv,        // inverse row permutation
-    const SPEX_options* option
-);
 
 #if 0
 /* Purpose: SPEX_permute_x permutes x to get it back in its original form.

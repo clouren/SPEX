@@ -26,14 +26,14 @@ extern int64_t malloc_count ;
 
 #define SPEX_PRINT_INFO(info)                                               \
 {                                                                           \
-    printf ("file %s line %d: ", __FILE__, __LINE__) ;                  \
+    printf ("file %s line %d: ", __FILE__, __LINE__) ;                      \
     switch(info)                                                            \
     {                                                                       \
         case SPEX_OK:              printf("SPEX_OK\n");            break;   \
         case SPEX_OUT_OF_MEMORY:   printf("OUT OF MEMORY\n");      break;   \
         case SPEX_SINGULAR:        printf("Matrix is SINGULAR\n"); break;   \
         case SPEX_INCORRECT_INPUT: printf("INCORRECT INPUT\n");    break;   \
-        case SPEX_INCORRECT:       printf("SPEX_INCORRECT\n");     break;   \
+        case SPEX_PANIC:           printf("SPEX_PANIC\n");         break;   \
         default:                   printf("unknown!\n");                    \
     }                                                                       \
 }
@@ -122,7 +122,8 @@ int spex_gmp_realloc_test
 
 SPEX_info spex_check_solution
 (
-    const SPEX_matrix *A,         // Input matrix
+    bool *Is_correct,             // if the solution is correct
+    const SPEX_matrix *A,         // Input matrix of CSC MPZ
     const SPEX_matrix *x,         // Solution vectors
     const SPEX_matrix *b,         // Right hand side vectors
     const SPEX_options* option    // Command options
@@ -130,8 +131,9 @@ SPEX_info spex_check_solution
 
 SPEX_info spex_update_verify
 (
-    SPEX_factorization *F,// LU factorization of A
-    const SPEX_matrix *A,     // Input matrix
+    bool *Is_correct,         // if the factorization is correct
+    SPEX_factorization *F,    // LU factorization of A
+    const SPEX_matrix *A,     // Input matrix of SPEX_DYNAMIC_CSC MPZ
     const SPEX_options *option// command options
 );
 #endif

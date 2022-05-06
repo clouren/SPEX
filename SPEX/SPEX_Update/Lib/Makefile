@@ -20,7 +20,7 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 # uncomment for extra error checking:
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
-# SPEX_CHOLMOD depends on SuiteSparse_config, M, GMP, and MPFR
+# SPEX_Update depends on SuiteSparse_config, M, GMP, and MPFR
 LDLIBS += -lspexutil -lspexleftlu -lsuitesparseconfig -lm -lgmp -lmpfr
 
 C = $(CC) $(CF) -I../Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Source
@@ -40,8 +40,7 @@ OBJ = \
     SPEX_Update_solve.o SPEX_Update_tsolve.o spex_update_solve_internal.o \
     spex_update_triangular_solve.o \
     spex_update_forward_sub.o \
-    SPEX_Update_Chol_Rank1.o \
-    SPEX_Update_factorization_convert.o
+    SPEX_Update_Chol_Rank1.o
     #spex_update_permute_row.o spex_update_verify.o \
     #spex_update_matrix_canonicalize.o \
 

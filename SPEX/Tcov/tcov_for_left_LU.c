@@ -832,7 +832,8 @@ int main( int argc, char* argv[])
                 if (pretend_to_fail) continue ;
 
                 // perform solution check if user wish to do so
-                TEST_CHECK(spex_check_solution(A, sol, b, option));
+                bool Is_correct;
+                TEST_CHECK(spex_check_solution(&Is_correct, A, sol, b, option));
                 if (pretend_to_fail) continue ;
 
             }
