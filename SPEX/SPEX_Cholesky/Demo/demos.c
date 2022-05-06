@@ -224,6 +224,7 @@ SPEX_info SPEX_tripread_double
     SPEX_matrix *A = NULL;
     info = SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_FP64, m, n, nz,
         false, true, option);
+    
     if (info != SPEX_OK)
     {
         return (info) ;

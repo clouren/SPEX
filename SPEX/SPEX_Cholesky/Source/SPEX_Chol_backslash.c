@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data\
+// SPEX_Chol/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data
 //                                type
 //------------------------------------------------------------------------------
 
@@ -16,18 +16,19 @@
  *
  * Input/Output arguments:
  *
- * x_handle:    A pointer to the solution of the linear system. The output is
- *              allowed to be returned in either double precision, mpfr_t, or
- *              rational mpq_t
+ * x_handle:    A pointer to the solution of the linear system. The output 
+ *              can be returned in double precision, 
+ *              mpfr_t (user-specified precision floating point), or
+ *              mpq_t (rational)
  *
- * type:        Data structure of output desired. Must be either SPEX_MPQ,
- *              SPEX_FP64, or SPEX_MPFR
+ * type:        Type of output desired. 
+ *              Must be SPEX_MPQ, SPEX_FP64 or SPEX_MPFR
  *
- * A:           User's input matrix. It must be populated prior to calling this
- *              function.
+ * A:           User's input matrix.
+ *              Must be populated prior to calling this function.
  *
- * b:           Collection of right hand side vectors. Must be populated prior
- *              to factorization.
+ * b:           Collection of right hand side vector(s).
+ *              Must be populated prior to calling this function.
  *
  * option:      Struct containing various command parameters for the
  *              factorization. If NULL on input, default values are used.
@@ -37,9 +38,9 @@
 {                                            \
     SPEX_factorization_free(&F, option);     \
     SPEX_symbolic_analysis_free (&S, option);\
-    SPEX_FREE (PAP->x.mpz); \
+    SPEX_FREE (PAP->x.mpz);                  \
     SPEX_matrix_free(&PAP, NULL);            \
-}
+} //TODO doublecheck SPEX_FREE (PAP->x.mpz);    
 
 # define SPEX_FREE_ALL            \
 {                                 \
@@ -53,13 +54,13 @@ SPEX_info SPEX_Chol_backslash
 (
     // Output
     SPEX_matrix** x_handle,       // On input: undefined. 
-                                  // On output: final solution vector
+                                  // On output: solution vector(s)
     // Input
     SPEX_type type,               // Type of output desired
-                                  // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix* A,         // Input matrix
-    const SPEX_matrix* b,         // Right hand side vector(s)
-    const SPEX_options* option    // Command options
+                                  // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
+    const SPEX_matrix* A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix* b,         // Right hand side vector(s). Must be SPEX_MPZ and SPEX_DENSE
+    const SPEX_options* option    // Command options (Default if NULL)
 )
 {
 
@@ -74,15 +75,8 @@ SPEX_info SPEX_Chol_backslash
     // check inputs
     //-------------------------------------------------------------------------
 
-    // x can't be NULL
-    //TODO TIM: isn't the below condition always true? (same question as in the SPEX_analysis_free)
-    //If it is always true, then it would be impossible to check-cover the guts of the if...
-    if (!x_handle)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
-    if (!A || !b || !option)
+    // x, A, B can't be NULL
+    if (!x_handle || !A || !b)
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -93,6 +87,7 @@ SPEX_info SPEX_Chol_backslash
         return SPEX_INCORRECT_INPUT;
     }
     
+    //TODO: Change to if (combined with the if below) <Check Correct format of A and b>
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(b->type == SPEX_MPZ);
@@ -102,6 +97,8 @@ SPEX_info SPEX_Chol_backslash
     {
         return SPEX_INCORRECT_INPUT;
     }
+
+    //TODO Make sure that aaaaaaaaaaaaaaaall the functiosn below, handle a NULL oooptions
     
     // Declare memory
     SPEX_symbolic_analysis *S = NULL;
@@ -111,51 +108,50 @@ SPEX_info SPEX_Chol_backslash
     
     
     //--------------------------------------------------------------------------
-    // Preorder: obtain the row/column ordering of A
+    // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_preorder(&S, A, option));
+    SPEX_CHECK( spex_chol_preorder(&S, A, option) );
     
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky.
-    // The symmetry check here checks both the nonzero pattern and values.
+    // This symmetry check checks for both the nonzero pattern and values.
     // In addition, the symmetry check also checks that no diagonal entry is zero;
     // as otherwise this indicates that the matrix is not SPD (even if symmetric)
     // If the symmetry check fails, the appropriate error code is returned
     //--------------------------------------------------------------------------
 
-
-    SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1, option));
+    SPEX_CHECK( SPEX_determine_symmetry((SPEX_matrix*)A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the 
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_permute_A(&PAP, A, true, S));
+    SPEX_CHECK( spex_chol_permute_A(&PAP, A, true, S) );
 
     //--------------------------------------------------------------------------
-    // Symbolic Analysis: compute the elimination tree of A
+    // Symbolic Analysis: compute the elimination tree of PAP
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_symbolic_analysis(S,PAP,option));
+    SPEX_CHECK( spex_chol_symbolic_analysis(S, PAP, option) );
 
     //--------------------------------------------------------------------------
-    // Factorization: Perform the REF Cholesky factorization of 
-    // A. By default, up-looking Cholesky factorization is done; however,
+    // Factorization: Perform the REF Cholesky factorization of PAP.
+    // By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //-------------------------------------------------------------------------- 
 
-    SPEX_CHECK(spex_chol_factor(&F, S,PAP, option));
+    SPEX_CHECK( spex_chol_factor(&F, S, PAP, option) );
 
     //--------------------------------------------------------------------------
     // Solve: Solve Ax = b using the REF Cholesky factorization. That is,
     // apply the factorization LDL' = PAP' to solve the linear system LDL'x = b.
-    // At the conclusion of the solve routines, x is the exact solution of 
+    // At the conclusion of the solve function, x is the exact solution of 
     // Ax = b stored as a set of numerators and denominators (mpq_t)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_Chol_solve(&x, F, b, option));
+    SPEX_CHECK( SPEX_Chol_solve(&x, F, b, option) );
 
     //--------------------------------------------------------------------------
     // At this point x is stored as mpq_t. If the user desires the output 
@@ -170,10 +166,15 @@ SPEX_info SPEX_Chol_backslash
     else
     {
         SPEX_matrix* x2 = NULL;
-        SPEX_CHECK(SPEX_matrix_copy(&x2, SPEX_DENSE, type, x, option));
+        SPEX_CHECK( SPEX_matrix_copy(&x2, SPEX_DENSE, type, x, option) );
         (*x_handle) = x2;
         SPEX_matrix_free (&x, NULL);
     }
+
+    mpz_t* det = NULL;
+    det = &(F->rhos->x.mpz[F->L->n-1]);
+    size_t bitsDet = mpz_sizeinbase((*det),2); //CLUSTER
+    gmp_printf("%llu\n ", (bitsDet)); //CLUSTER
 
     //--------------------------------------------------------------------------
     // Free all workspace and return success

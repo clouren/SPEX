@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_symbolic_analysis: Symbolic analysis for Cholesky factorization
+// SPEX_Chol/spex_Chol_symbolic_analysis: Symbolic analysis for SPEX Cholesky 
+//                                        factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
@@ -21,12 +22,12 @@
 
 #include "spex_chol_internal.h"  
 
-/* Purpose: perform the symbolic analysis for the Cholesky factorization, this 
- * means computing and postordering the elimination tree, getting the column
+/* Purpose: perform the symbolic analysis for the SPEX Cholesky factorization, 
+ * that is, computing and postordering the elimination tree, getting the column
  * counts of the SPD matrix A, setting the column pointers and exact number of 
  * non zeros of L.
  * 
- * Importantly, this function assumes that A has already been permuted.
+ * IMPORTANT: This function assumes that A has already been permuted.
  * 
  * Input arguments of the function:
  * 
@@ -39,7 +40,6 @@
  * A:           The user's permuted input matrix
  * 
  * option:      Command options
- * 
  */
 
 SPEX_info spex_chol_symbolic_analysis
@@ -48,7 +48,7 @@ SPEX_info spex_chol_symbolic_analysis
     SPEX_symbolic_analysis* S, //Symbolic analysis
     //Input
     const SPEX_matrix* A,      // Matrix to be factored   
-    const SPEX_options* option // command options
+    const SPEX_options* option // Command options
 )
 {
     SPEX_info info;
@@ -58,6 +58,8 @@ SPEX_info spex_chol_symbolic_analysis
     //--------------------------------------------------------------------------
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
+
+    // TODO Ensure that these are checked by caller and replace with ASSERTS
     if (!A || !S || !option )
     {
         return SPEX_INCORRECT_INPUT;
@@ -65,20 +67,20 @@ SPEX_info spex_chol_symbolic_analysis
 
     int64_t n = A->n;
     int64_t* post = NULL;
-    int64_t* c;
+    int64_t* c = NULL;
 
-    // Obtain the elimination tree of A
-    SPEX_CHECK(spex_chol_etree(&S->parent, A));
+    // Obtain elimination tree of A
+    SPEX_CHECK( spex_chol_etree(&S->parent, A) );
     
     // Postorder the elimination tree of A
-    SPEX_CHECK( spex_chol_post(&post, S->parent, n));
+    SPEX_CHECK( spex_chol_post(&post, S->parent, n) );
     
     // Get the column counts of A
-    SPEX_CHECK( spex_chol_counts(&c, A, S->parent, post));
+    SPEX_CHECK( spex_chol_counts(&c, A, S->parent, post) );
     
     // Set the column pointers of L
-    S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
-    SPEX_CHECK( SPEX_cumsum(S->cp, c, n, option));
+    S->cp = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t*) );
+    SPEX_CHECK( SPEX_cumsum(S->cp, c, n, option) );
    
     // Set the exact number of nonzeros in L
     S->lnz = S->cp[n];
