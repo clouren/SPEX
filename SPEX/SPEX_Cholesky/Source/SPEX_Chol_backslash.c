@@ -171,10 +171,6 @@ SPEX_info SPEX_Chol_backslash
         SPEX_matrix_free (&x, NULL);
     }
 
-    mpz_t* det = NULL;
-    det = &(F->rhos->x.mpz[F->L->n-1]);
-    size_t bitsDet = mpz_sizeinbase((*det),2); //CLUSTER
-    gmp_printf("%llu\n ", (bitsDet)); //CLUSTER
 
     //--------------------------------------------------------------------------
     // Free all workspace and return success
