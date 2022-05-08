@@ -67,12 +67,18 @@ cmake
 
 ------------
 
-do we really need SPEX_scale? 
-
 naming: SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
+
+move SPEX_gmp functions to the end of SPEX.h?
+
+user-callable functions for computing SPEX_matrix
 
 ------------ code review --------
 spex_CSC_mpz_to_dynamic.c spex_dynamic_to_CSC_mpz.c SPEX_factorization_convert.c SPEX_factorization_free.c SPEX_matrix_convert.c SPEX_vector_allocate.c SPEX_vector_free.c SPEX_vector_realloc.c
+
+SPEX_factorization_check
+
+how to create vk or w
 
 
 

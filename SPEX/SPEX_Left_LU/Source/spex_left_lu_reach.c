@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/spex_left_lu_reach: compute the set of nodes reachable from an input set
+// SPEX_Left_LU/spex_left_lu_reach: compute the set of nodes reachable from
+// an input set
 //------------------------------------------------------------------------------
 
 // SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
