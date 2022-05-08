@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_preorder: symbolic ordering and analysis for sparse
-//                               Cholesky
+// SPEX_Chol/SPEX_Chol_preorder: Symbolic ordering and analysis for SPEX Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
@@ -23,14 +22,10 @@
  * A:       Input matrix, unmodified on input/output
  *
  * option:  option->order tells the function which ordering scheme to use
- *
  */
 
-// This function is a slightly modified version of SPEX_Left_LU's 
-// LU analysis function
-
-# define SPEX_FREE_ALL                             \
-{                                                  \
+# define SPEX_FREE_ALL                       \
+{                                            \
     SPEX_symbolic_analysis_free(&S, option); \
 }
 
@@ -40,13 +35,13 @@ SPEX_info spex_chol_preorder
 (
     // Output
     SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 
-                                    // On input: undefined
-                                    // On output: contains the 
-                                    // row/column permutation and its
-                                    // inverse.
+                                        // On input: undefined
+                                        // On output: contains the 
+                                        // row/column permutation and its
+                                        // inverse.
     // Input
-    const SPEX_matrix* A,           // Input matrix
-    const SPEX_options* option      // Control parameters (use default if NULL)
+    const SPEX_matrix* A,               // Input matrix
+    const SPEX_options* option          // Control parameters (use default if NULL)
 )
 {
 
@@ -55,45 +50,42 @@ SPEX_info spex_chol_preorder
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
+    if ( !spex_initialized() ) return SPEX_PANIC;
 
-    if (!spex_initialized ( )) {return SPEX_PANIC;}
-
+    // TODO ensure the following statement is true
+    // All inputs have been checked by the caller so ASSERTS are used instead of ifs
     // A can have any data type, but must be in sparse CSC format
+    ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
     // m = n for Cholesky factorization
     ASSERT(A->n == A->m);
+
+    // Dimension can't be negative
+    ASSERT(A->n >= 0); 
     
     // If *S_handle != NULL then it may cause a memory leak.
     ASSERT(*S_handle == NULL);
 
-    if (!S_handle || A->n != A->m || A->kind != SPEX_CSC)
-    {
-        printf("error\n");
-        return SPEX_INCORRECT_INPUT;
-    }
-
     //--------------------------------------------------------------------------
-    // allocate symbolic analysis object
+    // Allocate symbolic analysis object
     //--------------------------------------------------------------------------
-
     SPEX_symbolic_analysis* S = NULL;
+    // declare indices and dimension of matrix
     int64_t i, k, index, n = A->n;
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
-
-    ASSERT(n >= 0); // Dimension can't be negative
 
     int64_t anz; // Number of nonzeros in A
     SPEX_matrix_nnz(&anz, A, option);   
 
     // Allocate memory for S    
     S = (SPEX_symbolic_analysis*) SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
-    if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
+    if (S == NULL) return SPEX_OUT_OF_MEMORY;
 
     S->kind = SPEX_CHOLESKY_FACTORIZATION ;
 
     // Allocate memory for row/column permutation
-    S->P_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
+    S->P_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
     if (S->P_perm == NULL)
     {
         SPEX_FREE_ALL;  
@@ -104,6 +96,33 @@ SPEX_info spex_chol_preorder
     SPEX_preorder order = SPEX_OPTION_ORDER(option);
     switch(order)
     {
+        default:
+        case SPEX_DEFAULT:
+        case SPEX_AMD:
+        // ---AMD ordering is used (DEFAULT)---
+        // S->p is set to AMD's column ordering on A.
+        // The number of nonzeros in L is given as AMD's computed
+        // number of nonzeros in the Cholesky factor L of A which is the exact
+        // nnz(L) for Cholesky factorization (barring numeric cancellation)
+        {
+            double Control[AMD_CONTROL];           // Declare AMD control
+            amd_l_defaults(Control);              // Set AMD defaults
+            double Info [AMD_INFO];
+            // Perform AMD
+            amd_l_order(n, (SuiteSparse_long *)A->p, (SuiteSparse_long *)A->i,
+                        (SuiteSparse_long *)S->P_perm, Control, Info);
+             S->lnz = Info[AMD_LNZ];        // Exact number of nonzeros for Cholesky
+             if (pr > 0)   // Output AMD info if desired
+             {
+                 SPEX_PRINTF("\n****Column Ordering Information****\n");
+                 amd_l_control(Control);
+                 amd_l_info(Info);
+             }
+             //double flops=A->n + Info[AMD_NDIV] +2*Info [AMD_NMULTSUBS_LDL]; //n + ndiv + 2*nmultsubs_ldl //CLUSTER
+             //printf("%f, %d, ",flops, S->lnz); //CLUSTER
+        }
+        break;
+
         case SPEX_NO_ORDERING:
         // ---No ordering is used--- 
         // S->p is set to [0 ... n] and the number of nonzeros in L is estimated 
@@ -127,7 +146,7 @@ SPEX_info spex_chol_preorder
         {
             // Declared as per COLAMD documentation
             int64_t Alen = 2*anz + 6 *(n+1) + 6*(n+1) + n;
-            int64_t* A2 = (int64_t*) SPEX_malloc(Alen*sizeof(int64_t));
+            int64_t* A2 = (int64_t*)SPEX_malloc(Alen*sizeof(int64_t));
             if (!A2)
             {
                 // out of memory
@@ -145,9 +164,9 @@ SPEX_info spex_chol_preorder
                 A2[i] = A->i[i];
             }
             int64_t stats[COLAMD_STATS];
-            colamd_l(n, n, Alen, (SuiteSparse_long *) A2,
-                (SuiteSparse_long *) S->P_perm, (double *) NULL,
-                (SuiteSparse_long *) stats);
+            colamd_l(n, n, Alen, (SuiteSparse_long *)A2,
+                     (SuiteSparse_long *) S->P_perm, (double *)NULL,
+                     (SuiteSparse_long *) stats);
             // estimate for lnz and unz
             S->lnz = 10*anz;
 
@@ -163,33 +182,6 @@ SPEX_info spex_chol_preorder
             SPEX_FREE(A2);
         }
         break;
-
-        case SPEX_AMD:
-        default:
-        // ---AMD ordering is used (DEFAULT)---
-        // S->p is set to AMD's column ordering on A.
-        // The number of nonzeros in L is given as AMD's computed
-        // number of nonzeros in the Cholesky factor L of A which is the exact
-        // nnz(L) for Cholesky factorization (barring numeric cancellation)
-        {
-            double Control[AMD_CONTROL];           // Declare AMD control
-            amd_l_defaults(Control);              // Set AMD defaults
-            double Info [AMD_INFO];
-            // Perform AMD
-            amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-            (SuiteSparse_long *) S->P_perm, Control, Info) ;
-             S->lnz = Info[AMD_LNZ];        // Exact number of nonzeros for Cholesky
-             if (pr > 0)   // Output AMD info if desired
-             {
-                 SPEX_PRINTF("\n****Column Ordering Information****\n");
-                 amd_l_control(Control);
-                 amd_l_info(Info);
-             }
-             //FIXME unused variables (commented by Jinhao)
-             //double flops=A->n + Info[AMD_NDIV] +2*Info [AMD_NMULTSUBS_LDL]; //n + ndiv + 2*nmultsubs_ldl //CLUSTER
-             //printf("%f, %d, ",flops, S->lnz); //CLUSTER
-        }
-        break;
     }//end switch(order)
 
     //--------------------------------------------------------------------------
@@ -198,7 +190,6 @@ SPEX_info spex_chol_preorder
     // too small for L. In this case, this block of code ensures that the
     // estimates on nnz(L) and nnz(U) are at least n and no more than n*n.
     //--------------------------------------------------------------------------
-
     // estimate exceeds max number of nnz in A
     if (S->lnz > (double) n*n)
     {
@@ -212,13 +203,10 @@ SPEX_info spex_chol_preorder
         S->lnz += n;
     }
 
-    //
     // Allocate pinv
     S->Pinv_perm = (int64_t*)SPEX_calloc(n, sizeof(int64_t));
-    if(!(S->Pinv_perm))
-    {
-        return SPEX_OUT_OF_MEMORY;
-    }
+    if(!(S->Pinv_perm)) return SPEX_OUT_OF_MEMORY;
+    
     // Populate pinv
     for (k = 0; k < n; k++)
     {
@@ -226,11 +214,9 @@ SPEX_info spex_chol_preorder
         S->Pinv_perm[index] = k;
     }
 
-
     //--------------------------------------------------------------------------
-    // return result
+    // Set result, report success
     //--------------------------------------------------------------------------
-
     (*S_handle) = S;
     return SPEX_OK;
 }

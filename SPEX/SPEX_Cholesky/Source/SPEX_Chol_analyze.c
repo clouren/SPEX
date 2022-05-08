@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_analize: 
+// SPEX_Chol/SPEX_Chol_analyze: Perform the symbolic analysis of A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
@@ -9,26 +9,25 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: perform the symbolic analysis for the Cholesky factorization, this 
- * means computing and postordering the elimination tree, getting the column
- * counts of the SPD matrix A, setting the column pointers and exact number of 
- * non zeros of L.
+/* Purpose: perform the symbolic analysis of A for the Cholesky factorization,
+ * that is, preordering A, computing the elimination tree, getting the column
+ * counts of A, setting the column pointers and exact number of non zeros of L.
  * 
  * Input arguments of the function:
  * 
  * S:           Symbolic analysis struct for Cholesky factorization. 
  *              On input it's NULL
- *              On output it contains he row/column permutation, the elimination
+ *              On output it contains the row/column permutation, the elimination
  *              tree, and the number of nonzeros in L.
  * 
- * A:           The user's input matrix
+ * A:           User's input matrix (Must be SPEX_MPZ and SPEX_CSC)
  * 
- * option:      Command options
+ * option:      Command options (Default if NULL)
  * 
  */
 
-# define SPEX_FREE_WORKSPACE                 \
-{                                            \
+# define SPEX_FREE_WORKSPACE      \
+{                                 \
     SPEX_matrix_free(&PAP, NULL); \
 }
 
@@ -39,51 +38,60 @@ SPEX_info SPEX_Chol_analyze
     // Output
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure 
     // Input
-    const SPEX_matrix* A,         // Input matrix
-    const SPEX_options* option    // Command options
+    const SPEX_matrix* A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_options* option    // Command options (Default if NULL)
 )
 {
 
     SPEX_info info;
+    // SPEX must be initialized
+    if (!spex_initialized())
+    {
+        return SPEX_PANIC;
+    }
     
+    // TODO  if to check if null inputs 
+    //TODO if to check inputs (not  NULL kind, type)
     SPEX_REQUIRE_KIND(A, SPEX_CSC);
 
+    // Declare memory
     SPEX_matrix* PAP = NULL;
     SPEX_symbolic_analysis *S = NULL;
 
 
     //--------------------------------------------------------------------------
-    // Preorder: obtain the row/column ordering of A
+    // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_preorder(&S, A, option));
+    SPEX_CHECK( spex_chol_preorder(&S, A, option) );
     
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky.
-    // The symmetry check here checks both the nonzero pattern and values.
+    // This symmetry check checks for both the nonzero pattern and values.
     // In addition, the symmetry check also checks that no diagonal entry is zero;
     // as otherwise this indicates that the matrix is not SPD (even if symmetric)
     // If the symmetry check fails, the appropriate error code is returned
-    // --------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_determine_symmetry( (SPEX_matrix*) A, 1, option));
+    SPEX_CHECK( SPEX_determine_symmetry((SPEX_matrix*)A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the 
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_permute_A(&PAP, A, false, S));
+    SPEX_CHECK( spex_chol_permute_A(&PAP, A, true, S) );
 
     //--------------------------------------------------------------------------
-    // Symbolic Analysis: compute the elimination tree of A
+    // Symbolic Analysis: compute the elimination tree of PAP
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_symbolic_analysis(S,PAP,option));
+    SPEX_CHECK( spex_chol_symbolic_analysis(S, PAP, option) );
 
     //--------------------------------------------------------------------------
-    // Free all workspace and return success
+    // Set output, free all workspace and return success
     //--------------------------------------------------------------------------
+
     (*S_handle) = S;
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

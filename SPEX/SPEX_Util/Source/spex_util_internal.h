@@ -228,7 +228,7 @@ void spex_gmp_failure (int status) ;
 //  SPEX_NO_ORDERING = 0,           None: Not recommended for sparse matrices
 //  SPEX_COLAMD = 1,                COLAMD: Default
 //  SPEX_AMD = 2                    AMD
-#define SPEX_DEFAULT_ORDER SPEX_COLAMD  /* FIXME */
+#define SPEX_DEFAULT_ORDER SPEX_DEFAULT_ORDERING
 
 // Defines printing to be done
 #define SPEX_DEFAULT_PRINT_LEVEL 0
@@ -272,9 +272,6 @@ void spex_gmp_failure (int status) ;
 #define SPEX_OPTION_TOL(option) \
     SPEX_OPTION (option, tol, SPEX_DEFAULT_TOL)
 
-#define SPEX_OPTION_CHECK(option) \
-    SPEX_OPTION (option, check, false)
-
 #define SPEX_OPTION_PIVOT(option) \
     SPEX_OPTION (option, pivot, SPEX_DEFAULT_PIVOT)
 
@@ -289,6 +286,9 @@ void spex_gmp_failure (int status) ;
 
 #define SPEX_OPTION_ROUND(option) \
     SPEX_OPTION (option, round, SPEX_DEFAULT_MPFR_ROUND)
+
+#define SPEX_OPTION_ALGORITHM(option) \
+    SPEX_OPTION (option, algo, SPEX_DEFAULT_ALGORITHM)
 
 //------------------------------------------------------------------------------
 // Field access macros for MPZ/MPQ/MPFR struct

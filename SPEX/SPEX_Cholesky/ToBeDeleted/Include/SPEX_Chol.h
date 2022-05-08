@@ -156,7 +156,6 @@
 #define SPEX_CHOL_VERSION_SUB   1
 
 //TODO consistency on * data types
-//TODO check comments: what is on input/what is on output
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -165,7 +164,7 @@
 //------------------------------------------------------------------------------    
     
 /* Purpose: Compute the exact solution of Ax = b. 
- * On input, A must be SPD and x is NULL
+ * On input, A is expected to be SPD and x is NULL
  * On output, x contains the solution of the linear system
  */
 SPEX_info SPEX_Chol_backslash
@@ -215,10 +214,7 @@ SPEX_info SPEX_Chol_factorize
 
 /* Purpose: After computing the REF Cholesky factorization A = LDL',
  * this function solves the associated linear system LDL' x = b
- * On input x is undefined, A contains the user's matrix, b contains 
- * the user's right hand side, rhos contains the pivots' values used 
- * in the factorization, L contains the REF Cholesky factor of A, 
- * and S contains the elimination tree
+ * On input x is undefined, F contains the Cholesky factorization
  * On output x contains the rational solution of the system LDL' x = b
  */
 SPEX_info SPEX_Chol_solve
@@ -228,8 +224,8 @@ SPEX_info SPEX_Chol_solve
                                       // On output: Rational solution (SPEX_MPQ)
                                       // to the system. 
     // Input
-    const SPEX_factorization *F, // Cholesky factorization
-    const SPEX_matrix* b,             // Right hand side vector
+    const SPEX_factorization *F,      // Cholesky factorization
+    const SPEX_matrix* b,             // Right hand side vector(s)
     const SPEX_options* option        // command options
 );
 

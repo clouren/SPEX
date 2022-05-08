@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_determine_symmetry: determine if a matrix is symmetric
+// SPEX_Util/SPEX_determine_symmetry: Determine if given matrix is 
+//                                    *numerically* (thus pattern-wise) symmetric
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -8,23 +9,15 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: Determine if the input A is indeed symmetric prior to
- * factorization.  There are two options as to how to determine the symmetry.
- * By setting the input check_if_numerically_symmetric is true, both the
- * nonzero pattern and the values of the nonzero entries are checked for
- * symmetry. If A passes both of these tests, then we can be sure it is indeed
- * fully symmetric.
- * 
- * If check_if_numerically_symmetric is set to false, only the nonzero pattern
- * of A is checked, thus we cannot gauranteee that the matrix is indeed fully
- * symmetric as the values of the entries is not checked.
+/* Purpose: Determine if the input A is *numerically* (thus pattern-wise) symmetric.
+ * Since SPEX is an exact framework, it doesn't make sense to check only pattern symmetry.
  * 
  * If the matrix is determined to be symmetric, SPEX_OK is returned; otherwise,
  * SPEX_UNSYMMETRIC is returned.
  */
 
 
-// TODO: Delete me in release
+// TODO: propagate the new calling style throughout
 
 #define SPEX_FREE_ALL               \
 {                                   \
@@ -36,63 +29,63 @@
 
 SPEX_info SPEX_determine_symmetry
 (
-    SPEX_matrix* A,
-    bool check_if_numerically_symmetric,
-            // if true, check A=A' (pattern & values). if false,
-            // only check if the pattern of A is symmetric, not
-            // the values
-    const SPEX_options* option // command options
+    SPEX_matrix* A,            // Input matrix to be checked for symmetry
+    const SPEX_options* option // Command options
 )
 {    
-    int64_t j;
     SPEX_info info;
-    // Declare matrix T
+    // TODO INSERT UNINITIALIZED CRAP
+  
+    // Only used index
+    int64_t j;
+
+    // Declare matrices T and R. T = A' and R = T' = A''
     SPEX_matrix *T = NULL, *R = NULL ;
     // T = A'
-    SPEX_CHECK( SPEX_transpose(&T, A, option));
+    SPEX_CHECK( SPEX_transpose(&T, A, option) );
 
-    // Check if column pointers are the same
+    // Check if the number of nonzeros in the columns
+    // of A are equal to the number of nonzeros in 
+    // the rows of A. This is a quick check to 
+    // ensure the matrix is candidate to be symmetric.
+    // Moreover, this check is important becuase 
+    // otherwise the ensuing block could seg-fault :(
     for (j = 0; j <= A->n; j++)
     {
         if (T->p[j] != A->p[j])
         {
-            // nnz( A(:,k)) != nnz( A'(:,k))
+            // nnz( A(:,k)) != nnz( A(k,:))
             SPEX_FREE_ALL ;
             return SPEX_UNSYMMETRIC;
         }
+      
     }
 
-    // R = T'
-    SPEX_CHECK( SPEX_transpose(&R, T, option));
-    // then compare R and T
-
-    // Check if i values are the same
+    // Set R = T'
+    SPEX_CHECK( SPEX_transpose(&R, T, option) );
+    
+    // Check whether A[i][j] = A[j][i] in both pattern and numerics
     for (j = 0; j < R->p[R->n]; j++)
     {
+        // Check pattern
         if (T->i[j] != R->i[j])
         {
-            // A[i][j] != A[j][i], unsymmetric
+            // Not pattern symmetrc
+            SPEX_FREE_ALL ;
+            return SPEX_UNSYMMETRIC;
+        }
+        // Check numerics
+        int r;
+        SPEX_CHECK( SPEX_mpz_cmp(&r, R->x.mpz[j], T->x.mpz[j]) );
+        if (r != 0)
+        {
+            // Not numeric symmetric
             SPEX_FREE_ALL ;
             return SPEX_UNSYMMETRIC;
         }
     }
-
-    // If we are performing an exhaustive search, we check the x values as well
-    // This is by far the most expensive part of checking the symmetry.
-    if (check_if_numerically_symmetric)
-    {
-        int r;
-        for (j = 0; j < R->p[R->n]; j++)
-        {
-            SPEX_CHECK(SPEX_mpz_cmp(&r, R->x.mpz[j], T->x.mpz[j]));
-            if ( r != 0)
-            {
-                // Pattern is symmetric, values are not
-                SPEX_FREE_ALL ;
-                return SPEX_UNSYMMETRIC;
-            }
-        }
-    }
+    
+    // Free memory and return OK meaning the matrix is symmetric
     SPEX_FREE_ALL ;
     return SPEX_OK;
 }

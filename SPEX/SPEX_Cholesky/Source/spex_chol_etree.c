@@ -24,7 +24,6 @@
 
 
 /* Purpose: Compute the elimination tree of A */
-//TOASK why do some functions have long "purpose" and other short "purpose"?
 
 SPEX_info spex_chol_etree 
 (

@@ -160,9 +160,10 @@ SPEX_pivot ;
 
 typedef enum
 {
-    SPEX_NO_ORDERING = 0,   // None: A is factorized as-is
-    SPEX_COLAMD = 1,        // COLAMD: Default
-    SPEX_AMD = 2            // AMD
+    SPEX_ORDER_DEFAULT = 0, // Defaults: COLAMD for LU, AMD for Cholesky
+    SPEX_NO_ORDERING = 1,   // None: A is factorized as-is
+    SPEX_COLAMD = 2,        // COLAMD
+    SPEX_AMD = 3            // AMD
 }
 SPEX_col_order ;
 
@@ -1043,10 +1044,6 @@ SPEX_info SPEX_transpose
 SPEX_info SPEX_determine_symmetry
 (
     SPEX_matrix* A,
-    bool check_if_numerically_symmetric,
-            // if true, check A=A' (pattern & values). if false,
-            // only check if the pattern of A is symmetric, not
-            // the values
     const SPEX_options* option
 );
 

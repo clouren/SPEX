@@ -24,13 +24,10 @@
 
  FIXME: why pass in S?  Why not pass in both the permutation P and
  its inverse?  If the inverse passed in is a NULL pointer, then
- compute it, use it, then discard it.  Also, why are both permutations
- Q_perm and Pinv_perm needed?  Only Pinv_perm is required.  See cs_symperm in
- CSparse.  Finally, we should use P_perm not Q_perm.
+ compute it, use it, then discard it.  
 
  * 
  */
-//TODO move input/output around
 SPEX_info spex_chol_permute_A
 (
     //Output
@@ -87,11 +84,10 @@ SPEX_info spex_chol_permute_A
         {
             // Set the number of nonzeros in the kth column of PAP
             PAP->p[k] = nz;
-            // FIXME: old comment here, out of date:
-            // Column k of PAP is equal to column S->p[k] of A. j is the starting
-            // point for nonzeros and indices for column S->p[k] of A
+            // Column k of PAP is equal to column S->P_perm[k] of A. j is the starting
+            // point for nonzeros and indices for column S->P_perm[k] of A
             j = S->P_perm[k];
-            // Iterate across the nonzeros in column S->p[k]
+            // Iterate across the nonzeros in column S->P_perm[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
                 // Set the nonzero value and location of the entries in column k of PAP

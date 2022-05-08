@@ -115,9 +115,7 @@ SPEX_info SPEX_Chol_solve
 
     // Set the value of the determinant det = rhos[n-1] 
     det = &(F->rhos->x.mpz[F->L->n-1]);
-    // FIXME unused variable (commented by Jinhao)
-    // size_t bitsDet = mpz_sizeinbase((*det),2); //CLUSTER
-    //gmp_printf("%llu, ", (bitsDet)); //CLUSTER
+
     
     SPEX_CHECK(spex_matrix_mul(b2, (*det) ));
     
@@ -144,13 +142,6 @@ SPEX_info SPEX_Chol_solve
     // allocate space for x as dense MPQ matrix
     SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
         0, false, true, option));
-/*
-    size_t bitsSmall=mpz_sizeinbase(b2->x.mpz[0],2); //CLUSTER
-    size_t bitsLarge=0; //CLUSTER
-    size_t bitsTemp; //CLUSTER
-    int64_t bitsSum=0; //CLUSTER
-    // Set x[i] = b2[i]/det
-*/
 
     // obtain x from permuted b2 with scale applied
     for (int64_t i = 0 ; i < b->m ; i++)
@@ -158,28 +149,13 @@ SPEX_info SPEX_Chol_solve
         int64_t pi = F->P_perm[i];
         for (int64_t j = 0 ; j < b->n ; j++)
         {
-            /*
-            bitsTemp=mpz_sizeinbase(SPEX_2D(b2,  i, j, mpz),2); //CLUSTER
-            if(bitsTemp>bitsLarge) //CLUSTER
-            { 
-                bitsLarge=bitsTemp; //CLUSTER
-            }
-            else if(bitsTemp<bitsSmall) //CLUSTER
-            {
-                    bitsSmall=bitsTemp; //CLUSTER
-            }
-            bitsSum=bitsSum+(int64_t)bitsTemp; //CLUSTER
-*/
+
             SPEX_CHECK(SPEX_mpq_set_z(SPEX_2D(x,  pi, j, mpq),
                                       SPEX_2D(b2,  i, j, mpz)));
             SPEX_CHECK(SPEX_mpq_div(SPEX_2D(x,  pi, j, mpq),
                                     SPEX_2D(x,  pi, j, mpq), b2->scale));
         }
     }
-
-    /*
-    gmp_printf("%llu, %llu, %llu, ", bitsSmall, bitsLarge, bitsSum); //CLUSTER
-    */
 
     // Set output, free memory
     (*x_handle) = x;

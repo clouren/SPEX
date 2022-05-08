@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_Factor: Integer preserving Cholesky factorization
+// SPEX_Chol/spxe_chol_factor: Integer preserving Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
@@ -23,7 +23,8 @@
  * a sparse REF symmetric triangular solve function. The overall factorization
  * is PAP' = LDL'
  * 
- * Importantly, this function assumes that A has already been permuted.
+ * Importantly, this function assumes that A has already been permuted,
+ *              and symbolically analyzed.
  * 
  * Input arguments of the function:
  * 
@@ -40,9 +41,7 @@
  * option:      Command options. Notably, option->chol_type indicates whether
  *              it is performing a left-looking (SPEX_CHOL_LEFT) or up-looking 
  *              factorization (SPEX_CHOL_UP) (default)
- * 
  */
-//TOASK should this purpose be here?
 
 SPEX_info spex_chol_factor      
 (
@@ -53,7 +52,7 @@ SPEX_info spex_chol_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix* A,      // Matrix to be factored   
-    const SPEX_options* option //command options
+    const SPEX_options* option // Command options
                                // Notably, option->chol_type indicates whether
                                // CHOL_UP (default) or CHOL_LEFT is used.
 )
@@ -67,77 +66,69 @@ SPEX_info spex_chol_factor
     //--------------------------------------------------------------------------
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
+    // TODO: Remove and statement that all inputs are checked by the caler (if true)
     /**/if (!F_handle || !S || !option )
     {
         return SPEX_INCORRECT_INPUT;
     }
 
+    // Number of nonzeros in A
     int64_t anz;
-    SPEX_CHECK(SPEX_matrix_nnz (&anz, A, option)) ;
+    SPEX_CHECK( SPEX_matrix_nnz(&anz, A, option) );
+    ASSERT(anz > 0);
     
-    if (anz < 0)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }/**/ //TOCHECK why do I need to comment this so that things will compile
-
     (*F_handle) = NULL ;
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
 
+    // Dimension of A
     int64_t n = A->n ;
 
-    //SPEX_factorization *F = NULL ;
-    // allocate memory space for the factorization
+    // Allocate memory for the factorization
     F = (SPEX_factorization*) SPEX_calloc(1, sizeof(SPEX_factorization));
-    if (F == NULL)
-    {
-        return SPEX_OUT_OF_MEMORY;
-    }
-    //SPEX_CHECK(SPEX_factorization_create(&F,option));
+    if (F == NULL) return SPEX_OUT_OF_MEMORY; 
+
     // set factorization kind
     F->kind = SPEX_CHOLESKY_FACTORIZATION;
 
     // Allocate and set scale_for_A
-    SPEX_CHECK(SPEX_mpq_init(F->scale_for_A));
-    SPEX_CHECK(SPEX_mpq_set (F->scale_for_A, A->scale));
+    SPEX_CHECK( SPEX_mpq_init(F->scale_for_A) );
+    SPEX_CHECK( SPEX_mpq_set (F->scale_for_A, A->scale) );
 
     // Inverse pivot ordering
-    F->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
+    F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
     // row/column permutation, to be copied from S->P_perm
-    F->P_perm =    (int64_t*) SPEX_malloc (n * sizeof(int64_t));
-
-
+    F->P_perm =    (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
     if (!(F->Pinv_perm) || !(F->P_perm))
     {
         // out of memory: free everything and return
-        SPEX_FREE_ALL  ;
+        SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
 
-    // copy column permutation from symbolic analysis to factorization
-    memcpy(F->P_perm, S->P_perm, n * sizeof(int64_t));
-    memcpy(F->Pinv_perm, S->Pinv_perm, n * sizeof(int64_t));
+    // Copy row/column permutation from symbolic analysis to factorization
+    memcpy(F->P_perm, S->P_perm, n*sizeof(int64_t));
+    memcpy(F->Pinv_perm, S->Pinv_perm, n*sizeof(int64_t));
 
 
     //--------------------------------------------------------------------------
     // Call factorization
     //--------------------------------------------------------------------------
-
-    switch(option->algo) 
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    switch(algo) 
     {
         case SPEX_ALGORITHM_DEFAULT:
         case SPEX_CHOL_UP:
-            SPEX_CHECK(spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK( spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option) );
             break;
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK(spex_chol_left_factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK( spex_chol_left_factor(&(F->L), &(F->rhos), S, A, option) );
             break;
         default:
             return SPEX_INCORRECT_ALGORITHM; 
     }
-    /**/
 
     //--------------------------------------------------------------------------
     // Set outputs, return ok
