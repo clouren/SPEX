@@ -17,6 +17,143 @@
 #ifndef SPEX_GMP_H
 #define SPEX_GMP_H
 
+#if 1 //FIXME new lines
+#include <setjmp.h>
+#include <stdarg.h>
+
+#ifdef SPEX_GMP_MEMORY_DEBUG
+void spex_gmp_dump ( void ) ;
+#endif
+
+extern int64_t spex_gmp_ntrials ;
+
+#ifndef SPEX_GMP_LIST_INIT
+// A size of 32 ensures that the list never needs to be increased in size.
+// The test coverage suite in SPEX_Left_LU/Tcov reduces this initial size to
+// exercise the code, in SPEX_Left_LU/Tcov/Makefile.
+#define SPEX_GMP_LIST_INIT 32
+#endif
+
+
+bool spex_gmp_init (void) ;
+
+void spex_gmp_finalize (void) ;
+
+void *spex_gmp_allocate (size_t size) ;
+
+void spex_gmp_free (void *p, size_t size) ;
+
+void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
+
+void spex_gmp_failure (int status) ;
+
+//------------------------------------------------------------------------------
+// Field access macros for MPZ/MPQ/MPFR struct
+//------------------------------------------------------------------------------
+// (similar definition in gmp-impl.h and mpfr-impl.h)
+
+#define SPEX_MPZ_SIZ(x)   ((x)->_mp_size)
+#define SPEX_MPZ_PTR(x)   ((x)->_mp_d)
+#define SPEX_MPZ_ALLOC(x) ((x)->_mp_alloc)
+#define SPEX_MPQ_NUM(x)   mpq_numref(x)
+#define SPEX_MPQ_DEN(x)   mpq_denref(x)
+#define SPEX_MPFR_MANT(x) ((x)->_mpfr_d)
+#define SPEX_MPFR_EXP(x)  ((x)->_mpfr_exp)
+#define SPEX_MPFR_PREC(x) ((x)->_mpfr_prec)
+#define SPEX_MPFR_SIGN(x) ((x)->_mpfr_sign)
+
+/*re-define but same result: */
+#define SPEX_MPFR_REAL_PTR(x) (&((x)->_mpfr_d[-1]))
+
+/* Invalid exponent value (to track bugs...) */
+#define SPEX_MPFR_EXP_INVALID \
+ ((mpfr_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mpfr_exp_t)/sizeof(mp_limb_t)-2))
+
+/* Macros to set the pointer in mpz_t/mpq_t/mpfr_t variable to NULL. It is best
+ * practice to call these macros immediately after mpz_t/mpq_t/mpfr_t variable
+ * is declared, and before the mp*_init function is called. It would help to
+ * prevent error when SPEX_MP*_CLEAR is called before the variable is
+ * successfully initialized.
+ */
+
+#define SPEX_MPZ_SET_NULL(x)                \
+    SPEX_MPZ_PTR(x) = NULL;                 \
+    SPEX_MPZ_SIZ(x) = 0;                    \
+    SPEX_MPZ_ALLOC(x) = 0;
+
+#define SPEX_MPQ_SET_NULL(x)                     \
+    SPEX_MPZ_PTR(SPEX_MPQ_NUM(x)) = NULL;        \
+    SPEX_MPZ_SIZ(SPEX_MPQ_NUM(x)) = 0;           \
+    SPEX_MPZ_ALLOC(SPEX_MPQ_NUM(x)) = 0;         \
+    SPEX_MPZ_PTR(SPEX_MPQ_DEN(x)) = NULL;        \
+    SPEX_MPZ_SIZ(SPEX_MPQ_DEN(x)) = 0;           \
+    SPEX_MPZ_ALLOC(SPEX_MPQ_DEN(x)) = 0;
+
+#define SPEX_MPFR_SET_NULL(x)               \
+    SPEX_MPFR_MANT(x) = NULL;               \
+    SPEX_MPFR_PREC(x) = 0;                  \
+    SPEX_MPFR_SIGN(x) = 1;                  \
+    SPEX_MPFR_EXP(x) = SPEX_MPFR_EXP_INVALID;
+
+/* GMP does not give a mechanism to tell a user when an mpz, mpq, or mpfr
+ * item has been cleared; thus, if mp*_clear is called on an object that
+ * has already been cleared, gmp will crash. It is also not possible to
+ * set a mp*_t = NULL. Thus, this mechanism modifies the internal GMP
+ * size of entries to avoid crashing in the case that a mp*_t is cleared
+ * multiple times.
+ */
+
+#define SPEX_MPZ_CLEAR(x)                        \
+{                                                \
+    if ((x) != NULL && SPEX_MPZ_PTR(x) != NULL)  \
+    {                                            \
+        mpz_clear(x);                            \
+        SPEX_MPZ_SET_NULL(x);                    \
+    }                                            \
+}
+
+#define SPEX_MPQ_CLEAR(x)                   \
+{                                           \
+    SPEX_MPZ_CLEAR(SPEX_MPQ_NUM(x));        \
+    SPEX_MPZ_CLEAR(SPEX_MPQ_DEN(x));        \
+}
+
+#define SPEX_MPFR_CLEAR(x)                        \
+{                                                 \
+    if ((x) != NULL && SPEX_MPFR_MANT(x) != NULL) \
+    {                                             \
+        mpfr_clear(x);                            \
+        SPEX_MPFR_SET_NULL(x);                    \
+    }                                             \
+}
+#endif
+
+
+#if 1 //FIXME new lines
+// ignore warnings about unused parameters in this file
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
+//------------------------------------------------------------------------------
+// global variables
+//------------------------------------------------------------------------------
+// TODO this is not thread-safe
+
+extern jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
+extern int64_t spex_gmp_nmalloc ;  // number of malloc'd objects in SPEX_gmp_list
+extern int64_t spex_gmp_nlist ;    // size of the SPEX_gmp_list
+extern void **spex_gmp_list  ;   // list of malloc'd objects
+
+//extern int64_t spex_gmp_ntrials ; // number of malloc's allowed (for
+                                // testing only): -1 means unlimited.
+
+extern mpz_t  *spex_gmpz_archive  ;    // current mpz object
+extern mpz_t  *spex_gmpz_archive2  ;    // current second mpz object
+extern mpq_t  *spex_gmpq_archive   ;    // current mpq object
+extern mpfr_t *spex_gmpfr_archive  ;    // current mpfr object
+
+#endif
+
+
 #define SPEX_GMP_WRAPPER_START                                          \
 {                                                                       \
     spex_gmp_nmalloc = 0 ;                                              \
@@ -114,6 +251,7 @@
     }                                                                   \
     SPEX_FREE (p) ;                                                     \
 }
+
 
 #endif
 

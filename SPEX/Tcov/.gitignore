@@ -14,3 +14,5 @@
 !tcov_for_update.c
 !tcov_malloc_test.c
 !tcov_malloc_test.h
+!simple_rand.c
+!simple_rand.h

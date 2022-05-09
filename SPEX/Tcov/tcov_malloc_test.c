@@ -74,7 +74,7 @@ void tcov_free
     free (p) ;
 }
 
-extern jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
+//extern jmp_buf spex_gmp_environment ;  // for setjmp and longjmp//FIXME
 
 int spex_gmp_realloc_test
 (

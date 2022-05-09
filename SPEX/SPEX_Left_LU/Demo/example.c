@@ -61,8 +61,8 @@ int main (void)
     // R is a n*n triplet matrix whose entries are FP64 Note that the first
     // boolean parameter says that the matrix is not shallow, so that A->i,
     // A->j, and A->x are calloc'd. The second boolean parameter is meaningless
-    // for FP64 matrices, but it tells SPEX Left LU to allocate the values of A->x
-    // for the mpz_t, mpq_t, and mpfr_t entries
+    // for FP64 matrices, but it tells SPEX Left LU to allocate the values of
+    // A->x for the mpz_t, mpq_t, and mpfr_t entries
     SPEX_matrix_allocate(&R, SPEX_TRIPLET, SPEX_FP64, n, n, nz,
         false, true, option);
     
@@ -102,9 +102,6 @@ int main (void)
 
     clock_t start_s = clock();
    
-    // SPEX Left LU has an optional check, to enable it, one can set the following
-    // parameter to be true.
-    //option->check = true;
     // Solve the system and give double solution
     OK(SPEX_Left_LU_backslash( &x, SPEX_FP64, A, b, option));
          

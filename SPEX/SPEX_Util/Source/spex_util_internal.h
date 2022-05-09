@@ -24,11 +24,8 @@
 //------------------------------------------------------------------------------
 
 // Standard C libraries
-#include <setjmp.h>
-#include <math.h>
+#include <setjmp.h> 
 #include <stdarg.h>
-#include <stdint.h>
-#include <inttypes.h>
 
 // SuiteSparse headers
 #include "SuiteSparse_config.h"
@@ -173,6 +170,7 @@ Definitions of these macros:
 //-------------------------functions for GMP wrapper----------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+#if 0 //FIXME moved to SPEX_gmp.h
 // uncomment this to print memory debugging info
 // #define SPEX_GMP_MEMORY_DEBUG
 
@@ -201,6 +199,9 @@ void spex_gmp_free (void *p, size_t size) ;
 void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
 
 void spex_gmp_failure (int status) ;
+#else
+#include "SPEX_gmp.h"
+#endif
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -293,7 +294,7 @@ void spex_gmp_failure (int status) ;
 //------------------------------------------------------------------------------
 // Field access macros for MPZ/MPQ/MPFR struct
 //------------------------------------------------------------------------------
-
+#if 0 //FIXME moved to SPEX_gmp.h
 // FUTURE: make these accessible to the end user?
 
 // (similar definition in gmp-impl.h and mpfr-impl.h)
@@ -372,6 +373,7 @@ void spex_gmp_failure (int status) ;
         SPEX_MPFR_SET_NULL(x);                    \
     }                                             \
 }
+#endif
 
 
 // ============================================================================
@@ -601,6 +603,13 @@ SPEX_info spex_cumsum
     int64_t *p,          // vector to store the sum of c
     int64_t *c,          // vector which is summed
     int64_t n            // size of c
+);
+
+/* Purpose: perform basic check for a given factorization
+ */
+SPEX_info spex_factorization_basic_check
+(
+    SPEX_factorization *F // The factorization to check
 );
 
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type

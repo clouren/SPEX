@@ -47,4 +47,4 @@ clean:
 purge: distclean
 
 distclean: clean
-	- $(RM) -r example example2 example3 example4 example5 spexlu_demo *.a *.dSYM *.obj *.dll
+	- $(RM) -r example example2 spexlu_demo spexlu_doub_demo *.a *.dSYM *.obj *.dll

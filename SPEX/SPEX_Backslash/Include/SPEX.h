@@ -752,10 +752,10 @@ SPEX_info SPEX_factorization_check
                            dynamic csc for updatable*/
         !(
           (!(F->updatable) && F->L->kind == SPEX_CSC &&
-                              !(F->L->p_shallow) && !(F->L->p) && 
-                              !(F->L->i_shallow) && !(F->L->i) &&
-                              !(F->L->x_shallow) && !(F->L->x)     ) ||         
-          (  F->updatable  && F->L->kind == SPEX_DYNAMIC_CSC && !(F->L->v))
+                              !(F->L->p_shallow) && F->L->p && 
+                              !(F->L->i_shallow) && F->L->i &&
+                              !(F->L->x_shallow) && F->L->x.mpz     ) ||         
+          (  F->updatable  && F->L->kind == SPEX_DYNAMIC_CSC && F->L->v)
          ) ||
         /* if F is LU*/
         (F->kind == SPEX_LU_FACTORIZATION &&
@@ -767,10 +767,10 @@ SPEX_info SPEX_factorization_check
                            dynamic csc for updatable*/
           !(
             (!(F->updatable) && F->U->kind == SPEX_CSC &&
-                                !(F->U->p_shallow) && !(F->U->p) &&
-                                !(F->U->i_shallow) && !(F->U->i) &&
-                                !(F->U->x_shallow) && !(F->U->x)     ) ||
-            (  F->updatable  && F->U->kind == SPEX_DYNAMIC_CSC && !(F->U->v))
+                                !(F->U->p_shallow) && F->U->p &&
+                                !(F->U->i_shallow) && F->U->i &&
+                                !(F->U->x_shallow) && F->U->x.mpz     ) ||
+            (  F->updatable  && F->U->kind == SPEX_DYNAMIC_CSC && F->U->v)
            )                 )))
     {     
         return SPEX_INCORRECT_INPUT;
@@ -1018,8 +1018,6 @@ SPEX_info SPEX_mpz_get_d (double *x, const mpz_t y) ;
 
 SPEX_info SPEX_mpz_get_si (int64_t *x, const mpz_t y) ;
 
-SPEX_info SPEX_mpz_set_q (mpz_t x, const mpq_t y) ;
-
 SPEX_info SPEX_mpz_mul (mpz_t a, const mpz_t b, const mpz_t c) ;
 
 SPEX_info SPEX_mpz_mul_si (mpz_t a, const mpz_t b, const int64_t c) ;
@@ -1070,8 +1068,6 @@ SPEX_info SPEX_mpq_canonicalize (mpq_t x);
 
 SPEX_info SPEX_mpq_set_d (mpq_t x, const double y) ;
 
-SPEX_info SPEX_mpq_swap (mpq_t x, mpq_t y);
-
 SPEX_info SPEX_mpq_set_ui (mpq_t x, const uint64_t y, const uint64_t z) ;
 
 SPEX_info SPEX_mpq_set_si (mpq_t x, const int64_t y, const uint64_t z) ;
@@ -1079,8 +1075,6 @@ SPEX_info SPEX_mpq_set_si (mpq_t x, const int64_t y, const uint64_t z) ;
 SPEX_info SPEX_mpq_set_num (mpq_t x, const mpz_t y) ;
 
 SPEX_info SPEX_mpq_set_den (mpq_t x, const mpz_t y) ;
-
-SPEX_info SPEX_mpq_get_den (mpz_t x, const mpq_t y) ;
 
 SPEX_info SPEX_mpq_get_d (double *x, const mpq_t y) ;
 
@@ -1098,8 +1092,6 @@ SPEX_info SPEX_mpq_cmp (int *r, const mpq_t x, const mpq_t y) ;
 
 SPEX_info SPEX_mpq_cmp_ui (int *r, const mpq_t x,
                     const uint64_t num, const uint64_t den) ;
-
-SPEX_info SPEX_mpq_cmp_z (int *r, const mpq_t x, const mpz_t y) ;
 
 SPEX_info SPEX_mpq_sgn (int *sgn, const mpq_t x) ;
 
@@ -1143,14 +1135,20 @@ SPEX_info SPEX_mpfr_free_cache (void) ;
 
 SPEX_info SPEX_mpfr_free_str (char *str) ;
 
-SPEX_info SPEX_gmp_printf (const char *format, ... ) ;
 #if 0
 // These functions are currently unused, but kept here for future reference.
 SPEX_info SPEX_gmp_asprintf (char **str, const char *format, ... ) ;
-SPEX_info SPEX_mpfr_printf ( const char *format, ... ) ;
 SPEX_info SPEX_gmp_fprintf (FILE *fp, const char *format, ... ) ;
+SPEX_info SPEX_gmp_printf (const char *format, ... ) ;
+SPEX_info SPEX_mpfr_printf ( const char *format, ... ) ;
 SPEX_info SPEX_mpfr_fprintf (FILE *fp, const char *format, ... ) ;
+
 SPEX_info SPEX_mpz_set_d (mpz_t x, const double y) ;
+SPEX_info SPEX_mpz_set_q (mpz_t x, const mpq_t y) ;
+
+SPEX_info SPEX_mpq_swap (mpq_t x, mpq_t y);
+SPEX_info SPEX_mpq_cmp_z (int *r, const mpq_t x, const mpz_t y) ;
+SPEX_info SPEX_mpq_get_den (mpz_t x, const mpq_t y) ;
 
 SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 #endif

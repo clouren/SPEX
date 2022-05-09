@@ -159,6 +159,7 @@ static:
 #	( cd CAMD && $(MAKE) static )
 #	( cd CCOLAMD && $(MAKE) static )
 	( cd COLAMD && $(MAKE) static )
+	( cd SPEX && $(MAKE) static )
 #	( cd CHOLMOD && $(MAKE) static )
 #	( cd KLU && $(MAKE) static )
 #	( cd LDL && $(MAKE) static )
@@ -198,11 +199,7 @@ purge:
 #	- ( cd SPQR && $(MAKE) purge )
 #	- ( cd PIRO_BAND && $(MAKE) purge )
 #	- ( cd SKYLINE_SVD && $(MAKE) purge )
-	- ( cd SPEX/SPEX_Left_LU && $(MAKE) purge )
-	- ( cd SPEX/SPEX_Update && $(MAKE) purge )
-	- ( cd SPEX/SPEX_Util && $(MAKE) purge )
-	- ( cd SPEX/SPEX_Cholesky && $(MAKE) purge )
-	- ( cd SPEX/SPEX_WAMF && $(MAKE) purge )
+	- ( cd SPEX && $(MAKE) purge )
 #	- $(RM) MATLAB_Tools/*/*.mex* MATLAB_Tools/spok/private/*.mex*
 	- $(RM) -r include/* bin/* lib/* share/*
 
@@ -228,8 +225,7 @@ clean:
 #	- ( cd SPQR && $(MAKE) clean )
 #	- ( cd PIRO_BAND && $(MAKE) clean )
 #	- ( cd SKYLINE_SVD && $(MAKE) clean )
-	- ( cd SPEX/SPEX_Left_LU && $(MAKE) clean )
-	- ( cd SPEX/SPEX_Util && $(MAKE) clean )
+	- ( cd SPEX && $(MAKE) clean )
 
 # Create the PDF documentation
 docs:

@@ -1,5 +1,5 @@
-% SPEX_Left_LU_DEMO a demo of SPEX_Left_LU_backslash
-% SPEX_Left_LU_LU is a package for solving sparse linear systems of equations
+%% SPEX_Left_LU_DEMO a demo of SPEX_Left_LU_backslash
+% SPEX is a package for solving sparse linear systems of equations
 % with a roundoff-free integer-preserving method.  The result is
 % always exact, unless the matrix A is perfectly singular.
 %
@@ -14,7 +14,7 @@ format compact
 %% SPEX_Left_LU_backslash vs MATLAB backslash: first example
 % In this first example, x = SPEX_Left_LU_backslash (A,b) returns an approximate
 % solution, but not because it was computed incorrectly in SPEX_Left_LU_backslash.
-% It is computed exactly as a rational result in SPEX_backslash with
+% It is computed exactly as a rational result in SPEX_Left_LU_backslash with
 % arbitrary precision, but then converted to double precision on output.
 
 format long g
@@ -88,13 +88,13 @@ option.solution = 'char' ;  % return x as a cell array of strings
 xspex = SPEX_Left_LU_backslash (U, b, option)
 
 %% Converting an exact rational result to vpa or double
-% If SPEX_backslash returns x as a cell array of strings, it cannot
+% If SPEX_Left_LU_backslash returns x as a cell array of strings, it cannot
 % be immediately used in computations in MATLAB.  It can be converted
 % into a vpa or double matrix, as illustrated below.  The solution
 % differs slightly from the vpa solution xvpa = vpa (U)\b, since
 % the MATLAB vpa converts fl(0.9) into a decimal representation 0.9,
 % or exactly 9/10; this is not exactly equal to fl(0.9), since the
-% value 9/10 is not representable in IEEE floating-point.  SPEX_backslash,
+% value 9/10 is not representable in IEEE floating-point.  SPEX_Left_LU_backslash,
 % by contrast, converts fl(0.9) into its exact rational representation,
 % 45000000000000001 / 50000000000000000.
 
@@ -103,7 +103,7 @@ xspex_as_double = double (vpa (xspex))
 xvpa_as_double = double (xvpa)
 
 %% Comparing the VPA and SPEX_Left_LU_BACKSLASH solutions in double
-% Both vpa(U)\b and SPEX_backslash(U,b) compute the same result
+% Both vpa(U)\b and SPEX_Left_LU_backslash(U,b) compute the same result
 % in the end, when their results are converted to double.
 err = xvpa_as_double - xspex_as_double
 

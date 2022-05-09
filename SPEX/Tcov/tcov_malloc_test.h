@@ -13,7 +13,7 @@
 
 #include "spex_left_lu_internal.h"
 #include "spex_update_internal.h"
-#include "SPEX_gmp.h"
+//#include "SPEX_gmp.h"//FIXME
 
 extern int64_t malloc_count ;
 

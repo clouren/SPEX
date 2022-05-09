@@ -128,7 +128,8 @@ SPEX_info SPEX_Chol_solve
     //--------------------------------------------------------------------------
     // get real solution x by applying both permutation and scale
     // x = P*b2/scale
-    //--------------------------------------------------------------------------    // Scale is the scaling factor for the solution vectors.
+    //--------------------------------------------------------------------------
+    // Scale is the scaling factor for the solution vectors.
     // When the forward/backsolve is complete, the entries in
     // x/det are rational, but are solving the scaled linear system
     // A' x = b' (that is if A had input which was rational or floating point

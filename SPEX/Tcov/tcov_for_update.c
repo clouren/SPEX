@@ -83,8 +83,9 @@
     SPEX_FREE(Q_inv);                            \
     if (F) SPEX_MPQ_CLEAR(F->scale_for_A);       \
     SPEX_FREE (F) ;                              \
-    SPEX_MPZ_CLEAR(tmpz);                        \
-    SPEX_MPQ_CLEAR(tmpq);                        \
+    SPEX_MPZ_CLEAR(tmpz1);                       \
+    SPEX_MPZ_CLEAR(tmpz2);                       \
+    SPEX_MPZ_CLEAR(tmpz3);                       \
     SPEX_FREE(option);                           \
     TEST_OK(SPEX_finalize()) ;                   \
 }
@@ -183,15 +184,14 @@ int main( int argc, char* argv[])
                 SPEX_matrix *b = NULL, *b_sol = NULL;
                 SPEX_matrix *L = NULL, *U = NULL, *rhos = NULL;
                 int64_t *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL;
-                mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
-                mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);
+                mpz_t tmpz1; SPEX_MPZ_SET_NULL(tmpz1);
+                mpz_t tmpz2; SPEX_MPZ_SET_NULL(tmpz2);
+                mpz_t tmpz3; SPEX_MPZ_SET_NULL(tmpz3);
                 FILE *mat_file = NULL;
+
                 TEST_CHECK(SPEX_create_default_options(&option));
                 if (pretend_to_fail) {continue;}
-                TEST_CHECK(SPEX_mpz_init(tmpz));
-                if (pretend_to_fail) {continue;}
-                TEST_CHECK(SPEX_mpq_init(tmpq));
-                if (pretend_to_fail) {continue;}
+
                 simple_rand_seed(seed);
                 option->print_level = 3;
 
@@ -939,6 +939,37 @@ int main( int argc, char* argv[])
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     TEST_CHECK_FAILURE(SPEX_Update_Chol_Rank1(
                         NULL, NULL, 1, option), SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // fail some SPEX_gmp functions
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // initialize mpz variables
+                    TEST_CHECK(SPEX_mpz_init(tmpz1));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_init(tmpz2));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_init(tmpz3));
+                    if (pretend_to_fail) {continue;}
+
+                    // set tmpz1 = 4 and tmpz2 = 4
+                    TEST_CHECK(SPEX_mpz_set_ui(tmpz1, 4));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_set_ui(tmpz2, 0));
+                    if (pretend_to_fail) {continue;}
+
+                    // try to compute 4/0, which will fail these functions
+                    TEST_CHECK_FAILURE(SPEX_mpz_fdiv_q(tmpz1, tmpz1, tmpz2),
+                        SPEX_PANIC);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_mpz_cdiv_q(tmpz1, tmpz1, tmpz2),
+                        SPEX_PANIC);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_mpz_cdiv_qr(tmpz1, tmpz3, tmpz1,
+                        tmpz2), SPEX_PANIC);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_mpz_divexact(tmpz1, tmpz1, tmpz2),
+                        SPEX_PANIC);
                     if (pretend_to_fail) {continue;}
                 }
 

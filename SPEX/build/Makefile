@@ -25,8 +25,11 @@ include ../../SuiteSparse_config/SuiteSparse_config.mk
 # uncomment for extra error checking:
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
-# SPEX_Left LU depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
+# SPEX depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
+
+# uncomment for debugging
+#CF += -g
 
 C = $(CC) $(CF) -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Util/Source -I../SPEX_Left_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source
 
@@ -147,7 +150,7 @@ spex_chol_%.o: ../SPEX_Cholesky/Source/spex_chol_%.c ../SPEX_Backslash/Include/S
 
 #-------------------------------------------------------------------------------
 
-OBJ_UPADATE = \
+OBJ_UPDATE = \
     spex_update_backward_sub.o \
     SPEX_Update_Chol_Rank1.o \
     spex_update_cppu.o \
@@ -202,7 +205,12 @@ $(INSTALL_LIB)/$(SO_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL)
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_PLAIN) )
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_MAIN) )
 	$(CP) ../SPEX_Backslash/Include/SPEX.h $(INSTALL_INCLUDE)
+	#$(CP) ../Doc/SPEX_UserGuide.pdf $(INSTALL_DOC)
+	#$(CP) ../README.md $(INSTALL_DOC)/SPEX_README.md
 	chmod 644 $(INSTALL_INCLUDE)/SPEX.h
+	#chmod 644 $(INSTALL_DOC)/SPEX_UserGuide.pdf
+	#chmod 644 $(INSTALL_DOC)/SPEX_README.md
+
 
 # uninstall SPEX
 uninstall:
@@ -210,6 +218,9 @@ uninstall:
 	$(RM) $(INSTALL_LIB)/$(SO_PLAIN)
 	$(RM) $(INSTALL_LIB)/$(SO_MAIN)
 	$(RM) $(INSTALL_INCLUDE)/SPEX.h
+	$(RM) $(INSTALL_DOC)/SPEX_UserGuide.pdf
+	$(RM) $(INSTALL_DOC)/SPEX_README.md
+
 
 #-------------------------------------------------------------------------------
 # Remove all but the files in the original distribution

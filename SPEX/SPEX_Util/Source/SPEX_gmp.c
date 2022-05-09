@@ -62,7 +62,7 @@
 // a memory error occurs (avoiding a double-free), in SPEX_GMP_SAFE_FREE.
 
 #include "spex_util_internal.h"
-#include "SPEX_gmp.h"
+//#include "SPEX_gmp.h" 
 
 // ignore warnings about unused parameters in this file
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -399,6 +399,7 @@ SPEX_info SPEX_gmp_fprintf
  * of characters written) upon success, otherwise return negative value (error
  * code) */
 
+#if 0
 /* This function is currently unused, but kept here for future reference. */
 SPEX_info SPEX_gmp_printf
 (
@@ -420,6 +421,7 @@ SPEX_info SPEX_gmp_printf
     // gmp_vprintf returns -1 if an error occurred.
     return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
 }
+#endif
 
 
 //------------------------------------------------------------------------------
@@ -703,13 +705,13 @@ SPEX_info SPEX_mpz_set_si
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
-#if 0
-/* This function is currently unused, but kept here for future reference. */
 //------------------------------------------------------------------------------
 // SPEX_mpz_set_d
 //------------------------------------------------------------------------------
 
 /* Purpose: Safely set an mpz number = a double */
+#if 0
+/* This function is currently unused, but kept here for future reference. */
 
 SPEX_info SPEX_mpz_set_d
 (
@@ -782,6 +784,9 @@ SPEX_info SPEX_mpz_swap
 // SPEX_mpz_set_q
 //------------------------------------------------------------------------------
 
+#if 0
+/* This function is currently unused, but kept here for future reference. */
+
 /* Purpose: Safely set an mpz number = mpq number */
 
 SPEX_info SPEX_mpz_set_q
@@ -795,6 +800,8 @@ SPEX_info SPEX_mpz_set_q
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_mul
@@ -1402,6 +1409,9 @@ SPEX_info SPEX_mpq_set_den
 // SPEX_mpq_get_den
 //------------------------------------------------------------------------------
 
+#if 0
+/* This function is currently unused, but kept here for future reference. */
+
 /* Purpose: Safely set an mpz number = denominator of an mpq number */
 
 SPEX_info SPEX_mpq_get_den
@@ -1415,6 +1425,7 @@ SPEX_info SPEX_mpq_get_den
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
+#endif
 
 //------------------------------------------------------------------------------
 // SPEX_mpq_get_d
@@ -1438,6 +1449,9 @@ SPEX_info SPEX_mpq_get_d
 // SPEX_mpq_swap
 //------------------------------------------------------------------------------
 
+#if 0
+/* This function is currently unused, but kept here for future reference. */
+
 /* Purpose: Safely swap the values x and y efficiently */
 
 SPEX_info SPEX_mpq_swap
@@ -1451,6 +1465,8 @@ SPEX_info SPEX_mpq_swap
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 // SPEX_mpq_neg
@@ -1589,6 +1605,9 @@ SPEX_info SPEX_mpq_cmp_ui
 // SPEX_mpq_cmp_z
 //------------------------------------------------------------------------------
 
+#if 0
+/* This function is currently unused, but kept here for future reference. */
+
 /* Purpose: Safely check if a mpq number equals to a mpz number,
  * r = 0 (r = false) if x != y, r < 0 if x < y, or r > 0 if x > y */
 
@@ -1604,6 +1623,8 @@ SPEX_info SPEX_mpq_cmp_z
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 // SPEX_mpq_equal

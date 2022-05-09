@@ -34,7 +34,7 @@ void SPEX_print_options // display specified/default options to user
 {
 
     char *piv, *order;
-    if (option->order == SPEX_COLAMD)
+    if (option->order == SPEX_COLAMD || option->order == SPEX_DEFAULT_ORDERING)
     {
         order = "the COLAMD";
     }
@@ -132,7 +132,7 @@ SPEX_info SPEX_process_command_line //processes the command line
                 return SPEX_INCORRECT_INPUT;
             }
             option->order = atoi(argv[i]);
-            if (option->order < 0 || option->order > 2)
+            if (option->order < 0 || option->order > 3)
             {
                 printf("\n****ERROR! Invalid column ordering"
                     "\nDefaulting to COLAMD\n\n");

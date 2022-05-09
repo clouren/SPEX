@@ -38,9 +38,10 @@
 //
 // q (or col) Column_order_param. e.g., spex_lu_demo q 1, which indicates SPEX_Left_LU
 // will use COLAMD for column ordering. Other available options are:
-//        0: None: Not recommended for sparse matrices
-//        1: COLAMD: Default
-//        2: AMD
+//        0: Default: COLAMD
+//        1: None: Not recommended for sparse matrices
+//        2: COLAMD
+//        3: AMD
 //
 // t (or tol) tolerance_param. e.g., spex_lu_demo t 1e-10, which indicates SPEX_Left_LU
 // will use 1e-10 as the tolerance for pivot scheme 3 and 4 mentioned above.

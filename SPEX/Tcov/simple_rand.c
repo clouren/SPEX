@@ -1,9 +1,10 @@
 // --------------------------------------------------------------------------
-// SPEX_Update/Demo/simple_rand.c: a very simple random number generator
+// Tcov/simple_rand.c: a very simple random number generator
 // --------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen, Lorena
+// Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All
+// Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 // --------------------------------------------------------------------------
@@ -11,12 +12,12 @@
 //  The POSIX.1-2001 example of rand, duplicated here so that the same sequence
 //  will be generated on different machines.  The purpose is not to generate
 //  high-quality random numbers, but to ensure the same sequence is generated
-//  on any computer or operating system.  This allows the SPEX_Update tests and
-//  demos to be repeatable.
+//  on any computer or operating system.  This allows the test coverage to be
+//  repeatable.
 
 //  Since the simple_rand ( ) function is replicated from the POSIX.1-2001
 //  standard, no copyright claim is intended for this specific file.  The
-//  copyright statement above applies to all of SPEX_Update, not this file.
+//  copyright statement above applies to all of SPEX, not this file.
 
 #include "simple_rand.h"
 

@@ -94,10 +94,10 @@ SPEX_info SPEX_factorization_convert
                            dynamic csc for updatable*/
         !(
           (!(F->updatable) && F->L->kind == SPEX_CSC &&
-                              !(F->L->p_shallow) && !(F->L->p) &&
-                              !(F->L->i_shallow) && !(F->L->i) &&
-                              !(F->L->x_shallow) && !(F->L->x)     ) ||
-          (  F->updatable  && F->L->kind == SPEX_DYNAMIC_CSC && !(F->L->v))
+                              !(F->L->p_shallow) && F->L->p &&
+                              !(F->L->i_shallow) && F->L->i &&
+                              !(F->L->x_shallow) && F->L->x.mpz     ) ||
+          (  F->updatable  && F->L->kind == SPEX_DYNAMIC_CSC && F->L->v)
          ) ||
         /* if F is LU*/
         (F->kind == SPEX_LU_FACTORIZATION &&
@@ -109,11 +109,11 @@ SPEX_info SPEX_factorization_convert
                            dynamic csc for updatable*/
           !(
             (!(F->updatable) && F->U->kind == SPEX_CSC &&
-                                !(F->U->p_shallow) && !(F->U->p) &&
-                                !(F->U->i_shallow) && !(F->U->i) &&
-                                !(F->U->x_shallow) && !(F->U->x)     ) ||
-            (  F->updatable  && F->U->kind == SPEX_DYNAMIC_CSC && !(F->U->v))
-           )                 )))
+                                !(F->U->p_shallow) && F->U->p &&
+                                !(F->U->i_shallow) && F->U->i &&
+                                !(F->U->x_shallow) && F->U->x.mpz     ) ||
+            (  F->updatable  && F->U->kind == SPEX_DYNAMIC_CSC && F->U->v)
+           )                                                               )))
     {
         return SPEX_INCORRECT_INPUT;
     }

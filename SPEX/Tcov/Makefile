@@ -22,7 +22,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 	-I../SPEX_Backslash/Include/ \
 	-I../SPEX_Util/Source/ \
 	-I../SPEX_Left_LU/Source -I../SPEX_Left_LU/Demo \
-	-I../SPEX_Update/Source  -I../SPEX_Update/Demo \
+	-I../SPEX_Update/Source \
         -I../../SuiteSparse_config -I../../COLAMD/Include \
 	-I../../AMD/Include \
         -DSPEX_GMP_LIST_INIT=2 #-DSPEX_DEBUG
@@ -33,13 +33,17 @@ LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig
 cov: runtests
 	./covall
 
-all: test4llu SPEXLLU test4luu SPEXLUU
+all: test4llu SPEXLLU test4luu
 
 #-------------------------------------------------------------------------------
+# compile .c file in this folder
 
 CS_Tcov = tcov_malloc_test.o
 
 $(CS_Tcov): tcov_malloc_test.h
+
+#-------------------------------------------------------------------------------
+# link and compile each .c file in SPEX_Util/Source
 
 CS_Util = \
     SPEX_calloc.o \
@@ -77,8 +81,9 @@ CS_Util = \
     spex_dynamic_to_CSC_mpz.o \
     spex_CSC_mpz_to_dynamic.o \
     spex_delete_mpz_array.o \
-    SPEX_determine_symmetry.o SPEX_transpose.o \
-    SPEX_factorization_convert.o \
+    SPEX_factorization_convert.o
+    #SPEX_determine_symmetry.o \
+    SPEX_transpose.o \
 
 $(CS_Util): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h
 
@@ -91,6 +96,7 @@ spex_%.c:
 	- ln -s ../SPEX_Util/Source/$@
 
 #-------------------------------------------------------------------------------
+# link and compile each .c file in SPEX_Left_LU/Source
 
 CS_Left_LU = \
     SPEX_LU_analyze.o \
@@ -128,6 +134,7 @@ demos.c:
 	- ln -s ../SPEX_Left_LU/Demo/$@
 
 #-------------------------------------------------------------------------------
+# link and compile each .c file in SPEX_Update/Source
 
 CS_Update = \
     spex_update_backward_sub.o \
@@ -150,7 +157,7 @@ CS_Update = \
 
 $(CS_Update): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
 
-.PRECIOUS: SPEX_Update_%.c spex_update_%.c LU_update_demo.c
+.PRECIOUS: SPEX_Update_%.c spex_update_%.c
 
 SPEX_Update_%.c:
 	- ln -s ../SPEX_Update/Source/$@
@@ -158,26 +165,17 @@ SPEX_Update_%.c:
 spex_update_%.c:
 	- ln -s ../SPEX_Update/Source/$@
 
-LU_update_demo.c:
-	- ln -s ../SPEX_Update/Demo/$@
-
-simple_rand.c:
-	- ln -s ../SPEX_Update/Demo/$@
-
 #-------------------------------------------------------------------------------
 
-test4llu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_left_LU.c demos.c
-	$(CC) $(LDFLAGS) tcov_for_left_LU.c demos.c $(CFLAGS) -o tcov_for_left_LU $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
+test4llu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_left_LU.c
+	$(CC) $(LDFLAGS) tcov_for_left_LU.c $(CFLAGS) -o tcov_for_left_LU $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
 
-SPEXLLU: $(CS_Util) $(CS_Left_LU) $(CS_Update) spexlu_demo.c demos.c
+SPEXLLU: $(CS_Util) $(CS_Left_LU) $(CS_Update) spexlu_demo.c demos.c ../SPEX_Left_LU/Demo/demos.h
 	$(CC) $(LDFLAGS) spexlu_demo.c demos.c $(CFLAGS) -o spexlu_demo $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
 
 
-test4luu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_update.c simple_rand.c
+test4luu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_update.c simple_rand.c simple_rand.h
 	$(CC) $(LDFLAGS) tcov_for_update.c simple_rand.c $(CFLAGS) -o tcov_for_update $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
-
-SPEXLUU: $(CS_Util) $(CS_Left_LU) $(CS_Update) LU_update_demo.c
-	$(CC) $(LDFLAGS) LU_update_demo.c $(CFLAGS) -o LU_update_demo $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
 
 #-------------------------------------------------------------------------------
 
@@ -186,9 +184,9 @@ runtests: runtests4llu runtests4luu
 
 # only run test for SPEX_Left_LU
 runtests4llu: all
-	- ./spexlu_demo p 2 q 0 f ../SPEX_Left_LU/ExampleMats/10teams_mat.txt ../SPEX_Left_LU/ExampleMats/10teams_v.txt
-	- ./spexlu_demo p 3 q 1 o 1 f ../SPEX_Left_LU/ExampleMats/10teams_mat.txt ../SPEX_Left_LU/ExampleMats/10teams_v.txt
-	- ./spexlu_demo p 4 q 2 o 1 f ../SPEX_Left_LU/ExampleMats/test_mat.txt ../SPEX_Left_LU/ExampleMats/test_rhs.txt
+	- ./spexlu_demo p 2 q 1 f ../SPEX_Left_LU/ExampleMats/10teams_mat.txt ../SPEX_Left_LU/ExampleMats/10teams_v.txt
+	- ./spexlu_demo p 3 q 2 o 1 f ../SPEX_Left_LU/ExampleMats/10teams_mat.txt ../SPEX_Left_LU/ExampleMats/10teams_v.txt
+	- ./spexlu_demo p 4 q 3 o 1 f ../SPEX_Left_LU/ExampleMats/test_mat.txt ../SPEX_Left_LU/ExampleMats/test_rhs.txt
 	- ./spexlu_demo p 5 f ../SPEX_Left_LU/ExampleMats/10teams_mat.txt ../SPEX_Left_LU/ExampleMats/10teams_v.txt
 	- ./tcov_for_left_LU > test_for_left_LU.out
 	- ./tcov_for_left_LU 0 1 1
@@ -198,7 +196,6 @@ runtests4luu: all
 	- ./tcov_for_update 0 6 > test_for_update1.out
 	- ./tcov_for_update 0 0 26 > test_for_update2.out
 	- ./tcov_for_update 1 6 > test_for_update3.out
-	- #./LU_update_demo
 
 #-------------------------------------------------------------------------------
 
@@ -226,8 +223,8 @@ vtests4luu: all
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_for_left_LU tcov_for_update spexlu_demo LU_update_demo *.out *.a cov.sort out Mats4Tcov/SPEX_Update/mat.txt
-	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c demos.c LU_update_demo.c simple_rand.c
+	- $(RM) tcov_for_left_LU tcov_for_update spexlu_demo *.out *.a cov.sort out Mats4Tcov/SPEX_Update/mat.txt
+	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c demos.c
 
 purge: distclean
 
