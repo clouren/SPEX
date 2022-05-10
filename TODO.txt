@@ -1,83 +1,36 @@
-symbolic cholesky : DONE, but need to merge it
+user-callable functions for computing SPEX_matrix
 
-structral matrix: 
-    (1) SPEX_kind, SPEX_type: unchanged, just A->x is NULL, only internal
-        (USE THIS)
-    (2) SPEX_type of "structural" (NOT THIS ONE)
-
-delete SPEX_TBD
-
-unify all interface for similar functionality
-    check on merge
-
-update makefile to generate one single .so
-    single user SPEX.h
-    TODO
-
-check names of user-visible functions, be consistent
-    later
-
-never change user's "option" struct
-
-// LU Chol QR auto
-NO: SPEX_Backslash(x, SPEX_type, A, b)
-
-OK: SPEX_Backslash(x, SPEX_type, A, b, option)
-
-NO: SPEX_Backslash(x, SPEX_type, A, b, algo, option), do not use this
-
-TODO: consistent name scheme. SPEX_all_lower_case ?
-    SPEX_left_lu_...
-    SPEX_chol_...
-
-TODO: merge Developemental and InitMerge branches
-    in progress -> Developmental
-    create a single SPEX.h, has everying in it
-
---- Mar 22, 2022
-
-NO: SPEX_analyze(S, A, kind, option)
-    -combine algo, SPEX_factorization_kind and SPEX_symbolic_analysis_kind
-
-move spex_check_solution to Tcov
-
--bool updatable in the SPEX_factorization
-
--BI-directional conversion between updatable and mpz csc non-updatable
-    the whole Factorization, not a matrix
-
-LU and (QR?) solvers should be able to solve A^Tx=b
-
-    F = lu (A)
-    solve A'*x = b
-    solve A*x = b
-    both
-
-*SPEX_matrix_copy const A
-
-*SPEX_update_solve assume updatable? NO, if not updatable, call SPEX_Left_LU_solve
-
-user guide
-
-merge branches
-
-
-cmake
-
-
-------------
-
-naming: SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
-
+check names of user-visible functions, be consistent: 
+    SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
+    consistent name scheme. SPEX_all_lower_case ?
+       SPEX_left_lu_...
+       SPEX_chol_...
+    
 move SPEX_gmp functions to the end of SPEX.h?
 user cannot create their own wrapped gmp/mpfr functions!
-
-user-callable functions for computing SPEX_matrix
 
 SPEX_Left_LU/MATLAB/html
 fl(0.9)
 
------------- code review --------
+licence folder
+
+user guide and cmake
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------ code review for SPEX_Update --------
+
 spex_CSC_mpz_to_dynamic.c spex_dynamic_to_CSC_mpz.c SPEX_factorization_convert.c SPEX_factorization_free.c SPEX_matrix_convert.c SPEX_vector_allocate.c SPEX_vector_free.c SPEX_vector_realloc.c
 
 SPEX_factorization_check
