@@ -232,8 +232,8 @@ SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 // which should be considered as a n-by-1 SPEX_matrix.
 //------------------------------------------------------------------------------
 
-// NOTE: the real value of the i-th nonzero entry in the list should be computed
-// as x[i]*scale. While scale is a rational number, the real values for all
+// NOTE: the real value of the k-th nonzero entry in the list should be computed
+// as x[k]*scale. While scale is a rational number, the real values for all
 // entries should be ensured to be INTEGER!! If the real value for any entry
 // turns out to be non-integer, make sure to scale up all entries in the same
 // matrix such that the real values of all entries become integer, then
@@ -242,14 +242,14 @@ SPEX_info SPEX_create_default_options (SPEX_options **option) ;
 
 typedef struct
 {
-    int64_t nz;   // number of nonzeros. nz is meaningless for a dense vector
+    int64_t nz;   // number of explicit entries in the vector
     int64_t nzmax;// size of array i and x, nz <= nzmax
     int64_t *i;   // array of size nzmax that contains the column/row indices
-                  // of each nnz. For a dense vector, i == NULL
+                  // of each nnz.
     mpz_t *x;     // array of size nzmax that contains the values of each nnz
     mpq_t scale;  // a scale factor that has not applied to entries in this v.
-                  // The real value of the i-th nonzero entry in the list should
-                  // be computed as x[i]*scale. x[i]/den(scale) must be integer.
+                  // The real value of the k-th nonzero entry in the list should
+                  // be computed as x[k]*scale. x[k]/den(scale) must be integer.
 } SPEX_vector;
 
 //------------------------------------------------------------------------------
@@ -306,7 +306,7 @@ typedef enum
 {
     SPEX_CSC = 0,           // matrix is in compressed sparse column format
     SPEX_TRIPLET = 1,       // matrix is in sparse triplet format
-    SPEX_DENSE = 2,         // matrix is in dense format
+    SPEX_DENSE = 2,         // matrix is in dense format (held by column)
     SPEX_DYNAMIC_CSC = 3    // matrix is in dynamic CSC format with each
                             // column dynamically allocated as SPEX_vector
 }
@@ -715,11 +715,9 @@ SPEX_info SPEX_factorization_free
 //------------------------------------------------------------------------------
 // Function for checking the correctness of a factorization, and printing it
 //------------------------------------------------------------------------------
-// TODO should we restrict the type and kind of L, U and rhos? Or at least same
-//      type of entries?
+
 // SPEX_factorization_check checks all the followings:
 // 1. if the required components exist;
-//    (TODO use spex_factorization_basic_check?)
 // 2. if sizes of different matrices match, i.e., L and U should be n*n, and
 //    rhos should be n*1;
 // 3. if L (and U if exists) is correct (using SPEX_matrix_check);
@@ -906,7 +904,7 @@ SPEX_info SPEX_transpose
 // SPEX_UNSYMMETRIC is returned.
 SPEX_info SPEX_determine_symmetry
 (
-    SPEX_matrix* A,            // Input matrix to be checked for symmetry
+    SPEX_matrix *A,            // Input matrix to be checked for symmetry
     const SPEX_options* option // Command options
 );
 
@@ -1413,15 +1411,14 @@ SPEX_info SPEX_Chol_solve
 // This portion of SPEX library update a exact Cholesky factorization PAQ =
 // LDL^T exactly when A is changed as A' = A+sigma*w*w^T, or a exact LU
 // factorization PAQ = LDU when A is changed with a single column.  This code
-// accompanies the paper
-
+// accompanies the following papers:
 
 //    The theory associated with this software can be found in the paper
-//    "Sparse Exact Rank-1 Cholesky Update", J. Chen, T. A. Davis, C. Lourenco,
-//    and E. Moreno-Centeno, ACM Transactions on Mathematical Software.
-//    To be submitted.
+//    "Sparse Exact Rank-1 Cholesky Update/Downdate", J. Chen, T. A. Davis, C.
+//    Lourenco, and E. Moreno-Centeno, ACM Transactions on Mathematical
+//    Software.  To be submitted.
 
-//    "Sparse Exact Rank-1 Cholesky Update", J. Chen, T. A. Davis, C. Lourenco,
+//    "Sparse Exact LU Rank-1 Modification", J. Chen, T. A. Davis, C. Lourenco,
 //    and E. Moreno-Centeno, ACM Transactions on Mathematical Software.
 //    To be submitted.
 
@@ -1458,6 +1455,7 @@ SPEX_info SPEX_Update_LU_ColRep
     SPEX_factorization* F,  // The SPEX LU factorization of a n-by-n matrix A,
                             // including L, U, rhos, P, Pinv, Q and Qinv.
     // Input:
+    // FIXME: SPEX_vector *vk
     SPEX_matrix *vk,        // Pointer to a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix
                             // which contains the column to be inserted.
                             // The rows of vk are in the same order as A.
@@ -1470,12 +1468,13 @@ SPEX_info SPEX_Update_LU_ColRep
 
 // This function swaps the k-th column of a given m-by-n matrix A with the
 // column from a m-by-1 matrix vk. Both matrices must be of SPEX_DYNAMIC_CSC
-// SPEX_MPZ and have the same row order. On ouput, both matrices are modified.
+// SPEX_MPZ and have the same row order. On output, both matrices are modified.
 
 SPEX_info SPEX_Update_matrix_colrep// performs column replacement
 (
     // Input/Output:
     SPEX_matrix *A,         // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
+    // FIXME: SPEX_vector *vk
     SPEX_matrix *vk,        // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
                             // the column vector to replace the k-th column of A
     // Input:
@@ -1501,21 +1500,12 @@ SPEX_info SPEX_Update_matrix_colrep// performs column replacement
 // user can compute A = A + sigma*w*w' *BEFORE* using this function (since w
 // will be modified). TODO: describe how to do this.
 
-// TODO: do we need these as user-callable methods? Just for MPZ?  What data
-// formats?  formats: static CSC, dynamic CSC, and dense.
-// data types: MPZ, others?
-
-    // C=A*B, C=alpha*A+beta*B, ...
-    // C += sigma*w*w' (just dynamic CSC)
-    // C = A(p,p)   symmetric permutation (user-callable)
-    // C = A(p,q)   unsymmetric permutation
-    // C = A'   SPEX_transpose (just static CSC, but all types)
-
 SPEX_info SPEX_Update_Chol_Rank1
 (
     // Input/Output:
     SPEX_factorization *F,  // The SPEX Cholesky factorization of a n-by-n
                             // matrix A, including L, rhos, P and Pinv.
+    // FIXME: SPEX_vector *w
     SPEX_matrix *w,         // a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix with
                             // the vector to modify the original matrix A, the
                             // resulting A is A+sigma*w*w'. In output, w is

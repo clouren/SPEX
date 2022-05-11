@@ -73,51 +73,12 @@ SPEX_info SPEX_factorization_convert
 )  
 {
 
-    SPEX_info info;
-
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
-    if (!spex_initialized()) {return SPEX_PANIC;}
 
-    // TODO: maybe put this if test in a helper function
-    // spex_factorization_basic_check (F)
-    if (!F ||
-        /* F can only be LU or Cholesky*/
-        !(F->kind == SPEX_LU_FACTORIZATION ||
-          F->kind == SPEX_CHOLESKY_FACTORIZATION) ||
-        /* P_perm and Pinv_perm should exist for any kind*/ 
-        !(F->P_perm) || !(F->Pinv_perm) ||
-        /* L should exist and have MPZ entries*/
-        !(F->L) || F->L->type != SPEX_MPZ ||
-        /* L should be non-shallow csc for non-updatable or
-                           dynamic csc for updatable*/
-        !(
-          (!(F->updatable) && F->L->kind == SPEX_CSC &&
-                              !(F->L->p_shallow) && F->L->p &&
-                              !(F->L->i_shallow) && F->L->i &&
-                              !(F->L->x_shallow) && F->L->x.mpz     ) ||
-          (  F->updatable  && F->L->kind == SPEX_DYNAMIC_CSC && F->L->v)
-         ) ||
-        /* if F is LU*/
-        (F->kind == SPEX_LU_FACTORIZATION &&
-        /* Q_perm should always exist and Qinv_perm should exist for updatable*/
-         (!(F->Q_perm) || (F->updatable && !(F->Qinv_perm)) ||
-        /*U should exist and have MPZ entries*/
-          !(F->U) || F->U->type != SPEX_MPZ ||
-        /* U should be non-shallow csc for non-updatable or
-                           dynamic csc for updatable*/
-          !(
-            (!(F->updatable) && F->U->kind == SPEX_CSC &&
-                                !(F->U->p_shallow) && F->U->p &&
-                                !(F->U->i_shallow) && F->U->i &&
-                                !(F->U->x_shallow) && F->U->x.mpz     ) ||
-            (  F->updatable  && F->U->kind == SPEX_DYNAMIC_CSC && F->U->v)
-           )                                                               )))
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
+    SPEX_info info = spex_factorization_basic_check (F) ;
+    if (info != SPEX_OK) return (info) ;
 
     //--------------------------------------------------------------------------
     // quick return

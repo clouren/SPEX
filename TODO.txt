@@ -75,7 +75,14 @@ user guide and cmake
 
 ------------ code review for SPEX_Update --------
 
-spex_CSC_mpz_to_dynamic.c spex_dynamic_to_CSC_mpz.c SPEX_factorization_convert.c SPEX_factorization_free.c SPEX_matrix_convert.c SPEX_vector_allocate.c SPEX_vector_free.c SPEX_vector_realloc.c
+spex_CSC_mpz_to_dynamic.c
+spex_dynamic_to_CSC_mpz.c
+SPEX_factorization_convert.c
+SPEX_factorization_free.c
+SPEX_matrix_convert.c
+SPEX_vector_allocate.c
+SPEX_vector_free.c
+SPEX_vector_realloc.c
 
 SPEX_factorization_check
 
