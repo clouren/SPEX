@@ -1,4 +1,4 @@
-SPEX/SPEX/SPEX_Left_LU/Tcov: comprehensive test coverage for SPEX Left LU.
+SPEX/Tcov: comprehensive test coverage for SPEX.
 
 Requires Linux. Type "make" to compile, and then "make run" to run the
 tests, or "make vtests" to run the tests with valgrind for memory leakage

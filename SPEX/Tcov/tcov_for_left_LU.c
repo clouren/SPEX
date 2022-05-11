@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX/SPEX/SPEX_Left_LU/Tcov/tcov_test.c: test coverage for SPEX_Left_LU
+// SPEX/Tcov/tcov_test.c: test coverage for SPEX_Left_LU
 //------------------------------------------------------------------------------
 
-// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
