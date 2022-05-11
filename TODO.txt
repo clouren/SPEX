@@ -1,5 +1,49 @@
 user-callable functions for computing SPEX_matrix
 
+    don't add them now, but include in the next grant proposal:
+
+        C = A*B
+        C MPZ = sparse CSC MPZ * sparse CSC MPZ
+        C MPQ = sparse CSC MPZ * sparse CSC MPQ
+        C MPQ = sparse CSC MPQ * sparse CSC MPZ
+        C MPQ = sparse CSC MPQ * sparse CSC MPQ
+
+        gaxpy: y = A*x+y
+        full MPZ += (sparse CSC MPZ) * full MPZ
+        full MPQ += (sparse CSC MPZ) * full MPQ
+        full MPQ += (sparse CSC MPQ) * full MPQ
+
+        add: C = alpha*A + beta*B
+        sparse CSC MPZ = alpha * (sparse CSC MPZ) + beta * (sparse CSC MPZ)
+        sparse CSC MPQ = alpha * (sparse CSC MPZ) + beta * (sparse CSC MPQ)
+        sparse CSC MPQ = alpha * (sparse CSC MPQ) + beta * (sparse CSC MPZ)
+        sparse CSC MPQ = alpha * (sparse CSC MPQ) + beta * (sparse CSC MPQ)
+
+        C = P*A*Q permute (unsymmetric)
+        C = P*A*P' symmetric
+
+    Grant proposal: scaling!!
+
+        scale factors per row or per column.  impact on LU, Cholesky,
+        C=A*B, gaxpy, add, ...
+
+        S = diagonal matrix of scale factors
+        A (is MPZ) * S (MPQ) implicitly held
+        S*A
+        or both :  Rs * A * Cs
+
+        LU = Rs * A * Cs
+
+        can LU have new scale factors?
+        effect on rhos?
+
+    driver:  PDE?  LP solver??
+        include SPEX into SOPLEX?
+
+    propose: factorize L*U = P*A*Q, then solve A'x=b, for static factorization
+
+TODO: start here, May 17:
+
 check names of user-visible functions, be consistent: 
     SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
     consistent name scheme. SPEX_all_lower_case ?

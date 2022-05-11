@@ -105,9 +105,9 @@
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_VERSION "1.1.0"
-#define SPEX_VERSION_MAJOR 1
-#define SPEX_VERSION_MINOR 1
+#define SPEX_VERSION "2.0.0"
+#define SPEX_VERSION_MAJOR 2
+#define SPEX_VERSION_MINOR 0
 #define SPEX_VERSION_SUB   0
 
 //------------------------------------------------------------------------------
@@ -568,7 +568,6 @@ typedef struct
     // For kind == SPEX_LU_FACTORIZATION, only Q_perm is not NULL.
     // For kind == SPEX_CHOLESKY_FACTORIZATION, both Q_perm and Qinv_perm are
     // NULL.
-    // TODO for QR????
     //--------------------------------------------------------------------------
     int64_t *P_perm;                // row permutation
     int64_t *Pinv_perm;             // inverse of row permutation
@@ -714,7 +713,7 @@ SPEX_info SPEX_factorization_free
 ) ;
 
 //------------------------------------------------------------------------------
-// Function for checking the correctness of a factorization
+// Function for checking the correctness of a factorization, and printing it
 //------------------------------------------------------------------------------
 // TODO should we restrict the type and kind of L, U and rhos? Or at least same
 //      type of entries?
@@ -733,51 +732,9 @@ SPEX_info SPEX_factorization_free
 
 SPEX_info SPEX_factorization_check
 (
-    SPEX_factorization *F, // The factorization to check
+    SPEX_factorization *F, // The factorization to check / print
     const SPEX_options* option
 ) ;
-
-#if 0 // pasted here for reference
-    // TODO: maybe put this if test in a helper function
-    // spex_factorization_basic_check (F)
-    if (!F ||
-        /* F can only be LU or Cholesky*/ 
-        !(F->kind == SPEX_LU_FACTORIZATION ||
-          F->kind == SPEX_CHOLESKY_FACTORIZATION) ||
-        /* P_perm and Pinv_perm should exist for any kind*/ 
-        !(F->P_perm) || !(F->Pinv_perm) ||
-        /* L should exist and have MPZ entries*/
-        !(F->L) || F->L->type != SPEX_MPZ ||
-        /* L should be non-shallow csc for non-updatable or
-                           dynamic csc for updatable*/
-        !(
-          (!(F->updatable) && F->L->kind == SPEX_CSC &&
-                              !(F->L->p_shallow) && F->L->p && 
-                              !(F->L->i_shallow) && F->L->i &&
-                              !(F->L->x_shallow) && F->L->x.mpz     ) ||         
-          (  F->updatable  && F->L->kind == SPEX_DYNAMIC_CSC && F->L->v)
-         ) ||
-        /* if F is LU*/
-        (F->kind == SPEX_LU_FACTORIZATION &&
-        /* Q_perm should always exist and Qinv_perm should exist for updatable*/
-         (!(F->Q_perm) || (F->updatable && !(F->Qinv_perm)) ||
-        /*U should exist and have MPZ entries*/
-          !(F->U) || F->U->type != SPEX_MPZ ||
-        /* U should be non-shallow csc for non-updatable or
-                           dynamic csc for updatable*/
-          !(
-            (!(F->updatable) && F->U->kind == SPEX_CSC &&
-                                !(F->U->p_shallow) && F->U->p &&
-                                !(F->U->i_shallow) && F->U->i &&
-                                !(F->U->x_shallow) && F->U->x.mpz     ) ||
-            (  F->updatable  && F->U->kind == SPEX_DYNAMIC_CSC && F->U->v)
-           )                 )))
-    {     
-        return SPEX_INCORRECT_INPUT;
-    }   
-
-
-#endif
 
 //------------------------------------------------------------------------------
 // Function for performing in-place conversion between updatable and
@@ -929,31 +886,7 @@ SPEX_info SPEX_finalize (void) ;
 // SPEX matrix utilities
 //------------------------------------------------------------------------------
 
-// TODO: do we need these as user-callable methods? Just for MPZ?  What data
-// formats?  formats: static CSC, dynamic CSC, and dense.
-// data types: MPZ, others?
-
-    // matrix mult: C=A*B
-    // matrix add:  C=alpha*A+beta*B, or just C=A+B
-    // matrix apply:  C = f(A): div, mul, negate
-    // C = A(p,q)   unsymmetric permutation
-
-    // we have:
-    // C += sigma*w*w' (just dynamic CSC)
-    // C = A(p,p)   symmetric permutation (user-callable) shallow!!
-    // C = A'   SPEX_transpose (just static CSC, but all data types)
-
-// GraphBLAS: 16 matrix types, for 13 built-in types
-//  (sparse, hypersparse, bitmap, full) x (iso or non-iso) x (by row or by col)
-//  x (bool, int8, uint8, ... float, double, ..., user-defined)
-//  C<M> += A*B
-//  * semiring
-//  +=
-
-
-
 /* WARNING: These functions have not been test covered!*/
-
 
 /* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
@@ -976,6 +909,8 @@ SPEX_info SPEX_determine_symmetry
     SPEX_matrix* A,            // Input matrix to be checked for symmetry
     const SPEX_options* option // Command options
 );
+
+// TODO: start here on May 17, 2022:
 
 // TODO move to the end of this file?
 //------------------------------------------------------------------------------
