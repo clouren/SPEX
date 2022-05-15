@@ -49,7 +49,7 @@ end
 flags = 'CFLAGS=''-std=c99 -fPIC''';
 
 % External libraries: GMP, MPRF, AMD, and COLAMD
-libs = '-L../../lib -lgmp -lmpfr -lamd -lcolamd -lsuitesparseconfig' ;
+libs = '-L../../../lib -lgmp -lmpfr -lamd -lcolamd -lsuitesparseconfig' ;
 
 % Path to headers
 includes = '-ISource/ -I../Source/ -I../Include/ -I../../SPEX_Util/Include -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Source';
