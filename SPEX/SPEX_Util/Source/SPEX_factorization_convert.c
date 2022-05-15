@@ -286,6 +286,7 @@ SPEX_info SPEX_factorization_convert
                     // obtaining U in CSR. Therefore, the pivot entry of j-th
                     // column of U (in CSC) is always the first entry
                     // being inserted to the j-th row of U (in CSR).
+                    // In fact, all entries in each vector will be in order.
                     ASSERT(i == j && mp == 0);
                 }
             }

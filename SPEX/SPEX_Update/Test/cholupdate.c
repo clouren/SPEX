@@ -37,7 +37,6 @@
 #define PRINT_TO_FILE
 
 #include "test.h"
-#include "SPEX_Chol.h"
 #include <assert.h>
 
 int main( int argc, char* argv[])
@@ -142,12 +141,12 @@ int main( int argc, char* argv[])
 #endif
     }
 
-    OK(SPEX_mpq_get_den(tmpz, Prob_A->scale));
+    mpq_get_den(tmpz, Prob_A->scale);
     OK(SPEX_mpz_cmp_ui(&sgn, tmpz, 1));
     if (sgn != 0)
     {
-        OK(SPEX_gmp_printf("scale is %Qd, whose den is not 1\n",
-            Prob_A->scale));
+        gmp_printf("scale is %Qd, whose den is not 1\n",
+            Prob_A->scale);
         FREE_WORKSPACE;
         return 0;
     }
@@ -245,7 +244,7 @@ int main( int argc, char* argv[])
     printf("compute initial Cholesky factorization for A....\n");
     option->algo = SPEX_CHOL_LEFT;// or SPEX_CHOL_UP
     OK(SPEX_Chol_analyze(&analysis, A1, option));
-    OK(SPEX_Chol_factorize(&F_update, analysis, A1, option));
+    OK(SPEX_Chol_factorize(&F_update, A1, analysis, option));
     //OK(SPEX_factorization_convert(F_update, true, option));
 
     //--------------------------------------------------------------------------
@@ -303,17 +302,17 @@ int main( int argc, char* argv[])
         if (iter == 0)
         {
             OK(SPEX_Chol_analyze(&analysis, A2, option));
-            OK(SPEX_Chol_factorize(&Ftmp, analysis, A2, option));
+            OK(SPEX_Chol_factorize(&Ftmp, A2, analysis, option));
         }
         else if (iter == 1)
         {
             OK(SPEX_Chol_analyze(&analysis, A3, option));
-            OK(SPEX_Chol_factorize(&Ftmp, analysis, A3, option));
+            OK(SPEX_Chol_factorize(&Ftmp, A3, analysis, option));
         }
         else if(iter == 3)
         {
             OK(SPEX_Chol_analyze(&analysis, A1, option));
-            OK(SPEX_Chol_factorize(&Ftmp, analysis, A1, option));
+            OK(SPEX_Chol_factorize(&Ftmp, A1, analysis, option));
         }
         end2 = clock();
 

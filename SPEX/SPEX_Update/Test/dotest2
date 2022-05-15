@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./ptest lp_cre_b > Outputs/lp_cre_b_chol.out
+./ptest lp_cre_b > Outputs/lp_cre_b_chol.out # > 180hrs
 ./ptest lp_cre_c > Outputs/lp_cre_c_chol.out
 ./ptest lp_cre_d > Outputs/lp_cre_d_chol.out
 ./ptest lp_cycle > Outputs/lp_cycle_chol.out

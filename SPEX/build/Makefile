@@ -75,7 +75,8 @@ OBJ_UTIL = \
     spex_delete_mpz_array.o \
     SPEX_determine_symmetry.o SPEX_transpose.o \
     SPEX_factorization_convert.o \
-    SPEX_factorization_check.o
+    SPEX_factorization_check.o \
+    spex_factorization_basic_check.o
     # spex_matrix_div.o \
 
 $(OBJ_UTIL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h Makefile

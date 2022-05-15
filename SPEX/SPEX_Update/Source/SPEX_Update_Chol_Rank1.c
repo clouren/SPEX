@@ -8,16 +8,17 @@
 
 //------------------------------------------------------------------------------
 
-// Purpose: This function is used to perform Cholesky rank-1 update for
-// A' = A + sigma*w*w^T, where A' and A are n-by-n matrix, w is n-by-1 vector
-// and sigma is a scalor (positive for update and negative for downdate).  The
-// matrices in the input factorization can be any type and/or kind and does not
-// have to be in updatable format. The function will always first check if the
-// factorization is updatable and perform necessary conversion if needed. L in
-// the output factorization will become updatable.
-// 
-// The matrix A is not modified during the update. If the updated A is needed,
-// user can compute A = A + sigma*w*wT BEFORE using this function (since w
+// Purpose: This function performs rank-1 Cholesky update/downdate. The input
+// factorization needs to be updatable with L being SPEX_DYNAMIC_CSC MPZ
+// matrix. Otherwise (if F is non-updatable upon input), this function calls
+// SPEX_factorization_convert to make F updatable, which requires that L in the
+// factorization must be non-shallow SPEX_CSC MPZ matrix. The output
+// factorization will always be updatable.  Since the factorization is modified
+// during the update process, the returned F should be considered as undefined
+// if this function fails for any reason.
+
+// The matrix w is modified during the update. If the updated A is needed,
+// user can compute A = A + sigma*w*w' *BEFORE* using this function (since w
 // will be modified).
 
 #define SPEX_FREE_ALL               \

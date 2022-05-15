@@ -81,7 +81,9 @@ CS_Util = \
     spex_dynamic_to_CSC_mpz.o \
     spex_CSC_mpz_to_dynamic.o \
     spex_delete_mpz_array.o \
-    SPEX_factorization_convert.o
+    SPEX_factorization_convert.o \
+    SPEX_factorization_check.o \
+    spex_factorization_basic_check.o
     #SPEX_determine_symmetry.o \
     SPEX_transpose.o \
 

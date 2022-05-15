@@ -8,20 +8,19 @@
 
 //------------------------------------------------------------------------------
 
-// Purpose: This function performs LU update for column replacement. The
-// matrices in the input factorization can be any type and/or kind and does not
-// have to be in updatable format. The function will always first check if the
-// factorization is updatable and perform necessary conversion if needed. L and
-// U in the output factorization will be updatable. The factorization will be
-// modified during the update process.  Therefore, if this function fails for
-// any reason, the returned F should be considered as undefined.
+// Purpose: This function performs LU update for column replacement. The input
+// factorization needs to be updatable with L and U being SPEX_DYNAMIC_CSC MPZ
+// matrices. Otherwise (if F is non-updatable upon input), this function calls
+// SPEX_factorization_convert to make F updatable, which requires that L and U
+// in the factorization must be non-shallow SPEX_CSC MPZ matrices.  The output
+// factorization will always be updatable.  Since the factorization is modified
+// during the update process, the returned F should be considered as undefined
+// if this function fails for any reason.
 //
-// The matrix A is not modified during the update. If the updated A is
-// needed, user can use the follow code if A is in SPEX_dynamic_CSC form.
-//
-//       SPEX_vector *Vtmp = A->v[k];
-//       A->v[k] = vk->v[0];
-//       vk->v[0] = Vtmp;
+// The matrix vk is not modified during the update. If needed, user can call
+// SPEX_Update_matrix_colrep to obtain the updated matrix A *AFTER* calling this
+// function.
+
 
 #define SPEX_FREE_ALL                \
 {                                    \
