@@ -42,6 +42,8 @@ user-callable functions for computing SPEX_matrix
 
     propose: factorize L*U = P*A*Q, then solve A'x=b, for static factorization
 
+    propose: thread-safe GMP wrapper, more general wrapper, extensible ...
+
 TODO: start here, May 17:
 
 check names of user-visible functions, be consistent: 

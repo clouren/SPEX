@@ -884,7 +884,7 @@ SPEX_info SPEX_finalize (void) ;
 // SPEX matrix utilities
 //------------------------------------------------------------------------------
 
-/* WARNING: These functions have not been test covered!*/
+/* FIXME: These functions have not been test covered!*/
 
 /* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
@@ -908,12 +908,11 @@ SPEX_info SPEX_determine_symmetry
     const SPEX_options* option // Command options
 );
 
-// TODO: start here on May 17, 2022:
-
-// TODO move to the end of this file?
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------
 //------------------------------------------------------------------------------
+
+// FIXME: update this
 
 // The following functions are the SPEX interface to the GMP/MPFR libary.
 // Each corresponding GMP/MPFR function is given a wrapper to ensure that no
@@ -1087,6 +1086,8 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 #endif
 
 
+
+// TODO: start here on May 31, 2022:
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

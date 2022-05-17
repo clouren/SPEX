@@ -14,6 +14,8 @@
 // can use them to construct their own wrappers around GMP functions.  See
 // SPEX_gmp.c for more details.
 
+// FIXME: rename this file to spex_gmp.h
+
 #ifndef SPEX_GMP_H
 #define SPEX_GMP_H
 
@@ -137,6 +139,8 @@ void spex_gmp_failure (int status) ;
 // global variables
 //------------------------------------------------------------------------------
 // TODO this is not thread-safe
+
+// FIXME: change 'extern' to SPEX_PUBLIC
 
 extern jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
 extern int64_t spex_gmp_nmalloc ;  // number of malloc'd objects in SPEX_gmp_list

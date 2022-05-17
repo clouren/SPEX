@@ -56,13 +56,12 @@
     }
 */
 
-// The SPEX_GMP*_WRAPPER_START macros also take an single 'archive' parameter,
+// The SPEX_GMP*_WRAPPER_START macros also take one or two 'archive' parameters,
 // for the current mpz, mpq, or mpfr object being operated on.  A pointer
 // parameter to this parameter is kept so that it can be safely freed in case
 // a memory error occurs (avoiding a double-free), in SPEX_GMP_SAFE_FREE.
 
 #include "spex_util_internal.h"
-//#include "SPEX_gmp.h" 
 
 // ignore warnings about unused parameters in this file
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -70,7 +69,8 @@
 //------------------------------------------------------------------------------
 // global variables
 //------------------------------------------------------------------------------
-// TODO this is not thread-safe
+// FIXME: this is not thread-safe.  Say this in the user guide.
+// FIXME: in user guide: state adding new wrappers requires edit of SPEX src
 
 jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
 int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in SPEX_gmp_list
