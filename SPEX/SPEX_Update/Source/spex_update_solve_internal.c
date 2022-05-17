@@ -111,7 +111,7 @@ SPEX_info spex_update_solve_internal
     v = (SPEX_vector*) SPEX_malloc(sizeof(SPEX_vector));
     if (!v)   { return SPEX_OUT_OF_MEMORY; }
     v->x = NULL;
-    v->i = NULL;
+    v->i = NULL; // leave this NULL since v is dense
     v->nzmax = n;
     v->nz = n;
     SPEX_MPQ_SET_NULL(v->scale);         // will not be used

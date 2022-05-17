@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./cholupdate lp_qap15 > Outputs/CholUpdate/lp_qap15_chol.out
+./cholupdate lp_qap15 > Outputs/CholUpdate/lp_qap15_chol.out # time-consuming
 ./cholupdate lp_sierra > Outputs/CholUpdate/lp_sierra_chol.out
 ./cholupdate lp_scsd8 > Outputs/CholUpdate/lp_scsd8_chol.out
 ./cholupdate lp_pds_02 > Outputs/CholUpdate/lp_pds_02_chol.out

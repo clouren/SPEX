@@ -17,9 +17,9 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O
-I = -I../Include -I../Lib -I../../../SuiteSparse_config -I../../SPEX_Util/Include -I../../SPEX_Util/Lib -I../../SPEX_Left_LU/Include -I../../SPEX_Left_LU/Lib -I../../SPEX_Cholesky/Include -I../../SPEX_Cholesky/Lib -I../../../lib #-I../../../COLAMD/Include -I../../../AMD/Include
+I = -I../../../include -I../../SPEX_Util/Demo -I../../SPEX_Util/Source
 
-LDLIBS += -lm -lgmp -lmpfr -lsuitesparseconfig -lspexutil -lspexupdate -lspexleftlu -lspexchol -lglpk #-lcolamd -lamd
+LDLIBS += -lm -lgmp -lmpfr -lsuitesparseconfig -lspex -lglpk
 
 all: lib ptest chol
 	- ./ptest lp_afiro
@@ -32,10 +32,10 @@ runchol: lib chol
 	- ./cholupdate
 
 lib:
-	( cd ../Lib ; $(MAKE) )
+	( cd ../../build ; $(MAKE) )
 
-ptest: lib ptest.c test.c test.h Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o ptest ptest.c test.c $(LDLIBS)
+ptest: lib ptest.c test.c test.h ../../SPEX_Util/Demo/my_safe_gmp.c ../../SPEX_Util/Demo/my_safe_gmp.h ../../SPEX_Util/Source/SPEX_gmp.h Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o ptest ptest.c test.c ../../SPEX_Util/Demo/my_safe_gmp.c $(LDLIBS)
 
 openfile: lib openfile.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o openfile openfile.c test.c $(LDLIBS)

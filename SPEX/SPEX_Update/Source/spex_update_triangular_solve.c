@@ -58,6 +58,7 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
         // iterate across each entry
         for (j = *last_update+1; j < k; j++)
         {
+            // TODO iterate nnz pattern?
             // skip if x(P[j]) == 0
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[P[j]]));
             if (sgn == 0)       {continue; }

@@ -9,8 +9,8 @@
 //------------------------------------------------------------------------------
 #include <ctype.h>
 #include <glpk.h>
-#include "SPEX_Update.h"
-#include "SPEX_Left_LU.h"
+#include "SPEX.h"
+#include "my_safe_gmp.h"
 
 #ifndef FREE_WORKSPACE
 #define FREE_WORKSPACE
