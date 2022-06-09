@@ -52,8 +52,8 @@ check names of user-visible functions, be consistent:
        SPEX_left_lu_...
        SPEX_chol_...
     
-move SPEX_gmp functions to the end of SPEX.h?
-user cannot create their own wrapped gmp/mpfr functions!
+OK: move SPEX_gmp functions to the end of SPEX.h? Not needed.
+OK: user cannot create their own wrapped gmp/mpfr functions! This is oK.
 
 SPEX_Left_LU/MATLAB/html
 fl(0.9)
@@ -62,8 +62,34 @@ licence folder
 
 user guide and cmake
 
+Near-term Papers: (4 or 5)
 
+    SIAM paper: LU column replacement (and Chol col replacement?)
+        theory: JinHao and Tim
+        submitted by Aug 2022
+    SIAM paper: Cholesky update/downdate (and LU up/down?)
+        theory: JinHao and Tim
+        submitted by Aug 2022
+    perhaps conf paper: on Chol col replacement and LU up/down
+        JinHao and Tim
 
+    ACM TOMS paper: code for LU col repl, Chol up/down
+        authors: JinHao, Lorena, Chris, Tim, Erick
+        submitted by Aug 2022??
+
+    ACM TOMS paper: Cholesky alone (+code)
+        needs some code work, add to user guide, computational results
+        authors: Lorena, JinHao, Chris, Erick, Tim
+        submitted by Aug 2022??
+
+Submitted:
+    dense QR (submitted to SIAM)
+
+Future: (add to proposal)
+    SIAM on dense Gram-Schmidt, theory
+    SIAM paper on sparse QR theory
+    ACM TOMS sparse QR code (left-looking Gram-Schmidt)
+        starting Fall 2022:
 
 
 
