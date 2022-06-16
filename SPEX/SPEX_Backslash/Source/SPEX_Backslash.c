@@ -80,6 +80,7 @@ SPEX_info SPEX_Backslash
     {
         return SPEX_OUT_OF_MEMORY;
     }
+    
     if (option != NULL)
     {
         // IF the options are not NULL, copy the important parts. 
@@ -124,6 +125,7 @@ SPEX_info SPEX_Backslash
 
             // x_handle contains the exact solution of Ax = b and is
             // stored in the user desired type. Now, we exit and return ok
+            SPEX_FREE(backslash_options);
             return SPEX_OK;
         }
         else if (info == SPEX_NOTSPD) 
@@ -148,6 +150,7 @@ SPEX_info SPEX_Backslash
 
                 // x_handle contains the exact solution of Ax = b and is
                 // stored in the user desired type. Now, we exit and return ok
+                SPEX_FREE(backslash_options);
                 return SPEX_OK;
             }
             else
@@ -156,6 +159,7 @@ SPEX_info SPEX_Backslash
                 // the problem, most likely that A is singular
                 // Note that, because LU failed, x_handle is still
                 // NULL so there is no potential for a memory leak here
+                SPEX_FREE(backslash_options);
                 return info;
             }
         }
@@ -166,6 +170,7 @@ SPEX_info SPEX_Backslash
             // memory condition.
             // Note that since Cholesky failed, x_handle is still NULL
             // so there is no potential for a memory leak here
+            SPEX_FREE(backslash_options);
             return info;
         }
     }
@@ -191,6 +196,7 @@ SPEX_info SPEX_Backslash
             
             // x_handle contains the exact solution of Ax = b and is
             // stored in the user desired type. Now, we exit and return ok
+            SPEX_FREE(backslash_options);
             return SPEX_OK;
         }
         else
@@ -198,6 +204,7 @@ SPEX_info SPEX_Backslash
             // LU factorization failed. Return the error code
             // Note that since LU factorization failed, x_handle
             // is still NULL, so there is no potential for a memory leak
+            SPEX_FREE(backslash_options);
             return info;
         }
     }
@@ -207,6 +214,7 @@ SPEX_info SPEX_Backslash
         // Return the error code and stop
         // Since classification failed, x_handle is still NULL,
         // so there is no possibility of a memory leak
+        SPEX_FREE(backslash_options);
         return info;
     }
 }
