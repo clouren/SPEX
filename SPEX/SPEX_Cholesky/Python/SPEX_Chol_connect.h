@@ -15,7 +15,7 @@
 #include <gmp.h>
 #include <mpfr.h>*/
 
-#include "SPEX_Chol.h"
+#include "SPEX.h"
 
 
 void python_backslash_char
