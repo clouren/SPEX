@@ -1,18 +1,19 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU_/MATLAB/SPEX_Left_LU_mex_soln: Use SPEX Left LU within MATLAB
+// SPEX/MATLAB/SPEX_Chol_mex_soln: Use SPEX Chol within MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
+// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
-
 //------------------------------------------------------------------------------
 
-/* Purpose: The .c file defining the SPEX Left LU MATLAB interfacee
- * This function defines: x = SPEX_mex_soln (A, b, option)
+/* Purpose: The .c file defining the SPEX Chol MATLAB interfacee
+ * This function defines: x = SPEX_Chol_mex_soln (A, b, option)
  */
 
-#include "SPEX_Left_LU_mex.h"
+
+#include "SPEX_mex.h"
 
 void mexFunction
 (
@@ -23,15 +24,13 @@ void mexFunction
 )
 {
     //--------------------------------------------------------------------------
-    // Initialize SPEX Left LU library environment
+    // Initialize SPEX Chol library environment
     //--------------------------------------------------------------------------
 
     SPEX_info status ;
-    if (!spex_initialized ( ))
-    {
-        SPEX_MEX_OK (SPEX_initialize_expert
+    SPEX_MEX_OK (SPEX_initialize_expert
             (mxMalloc, mxCalloc, mxRealloc, mxFree)) ;
-    }
+        
     SuiteSparse_config.printf_func = mexPrintf ;
 
     //--------------------------------------------------------------------------
@@ -40,7 +39,7 @@ void mexFunction
 
     if (nargout > 1 || nargin < 2 || nargin > 3)
     {
-        spex_left_lu_mex_error (1, "Usage: x = SPEX_mex_soln (A,b,option)") ;
+        spex_mex_error (1, "Usage: x = SPEX_chol_soln (A,b,option)") ;
     }
 
     //--------------------------------------------------------------------------
@@ -49,15 +48,17 @@ void mexFunction
 
     if (mxIsComplex (pargin [0]) || mxIsComplex (pargin [1]))
     {
-        spex_left_lu_mex_error (1, "inputs must be real") ;
+        spex_mex_error (1, "inputs must be real") ;
     }
+    /***/
     if (!mxIsSparse (pargin [0]))     // Is the matrix sparse?
     {
-        spex_left_lu_mex_error (1, "first input must be sparse") ;
+        spex_mex_error (1, "first input must be sparse") ;
     }
+    /**/
     if (mxIsSparse (pargin [1]))         // Is b sparse?
     {
-        spex_left_lu_mex_error (1, "second input must be full") ;
+        spex_mex_error (1, "second input must be full") ;
     }
 
     //--------------------------------------------------------------------------
@@ -65,10 +66,14 @@ void mexFunction
     //--------------------------------------------------------------------------
 
     SPEX_options *option = NULL;
-    SPEX_MEX_OK(SPEX_create_default_options(&option));
+    SPEX_create_default_options(&option);
+    if (option == NULL)
+    {
+        spex_mex_error (SPEX_OUT_OF_MEMORY, "") ;
+    }
 
     spex_mex_options mexoptions ;
-    if (nargin > 2) spex_left_lu_get_matlab_options (option, &mexoptions, pargin [2]) ;
+    if (nargin > 2) spex_mex_get_matlab_options (option, &mexoptions, pargin [2]) ;
 
     //--------------------------------------------------------------------------
     // get A and b
@@ -76,8 +81,8 @@ void mexFunction
 
     SPEX_matrix *A = NULL ;
     SPEX_matrix *b = NULL ;
-    spex_left_lu_mex_get_A_and_b (&A, &b, pargin, option) ;
-
+    spex_mex_get_A_and_b (&A, &b, pargin, option) ;
+/**/
     if (option->print_level > 0)
     {
         printf ("\nScaled integer input matrix A:\n") ;
@@ -91,11 +96,11 @@ void mexFunction
     }
 
     //--------------------------------------------------------------------------
-    // x = A\b via SPEX_Left_LU, returning result as SPEX_MPQ
+    // x = A\b via SPEX_Chol, returning result as SPEX_MPQ
     //--------------------------------------------------------------------------
 
     SPEX_matrix *x = NULL ;
-    SPEX_MEX_OK (SPEX_Left_LU_backslash (&x, SPEX_MPQ, A, b, option)) ;
+    SPEX_MEX_OK (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option)) ;
 
     //--------------------------------------------------------------------------
     // print the result, if requested
@@ -152,7 +157,7 @@ void mexFunction
             status = SPEX_mpfr_asprintf (&s, "%Qd", x->x.mpq [p]) ;
             if (status < 0)
             {
-                spex_left_lu_mex_error (1, "error converting x to string") ;
+                spex_mex_error (1, "error converting x to string") ;
             }
             // convert the string into a MATLAB string and store in x {i,j}
             mxSetCell (pargout [0], p, mxCreateString (s)) ;
@@ -170,5 +175,7 @@ void mexFunction
     SPEX_matrix_free (&A, option) ;
     SPEX_FREE (option) ;
     SPEX_finalize ( ) ;
+    /**/
+
 }
 

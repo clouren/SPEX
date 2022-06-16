@@ -1,19 +1,18 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/MATLAB/spex_chol_mex_get_A_and_b: Obtain user's A and b matrices
+// SPEX/MATLAB/SPEX_mex_get_A_and_b.c: convert A&b to SPEX matrices
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-// Erick Moreno-Centeno, Timothy A. Davis, Jinhao Chen, Texas A&M University.  
-// All Rights Reserved.  See SPEX_Cholesky/License for the license.
-
-
+// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
+// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 //------------------------------------------------------------------------------
 
 /* Purpose: This function reads in the A matrix and right hand side vectors. */
 
-#include "SPEX_Chol_mex.h"
+#include "SPEX_mex.h"
 
-void spex_chol_mex_get_A_and_b
+void spex_mex_get_A_and_b
 (
     SPEX_matrix **A_handle,     // Internal SPEX Mat stored in CSC
     SPEX_matrix **b_handle,     // mpz matrix used internally
@@ -28,7 +27,7 @@ void spex_chol_mex_get_A_and_b
 
     if (!A_handle || !pargin)
     {
-        spex_chol_mex_error (SPEX_INCORRECT_INPUT, "");
+        spex_mex_error (SPEX_INCORRECT_INPUT, "");
     }
     (*A_handle) = NULL ;
 
@@ -52,7 +51,7 @@ void spex_chol_mex_get_A_and_b
     
     if (!Ai || !Ap || !Ax)
     {
-        spex_chol_mex_error (SPEX_INCORRECT_INPUT, "") ;
+        spex_mex_error (SPEX_INCORRECT_INPUT, "") ;
     }
 
     // Get info about A
@@ -61,11 +60,11 @@ void spex_chol_mex_get_A_and_b
     Anz = Ap[nA];
     if (nA != mA)
     {
-        spex_chol_mex_error (1, "A must be square") ;
+        spex_mex_error (1, "A must be square") ;
     }
 
     // check the values of A
-    bool A_has_int64_values = spex_chol_mex_check_for_inf (Ax, Anz) ;
+    bool A_has_int64_values = spex_mex_check_for_inf (Ax, Anz) ;
 
     SPEX_matrix* A = NULL;
     SPEX_matrix* A_matlab = NULL;
@@ -76,7 +75,7 @@ void spex_chol_mex_get_A_and_b
         int64_t *Ax_int64 = (int64_t*) SPEX_malloc (Anz* sizeof (int64_t)) ;
         if (!Ax_int64)
         {
-            spex_chol_mex_error (SPEX_OUT_OF_MEMORY, "") ;
+            spex_mex_error (SPEX_OUT_OF_MEMORY, "") ;
         }
         for (k = 0; k < Anz; k++)
         {
@@ -122,7 +121,7 @@ void spex_chol_mex_get_A_and_b
     bx = mxGetDoubles (pargin[1]) ;
     if (!bx)
     {
-        spex_chol_mex_error (SPEX_INCORRECT_INPUT, "") ;
+        spex_mex_error (SPEX_INCORRECT_INPUT, "") ;
     }
 
     // Get info about RHS vector (s)
@@ -130,13 +129,13 @@ void spex_chol_mex_get_A_and_b
     mb = mxGetM (pargin[1]) ;
     if (mb != mA)
     {
-        spex_chol_mex_error (1, "dimension mismatch") ;
+        spex_mex_error (1, "dimension mismatch") ;
     }
 
     int64_t count = 0;
 
     // check the values of b
-    bool b_has_int64_values = spex_chol_mex_check_for_inf (bx, nb*mb) ;
+    bool b_has_int64_values = spex_mex_check_for_inf (bx, nb*mb) ;
 
     if (b_has_int64_values)
     {

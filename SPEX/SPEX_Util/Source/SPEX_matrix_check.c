@@ -144,6 +144,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     SPEX_MPZ_SET_NULL(q);
     SPEX_MPZ_SET_NULL(r);
 
+    
     int64_t lines = 0 ;     // # of lines printed so far
 
     //--------------------------------------------------------------------------

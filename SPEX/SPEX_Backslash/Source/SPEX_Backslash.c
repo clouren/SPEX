@@ -33,7 +33,9 @@
  *              factorization. If NULL on input, default values are used.
  */
 
-#include "SPEX_Backslash.h"
+#include "SPEX.h"
+
+
 
 SPEX_info SPEX_Backslash
 (
@@ -53,18 +55,7 @@ SPEX_info SPEX_Backslash
     // Check inputs
     // TODO: Make sure this line is in all the Cholesky functions
     if (!spex_initialized()) return SPEX_PANIC;
-    
-    ASSERT(!A);
-    ASSERT(!b);
-    ASSERT(!X_handle);
-    ASSERT(A->m == A->n);
-    // A must be CSC and MPZ
-    ASSERT(A->type == SPEX_MPZ);
-    ASSERT(A->kind == SPEX_CSC);
-    // b must be dense and MPZ
-    ASSERT(b->type == SPEX_MPZ);
-    ASSERT(b->kind == SPEX_DENSE);
-    
+  
     if (!X_handle || !A || !b || A->m != A->n || A->type != SPEX_MPZ || 
         A->kind != SPEX_CSC || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {

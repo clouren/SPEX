@@ -1,21 +1,23 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/MATLAB/spex_get_matlab_options: Set factorization options 
+// SPEX/MATLAB/SPEX_mex_get_matlab_optons.c: Get command options from user 
 //------------------------------------------------------------------------------
 
-// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
+// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
-
 //------------------------------------------------------------------------------
 
-#include "SPEX_Left_LU_mex.h"
+#include "SPEX_mex.h"
 
 // Purpose: This function reads in the necessary information from the options
 // struct for MATLAB.
 
 #define MATCH(s,t) (strcmp (s,t) == 0)
+#define SPEX_MIN(a,b) ( a < b ? a : b)
+#define SPEX_MAX(a,b) (a > b ? a : b)
 
-void spex_left_lu_get_matlab_options
+void spex_mex_get_matlab_options
 (
     SPEX_options* option,           // Control parameters
     spex_mex_options *mexoptions,   // MATLAB-specific options
@@ -42,7 +44,7 @@ void spex_left_lu_get_matlab_options
     field = present ? mxGetField (input, 0, "order") : NULL ;
     if (field != NULL)
     {
-        if (!mxIsChar (field)) spex_left_lu_mex_error (1, "option.order must be a string") ;
+        if (!mxIsChar (field)) spex_mex_error (1, "option.order must be a string") ;
         mxGetString (field, string, LEN) ;
         if (MATCH (string, "none"))
         {
@@ -58,7 +60,7 @@ void spex_left_lu_get_matlab_options
         }
         else
         {
-            spex_left_lu_mex_error (1, "unknown option.order") ;
+            spex_mex_error (1, "unknown option.order") ;
         }
     }
 
@@ -70,7 +72,7 @@ void spex_left_lu_get_matlab_options
     field = present ? mxGetField (input, 0, "pivot") : NULL ;
     if (field != NULL)
     {
-        if (!mxIsChar (field)) spex_left_lu_mex_error (1, "option.pivot must be a string") ;
+        if (!mxIsChar (field)) spex_mex_error (1, "option.pivot must be a string") ;
         mxGetString (field, string, LEN) ;
         if (MATCH (string, "smallest"))
         {
@@ -100,7 +102,7 @@ void spex_left_lu_get_matlab_options
         }
         else
         {
-            spex_left_lu_mex_error (1, "unknown option.pivot") ;
+            spex_mex_error (1, "unknown option.pivot") ;
         }
     }
 
@@ -117,7 +119,7 @@ void spex_left_lu_get_matlab_options
             option->tol = mxGetScalar (field) ;
             if (option->tol > 1 || option->tol <= 0)
             {
-                spex_left_lu_mex_error (1, "invalid option.tol, "
+                spex_mex_error (1, "invalid option.tol, "
                     "must be > 0 and <= 1") ;
             }
         }
@@ -146,7 +148,7 @@ void spex_left_lu_get_matlab_options
         }
         else
         {
-            spex_left_lu_mex_error (1, "unknown option.solution") ;
+            spex_mex_error (1, "unknown option.solution") ;
         }
     }
 
@@ -162,7 +164,7 @@ void spex_left_lu_get_matlab_options
         if (d != trunc (d) || d < 2 || d > (1 << 29))
         {
             // the MATLAB vpa requires digits between 2 and 2^29
-            spex_left_lu_mex_error (1, "options.digits must be an integer "
+            spex_mex_error (1, "options.digits must be an integer "
                 "between 2 and 2^29") ;
         }
         mexoptions->digits = (int32_t) d ;

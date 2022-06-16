@@ -1,18 +1,18 @@
 //------------------------------------------------------------------------------
-// SPEX_Left_LU/MATLAB/spex_left_lu_mex_error: Return error messages to matlab
+// SPEX/MATLAB/SPEX_mex_error.c: Check error codes for MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX_Left_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
+// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
-
 //------------------------------------------------------------------------------
 
 /* Purpose: This function prints error messages for MATLAB for debugging*/
 
-#include "SPEX_Left_LU_mex.h"
+#include "SPEX_mex.h"
 
-void spex_left_lu_mex_error
+void spex_mex_error
 (
     SPEX_info status,
     char *message
@@ -36,10 +36,22 @@ void spex_left_lu_mex_error
             SPEX_finalize ( ) ;
             mexErrMsgTxt ("invalid inputs") ;
 
-        case SPEX_PANIC :                // SPEX_Left_LU used without proper initialization
+//        case SPEX_INCORRECT :            // The solution is incorrect
+//            SPEX_finalize ( ) ;
+//            mexErrMsgTxt ("result invalid") ;
+        
+        case SPEX_UNSYMMETRIC :          // Matrix is unsymmetric cannot use Cholesky
+            SPEX_finalize ( );
+            mexErrMsgTxt ("input matrix is either pattern or numeric unsymmetric") ;
+        
+        case SPEX_NOTSPD :               // Matrix is not SPD, can't use Cholesky
+            SPEX_finalize ( );
+            mexErrMsgTxt ("input matrix is symmetric but not SPD") ;
+
+        case SPEX_PANIC :                // SPEX used without proper initialization
             SPEX_finalize ( ) ;
             mexErrMsgTxt ("panic") ;
-
+        
         default : 
             SPEX_finalize ( ) ;
             mexErrMsgTxt (message) ;

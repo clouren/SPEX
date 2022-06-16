@@ -1,0 +1,412 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>SPEX_mex_demo</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-06-16"><meta name="DC.source" content="SPEX_mex_demo.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">SPEX_mex_demo a demo of SPEX MATLAB interface</a></li><li><a href="#2">SPEX vs MATLAB backslash: first example</a></li><li><a href="#3">SPEX backslash: exact, vs MATLAB backslash: approximate</a></li><li><a href="#4">SPEX Backslash on singular problems</a></li><li><a href="#5">SPEX on an ill-conditioned problem</a></li><li><a href="#6">vpa can find a good but not perfect solution:</a></li><li><a href="#7">SPEX_Backslash computes the exact answer</a></li><li><a href="#8">SPEX_Left_LU_backslash with exact results</a></li><li><a href="#10">Converting an exact rational result to vpa or double</a></li><li><a href="#11">Comparing the VPA and SPEX_BACKSLASH solutions in double</a></li></ul></div><h2 id="1">SPEX_mex_demo a demo of SPEX MATLAB interface</h2><p>SPEX is a package for solving sparse linear systems of equations with a roundoff-free integer-preserving method.  The result is always exact, unless the matrix A is perfectly singular.</p><p>See also vpa, SPEX_mex_install, SPEX_mex_test.</p><p>SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, Jinhao Chen, Lorena Mejia Domenzain, Erick Moreno-Centeno and Timothy A. Davis, Texas A&amp;M University.  All Rights Reserved. SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later</p><pre class="codeinput">format <span class="string">compact</span>
+</pre><h2 id="2">SPEX vs MATLAB backslash: first example</h2><p>In this first example, x = SPEX_Backslash (A, b) ; returns an approximate solution, but not because it was computed incorrectly in SPEX_Backslash. It is computed exactly as a rational result in SPEX_Left_LU_backslash with arbitrary precision, but then converted to double precision on output.</p><pre class="codeinput">format <span class="string">long</span> <span class="string">g</span>
+load <span class="string">west0479</span>
+A = west0479 ;
+n = size (A, 1) ;
+xtrue = rand (n,1) ;
+b = A*xtrue ;
+x = SPEX_Backslash (A, b) ;
+<span class="comment">% error is nonzero: x is computed exactly in rational arbitrary-precision,</span>
+<span class="comment">% but then lost precision when returned to MATLAB:</span>
+err_spex = norm (x-xtrue)
+x = A\b ;
+<span class="comment">% error is nonzero: MATLAB x=A\b experiences floating-point error</span>
+<span class="comment">% throughout its computations:</span>
+err_matlab = norm (x-xtrue)
+</pre><pre class="codeoutput">err_spex =
+      7.16388662293505e-11
+err_matlab =
+      5.14402935896455e-11
+</pre><h2 id="3">SPEX backslash: exact, vs MATLAB backslash: approximate</h2><p>In this example, x = SPEX_Backslash (A, b) ; is returned exactly in the MATLAB vector x, because x contains only integers representable exactly in double precision.  x = A\b results in floating-point roundoff error.</p><pre class="codeinput">amax = max (abs (A), [ ], <span class="string">'all'</span>) ;
+A = floor (2^20 * (A / amax)) + n * speye (n) ;
+xtrue = floor (64 * xtrue) ;
+b = A*xtrue ;
+x = SPEX_Backslash (A, b) ;
+<span class="comment">% error will be exactly zero:</span>
+err_spex = norm (x-xtrue)
+x = A\b ;
+<span class="comment">% error will be small but nonzero:</span>
+err_matlab = norm (x-xtrue)
+</pre><pre class="codeoutput">err_spex =
+     0
+err_matlab =
+      2.04402930859997e-11
+</pre><h2 id="4">SPEX Backslash on singular problems</h2><p>The matrix 2008 is a rank deficient rectangular matrix If we compute A = A'*A we obtain this 9*9 integer matrix:</p><pre>  4    -1    -1     0    -1     0     0    -1     0
+  -1     4     0    -1     0    -1     0    -1     0
+  -1     0     4    -1    -1     0    -1     0     0
+   0    -1    -1     4     0    -1    -1     0     0
+  -1     0    -1     0     4    -1     0     0    -1
+   0    -1     0    -1    -1     4     0     0    -1
+   0     0    -1    -1     0     0     4    -1    -1
+  -1    -1     0     0     0     0    -1     4    -1
+   0     0     0     0    -1    -1    -1    -1     4</pre><p>Since this is an integer matrix, SPEX can obtain it exactly. This matrix is ill-conditioned and singular, SPEX correctly determines that it is. However, MATLAB Cholesky factorization both succeeds and returns a useless answer. Note that to continue the demo, the backslash line is wrapped in a try catch the default behavior of SPEX is to return an error to MATLAB and exit</p><pre class="codeinput">fprintf(<span class="string">"Testing singular matrix"</span>);
+prob = ssget(2008); A = prob.A;
+B = full(A'*A);
+b = ones(9,1);
+
+<span class="keyword">try</span> x = SPEX_Backslash (B, b) ;
+<span class="keyword">catch</span> fprintf(<span class="string">"\nError, spex determines matrix is singular\n"</span>);
+<span class="keyword">end</span>
+
+R = chol(B);
+x_chol = R \ (R' \ b)
+
+R = vpa(chol(B));
+x_vpa = vpa ( R \ vpa( (R'\b)))
+</pre><pre class="codeoutput">Testing singular matrix
+Error, spex determines matrix is singular
+x_chol =
+      4.05323966463344e+15
+      4.05323966463344e+15
+      4.05323966463344e+15
+      4.05323966463344e+15
+      4.05323966463344e+15
+      4.05323966463344e+15
+      4.05323966463344e+15
+      4.05323966463344e+15
+      4.05323966463344e+15
+x_vpa =
+ 4053239664633448.4109157005784706
+ 4053239664633448.4109157005784706
+ 4053239664633448.4109157005784706
+ 4053239664633448.4109157005784706
+ 4053239664633447.9109157005784706
+ 4053239664633447.9109157005784706
+ 4053239664633447.9109157005784706
+ 4053239664633447.9109157005784706
+ 4053239664633445.9109157005784706
+</pre><h2 id="5">SPEX on an ill-conditioned problem</h2><p>x = SPEX_Backslash (A,b) is able to accurately solve problems that x=A\b cannot. Consider the following matrix in the MATLAB gallery:</p><pre class="codeinput">[U, b] = gallery (<span class="string">'wilk'</span>, 3)
+</pre><pre class="codeoutput">U =
+                     1e-10                       0.9                      -0.4
+                         0                       0.9                      -0.4
+                         0                         0                     1e-10
+b =
+     0
+     0
+     1
+</pre><h2 id="6">vpa can find a good but not perfect solution:</h2><pre class="codeinput">xvpa = vpa (U) \ b
+
+<span class="comment">%     but MATLAB's numerical x = U\b computes a poor solution:</span>
+xapprox = U \ b
+</pre><pre class="codeoutput">xvpa =
+                                 0
+ 4444444444.4444444444444444444444
+                     10000000000.0
+xapprox =
+         -2894.21354359042
+          4444444444.44444
+               10000000000
+</pre><h2 id="7">SPEX_Backslash computes the exact answer</h2><p>It returns it to MATLAB as a double vector, obtaining the exact results</p><pre class="codeinput">xspex = SPEX_Backslash (U, b)
+err = xvpa - xspex
+relerr = double (err (2:3) ./ xvpa (2:3))
+</pre><pre class="codeoutput">xspex =
+                         0
+          4444444444.44444
+               10000000000
+err =
+                                        0
+ 0.00000074174669053819444444444514565414
+                                        0
+relerr =
+      1.66893005371094e-16
+                         0
+</pre><h2 id="8">SPEX_Left_LU_backslash with exact results</h2><p>SPEX_Left_LU_backslash can also return x as a cell array of strings, which preserves the exact rational result.  The printing option is also enabled in this example.  The floating-point matrices U and b are converted into a scaled integer matrix before solving U*x=b with SPEX Left LU.</p><p>Note that, importantly, SPEX obtains an integer matrix by scaling the input. SPEX scales all input by 1e16. This is because consider the number U(1,2). The value U(1,2)=0.9 is a floating point number and cannot be represented exactly in IEEE floating-point. Specifically, the rational represenation of it is fl(0.9) = 45000000000000001 / 50000000000000000.</p><p>SPEX assumes the user wants what they typed in. Scaling this matrix exactly gives the above rational. Conversely scaling with 16 digits of precision gives the exact fraction 9/10.</p><p>If one wishes to obtain FULL floating-point precision and/or support for floating point values smaller than 1e-16 there are two options:</p><pre class="language-matlab">1) Within <span class="string">MATLAB</span> <span class="string">the</span> <span class="string">user</span> <span class="string">scaes</span> <span class="string">the</span> <span class="string">matrix</span> <span class="string">themselves.</span> <span class="string">If</span> <span class="string">SPEX</span> <span class="string">is</span>
+   given <span class="string">an</span> <span class="string">integer</span> <span class="string">matrix</span> <span class="string">it</span> <span class="string">is</span> <span class="string">preserved</span> <span class="string">exactly</span>
+</pre><pre class="language-matlab">2) Within <span class="string">C</span> <span class="string">convert</span> <span class="string">the</span> <span class="string">matrix</span> <span class="string">to</span> <span class="string">a</span> <span class="string">SPEX_MPFR.</span> <span class="string">MPFR</span> <span class="string">numbers</span>
+   can <span class="string">exactly</span> <span class="string">store</span> <span class="string">doubles.</span> <span class="string">The</span> <span class="string">conversion</span> <span class="string">from</span> <span class="string">MPFR</span> <span class="string">to</span> <span class="string">integer</span>
+   is <span class="string">fully</span> <span class="string">exact</span> <span class="string">and</span> <span class="string">all</span> <span class="string">one</span> <span class="string">would</span> <span class="string">obtain</span> <span class="string">the</span> <span class="string">rational</span> <span class="string">representation</span>
+   of <span class="string">the</span> <span class="string">floating-point</span> <span class="string">number</span> <span class="string">itself.</span> <span class="string">This</span> <span class="string">can</span> <span class="string">be</span> <span class="string">done</span> <span class="string">with</span> <span class="string">1</span> <span class="string">call</span>
+   to <span class="string">the</span> <span class="string">SPEX</span> <span class="string">matrix</span> <span class="string">copy</span> <span class="string">function.</span>
+</pre><p>In any case, below is the exact solution with U(1,2) = 9/10</p><pre class="codeinput">option.print = 3 ;          <span class="comment">% also print the details</span>
+option.solution = <span class="string">'char'</span> ;  <span class="comment">% return x as a cell array of strings</span>
+</pre><pre class="codeinput">xspex = SPEX_Left_LU_backslash (U, b, option)
+</pre><pre class="codeoutput">
+Scaled integer input matrix A:
+SPEX_matrix: nrows: 3, ncols: 3, nz:6, nzmax: 6, kind: CSC, type: MPZ
+scale factor: 10000000000
+column 0 :
+  row 0 : 1 
+column 1 :
+  row 0 : 9000000000 
+  row 1 : 9000000000 
+column 2 :
+  row 0 : -4000000000 
+  row 1 : -4000000000 
+  row 2 : 1 
+
+Scaled integer right-hand-side b:
+SPEX_matrix: nrows: 3, ncols: 1, nz:3, nzmax: 3, kind: Dense, type: MPZ
+scale factor: 1
+column 0 :
+  row 0 : 0 
+  row 1 : 0 
+  row 2 : 1 
+
+****Column Ordering Information****
+
+Estimated L and U nonzeros: 60
+
+Solution x:
+SPEX_matrix: nrows: 3, ncols: 1, nz:3, nzmax: 3, kind: Dense, type: MPQ
+scale factor: 1
+column 0 :
+  row 0 : 0 
+  row 1 : 40000000000/9 
+  row 2 : 10000000000 
+xspex =
+  3&times;1 cell array
+    {'0'            }
+    {'40000000000/9'}
+    {'10000000000'  }
+</pre><h2 id="10">Converting an exact rational result to vpa or double</h2><p>If SPEX_Left_LU_backslash returns x as a cell array of strings, it cannot be immediately used in computations in MATLAB.  It can be converted into a vpa or double matrix, as illustrated below.</p><pre class="codeinput">xspex_as_vpa = vpa (xspex)
+xspex_as_double = double (vpa (xspex))
+xvpa_as_double = double (xvpa)
+</pre><pre class="codeoutput">xspex_as_vpa =
+                                 0
+ 4444444444.4444444444444444444444
+                     10000000000.0
+xspex_as_double =
+                         0
+          4444444444.44444
+               10000000000
+xvpa_as_double =
+                         0
+          4444444444.44444
+               10000000000
+</pre><h2 id="11">Comparing the VPA and SPEX_BACKSLASH solutions in double</h2><p>Both vpa(U)\b and SPEX_Backslash(U,b) compute the same result in the end, when their results are converted to double.</p><pre class="codeinput">err = xvpa_as_double - xspex_as_double
+</pre><pre class="codeoutput">err =
+     0
+     0
+     0
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% SPEX_mex_demo a demo of SPEX MATLAB interface
+% SPEX is a package for solving sparse linear systems of equations
+% with a roundoff-free integer-preserving method.  The result is
+% always exact, unless the matrix A is perfectly singular.
+%
+% See also vpa, SPEX_mex_install, SPEX_mex_test.
+%
+% SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
+% Jinhao Chen, Lorena Mejia Domenzain, Erick Moreno-Centeno and Timothy A. Davis, 
+% Texas A&M University.  All Rights Reserved.  
+% SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+format compact
+
+%% SPEX vs MATLAB backslash: first example
+% In this first example, x = SPEX_Backslash (A, b) ; returns an approximate
+% solution, but not because it was computed incorrectly in SPEX_Backslash.
+% It is computed exactly as a rational result in SPEX_Left_LU_backslash with
+% arbitrary precision, but then converted to double precision on output.
+
+format long g
+load west0479
+A = west0479 ;
+n = size (A, 1) ;
+xtrue = rand (n,1) ;
+b = A*xtrue ;
+x = SPEX_Backslash (A, b) ;
+% error is nonzero: x is computed exactly in rational arbitrary-precision,
+% but then lost precision when returned to MATLAB:
+err_spex = norm (x-xtrue)
+x = A\b ;
+% error is nonzero: MATLAB x=A\b experiences floating-point error
+% throughout its computations:
+err_matlab = norm (x-xtrue)
+
+%% SPEX backslash: exact, vs MATLAB backslash: approximate
+% In this example, x = SPEX_Backslash (A, b) ; is returned exactly in the
+% MATLAB vector x, because x contains only integers representable exactly
+% in double precision.  x = A\b results in floating-point roundoff error.
+
+amax = max (abs (A), [ ], 'all') ;
+A = floor (2^20 * (A / amax)) + n * speye (n) ;
+xtrue = floor (64 * xtrue) ;
+b = A*xtrue ;
+x = SPEX_Backslash (A, b) ;
+% error will be exactly zero:
+err_spex = norm (x-xtrue)
+x = A\b ;
+% error will be small but nonzero:
+err_matlab = norm (x-xtrue)
+
+%% SPEX Backslash on singular problems
+% The matrix 2008 is a rank deficient rectangular matrix
+% If we compute A = A'*A we obtain this 9*9 integer matrix:
+%
+%    4    -1    -1     0    -1     0     0    -1     0
+%    -1     4     0    -1     0    -1     0    -1     0
+%    -1     0     4    -1    -1     0    -1     0     0
+%     0    -1    -1     4     0    -1    -1     0     0
+%    -1     0    -1     0     4    -1     0     0    -1
+%     0    -1     0    -1    -1     4     0     0    -1
+%     0     0    -1    -1     0     0     4    -1    -1
+%    -1    -1     0     0     0     0    -1     4    -1
+%     0     0     0     0    -1    -1    -1    -1     4
+%
+% Since this is an integer matrix, SPEX can obtain it exactly.
+% This matrix is ill-conditioned and singular, SPEX correctly determines 
+% that it is. However, MATLAB Cholesky factorization both
+% succeeds and returns a useless answer.
+% Note that to continue the demo, the backslash line is wrapped in a try catch
+% the default behavior of SPEX is to return an error to MATLAB and exit
+
+fprintf("Testing singular matrix");
+prob = ssget(2008); A = prob.A;
+B = full(A'*A);
+b = ones(9,1);
+
+try x = SPEX_Backslash (B, b) ;
+catch fprintf("\nError, spex determines matrix is singular\n");
+end
+
+R = chol(B);
+x_chol = R \ (R' \ b)
+
+R = vpa(chol(B));
+x_vpa = vpa ( R \ vpa( (R'\b)))
+
+%% SPEX on an ill-conditioned problem
+% x = SPEX_Backslash (A,b) is able to accurately solve problems that x=A\b cannot.
+% Consider the following matrix in the MATLAB gallery:
+
+[U, b] = gallery ('wilk', 3)
+
+%%    vpa can find a good but not perfect solution:
+xvpa = vpa (U) \ b
+
+%     but MATLAB's numerical x = U\b computes a poor solution:
+xapprox = U \ b
+
+%% SPEX_Backslash computes the exact answer
+% It returns it to MATLAB as a double vector, obtaining the exact results
+
+xspex = SPEX_Backslash (U, b)
+err = xvpa - xspex
+relerr = double (err (2:3) ./ xvpa (2:3))
+
+%% SPEX_Left_LU_backslash with exact results
+% SPEX_Left_LU_backslash can also return x as a cell array of strings, which
+% preserves the exact rational result.  The printing option is also
+% enabled in this example.  The floating-point matrices U and b are
+% converted into a scaled integer matrix before solving U*x=b with
+% SPEX Left LU.
+%
+% Note that, importantly, SPEX obtains an integer matrix by scaling the
+% input. SPEX scales all input by 1e16. This is because consider the number
+% U(1,2). The value U(1,2)=0.9 is a floating point number and cannot be
+% represented exactly in IEEE floating-point. Specifically, the rational
+% represenation of it is fl(0.9) = 45000000000000001 / 50000000000000000.
+%
+% SPEX assumes the user wants what they typed in. Scaling this matrix exactly
+% gives the above rational. Conversely scaling with 16 digits of precision
+% gives the exact fraction 9/10.
+%
+% If one wishes to obtain FULL floating-point precision and/or support
+% for floating point values smaller than 1e-16 there are two options:
+%
+%   1) Within MATLAB the user scaes the matrix themselves. If SPEX is
+%      given an integer matrix it is preserved exactly
+%
+%   2) Within C convert the matrix to a SPEX_MPFR. MPFR numbers
+%      can exactly store doubles. The conversion from MPFR to integer
+%      is fully exact and all one would obtain the rational representation
+%      of the floating-point number itself. This can be done with 1 call
+%      to the SPEX matrix copy function.
+%
+% In any case, below is the exact solution with U(1,2) = 9/10
+
+option.print = 3 ;          % also print the details
+option.solution = 'char' ;  % return x as a cell array of strings
+
+%%
+
+xspex = SPEX_Left_LU_backslash (U, b, option)
+
+%% Converting an exact rational result to vpa or double
+% If SPEX_Left_LU_backslash returns x as a cell array of strings, it cannot
+% be immediately used in computations in MATLAB.  It can be converted
+% into a vpa or double matrix, as illustrated below.  
+
+xspex_as_vpa = vpa (xspex)
+xspex_as_double = double (vpa (xspex))
+xvpa_as_double = double (xvpa)
+
+%% Comparing the VPA and SPEX_BACKSLASH solutions in double
+% Both vpa(U)\b and SPEX_Backslash(U,b) compute the same result
+% in the end, when their results are converted to double.
+err = xvpa_as_double - xspex_as_double
+
+
+##### SOURCE END #####
+--></body></html>

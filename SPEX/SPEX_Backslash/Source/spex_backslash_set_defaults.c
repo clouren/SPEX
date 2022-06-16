@@ -19,7 +19,7 @@
  * lu:          If true, LU factorization is used, if false, Cholesky is used //TODO this will change with Jinaho's changes
  */
 
-#include "SPEX_Backslash.h"
+#include "SPEX.h"
 
 SPEX_info spex_backslash_set_defaults
 (
@@ -27,7 +27,8 @@ SPEX_info spex_backslash_set_defaults
     bool lu
 )
 {
-    ASSERT( option != NULL);
+    if (option == NULL)
+        return SPEX_INCORRECT_INPUT;
     if (lu)
     {
         option->order = SPEX_COLAMD;
