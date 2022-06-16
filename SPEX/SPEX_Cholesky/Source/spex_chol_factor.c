@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spxe_chol_factor: Integer preserving Cholesky factorization
+// SPEX_Chol/spex_chol_factor: Integer preserving Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
@@ -64,14 +64,11 @@ SPEX_info spex_chol_factor
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
+    // All inputs have been checked by the caller, asserts are used here as a
+    // reminder of the appropriate data types
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
-    // TODO: Remove and statement that all inputs are checked by the caler (if true)
-    /**/if (!F_handle || !S || !option )
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
+    
     // Number of nonzeros in A
     int64_t anz;
     SPEX_CHECK( SPEX_matrix_nnz(&anz, A, option) );

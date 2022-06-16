@@ -24,9 +24,8 @@ SPEX_info spex_chol_post
 {
     SPEX_info info ;
 
-    // Input checks
+    // All inputs have been checked by the caller
     ASSERT( n >= 0);
-    if (!parent) return (SPEX_INCORRECT_INPUT) ;
     
     // Declare variables
     int64_t j, k = 0, *post, *w, *head, *next, *stack ;

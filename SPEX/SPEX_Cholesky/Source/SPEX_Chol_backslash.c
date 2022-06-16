@@ -87,18 +87,21 @@ SPEX_info SPEX_Chol_backslash
         return SPEX_INCORRECT_INPUT;
     }
     
-    //TODO: Change to if (combined with the if below) <Check Correct format of A and b>
-    ASSERT(A->type == SPEX_MPZ);
-    ASSERT(A->kind == SPEX_CSC);
-    ASSERT(b->type == SPEX_MPZ);
-    ASSERT(b->kind == SPEX_DENSE);
-
+    // A must be the appropriate dimension
     if (A->n == 0 || A->m == 0 || A->n != A->m)
     {
         return SPEX_INCORRECT_INPUT;
     }
+    
+    // Make sure A and b are in the correct format
+    if (A->type != SPEX_MPZ || A->kind != SPEX_CSC || b->type != SPEX_MPZ
+        || b->kind != SPEX_DENSE)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
 
-    //TODO Make sure that aaaaaaaaaaaaaaaall the functiosn below, handle a NULL oooptions
+    //TODO Make sure that all the functions below, handle a NULL oooptions
+    // Is this done? If so please delete this TODO
     
     // Declare memory
     SPEX_symbolic_analysis *S = NULL;

@@ -4,20 +4,37 @@ Files and folders in this distribution:
 
     README.md       this file
     
+    build           Contains the SPEX C library as well
+                    as the .so files
+                    
+    DOC             User guide for the SPEX software package
+    
+    MATLAB          MATLAB interface for the SPEX software package
+    
+    SPEX_Backslash  Exactly solve sparse linear systems with 
+                    default settings. This is the easiest
+                    starting point for the SPEX software package.
+                    SPEX_Backslash will automatically determine the
+                    appropriate factorization algorithm for use in 
+                    solving your problem A x = b (Developmental)
+    
     SPEX_Cholesky   Sparse integer-preserving SPEX_Cholesky
                     factorization for exactly solving SPD
                     linear systems (Developmental)
                     
     SPEX_Left_LU    Sparse left-looking integer-preserving
                     LU factorization for exactly solve 
-                    sparse linear systems (Release)
+                    sparse linear systems. (Release)
                     
     SPEX_QR         Sparse integer-preserving QR factorization
                     (Developmental)
+
+    SPEX_Update     Sparse column replacement and rank 1 updates
+                    for the SPEX factorizations
     
-    SPEX_UTIL   Utility functions for all SPEX components
+    SPEX_UTIL       Utility functions for all SPEX components
     
-    Makefile    compiles SPEX and its dependencies
+    Makefile        compiles SPEX and its dependencies
 
 Dependencies:
 

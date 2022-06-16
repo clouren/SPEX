@@ -12,6 +12,9 @@
 #ifndef SPEX_H
 #define SPEX_H
 
+// TODO: Shouldn't this be in a top level folder SPEX/Include instead of here?
+// Is there a reason Tim/Jinhao left it here?
+
 // SPEX is a collection of functions for the SParse EXact package.
 // Included are several routines for memory management, matrix operations, and 
 // wrappers to the GMP library.

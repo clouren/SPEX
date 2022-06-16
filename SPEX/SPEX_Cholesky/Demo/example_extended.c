@@ -22,7 +22,7 @@
     SPEX_FREE(option);                  \
     SPEX_finalize();                    \
 }                                       
-    //TOASK SPEX_factorization_free(&F, option) does not seem to be freeing rhos and L ???
+
 #define DEMO_OK(method)                 \
 {                                       \
     ok = method ;                       \
@@ -51,7 +51,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Declare memory & Process Command Line
     //--------------------------------------------------------------------------
-    int64_t n = 0, check, ok, j, index, k, nz = 0;
+    int64_t n = 0, ok;
    
     SPEX_symbolic_analysis *S = NULL;
     SPEX_factorization *F = NULL ;
@@ -59,7 +59,7 @@ int main( int argc, char* argv[] )
     SPEX_matrix* b = NULL;
     SPEX_matrix* x = NULL;
     
-    // Default options. May be changed in SLIP_LU_config.h
+    // Default options. 
     SPEX_options *option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     
@@ -117,11 +117,9 @@ int main( int argc, char* argv[] )
 
     DEMO_OK( SPEX_Chol_factorize(&F, A, S, option));
   
-     F->L->m = n;
-//     
-     clock_t end_factor = clock();
+    F->L->m = n;
+    clock_t end_factor = clock();
      
-     //printf("\nhere\n");
 
     //--------------------------------------------------------------------------
     // Solve linear system
@@ -131,12 +129,6 @@ int main( int argc, char* argv[] )
     DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
 
     clock_t end_solve = clock();
-
-    option->print_level = 3;
-    // FIXME do not use SPEX_check_solution in demo to make user think that is
-    // required. This function is now moved to Tcov/tcov_malloc_test.c. Call
-    // this function when performing test coverage. 
-    //DEMO_OK(SPEX_check_solution(A, x, b, option));
     
     //--------------------------------------------------------------------------
     // Output & Timing Stats

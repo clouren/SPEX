@@ -2,8 +2,10 @@
 // SPEX_Chol/SPEX_Chol_analyze: Perform the symbolic analysis of A
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// TODO: Update this part for all functions/makefiles/etc. The below template can be copied and pasted
+
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
 // Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -50,11 +52,16 @@ SPEX_info SPEX_Chol_analyze
         return SPEX_PANIC;
     }
     
-    // TODO  if to check if null inputs 
-    //TODO if to check inputs (not  NULL kind, type)
+    // Check inputs
+    if ( !S_handle || !A)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+    
+    // SPEX must be CSC
     SPEX_REQUIRE_KIND(A, SPEX_CSC);
 
-    // Declare memory
+    // Declare permuted matrix and S
     SPEX_matrix* PAP = NULL;
     SPEX_symbolic_analysis *S = NULL;
 

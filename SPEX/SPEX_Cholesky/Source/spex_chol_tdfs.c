@@ -33,11 +33,11 @@ SPEX_info spex_chol_tdfs
         if (i == -1)
         {
             top-- ;                 // p has no unordered children left 
-            post[(*k)++] = p ;     // node p is the kth postordered node 
+            post[(*k)++] = p ;      // node p is the kth postordered node 
         }
         else
         {
-            head[p] = next[i] ;   // remove i from children of p 
+            head[p] = next[i] ;    // remove i from children of p 
             stack[++top] = i ;     // start dfs on child node i 
         }
     }

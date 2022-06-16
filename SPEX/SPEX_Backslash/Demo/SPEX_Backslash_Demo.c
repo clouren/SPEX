@@ -50,7 +50,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Declare memory & Process Command Line
     //--------------------------------------------------------------------------
-    int64_t n = 0, check, ok, j, index, k, nz = 0;
+    int64_t n = 0, ok;
     
     SPEX_matrix *A = NULL;
     SPEX_matrix *b = NULL;
@@ -112,7 +112,6 @@ int main( int argc, char* argv[] )
     clock_t start = clock();
     
     option->print_level = 0;
-    //option->check = true;
     
     DEMO_OK( SPEX_Backslash(&x, SPEX_FP64, A, b, option));
     

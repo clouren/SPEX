@@ -43,23 +43,6 @@ SPEX_info SPEX_Chol_process_command_line //processes the command line
             //SPEX_show_usage();
             return SPEX_INCORRECT_INPUT;
         }
-        /* Not used...kept for legacy
-        else if ( strcmp(arg,"p") == 0 || strcmp(arg,"piv") == 0)
-        {
-            if (!argv[++i])
-            {
-                print64_t*f("\n****ERROR! There must be a pivot argument between"
-                    " 0-5 followint64_t*g p\n");
-                return SPEX_INCORRECT_INPUT;
-            }
-            option->pivot = atoi(argv[i]);
-            if (option->pivot < 0 || option->pivot > 5)
-            {
-                print64_t*f("\n****ERROR! Invalid pivot selection!"
-                    "\nDefaultint64_t*g to smallest pivot\n\n");
-                option->pivot = SPEX_SMALLEST;
-            }
-        }*/
         else if ( strcmp(arg, "q") == 0 || strcmp(arg,"col") == 0)
         {
             if (!argv[++i])
@@ -76,29 +59,6 @@ SPEX_info SPEX_Chol_process_command_line //processes the command line
                 option->order = SPEX_COLAMD;
             }
         }
-        /* Not used, kept for legacy
-        else if ( strcmp(arg,"t") == 0 || strcmp(arg, "tol") == 0)
-        {
-            if (!argv[++i])
-            {
-                print64_t*f("\n****ERROR! There must be a non negative tolerance"
-                    " value followint64_t*g t\n");
-                return SPEX_INCORRECT_INPUT;
-            }
-            else if (!atof(argv[i]))
-            {
-                print64_t*f("\n****ERROR! There must be a non negative tolerance"
-                    " value followint64_t*g t\n");
-                return SPEX_INCORRECT_INPUT;
-            }
-            option->tol = atof(argv[i]);
-            if (option->tol < 0)
-            {
-                print64_t*f("\n****ERROR! Invalid Tolerance, tolerance must be"
-                    " non-negative\n");
-                return SPEX_INCORRECT_INPUT;
-            }
-        }*/
         else if ( strcmp(arg,"out2") == 0 || strcmp(arg, "o2") == 0)
         {
             if (!argv[++i])

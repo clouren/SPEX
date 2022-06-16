@@ -43,12 +43,9 @@ SPEX_info spex_chol_counts
     int64_t i, j, k, n, J, s, p, q, jleaf, *colcount = NULL, *w = NULL;
     // Auxiliary variables
     int64_t  *maxfirst, *prevleaf, *ancestor, *first, *delta ;
-    // FIXME currently unused variables
-    //int64_t m = A->m, *head = NULL, *next = NULL ;
     n = A->n ;
-    // Can not have negative m or n
+    // Can not have negative n
     ASSERT(n >= 0) ;
-    //ASSERT(m >= 0) ;FIXME
     // Size of workspace
     s = 4*n ;
     // Allocate result in delta

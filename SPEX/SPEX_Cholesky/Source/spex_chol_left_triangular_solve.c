@@ -29,21 +29,21 @@
  *                  Undefined on input. On output xi[top_output..n-1] contains
  *                  the beginning of the nonzero pattern.
  * 
+ * x:               Solution of linear system. Undefined on input. On output
+ *                  contains the kth column of L.
+ * 
+ * xi:              Nonzero pattern. Undefined on input. On output contains the
+ *                  nonzero pattern of the kth row of L
+ * 
  * L:               Lower triangular matrix.
  * 
  * A:               Input matrix
  * 
  * k:               Current iteration of the algorithm (i.e., column of A)
  * 
- * xi:              Nonzero pattern. Undefined on input. On output contains the
- *                  nonzero pattern of the kth row of L
- * 
  * rhos:            Sequence of pivots used in factorization
  * 
  * h:               History vector. 
- * 
- * x:               Solution of linear system. Undefined on input. On output
- *                  contains the kth column of L.
  * 
  * parent:          Elimination tree
  * 
@@ -93,7 +93,8 @@ SPEX_info spex_chol_left_triangular_solve
 {   
     SPEX_info info;
     
-    // Input checks
+    // Input checks. All pointers are checked by the callersm these are here to
+    // remind us of the correct formats of each matrix
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(L->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
@@ -103,7 +104,7 @@ SPEX_info spex_chol_left_triangular_solve
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
    
-    int64_t j, i, p, m, top, n;// jnew, inew, col
+    int64_t j, i, p, m, top, n;
     int sgn;
     
     // row_top is the start of the nonzero pattern obtained after analyzing the
@@ -181,15 +182,7 @@ SPEX_info spex_chol_left_triangular_solve
     {
         SPEX_mpz_set_ui(x->x.mpz[ xi[i] ], 0);
     }
-    
-    // TODO Please do tests to make sure this is correct.
-    // If the matrix is not SPD, then the diagonal can become numerically zero. ??? Otherwise, 
-    // Even though, it cannot be zero from the beginning as tmus MUST be true: ej^T A ej > 0 
-    /*if (L->p[k] != k)
-    {
-        SPEX_FREE_ALL;
-        return SPEX_NOTSPD;
-    }*/ //NOT CORRECT  FIXME
+
     SPEX_mpz_set_ui(x->x.mpz[k], 0);
         
     
@@ -224,7 +217,7 @@ SPEX_info spex_chol_left_triangular_solve
     {
         h[xi[i]] = -1;
     }
-        
+     
     //--------------------------------------------------------------------------
     // Iterate accross nonzeros in x
     //--------------------------------------------------------------------------

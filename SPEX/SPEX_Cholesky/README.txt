@@ -12,4 +12,4 @@ factorization.
 SPEX_Cholesky is a component of the SParse EXact software
 package. Its dependencies are the same as SPEX.
 
-TODO: Add these functions to documentation
+# TODO: Update this file to mimic the same file from SPEX Left LU

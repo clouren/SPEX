@@ -31,7 +31,7 @@ LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
 # uncomment for debugging
 #CF += -g
 
-C = $(CC) $(CF) -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Util/Source -I../SPEX_Left_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source
+C = $(CC) $(CF) -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Util/Source -I../SPEX_Left_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source -I../SPEX_Backslash/Source
 
 all: install
 
@@ -180,6 +180,21 @@ spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
+
+OBJ_BACKSLASH = \
+    SPEX_Backslash.o
+
+$(OBJ_BACKSLASH): ../SPEX_Backslash/Include/SPEX.h Makefile
+
+SPEX_Backslash.o: ../SPEX_Backslash/Source/SPEX_Backslash.c ../SPEX_Backslash/Include/SPEX.h
+	$(C) $(I) -c $<
+
+# Curently no internal
+#spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+#	$(C) $(I) -c $<
+
+
+#-------------------------------------------------------------------------------
 # Create the bin
 #-------------------------------------------------------------------------------
 
@@ -188,7 +203,7 @@ library:
 
 static: $(AR_TARGET)
 
-$(AR_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL)
+$(AR_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL) $(OBJ_BACKSLASH)
 	$(ARCHIVE) $@ $^
 	- $(RANLIB) $(AR_TARGET)
 
@@ -199,7 +214,7 @@ $(AR_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL)
 # install SPEX
 install: $(AR_TARGET) $(INSTALL_LIB)/$(SO_TARGET)
 
-$(INSTALL_LIB)/$(SO_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL)
+$(INSTALL_LIB)/$(SO_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL) $(OBJ_BACKSLASH)
 	@mkdir -p $(INSTALL_LIB)
 	@mkdir -p $(INSTALL_INCLUDE)
 	@mkdir -p $(INSTALL_DOC)
