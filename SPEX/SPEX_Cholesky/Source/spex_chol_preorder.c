@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_preorder: Symbolic ordering and analysis for SPEX Cholesky
+// SPEX_Chol/spex_Chol_preorder: Symbolic ordering and analysis for SPEX Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
@@ -52,7 +52,6 @@ SPEX_info spex_chol_preorder
     //--------------------------------------------------------------------------
     if ( !spex_initialized() ) return SPEX_PANIC;
 
-    // TODO ensure the following statement is true
     // All inputs have been checked by the caller so ASSERTS are used instead of ifs
     // A can have any data type, but must be in sparse CSC format
     ASSERT(A->type == SPEX_MPZ);
@@ -114,7 +113,7 @@ SPEX_info spex_chol_preorder
              S->lnz = Info[AMD_LNZ];        // Exact number of nonzeros for Cholesky
              if (pr > 0)   // Output AMD info if desired
              {
-                 SPEX_PRINTF("\n****Column Ordering Information****\n");
+                 SPEX_PRINTF("\n****Ordering Information****\n");
                  amd_l_control(Control);
                  amd_l_info(Info);
              }
@@ -173,16 +172,16 @@ SPEX_info spex_chol_preorder
             // Print stats if desired
             if (pr > 0)
             {
-                SPEX_PRINTF ("\n****Column Ordering Information****\n");
+                SPEX_PRINTF ("\n****Ordering Information****\n");
                 colamd_l_report ((SuiteSparse_long *) stats);
-                SPEX_PRINTF ("\nEstimated L and U nonzeros: %" PRId64 "\n", S->lnz);
+                SPEX_PRINTF ("\nEstimated L nonzeros: %" PRId64 "\n", S->lnz);
             }
             //Note that A2 is a local-to-this-case variable; so it cannot and should 
             //not be part of the  SPEX_FREE_WORKSPACE or SPEX_FREE_ALL mechanisms
             SPEX_FREE(A2);
         }
         break;
-    }//end switch(order)
+    }
 
     //--------------------------------------------------------------------------
     // Make sure appropriate space is allocated. It is possible to return

@@ -19,7 +19,7 @@
     SPEX_FREE_WORKSPACE            \
     SPEX_matrix_free(&x, NULL);    \
 }
-//TODO maybe have a separate "clusterVersion" for all the prints, so they are def not in the release version
+
 #include "spex_chol_internal.h"
 
 /* Purpose: This function solves the linear system LDL' x = b.
@@ -30,42 +30,35 @@
  *                  on output x_handle contains a pointer to the solution
  *                  vector(s)
  * 
- * PAP:             Permuted version of the input matrix
- * 
- * A:               Nonpermuted (original) input matrix
- * 
- * b:               Right hand side vector(s)
- * 
- * rhos:            Sequence of factorization pivots
- * 
- * L:               Lower triangular matrix
+ * F:               The factorization struct containing the REF cholesky
+ *                  factorization of A, permutation, etc
  * 
  * S:               Symbolic analysis struct (contains row/column permutation
  *                  and its inverse
  * 
- * option:          Command options
- * 
+ * option:          Command options * 
  */
 
 SPEX_info SPEX_Chol_solve
 (
     // Output
-    SPEX_matrix** x_handle,           // On input: undefined.
-                                      // On output: Rational solution (SPEX_MPQ)
-                                      // to the system. 
+    SPEX_matrix** x_handle,     // On input: undefined.
+                                // On output: Rational solution (SPEX_MPQ)
+                                // to the system. 
     // input/output:
-    SPEX_factorization *F,  // The non-updatable Cholesky factorization.
-                            // Mathematically, F is unchanged.  However, if F
-                            // is updatable on input, it is converted to
-                            // non-updatable.  If F is already non-updatable,
-                            // it is not modified.
+    SPEX_factorization *F,      // The non-updatable Cholesky factorization.
+                                // Mathematically, F is unchanged.  However, if F
+                                // is updatable on input, it is converted to
+                                // non-updatable.  If F is already non-updatable,
+                                // it is not modified.
     // input:
-    const SPEX_matrix* b,             // Right hand side vector
-    const SPEX_options* option        // command options
+    const SPEX_matrix* b,       // Right hand side vector
+    const SPEX_options* option  // command options
 )
 {
     SPEX_info info;
 
+    // Ensure SPEX is initialized
     if (!spex_initialized()) return SPEX_PANIC;
   
     // Check the inputs
@@ -79,12 +72,6 @@ SPEX_info SPEX_Chol_solve
         return SPEX_INCORRECT_INPUT;
     }
     
-    // convert the factorization F to non-updatable
-    info = SPEX_factorization_convert(F, false, option);
-    if (info != SPEX_OK) return info;
-    
-    //int64_t i, j, nz, n = F->L->n;
-
     // det is the determinant of the PAP matrix. It is obtained for free
     // from the SPEX Cholesky factorization det = rhos[n-1] = L[n,n]
     mpz_t* det = NULL;
@@ -101,6 +88,9 @@ SPEX_info SPEX_Chol_solve
     // get b2 = Pinv*b
     //--------------------------------------------------------------------------
 
+    // Ensure that F is in a non-updatable form
+    SPEX_CHECK( SPEX_factorization_convert(F, false, option));
+    
     SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option)) ;
 
     //--------------------------------------------------------------------------
@@ -116,7 +106,8 @@ SPEX_info SPEX_Chol_solve
     // Set the value of the determinant det = rhos[n-1] 
     det = &(F->rhos->x.mpz[F->L->n-1]);
 
-    
+    // Multiply b2 by the determinant. This multiplication ensures that the next
+    // backsolve is integral
     SPEX_CHECK(spex_matrix_mul(b2, (*det) ));
     
     //--------------------------------------------------------------------------

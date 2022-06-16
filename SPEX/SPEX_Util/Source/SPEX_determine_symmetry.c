@@ -34,7 +34,7 @@ SPEX_info SPEX_determine_symmetry
 )
 {    
     SPEX_info info;
-    // TODO INSERT UNINITIALIZED CRAP
+    // TODO INSERT UNINITIALIZED stuff
   
     // Only used index
     int64_t j;

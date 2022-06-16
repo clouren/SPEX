@@ -9,14 +9,16 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Util.h"
-#include "SPEX_Left_LU.h"
-#include "SPEX_Chol.h"
-#include "SPEX_Backslash.h"
+#include "SPEX.h"
 #include <time.h>
 #include <stdint.h>
 #include <inttypes.h>
 
+// To access the kth entry in a SPEX_matrix using 1D linear addressing,
+// in any matrix kind (CSC, triplet, or dense), in any type:
+#define SPEX_1D(A,k,type) ((A)->x.type [k])
+// To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
+#define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 #define SPEX_MIN(a,b) (((a) < (b)) ? (a) : (b))
 /* Purpose: This processes the command line for user specified options */
 SPEX_info SPEX_Backslash_process_command_line //processes the command line

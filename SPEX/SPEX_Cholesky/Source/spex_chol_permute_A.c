@@ -22,6 +22,7 @@
  * S:            Symbolic analysis struct for Cholesky factorization. 
  *               Contains row/column permutation of A
 
+ // TODO: please address the issues in this file. Let me know if you need help. Once you've fixed them delete all fixmes
  FIXME: why pass in S?  Why not pass in both the permutation P and
  its inverse?  If the inverse passed in is a NULL pointer, then
  compute it, use it, then discard it.  

@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 // This file is not intended to be #include'd in user applications.  Use
-// SPEX_Chol.h instead.
+// SPEX.h instead.
 
 #ifndef SPEX_CHOL_INTERNAL_H
 #define SPEX_CHOL_INTERNAL_H

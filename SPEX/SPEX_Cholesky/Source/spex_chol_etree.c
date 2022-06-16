@@ -34,7 +34,8 @@ SPEX_info spex_chol_etree
     const SPEX_matrix* A        // Input matrix (must be SPD).
 )
 {
-    // Check input
+    // All inputs are checked by the caller so asserts are used here as a reminder
+    // of the appropriate formats
     ASSERT (A != NULL) ;
     ASSERT(A->kind == SPEX_CSC) ;
     ASSERT(A->type == SPEX_MPZ) ;

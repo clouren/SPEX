@@ -22,27 +22,13 @@ demos: all
 
 # compile the dynamic library only, and then run the demos
 C:
-	( cd Lib ; $(MAKE) )
 	( cd Demo ; $(MAKE) )
 
 # compile the dynamic library, and then run the demos and statement coverage
 all: C cov
 
-# compile the dynamic library only
-library:
-	( cd Lib ; $(MAKE) )
-
-# compile the static library only
-static:
-	( cd Lib ; $(MAKE) static )
-
-# statement coverage test
-cov:
-	( cd Tcov ; $(MAKE) )
-
 # remove files not in the distribution, but keep compiled libraries
 clean:
-	( cd Lib ; $(MAKE) clean )
 	( cd Demo ; $(MAKE) clean )
 	#( cd Tcov ; $(MAKE) clean )
 	- ( cd MATLAB/Source ; $(RM) *.o )
@@ -51,7 +37,6 @@ clean:
 
 # remove all files not in the distribution
 purge:
-	( cd Lib ; $(MAKE) purge )
 	( cd Demo ; $(MAKE) purge )
 	#( cd Tcov ; $(MAKE) purge )
 	- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
@@ -60,11 +45,4 @@ purge:
 
 distclean: purge
 
-# install the library
-install: library
-	( cd Lib ; $(MAKE) install )
-
-# uninstall the library
-uninstall:
-	( cd Lib ; $(MAKE) uninstall )
 

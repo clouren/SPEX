@@ -56,15 +56,12 @@ SPEX_info spex_chol_symbolic_analysis
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
+    
+    // Inputs are checked by the caller, asserts are here as a reminder of the format
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
-
-    // TODO Ensure that these are checked by caller and replace with ASSERTS
-    if (!A || !S || !option )
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
+    
+    // Declare local variables
     int64_t n = A->n;
     int64_t* post = NULL;
     int64_t* c = NULL;

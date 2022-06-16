@@ -47,8 +47,14 @@ SPEX_info spex_chol_forward_sub
     SPEX_info info;
     int64_t  i, p, k, n = L->n, m, mnew;
     
+    // All inputs have been checked by the caller. Asserts are 
+    // here for reminder
     ASSERT(n >= 0);
     ASSERT(L->n == x->m);
+    ASSERT(L->kind == SPEX_CSC);
+    ASSERT(L->type == SPEX_MPZ);
+    ASSERT(x->kind == SPEX_DENSE);
+    ASSERT(x->type == SPEX_MPZ);
     
     int sgn;
     
@@ -70,7 +76,7 @@ SPEX_info spex_chol_forward_sub
     for (k = 0; k < x->n; k++)
     {
         //----------------------------------------------------------------------
-        // Iterate accross all nonzeros in x. Assume x is dense
+        // Iterate accross all nonzeros in x. Assumes x is dense
         //----------------------------------------------------------------------
         for (i = 0; i < n; i++)
         {

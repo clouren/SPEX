@@ -9,9 +9,6 @@
 
 //------------------------------------------------------------------------------
 
-//TODO (maybe) change name of folder from SPEX_Cholesky to Cholesky
-//TOASK valgrind: Conditional jump or move depends on uninitialised value(s) ??
-
 /* This example shows how to use SPEX Chol with a given input matrix and a double
    output. The input is read from a file */
 
@@ -50,24 +47,19 @@ int main (int argc, char **argv)
     SPEX_initialize();
 
     //--------------------------------------------------------------------------
-    // Get matrix and right hand side file names
+    // Get matrix file name
     //--------------------------------------------------------------------------
-    /**/char *mat_name, *rhs_name;
+    char *mat_name;
     mat_name = "../ExampleMats/872.mat.txt";
-    rhs_name = "../ExampleMats/872.mat.soln.txt";/**/
-    /*char* mat_name = "../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
-    char* rhs_name = "../ExampleMats/2.mat.soln.txt";*/
     if (argc > 2)
     {
         mat_name = argv[1];
-        rhs_name = argv[2];
     }
 
     //--------------------------------------------------------------------------
     // Declare our data structures
     //--------------------------------------------------------------------------
     SPEX_info ok;
-    //SPEX_matrix *Ad = NULL ;                     // input matrix as double
     SPEX_matrix* A = NULL ;                     // input matrix with mpz values
     SPEX_matrix* b = NULL ;                     // Right hand side vector
     SPEX_matrix* x = NULL ;                     // Solution vectors
@@ -80,7 +72,7 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-    option->order = SPEX_AMD; //AMD is default for Cholesky //TODO maybe change Util?
+    option->order = SPEX_AMD; //AMD is default for Cholesky
     //--------------------------------------------------------------------------
     // Allocate memory, read in A and b
     //--------------------------------------------------------------------------
@@ -117,16 +109,8 @@ int main (int argc, char **argv)
     // solve
     //--------------------------------------------------------------------------
     clock_t start_s = clock();
-    
-    // SPEX Cholesky has an optional check, to enable it, one can set the following
-    // parameter to be true.
-    //option->check = true;
-    //option->print_level = 1;
-    // Solve the system and give MPQ solution
-    
 
     DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
-    
     
     clock_t end_s = clock();
 
@@ -137,19 +121,12 @@ int main (int argc, char **argv)
     // x2 is a copy of the solution. x2 is a dense matrix with mpfr entries
     DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
     
-    /*option->print_level = 1;
-    if (option->check)
-    {
-        DEMO_OK(SPEX_check_solution(A, x, b, option));
-    }*/
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------
     FREE_WORKSPACE;
 
     printf ("\n%s: all tests passed\n\n", __FILE__) ;
-    
-
     return 0;
 }
 

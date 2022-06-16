@@ -22,11 +22,11 @@
  * F_handle:    Handle to the factorization struct. Null on input.
  *              On output, contains a pointer to the factorization.
  * 
+ * A:           User's input matrix. Must be SPEX_MPZ and SPEX_CSC.
+ * 
  * S:           Symbolic analysis struct for Cholesky factorization. 
  *              On input it contains the elimination tree and 
  *              the number of nonzeros in L.
- *
- * A:           User's input matrix. Must be SPEX_MPZ and SPEX_CSC.
  * 
  * option:      Command options. Default if NULL. Notably, option->chol_type indicates whether
  *              it is performing the default up-looking factorization (SPEX_CHOL_UP)
@@ -47,26 +47,29 @@ SPEX_info SPEX_Chol_factorize
     // Output
     SPEX_factorization **F_handle,  // Cholesky factorization struct
     //Input
-    const SPEX_matrix* A,      // Matrix to be factored. Must be SPEX_MPZ and SPEX_CSC   
+    const SPEX_matrix* A,           // Matrix to be factored. Must be SPEX_MPZ and SPEX_CSC   
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
-                               // elimination tree of A, the column pointers of
-                               // L, and the exact number of nonzeros of L.
-    const SPEX_options* option //command options
-                               // Notably, option->chol_type indicates whether
-                               // CHOL_UP (default) or CHOL_LEFT is used.
+                                    // elimination tree of A, the column pointers of
+                                    // L, and the exact number of nonzeros of L.
+    const SPEX_options* option      //command options
+                                    // Notably, option->chol_type indicates whether
+                                    // CHOL_UP (default) or CHOL_LEFT is used.
 )
 {
 
     SPEX_info info;
+    
+    // Check inputs for NULL
+    if (!F_handle || !A || !S)
+        return SPEX_INCORRECT_INPUT;
+    
+    // Ensure inputs are in the correct format
+    if (A->kind != SPEX_CSC || A->type != SPEX_MPZ || S->kind!=SPEX_CHOLESKY_FACTORIZATION)
+        return SPEX_INCORRECT_INPUT;
+    
 
     SPEX_matrix* PAP = NULL;
     SPEX_factorization *F = NULL ;
-
-    //TODO check inputs with if
-    ASSERT(S->kind==SPEX_CHOLESKY_FACTORIZATION);
-    
-    // TODO Copy comments from backslash
-    //TODO copy space between comment to code from here
 
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the row/column ordering from 

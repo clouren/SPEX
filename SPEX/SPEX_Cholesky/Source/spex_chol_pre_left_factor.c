@@ -11,6 +11,7 @@
 
 
 //TODO doublecheck valgrind
+// Chris: Assuming this is fixed? IF so please delete
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
     SPEX_FREE(c);                   \
@@ -45,9 +46,6 @@
  *               On input it contains information that is not used in this 
  *               function such as the row/column permutation
  *               On output it contains the number of nonzeros in L.
- * 
- * c:            Column pointers
- * 
  */
 SPEX_info spex_chol_pre_left_factor
 (
@@ -63,12 +61,13 @@ SPEX_info spex_chol_pre_left_factor
                                   // inverse
 )
 {
-    // Input check
+    // All inputs have been checked by the caller, thus asserts are used here
+    // as a reminder of the expected data types
     SPEX_info info;
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
     
-    int64_t  top, k, j, jnew, n = A->n;
+    int64_t  top, k, j, jnew, n = A->n, p = 0;
     int64_t* c = NULL;
     SPEX_matrix* L = NULL;
     ASSERT(n >= 0);
@@ -89,6 +88,7 @@ SPEX_info spex_chol_pre_left_factor
         return SPEX_OUT_OF_MEMORY;
     }
     
+    // Set the column pointers of L and c
     for (k = 0; k < n; k++)
     {
         L->p[k] = c[k] = S->cp[k];
@@ -108,13 +108,12 @@ SPEX_info spex_chol_pre_left_factor
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x
         //----------------------------------------------------------------------
-        int64_t p = 0;
         for (j = top; j < n; j++)
         {
             jnew = xi[j];
             if (jnew == k) continue;
             p = c[jnew]++;
-            // Place the i location of the L->nz nonzero
+            // Place the i location of the next nonzero
             L->i[p] = k;
         }
         p = c[k]++;

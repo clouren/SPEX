@@ -32,11 +32,8 @@ SPEX_info spex_chol_backward_sub
 )
 {
     SPEX_info info;
-    // All inputs have been checked by the caller, so no input checking here
-    // (otherwise it's impossible to 100% test cover)
-    //No null input checking 
-
-    // Check input
+    // All inputs have been checked by the caller, asserts are
+    // here as a reminder
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(L->kind == SPEX_CSC);
     ASSERT(x->type == SPEX_MPZ);

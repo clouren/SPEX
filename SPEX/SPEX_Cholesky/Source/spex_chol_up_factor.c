@@ -36,15 +36,15 @@
  * L_handle:    A handle to the L matrix. Null on input.
  *              On output, contains a pointer to the L matrix.
  * 
+ * rhos_handle: A handle to the sequence of pivots. NULL on input. 
+ *              On output it contains a pointer to the pivots matrix.
+ * 
  * S:           Symbolic analysis struct for Cholesky factorization. 
  *              On input it contains information that is not used in this 
  *              function such as the row/column permutation
  *              On output it contains the elimination tree and 
  *              the number of nonzeros in L.
  * 
- * rhos_handle: A handle to the sequence of pivots. NULL on input. 
- *              On output it contains a pointer to the pivots matrix.
- *
  * A:           The user's permuted input matrix
  * 
  * option:      Command options
@@ -76,9 +76,10 @@ SPEX_info spex_chol_up_factor
     int64_t anz;
     // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
     // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
-    SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
-    ASSERT(info == SPEX_OK); //REMINDER in SPEX_CHECK if info!=SPEX_OK it would Free alloc (which is why we can't use SPEX_CHECK here)
-        //TODO remove reminder (but not until there is no chance of making same mistake)
+    SPEX_info info =  SPEX_matrix_nnz (&anz, A, option);
+    
+    if (info != SPEX_OK)
+        return SPEX_INCORRECT_INPUT;
     
     if (anz < 0)
     {
@@ -96,7 +97,7 @@ SPEX_info spex_chol_up_factor
     int64_t* c = NULL;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, jnew, k;//col, loc, lnz = 0, unz = 0
+    int64_t n = A->n, top, i, j, jnew, k;
     int sgn;
     size_t size;
     
@@ -155,7 +156,7 @@ SPEX_info spex_chol_up_factor
         false, /* do not initialize the entries of x: */ false, option));
     
     // Create rhos, a "global" dense mpz_t matrix of dimension n*1. 
-    // As inidicated with the second boolean parameter true, the mpz entries in
+    // As indicated with the second boolean parameter true, the mpz entries in
     // rhos are initialized to the default size (unlike x).
     SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
@@ -206,7 +207,7 @@ SPEX_info spex_chol_up_factor
         SPEX_CHECK(spex_chol_up_triangular_solve(&top, xi, x, L, A, k, S->parent, 
                                                  c, rhos, h));
   
-        // If x[k] is nonzero chose it as pivot. Otherwise, the matrix is 
+        // If x[k] is nonzero choose it as pivot. Otherwise, the matrix is 
         // not SPD (indeed, it may even be singular).
         SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k])); 
         if (sgn != 0)

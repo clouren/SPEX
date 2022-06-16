@@ -36,15 +36,15 @@
  * L_handle:    A handle to the L matrix. Null on input.
  *              On output, contains a pointer to the L matrix.
  * 
+ * rhos_handle: A handle to the sequence of pivots. NULL on input. 
+ *              On output it contains a pointer to the pivots matrix.
+ * 
  * S:           Symbolic analysis struct for Cholesky factorization. 
  *              On input it contains information that is not used in this 
  *              function such as the row/column permutation
  *              On output it contains the elimination tree and 
  *              the number of nonzeros in L.
  * 
- * rhos_handle: A handle to the sequence of pivots. NULL on input. 
- *              On output it contains a pointer to the pivots matrix.
- *
  * A:           The user's permuted input matrix
  * 
  * option:      Command options
@@ -68,6 +68,7 @@ SPEX_info spex_chol_left_factor
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
+    SPEX_info info;
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
@@ -75,8 +76,9 @@ SPEX_info spex_chol_left_factor
     int64_t anz;
     // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
     // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
-    SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
-    ASSERT(info == SPEX_OK);
+    info = SPEX_matrix_nnz (&anz, A, option);
+    if (info != SPEX_OK)
+        return SPEX_INCORRECT_INPUT;
     
     if (anz < 0)
     {
@@ -94,7 +96,7 @@ SPEX_info spex_chol_left_factor
     SPEX_matrix *x = NULL ;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, lnz = 0, jnew, k;// col, loc, unz = 0
+    int64_t n = A->n, top, i, j, lnz = 0, jnew, k;
     int sgn;
     size_t size;
     
@@ -142,7 +144,6 @@ SPEX_info spex_chol_left_factor
     // bound.  It is still possible that more bits will be required which is
     // correctly handled internally.
     int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n))) ;
-    // FIXME: paranoia
     
     // Create x, a "global" dense mpz_t matrix of dimension n*1 (i.e., it is 
     // used as workspace re-used at each iteration). The second boolean
@@ -228,13 +229,12 @@ SPEX_info spex_chol_left_factor
             {
                 // Find the size of x[j]
                 size = mpz_sizeinbase(x->x.mpz[jnew],2);
-                // FIXME: paranoia on size+2
 
                 // GMP manual: Allocated size should be size+2
                 SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
                 
                 // Place the x value of this nonzero in row jnew of L
-                SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew])); //try mpz_swap (might screw up the size thing) (valgrind should show increase in mallocs)
+                SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew])); 
 
                 // Increment lnz
                 lnz += 1;
