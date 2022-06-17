@@ -5,9 +5,9 @@ import scipy
 from scipy.sparse import csc_matrix
 from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc, linalg
 
-#TODO add the functionality of getting strings as output 
 #TODO each function in a different file? (check how that works in python libraries)
 #TODO actual error handling
+#TODO memory free function
 
 
 def SPEX_Chol_backslashVIEJO( A,b ): 
@@ -49,7 +49,7 @@ def SPEX_Chol_backslashVIEJO( A,b ):
    
     return x
 
-def SPEX_Chol_void( A, b, order ): 
+def SPEX_Chol_void( A, b, order, charOut ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -80,14 +80,14 @@ def SPEX_Chol_void( A, b, order ):
     x_c = (ctypes.c_char_p*n)()
     x_d = (ctypes.c_double*n)()
     x_v = (ctypes.c_void_p*n)()
-    
+        
     ##--------------------------------------------------------------------------
     ## Solve Ax=b using REF Sparse Cholesky Factorization
     ##--------------------------------------------------------------------------
     c_backslash(x_c,
                 x_d,
                 x_v,
-                True,
+                charOut,
                 A.indptr.astype(np.int64), #without the cast it would be int32 and it would not be compatible with the C method
                 A.indices.astype(np.int64),
                 A.data.astype(np.float64), 
@@ -96,13 +96,19 @@ def SPEX_Chol_void( A, b, order ):
                 n,
                 A.nnz,
                 order)
-    
+    print("x_d")
     for i in range(3):
         print(x_d[i])
+    print("x_c")
     for i in range(3):
-        print(x_v[i])
-   
-    return x_v
+        print(x_c[i])
+    print("x_v")
+    a = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_char_p))
+    ##x=(ctypes.c_char_p*n)()
+    ##for i in range(n):
+    ##    x[i]=str(a[0])[2:-1]
+    
+    return a
 
 def SPEX_Chol_string( A, b, order ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
@@ -209,7 +215,6 @@ def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}):
     ##--------------------------------------------------------------------------
     ## Ordering
     ##--------------------------------------------------------------------------
-    #TODO swich
     if options['Ordering']=="none":
         order=0
     elif options['Ordering']=="colamd":

@@ -81,7 +81,8 @@ int main(){
      x_d=(double *)malloc(n*sizeof(double));
      char** x_c=NULL;
      x_c=(char **)malloc(n*sizeof(char *));
-     bool charOut = true;
+     bool charOut = false;
+     //printf("%d \n", charOut);
 
      void** x_v=NULL;
      x_v=(void **)malloc(n*sizeof(void *));

@@ -16,14 +16,15 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 # uncomment for extra error checking:
 #CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
-PATH_TO_SPEX_UTIL=-Wl,-rpath,"../../SPEX_Util/Lib/"
-PATH_TO_SPEX_CHOL=-Wl,-rpath,"../SPEX/SPEX_Cholesky/Lib/"
-CF =  $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) $(PATH_TO_SPEX_CHOL) -O
-I = -I../Include -I../Source -I../Lib -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Util/Lib
+#PATH_TO_SPEX_UTIL=-Wl,-rpath,"../../SPEX_Util/Lib/"
+#PATH_TO_SPEX_CHOL=-Wl,-rpath,"../SPEX/SPEX_Cholesky/Lib/"
+PATH_TO_SPEX=-Wl,-rpath,"../../lib/"
+CF =  $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX) -O #$(PATH_TO_SPEX_UTIL) $(PATH_TO_SPEX_CHOL) -O
+I = -I../Include -I../Source -I../Lib -I../../../SuiteSparse_config -I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include -I../../SPEX_Util/Source -I../../SPEX_Util/Lib -I../../lib -I../../SPEX_Backslash/Include
 
 LDLIBS += -lsuitesparseconfig -lcolamd -lamd \
           -lgmp -lmpfr \
-           -L../../SPEX_Util/Lib/ -lspexutil -lm \
+           -L../../lib -lspex -lm \
            -L../Lib -lspexchol \
            -lm -lsuitesparseconfig -lcolamd -lamd -lgmp -lmpfr 
 #CS = ../Lib/libspexchol.a $(LDLIBS)
@@ -51,7 +52,7 @@ SPEX_Chol_connect.so: SPEX_Chol_connect.o
 
 
 clean:
-	- $(RM) demo SPEX_Chol_connect.so SPEX_Chol_connect.o
+	- $(RM) demo demo_debug SPEX_Chol_connect.so SPEX_Chol_connect.o
 
 purge: distclean
 
