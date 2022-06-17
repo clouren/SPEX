@@ -27,9 +27,6 @@ SPEX_info SPEX_scale
     // Output
     SPEX_matrix* x,
     // Input
-    //scale_A, //TOASK is this the best way? Or should it be just scale1 and scale2 and then we change the order dependeing on
-    //scale_b,
-    //bool scale //true scale, false unscale 
     const mpq_t scaling_num, //numerator
     const mpq_t scaling_den, //denominator
     const SPEX_options* option        // command options
@@ -64,7 +61,7 @@ SPEX_info SPEX_scale
         {
             SPEX_CHECK(SPEX_mpq_mul(x->x.mpq[i], x->x.mpq[i], scale));
         }
-    }//TODO maybe? use SPEX_matrix_mul
+    }
 
   //--------------------------------------------------------------------------
   // Free all workspace and return success

@@ -2,7 +2,7 @@
 // SPEX/Include/SPEX.h: Include file for SPEX Library
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen, Lorena
+// SPEX: (c) 2019-2022, Chris Lourenco (US Naval Academy), Jinhao Chen, Lorena
 // Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All
 // Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
@@ -13,7 +13,6 @@
 #define SPEX_H
 
 // TODO: Shouldn't this be in a top level folder SPEX/Include instead of here?
-// Is there a reason Tim/Jinhao left it here?
 
 // SPEX is a collection of functions for the SParse EXact package.
 // Included are several routines for memory management, matrix operations, and 
@@ -128,14 +127,13 @@ typedef enum
     SPEX_OUT_OF_MEMORY = -1,      // out of memory
     SPEX_SINGULAR = -2,           // the input matrix A is singular
     SPEX_INCORRECT_INPUT = -3,    // one or more input arguments are incorrect
-//  SPEX_INCORRECT = -4,          // The solution is incorrect
-    SPEX_UNSYMMETRIC = -5,        // The input matrix is unsymmetric
-    SPEX_NOTSPD = -6,             // The input matrix is not SPD
+    SPEX_UNSYMMETRIC = -4,        // The input matrix is unsymmetric
+    SPEX_NOTSPD = -5,             // The input matrix is not SPD
                                   // UNSYMMETRIC and NOTSPD are used for
                                   // Cholesky factorization
-    SPEX_INCORRECT_ALGORITHM = -7,// The algorithm is not compatible with 
+    SPEX_INCORRECT_ALGORITHM = -6,// The algorithm is not compatible with 
                                   // the factorization
-    SPEX_PANIC = -8               // SPEX used without proper initialization,
+    SPEX_PANIC = -7               // SPEX used without proper initialization,
                                   // or other unrecoverable error
 }
 SPEX_info ;
@@ -144,6 +142,7 @@ SPEX_info ;
 // Pivot scheme codes
 //------------------------------------------------------------------------------
 
+// TODO: How are we going to handle the defaults with LU/Cholesky?
 #define SPEX_DEFAULT 0
 
 // A code in SPEX_options to tell SPEX what type of pivoting to use for pivoting
@@ -182,8 +181,6 @@ SPEX_preorder ;
 //------------------------------------------------------------------------------
 
 // A code in SPEX_options to tell SPEX which factorization algorithm to use 
-
-// TODO: document this, only used within a given solver
 
 typedef enum
 {
@@ -677,14 +674,6 @@ typedef struct
     SPEX_matrix *rhos;                    // A n-by-1 dense matrix for the
                                           // pivot values
 
-    //--------------------------------------------------------------------------
-    // FUTURE: These are used for QR factorization, but ignored for LU or
-    // Cholesky factorization.
-    //--------------------------------------------------------------------------
-
-//  FUTURE:
-//  SPEX_matrix *Q;                       // The orthogonal matrix from QR
-//  SPEX_matrix *R;                       // The upper triangular matrix from QR
 
     //--------------------------------------------------------------------------
     // The permutations of the matrix that are used during the factorization.
@@ -1327,9 +1316,6 @@ SPEX_info SPEX_Left_LU_solve
 //    precision is user defined.
 
 
-//TODO consistency on * data types
-
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //-----------------------Primary SPEX Cholesky routines-------------------------
@@ -1348,8 +1334,8 @@ SPEX_info SPEX_Chol_backslash
     // Input
     SPEX_type type,               // Type of output desired
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix *A,         // Input matrix, must be static CSC MPZ
-    const SPEX_matrix *b,         // Right hand side matrix that might contain
+    const SPEX_matrix* A,         // Input matrix, must be static CSC MPZ
+    const SPEX_matrix* b,         // Right hand side matrix that might contain
                                   // multiple columns, must be dense MPZ
     const SPEX_options* option    // Command options
 );
@@ -1359,16 +1345,16 @@ SPEX_info SPEX_Chol_analyze
     // Output
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure 
     // Input
-    const SPEX_matrix *A,         // Input matrix, must be static CSC
+    const SPEX_matrix* A,         // Input matrix, must be static CSC
     const SPEX_options* option    // Command options
 );
 
 SPEX_info SPEX_Chol_factorize
 (
     // Output
-    SPEX_factorization **F_handle,// Cholesky factorization
+    SPEX_factorization** F_handle,// Cholesky factorization
     //Input
-    const SPEX_matrix *A,         // matrix to be factorized, must be CSC MPZ
+    const SPEX_matrix* A,         // matrix to be factorized, must be CSC MPZ
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
                                   // elimination tree of A, the column pointers
                                   // of L, and the exact number of nnz of L.
@@ -1394,13 +1380,13 @@ SPEX_info SPEX_Chol_solve
                                   // On output: Rational solution (SPEX_MPQ)
                                   // to the system. 
     // input/output:
-    SPEX_factorization *F,  // The non-updatable Cholesky factorization.
+    SPEX_factorization* F,  // The non-updatable Cholesky factorization.
                             // Mathematically, F is unchanged.  However, if F
                             // is updatable on input, it is converted to
                             // non-updatable.  If F is already non-updatable,
                             // it is not modified.
     // input:
-    const SPEX_matrix *b,         // Right hand side matrix that might contain
+    const SPEX_matrix* b,         // Right hand side matrix that might contain
                                   // multiple columns, must be dense MPZ
     const SPEX_options* option    // command options
 );

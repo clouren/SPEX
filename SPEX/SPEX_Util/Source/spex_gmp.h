@@ -14,12 +14,9 @@
 // can use them to construct their own wrappers around GMP functions.  See
 // SPEX_gmp.c for more details.
 
-// FIXME: rename this file to spex_gmp.h
-
 #ifndef SPEX_GMP_H
 #define SPEX_GMP_H
 
-#if 1 //FIXME new lines
 #include <setjmp.h>
 #include <stdarg.h>
 
@@ -128,10 +125,8 @@ void spex_gmp_failure (int status) ;
         SPEX_MPFR_SET_NULL(x);                    \
     }                                             \
 }
-#endif
 
 
-#if 1 //FIXME new lines
 // ignore warnings about unused parameters in this file
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -154,9 +149,6 @@ extern mpz_t  *spex_gmpz_archive  ;    // current mpz object
 extern mpz_t  *spex_gmpz_archive2  ;    // current second mpz object
 extern mpq_t  *spex_gmpq_archive   ;    // current mpq object
 extern mpfr_t *spex_gmpfr_archive  ;    // current mpfr object
-
-#endif
-
 
 #define SPEX_GMP_WRAPPER_START                                          \
 {                                                                       \
@@ -258,4 +250,3 @@ extern mpfr_t *spex_gmpfr_archive  ;    // current mpfr object
 
 
 #endif
-

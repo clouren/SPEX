@@ -11,7 +11,7 @@
 // Allocate an m-by-n SPEX_matrix, in either dynamic_CSC x mpz or one of
 // 15 data structures:
 // (sparse CSC, sparse triplet, or dense) x
-// (mpz, mpz, mfpr, int64, or double).
+// (mpz, mpq, mfpr, int64, or double).
 
 // If the matrix is not dynamic_CSC, then it may be created as 'shallow', in
 // which case A->p, A->i, A->j, and A->x are all returned as NULL, and all

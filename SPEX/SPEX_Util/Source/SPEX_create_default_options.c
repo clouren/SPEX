@@ -36,6 +36,7 @@ SPEX_info SPEX_create_default_options (SPEX_options **option )
     //--------------------------------------------------------------------------
 
     (*option)->pivot       = SPEX_DEFAULT_PIVOT ;
+    // TODO Discuss: Erick/Tim what should we do here
     (*option)->order       = SPEX_DEFAULT_ORDER ;
     (*option)->print_level = SPEX_DEFAULT_PRINT_LEVEL ;
     (*option)->prec        = SPEX_DEFAULT_PRECISION ;

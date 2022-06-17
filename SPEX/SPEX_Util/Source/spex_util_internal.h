@@ -200,7 +200,7 @@ void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
 
 void spex_gmp_failure (int status) ;
 #else
-#include "SPEX_gmp.h"
+#include "spex_gmp.h"
 #endif
 
 //------------------------------------------------------------------------------
@@ -208,6 +208,8 @@ void spex_gmp_failure (int status) ;
 //-----------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
+// TODO: What should we do to fix this?
 
 // Tolerance used in the pivoting schemes. This number can be anything in
 // between 0 and 1. A value of 0 selects the diagonal element exclusively and a

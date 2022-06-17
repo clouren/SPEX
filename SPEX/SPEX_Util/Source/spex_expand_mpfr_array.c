@@ -57,8 +57,6 @@ SPEX_info spex_expand_mpfr_array
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
 
     uint64_t prec = SPEX_OPTION_PREC (option) ;
-    // paranoia:  check prec here: cast to mprf_prec_t, and back, assert
-    // equality, if not equal then return SPEX_PANIC
     mpfr_rnd_t round = SPEX_OPTION_ROUND (option) ;
 
     SPEX_CHECK(SPEX_mpq_init(temp));
@@ -70,6 +68,9 @@ SPEX_info spex_expand_mpfr_array
     SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPFR, n, 1, n,
         false, true, option));
 
+    // TODO: Discuss: Should we not just cast MPFR->rational->mpz?
+    // This gets rid of doing the 2^prec crap
+    // Erick/Tim what do you think?
     // expon = 2^prec (overestimate)
     SPEX_CHECK(SPEX_mpfr_ui_pow_ui(expon, 2, prec, round)) ;
 

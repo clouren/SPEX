@@ -108,4 +108,16 @@ spex_update_triangular_solve
 how to create vk or w
 
 
+----------- TODO from Util ----------
+
+spex_expand_mpfr: Should we do a conversion of mpfr->mpq->mpz instead
+of how we currently treat it like a big double
+
+default_options: how should we handle this for cholesky vs LU; current
+approach doesnt make sense
+
+SPEX_DEFAULT in spex.h: how do we handle this for LU/Cholesky
+
+spex.h: should we have a master Include folder?
+
 

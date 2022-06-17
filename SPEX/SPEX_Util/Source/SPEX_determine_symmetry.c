@@ -16,9 +16,6 @@
  * SPEX_UNSYMMETRIC is returned.
  */
 
-
-// TODO: propagate the new calling style throughout
-
 #define SPEX_FREE_ALL               \
 {                                   \
     SPEX_matrix_free(&T,NULL);      \
@@ -34,7 +31,19 @@ SPEX_info SPEX_determine_symmetry
 )
 {    
     SPEX_info info;
-    // TODO INSERT UNINITIALIZED stuff
+    
+    // Check for null pointers
+    if (!A || !option)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+    
+    // A must be CSC and mpz_t
+    if (A->kind != SPEX_CSC || A->type != SPEX_MPZ)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+
   
     // Only used index
     int64_t j;
@@ -49,11 +58,14 @@ SPEX_info SPEX_determine_symmetry
     // the rows of A. This is a quick check to 
     // ensure the matrix is candidate to be symmetric.
     // Moreover, this check is important becuase 
-    // otherwise the ensuing block could seg-fault :(
+    // otherwise the ensuing block could seg-fault
     for (j = 0; j <= A->n; j++)
     {
         if (T->p[j] != A->p[j])
         {
+            // Number of nonzeros in column k of A
+            // is not the same as the number of nonzeros
+            // in row k of A. So free all and exit
             // nnz( A(:,k)) != nnz( A(k,:))
             SPEX_FREE_ALL ;
             return SPEX_UNSYMMETRIC;
@@ -70,7 +82,7 @@ SPEX_info SPEX_determine_symmetry
         // Check pattern
         if (T->i[j] != R->i[j])
         {
-            // Not pattern symmetrc
+            // Not pattern symmetric as row indices do not match
             SPEX_FREE_ALL ;
             return SPEX_UNSYMMETRIC;
         }

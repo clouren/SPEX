@@ -15,8 +15,6 @@
  *
  */
 
-//TODO change
- 
 #define SPEX_FREE_WORKSPACE         \
     SPEX_MPZ_CLEAR(gcd);            \
     SPEX_MPZ_CLEAR(one);            \
@@ -50,10 +48,17 @@ SPEX_info spex_expand_double_array
     int r1, r2 = 1;
     bool nz_found = false;
     SPEX_info info ;
-    // Double precision accurate to about 2e-16. We multiply by 10e17 to convert
-    // (overestimate to be safe)
+    // Double precision accurate to about 2e-16. We multiply by 1e16 to convert
+    // Note that this conversion allows a number like 0.9 to be represented exactly
+    // fl(0.9) is not exact in double precision; in fact the exact conversion is
+    // fl(0.9) = 45000000000000001 / 50000000000000000. Multiplying by 1e16 gives
+    // the actual value of 9/10 when scaled. Note that if this type of conversion
+    // is not desired by the user it is suggested they first convert from double to
+    // MPFR then from MPFR to MPQ as that will be fully exact.
     double expon = pow(10, 16);
-    // Quad precision in case input is huge
+    // Convert the input x into a quad precision matrix. This is to handle the (rare)
+    // case that the user gives an input double which is close to DOUBLE_MAX. In that case
+    // the multiplication could lead to inf.
     SPEX_matrix* x3 = NULL;
     mpz_t gcd, one; SPEX_MPZ_SET_NULL(gcd); SPEX_MPZ_SET_NULL(one);
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
@@ -70,13 +75,13 @@ SPEX_info spex_expand_double_array
     SPEX_CHECK(SPEX_mpq_set_d(scale, expon));           // scale = 10^16
     for (i = 0; i < n; i++)
     {
-        // Set x3[i] = x[i]
+        // x3[i] = x[i], cast double to MPFR
         SPEX_CHECK(SPEX_mpfr_set_d(x3->x.mpfr[i], x[i], round));
 
-        // x3[i] = x[i] * 10^16
+        // x3[i] = x[i] * 10^16, multiply MPFR by 10^16
         SPEX_CHECK(SPEX_mpfr_mul_d(x3->x.mpfr[i], x3->x.mpfr[i], expon, round));
 
-        // x_out[i] = x3[i]
+        // x_out[i] = x3[i], cast MPFR to integer truncating remaining decimal component
         SPEX_CHECK(SPEX_mpfr_get_z(x_out[i], x3->x.mpfr[i], round));
     }
 
