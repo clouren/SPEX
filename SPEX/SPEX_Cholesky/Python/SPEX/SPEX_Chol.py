@@ -9,6 +9,62 @@ from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc, linalg
 #TODO actual error handling
 #TODO memory free function
 
+def spex_chol_backslash( A, b, order, charOut ): 
+    ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
+    ## b is a numpy.array (data must be float64)
+    
+    ##--------------------------------------------------------------------------
+    ## Load the library with the "C bridge code"
+    ##--------------------------------------------------------------------------
+    lib = ctypes.CDLL('./SPEX_Chol_connect.so')
+    c_backslash = lib.SPEX_python_backslash
+    
+    ##--------------------------------------------------------------------------
+    ## Specify the parameter types and return type of the C function
+    ##--------------------------------------------------------------------------
+    c_backslash.argtypes = [ctypes.POINTER(ctypes.c_void_p),
+                            ndpointer(dtype=np.int64, ndim=1, flags=None),
+                            ndpointer(dtype=np.int64, ndim=1, flags=None),
+                            ndpointer(dtype=np.float64, ndim=1, flags=None),
+                            ndpointer(dtype=np.float64, ndim=1, flags=None), 
+                            ctypes.c_int, 
+                            ctypes.c_int,
+                            ctypes.c_int,
+                            ctypes.c_int,
+                            ctypes.c_bool]
+    c_backslash.restype = ctypes.c_int #C method is void
+    
+    n=A.shape[0] #number of columns/rows of A
+    
+    x_v = (ctypes.c_void_p*n)()
+        
+    ##--------------------------------------------------------------------------
+    ## Solve Ax=b using REF Sparse Cholesky Factorization
+    ##--------------------------------------------------------------------------
+    c_backslash(x_v,
+                A.indptr.astype(np.int64), #without the cast it would be int32 and it would not be compatible with the C method
+                A.indices.astype(np.int64),
+                A.data.astype(np.float64), 
+                b,
+                n,
+                n,
+                A.nnz,
+                order,
+                charOut)
+    
+    ##--------------------------------------------------------------------------
+    ## Cast solution into correct type (string or double)
+    ##--------------------------------------------------------------------------
+    if charOut:
+        x = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_char_p))
+    else:
+        #x = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_double))
+        x=[]
+        for i in range(3):
+            val=ctypes.cast(x_v[i], ctypes.POINTER(ctypes.c_double))
+            x.append(val[0]) ##this can also be changed to be a numpy array instead of a list
+    
+    return x
 
 def SPEX_Chol_backslashVIEJO( A,b ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
@@ -49,7 +105,7 @@ def SPEX_Chol_backslashVIEJO( A,b ):
    
     return x
 
-def SPEX_Chol_void( A, b, order, charOut ): 
+def SPEX_Chol_all( A, b, order, charOut ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
@@ -57,7 +113,7 @@ def SPEX_Chol_void( A, b, order, charOut ):
     ## Load the library with the "C bridge code"
     ##--------------------------------------------------------------------------
     lib = ctypes.CDLL('./SPEX_Chol_connect.so')
-    c_backslash = lib.SPEX_python_backslash
+    c_backslash = lib.SPEX_python_backslashVoid
     
     ##--------------------------------------------------------------------------
     ## Specify the parameter types and return type of the C function
@@ -98,16 +154,22 @@ def SPEX_Chol_void( A, b, order, charOut ):
                 order)
     print("x_d")
     for i in range(3):
-        print(x_d[i])
+        print(x_d[i], type(x_d[i]))
     print("x_c")
     for i in range(3):
         print(x_c[i])
     print("x_v")
-    a = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_char_p))
-    ##x=(ctypes.c_char_p*n)()
-    ##for i in range(n):
-    ##    x[i]=str(a[0])[2:-1]
-    
+    if charOut:
+        a = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_char_p))
+    else:
+        a=[]
+        #a = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_double*n))
+        for i in range(3):
+            val=ctypes.cast(x_v[i], ctypes.POINTER(ctypes.c_double))
+            a.append(val[0])
+    for i in range(3):
+        print(a[i])
+ 
     return a
 
 def SPEX_Chol_string( A, b, order ): 
@@ -229,14 +291,15 @@ def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}):
     ## Call the correct function depending on the desired output type
     ##--------------------------------------------------------------------------    
     if options['SolutionType']=="double":
-        x=SPEX_Chol_double(A,b,order)
+        charOut=0
     elif options['SolutionType']=="string":
-        x=SPEX_Chol_string(A,b,order)
+        charOut=0
     else:
         print("Invalid output type options")
         raise ValueError
 
-   
+    x=spex_chol_backslash(A,b,order,charOut)
+
     return x
 
 
@@ -264,3 +327,6 @@ def spex_matrix_from_file(fname):
     return A
 
 
+def free():
+    #frees the memory allocated using ctypes
+    x=1

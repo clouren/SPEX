@@ -70,7 +70,23 @@ void python_backslash_double
 
 SPEX_info SPEX_python_backslash
 ( 
- //output
+     //output
+     void** sol_void, //solution
+     //input
+     int64_t* Ap,     // column pointers of A, an array size is n+1 
+     int64_t* Ai,     // row indices of A, of size nzmax.
+     double* Ax,      // values of A
+     double* bx,      // values of b
+     int m,           // Number of rows of A
+     int n,           // Number of columns of A
+     int nz,          // Number of nonzeros in A
+     int ordering,    // type of ordering: 0-none, 1-colamd, 2-amd
+     bool charOut    // True if char** output, false if double
+);
+
+SPEX_info SPEX_python_backslashVoid
+( 
+//output
  char** sol_char,      // solution (null if double output)
  double* sol_doub,     // solution (null if char output)
  void** sol_void,
