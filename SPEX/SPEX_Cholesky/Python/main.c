@@ -77,34 +77,54 @@ int main(){
      
      free(x2);*/
 
-     double* x_d=NULL;
-     x_d=(double *)malloc(n*sizeof(double));
-     char** x_c=NULL;
-     x_c=(char **)malloc(n*sizeof(char *));
-     bool charOut = false;
-     //printf("%d \n", charOut);
+     
 
      void** x_v=NULL;
      x_v=(void **)malloc(n*sizeof(void *));
-
-
-     SPEX_python_backslash(x_c,x_d,x_v,charOut,col_pointers,row_index,data,rhs,n,n,nz,2);
-     if(charOut)
+     bool charOut = false;
+    
+    //printf("HERE\n");
+     SPEX_python_backslash(x_v,col_pointers,row_index,data,rhs,n,n,nz,2,charOut);
+    printf("backslash\n");
+    if(charOut)
      {
           printf("STRING SOLUTION\n");
-          printf("%s,%s,%s\n",x_c[0],x_c[1],x_c[2]);
+          //printf("%s,%s,%s\n",x_c[0],x_c[1],x_c[2]);
           printf("void %s,%s,%s\n",x_v[0],x_v[1],x_v[2]);
      }
      else
      {
           printf("DOUBLE SOLUTION\n");
-          printf("%f,%f,%f\n",x_d[0],x_d[1],x_d[2]);
-          //printf("void %f,%f,%f\n",*(double *)x_v[0],*(double *)x_v[1],*(double *)x_v[2]);
+          //printf("%f,%f,%f\n",x_d[0],x_d[1],x_d[2]);
           printf("void %f,%f,%f\n",x_v[0],x_v[1],x_v[2]);
      }
+    
+    double* x_d=NULL;
+     x_d=(double *)malloc(n*sizeof(double));
+     char** x_c=NULL;
+     x_c=(char **)malloc(n*sizeof(char *));
+    void** x_v2=NULL;
+     x_v2=(void **)malloc(n*sizeof(void *));
+
+     SPEX_python_backslashVoid(x_c,x_d,x_v,charOut,col_pointers,row_index,data,rhs,n,n,nz,2);
+    printf("backslashviejo\n"); 
+    if(charOut)
+     {
+          printf("STRING SOLUTION\n");
+          printf("%s,%s,%s\n",x_c[0],x_c[1],x_c[2]);
+          printf("void %s,%s,%s\n",x_v2[0],x_v2[1],x_v2[2]);
+     }
+     else
+     {
+          printf("DOUBLE SOLUTION\n");
+          printf("%f,%f,%f\n",x_d[0],x_d[1],x_d[2]);
+          printf("void %f,%f,%f\n",x_v2[0],x_v2[1],x_v2[2]);
+     }
+    
+    free(x_v);
      free(x_d);
      free(x_c);
-     free(x_v);
+     free(x_v2);
      return 0;
 }
 

@@ -78,4 +78,4 @@ def test_void():
     x=SPEX_Chol.SPEX_Chol_void(A,b,2,True)
     print('Test from file successful')
         
-test_void()
+test()

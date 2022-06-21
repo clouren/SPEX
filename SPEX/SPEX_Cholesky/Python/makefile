@@ -34,7 +34,7 @@ LDLIBS += -lsuitesparseconfig -lcolamd -lamd \
 
 all: demo demo_debug SPEX_Chol_connect.o SPEX_Chol_connect.so
 	- ./demo
-	- ./demo_debug
+	- #./demo_debug
 
 
 demo: SPEX_Chol_connect.c 
