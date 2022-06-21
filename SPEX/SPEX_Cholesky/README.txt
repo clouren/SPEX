@@ -1,15 +1,8 @@
-*************************************************************
-THIS IS DEVELOPMENTAL CODE, IT IS NOT INTENDED TO YET BE USED 
-BY PRACTITIONERS. IF YOU WANT TO SOLVE A LINEAR SYSTEM EXACTLY
-USE SPEX_LEFT_LU
-*************************************************************
 
-SPEX_Cholesky is a code for exactly solving sparse SPD
-linear systems. It comprises both an integer-preserving
-up-looking and integer-preserving left-looking Cholesky
-factorization.
+SPEX_Cholesky is software package used to solve a sparse SPD linear systems exactly using the Sparse Cholesky factorization. It comprises both an integer-preserving up-looking and integer-preserving left-looking Cholesky factorization.
 
-SPEX_Cholesky is a component of the SParse EXact software
-package. Its dependencies are the same as SPEX.
+SPEX_Cholesky Purpose: Exactly solve a sparse system of linear equations using a given input matrix and right hand side vector file. This code can output the final solution to a user specified output file in either double precision or full precision rational numbers. If you intend to use SPEX_Cholesky within another program, refer to examples for help with this.
 
-# TODO: Update this file to mimic the same file from SPEX Left LU
+example_simple Purpose: Demonstrate the simple interface of SPEX_Cholesky for a matrix to be read in
+
+example_extended Purpose: Demonstrate the extended interface of SPEX_Cholesky for a matrix to be read in

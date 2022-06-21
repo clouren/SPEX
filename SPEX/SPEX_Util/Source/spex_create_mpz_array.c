@@ -40,7 +40,7 @@ mpz_t* spex_create_mpz_array
             // memory allocation, and thus such failure will never occur.
             // Out of memory
             SPEX_MPZ_SET_NULL(x[i]);
-            for (int64_t j = 0; j < n; j++)
+            for (int64_t j = 0; j < i; j++)
             {
                 if ( x[j] != NULL)
                 {

@@ -11,7 +11,7 @@
 #define MY_SAFE_GMP_H
 
 #include "SPEX.h"
-#include "SPEX_gmp.h"
+#include "spex_gmp.h"
 
 /* Safely print to the standard output stdout. Return positive value (the number
  * of characters written) upon success, otherwise return negative value (error

@@ -29,6 +29,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
 {
     SPEX_REQUIRE (B, SPEX_DYNAMIC_CSC, SPEX_MPZ) ;
     if (A_handle == NULL)   {return SPEX_INCORRECT_INPUT;}
+    // B has been checked by the caller so no need to check here
 
     SPEX_info info;
     int sgn;

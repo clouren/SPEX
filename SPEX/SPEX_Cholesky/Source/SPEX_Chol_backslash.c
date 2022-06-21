@@ -3,8 +3,8 @@
 //                                type
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
 // Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -40,7 +40,7 @@
     SPEX_symbolic_analysis_free (&S, option);\
     SPEX_FREE (PAP->x.mpz);                  \
     SPEX_matrix_free(&PAP, NULL);            \
-} //TODO doublecheck SPEX_FREE (PAP->x.mpz);    
+}  
 
 #define SPEX_FREE_ALL            \
 {                                 \
@@ -101,7 +101,7 @@ SPEX_info SPEX_Chol_backslash
     }
 
     //TODO Make sure that all the functions below, handle a NULL oooptions
-    // Is this done? If so please delete this TODO
+    // Is this done? If so please delete this
     
     // Declare memory
     SPEX_symbolic_analysis *S = NULL;

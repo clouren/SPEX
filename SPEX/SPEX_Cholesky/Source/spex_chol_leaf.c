@@ -2,8 +2,8 @@
 // SPEX_Chol/spex_Chol_leaf: Subroutine for column counts of Cholesky
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2021, Chris Lourenco, United States Naval Academy, 
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
 // Texas A&M University. All Rights Reserved. 
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

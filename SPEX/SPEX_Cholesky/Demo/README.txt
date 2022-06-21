@@ -1,3 +1,5 @@
-Demo files for SPEX Chol
+example_simple Purpose: Demonstrate the simple interface of SPEX_Cholesky for a matrix to be read in
 
-TODO: Write something similar to waht we have in SPEX Left LU describing the demo
+example_extended Purpose: Demonstrate the extended interface of SPEX_Cholesky for a matrix to be read in
+
+TODO (not quite a todo) Left LU doesn't have a readme for the Demo 
