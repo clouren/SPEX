@@ -2,8 +2,6 @@
 // SPEX_Chol/SPEX_Chol_analyze: Perform the symbolic analysis of A
 //------------------------------------------------------------------------------
 
-// TODO: Update this part for all makefiles (not from lab)
-
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
 // Texas A&M University. All Rights Reserved. 
