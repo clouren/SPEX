@@ -185,6 +185,7 @@ SPEX_info SPEX_Update_Chol_Rank1
             // reset S(j) = 1
             SPEX_CHECK(SPEX_mpq_set_ui(L->v[j]->scale, 1, 1));
 
+            // TODO combine the above into following iteration as p=0
             // iterate across nnz in L->v[j] but skip the pivot entry L(j,j)
             for (p = 1; p < L->v[j]->nz; p++)
             {

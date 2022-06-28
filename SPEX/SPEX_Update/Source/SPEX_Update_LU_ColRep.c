@@ -165,7 +165,10 @@ SPEX_info SPEX_Update_LU_ColRep
     if (k < n-1)
     {
         // build Lk_dense_col and Uk_dense_row, remove explicit 0, search for
-        // inext and jnext
+        // inext and jnext. It should be noted that scale of L(:,k) or U(k,:)
+        // will be ignored when extracting entries to the scattered vector.
+        // Since this factor will remain unchanged during the process of
+        // pushing column k to position n-1, and finally be reset to 1.
         SPEX_CHECK(spex_update_get_scattered_v(&Lk_dense_col, &inext,
             L->v[k], n, k, P_inv, false, option));
         SPEX_CHECK(spex_update_get_scattered_v(&Uk_dense_row, &jnext,
@@ -434,7 +437,7 @@ SPEX_info SPEX_Update_LU_ColRep
             // |     | |       |
             // 2     5 6       10
             // we will swap 2 and 5 first, then with 6, and with 10
-            // sequencially, which can be found from the map eazily
+            // sequencially, which can be found from the map easily
             if (n-2 > last_max_ks)
             {
                 for (j = k+1; j <= n-2; j++)

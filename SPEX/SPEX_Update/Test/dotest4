@@ -12,7 +12,7 @@
 ./ptest lp_pds_10 > Outputs/lp_pds_10_chol.out
 ./ptest lp_pds_20 > Outputs/lp_pds_20_chol.out
 ./ptest lp_perold > Outputs/lp_perold_chol.out
-./ptest lp_pilot > Outputs/lp_pilot_chol.out # >99hrs
+./ptest lp_pilot > Outputs/lp_pilot_chol.out # >790hrs
 ./ptest lp_pilot4 > Outputs/lp_pilot4_chol.out
-./ptest lp_pilot87 > Outputs/lp_pilot87_chol.out
+./ptest lp_pilot87 > Outputs/lp_pilot87_chol.out # >398hrs
 ./ptest lp_pilot_ja > Outputs/lp_pilot_ja_chol.out

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-./ptest lp_cre_b > Outputs/lp_cre_b_chol.out # > 180hrs
+./ptest lp_cre_b > Outputs/lp_cre_b_chol.out # > 872hrs
 ./ptest lp_cre_c > Outputs/lp_cre_c_chol.out
-./ptest lp_cre_d > Outputs/lp_cre_d_chol.out
+./ptest lp_cre_d > Outputs/lp_cre_d_chol.out # > 398hrs
 ./ptest lp_cycle > Outputs/lp_cycle_chol.out
 ./ptest lp_czprob > Outputs/lp_czprob_chol.out
 ./ptest lp_d2q06c > Outputs/lp_d2q06c_chol.out

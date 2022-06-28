@@ -244,7 +244,8 @@ SPEX_info spex_update_dppu1
 
     SPEX_CHECK(SPEX_mpz_sgn(&(Lksk_sgn), Lk_dense_col->x[Pks]));
 #ifdef SPEX_DEBUG
-        printf("using dppu1 swapping k(%ld) and ks(%ld), L(ks,k)%s=0\n",k,ks,Lksk_sgn==0?"=":"!");
+    printf("using dppu1 swapping k(%ld) and ks(%ld), L(ks,k)%s=0\n",
+        k, ks, Lksk_sgn==0?"=":"!");
 #endif
     if (Lksk_sgn == 0) // L(P(ks),k) == 0
     {
@@ -545,11 +546,18 @@ SPEX_info spex_update_dppu1
                 Lk_dense_col->i[Lks_nz] = ck;
                 Lks_nz++;
             }
+
+            // L(ck, ks) -= L(P(k),ks)*L(ck,k) 
             SPEX_CHECK(SPEX_mpz_submul(Lk_dense_col->x[ck],
                                        Lk_dense_col->x[Pk], L->v[k]->x[pk]));
+
+            // Check if resulting L(ck,ks) == 0
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, Lk_dense_col->x[ck]));
             if (sgn != 0) // L(ck, ks) != 0
             {
+                // only perform L(ck, ks) /= den(SL(ks)), and set
+                // SL(ks) = num(SL(ks)) when finished. In this way, L(ck, ks)
+                // will be smaller in size.
                 SPEX_CHECK(SPEX_mpz_divexact(Lk_dense_col->x[ck],
                                              Lk_dense_col->x[ck],
                                              SPEX_MPQ_DEN(SL(ks))));

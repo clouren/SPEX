@@ -90,7 +90,8 @@ SPEX_info spex_update_dppu2
 
         //----------------------------------------------------------------------
         // update entries in frames between k and n-1
-        //----------------------------------------------------------------------        // since the value in Uk_dense_row[Q[k]] will not be used, we use it to
+        //----------------------------------------------------------------------
+        // since the value in Uk_dense_row[Q[k]] will not be used, we use it to
         // hold the original value of sd[k] before swapping columns and rows of
         // k and n-1. Then we set sd[k] to the new pivot of column k of L
         // vk[P[k]], which is kept as first entry in the nnz list.
@@ -230,7 +231,7 @@ SPEX_info spex_update_dppu2
         // no need to apply S(2,ks) if S(2,ks) == 1
         if (sgn == 0) { continue;}
 
-        // apply S(2,tmp_ks) to U(ks,cks)
+        // apply S(2,tmp_ks) to U(ks,cks) TODO try not to do this
         // This must be done so that the following IPGE update will have the
         // result in integer domain
         SPEX_CHECK(SPEX_mpz_divexact(Uk_dense_row->x[cks],

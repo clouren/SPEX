@@ -8,5 +8,5 @@
 ./cholupdate lp_qap12 > Outputs/CholUpdate/lp_qap12_chol.out
 ./cholupdate lp_ship04s > Outputs/CholUpdate/lp_ship04s_chol.out
 ./cholupdate lp_stocfor3 > Outputs/CholUpdate/lp_stocfor3_chol.out
-./cholupdate lp_ken_18 > Outputs/CholUpdate/lp_ken_18_chol.out
+./cholupdate lp_ken_18 > Outputs/CholUpdate/lp_ken_18_chol.out # > 270hrs
 ./cholupdate lp_cre_a > Outputs/CholUpdate/lp_cre_a_chol.out

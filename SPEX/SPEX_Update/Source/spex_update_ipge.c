@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------
 // SPEX_Update/spex_update_ipge.c: perform one iteration of IPGE and perform
-// skipped any scaling process.
+// any skipped scaling process.
+// TODO rewrite this function, try to extract common factor
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -44,8 +45,8 @@
 // x[i] = x[i]*sd[j]/sd[h[i]]- v(i)*x[perm[j]]/sd[h[perm[j]]].
 //
 // When the IPGE update finished, all entries x[perm[1:j]] will be final,
-// while x[perm[j+1:n]] need further update. All entries in vector x have common
-// factor x_scale.
+// while x[perm[j+1:n]] need further update. All entries in vector x may have
+// common factor x_scale that has not yet been applied to x[1:n].
 
 
 #define SPEX_FREE_ALL                \
