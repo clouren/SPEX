@@ -15,16 +15,16 @@
 
 SPEX_info SPEX_vector_free
 (
-    SPEX_vector **v,  // vector to be deleted
+    SPEX_vector **v_handle,  // vector to be deleted
     const SPEX_options *option
 )
 {
     if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
-    if(v == NULL || (*v) == NULL) {return SPEX_OK;}
-    spex_delete_mpz_array(&((*v)->x), (*v)->nzmax);
-    SPEX_MPQ_CLEAR((*v)->scale);
-    SPEX_FREE((*v)->i);
-    SPEX_FREE(*v);
+    if(v_handle == NULL || (*v_handle) == NULL) {return SPEX_OK;}
+    spex_delete_mpz_array(&((*v_handle)->x), (*v_handle)->nzmax);
+    SPEX_MPQ_CLEAR((*v_handle)->scale);
+    SPEX_FREE((*v_handle)->i);
+    SPEX_FREE(*v_handle);
 
     return SPEX_OK;
 }

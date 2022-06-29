@@ -219,7 +219,7 @@ typedef struct SPEX_options
 // Purpose: Create SPEX_options object with default parameters
 // upon successful allocation, which are defined in SPEX_util_nternal.h
 // To free it, simply use SPEX_FREE (*option).
-SPEX_info SPEX_create_default_options (SPEX_options **option) ;
+SPEX_info SPEX_create_default_options (SPEX_options **option_handle) ;
 
 //------------------------------------------------------------------------------
 // SPEX_vector: a compressed sparse vector data structure used to form
@@ -290,7 +290,7 @@ SPEX_info SPEX_vector_realloc
 
 SPEX_info SPEX_vector_free
 (
-    SPEX_vector **v,                // vector to be deleted
+    SPEX_vector **v_handle,                // vector to be deleted
     const SPEX_options *option
 );
 
@@ -362,7 +362,7 @@ SPEX_type ;
 //     and its own scale factor.  For this kind, A->nzmax, A->nz, A->p, A->i,
 //     A->x and A->*_shallow are ignored and pointers p, i and x are remained
 //     as NULL pointers. To access entries in column j, A->v[j]->i[0 ...
-//     A->v[j]->nz] give the row indices of all nonzeros, and the mpz_t values
+//     A->v[j]->nz-1] give the row indices of all nonzeros, and the mpz_t values
 //     of these entries appear in the same locations in A->v[j]->x.
 //     A->v[j]->nzmax is the max number of nonzeros allocated.
 
@@ -605,7 +605,7 @@ typedef struct
 
 SPEX_info SPEX_symbolic_analysis_free        
 (
-    SPEX_symbolic_analysis **S, // Structure to be deleted
+    SPEX_symbolic_analysis **S_handle, // Structure to be deleted
     const SPEX_options *option
 ) ;
 
@@ -700,7 +700,7 @@ typedef struct
 
 SPEX_info SPEX_factorization_free        
 (
-    SPEX_factorization **F, // Factorization to be deleted
+    SPEX_factorization **F_handle, // Factorization to be deleted
     const SPEX_options *option
 ) ;
 

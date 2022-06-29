@@ -326,7 +326,7 @@ SPEX_info SPEX_matrix_copy
                                         Y->x.mpfr[i + j*A->m])) ;
                                     if (s != 0)
                                     {
-                                        C->i [nz] = i ;                                        
+                                        C->i [nz] = i ;
                                         SPEX_CHECK (SPEX_mpfr_set (
                                             SPEX_1D (C, nz, mpfr),
                                             Y->x.mpfr[i + j*A->m],

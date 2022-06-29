@@ -15,7 +15,7 @@
 #include "spex_util_internal.h"
 
 
-SPEX_info SPEX_create_default_options (SPEX_options **option )
+SPEX_info SPEX_create_default_options (SPEX_options **option_handle )
 {
 
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
@@ -24,8 +24,8 @@ SPEX_info SPEX_create_default_options (SPEX_options **option )
     // allocate the option struct
     //--------------------------------------------------------------------------
 
-    *option = SPEX_malloc(sizeof(SPEX_options)) ;
-    if (!(*option))
+    *option_handle = SPEX_malloc(sizeof(SPEX_options)) ;
+    if (!(*option_handle))
     {
         // out of memory
         return (SPEX_OUT_OF_MEMORY) ;
@@ -35,14 +35,14 @@ SPEX_info SPEX_create_default_options (SPEX_options **option )
     // set defaults
     //--------------------------------------------------------------------------
 
-    (*option)->pivot       = SPEX_DEFAULT_PIVOT ;
+    (*option_handle)->pivot       = SPEX_DEFAULT_PIVOT ;
     // TODO Discuss: Erick/Tim what should we do here
-    (*option)->order       = SPEX_DEFAULT_ORDER ;
-    (*option)->print_level = SPEX_DEFAULT_PRINT_LEVEL ;
-    (*option)->prec        = SPEX_DEFAULT_PRECISION ;
-    (*option)->tol         = SPEX_DEFAULT_TOL ;
-    (*option)->round       = SPEX_DEFAULT_MPFR_ROUND ;
-    (*option)->algo        = SPEX_DEFAULT_ALGORITHM ;
+    (*option_handle)->order       = SPEX_DEFAULT_ORDER ;
+    (*option_handle)->print_level = SPEX_DEFAULT_PRINT_LEVEL ;
+    (*option_handle)->prec        = SPEX_DEFAULT_PRECISION ;
+    (*option_handle)->tol         = SPEX_DEFAULT_TOL ;
+    (*option_handle)->round       = SPEX_DEFAULT_MPFR_ROUND ;
+    (*option_handle)->algo        = SPEX_DEFAULT_ALGORITHM ;
 
     //--------------------------------------------------------------------------
     // return result

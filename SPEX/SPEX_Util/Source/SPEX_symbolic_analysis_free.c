@@ -19,23 +19,23 @@
 
 SPEX_info SPEX_symbolic_analysis_free
 (
-    SPEX_symbolic_analysis **S, // Structure to be deleted
+    SPEX_symbolic_analysis **S_handle, // Structure to be deleted
     const SPEX_options *option
 )
 {
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
-    if ((S != NULL) && (*S != NULL))
+    if ((S_handle != NULL) && (*S_handle != NULL))
     {
 
-        SPEX_FREE((*S)->P_perm);
-        SPEX_FREE((*S)->Pinv_perm);
-        SPEX_FREE((*S)->Q_perm);
-        SPEX_FREE((*S)->Qinv_perm);
+        SPEX_FREE((*S_handle)->P_perm);
+        SPEX_FREE((*S_handle)->Pinv_perm);
+        SPEX_FREE((*S_handle)->Q_perm);
+        SPEX_FREE((*S_handle)->Qinv_perm);
 
-        SPEX_FREE((*S)->parent);
-        SPEX_FREE((*S)->cp);
-        SPEX_FREE (*S);
+        SPEX_FREE((*S_handle)->parent);
+        SPEX_FREE((*S_handle)->cp);
+        SPEX_FREE (*S_handle);
     }
 
     return (SPEX_OK) ;
