@@ -43,6 +43,7 @@ SPEX_info SPEX_Update_Chol_Rank1
                             // modified during the update process. Therefore,
                             // if this function fails for any reason, the
                             // returned F should be considered as undefined.
+    // FIXME: make this a SPEX_vector
     SPEX_matrix *w,         // a n-by-1 dynamic_CSC matrix that contains the
                             // vector to modify the original matrix A, the
                             // resulting A is A+sigma*w*w^T. A->scale = w->scale

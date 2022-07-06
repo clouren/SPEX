@@ -50,6 +50,7 @@ SPEX_info SPEX_Update_LU_ColRep
                             // Therefore, if this function fails for any
                             // reason, the returned F should be considered as
                             // undefined.
+    // FIXME: make this SPEX_vector
     SPEX_matrix *vk,        // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
                             // vk->scale = A->scale and vk->v[0]->scale = 1.

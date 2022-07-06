@@ -29,10 +29,13 @@ SPEX_info spex_update_get_scattered_v
     spex_scattered_vector **sv_handle,// output vector in scattered form
     int64_t *next,               // the smallest col/row index of non-pivot nz.
                                  // If next == NULL, searching is not performed.
-    // input
+
+    // input (if keep_v true), input/output (if keep_v false)
     SPEX_vector *v,              // the vector in compressed form, whose
-                                 // max index is n
-    const int64_t n,             // number of entries in v
+                                 // max index is n.
+
+    // input
+    const int64_t n,             // length of the vector v
     const int64_t k,             // column index of v in L, or row index in U.
                                  // Ignored if next == NULL.
     const int64_t *perm_inv,     // inverse of permutation applied on v.
@@ -51,13 +54,21 @@ SPEX_info spex_update_get_scattered_v
 
     int sgn;
     if (next != NULL) {(*next) = n;}
-    p = 0;
-    while (p < v->nz)
+
+    for (p = 0 ; p < v->nz ; p++)
     {
+        // skip the entry if it is exactly zero
         SPEX_CHECK(SPEX_mpz_sgn(&sgn, v->x[p]));
         if (sgn != 0)
         {
             i = v->i[p];
+            if (i < 0 || i >= n)
+            {
+                // v is an invalid vector
+                SPEX_FREE_ALL ;
+                return (SPEX_INCORRECT_INPUT) ;
+            }
+
             if (next != NULL)
             {
                 // search the smallest col/row index of the non-pivot nonzero
@@ -76,20 +87,12 @@ SPEX_info spex_update_get_scattered_v
             else
             {
                 // swapping mpz pointer, which is more efficient
+                // in this case, v is modified
                 SPEX_CHECK(SPEX_mpz_swap(sv->x[i], v->x[p]));
             }
-            sv->i[p] = i;
-            p++;
-        }
-        else
-        {
-            // remove explicit zeros
-            v->nz--;
-            SPEX_CHECK(SPEX_mpz_swap(v->x[p], v->x[v->nz]));
-            v->i[p] = v->i[v->nz];
+            sv->i[(sv->nz)++] = i;
         }
     }
-    sv->nz = v->nz;
 
     *sv_handle = sv;
     return SPEX_OK;
