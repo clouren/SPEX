@@ -123,6 +123,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     if (pr >= 2)
     {
         SPEX_PR2 ("scale factor: ") ;
+        // use mpfr_asprintf so that we can use SPEX_PR*, which
+        // employs either printf or mexprintf
         status = SPEX_mpfr_asprintf (&buff,"%Qd\n", A->scale) ;
         if (status >= 0)
         {
@@ -237,6 +239,9 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         {
                             case SPEX_MPZ:
                             {
+                                // use mpfr_asprintf so that we can use
+                                // SPEX_PR*, which employs either printf or
+                                // mexprintf
                                 status = SPEX_mpfr_asprintf(&buff, "%Zd \n",
                                     A->x.mpz[p]);
                                 if (status >= 0)
@@ -337,6 +342,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                     {
                         case SPEX_MPZ:
                         {
+                            // use mpfr_asprintf so that we can use SPEX_PR*,
+                            // which employs either printf or mexprintf
                             status = SPEX_mpfr_asprintf(&buff, "%Zd \n",
                                 A->x.mpz [p]);
                             if (status >= 0) 
@@ -466,6 +473,9 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         {
                             case SPEX_MPZ:
                             {
+                                // use mpfr_asprintf so that we can use
+                                // SPEX_PR*, which employs either printf or
+                                // mexprintf
                                 status = SPEX_mpfr_asprintf (&buff, "%Zd \n" ,
                                     SPEX_2D(A, i, j, mpz)) ;
                                 if (status >= 0)  
@@ -606,6 +616,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                                 SPEX_FREE_ALL ;
                                 return (SPEX_INCORRECT_INPUT) ;
                             }
+                            // use mpfr_asprintf so that we can use SPEX_PR*,
+                            // which employs either printf or mexprintf
                             status = SPEX_mpfr_asprintf(&buff, "%Zd \n", q);
                             if (status >= 0)
                             {

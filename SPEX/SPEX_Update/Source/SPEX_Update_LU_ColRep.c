@@ -41,6 +41,7 @@
 #define SL(k) (L->v[(k)]->scale)
 #define SU(k) (UT->v[(k)]->scale)
 
+// TODO allow vk->v[0]->scale != 1?
 SPEX_info SPEX_Update_LU_ColRep
 (
     SPEX_factorization* F,  // The SPEX factorization of A, including L, U,
@@ -51,6 +52,7 @@ SPEX_info SPEX_Update_LU_ColRep
                             // undefined.
     SPEX_matrix *vk,        // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
+                            // vk->scale = A->scale and vk->v[0]->scale = 1.
                             // The rows of vk are in the same order as A.
     int64_t k,              // The column index that vk will be inserted, 0<=k<n
     const SPEX_options *option// Command parameters

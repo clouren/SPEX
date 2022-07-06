@@ -17,7 +17,6 @@ include ../SuiteSparse_config/SuiteSparse_config.mk
 # Compile the default rules for each package
 go:
 	( cd build && $(MAKE) )
-	( cd SPEX_Util && $(MAKE) )
 	( cd SPEX_Left_LU && $(MAKE) )
 	( cd SPEX_Update && $(MAKE) )
 	( cd SPEX_Cholesky && $(MAKE) )

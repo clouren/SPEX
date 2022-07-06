@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------
-# SPEX_Update/Makefile: run SPEX_LU_Update demo and tests
+# SPEX_Update/Makefile: run SPEX_Update demo and tests
 #------------------------------------------------------------------------------
 
 # SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
@@ -26,7 +26,6 @@ clean:
 	#( cd Test ; $(MAKE) clean )
 	#- ( cd MATLAB/Source ; $(RM) *.o )
 	#- ( cd MATLAB    ; $(RM) *.o )
-	#( cd Doc ; $(MAKE) clean )
 
 # remove all files not in the distribution
 purge:
@@ -34,6 +33,5 @@ purge:
 	#( cd Test ; $(MAKE) purge )
 	#- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
 	#- ( cd MATLAB    ; $(RM) *.o *.mex* )
-	#( cd Doc ; $(MAKE) clean )
 
 distclean: purge

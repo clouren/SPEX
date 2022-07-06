@@ -584,7 +584,8 @@ int main( int argc, char* argv[])
                         SPEX_FREE(Q_inv);
                         F->Qinv_perm = Q_inv;
 
-                        // permute first vector of L and U
+                        // permute first vector of L and U to test if the code
+                        // work for matrix with unsorted indices of nnz list
                         int64_t Lp = -1, Up = -1, tmp;
                         for (i = 0; i < An; i++)
                         {
@@ -621,6 +622,10 @@ int main( int argc, char* argv[])
                             if (pretend_to_fail) {continue;}
                         }
 
+                        // check the non-updatable factorization
+                        TEST_CHECK(SPEX_factorization_check(F, option));
+                        if (pretend_to_fail) {continue;}
+
                         info = SPEX_Update_LU_ColRep(F, vk, k, option);
                         Q_inv = F->Qinv_perm;
                     }
@@ -644,11 +649,6 @@ int main( int argc, char* argv[])
                             option));
                         if (pretend_to_fail) {break;}
 
-                        // get non-updatable F
-                        TEST_CHECK(SPEX_factorization_convert(F, false,
-                            option));
-                        if (pretend_to_fail) {continue;}
-
                         info = SPEX_Update_Chol_Rank1(F, vk, sigma, option);
                     }
                         
@@ -666,8 +666,11 @@ int main( int argc, char* argv[])
 
                     if (test_type == 0)
                     {
+                        // use SPEX_Update_matrix_colrep
                         TEST_CHECK(SPEX_Update_matrix_colrep(A, vk, k, option));
                         if (pretend_to_fail) {continue;}
+
+                        // verify solution
                         bool Is_correct;
                         TEST_CHECK(spex_update_verify(&Is_correct, F, A,
                             option));
@@ -859,6 +862,7 @@ int main( int argc, char* argv[])
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}
+                    P0 = P[1]; P[1] = P[0]; P[0] = P0;
 
                     // case 2: input NULL pointer(s)
                     TEST_CHECK_FAILURE(SPEX_Update_tsolve(NULL, NULL, NULL,
@@ -868,11 +872,166 @@ int main( int argc, char* argv[])
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
-                    // case 
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // test and fail SPEX_factorization_check
+                    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // incorrect size
+                    F->L->m = F->L->n+1;
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->L->m = F->L->n;//restore
+
+                    // incorrect pivot in L
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->L->v[0]->x[0]));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->L->v[0]->x[0]));//restore
+                    if (pretend_to_fail) {continue;}
+
+                    // incorrect pivot in U
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->U->v[0]->x[0]));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->U->v[0]->x[0]));//restore
+                    if (pretend_to_fail) {continue;}
+
+                    // first entry of L->v[0] is not pivot
+                    i = F->P_perm[0];
+                    F->P_perm[0] = F->P_perm[1];
+                    F->P_perm[1] = i;
+                    F->Pinv_perm[F->P_perm[0]] = 0;
+                    F->Pinv_perm[i] = 1;
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->Pinv_perm[F->P_perm[0]] = 1;
+                    F->Pinv_perm[i] = 0;
+                    F->P_perm[1] = F->P_perm[0];
+                    F->P_perm[0] = i;//restore
+
+                    // first entry of U->v[0] is not pivot
+                    j = F->Q_perm[0];
+                    F->Q_perm[0] = F->Q_perm[1];
+                    F->Q_perm[1] = j;
+                    F->Qinv_perm[F->Q_perm[0]] = 0;
+                    F->Qinv_perm[j] = 1;
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->Qinv_perm[F->Q_perm[0]] = 1;
+                    F->Qinv_perm[j] = 0;
+                    F->Q_perm[1] = F->Q_perm[0];
+                    F->Q_perm[0] = j;//restore
+
+                    // unmatched Q and Qinv index
+                    j = F->Q_perm[1];
+                    F->Qinv_perm[j] = 0;
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->Qinv_perm[j] = 1;//restore
+
+                    // get non-updatable F
+                    TEST_CHECK(SPEX_factorization_convert(F, false, option));
+                    if (pretend_to_fail) {continue;}
+
+                    // duplicate Q index
+                    F->Q_perm[1] = F->Q_perm[0];
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+
+                    // Q index out of range
+                    F->Q_perm[1] = -1;
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->Q_perm[1] = j;//restore
+
+                    // unmatched P and Pinv index
+                    i = F->P_perm[1];
+                    F->Pinv_perm[i] = 0;
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->Pinv_perm[i] = 1;//restore
+
+                    // duplicate P index
+                    F->P_perm[1] = F->P_perm[0];
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+
+                    // P index out of range
+                    F->P_perm[1] = -1;
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->P_perm[1] = i;//restore
+
+                    // incorrect pivot in L
+                    TEST_CHECK(SPEX_mpz_init(tmpz1));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_set_ui(tmpz1, 4));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->L->x.mpz[0]));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->L->x.mpz[0]));//restore
+                    if (pretend_to_fail) {continue;}
+
+                    // incorrect pivot in U
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->U->x.mpz[0]));
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    TEST_CHECK(SPEX_mpz_swap(tmpz1, F->U->x.mpz[0]));//restore
+                    if (pretend_to_fail) {continue;}
+
+                    // L(1,1) not found
+                    for (p = F->L->p[1]; p < F->L->p[2]; p++)
+                    {
+                        if (F->L->i[p] == 1)
+                        {
+                            F->L->i[p] = 0;
+                            break;
+                        }
+                    }
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->L->i[p] = 1;
+
+                    // U(1,1) not found
+                    for (p = F->U->p[1]; p < F->U->p[2]; p++)
+                    {
+                        if (F->U->i[p] == 1)
+                        {
+                            F->U->i[p] = 0;
+                            break;
+                        }
+                    }
+                    TEST_CHECK_FAILURE(SPEX_factorization_check(F, option),
+                        SPEX_INCORRECT_INPUT);
+                    if (pretend_to_fail) {continue;}
+                    F->U->i[p] = 1;
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // test and fail SPEX_matrix_check
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+                    // get updatable F
+                    TEST_CHECK(SPEX_factorization_convert(F, true, option));
+                    if (pretend_to_fail) {continue;}
+
+                    // non-integral entries due to improper scale of each vector
                     TEST_CHECK(SPEX_mpq_set_ui(L->v[An-1]->scale, 1, 100000));
                     if (pretend_to_fail) {continue;}
                     TEST_CHECK_FAILURE(SPEX_matrix_check(L, option),
@@ -945,8 +1104,6 @@ int main( int argc, char* argv[])
                     // fail some SPEX_gmp functions
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // initialize mpz variables
-                    TEST_CHECK(SPEX_mpz_init(tmpz1));
-                    if (pretend_to_fail) {continue;}
                     TEST_CHECK(SPEX_mpz_init(tmpz2));
                     if (pretend_to_fail) {continue;}
                     TEST_CHECK(SPEX_mpz_init(tmpz3));

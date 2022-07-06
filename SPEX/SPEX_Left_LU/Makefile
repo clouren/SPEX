@@ -26,13 +26,11 @@ clean:
 	( cd Demo ; $(MAKE) clean )
 	- ( cd MATLAB/Source ; $(RM) *.o )
 	- ( cd MATLAB    ; $(RM) *.o )
-#	( cd Doc ; $(MAKE) clean )
 
 # remove all files not in the distribution
 purge:
 	( cd Demo ; $(MAKE) purge )
 	- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
 	- ( cd MATLAB    ; $(RM) *.o *.mex* )
-#	( cd Doc ; $(MAKE) clean )
 
 distclean: purge

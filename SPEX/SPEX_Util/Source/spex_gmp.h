@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Util/SPEX_gmp.h: definitions for SPEX_gmp.c
+// SPEX_Util/spex_gmp.h: definitions for SPEX_gmp.c
 //------------------------------------------------------------------------------
 
 // SPEX_Util: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -17,19 +17,27 @@
 #ifndef SPEX_GMP_H
 #define SPEX_GMP_H
 
-#include <setjmp.h>
-#include <stdarg.h>
+#include "SPEX.h"
+
+//------------------------------------------------------------------------------
+//-------------------------functions for GMP wrapper----------------------------
+//------------------------------------------------------------------------------
+
+// uncomment this to print memory debugging info
+// #define SPEX_GMP_MEMORY_DEBUG
 
 #ifdef SPEX_GMP_MEMORY_DEBUG
 void spex_gmp_dump ( void ) ;
 #endif
 
-extern int64_t spex_gmp_ntrials ;
+// FIXME: change 'extern' to SPEX_PUBLIC
+extern int64_t spex_gmp_ntrials ; // number of malloc's allowed (for
+                                  // testing only): -1 means unlimited.
 
 #ifndef SPEX_GMP_LIST_INIT
 // A size of 32 ensures that the list never needs to be increased in size.
-// The test coverage suite in SPEX_Left_LU/Tcov reduces this initial size to
-// exercise the code, in SPEX_Left_LU/Tcov/Makefile.
+// The test coverage suite in SPEX/Tcov reduces this initial size to
+// exercise the code, in SPEX/Tcov/Makefile.
 #define SPEX_GMP_LIST_INIT 32
 #endif
 
@@ -49,6 +57,8 @@ void spex_gmp_failure (int status) ;
 //------------------------------------------------------------------------------
 // Field access macros for MPZ/MPQ/MPFR struct
 //------------------------------------------------------------------------------
+// FUTURE: make these accessible to the end user?
+
 // (similar definition in gmp-impl.h and mpfr-impl.h)
 
 #define SPEX_MPZ_SIZ(x)   ((x)->_mp_size)
@@ -126,29 +136,9 @@ void spex_gmp_failure (int status) ;
     }                                             \
 }
 
-
-// ignore warnings about unused parameters in this file
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
 //------------------------------------------------------------------------------
-// global variables
+// GMP/MPFR wrapper macros
 //------------------------------------------------------------------------------
-// TODO this is not thread-safe
-
-// FIXME: change 'extern' to SPEX_PUBLIC
-
-extern jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
-extern int64_t spex_gmp_nmalloc ;  // number of malloc'd objects in SPEX_gmp_list
-extern int64_t spex_gmp_nlist ;    // size of the SPEX_gmp_list
-extern void **spex_gmp_list  ;   // list of malloc'd objects
-
-//extern int64_t spex_gmp_ntrials ; // number of malloc's allowed (for
-                                // testing only): -1 means unlimited.
-
-extern mpz_t  *spex_gmpz_archive  ;    // current mpz object
-extern mpz_t  *spex_gmpz_archive2  ;    // current second mpz object
-extern mpq_t  *spex_gmpq_archive   ;    // current mpq object
-extern mpfr_t *spex_gmpfr_archive  ;    // current mpfr object
 
 #define SPEX_GMP_WRAPPER_START                                          \
 {                                                                       \

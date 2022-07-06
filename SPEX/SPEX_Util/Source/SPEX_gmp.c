@@ -69,8 +69,7 @@
 //------------------------------------------------------------------------------
 // global variables
 //------------------------------------------------------------------------------
-// FIXME: this is not thread-safe.  Say this in the user guide.
-// FIXME: in user guide: state adding new wrappers requires edit of SPEX src
+// FIXME: this is not thread-safe.
 
 jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
 int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in SPEX_gmp_list

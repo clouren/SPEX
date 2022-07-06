@@ -1449,6 +1449,7 @@ SPEX_info SPEX_Update_LU_ColRep
     SPEX_matrix *vk,        // Pointer to a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix
                             // which contains the column to be inserted.
                             // The rows of vk are in the same order as A.
+                            // vk->scale = A->scale and vk->v[0]->scale = 1.
                             // This matrix remains unchanged on output.
     int64_t k,              // The column index of A that vk will be inserted,
                             // 0 <= k < n.
@@ -1467,9 +1468,10 @@ SPEX_info SPEX_Update_matrix_colrep// performs column replacement
     // FIXME: SPEX_vector *vk
     SPEX_matrix *vk,        // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
                             // the column vector to replace the k-th column of A
+                            // vk->scale = A->scale and vk->v[0]->scale = 1.
     // Input:
     int64_t k,              // The column index of A that vk will be inserted,
-                            // 0 <= k < n.
+                            // 0 <= k < m.
     const SPEX_options *option// Command parameters
 );
 
@@ -1498,7 +1500,8 @@ SPEX_info SPEX_Update_Chol_Rank1
     // FIXME: SPEX_vector *w
     SPEX_matrix *w,         // a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix with
                             // the vector to modify the original matrix A, the
-                            // resulting A is A+sigma*w*w'. In output, w is
+                            // resulting A is A+sigma*w*w'. w->scale = A->scale
+                            // and w->v[0]->scale = 1. In output, w is
                             // updated as the solution to L*D*w_out = w
     // Input:
     const int64_t sigma,    // a nonzero scalar that determines whether

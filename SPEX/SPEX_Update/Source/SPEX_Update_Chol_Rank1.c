@@ -35,6 +35,7 @@
 
 #include "spex_update_internal.h"
 
+// TODO allow w->v[0]->scale != 1
 SPEX_info SPEX_Update_Chol_Rank1
 (
     SPEX_factorization *F,  // The SPEX Cholesky factorization of A, including
@@ -44,7 +45,8 @@ SPEX_info SPEX_Update_Chol_Rank1
                             // returned F should be considered as undefined.
     SPEX_matrix *w,         // a n-by-1 dynamic_CSC matrix that contains the
                             // vector to modify the original matrix A, the
-                            // resulting A is A+sigma*w*w^T. In output, w is
+                            // resulting A is A+sigma*w*w^T. A->scale = w->scale
+                            // and w->v[0]->scale = 1. In output, w is
                             // updated as the solution to L*D^(-1)*w_out = w
     const int64_t sigma,    // a nonzero scalar that determines whether
                             // this is an update (sigma > 0) or downdate

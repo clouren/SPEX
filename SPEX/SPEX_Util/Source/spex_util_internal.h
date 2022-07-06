@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // This file is not intended to be #include'd in user applications.  Use
-// SPEX_Util.h instead.
+// SPEX.h instead.
 
 #ifndef SPEX_UTIL_INTERNAL_H
 #define SPEX_UTIL_INTERNAL_H
@@ -31,6 +31,13 @@
 #include "SuiteSparse_config.h"
 #include "colamd.h"
 #include "amd.h"
+
+// macros for MPZ/MPQ/MPFR struct
+#include "spex_gmp.h"
+
+// user-callable functions
+#include "SPEX.h"
+
 
 //------------------------------------------------------------------------------
 // debugging
@@ -143,7 +150,6 @@ Definitions of these macros:
     }                           \
 }
 
-#include "SPEX.h"
 
 //------------------------------------------------------------------------------
 // printing control
@@ -165,43 +171,7 @@ Definitions of these macros:
 #define SPEX_PR2(...) { if (pr >= 2) SPEX_PRINTF (__VA_ARGS__) }
 #define SPEX_PR3(...) { if (pr >= 3) SPEX_PRINTF (__VA_ARGS__) }
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//-------------------------functions for GMP wrapper----------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-#if 0 //FIXME moved to SPEX_gmp.h
-// uncomment this to print memory debugging info
-// #define SPEX_GMP_MEMORY_DEBUG
 
-#ifdef SPEX_GMP_MEMORY_DEBUG
-void spex_gmp_dump ( void ) ;
-#endif
-
-extern int64_t spex_gmp_ntrials ;
-
-#ifndef SPEX_GMP_LIST_INIT
-// A size of 32 ensures that the list never needs to be increased in size.
-// The test coverage suite in SPEX_Left_LU/Tcov reduces this initial size to
-// exercise the code, in SPEX_Left_LU/Tcov/Makefile.
-#define SPEX_GMP_LIST_INIT 32
-#endif
-
-
-bool spex_gmp_init (void) ;
-
-void spex_gmp_finalize (void) ;
-
-void *spex_gmp_allocate (size_t size) ;
-
-void spex_gmp_free (void *p, size_t size) ;
-
-void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
-
-void spex_gmp_failure (int status) ;
-#else
-#include "spex_gmp.h"
-#endif
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -293,89 +263,6 @@ void spex_gmp_failure (int status) ;
 #define SPEX_OPTION_ALGORITHM(option) \
     SPEX_OPTION (option, algo, SPEX_DEFAULT_ALGORITHM)
 
-//------------------------------------------------------------------------------
-// Field access macros for MPZ/MPQ/MPFR struct
-//------------------------------------------------------------------------------
-#if 0 //FIXME moved to SPEX_gmp.h
-// FUTURE: make these accessible to the end user?
-
-// (similar definition in gmp-impl.h and mpfr-impl.h)
-
-#define SPEX_MPZ_SIZ(x)   ((x)->_mp_size)
-#define SPEX_MPZ_PTR(x)   ((x)->_mp_d)
-#define SPEX_MPZ_ALLOC(x) ((x)->_mp_alloc)
-#define SPEX_MPQ_NUM(x)   mpq_numref(x)
-#define SPEX_MPQ_DEN(x)   mpq_denref(x)
-#define SPEX_MPFR_MANT(x) ((x)->_mpfr_d)
-#define SPEX_MPFR_EXP(x)  ((x)->_mpfr_exp)
-#define SPEX_MPFR_PREC(x) ((x)->_mpfr_prec)
-#define SPEX_MPFR_SIGN(x) ((x)->_mpfr_sign)
-
-/*re-define but same result: */
-#define SPEX_MPFR_REAL_PTR(x) (&((x)->_mpfr_d[-1]))
-
-/* Invalid exponent value (to track bugs...) */
-#define SPEX_MPFR_EXP_INVALID \
- ((mpfr_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mpfr_exp_t)/sizeof(mp_limb_t)-2))
-
-/* Macros to set the pointer in mpz_t/mpq_t/mpfr_t variable to NULL. It is best
- * practice to call these macros immediately after mpz_t/mpq_t/mpfr_t variable
- * is declared, and before the mp*_init function is called. It would help to
- * prevent error when SPEX_MP*_CLEAR is called before the variable is
- * successfully initialized.
- */
-
-#define SPEX_MPZ_SET_NULL(x)                \
-    SPEX_MPZ_PTR(x) = NULL;                 \
-    SPEX_MPZ_SIZ(x) = 0;                    \
-    SPEX_MPZ_ALLOC(x) = 0;
-
-#define SPEX_MPQ_SET_NULL(x)                     \
-    SPEX_MPZ_PTR(SPEX_MPQ_NUM(x)) = NULL;        \
-    SPEX_MPZ_SIZ(SPEX_MPQ_NUM(x)) = 0;           \
-    SPEX_MPZ_ALLOC(SPEX_MPQ_NUM(x)) = 0;         \
-    SPEX_MPZ_PTR(SPEX_MPQ_DEN(x)) = NULL;        \
-    SPEX_MPZ_SIZ(SPEX_MPQ_DEN(x)) = 0;           \
-    SPEX_MPZ_ALLOC(SPEX_MPQ_DEN(x)) = 0;
-
-#define SPEX_MPFR_SET_NULL(x)               \
-    SPEX_MPFR_MANT(x) = NULL;               \
-    SPEX_MPFR_PREC(x) = 0;                  \
-    SPEX_MPFR_SIGN(x) = 1;                  \
-    SPEX_MPFR_EXP(x) = SPEX_MPFR_EXP_INVALID;
-
-/* GMP does not give a mechanism to tell a user when an mpz, mpq, or mpfr
- * item has been cleared; thus, if mp*_clear is called on an object that
- * has already been cleared, gmp will crash. It is also not possible to
- * set a mp*_t = NULL. Thus, this mechanism modifies the internal GMP
- * size of entries to avoid crashing in the case that a mp*_t is cleared
- * multiple times.
- */
-
-#define SPEX_MPZ_CLEAR(x)                        \
-{                                                \
-    if ((x) != NULL && SPEX_MPZ_PTR(x) != NULL)  \
-    {                                            \
-        mpz_clear(x);                            \
-        SPEX_MPZ_SET_NULL(x);                    \
-    }                                            \
-}
-
-#define SPEX_MPQ_CLEAR(x)                   \
-{                                           \
-    SPEX_MPZ_CLEAR(SPEX_MPQ_NUM(x));        \
-    SPEX_MPZ_CLEAR(SPEX_MPQ_DEN(x));        \
-}
-
-#define SPEX_MPFR_CLEAR(x)                        \
-{                                                 \
-    if ((x) != NULL && SPEX_MPFR_MANT(x) != NULL) \
-    {                                             \
-        mpfr_clear(x);                            \
-        SPEX_MPFR_SET_NULL(x);                    \
-    }                                             \
-}
-#endif
 
 
 // ============================================================================

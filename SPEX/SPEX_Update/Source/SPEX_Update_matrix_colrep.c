@@ -22,6 +22,7 @@ SPEX_info SPEX_Update_matrix_colrep// performs column replacement
     SPEX_matrix *A,         // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
     SPEX_matrix *vk,        // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
                             // the column vector to replace the k-th column of A
+                            // vk->scale = A->scale and vk->v[0]->scale = 1.
     int64_t k,              // The column index that vk will be inserted, 0<=k<n
     const SPEX_options *option// Command parameters
 )

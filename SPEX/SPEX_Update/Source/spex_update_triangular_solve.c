@@ -58,7 +58,9 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
         // iterate across each entry
         for (j = *last_update+1; j < k; j++)
         {
-            // TODO iterate nnz pattern?
+            // The reason for not traversing nnz pattern: the time complexity
+            // of the update algorithm is alread more than O(n). The speedup
+            // provided by traversing nnz pattern will not be significant.
             // skip if x(P[j]) == 0
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[P[j]]));
             if (sgn == 0)       {continue; }
