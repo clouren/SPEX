@@ -15,6 +15,9 @@
 // SPEX_Chol_determine_error: error codes for exact factorization
 
 #include "demos.h"
+#include "spex_gmp.h"
+#include "spex_util_internal.h"
+
 
 // ignore warnings about unused parameters in this file
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -325,3 +328,133 @@ void SPEX_Chol_determine_error
         printf("\nIncorrect input for a SPEX_Chol Function\n");
     }
 }
+
+
+
+SPEX_info SPEX_check_solution
+(
+    const SPEX_matrix *A,         // Input matrix
+    const SPEX_matrix *x,         // Solution vectors
+    const SPEX_matrix *b,         // Right hand side vectors
+    const SPEX_options* option    // Command options
+)
+{
+    if (!SPEX_initialize ( )) return (SPEX_PANIC) ;
+
+    //--------------------------------------------------------------------------
+    // check inputs. Input are also checked by the two callers
+    //--------------------------------------------------------------------------
+
+    SPEX_info info ;
+    /*SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ) ;
+    SPEX_REQUIRE (x, SPEX_DENSE, SPEX_MPQ) ;
+    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;*/
+
+    //--------------------------------------------------------------------------
+    // Declare vars
+    //--------------------------------------------------------------------------
+
+    int64_t p, j, i, nz;
+    SPEX_matrix *b2 = NULL;   // b2 stores the solution of A*x
+    mpq_t temp; SPEX_MPQ_SET_NULL(temp);
+    mpq_t scale; SPEX_MPQ_SET_NULL(scale);
+
+    SPEX_CHECK (SPEX_mpq_init(temp));
+    SPEX_CHECK(SPEX_mpq_init(scale));
+    SPEX_CHECK (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
+        b->nzmax, false, true, option));
+
+
+    //--------------------------------------------------------------------------
+    // perform SPEX_mpq_addmul in loops to compute b2 = A'*x, where A' is the
+    // scaled matrix with all entries in integer
+    //--------------------------------------------------------------------------
+
+    for (j = 0; j < b->n; j++)
+    {
+        for (i = 0; i < b->m; i++)
+        {
+            for (p = A->p[i]; p < A->p[i + 1]; p++)
+            {
+                // temp = A[p][i] (note this must be done seperately since A is
+                // mpz and temp is mpq)
+                SPEX_CHECK(SPEX_mpq_set_z(temp, A->x.mpz[p]));
+
+                // temp = temp*x[i]
+                SPEX_CHECK(SPEX_mpq_mul(temp, temp,
+                                        SPEX_2D(x, i, j, mpq)));
+
+                // b2[p] = b2[p]-temp
+                SPEX_CHECK(SPEX_mpq_add(SPEX_2D(b2, A->i[p], j, mpq),
+                                        SPEX_2D(b2, A->i[p], j, mpq),temp));
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Apply scales of A and b to b2 before comparing the b2 with scaled b'
+    //--------------------------------------------------------------------------
+
+    SPEX_CHECK(SPEX_mpq_div(scale, b->scale, A->scale));
+
+    // Apply scaling factor, but ONLY if it is not 1
+    int r;
+    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, scale, 1, 1));
+    if (r != 0)
+    {
+        nz = x->m * x->n;
+        for (i = 0; i < nz; i++)
+        {
+            SPEX_CHECK(SPEX_mpq_mul(b2->x.mpq[i], b2->x.mpq[i], scale));
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // check if b==b2
+    //--------------------------------------------------------------------------
+
+    for (j = 0; j < b->n; j++)
+    {
+        for (i = 0; i < b->m; i++)
+        {
+            // temp = b[i] (correct b)
+            SPEX_CHECK(SPEX_mpq_set_z(temp, SPEX_2D(b, i, j, mpz)));
+
+            // set check false if b!=b2
+            SPEX_CHECK(SPEX_mpq_equal(&r, temp, SPEX_2D(b2, i, j, mpq)));
+            if (r == 0)
+            {
+                //printf("ERROR\n");
+                info = SPEX_PANIC;
+                j = b->n;
+                break;
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Print info
+    //--------------------------------------------------------------------------
+
+    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
+    if (info == SPEX_OK)
+    {
+        SPEX_PR1 ("Solution is verified to be exact.\n") ;
+    }
+    else if (info == SPEX_PANIC)
+    {
+        // This can never happen.
+        SPEX_PR1 ("ERROR! Solution is wrong. This is a bug; please "
+                  "contact the authors of SPEX.\n") ;
+    }
+
+    //--------------------------------------------------------------------------
+    // Free memory
+    //--------------------------------------------------------------------------
+
+    SPEX_MPQ_CLEAR(temp);                   \
+    SPEX_MPQ_CLEAR(scale);                  \
+    SPEX_matrix_free(&b2, NULL);
+    return info;
+}
+

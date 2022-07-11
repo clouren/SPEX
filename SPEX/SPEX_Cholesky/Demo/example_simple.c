@@ -50,7 +50,8 @@ int main (int argc, char **argv)
     // Get matrix file name
     //--------------------------------------------------------------------------
     char *mat_name;
-    mat_name = "../ExampleMats/872.mat.txt";
+    mat_name = "../ExampleMats/719.mat.txt";
+    printf("%s\n", mat_name);
     if (argc > 2)
     {
         mat_name = argv[1];
@@ -109,6 +110,7 @@ int main (int argc, char **argv)
     // solve
     //--------------------------------------------------------------------------
     clock_t start_s = clock();
+    option->algo=SPEX_CHOL_LEFT;
 
     DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
     
@@ -120,6 +122,17 @@ int main (int argc, char **argv)
 
     // x2 is a copy of the solution. x2 is a dense matrix with mpfr entries
     DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
+    
+    
+    printf("%d \n", option->algo);
+    /*for (int64_t i=0; i<n; i++)
+    {
+        //gmp_printf("%Qd, ", x->x.mpq[i]);
+        printf("%.16f \n", x2->x.fp64[i]);
+    }*/
+    
+    option->print_level=1;
+    DEMO_OK ( SPEX_check_solution(A,x,b,option));
     
     //--------------------------------------------------------------------------
     // Free memory

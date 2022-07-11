@@ -67,3 +67,12 @@ void SPEX_Chol_determine_error
 (
     SPEX_info ok
 );
+
+
+SPEX_info SPEX_check_solution
+(
+    const SPEX_matrix *A,         // Input matrix
+    const SPEX_matrix *x,         // Solution vectors
+    const SPEX_matrix *b,         // Right hand side vectors
+    const SPEX_options* option    // Command options
+);

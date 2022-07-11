@@ -63,7 +63,7 @@ int main( int argc, char* argv[] )
     SPEX_options *option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     
-    char* mat_name = "../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
+    char* mat_name = "../ExampleMats/719.mat.txt";// Set demo matrix and RHS name
     char* rhs_name = "../ExampleMats/2.mat.soln.txt";
     int64_t rat = 1;
     
@@ -119,6 +119,9 @@ int main( int argc, char* argv[] )
   
     F->L->m = n;
     clock_t end_factor = clock();
+    
+    option->print_level=3;
+    //DEMO_OK(SPEX_matrix_check(F->L,option));
      
 
     //--------------------------------------------------------------------------
