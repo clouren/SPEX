@@ -10,7 +10,6 @@
 
 //------------------------------------------------------------------------------
 
-
 /* Purpose: This code utilizes the SPEX Cholesky factorization to exactly solve
  *          the linear system Ax = b.
  *
@@ -99,9 +98,6 @@ SPEX_info SPEX_Chol_backslash
     {
         return SPEX_INCORRECT_INPUT;
     }
-
-    //TODO Make sure that all the functions below, handle a NULL oooptions
-    // Is this done? If so please delete this
     
     // Declare memory
     SPEX_symbolic_analysis *S = NULL;

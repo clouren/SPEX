@@ -39,8 +39,13 @@ SPEX_info spex_chol_backward_sub
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
     
+    SPEX_options *option = NULL;
+    SPEX_CHECK(SPEX_create_default_options(&option));
+    option->print_level=3;
+    
     int64_t k, p, j, n = L->n;
     int sgn;
+    
     // Iterate across the RHS vectors
     for (k = 0; k < x->n; k++)
     {
@@ -49,7 +54,7 @@ SPEX_info spex_chol_backward_sub
         {
             // if x[j,k] == 0 skip this operation
             SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, j, k, mpz)));
-            if (sgn == 0) continue;
+            //if (sgn == 0) continue;
             
             for (p = L->p[j]+1; p < L->p[j+1]; p++)
             {
@@ -57,9 +62,12 @@ SPEX_info spex_chol_backward_sub
                 SPEX_CHECK( SPEX_mpz_submul( SPEX_2D(x, j, k, mpz), L->x.mpz[p], 
                                       SPEX_2D( x, L->i[p], k, mpz)));
             }
+            SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, j, k, mpz)));
+            if (sgn == 0) continue;
             // Compute x[j,k] = x[j,k] / L[j,j]
             SPEX_CHECK( SPEX_mpz_divexact( SPEX_2D(x, j, k, mpz), 
                         SPEX_2D(x, j, k, mpz), L->x.mpz[ L->p[j]]));
+                
         }
     }
     return SPEX_OK;

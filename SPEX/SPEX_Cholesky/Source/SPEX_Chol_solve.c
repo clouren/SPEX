@@ -98,6 +98,7 @@ SPEX_info SPEX_Chol_solve
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_chol_forward_sub(b2, F->L, F->rhos));
+    
 
     //--------------------------------------------------------------------------
     // Apply the determinant to b2, b2 = det*b2
@@ -109,6 +110,7 @@ SPEX_info SPEX_Chol_solve
     // Multiply b2 by the determinant. This multiplication ensures that the next
     // backsolve is integral
     SPEX_CHECK(spex_matrix_mul(b2, (*det) ));
+    
     
     //--------------------------------------------------------------------------
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
