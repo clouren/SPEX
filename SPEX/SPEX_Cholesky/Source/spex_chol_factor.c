@@ -114,6 +114,7 @@ SPEX_info spex_chol_factor
     // Call factorization
     //--------------------------------------------------------------------------
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    algo=SPEX_CHOL_UP;
     switch(algo) 
     {
         case SPEX_ALGORITHM_DEFAULT:
