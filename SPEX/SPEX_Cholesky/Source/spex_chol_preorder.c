@@ -2,9 +2,9 @@
 // SPEX_Chol/spex_Chol_preorder: Symbolic ordering and analysis for SPEX Cholesky
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -34,9 +34,9 @@
 SPEX_info spex_chol_preorder
 (
     // Output
-    SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure 
+    SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure
                                         // On input: undefined
-                                        // On output: contains the 
+                                        // On output: contains the
                                         // row/column permutation and its
                                         // inverse.
     // Input
@@ -61,8 +61,8 @@ SPEX_info spex_chol_preorder
     ASSERT(A->n == A->m);
 
     // Dimension can't be negative
-    ASSERT(A->n >= 0); 
-    
+    ASSERT(A->n >= 0);
+
     // If *S_handle != NULL then it may cause a memory leak.
     ASSERT(*S_handle == NULL);
 
@@ -75,9 +75,9 @@ SPEX_info spex_chol_preorder
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
 
     int64_t anz; // Number of nonzeros in A
-    SPEX_matrix_nnz(&anz, A, option);   
+    SPEX_matrix_nnz(&anz, A, option);
 
-    // Allocate memory for S    
+    // Allocate memory for S
     S = (SPEX_symbolic_analysis*) SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
     if (S == NULL) return SPEX_OUT_OF_MEMORY;
 
@@ -87,7 +87,7 @@ SPEX_info spex_chol_preorder
     S->P_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
     if (S->P_perm == NULL)
     {
-        SPEX_FREE_ALL;  
+        SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
 
@@ -123,9 +123,9 @@ SPEX_info spex_chol_preorder
         break;
 
         case SPEX_NO_ORDERING:
-        // ---No ordering is used--- 
-        // S->p is set to [0 ... n] and the number of nonzeros in L is estimated 
-        // to be 10 times the number of nonzeros in A. 
+        // ---No ordering is used---
+        // S->p is set to [0 ... n] and the number of nonzeros in L is estimated
+        // to be 10 times the number of nonzeros in A.
         // This is a very crude estimate on the nnz(L)
         {
             for (i = 0; i < n+1; i++)
@@ -149,7 +149,7 @@ SPEX_info spex_chol_preorder
             if (!A2)
             {
                 // out of memory
-                SPEX_FREE_ALL;  
+                SPEX_FREE_ALL;
                 return SPEX_OUT_OF_MEMORY;
             }
             // Initialize S->p as per COLAMD documentation
@@ -176,7 +176,7 @@ SPEX_info spex_chol_preorder
                 colamd_l_report ((SuiteSparse_long *) stats);
                 SPEX_PRINTF ("\nEstimated L nonzeros: %" PRId64 "\n", S->lnz);
             }
-            //Note that A2 is a local-to-this-case variable; so it cannot and should 
+            //Note that A2 is a local-to-this-case variable; so it cannot and should
             //not be part of the  SPEX_FREE_WORKSPACE or SPEX_FREE_ALL mechanisms
             SPEX_FREE(A2);
         }
@@ -205,7 +205,7 @@ SPEX_info spex_chol_preorder
     // Allocate pinv
     S->Pinv_perm = (int64_t*)SPEX_calloc(n, sizeof(int64_t));
     if(!(S->Pinv_perm)) return SPEX_OUT_OF_MEMORY;
-    
+
     // Populate pinv
     for (k = 0; k < n; k++)
     {

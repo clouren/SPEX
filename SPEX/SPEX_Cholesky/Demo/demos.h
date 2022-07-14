@@ -2,9 +2,9 @@
 // SPEX_Chol/Demo/demos.h: #include file the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ SPEX_info SPEX_Chol_process_command_line //processes the command line
 /* Purpose: This function reads in a matrix stored in a triplet format
  * with double entries. The format used can be seen in any of the
  * example mat files.
- * 
+ *
  * This is only used for Demo purposes
  */
 
@@ -46,7 +46,7 @@ SPEX_info SPEX_tripread_double
 // SPEX_read_dense
 //------------------------------------------------------------------------------
 
-/* Purpose: Read a dense matrix for RHS vectors. 
+/* Purpose: Read a dense matrix for RHS vectors.
  * the values in the file must be integers
  */
 

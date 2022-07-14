@@ -2,9 +2,9 @@
 // SPEX_Chol/Demo/example.c: example main program for SPEX_Cholesky
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -24,7 +24,7 @@
     SPEX_FREE(option);   \
     SPEX_finalize();
 
-#include "demos.h"   
+#include "demos.h"
 
 #define DEMO_OK(method)                 \
 {                                       \
@@ -37,7 +37,7 @@
     }                                   \
 }
 
-    
+
 int main (int argc, char **argv)
 {
     //--------------------------------------------------------------------------
@@ -87,7 +87,7 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-    
+
     DEMO_OK(SPEX_tripread_double(&A, mat_file, option));
     fclose(mat_file);
 
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
     option->algo=SPEX_CHOL_LEFT;
 
     DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
-    
+
     clock_t end_s = clock();
 
     double t_s = (double) (end_s - start_s) / CLOCKS_PER_SEC;
@@ -122,18 +122,18 @@ int main (int argc, char **argv)
 
     // x2 is a copy of the solution. x2 is a dense matrix with mpfr entries
     DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
-    
-    
+
+
     printf("%d \n", option->algo);
     /*for (int64_t i=0; i<n; i++)
     {
         //gmp_printf("%Qd, ", x->x.mpq[i]);
         printf("%.16f \n", x2->x.fp64[i]);
     }*/
-    
+
     option->print_level=1;
     DEMO_OK ( SPEX_check_solution(A,x,b,option));
-    
+
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------
