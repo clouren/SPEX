@@ -35,7 +35,6 @@
     SPEX_matrix_free(&basic_sol, option);        \
     SPEX_matrix_free(&y, option);                \
     SPEX_matrix_free(&y_sol, option);            \
-    SPEX_matrix_free(&A3, option);               \
     SPEX_matrix_free(&vk, option);               \
     SPEX_factorization_free(&F1, option);        \
     SPEX_factorization_free(&F2, option);        \
@@ -83,7 +82,7 @@ int main( int argc, char* argv[])
     double z0 = 0;
     SPEX_options* option = NULL;
     SPEX_matrix *Prob_A = NULL, *Prob_c = NULL, *tempA = NULL, * b_dbl = NULL;
-    SPEX_matrix *A1 = NULL, *x1 = NULL, *A2 = NULL, *A3 = NULL;
+    SPEX_matrix *A1 = NULL, *x1 = NULL, *A2 = NULL;
     SPEX_matrix *b = NULL, *c = NULL,  *basic_sol = NULL, *y = NULL,
                 *c_new = NULL, *y_sol = NULL;
     SPEX_matrix *vk = NULL;
@@ -678,6 +677,11 @@ int main( int argc, char* argv[])
         end1 = clock();
 
         // print results
+        printf("\nSolving 3 linear equations time: \t%lf", t_solve);
+        printf("\nSearch k and new_col time: \t\t%lf\n",
+           (double) (end1 - start1) / CLOCKS_PER_SEC);
+        fprintf(result_file, "%lf \t%lf ", t_solve,
+           (double) (end1 - start1) / CLOCKS_PER_SEC);
 #ifdef MY_PRINT_BASIS
         fprintf(out_file,"prev basis k(%ld): %ld; new basis k: %ld\n",
             k, basis[k]-n, new_col);
@@ -698,11 +702,6 @@ int main( int argc, char* argv[])
         printf("----------%ld: replacing k(%ld) with new_col(%ld)-----------\n",
             iter, k, new_col);
         printf("-----------------------------------------------------------\n");
-        printf("\nSolving 3 linear equations time: \t%lf", t_solve);
-        printf("\nSearch k and new_col time: \t\t%lf\n",
-           (double) (end1 - start1) / CLOCKS_PER_SEC);
-        fprintf(result_file, "%lf \t%lf ", t_solve,
-           (double) (end1 - start1) / CLOCKS_PER_SEC);
 
         //----------------------------------------------------------------------
         // perform continuous LU update
@@ -719,6 +718,9 @@ int main( int argc, char* argv[])
 
         if (iter > 0)
         {
+            // perform conversion first to exclude the time for this step
+            OK(SPEX_factorization_convert(F2, true, option));
+
             start_luu3 = clock();
 
             OK(SPEX_Update_LU_ColRep(F2, vk, k, option));
@@ -745,13 +747,9 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         // generate new matrix with vk inserted
         //----------------------------------------------------------------------
-        tmpv = A2->v[k]; A2->v[k] = vk->v[0]; vk->v[0] = tmpv;
+        OK(SPEX_Update_matrix_colrep(A2, vk, k, option));
         OK(SPEX_matrix_free(&A1, option));
         OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
-        if (iter == 0)
-        {
-            OK(SPEX_matrix_copy(&A3, SPEX_DYNAMIC_CSC, SPEX_MPZ, A2, option));
-        }
 
         //----------------------------------------------------------------------
         // perform direct LU factorization for matrix A1
