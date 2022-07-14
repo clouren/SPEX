@@ -34,8 +34,8 @@ runchol: lib chol
 lib:
 	( cd ../../build ; $(MAKE) )
 
-ptest: lib ptest.c test.c test.h ../../SPEX_Util/Demo/my_safe_gmp.c ../../SPEX_Util/Demo/my_safe_gmp.h ../../SPEX_Util/Source/SPEX_gmp.h Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o ptest ptest.c test.c ../../SPEX_Util/Demo/my_safe_gmp.c $(LDLIBS)
+ptest: lib ptest.c test.c test.h Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o ptest ptest.c test.c $(LDLIBS)
 
 openfile: lib openfile.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o openfile openfile.c test.c $(LDLIBS)
