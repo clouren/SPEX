@@ -17,13 +17,11 @@ include ../../SuiteSparse_config/SuiteSparse_config.mk
 PATH_TO_SPEX=-Wl,-rpath,"../lib/"
 CF =  $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX) -O 
 
-I = -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Util/Source -I../SPEX_Left_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source\
--I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/include \
--I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/include
+I = -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Util/Source -I../SPEX_Left_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source
 
 LDLIBS += -lsuitesparseconfig -lcolamd -lamd \
-	   -L/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/lib -lgmp -lm\
-           -L/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/lib -lmpfr -lm\
+           -lgmp -lm\
+           -lmpfr -lm\
            -L../../lib -lspex -lm 
 
 all: SPEX_connect.o SPEX_connect.so
