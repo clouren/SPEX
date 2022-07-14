@@ -1,4 +1,4 @@
-# SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+# SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
 # Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
 # Texas A&M University. All Rights Reserved. 
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
@@ -10,11 +10,7 @@ import scipy
 from scipy.sparse import csc_matrix
 from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc, linalg
 
-#TODO each function in a different file? (check how that works in python libraries)
-#TODO memory free function
-#TODO names and maybe also have Left LU and backslash
-
-def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}): 
+def backslash( A, b, options={'SolutionType': 'double'}): 
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     ## options is a dictionary that specifies what tipe the solution should be, this by default is double
@@ -33,19 +29,6 @@ def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}):
     if scipy.sparse.linalg.norm(A-A.T, scipy.Inf) > tol:
         print("Input matrix is not symmetric")
         raise TypeError
-    
-    ##--------------------------------------------------------------------------
-    ## Ordering
-    ##--------------------------------------------------------------------------
-    if options['Ordering']=="none":
-        order=0
-    elif options['Ordering']=="colamd":
-        order=1
-    elif options['Ordering']=="amd": ##amd is the default ordering for Cholesky
-        order=2
-    else:
-        print("Invalid order options")
-        raise ValueError
         
     ##--------------------------------------------------------------------------
     ## Call the correct function depending on the desired output type
@@ -58,19 +41,19 @@ def Cholesky( A, b, options={'SolutionType': 'double', 'Ordering': 'amd'}):
         print("Invalid output type options")
         raise ValueError
 
-    x=spex_chol_backslash(A,b,order,charOut)
+    x=spex_backslash(A,b,charOut)
 
     return x
 
-def spex_chol_backslash( A, b, order, charOut ): 
+def spex_backslash( A, b, charOut ): 
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     
     ##--------------------------------------------------------------------------
     ## Load the library with the "C bridge code"
     ##--------------------------------------------------------------------------
-    lib = ctypes.CDLL('./SPEX_Chol_connect.so')
-    c_backslash = lib.SPEX_python_backslash
+    lib = ctypes.CDLL('./SPEX_connect.so')
+    c_backslash = lib.spex_backslash_python
     
     ##--------------------------------------------------------------------------
     ## Specify the parameter types and return type of the C function
@@ -81,7 +64,6 @@ def spex_chol_backslash( A, b, order, charOut ):
                             ndpointer(dtype=np.float64, ndim=1, flags=None),
                             ndpointer(dtype=np.float64, ndim=1, flags=None), 
                             ctypes.c_int, 
-                            ctypes.c_int,
                             ctypes.c_int,
                             ctypes.c_int,
                             ctypes.c_bool]
@@ -102,7 +84,6 @@ def spex_chol_backslash( A, b, order, charOut ):
                 n,
                 n,
                 A.nnz,
-                order,
                 charOut)
     
     ##--------------------------------------------------------------------------
@@ -113,37 +94,8 @@ def spex_chol_backslash( A, b, order, charOut ):
     else:
         #x = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_double))
         x=[]
-        for i in range(3):
+        for i in range(n):
             val=ctypes.cast(x_v[i], ctypes.POINTER(ctypes.c_double))
             x.append(val[0]) ##this can also be changed to be a numpy array instead of a list
     
     return x
-
-
-def spex_matrix_from_file(fname):
-    #fname is the name of the file that contains matrix A
-  
-    ##--------------------------------------------------------------------------
-    ## Load file data and store it in mat
-    ##--------------------------------------------------------------------------
-    mat = np.loadtxt(fname, delimiter=' ')
-    
-    ##--------------------------------------------------------------------------
-    ## Splice mat to get the componets of matrix A and populate a scipy sparse matrix
-    ##--------------------------------------------------------------------------
-    data = mat[1:,2]
-    row = mat[1:,0].astype(int)
-    col = mat[1:,1].astype(int)
-    n = mat[0][0].astype(int)
-    m = mat[0][1].astype(int)
-    ## The matrix in the file is in triplet form
-    triplet=coo_matrix((data, (row, col)),shape=(n, m))
-    ## Change the triplet matrix into a csc matrix
-    A = triplet.tocsc()
-    
-    return A
-
-
-def free():
-    #frees the memory allocated using ctypes
-    x=1
