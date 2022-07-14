@@ -86,7 +86,6 @@ int main( int argc, char* argv[])
     SPEX_matrix *b = NULL, *c = NULL,  *basic_sol = NULL, *y = NULL,
                 *c_new = NULL, *y_sol = NULL;
     SPEX_matrix *vk = NULL;
-    SPEX_vector *tmpv;
     SPEX_factorization *F1 = NULL, *F2 = NULL;
     mpz_t tmpz;
     mpq_t obj, minq, maxq, tmpq1, tmpq2;
@@ -696,7 +695,10 @@ int main( int argc, char* argv[])
         printf("prev basis k(%ld): %ld; new basis k: %ld\n",
             k, basis[k]-n, new_col);
         used_as_basis[new_col] = k;
-        used_as_basis[basis[k]-n] = -1;
+        if (basis[k] >= n)
+        {
+            used_as_basis[basis[k]-n] = -1;
+        }
         basis[k] = new_col+n;
         printf("\n---------------------------------------------------------\n");
         printf("----------%ld: replacing k(%ld) with new_col(%ld)-----------\n",
