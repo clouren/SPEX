@@ -2,9 +2,9 @@
 // SPEX_Chol/SPEX_Chol_Solve: Solve the SPD linear system after factorization
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -25,18 +25,18 @@
 /* Purpose: This function solves the linear system LDL' x = b.
  *
  * Input arguments:
- * 
+ *
  * x_handle:        A handle to the solution matrix. On input this is NULL,
  *                  on output x_handle contains a pointer to the solution
  *                  vector(s)
- * 
+ *
  * F:               The factorization struct containing the REF cholesky
  *                  factorization of A, permutation, etc
- * 
+ *
  * S:               Symbolic analysis struct (contains row/column permutation
  *                  and its inverse
- * 
- * option:          Command options * 
+ *
+ * option:          Command options *
  */
 
 SPEX_info SPEX_Chol_solve
@@ -44,7 +44,7 @@ SPEX_info SPEX_Chol_solve
     // Output
     SPEX_matrix** x_handle,     // On input: undefined.
                                 // On output: Rational solution (SPEX_MPQ)
-                                // to the system. 
+                                // to the system.
     // input/output:
     SPEX_factorization *F,      // The non-updatable Cholesky factorization.
                                 // Mathematically, F is unchanged.  However, if F
@@ -60,7 +60,7 @@ SPEX_info SPEX_Chol_solve
 
     // Ensure SPEX is initialized
     if (!spex_initialized()) return SPEX_PANIC;
-  
+
     // Check the inputs
     ASSERT(!x_handle);
     ASSERT(b->type == SPEX_MPZ);
@@ -71,7 +71,7 @@ SPEX_info SPEX_Chol_solve
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // det is the determinant of the PAP matrix. It is obtained for free
     // from the SPEX Cholesky factorization det = rhos[n-1] = L[n,n]
     mpz_t* det = NULL;
@@ -90,28 +90,28 @@ SPEX_info SPEX_Chol_solve
 
     // Ensure that F is in a non-updatable form
     SPEX_CHECK( SPEX_factorization_convert(F, false, option));
-    
+
     SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option)) ;
 
     //--------------------------------------------------------------------------
-    // Forward substitution, b2 = L \ b2. Note that b2 is overwritten    
+    // Forward substitution, b2 = L \ b2. Note that b2 is overwritten
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_chol_forward_sub(b2, F->L, F->rhos));
-    
+
 
     //--------------------------------------------------------------------------
     // Apply the determinant to b2, b2 = det*b2
     //--------------------------------------------------------------------------
 
-    // Set the value of the determinant det = rhos[n-1] 
+    // Set the value of the determinant det = rhos[n-1]
     det = &(F->rhos->x.mpz[F->L->n-1]);
 
     // Multiply b2 by the determinant. This multiplication ensures that the next
     // backsolve is integral
     SPEX_CHECK(spex_matrix_mul(b2, (*det) ));
-    
-    
+
+
     //--------------------------------------------------------------------------
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
     //--------------------------------------------------------------------------
@@ -127,7 +127,7 @@ SPEX_info SPEX_Chol_solve
     // x/det are rational, but are solving the scaled linear system
     // A' x = b' (that is if A had input which was rational or floating point
     // and had to be converted to integers). Thus, the scale here is used
-    // to convert x into into the actual solution of A x = b. 
+    // to convert x into into the actual solution of A x = b.
     // Mathematically, set scale = b->scale * rhos[n-1] / PAP->scale
     SPEX_CHECK(SPEX_mpq_set_z(b2->scale, (*det)));
     SPEX_CHECK(SPEX_mpq_mul(b2->scale, b2->scale, b->scale));

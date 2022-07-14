@@ -2,9 +2,9 @@
 // SPEX_Chol/spex_Chol_Counts: Column counts for Cholesky factorization
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -28,7 +28,7 @@
 /* Purpose: Obtain the column counts of an SPD matrix for Cholesky factorization*
  * This is a modified version of Csparse's cs_chol_counts function
  */
-SPEX_info spex_chol_counts 
+SPEX_info spex_chol_counts
 (
     // Output
     int64_t** c_handle,     // On ouptut: column counts
@@ -69,7 +69,7 @@ SPEX_info spex_chol_counts
     {
         j = post[k] ;
         delta[j] = (first[j] == -1) ? 1 : 0 ;  /* delta[j]=1 if j is a leaf */
-        for ( ; j != -1 && first[j] == -1 ; j = parent[j]) 
+        for ( ; j != -1 && first[j] == -1 ; j = parent[j])
         {
             first [j] = k ;
         }
@@ -82,7 +82,7 @@ SPEX_info spex_chol_counts
     for (k = 0 ; k < n ; k++)
     {
         j = post[k] ;          /* j is the kth node in postordered etree */
-        if (parent[j] != -1) 
+        if (parent[j] != -1)
         {
             delta[parent[j]]-- ;    /* j is not a root */
         }
@@ -102,7 +102,7 @@ SPEX_info spex_chol_counts
                 }
             }
         }
-        if (parent[j] != -1) 
+        if (parent[j] != -1)
         {
             ancestor[j] = parent[j] ;
         }
@@ -116,5 +116,5 @@ SPEX_info spex_chol_counts
     }
     (*c_handle) = colcount;
     SPEX_FREE_WORKSPACE;
-    return SPEX_OK;    
-} 
+    return SPEX_OK;
+}

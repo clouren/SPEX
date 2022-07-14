@@ -2,9 +2,9 @@
 // SPEX_Chol/SPEX_Chol_forward_sub: Solve the system LDx = b
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -36,7 +36,7 @@
 SPEX_info spex_chol_forward_sub
 (
     // Input/Output
-    SPEX_matrix* x,              // Right hand side matrix. 
+    SPEX_matrix* x,              // Right hand side matrix.
                                  // On input: contains b
                                  // On output: contains the solution of LD x = x
     // Input
@@ -46,8 +46,8 @@ SPEX_info spex_chol_forward_sub
 {
     SPEX_info info;
     int64_t  i, p, k, n = L->n, m, mnew;
-    
-    // All inputs have been checked by the caller. Asserts are 
+
+    // All inputs have been checked by the caller. Asserts are
     // here for reminder
     ASSERT(n >= 0);
     ASSERT(L->n == x->m);
@@ -55,9 +55,9 @@ SPEX_info spex_chol_forward_sub
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
     ASSERT(x->type == SPEX_MPZ);
-    
+
     int sgn;
-    
+
     // Build the history matrix
     SPEX_matrix *h;
     SPEX_CHECK(SPEX_matrix_allocate(&h, SPEX_DENSE, SPEX_INT64, x->m, x->n,
@@ -94,9 +94,9 @@ SPEX_info spex_chol_forward_sub
                 // x[i,l] = x[i,k] * rhos[i-1]
                 SPEX_CHECK(SPEX_mpz_mul(SPEX_2D(x, i, k, mpz),
                                     SPEX_2D(x, i, k, mpz),rhos->x.mpz[i-1]));
-    
+
                 // Only divide by the previous pivot if it is not =1
-                // (the default for the first iteration)  
+                // (the default for the first iteration)
                 if (p > -1)
                 {
                     // x[i,k] = x[i,k] / rhos[p]

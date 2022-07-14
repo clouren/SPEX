@@ -2,9 +2,9 @@
 // SPEX_Chol/Demo/demos.c: support functions for the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ SPEX_info SPEX_Chol_process_command_line //processes the command line
 /* Purpose: This function reads in a matrix stored in a triplet format
  * with double entries. The format used can be seen in any of the
  * example mat files.
- * 
+ *
  * This is only used for Demo purposes
  */
 
@@ -188,15 +188,15 @@ SPEX_info SPEX_tripread_double
     SPEX_matrix *A = NULL;
     info = SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_FP64, m, n, nz,
         false, true, option);
-    
+
     if (info != SPEX_OK)
     {
         return (info) ;
     }
-    
+
     s = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
         &(A->i[0]), &(A->j[0]), &(A->x.fp64[0])) ;
-            
+
     if (feof(file) || s <= 0)
     {
         printf ("premature end-of-file\n") ;
@@ -226,11 +226,11 @@ SPEX_info SPEX_tripread_double
     }
 
     // the triplet matrix now has nz entries
-    A->nz = nz;    
+    A->nz = nz;
 
     // At this point, A is a double triplet matrix. We make a copy of it with C
     // C is a CSC matrix with mpz entries
-    
+
     SPEX_matrix* C = NULL;
     SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
 
@@ -245,7 +245,7 @@ SPEX_info SPEX_tripread_double
 // SPEX_read_dense
 //------------------------------------------------------------------------------
 
-/* Purpose: Read a dense matrix for RHS vectors. 
+/* Purpose: Read a dense matrix for RHS vectors.
  * the values in the file must be integers
  */
 
