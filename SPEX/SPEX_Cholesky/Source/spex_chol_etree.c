@@ -2,9 +2,9 @@
 // SPEX_Chol/spex_Chol_etree: Compute the elimination tree of a matrix A
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -25,7 +25,7 @@
 
 /* Purpose: Compute the elimination tree of A */
 
-SPEX_info spex_chol_etree 
+SPEX_info spex_chol_etree
 (
     // Output
     int64_t** tree_handle,      // On output: contains the elimination tree of A
@@ -59,16 +59,16 @@ SPEX_info spex_chol_etree
     ancestor = w ;
     for (k = 0 ; k < n ; k++)
     {
-        parent [k] = -1 ;                           // node k has no parent yet 
-        ancestor [k] = -1 ;                         // nor does k have an ancestor 
+        parent [k] = -1 ;                           // node k has no parent yet
+        ancestor [k] = -1 ;                         // nor does k have an ancestor
         for (p = A->p [k] ; p < A->p [k+1] ; p++)
         {
             i = A->i [p] ;
-            for ( ; i != -1 && i < k ; i = inext)   // traverse from i to k 
+            for ( ; i != -1 && i < k ; i = inext)   // traverse from i to k
             {
-                inext = ancestor [i] ;              // int64_t*ext = ancestor of i 
-                ancestor [i] = k ;                  // path compression 
-                if (inext == -1) parent [i] = k ;   // no anc., parent is k 
+                inext = ancestor [i] ;              // int64_t*ext = ancestor of i
+                ancestor [i] = k ;                  // path compression
+                if (inext == -1) parent [i] = k ;   // no anc., parent is k
             }
         }
     }

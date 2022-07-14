@@ -3,9 +3,9 @@
 //                                type
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -15,12 +15,12 @@
  *
  * Input/Output arguments:
  *
- * x_handle:    A pointer to the solution of the linear system. The output 
- *              can be returned in double precision, 
+ * x_handle:    A pointer to the solution of the linear system. The output
+ *              can be returned in double precision,
  *              mpfr_t (user-specified precision floating point), or
  *              mpq_t (rational)
  *
- * type:        Type of output desired. 
+ * type:        Type of output desired.
  *              Must be SPEX_MPQ, SPEX_FP64 or SPEX_MPFR
  *
  * A:           User's input matrix.
@@ -39,7 +39,7 @@
     SPEX_symbolic_analysis_free (&S, option);\
     SPEX_FREE (PAP->x.mpz);                  \
     SPEX_matrix_free(&PAP, NULL);            \
-}  
+}
 
 #define SPEX_FREE_ALL            \
 {                                 \
@@ -52,7 +52,7 @@
 SPEX_info SPEX_Chol_backslash
 (
     // Output
-    SPEX_matrix** x_handle,       // On input: undefined. 
+    SPEX_matrix** x_handle,       // On input: undefined.
                                   // On output: solution vector(s)
     // Input
     SPEX_type type,               // Type of output desired
@@ -69,7 +69,7 @@ SPEX_info SPEX_Chol_backslash
     {
         return SPEX_PANIC;
     }
-    
+
     //-------------------------------------------------------------------------
     // check inputs
     //-------------------------------------------------------------------------
@@ -85,33 +85,33 @@ SPEX_info SPEX_Chol_backslash
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // A must be the appropriate dimension
     if (A->n == 0 || A->m == 0 || A->n != A->m)
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // Make sure A and b are in the correct format
     if (A->type != SPEX_MPZ || A->kind != SPEX_CSC || b->type != SPEX_MPZ
         || b->kind != SPEX_DENSE)
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // Declare memory
     SPEX_symbolic_analysis *S = NULL;
     SPEX_factorization *F = NULL ;
     SPEX_matrix *x = NULL;
     SPEX_matrix* PAP = NULL;
-    
-    
+
+
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_chol_preorder(&S, A, option) );
-    
+
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky.
     // This symmetry check checks for both the nonzero pattern and values.
@@ -123,7 +123,7 @@ SPEX_info SPEX_Chol_backslash
     SPEX_CHECK( SPEX_determine_symmetry((SPEX_matrix*)A, option) );
 
     //--------------------------------------------------------------------------
-    // Permute matrix A, that is apply the row/column ordering from the 
+    // Permute matrix A, that is apply the row/column ordering from the
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
@@ -139,21 +139,21 @@ SPEX_info SPEX_Chol_backslash
     // Factorization: Perform the REF Cholesky factorization of PAP.
     // By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
-    //-------------------------------------------------------------------------- 
+    //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_chol_factor(&F, S, PAP, option) );
 
     //--------------------------------------------------------------------------
     // Solve: Solve Ax = b using the REF Cholesky factorization. That is,
     // apply the factorization LDL' = PAP' to solve the linear system LDL'x = b.
-    // At the conclusion of the solve function, x is the exact solution of 
+    // At the conclusion of the solve function, x is the exact solution of
     // Ax = b stored as a set of numerators and denominators (mpq_t)
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( SPEX_Chol_solve(&x, F, b, option) );
 
     //--------------------------------------------------------------------------
-    // At this point x is stored as mpq_t. If the user desires the output 
+    // At this point x is stored as mpq_t. If the user desires the output
     // to be mpq_t we set x_handle = x. Otherwise, we create a copy, x2, of x
     // of the desired type. We then set x_handle = x2 and free x.
     //--------------------------------------------------------------------------

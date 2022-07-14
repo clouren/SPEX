@@ -2,9 +2,9 @@
 // SPEX_Chol/SPEX_Chol_permute_A: Symmetric permutation of matrix A
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -14,20 +14,20 @@
 /* Purpose: Given the row/column permutation P stored in S, permute the matrix
  * A and return PAP'
  * Input arguments:
- * 
- * PAP_handle:   The user's permuted input matrix. 
- * 
+ *
+ * PAP_handle:   The user's permuted input matrix.
+ *
  * A:            The user's input matrix
- * 
- * S:            Symbolic analysis struct for Cholesky factorization. 
+ *
+ * S:            Symbolic analysis struct for Cholesky factorization.
  *               Contains row/column permutation of A
 
  // TODO: please address the issues in this file. Let me know if you need help. Once you've fixed them delete all fixmes
  FIXME: why pass in S?  Why not pass in both the permutation P and
  its inverse?  If the inverse passed in is a NULL pointer, then
- compute it, use it, then discard it.  
+ compute it, use it, then discard it.
 
- * 
+ *
  */
 SPEX_info spex_chol_permute_A
 (
@@ -36,9 +36,9 @@ SPEX_info spex_chol_permute_A
                                // On output: contains the permuted matrix
     //Input
     const SPEX_matrix* A,      // Input matrix
-    const bool numeric,        // True if user wants to permute pattern and 
+    const bool numeric,        // True if user wants to permute pattern and
                                // numbers, false if only pattern
-    const SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains 
+    const SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains
                                // row/column permutations
 )
 {
@@ -56,7 +56,7 @@ SPEX_info spex_chol_permute_A
     if (!PAP_handle || !S || !A || A->type != SPEX_MPZ || A->kind != SPEX_CSC)
     {
         return SPEX_INCORRECT_INPUT;
-    }     
+    }
 
     // Create indices and pinv, the inverse row permutation
     int64_t j, k, t, nz = 0, n = A->n;
@@ -72,14 +72,14 @@ SPEX_info spex_chol_permute_A
     PAP->i_shallow = false ; //TODO FIXME still feels like patchwork, figure out why
 
     // FIXME: PAP->x.mpz is a different kind of shallow
-    
+
     if(numeric)
     {
        PAP->x.mpz=(mpz_t*)SPEX_malloc((A->p[n])*sizeof(mpz_t));
 
         // Set PAP scale
         SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
-    
+
         // Populate the entries in PAP
         for (k = 0; k < n; k++)
         {
@@ -94,7 +94,7 @@ SPEX_info spex_chol_permute_A
                 // Set the nonzero value and location of the entries in column k of PAP
                 // NOTE: this is shallow.   Provide option for a deep copy of the values?
                 // FIXME: call an mpz_* function to do the pointer assignment?
-                (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t])); 
+                (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t]));
                 //SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
                 // Row i of this nonzero is equal to pinv[A->i[t]]
                 PAP->i[nz] = S->Pinv_perm[ A->i[t] ];
@@ -126,7 +126,7 @@ SPEX_info spex_chol_permute_A
                 nz++;
             }
         }
-    } 
+    }
 
     // Finalize the last column of PAP
     PAP->p[n] = nz;
