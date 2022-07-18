@@ -25,9 +25,9 @@
     SPEX_matrix_free(&Prob_A, option);           \
     SPEX_matrix_free(&Prob_c, option);           \
     SPEX_matrix_free(&tempA, option);            \
-    SPEX_matrix_free(&A1, option);               \
+    SPEX_matrix_free(&A_CSC, option);               \
     SPEX_matrix_free (&x1, option);              \
-    SPEX_matrix_free(&A2, option);               \
+    SPEX_matrix_free(&A_DCSC, option);               \
     SPEX_matrix_free(&b, option);                \
     SPEX_matrix_free(&b_dbl, option);            \
     SPEX_matrix_free(&c, option);                \
@@ -82,7 +82,7 @@ int main( int argc, char* argv[])
     double z0 = 0;
     SPEX_options* option = NULL;
     SPEX_matrix *Prob_A = NULL, *Prob_c = NULL, *tempA = NULL, * b_dbl = NULL;
-    SPEX_matrix *A1 = NULL, *x1 = NULL, *A2 = NULL;
+    SPEX_matrix *A_CSC = NULL, *x1 = NULL, *A_DCSC = NULL;
     SPEX_matrix *b = NULL, *c = NULL,  *basic_sol = NULL, *y = NULL,
                 *c_new = NULL, *y_sol = NULL;
     SPEX_matrix *vk = NULL;
@@ -189,10 +189,10 @@ int main( int argc, char* argv[])
         return 0;
     }
 
-    // allocate A2 with n sparse vectors with initially 0 nnz
-    OK(SPEX_matrix_allocate(&A2, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, n, 0,
+    // allocate A_DCSC with n sparse vectors with initially 0 nnz
+    OK(SPEX_matrix_allocate(&A_DCSC, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, n, 0,
         false, true, option));
-    OK(SPEX_mpq_set(A2->scale, Prob_A->scale));
+    OK(SPEX_mpq_set(A_DCSC->scale, Prob_A->scale));
     int num_of_new_basis = -1;
     last_obj = glp_get_obj_val(LP)+z0;
 
@@ -252,7 +252,7 @@ int main( int argc, char* argv[])
         bool one_more_simplex = false;
 
         // free memory allocated before allocating new memory
-        OK(SPEX_matrix_free(&A1, option));
+        OK(SPEX_matrix_free(&A_CSC, option));
         OK(SPEX_factorization_free(&F1, option));
         OK(SPEX_matrix_free (&x1, option));
         SPEX_symbolic_analysis_free(&analysis, option);
@@ -280,13 +280,13 @@ int main( int argc, char* argv[])
                 int r;
                 OK(SPEX_mpz_cmp_ui(&r, tmpz, 1));
                 assert(r == 0);// denominator must be 1
-                if (A2->v[i]->nzmax < 1)
+                if (A_DCSC->v[i]->nzmax < 1)
                 {
-                    OK(SPEX_vector_realloc(A2->v[i], 1, option));
+                    OK(SPEX_vector_realloc(A_DCSC->v[i], 1, option));
                 }
-                mpq_get_num(A2->v[i]->x[0], Prob_A->scale);
-                A2->v[i]->i[0] = j;
-                A2->v[i]->nz = 1;
+                mpq_get_num(A_DCSC->v[i]->x[0], Prob_A->scale);
+                A_DCSC->v[i]->i[0] = j;
+                A_DCSC->v[i]->nz = 1;
             }
             else
             {
@@ -297,35 +297,35 @@ int main( int argc, char* argv[])
                 }
                 used_as_basis[j] = i;
                 nz = Prob_A->p[j+1]-Prob_A->p[j];
-                if (A2->v[i]->nzmax < nz)
+                if (A_DCSC->v[i]->nzmax < nz)
                 {
-                    OK(SPEX_vector_realloc(A2->v[i], nz, option));
+                    OK(SPEX_vector_realloc(A_DCSC->v[i], nz, option));
                 }
                 nz = 0;
                 for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
                 {
-                    A2->v[i]->i[nz] = Prob_A->i[p];
-                    OK(SPEX_mpz_set(A2->v[i]->x[nz], Prob_A->x.mpz[p]));
+                    A_DCSC->v[i]->i[nz] = Prob_A->i[p];
+                    OK(SPEX_mpz_set(A_DCSC->v[i]->x[nz], Prob_A->x.mpz[p]));
                     nz++;
                 }
-                A2->v[i]->nz = nz;
+                A_DCSC->v[i]->nz = nz;
             }
         }
 
-        // get a CSC x MPZ A1 from dynamic_CSC x MPZ A2
-        OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
+        // get a CSC x MPZ A_CSC from dynamic_CSC x MPZ A_DCSC
+        OK(SPEX_matrix_copy(&A_CSC, SPEX_CSC, SPEX_MPZ, A_DCSC, option));
 
         //------------------------------------------------------------------
-        // perform LU factorization for the initial matrix A1
+        // perform LU factorization for the initial matrix A_CSC
         //------------------------------------------------------------------
         //start_llu = clock();
 
         // perform symbolic analysis by getting the column preordering of A
-        OK(SPEX_LU_analyze(&analysis, A1, option));
+        OK(SPEX_LU_analyze(&analysis, A_CSC, option));
 
         // perform the SPEX Left LU factorization to obtain matrices L
         // and U and a row permutation P such that PAQ = LDU.
-        OK(SPEX_Left_LU_factorize(&F1, A1, analysis, option));
+        OK(SPEX_Left_LU_factorize(&F1, A_CSC, analysis, option));
 
         //end_llu = clock();
 
@@ -483,6 +483,7 @@ int main( int argc, char* argv[])
 
         // reset objective value = 0
         OK(SPEX_mpq_set_ui(obj, 0, 1));
+        bool checked = false;
         for (i = 0; i < n; i++)
         {
             j = basis[i];
@@ -507,8 +508,15 @@ int main( int argc, char* argv[])
                 if (mpq_sgn(basic_sol->x.mpq[i]) < 0)
                 {
                     printf("x[%ld]=%lf<0\n",j,mpq_get_d(basic_sol->x.mpq[i]));
-                    gmp_printf("exact x[%ld]=%Qd\n",j,basic_sol->x.mpq[i]);
+                    //gmp_printf("exact x[%ld]=%Qd\n",j,basic_sol->x.mpq[i]);
                     //OK(SPEX_PANIC);
+                    if (!checked)
+                    {
+                        checked = true;
+                        bool Is_correct;
+                        OK(MY_update_verify(&Is_correct, F1, A_CSC, option));
+                        assert(Is_correct);
+                    }
                 }
 #else
                 SPEX_gmp_printf("%ld xz[%ld]= %Qd \n",i,j,basic_sol->x.mpq[i]);
@@ -749,23 +757,23 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         // generate new matrix with vk inserted
         //----------------------------------------------------------------------
-        OK(SPEX_Update_matrix_colrep(A2, vk, k, option));
-        OK(SPEX_matrix_free(&A1, option));
-        OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
+        OK(SPEX_Update_matrix_colrep(A_DCSC, vk, k, option));
+        OK(SPEX_matrix_free(&A_CSC, option));
+        OK(SPEX_matrix_copy(&A_CSC, SPEX_CSC, SPEX_MPZ, A_DCSC, option));
 
         //----------------------------------------------------------------------
-        // perform direct LU factorization for matrix A1
+        // perform direct LU factorization for matrix A_CSC
         //----------------------------------------------------------------------
         SPEX_factorization_free(&F2, NULL);
         SPEX_symbolic_analysis_free(&analysis, option);
         start_llu = clock();
 
         // perform symbolic analysis by getting the column preordering of A
-        OK(SPEX_LU_analyze(&analysis, A1, option));
+        OK(SPEX_LU_analyze(&analysis, A_CSC, option));
 
         // Now we perform the SPEX Left LU factorization to obtain matrices L
         // and U and a row permutation P such that PAQ = LDU.
-        OK(SPEX_Left_LU_factorize(&F2, A1, analysis, option));
+        OK(SPEX_Left_LU_factorize(&F2, A_CSC, analysis, option));
 //        if (info == SPEX_OK) {printf("matrix is not singular!\n");}
 
         end_llu = clock();

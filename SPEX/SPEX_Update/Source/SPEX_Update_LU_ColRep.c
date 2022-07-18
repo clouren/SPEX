@@ -50,6 +50,8 @@ SPEX_info SPEX_Update_LU_ColRep
                             // Therefore, if this function fails for any
                             // reason, the returned F should be considered as
                             // undefined.
+    // A is needed for debug mode
+    //SPEX_matrix *A,         // Input matrix, must be dynamic CSC
     // FIXME: make this SPEX_vector
     SPEX_matrix *vk,        // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
@@ -95,6 +97,9 @@ SPEX_info SPEX_Update_LU_ColRep
     spex_scattered_vector *Lk_dense_col = NULL, *Uk_dense_row = NULL,
         *vk_dense = NULL;
     mpz_t *sd = rhos->x.mpz;
+#ifdef SPEX_DEBUG
+    int64_t input_k = k;
+#endif
 
     //--------------------------------------------------------------------------
     // allocate space for workspace
@@ -214,8 +219,9 @@ SPEX_info SPEX_Update_LU_ColRep
                     {
                         printf("%ld ", Lk_dense_col->i[pp]);
                     }
-                    SPEX_CHECK(SPEX_gmp_printf("\nLk(%ld)=%Zd\n",
-                        ii, Lk_dense_col->x[ii]));
+                    //SPEX_CHECK(SPEX_gmp_printf("\nLk(%ld)=%Zd\n",
+                    //    ii, Lk_dense_col->x[ii]));
+                    gmp_printf("\nLk(%ld)=%Zd\n", ii, Lk_dense_col->x[ii]);
                     SPEX_CHECK(SPEX_PANIC);
                 }
             }
@@ -251,8 +257,9 @@ SPEX_info SPEX_Update_LU_ColRep
                     {
                         printf("%ld ", Uk_dense_row->i[pp]);
                     }
-                    SPEX_CHECK(SPEX_gmp_printf("\nUk(%ld)=%Zd\n",
-                        ii, Uk_dense_row->x[ii]));
+                    //SPEX_CHECK(SPEX_gmp_printf("\nUk(%ld)=%Zd\n",
+                    //    ii, Uk_dense_row->x[ii]));
+                    gmp_printf("\nUk(%ld)=%Zd\n", ii, Uk_dense_row->x[ii]);
                     SPEX_CHECK(SPEX_PANIC);
                 }
             }
@@ -276,6 +283,20 @@ SPEX_info SPEX_Update_LU_ColRep
                     __FILE__, __LINE__);
                 SPEX_CHECK(SPEX_PANIC);
             }
+        }
+
+        // exactly verify each entry of the factorization
+        bool is_correct;
+        SPEX_CHECK(spex_update_debug(&is_correct, F, k, Lk_dense_col,
+            Uk_dense_row, false, vk, A, option));
+        if (is_correct)
+        {
+            printf("correct so far****************************\n");
+        }
+        else
+        {
+            printf("fail-----------------------------------\n");
+            ASSERT(is_correct);
         }
 
         if (jnext < n)
@@ -489,6 +510,11 @@ SPEX_info SPEX_Update_LU_ColRep
                     //                 vk at (k-1)-th IPGE
                     if (Uc_offdiag[n-1] > vk_2ndlastnz && vk_2ndlastnz <= k)
                     {
+#ifdef SPEX_DEBUG
+                        printf("use vk since indecies of offdiag in U(:,n-1)"
+                            "and vk is %ld and %ld\n",Uc_offdiag[n-1],
+                            vk_2ndlastnz);
+#endif
                         use_col_n = 1;
                     }
                     else
@@ -781,6 +807,21 @@ SPEX_info SPEX_Update_LU_ColRep
     // S(:,k)=[1;1]
     SPEX_CHECK(SPEX_mpq_set_ui(SL(k), 1, 1));
     SPEX_CHECK(SPEX_mpq_set_ui(SU(k), 1, 1));
+#ifdef SPEX_DEBUG
+    // exactly verify each entry of the factorization
+    bool is_correct;
+    SPEX_CHECK(spex_update_debug(&is_correct, F, input_k, Lk_dense_col,
+        Uk_dense_row, true, vk, A, option));
+    if (is_correct)
+    {
+        printf("correct at output****************************\n");
+    }
+    else
+    {
+        printf("fail at output-----------------------------------\n");
+        ASSERT(is_correct);
+    }
+#endif
 
     SPEX_FREE_ALL;
     return SPEX_OK;

@@ -465,11 +465,14 @@ SPEX_info spex_update_dppu1
 
     if (Lksk_sgn == 0)
     {
+#ifndef SPEX_DEBUG
+        // disable this in the debug mode for simpler verification
         if (Lk_dense_col->nz == 1)
         {
             SPEX_FREE_ALL;
             return SPEX_OK;
         }
+#endif
         // IPGE update for col k of L can be achieved by setting
         // S(1, ks) = S(1, ks)*pending_scale
         SPEX_CHECK(SPEX_mpq_mul(SL(ks), SL(ks), pending_scale));
