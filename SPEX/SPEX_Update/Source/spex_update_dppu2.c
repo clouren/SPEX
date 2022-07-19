@@ -381,7 +381,7 @@ SPEX_info spex_update_dppu2
                 // U(ks,cks) = (U(ks,cks)*sd(last_nz_b4_ks))/sd(h[cks]);
                 SPEX_CHECK(SPEX_mpz_mul(Uk_dense_row->x[cks],
                                       Uk_dense_row->x[cks], sd[last_nz_b4_ks]));
-                if (h[cks] > 0)
+                if (h[cks] > -1)
                 {
                     SPEX_CHECK(SPEX_mpz_divexact(Uk_dense_row->x[cks],
                                      Uk_dense_row->x[cks], sd[h[cks]]));

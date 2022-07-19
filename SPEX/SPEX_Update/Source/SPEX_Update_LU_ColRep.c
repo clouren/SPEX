@@ -286,17 +286,20 @@ SPEX_info SPEX_Update_LU_ColRep
         }
 
         // exactly verify each entry of the factorization
-        bool is_correct;
-        SPEX_CHECK(spex_update_debug(&is_correct, F, k, Lk_dense_col,
-            Uk_dense_row, false, vk, A, option));
-        if (is_correct)
+        if (A != NULL)
         {
-            printf("correct so far****************************\n");
-        }
-        else
-        {
-            printf("fail-----------------------------------\n");
-            ASSERT(is_correct);
+            bool is_correct;
+            SPEX_CHECK(spex_update_debug(&is_correct, F, k, Lk_dense_col,
+                Uk_dense_row, false, vk, A, option));
+            if (is_correct)
+            {
+                printf("correct so far****************************\n");
+            }
+            else
+            {
+                printf("fail-----------------------------------\n");
+                ASSERT(is_correct);
+            }
         }
 
         if (jnext < n)
@@ -809,17 +812,20 @@ SPEX_info SPEX_Update_LU_ColRep
     SPEX_CHECK(SPEX_mpq_set_ui(SU(k), 1, 1));
 #ifdef SPEX_DEBUG
     // exactly verify each entry of the factorization
-    bool is_correct;
-    SPEX_CHECK(spex_update_debug(&is_correct, F, input_k, Lk_dense_col,
-        Uk_dense_row, true, vk, A, option));
-    if (is_correct)
+    if (A != NULL)
     {
-        printf("correct at output****************************\n");
-    }
-    else
-    {
-        printf("fail at output-----------------------------------\n");
-        ASSERT(is_correct);
+        bool is_correct;
+        SPEX_CHECK(spex_update_debug(&is_correct, F, input_k, Lk_dense_col,
+            Uk_dense_row, true, vk, A, option));
+        if (is_correct)
+        {
+            printf("correct at output****************************\n");
+        }
+        else
+        {
+            printf("fail at output-----------------------------------\n");
+            ASSERT(is_correct);
+        }
     }
 #endif
 

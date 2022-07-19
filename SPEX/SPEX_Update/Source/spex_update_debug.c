@@ -40,6 +40,7 @@ SPEX_info spex_update_debug
 )
 {
     SPEX_info info = SPEX_OK;
+    *Is_correct = true;
 #ifdef SPEX_DEBUG
     int64_t n = F->L->n, *P = F->P_perm, *Q = F->Q_perm;
     int r;
@@ -121,7 +122,7 @@ SPEX_info spex_update_debug
             mpq_set_num(tmpq, Ftmp->rhos->x.mpz[jcol]);
             mpq_set_den(tmpq, F->rhos->x.mpz[jcol]);
             mpq_canonicalize(tmpq);
-            gmp_printf("rhos=%Qd\n",tmpq);
+            gmp_printf("correct/updated rhos ratio=%Qd\n",tmpq);
             printf("rhos(%ld) incorrect, ratio = %f\n", jcol,
                 mpq_get_d(tmpq));
             *Is_correct = false;
@@ -234,8 +235,8 @@ SPEX_info spex_update_debug
                 SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->L->x.mpz[p], tmpz));
                 if (r != 0)
                 {
-                    mpq_set_num(tmpq, tmpz);
-                    mpq_set_den(tmpq, Ftmp->L->x.mpz[p]);
+                    mpq_set_num(tmpq, Ftmp->L->x.mpz[p]);
+                    mpq_set_den(tmpq, tmpz);
                     mpq_canonicalize(tmpq);
                     printf("L(%ld,%ld) incorrect, ratio = %f\n", irow,
                         jcol, mpq_get_d(tmpq));
@@ -245,7 +246,7 @@ SPEX_info spex_update_debug
         }
         if (fail)
         {
-            printf("incorrect %ld-th column of L:\n",jcol);
+            printf("expected %ld-th column of L:\n",jcol);
             for (p = Ftmp->L->p[jcol]; p < Ftmp->L->p[jcol+1]; p++)
             {
                 if (mpz_sgn(Ftmp->L->x.mpz[p]) == 0) continue;
@@ -253,6 +254,7 @@ SPEX_info spex_update_debug
                 printf("%ld ",irow);
             }
             printf("\n--------------------\n");
+            printf("updated %ld-th column of L:\n",jcol);
             if (jcol == k && !finish_update)
             {
                 for (p = 0; p < Lk_dense_col->nz; p++)
@@ -319,9 +321,12 @@ SPEX_info spex_update_debug
                 SPEX_CHECK(SPEX_mpz_sgn(&r, UT->x.mpz[p]));
                 if (r != 0)
                 {
-                    printf("U(%ld,%ld) should not be 0\n", i, j);
-                    // this entry could have been deleted
-                    if (finish_update || j != k)     fail = true;
+                    // entries in the column k of U have been deleted
+                    if (finish_update || j != k)
+                    {
+                        printf("U(%ld,%ld) should not be 0\n", i, j);
+                        fail = true;
+                    }
                 }
             }
             else
@@ -341,8 +346,8 @@ SPEX_info spex_update_debug
                 SPEX_CHECK(SPEX_mpz_cmp(&r, UT->x.mpz[p], tmpz));
                 if (r != 0)
                 {
-                    mpq_set_num(tmpq, tmpz);
-                    mpq_set_den(tmpq, UT->x.mpz[p]);
+                    mpq_set_num(tmpq, UT->x.mpz[p]);
+                    mpq_set_den(tmpq, tmpz);
                     mpq_canonicalize(tmpq);
                     printf("U(%ld,%ld) incorrect, ratio = %f\n", i, j,
                         mpq_get_d(tmpq));
@@ -352,7 +357,7 @@ SPEX_info spex_update_debug
         }
         if (fail)
         {
-            printf("incorrect %ld-th row of U:\n",i);
+            printf("expected %ld-th row of U:\n",i);
             for (p = UT->p[i]; p < UT->p[i+1]; p++)
             {
                 if (mpz_sgn(UT->x.mpz[p]) == 0) continue;
@@ -360,12 +365,13 @@ SPEX_info spex_update_debug
                 printf("%ld ",j);
             }
             printf("\n--------------------\n");
+            printf("updated %ld-th row of U:\n",i);
             if (i == k && !finish_update)
             {
                 for (p = 0; p < Uk_dense_row->nz; p++)
                 {
-                    int64_t j = F->U->v[i]->i[p];
-                    if (mpz_sgn(F->U->v[i]->x[j]) == 0) continue;
+                    int64_t j = Uk_dense_row->i[p];
+                    if (mpz_sgn(Uk_dense_row->x[j]) == 0) continue;
                     printf("%ld ",F->Qinv_perm[j]);
                 }
             }
@@ -385,7 +391,6 @@ SPEX_info spex_update_debug
         }
     }
 
-    *Is_correct = true;
     SPEX_FREE_ALL;
 #endif
     return info;
