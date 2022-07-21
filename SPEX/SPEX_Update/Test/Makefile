@@ -37,6 +37,9 @@ lib:
 ptest: lib ptest.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o ptest ptest.c test.c $(LDLIBS)
 
+test_optimal: lib test_optimal.c test.c test.h Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o test_optimal test_optimal.c test.c $(LDLIBS)
+
 openfile: lib openfile.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o openfile openfile.c test.c $(LDLIBS)
 
