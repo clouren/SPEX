@@ -253,18 +253,23 @@ SPEX_info spex_update_dppu2
             // L->v[k] has been updated with the inserted column vk in this
             // case, and there is at most one entry in L->v[k] other than the
             // pivot L(P[k], k) (since this function is called), which is
-            // L(P[ks], k). The pivot entry L(P[k], k) is kept as the first
+            // L(P[n-1], k). The pivot entry L(P[k], k) is kept as the first
             // entry in the nnz list, while the second entry (if exists) in the
-            // list would be L(P[ks],k).
-            // Therefore, if there is only 1 entry in L->v[k], then L(P[ks],k)=0
+            // list would be L(P[n-1],k).
+            // Therefore, if there is only 1 entry in L->v[k], then
+            // L(P[n-1],k) == 0
             if (L->v[k]->nz == 1) { continue; }
 
-            // only need to perform IPGE for U(ks, Q(ks)) (i.e., U(k,Q(k))
+            // only need to perform IPGE for U(n-1, Q(n-1)) (i.e., U(k,Q(n-1))
             // before permutation) since there is only one off-diagonal nnz in
-            // row k of U (i.e., row ks before permutation), which is U(k,Q(ks))
+            // row k of U (i.e., row n-1 before permutation), which is
+            // U(k,Q(n-1)). Since U(k,Q(k)) has not yet been inserted to row k
+            // of U, U(k,Q(n-1)) can be found as U->v[k]->x[0], and it has no
+            // pending scale, i.e., S(2,k) = 1.
             //
-            // U(ks,Q(ks)) = (U(ks, Q(ks))*L(P[k], k)-
-            //                L(P[ks], k)*U(k, Q(ks)))/sd[k-1]
+            // U(n-1,Q(n-1)) = (U(n-1, Q(n-1))*L(P[k], k)-
+            //                  L(P[n-1], k)*U(k, Q(n-1)))/sd[k-1]
+            // NOTE: S(1,k) = 1, so the above result is unscaled
             SPEX_CHECK(SPEX_mpz_mul(Uk_dense_row->x[Qks],
                                     Uk_dense_row->x[Qks], L->v[k]->x[0]));
             SPEX_CHECK(SPEX_mpz_submul(Uk_dense_row->x[Qks],
@@ -337,6 +342,7 @@ SPEX_info spex_update_dppu2
         // other entries in row tmp_ks are up-to-date (i.e., maintained as
         // >=-1)
         h[Qks] = SPEX_UNFLIP(h[Qks]);
+        last_nz_b4_ks = h[Qks];
     }
     else
     {
@@ -375,7 +381,7 @@ SPEX_info spex_update_dppu2
                 // U(ks,cks) = (U(ks,cks)*sd(last_nz_b4_ks))/sd(h[cks]);
                 SPEX_CHECK(SPEX_mpz_mul(Uk_dense_row->x[cks],
                                       Uk_dense_row->x[cks], sd[last_nz_b4_ks]));
-                if (h[cks] > 0)
+                if (h[cks] > -1)
                 {
                     SPEX_CHECK(SPEX_mpz_divexact(Uk_dense_row->x[cks],
                                      Uk_dense_row->x[cks], sd[h[cks]]));
@@ -384,11 +390,6 @@ SPEX_info spex_update_dppu2
             pks++;
         }
     }
-
-    // no need to update L(P(ks), ks), which will be updated in the last loop
-    // L(P[ks],ks) = U(ks,Q[ks]);
-    //SPEX_CHECK(SPEX_mpz_set(Lk_dense_col->x[P[tmp_ks]],
-    //                        Uk_dense_row->x[Q[tmp_ks]]));
 
     if (last_nz_b4_ks != tmp_ks-1)
     {
@@ -410,6 +411,7 @@ SPEX_info spex_update_dppu2
         SPEX_CHECK(SPEX_mpz_set(sd[tmp_ks], Uk_dense_row->x[Qks]));
     }
 
+
     if (ks == n)
     {
         // move data from Uk_dense_row, there is only one entry that needs
@@ -421,8 +423,19 @@ SPEX_info spex_update_dppu2
         U->v[n-1]->nz = 1;
         L->v[n-1]->i[0] = Pks;
         // S(1,n-1) = S(2, n-1)
-        SPEX_CHECK(SPEX_mpq_set(SL(tmp_ks), SU(n-1))); 
+        SPEX_CHECK(SPEX_mpq_set(SL(tmp_ks), SU(n-1)));
     }
+#ifdef SPEX_DEBUG
+    // no need to update L(P(ks), ks), which will be updated in the last loop
+    // L(P[ks],ks) = U(ks,Q[ks]);
+    // only do so in the debug mode for simpler verification
+    else
+    {
+        SPEX_CHECK(SPEX_mpz_set(Lk_dense_col->x[Pks],
+                                Uk_dense_row->x[Qks]));
+        SPEX_CHECK(SPEX_mpq_set(SL(tmp_ks), SU(tmp_ks)));
+    }
+#endif
 
     SPEX_FREE_ALL;
     return SPEX_OK;

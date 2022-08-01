@@ -168,7 +168,9 @@ OBJ_UPDATE = \
     SPEX_Update_solve.o \
     SPEX_Update_tsolve.o \
     spex_update_solve_internal.o \
-    spex_update_triangular_solve.o
+    spex_update_triangular_solve.o \
+    spex_update_debug.o \
+    spex_update_verify.o
 
 
 $(OBJ_UPDATE): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update//Source/spex_update_internal.h Makefile

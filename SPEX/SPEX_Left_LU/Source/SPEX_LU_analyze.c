@@ -100,8 +100,15 @@ SPEX_info SPEX_LU_analyze
         amd_l_defaults (Control) ;              // Set AMD defaults
         double Info [AMD_INFO];
         // Perform AMD
-        amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-            (SuiteSparse_long *) S->Q_perm, Control, Info) ;
+        SuiteSparse_long amd_done = 
+            amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
+                (SuiteSparse_long *) S->Q_perm, Control, Info) ;
+        //FIXME: allow AMD_OK_BUT_JUMBLED?
+        if (amd_done != AMD_OK && amd_done != AMD_OK_BUT_JUMBLED)
+        {
+            SPEX_symbolic_analysis_free (&S, option) ;
+            return SPEX_INCORRECT_INPUT;
+        }
         S->lnz = S->unz = Info[AMD_LNZ];        // estimate for unz and lnz
         if (pr > 0)   // Output AMD info if desired
         {
@@ -138,9 +145,16 @@ SPEX_info SPEX_LU_analyze
             A2[i] = A->i[i];
         }
         int64_t stats [COLAMD_STATS];
-        colamd_l (n, n, Alen, (SuiteSparse_long *) A2,
-            (SuiteSparse_long *) S->Q_perm, (double *) NULL,
-            (SuiteSparse_long *) stats) ;
+        SuiteSparse_long colamd_done =
+            colamd_l (n, n, Alen, (SuiteSparse_long *) A2,
+                (SuiteSparse_long *) S->Q_perm, (double *) NULL,
+                (SuiteSparse_long *) stats) ;
+        SPEX_FREE(A2);  // free workspace
+        if (!colamd_done) // check if COLAMD is successful
+        {
+            SPEX_symbolic_analysis_free (&S, option) ;
+            return SPEX_INCORRECT_INPUT;
+        }
         // estimate for lnz and unz
         S->lnz = S->unz = 10*anz;
 
@@ -151,7 +165,6 @@ SPEX_info SPEX_LU_analyze
             colamd_l_report ((SuiteSparse_long *) stats) ;
             SPEX_PRINTF ("\nEstimated L and U nonzeros: %" PRId64 "\n", S->lnz);
         }
-        SPEX_FREE(A2);
     }
 
     //--------------------------------------------------------------------------

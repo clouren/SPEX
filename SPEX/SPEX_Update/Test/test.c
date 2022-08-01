@@ -1625,18 +1625,14 @@ SPEX_info MY_update_verify
     // Print result
     //--------------------------------------------------------------------------
 
-    if (option->print_level >= 1)
+    if (!(*Is_correct))
     {
-        if (!(*Is_correct))
-        {
-            // This can never happen.
-            printf ("ERROR! Factorization is wrong. This is a bug; please "
-                      "contact the authors of SPEX.\n") ;
-        }
-        else
-        {
-            printf ("Factorization is verified to be correct and exact.\n") ;
-        }
+        // This can never happen.
+        printf ("ERROR! Factorization is wrong.\n") ;
+    }
+    else
+    {
+        printf ("Factorization is verified to be correct and exact.\n") ;
     }
 
     MY_FREE_ALL;

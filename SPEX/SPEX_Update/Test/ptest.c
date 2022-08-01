@@ -10,6 +10,22 @@
 
 /*
  * performance test
+ * ./ptest
+ *           run ptest with lp problem lp_afiro, files located in
+ *           TestMats/LPnetlib/lp_afiro/lp_afiro_*.mtx, no init basis
+ *
+ * ./ptest lp_25fv47
+ *           run ptest with lp problem lp_25fv47, files located in
+ *           TestMats/LPnetlib/lp_25fv47/lp_25fv47_*.mtx, no init basis
+ *
+ * ./ptest lp_25fv47 0
+ *           run ptest with lp problem lp_25fv47, files located in
+ *           TestMats/LPnetlib/lp_25fv47/lp_25fv47_*.mtx, no init basis
+ *
+ * ./ptest lp_25fv47 1 // does not work correctly
+ *           run ptest with lp problem lp_25fv47, files located in
+ *           TestMats/LPnetlib/lp_25fv47/lp_25fv47_*.mtx with init basis in
+ *           the same directory
  */
 
 // uncomment the following if basis info in each simplex iteration is wished
@@ -21,13 +37,14 @@
     glp_delete_prob(LP);                         \
     glp_free_env();                              \
     if (out_file != NULL) fclose(out_file);      \
+    if (basis_file != NULL) fclose(basis_file);  \
     fclose(result_file);                         \
     SPEX_matrix_free(&Prob_A, option);           \
     SPEX_matrix_free(&Prob_c, option);           \
     SPEX_matrix_free(&tempA, option);            \
-    SPEX_matrix_free(&A1, option);               \
+    SPEX_matrix_free(&A_CSC, option);            \
     SPEX_matrix_free (&x1, option);              \
-    SPEX_matrix_free(&A2, option);               \
+    SPEX_matrix_free(&A_DCSC, option);           \
     SPEX_matrix_free(&b, option);                \
     SPEX_matrix_free(&b_dbl, option);            \
     SPEX_matrix_free(&c, option);                \
@@ -35,11 +52,10 @@
     SPEX_matrix_free(&basic_sol, option);        \
     SPEX_matrix_free(&y, option);                \
     SPEX_matrix_free(&y_sol, option);            \
-    SPEX_matrix_free(&A3, option);               \
     SPEX_matrix_free(&vk, option);               \
     SPEX_factorization_free(&F1, option);        \
     SPEX_factorization_free(&F2, option);        \
-    SPEX_symbolic_analysis_free(&analysis, option);    \
+    SPEX_symbolic_analysis_free(&analysis, option);\
     SPEX_FREE(option);                           \
     mpq_clear(obj); mpz_clear(tmpz);             \
     mpq_clear(minq); mpq_clear(tmpq1);           \
@@ -53,8 +69,6 @@
 
 #include "test.h"
 #include <assert.h>
-int64_t init_basis[27]={27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 62, 61, 66, 46, 50, 44, 45, 48, 49, 59, 60, 64, 65, 76, 75};
-
 
 int main( int argc, char* argv[])
 {
@@ -62,9 +76,14 @@ int main( int argc, char* argv[])
     //char *prob_name = "lp_25fv47";//5.5018458883E+03
     char *prob_name = "lp_afiro"; // optimal: -4.6475314E+02
     //char *prob_name = "aa5";
+    int init_basis = 0;
     if (argc >= 2)
     {
         prob_name = argv[1];
+    }
+    if (argc >= 3)
+    {
+        init_basis = atoi(argv[2]);
     }
     SPEX_info info;
     //------------------------------------------------------------------
@@ -83,11 +102,10 @@ int main( int argc, char* argv[])
     double z0 = 0;
     SPEX_options* option = NULL;
     SPEX_matrix *Prob_A = NULL, *Prob_c = NULL, *tempA = NULL, * b_dbl = NULL;
-    SPEX_matrix *A1 = NULL, *x1 = NULL, *A2 = NULL, *A3 = NULL;
+    SPEX_matrix *A_CSC = NULL, *x1 = NULL, *A_DCSC = NULL;
     SPEX_matrix *b = NULL, *c = NULL,  *basic_sol = NULL, *y = NULL,
                 *c_new = NULL, *y_sol = NULL;
     SPEX_matrix *vk = NULL;
-    SPEX_vector *tmpv;
     SPEX_factorization *F1 = NULL, *F2 = NULL;
     mpz_t tmpz;
     mpq_t obj, minq, maxq, tmpq1, tmpq2;
@@ -99,6 +117,7 @@ int main( int argc, char* argv[])
             start_luu3 = 0, end_luu3 = 0;
     FILE *out_file = NULL;
     FILE *result_file = NULL;
+    FILE *basis_file = NULL;
     char file_name[1000];
     glp_prob *LP;
     glp_smcp parm;
@@ -148,10 +167,10 @@ int main( int argc, char* argv[])
     //--------------------------------------------------------------------------
     // generate initial basis matrix
     //--------------------------------------------------------------------------
-    glp_adv_basis(LP, 0);
-    //glp_std_basis(LP);
-    //glp_cpx_basis(LP);
-    glp_factorize(LP); // in order to use glp_get_bhead
+    // allocate A_DCSC with n sparse vectors with initially 0 nnz
+    OK(SPEX_matrix_allocate(&A_DCSC, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, n, 0,
+        false, true, option));
+    OK(SPEX_mpq_set(A_DCSC->scale, Prob_A->scale))
     basis = (int64_t*) SPEX_malloc(n * sizeof(int64_t));
     used_as_basis = (int64_t*) SPEX_malloc(nvars * sizeof(int64_t));
     if (!basis || !used_as_basis)
@@ -159,122 +178,30 @@ int main( int argc, char* argv[])
         FREE_WORKSPACE;
         return 0;
     }
-    for (j = 0; j < nvars; j++)
-    {
-        used_as_basis[j] = -1;
-    }
 
-    printf("getting initial basic variables....\n");
-    parm.msg_lev = GLP_MSG_OFF;
-    printf("OPT(%d) FEAS(%d) INFEAS(%d) NOFEAS(%d) UNBND(%d) UNDEF(%d)\n",
-        GLP_OPT, GLP_FEAS, GLP_INFEAS, GLP_NOFEAS, GLP_UNBND, GLP_UNDEF);
-    int64_t count=0;
-    double last_obj = glp_get_obj_val(LP);
-    while (glp_get_status(LP) != GLP_FEAS)
+    // if initial basis is available, read in via file
+    if (init_basis == 1)
     {
-        if (glp_get_obj_val(LP) >= last_obj)
+        sprintf(file_name, "TestMats/LPnetlib/%s/%s_basis.txt",prob_name,
+            prob_name);
+        printf("reading basis from file %s\n",file_name);
+        basis_file = fopen(file_name,"r");
+        if (basis_file == NULL)
         {
-            parm.it_lim++;
+            printf("Could not open file: %s!\n", file_name);
+            FREE_WORKSPACE;
+            return 0;
         }
-        last_obj = glp_get_obj_val(LP);
-        glp_simplex(LP, &parm);
-        printf("%ld: %d, obj: %lf\n",count++,
-            glp_get_status(LP), glp_get_obj_val(LP)+z0);
-    }
-    parm.it_lim = 1;
-
-    col_val =  (double*) SPEX_malloc((n+1)*sizeof(double));
-    col_ind =  (int*)    SPEX_malloc((n+1)*sizeof(int));
-    if (!col_val  || !col_ind)
-    {
-        FREE_WORKSPACE;
-        return 0;
-    }
-
-    // allocate A2 with n sparse vectors with initially 0 nnz
-    OK(SPEX_matrix_allocate(&A2, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, n, 0,
-        false, true, option));
-    OK(SPEX_mpq_set(A2->scale, Prob_A->scale));
-    int num_of_new_basis = -1;
-    last_obj = glp_get_obj_val(LP)+z0;
-
-    while (glp_get_status(LP) != GLP_OPT)
-    {
-        // check if there is any non-basic variable that has nonzero value
-        // printf("BS(%d) NLOWB(%d) NUPB(%d) NFREE(%d) NFIX(%d)\n",
-        //    GLP_BS, GLP_NL, GLP_NU, GLP_NF, GLP_NS);
-        int illegal_count = 0;
-        for (j = 0; j < nvars; j++)
-        {
-            double lb = glp_get_col_lb(LP, j+1);
-            double ub = glp_get_col_ub(LP, j+1);
-            assert (lb == 0);
-            int col_stat = glp_get_col_stat(LP, j+1);
-            double xj   = glp_get_col_prim(LP, j+1);
-            if (glp_get_col_bind(LP, j+1) == 0 && xj != 0)
-            {
-                printf("%d: x[%ld]=%lf is nonbasic, bnd=[%lf %lf] state=%d\n",
-                    illegal_count++, j,xj,lb,ub, col_stat);
-                assert(col_stat == GLP_NU);
-
-                // update LP in glpk
-                int colj_nz = glp_get_mat_col(LP, j+1, col_ind, col_val);
-                for (k = 1; k <= colj_nz; k++)
-                {
-                    i = col_ind[k]-1;
-                    b_dbl->x.fp64[i] -= (double) (col_val[k]*ub);
-                    glp_set_row_bnds(LP, i+1, GLP_FX, b_dbl->x.fp64[i], 0.0);
-                    col_val[k] *= -1;
-                }
-                glp_set_mat_col(LP, j+1, colj_nz, col_ind, col_val);
-                z0 += glp_get_obj_coef(LP,j+1)*ub;
-                glp_set_obj_coef(LP,j+1, -1*glp_get_obj_coef(LP,j+1));
-                glp_set_col_stat(LP, j+1, GLP_NL);
-
-                // update the SPEX matrices
-                for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
-                {
-                    OK(SPEX_mpz_neg(Prob_A->x.mpz[p], Prob_A->x.mpz[p]));
-                }
-                OK(SPEX_mpz_neg(Prob_c->x.mpz[j], Prob_c->x.mpz[j]));
-            }
-        }
-        if (illegal_count > 0)
-        {
-            glp_simplex(LP, &parm);
-            printf("%ld: %d, obj: %lf\n",count++,
-                glp_get_status(LP), glp_get_obj_val(LP));
-            continue;
-        }
-
-        // create a mpz matrix of b
-        OK(SPEX_matrix_free(&b, option));
-        OK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b_dbl, option));
-
-        bool one_more_simplex = false;
-
-        // free memory allocated before allocating new memory
-        OK(SPEX_matrix_free(&A1, option));
-        OK(SPEX_factorization_free(&F1, option));
-        OK(SPEX_matrix_free (&x1, option));
-        SPEX_symbolic_analysis_free(&analysis, option);
-
         // get basis indices and build basis matrix
         for (i = 0; i < n; i++)
         {
-            j = glp_get_bhead(LP, i+1)-1;
-            if (num_of_new_basis == -1)
+            if (fscanf(basis_file, "%ld, ", &j) == EOF)
             {
-                basis[i] = j;
+                printf("Error while reading file: %s!\n", file_name);
+                FREE_WORKSPACE;
+                return 0;
             }
-            else
-            {
-                if (basis[i] != j)
-                {
-                    basis[i] = j;
-                    num_of_new_basis++;
-                }
-            }
+            basis[i] = j;
 
             if (j < n)
             {
@@ -282,122 +209,294 @@ int main( int argc, char* argv[])
                 int r;
                 OK(SPEX_mpz_cmp_ui(&r, tmpz, 1));
                 assert(r == 0);// denominator must be 1
-                if (A2->v[i]->nzmax < 1)
+                if (A_DCSC->v[i]->nzmax < 1)
                 {
-                    OK(SPEX_vector_realloc(A2->v[i], 1, option));
+                    OK(SPEX_vector_realloc(A_DCSC->v[i], 1, option));
                 }
-                mpq_get_num(A2->v[i]->x[0], Prob_A->scale);
-                A2->v[i]->i[0] = j;
-                A2->v[i]->nz = 1;
+                mpq_get_num(A_DCSC->v[i]->x[0], Prob_A->scale);
+                A_DCSC->v[i]->i[0] = j;
+                A_DCSC->v[i]->nz = 1;
             }
             else
             {
                 j = j-n;
-                if (glp_get_col_prim(LP, j+1) < -1e-6)
-                {
-                    printf("x[%ld]=%f\n",j,glp_get_col_prim(LP,j+1));
-                }
-                used_as_basis[j] = i;
                 nz = Prob_A->p[j+1]-Prob_A->p[j];
-                if (A2->v[i]->nzmax < nz)
+                if (A_DCSC->v[i]->nzmax < nz)
                 {
-                    OK(SPEX_vector_realloc(A2->v[i], nz, option));
+                    OK(SPEX_vector_realloc(A_DCSC->v[i], nz, option));
                 }
                 nz = 0;
                 for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
                 {
-                    A2->v[i]->i[nz] = Prob_A->i[p];
-                    OK(SPEX_mpz_set(A2->v[i]->x[nz], Prob_A->x.mpz[p]));
+                    A_DCSC->v[i]->i[nz] = Prob_A->i[p];
+                    OK(SPEX_mpz_set(A_DCSC->v[i]->x[nz], Prob_A->x.mpz[p]));
                     nz++;
                 }
-                A2->v[i]->nz = nz;
+                A_DCSC->v[i]->nz = nz;
             }
         }
 
-        // get a CSC x MPZ A1 from dynamic_CSC x MPZ A2
-        OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
+        // get a CSC x MPZ A_CSC from dynamic_CSC x MPZ A_DCSC
+        OK(SPEX_matrix_copy(&A_CSC, SPEX_CSC, SPEX_MPZ, A_DCSC, option));
 
         //------------------------------------------------------------------
-        // perform LU factorization for the initial matrix A1
+        // perform LU factorization for the initial matrix A_CSC
         //------------------------------------------------------------------
         //start_llu = clock();
 
         // perform symbolic analysis by getting the column preordering of A
-        OK(SPEX_LU_analyze(&analysis, A1, option));
+        OK(SPEX_LU_analyze(&analysis, A_CSC, option));
 
         // perform the SPEX Left LU factorization to obtain matrices L
         // and U and a row permutation P such that PAQ = LDU.
-        OK(SPEX_Left_LU_factorize(&F1, A1, analysis, option));
+        OK(SPEX_Left_LU_factorize(&F1, A_CSC, analysis, option));
 
-        //end_llu = clock();
+        // create a mpz matrix of b
+        OK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b_dbl, option));
+    }
+    else
+    {
+        glp_adv_basis(LP, 0);
+        //glp_std_basis(LP);
+        //glp_cpx_basis(LP);
+        glp_factorize(LP); // in order to use glp_get_bhead
 
-        //------------------------------------------------------------------
-        // Solve LDU x = b
-        //------------------------------------------------------------------
-
-        OK(SPEX_Left_LU_solve(&x1, F1, b, option));
-
-        // check if any solution is infeasible
-        double max_diff = 0, diff;
-        for (i = 0; i < n; i++)
+        printf("getting initial basic variables....\n");
+        parm.msg_lev = GLP_MSG_OFF;
+        printf("OPT(%d) FEAS(%d) INFEAS(%d) NOFEAS(%d) UNBND(%d) UNDEF(%d)\n",
+            GLP_OPT, GLP_FEAS, GLP_INFEAS, GLP_NOFEAS, GLP_UNBND, GLP_UNDEF);
+        int64_t count=0;
+        double last_obj = glp_get_obj_val(LP);
+        while (glp_get_status(LP) != GLP_FEAS)
         {
-            j = basis[i];
-            if (j >= n)
-            {
-                j= j-n;
-                double xi    = glp_get_col_prim(LP, j+1);
-                diff = fabs(mpq_get_d(x1->x.mpq[i])-xi);
-                if (diff > 1e-5)
-                {
-                    if (diff > max_diff) max_diff = diff;
-                    printf("big difference in solution! x[%ld]=%lf!=%lf\n",
-                        j, mpq_get_d(x1->x.mpq[i]), xi);
-                }
-                /*else
-                {
-                    printf("x[%ld]=%lf==%lf\n",
-                        j, mpq_get_d(x1->x.mpq[i]), xi);
-                }*/
-
-                if (mpq_get_d(x1->x.mpq[i]) < 0)
-                {
-                    gmp_printf("infeasible solution: x[%ld]=%Qd\n",j,
-                        x1->x.mpq[i]);
-                    one_more_simplex = true;
-                    break;
-                }
-            }
-        }
-        if (max_diff > 0) printf("max difference in solution is %f\n",max_diff);
-
-        // perform another iteration of simplex if needed
-        if (one_more_simplex)
-        {
-            if (num_of_new_basis == 0 ||
-                (num_of_new_basis != -1 && glp_get_obj_val(LP)+z0 >= last_obj))
+            if (glp_get_obj_val(LP) >= last_obj)
             {
                 parm.it_lim++;
             }
-            last_obj = glp_get_obj_val(LP)+z0;
+            last_obj = glp_get_obj_val(LP);
             glp_simplex(LP, &parm);
-            printf("%ld: %d, obj: %lf, new basis count: %d\n",count++,
-                glp_get_status(LP), glp_get_obj_val(LP)+z0, num_of_new_basis);
-            num_of_new_basis = 0;
+            printf("%ld: %d, obj: %lf\n",count++,
+                glp_get_status(LP), glp_get_obj_val(LP)+z0);
         }
-        else
-        {
-            break;
-        }
-    }
-    SPEX_FREE(col_val);
-    SPEX_FREE(col_ind);
-    printf("preprocess finished\n");
+        parm.it_lim = 1;
 
-    if (glp_get_status(LP) == GLP_OPT)
-    {
-        printf("LP is optimized!\n");
-        FREE_WORKSPACE;
-        return 0;
+        col_val =  (double*) SPEX_malloc((n+1)*sizeof(double));
+        col_ind =  (int*)    SPEX_malloc((n+1)*sizeof(int));
+        if (!col_val  || !col_ind)
+        {
+            FREE_WORKSPACE;
+            return 0;
+        }
+
+        int num_of_new_basis = -1;
+        last_obj = glp_get_obj_val(LP)+z0;
+
+        while (glp_get_status(LP) != GLP_OPT)
+        {
+            // check if there is any non-basic variable that has nonzero value
+            // printf("BS(%d) NLOWB(%d) NUPB(%d) NFREE(%d) NFIX(%d)\n",
+            //    GLP_BS, GLP_NL, GLP_NU, GLP_NF, GLP_NS);
+            int illegal_count = 0;
+            for (j = 0; j < nvars; j++)
+            {
+                double lb = glp_get_col_lb(LP, j+1);
+                double ub = glp_get_col_ub(LP, j+1);
+                assert (lb == 0);
+                int col_stat = glp_get_col_stat(LP, j+1);
+                double xj   = glp_get_col_prim(LP, j+1);
+                if (glp_get_col_bind(LP, j+1) == 0 && xj != 0)
+                {
+                    printf("%d: x[%ld]=%lf is nonbasic, bnd=[%lf %lf]"
+                        " state=%d\n",
+                        illegal_count++, j,xj,lb,ub, col_stat);
+                    assert(col_stat == GLP_NU);
+
+                    // update LP in glpk
+                    int colj_nz = glp_get_mat_col(LP, j+1, col_ind, col_val);
+                    for (k = 1; k <= colj_nz; k++)
+                    {
+                        i = col_ind[k]-1;
+                        b_dbl->x.fp64[i] -= (double) (col_val[k]*ub);
+                        glp_set_row_bnds(LP, i+1, GLP_FX, b_dbl->x.fp64[i],0.0);
+                        col_val[k] *= -1;
+                    }
+                    glp_set_mat_col(LP, j+1, colj_nz, col_ind, col_val);
+                    z0 += glp_get_obj_coef(LP,j+1)*ub;
+                    glp_set_obj_coef(LP,j+1, -1*glp_get_obj_coef(LP,j+1));
+                    glp_set_col_stat(LP, j+1, GLP_NL);
+
+                    // update the SPEX matrices
+                    for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
+                    {
+                        OK(SPEX_mpz_neg(Prob_A->x.mpz[p], Prob_A->x.mpz[p]));
+                    }
+                    OK(SPEX_mpz_neg(Prob_c->x.mpz[j], Prob_c->x.mpz[j]));
+                }
+            }
+            if (illegal_count > 0)
+            {
+                glp_simplex(LP, &parm);
+                printf("%ld: %d, obj: %lf\n",count++,
+                    glp_get_status(LP), glp_get_obj_val(LP));
+                continue;
+            }
+
+            // create a mpz matrix of b
+            OK(SPEX_matrix_free(&b, option));
+            OK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b_dbl, option));
+
+            bool one_more_simplex = false;
+
+            // free memory allocated before allocating new memory
+            OK(SPEX_matrix_free(&A_CSC, option));
+            OK(SPEX_factorization_free(&F1, option));
+            OK(SPEX_matrix_free (&x1, option));
+            SPEX_symbolic_analysis_free(&analysis, option);
+
+            // get basis indices and build basis matrix
+            for (i = 0; i < n; i++)
+            {
+                j = glp_get_bhead(LP, i+1)-1;
+                if (num_of_new_basis == -1)
+                {
+                    basis[i] = j;
+                }
+                else
+                {
+                    if (basis[i] != j)
+                    {
+                        basis[i] = j;
+                        num_of_new_basis++;
+                    }
+                }
+
+                if (j < n)
+                {
+                    mpq_get_den(tmpz, Prob_A->scale);
+                    int r;
+                    OK(SPEX_mpz_cmp_ui(&r, tmpz, 1));
+                    assert(r == 0);// denominator must be 1
+                    if (A_DCSC->v[i]->nzmax < 1)
+                    {
+                        OK(SPEX_vector_realloc(A_DCSC->v[i], 1, option));
+                    }
+                    mpq_get_num(A_DCSC->v[i]->x[0], Prob_A->scale);
+                    A_DCSC->v[i]->i[0] = j;
+                    A_DCSC->v[i]->nz = 1;
+                }
+                else
+                {
+                    j = j-n;
+                    if (glp_get_col_prim(LP, j+1) < -1e-6)
+                    {
+                        printf("x[%ld]=%f\n",j,glp_get_col_prim(LP,j+1));
+                    }
+                    nz = Prob_A->p[j+1]-Prob_A->p[j];
+                    if (A_DCSC->v[i]->nzmax < nz)
+                    {
+                        OK(SPEX_vector_realloc(A_DCSC->v[i], nz, option));
+                    }
+                    nz = 0;
+                    for (p = Prob_A->p[j]; p < Prob_A->p[j+1]; p++)
+                    {
+                        A_DCSC->v[i]->i[nz] = Prob_A->i[p];
+                        OK(SPEX_mpz_set(A_DCSC->v[i]->x[nz], Prob_A->x.mpz[p]));
+                        nz++;
+                    }
+                    A_DCSC->v[i]->nz = nz;
+                }
+            }
+
+            // get a CSC x MPZ A_CSC from dynamic_CSC x MPZ A_DCSC
+            OK(SPEX_matrix_copy(&A_CSC, SPEX_CSC, SPEX_MPZ, A_DCSC, option));
+
+            //------------------------------------------------------------------
+            // perform LU factorization for the initial matrix A_CSC
+            //------------------------------------------------------------------
+            //start_llu = clock();
+
+            // perform symbolic analysis by getting the column preordering of A
+            OK(SPEX_LU_analyze(&analysis, A_CSC, option));
+
+            // perform the SPEX Left LU factorization to obtain matrices L
+            // and U and a row permutation P such that PAQ = LDU.
+            OK(SPEX_Left_LU_factorize(&F1, A_CSC, analysis, option));
+
+            //end_llu = clock();
+
+            //------------------------------------------------------------------
+            // Solve LDU x = b
+            //------------------------------------------------------------------
+
+            OK(SPEX_Left_LU_solve(&x1, F1, b, option));
+
+            // check if any solution is infeasible
+            double max_diff = 0, diff;
+            for (i = 0; i < n; i++)
+            {
+                j = basis[i];
+                if (j >= n)
+                {
+                    j= j-n;
+                    double xi    = glp_get_col_prim(LP, j+1);
+                    diff = fabs(mpq_get_d(x1->x.mpq[i])-xi);
+                    if (diff > 1e-5)
+                    {
+                        if (diff > max_diff) max_diff = diff;
+                        printf("big difference in solution! x[%ld]=%lf!=%lf\n",
+                            j, mpq_get_d(x1->x.mpq[i]), xi);
+                    }
+                    /*else
+                    {
+                        printf("x[%ld]=%lf==%lf\n",
+                            j, mpq_get_d(x1->x.mpq[i]), xi);
+                    }*/
+
+                    if (mpq_get_d(x1->x.mpq[i]) < 0)
+                    {
+                        gmp_printf("infeasible solution: x[%ld]=%Qd\n",j,
+                            x1->x.mpq[i]);
+                        one_more_simplex = true;
+                        break;
+                    }
+                }
+            }
+            if (max_diff > 0)
+            {
+                printf("max difference in solution is %f\n", max_diff);
+            }
+
+            // perform another iteration of simplex if needed
+            if (one_more_simplex)
+            {
+                if (num_of_new_basis == 0 ||
+                    (num_of_new_basis != -1 &&
+                     glp_get_obj_val(LP)+z0 >= last_obj))
+                {
+                    parm.it_lim++;
+                }
+                last_obj = glp_get_obj_val(LP)+z0;
+                glp_simplex(LP, &parm);
+                printf("%ld: %d, obj: %lf, new basis count: %d\n",count++,
+                    glp_get_status(LP), glp_get_obj_val(LP)+z0,
+                    num_of_new_basis);
+                num_of_new_basis = 0;
+            }
+            else
+            {
+                break;
+            }
+        }
+        SPEX_FREE(col_val);
+        SPEX_FREE(col_ind);
+        printf("preprocess finished\n");
+
+        if (glp_get_status(LP) == GLP_OPT)
+        {
+            printf("LP is optimized!\n");
+            FREE_WORKSPACE;
+            return 0;
+        }
     }
 
 #if 0
@@ -457,6 +556,15 @@ int main( int argc, char* argv[])
     //--------------------------------------------------------------------------
     // generate initial inputs for LU update
     //--------------------------------------------------------------------------
+    for (j = 0; j < nvars; j++)
+    {
+        used_as_basis[j] = -1;
+    }
+    for (i = 0; i < n; i++)
+    {
+        j = basis[i];
+        if (j >= n)   used_as_basis[j-n] = i;
+    }
     // allocate space for vk
     OK(SPEX_matrix_allocate(&vk, SPEX_DYNAMIC_CSC, SPEX_MPZ, n, 1, 0, false,
         true, option));
@@ -485,6 +593,7 @@ int main( int argc, char* argv[])
 
         // reset objective value = 0
         OK(SPEX_mpq_set_ui(obj, 0, 1));
+        bool checked = false;
         for (i = 0; i < n; i++)
         {
             j = basis[i];
@@ -509,8 +618,15 @@ int main( int argc, char* argv[])
                 if (mpq_sgn(basic_sol->x.mpq[i]) < 0)
                 {
                     printf("x[%ld]=%lf<0\n",j,mpq_get_d(basic_sol->x.mpq[i]));
-                    gmp_printf("exact x[%ld]=%Qd\n",j,basic_sol->x.mpq[i]);
+                    //gmp_printf("exact x[%ld]=%Qd\n",j,basic_sol->x.mpq[i]);
                     //OK(SPEX_PANIC);
+                    if (!checked)
+                    {
+                        checked = true;
+                        bool Is_correct;
+                        OK(MY_update_verify(&Is_correct, F1, A_CSC, option));
+                        assert(Is_correct);
+                    }
                 }
 #else
                 SPEX_gmp_printf("%ld xz[%ld]= %Qd \n",i,j,basic_sol->x.mpq[i]);
@@ -677,7 +793,31 @@ int main( int argc, char* argv[])
         }
         end1 = clock();
 
+        // check basis
+        /*
+        for (i = 0; i < n; i++)
+        {
+            if(used_as_basis[i] == -1) continue;
+            printf("\n%ld:\n",i);
+            for (j = i+1; j < n; j++)
+            {
+                printf ("[%ld %ld]",used_as_basis[i], used_as_basis[j]);
+                if (used_as_basis[i] == used_as_basis[j])
+                {
+                    printf("%ld %ld->%ld, basis[%ld]=%ld\n",i,j,
+                         used_as_basis[i], used_as_basis[i],
+                         basis[used_as_basis[i]]);
+                    abort();
+                }
+            }
+        }*/
+
         // print results
+        printf("\nSolving 3 linear equations time: \t%lf", t_solve);
+        printf("\nSearch k and new_col time: \t\t%lf\n",
+           (double) (end1 - start1) / CLOCKS_PER_SEC);
+        fprintf(result_file, "%lf \t%lf ", t_solve,
+           (double) (end1 - start1) / CLOCKS_PER_SEC);
 #ifdef MY_PRINT_BASIS
         fprintf(out_file,"prev basis k(%ld): %ld; new basis k: %ld\n",
             k, basis[k]-n, new_col);
@@ -692,17 +832,16 @@ int main( int argc, char* argv[])
         printf("prev basis k(%ld): %ld; new basis k: %ld\n",
             k, basis[k]-n, new_col);
         used_as_basis[new_col] = k;
-        used_as_basis[basis[k]-n] = -1;
+        if (basis[k] >= n)
+        {
+            assert(used_as_basis[basis[k]-n] == k);
+            used_as_basis[basis[k]-n] = -1;
+        }
         basis[k] = new_col+n;
         printf("\n---------------------------------------------------------\n");
         printf("----------%ld: replacing k(%ld) with new_col(%ld)-----------\n",
             iter, k, new_col);
         printf("-----------------------------------------------------------\n");
-        printf("\nSolving 3 linear equations time: \t%lf", t_solve);
-        printf("\nSearch k and new_col time: \t\t%lf\n",
-           (double) (end1 - start1) / CLOCKS_PER_SEC);
-        fprintf(result_file, "%lf \t%lf ", t_solve,
-           (double) (end1 - start1) / CLOCKS_PER_SEC);
 
         //----------------------------------------------------------------------
         // perform continuous LU update
@@ -719,6 +858,9 @@ int main( int argc, char* argv[])
 
         if (iter > 0)
         {
+            // perform conversion first to exclude the time for this step
+            OK(SPEX_factorization_convert(F2, true, option));
+
             start_luu3 = clock();
 
             OK(SPEX_Update_LU_ColRep(F2, vk, k, option));
@@ -745,27 +887,23 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         // generate new matrix with vk inserted
         //----------------------------------------------------------------------
-        tmpv = A2->v[k]; A2->v[k] = vk->v[0]; vk->v[0] = tmpv;
-        OK(SPEX_matrix_free(&A1, option));
-        OK(SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A2, option));
-        if (iter == 0)
-        {
-            OK(SPEX_matrix_copy(&A3, SPEX_DYNAMIC_CSC, SPEX_MPZ, A2, option));
-        }
+        OK(SPEX_Update_matrix_colrep(A_DCSC, vk, k, option));
+        OK(SPEX_matrix_free(&A_CSC, option));
+        OK(SPEX_matrix_copy(&A_CSC, SPEX_CSC, SPEX_MPZ, A_DCSC, option));
 
         //----------------------------------------------------------------------
-        // perform direct LU factorization for matrix A1
+        // perform direct LU factorization for matrix A_CSC
         //----------------------------------------------------------------------
         SPEX_factorization_free(&F2, NULL);
         SPEX_symbolic_analysis_free(&analysis, option);
         start_llu = clock();
 
         // perform symbolic analysis by getting the column preordering of A
-        OK(SPEX_LU_analyze(&analysis, A1, option));
+        OK(SPEX_LU_analyze(&analysis, A_CSC, option));
 
         // Now we perform the SPEX Left LU factorization to obtain matrices L
         // and U and a row permutation P such that PAQ = LDU.
-        OK(SPEX_Left_LU_factorize(&F2, A1, analysis, option));
+        OK(SPEX_Left_LU_factorize(&F2, A_CSC, analysis, option));
 //        if (info == SPEX_OK) {printf("matrix is not singular!\n");}
 
         end_llu = clock();

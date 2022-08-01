@@ -20,13 +20,14 @@
 
 SPEX_info spex_update_verify
 (
+    bool *Is_correct,     // if factorization is correct
     SPEX_factorization *F,// LU factorization of A
-    const SPEX_matrix *A,     // Input matrix
-    int64_t *h,            // history vector
+    const SPEX_matrix *A,     // Input matrix Dynamic_CSC MPZ
     const SPEX_options *option// command options
 )
 {
-    SPEX_info info;
+    SPEX_info info = SPEX_OK;
+#ifdef SPEX_DEBUG
     int64_t tmp, i, n = F->L->n;
     int r;
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
@@ -37,7 +38,7 @@ SPEX_info spex_update_verify
     SPEX_CHECK(SPEX_mpq_init(temp));
     SPEX_CHECK(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
         true, option));
-    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
+    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, n, 1, n, false,
         true, option));
 
     // -------------------------------------------------------------------------
@@ -62,7 +63,7 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     for (i = 0; i < n; i++)
     {
-        SPEX_CHECK(SPEX_mpz_sgn(&r, x->x.mpz[i]));
+        SPEX_CHECK(SPEX_mpq_sgn(&r, x->x.mpq[i]));
         if (r == 0) { continue;}
 
         for (int64_t p = 0; p < A->v[i]->nz; p++)
@@ -92,6 +93,7 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     // check if b2 == b
     // -------------------------------------------------------------------------
+    *Is_correct = true;
     for (i = 0; i < n; i++)
     {
         // temp = b[i] (correct b)
@@ -101,7 +103,7 @@ SPEX_info spex_update_verify
         SPEX_CHECK(SPEX_mpq_equal(&r, temp, b2->x.mpq[i]));
         if (r == 0)
         {
-            info = SPEX_INCORRECT;
+            *Is_correct = false;
             break;
         }
     }
@@ -110,18 +112,17 @@ SPEX_info spex_update_verify
     // Print info
     //--------------------------------------------------------------------------
 
-    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
-    if (info == SPEX_OK)
+    if (*Is_correct)
     {
-        SPEX_PR1 ("Factorization is verified to be correct and exact.\n") ;
+        printf ("Factorization is verified to be correct and exact.\n") ;
     }
-    else if (info == SPEX_INCORRECT)
+    else
     {
-        // This can never happen.
-        SPEX_PR1 ("ERROR! Factorization is wrong. This is a bug; please "
+        printf ("ERROR! Factorization is wrong. This is a bug; please "
                   "contact the authors of SPEX.\n") ;
     }
 
     SPEX_FREE_ALL;
+#endif
     return info;
 }

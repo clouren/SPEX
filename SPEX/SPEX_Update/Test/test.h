@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include <glpk.h>
 #include "SPEX.h"
-#include "my_safe_gmp.h"
 
 #ifndef FREE_WORKSPACE
 #define FREE_WORKSPACE
