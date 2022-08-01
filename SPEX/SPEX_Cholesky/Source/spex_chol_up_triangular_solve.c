@@ -189,11 +189,9 @@ SPEX_info spex_chol_up_triangular_solve
                 if (sgn == 0)
                 {
                     // First, get the correct value of x[i] = 0 - lij * x[j]
-                    // TODO: Please compare this single fgunction call to doing via two calls: x[i] = lij * x[j], and then flipping the sign of x[i] (flip sign with flip sign function, not multiply by -1) ----all of this check for the case where x[i] is zero
-                    // ^ use a list of humongous numbers
-                    // TODO: Has this check been done? Insert the better one here.
-                    SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m],
+                    SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i], L->x.mpz[m],
                                                  x->x.mpz[j]));
+                    SPEX_CHECK(SPEX_mpz_neg(x->x.mpz[i],x->x.mpz[i]));
                     // Do a division by the pivot if necessary.
                     if (j >= 1)
                     {

@@ -123,14 +123,7 @@ int main (int argc, char **argv)
     // x2 is a copy of the solution. x2 is a dense matrix with mpfr entries
     DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
     
-    
-    printf("%d \n", option->algo);
-    /*for (int64_t i=0; i<n; i++)
-    {
-        //gmp_printf("%Qd, ", x->x.mpq[i]);
-        printf("%.16f \n", x2->x.fp64[i]);
-    }*/
-    
+    //Check solution
     option->print_level=1;
     DEMO_OK ( SPEX_check_solution(A,x,b,option));
     
@@ -140,6 +133,7 @@ int main (int argc, char **argv)
     FREE_WORKSPACE;
 
     printf ("\n%s: all tests passed\n\n", __FILE__) ;
+    
     return 0;
 }
 

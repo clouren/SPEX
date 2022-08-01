@@ -63,7 +63,7 @@ int main( int argc, char* argv[] )
     SPEX_options *option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     
-    char* mat_name = "../ExampleMats/719.mat.txt";// Set demo matrix and RHS name
+    char* mat_name = "../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
     char* rhs_name = "../ExampleMats/2.mat.soln.txt";
     int64_t rat = 1;
     
@@ -107,13 +107,11 @@ int main( int argc, char* argv[] )
     clock_t end_col = clock();
     
     
-
     //--------------------------------------------------------------------------
     // Factorize PAP
     //--------------------------------------------------------------------------
     //option->algo=SPEX_CHOL_LEFT;
     clock_t start_factor = clock();
-
 
     DEMO_OK( SPEX_Chol_factorize(&F, A, S, option));
   
@@ -122,7 +120,6 @@ int main( int argc, char* argv[] )
     
     option->print_level=3;
     //DEMO_OK(SPEX_matrix_check(F->L,option));
-     
 
     //--------------------------------------------------------------------------
     // Solve linear system
@@ -146,6 +143,10 @@ int main( int argc, char* argv[] )
     printf("\nSymbolic Analysis Check time: \t\t%lf", t_col);
     printf("\nIP Chol Factorization time: \t\t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);
+    
+    // Check solution
+    option->print_level=1;
+    DEMO_OK ( SPEX_check_solution(A,x,b,option));
     
 
     //--------------------------------------------------------------------------

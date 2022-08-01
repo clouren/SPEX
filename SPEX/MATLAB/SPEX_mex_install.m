@@ -64,10 +64,10 @@ end
 flags = 'CFLAGS=''-std=c99 -fPIC''';
 
 % External libraries: GMP, MPRF, AMD, and COLAMD
-libs = '-L../../lib -lgmp -lmpfr -lamd -lcolamd -lsuitesparseconfig' ;
+libs = '-L/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib -lamd -lcolamd -lsuitesparseconfig -L/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/lib -lgmp -lm -L/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/lib -lmpfr -lm' ;
 
 % Path to headers
-includes = '-ISource/ -I../SPEX_Backslash/Include/ -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Util/Source';
+includes = '-ISource/ -I../SPEX_Backslash/Include/ -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Util/Source -I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/include -I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/include';
 
 % verbose = ' -v '
 verbose = '' ;

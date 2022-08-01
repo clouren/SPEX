@@ -21,12 +21,6 @@
  * 
  * S:            Symbolic analysis struct for Cholesky factorization. 
  *               Contains row/column permutation of A
-
- // TODO: please address the issues in this file. Let me know if you need help. Once you've fixed them delete all fixmes
- FIXME: why pass in S?  Why not pass in both the permutation P and
- its inverse?  If the inverse passed in is a NULL pointer, then
- compute it, use it, then discard it.  
-
  * 
  */
 SPEX_info spex_chol_permute_A
@@ -64,19 +58,10 @@ SPEX_info spex_chol_permute_A
 
     // Allocate memory for PAP which is a permuted copy of A
     SPEX_matrix* PAP = NULL;
-    //SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
-    SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], true, false, NULL));
-    PAP->p=(int64_t*)SPEX_malloc((n+1)*sizeof(int64_t));
-    PAP->i=(int64_t*)SPEX_malloc((A->p[n])*sizeof(int64_t));
-    PAP->p_shallow = false ;
-    PAP->i_shallow = false ; //TODO FIXME still feels like patchwork, figure out why
-
-    // FIXME: PAP->x.mpz is a different kind of shallow
+    SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
     
     if(numeric)
     {
-       PAP->x.mpz=(mpz_t*)SPEX_malloc((A->p[n])*sizeof(mpz_t));
-
         // Set PAP scale
         SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
     
@@ -92,10 +77,7 @@ SPEX_info spex_chol_permute_A
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
                 // Set the nonzero value and location of the entries in column k of PAP
-                // NOTE: this is shallow.   Provide option for a deep copy of the values?
-                // FIXME: call an mpz_* function to do the pointer assignment?
-                (*(PAP->x.mpz[nz]))=(*(A->x.mpz[t])); 
-                //SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
+                SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
                 // Row i of this nonzero is equal to pinv[A->i[t]]
                 PAP->i[nz] = S->Pinv_perm[ A->i[t] ];
                 // Move to the next nonzero element of PAP
@@ -105,10 +87,9 @@ SPEX_info spex_chol_permute_A
     }
     else
     {
-
         PAP->x.mpz= NULL ;
         PAP->x_shallow = true ;
-
+        
         // Populate the entries in PAP
         for (k = 0; k < n; k++)
         {
@@ -130,7 +111,6 @@ SPEX_info spex_chol_permute_A
 
     // Finalize the last column of PAP
     PAP->p[n] = nz;
-
     // Set output, return success
     (*PAP_handle) = PAP;
     return SPEX_OK;
