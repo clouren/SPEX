@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_permute_A: Symmetric permutation of matrix A
+// SPEX_Cholesky/spex_chol_permute_A: Symmetric permutation of matrix A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_Up_Factor: Up-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_chol_up_factor: Up-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

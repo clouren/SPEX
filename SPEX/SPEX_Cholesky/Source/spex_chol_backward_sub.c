@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_ltsolve: Solve the system L' x = b for Cholesky
+// SPEX_Cholesky/spex_chol_backward_sub: Solve the system L' x = b for Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

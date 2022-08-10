@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_chol_factor: Integer preserving Cholesky factorization
+// SPEX_Cholesky/spex_chol_factor: Integer preserving Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

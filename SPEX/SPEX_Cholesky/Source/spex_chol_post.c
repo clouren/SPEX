@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_post: Postorder a forest
+// SPEX_Cholesky/spex_chol_post: Postorder a forest
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

@@ -1,5 +1,5 @@
 ///------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_forward_sub: Solve the system LDx = b
+// SPEX_Cholesky/spex_chol_forward_sub: Solve the system LDx = b
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

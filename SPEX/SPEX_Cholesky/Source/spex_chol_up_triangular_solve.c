@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Up_Chol_triangular_solve: Sparse symmetric REF Triangular solve
+// SPEX_Cholesky/spex_chol_up_triangular_solve: Sparse symmetric REF Triangular solve
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

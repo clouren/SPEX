@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_Left_Factor: Left-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_chol_left_factor: Left-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

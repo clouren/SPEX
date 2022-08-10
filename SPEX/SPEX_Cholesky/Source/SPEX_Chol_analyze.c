@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_analyze: Perform the symbolic analysis of A
+// SPEX_Cholesky/SPEX_Chol_analyze: Perform the symbolic analysis of A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

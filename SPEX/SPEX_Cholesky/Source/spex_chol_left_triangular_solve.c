@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Left_Chol_triangular_solve: sparse symmetric left-looking
+// SPEX_Cholesky/spex_chol_left_triangular_solve: sparse symmetric left-looking
 //                                            triangular solve
 //------------------------------------------------------------------------------
+
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
