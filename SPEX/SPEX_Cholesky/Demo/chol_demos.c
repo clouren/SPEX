@@ -180,9 +180,10 @@ SPEX_info SPEX_tripread_double
     int s = fscanf(file, "%"PRId64" %"PRId64" %"PRId64"\n", &m, &n, &nz);
     if (feof(file) || s < 3)
     {
-        printf ("premature end-of-file\n") ;
+        printf ("premature end-of-file (header line)\n") ;
         return SPEX_INCORRECT_INPUT;
     }
+    // printf ("m %ld n %ld nz %ld\n", m, n, nz) ;
 
     // First, we create our A matrix which is triplet double
     SPEX_matrix *A = NULL;
@@ -197,9 +198,9 @@ SPEX_info SPEX_tripread_double
     s = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
         &(A->i[0]), &(A->j[0]), &(A->x.fp64[0])) ;
 
-    if (feof(file) || s <= 0)
+    if (s <= 0)
     {
-        printf ("premature end-of-file\n") ;
+        printf ("premature end-of-file (first triplet)\n") ;
         SPEX_matrix_free(&A, option);
         return SPEX_INCORRECT_INPUT;
     }
@@ -214,9 +215,9 @@ SPEX_info SPEX_tripread_double
     {
         s = fscanf(file, "%"PRId64" %"PRId64" %lf\n",
             &(A->i[k]), &(A->j[k]), &(A->x.fp64[k]));
-        if ((feof(file) && k != nz-1) || s < 3)
+        if (s < 3)
         {
-            printf ("premature end-of-file\n") ;
+            printf ("premature end-of-file (subsequent triplet)\n") ;
             SPEX_matrix_free(&A, option);
             return SPEX_INCORRECT_INPUT;
         }
@@ -397,7 +398,6 @@ SPEX_info SPEX_check_solution
                 // b2[p] = b2[p]-temp
                 SPEX_CHECK(SPEX_mpq_add(SPEX_2D(b2, A->i[p], j, mpq),
                                         SPEX_2D(b2, A->i[p], j, mpq),temp));
-                // FIXME: temp is leaking
             }
         }
     }

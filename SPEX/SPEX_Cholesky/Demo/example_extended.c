@@ -115,7 +115,6 @@ int main( int argc, char* argv[] )
 
     DEMO_OK( SPEX_Chol_factorize(&F, A, S, option));
 
-    F->L->m = n;        // FIXME what is this doing here???
     clock_t end_factor = clock();
 
     option->print_level=3;

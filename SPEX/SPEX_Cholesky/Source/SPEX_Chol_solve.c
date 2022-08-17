@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/SPEX_Chol_Solve: Solve the SPD linear system after factorization
+// SPEX_Cholesky/SPEX_Chol_Solve: Solve the SPD linear system after
+// factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -59,7 +60,10 @@ SPEX_info SPEX_Chol_solve
     SPEX_info info;
 
     // Ensure SPEX is initialized
-    if (!spex_initialized()) return SPEX_PANIC;
+    if (!spex_initialized())
+    {
+        return SPEX_PANIC;
+    }
 
     // Check the inputs
     ASSERT(!x_handle);
@@ -69,7 +73,6 @@ SPEX_info SPEX_Chol_solve
 
     if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {
-        GOTCHA ;
         return SPEX_INCORRECT_INPUT;
     }
 

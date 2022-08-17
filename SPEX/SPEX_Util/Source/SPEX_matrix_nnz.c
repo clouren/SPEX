@@ -26,9 +26,15 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
+    if (nnz == NULL)
+    {
+        return (SPEX_INCORRECT_INPUT) ;
+    }
+
+    (*nnz) = -1 ;
+
     if (A == NULL)
     {
-        *nnz = -1;
         return (SPEX_INCORRECT_INPUT) ;
     }
 

@@ -251,7 +251,7 @@ runtests4chol: test4chol
 V = valgrind #--leak-check=full
 
 # run all statement coverage tests but with valgrind
-vtests: vtests4llu vtests4luu
+vtests: vtests4llu vtests4luu vtests4chol
 
 # run test for SPEX_Left_LU with valgrind
 vtests4llu: all

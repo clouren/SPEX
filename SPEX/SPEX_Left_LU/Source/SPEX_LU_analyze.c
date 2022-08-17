@@ -103,9 +103,9 @@ SPEX_info SPEX_LU_analyze
         SuiteSparse_long amd_done = amd_l_order(n, (SuiteSparse_long *) A->p,
             (SuiteSparse_long *) A->i, (SuiteSparse_long *) S->Q_perm,
             Control, Info) ;
-        //FIXME: allow AMD_OK_BUT_JUMBLED?
         if (amd_done != AMD_OK && amd_done != AMD_OK_BUT_JUMBLED)
         {
+            // AMD failed.  This is untestable via SPEX.
             SPEX_symbolic_analysis_free (&S, option) ;
             return SPEX_INCORRECT_INPUT;
         }
@@ -151,8 +151,9 @@ SPEX_info SPEX_LU_analyze
         SPEX_FREE(A2);  // free workspace
         if (!colamd_done) // check if COLAMD is successful
         {
+            // COLAMD failed.  This is untestable via SPEX.
             SPEX_symbolic_analysis_free (&S, option) ;
-            return SPEX_INCORRECT_INPUT;
+            return SPEX_PANIC ;
         }
         // estimate for lnz and unz
         S->lnz = S->unz = 10*anz;

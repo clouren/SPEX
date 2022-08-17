@@ -11,12 +11,7 @@
 
 //------------------------------------------------------------------------------
 
-
-#define SPEX_FREE_ALL               \
-{                                   \
-    /* FIXME: was broken */ \
-    /* SPEX_matrix_free(&x, NULL);   */  \
-}
+#define SPEX_FREE_ALL ;
 
 #include "spex_chol_internal.h"
 
@@ -97,6 +92,15 @@ SPEX_info spex_chol_left_triangular_solve
 
     // Input checks. All pointers are checked by the callersm these are here to
     // remind us of the correct formats of each matrix
+    ASSERT(top_output != NULL) ;
+    ASSERT (x != NULL) ;
+    ASSERT (xi != NULL) ;
+    ASSERT (L != NULL) ;
+    ASSERT (A != NULL) ;
+    ASSERT (rhos != NULL) ;
+    ASSERT (h != NULL) ;
+    ASSERT (parent != NULL) ;
+    ASSERT (c != NULL) ;
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(L->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
@@ -105,7 +109,6 @@ SPEX_info spex_chol_left_triangular_solve
     ASSERT(rhos->kind == SPEX_CSC);
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
-    ASSERT(top_output != NULL) ;
 
     int64_t j, i, p, m, top, n;
     int sgn;

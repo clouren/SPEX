@@ -51,14 +51,6 @@ SPEX_info spex_chol_permute_A
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
-    // FIXME: this is untestable since the caller checks these conditions.
-    // Remove this test.
-    if (!PAP_handle || !S || !A || A->type != SPEX_MPZ || A->kind != SPEX_CSC)
-    {
-        GOTCHA ;
-        return SPEX_INCORRECT_INPUT;
-    }
-
     // Create indices and pinv, the inverse row permutation
     int64_t j, k, t, nz = 0, n = A->n;
     (*PAP_handle) = NULL ;
@@ -83,13 +75,15 @@ SPEX_info spex_chol_permute_A
         {
             // Set the number of nonzeros in the kth column of PAP
             PAP->p[k] = nz;
-            // Column k of PAP is equal to column S->P_perm[k] of A. j is the starting
-            // point for nonzeros and indices for column S->P_perm[k] of A
+            // Column k of PAP is equal to column S->P_perm[k] of A. j is the
+            // starting point for nonzeros and indices for column S->P_perm[k]
+            // of A
             j = S->P_perm[k];
             // Iterate across the nonzeros in column S->P_perm[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
-                // Set the nonzero value and location of the entries in column k of PAP
+                // Set the nonzero value and location of the entries in column
+                // k of PAP
                 SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
                 // Row i of this nonzero is equal to pinv[A->i[t]]
                 PAP->i[nz] = S->Pinv_perm[ A->i[t] ];
@@ -105,17 +99,18 @@ SPEX_info spex_chol_permute_A
         // construct PAP with just its pattern, not the values
         //----------------------------------------------------------------------
 
+        // FUTURE: tell SPEX_matrix_allocate not to allocate PAP->x at all.
         SPEX_FREE (PAP->x.mpz) ;
         ASSERT (PAP->x.mpz == NULL) ;
         PAP->x_shallow = true ;
-        
+
         // Populate the entries in PAP
         for (k = 0; k < n; k++)
         {
             // Set the number of nonzeros in the kth column of PAP
             PAP->p[k] = nz;
-            // Column k of PAP is equal to column S->p[k] of A. j is the starting
-            // point for nonzeros and indices for column S->p[k] of A
+            // Column k of PAP is equal to column S->p[k] of A. j is the
+            // starting point for nonzeros and indices for column S->p[k] of A
             j = S->P_perm[k];
             // Iterate across the nonzeros in column S->p[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)

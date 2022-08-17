@@ -899,7 +899,7 @@ int main( int argc, char* argv[])
     {
         free(gmp_ntrial_list);
         free(malloc_trials_list);
-        printf ("tests finished\n") ;
+        printf ("\nSPEX LU tests finished, all tests passed\n") ;
     }
     else
     {
@@ -908,7 +908,7 @@ int main( int argc, char* argv[])
         {
             printf("%ld ", malloc_count_list[i]);
         }
-        printf("\nbrutal tests finished\n");
+        printf("\nSPEX LU: brutal tests finished, all tests passed\n");
     }
 
     return 0;

@@ -164,7 +164,6 @@ SPEX_info SPEX_Chol_backslash
     }
     else
     {
-        GOTCHA ;
         SPEX_matrix* x2 = NULL;
         SPEX_CHECK( SPEX_matrix_copy(&x2, SPEX_DENSE, type, x, option) );
         (*x_handle) = x2;

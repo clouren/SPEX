@@ -213,7 +213,6 @@ SPEX_info SPEX_matrix_allocate
                 ok = ok && (A->x.fp64 != NULL) ;
                 break ;
 
-            // FIXME: need a symbolic case, for PAP->x.mpz NULL
         }
 
         if (!ok)

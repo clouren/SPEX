@@ -123,16 +123,29 @@ SPEX_info spex_chol_preorder
             amd_l_defaults(Control);              // Set AMD defaults
             double Info [AMD_INFO];
             // Perform AMD
-            // FIXME: amd_l_order returns an error code, but not checked!
-            amd_l_order(n, (SuiteSparse_long *)A->p, (SuiteSparse_long *)A->i,
-                        (SuiteSparse_long *)S->P_perm, Control, Info);
-            S->lnz = Info[AMD_LNZ];  // Exact number of nonzeros for Cholesky
+            SuiteSparse_long amd_result = amd_l_order(n,
+                (SuiteSparse_long *)A->p, (SuiteSparse_long *)A->i,
+                (SuiteSparse_long *)S->P_perm, Control, Info);
+            // FIXME: do this in LU as well:
             if (pr > 0)   // Output AMD info if desired
             {
                 SPEX_PRINTF("\n****Ordering Information****\n");
                 amd_l_control(Control);
                 amd_l_info(Info);
             }
+            if (!(amd_result == AMD_OK || amd_result == AMD_OK_BUT_JUMBLED))
+            {
+                // AMD failed: either out of memory, or bad input
+                SPEX_FREE_ALL ;
+                if (amd_result == AMD_OUT_OF_MEMORY)
+                {
+                    // AMD ran out of memory
+                    return (SPEX_OUT_OF_MEMORY) ;
+                }
+                // input matrix is invalid
+                return (SPEX_INCORRECT_INPUT) ;
+            }
+            S->lnz = Info[AMD_LNZ];  // Exact number of nonzeros for Cholesky
         }
         break;
 
@@ -177,10 +190,16 @@ SPEX_info spex_chol_preorder
                 A2[i] = A->i[i];
             }
             int64_t stats[COLAMD_STATS];
-            // FIXME: colamd returns an error code, which is ignored!
-            colamd_l(n, n, Alen, (SuiteSparse_long *)A2,
-                     (SuiteSparse_long *) S->P_perm, (double *)NULL,
-                     (SuiteSparse_long *) stats);
+            SuiteSparse_long colamd_result = colamd_l (n, n, Alen,
+                (SuiteSparse_long *)A2, (SuiteSparse_long *) S->P_perm,
+                (double *)NULL, (SuiteSparse_long *) stats);
+            if (!colamd_result)
+            {
+                // COLAMD failed; this "cannot" occur (and is untestable)
+                // FIXME make sure this is untestable
+                SPEX_FREE_ALL ;
+                return (SPEX_PANIC) ;
+            }
             // estimate for lnz and unz
             S->lnz = 10*anz;
 

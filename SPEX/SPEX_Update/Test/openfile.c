@@ -137,8 +137,7 @@ int main( int argc, char* argv[])
         basis[i] = glp_get_bhead(LP, i+1)-1;
         if (basis[i] < n && glp_get_mat_row(LP, basis[i]+1, NULL, NULL) != 0)
         {
-            //printf("basis[%ld]=%ld\n",i,basis[i]);
-            GOTCHA;
+            printf("basis[%ld]=%ld\n",i,basis[i]);
             return 0;;
         }
 #endif

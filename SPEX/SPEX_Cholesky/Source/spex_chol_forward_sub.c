@@ -128,7 +128,6 @@ SPEX_info spex_chol_forward_sub
                     {
                         // In this case x[m,k] is zero,
                         // so we compute x[m,k] = 0 - l[m,i]*x[i,k]
-                        GOTCHA ;
                         SPEX_CHECK(SPEX_mpz_submul(SPEX_2D(x, mnew, k, mpz),
                                         L->x.mpz[m], SPEX_2D(x, i, k, mpz)));
                         // x[m,k] = x[m,k]/rhos[i-1] if we are not in the first

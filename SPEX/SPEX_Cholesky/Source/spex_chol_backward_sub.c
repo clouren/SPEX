@@ -9,11 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALL            \
-{                                \
-    /* FIXME: was broken */ \
-    /* SPEX_matrix_free(&x, NULL);  */ \
-}
+#define SPEX_FREE_ALL ;
 
 #include "spex_chol_internal.h"
 

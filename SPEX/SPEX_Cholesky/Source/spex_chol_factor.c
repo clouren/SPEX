@@ -114,15 +114,16 @@ SPEX_info spex_chol_factor
     //--------------------------------------------------------------------------
 
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    // FIXME: algo = SPEX_CHOL_UP ; // why was this here?
     switch(algo)
     {
-        case SPEX_ALGORITHM_DEFAULT:    // fall through to up-looking Cholesky
+        case SPEX_ALGORITHM_DEFAULT:
+            // fall through to up-looking Cholesky (the default)
         case SPEX_CHOL_UP:
-            SPEX_CHECK( spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option) );
+            SPEX_CHECK( spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option));
             break;
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK( spex_chol_left_factor(&(F->L), &(F->rhos), S, A, option) );
+            SPEX_CHECK( spex_chol_left_factor(&(F->L), &(F->rhos), S, A,
+                option) );
             break;
         default:
             return SPEX_INCORRECT_ALGORITHM;
