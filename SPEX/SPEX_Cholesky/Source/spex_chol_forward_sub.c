@@ -128,13 +128,15 @@ SPEX_info spex_chol_forward_sub
                     {
                         // In this case x[m,k] is zero,
                         // so we compute x[m,k] = 0 - l[m,i]*x[i,k]
+                        GOTCHA ;
                         SPEX_CHECK(SPEX_mpz_submul(SPEX_2D(x, mnew, k, mpz),
                                         L->x.mpz[m], SPEX_2D(x, i, k, mpz)));
                         // x[m,k] = x[m,k]/rhos[i-1] if we are not in the first
                         // iteration (in which case rhos[i-1] = 1
                         if (i > 0)
                         {
-                            SPEX_CHECK(SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
+                            SPEX_CHECK(
+                                SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
                                 SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[i-1]));
                         }
                     }
@@ -152,7 +154,8 @@ SPEX_info spex_chol_forward_sub
                             // x[m,k] = x[m,k] / rhos[p]
                             if (p > -1)
                             {
-                                SPEX_CHECK(SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
+                                SPEX_CHECK(
+                                    SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
                                     SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[p]));
                             }
                         }
@@ -168,8 +171,9 @@ SPEX_info spex_chol_forward_sub
                         // x[m,k] = x[m,k] / rhos[i-1]
                         if (i > 0)
                         {
-                            SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(x, mnew, k, mpz),
-                                    SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[i-1]));
+                            SPEX_CHECK(
+                                SPEX_mpz_divexact( SPEX_2D(x, mnew, k, mpz),
+                                SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[i-1]));
                         }
                     }
                     // Update the history value of x[m,k]

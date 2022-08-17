@@ -76,15 +76,19 @@ SPEX_info spex_chol_left_factor
     ASSERT(A->kind == SPEX_CSC);
 
     // Check the number of nonzeros in A
-    int64_t anz;
+    int64_t anz = 0 ;
     // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
     // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
     info = SPEX_matrix_nnz (&anz, A, option);
     if (info != SPEX_OK)
+    {
+        GOTCHA ;
         return SPEX_INCORRECT_INPUT;
+    }
 
     if (anz < 0)
     {
+        GOTCHA ;
         return SPEX_INCORRECT_INPUT;
     }
 
@@ -212,6 +216,7 @@ SPEX_info spex_chol_left_factor
         }
         else
         {
+            GOTCHA ;
             SPEX_FREE_WORKSPACE;
             return SPEX_NOTSPD;
         }

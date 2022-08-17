@@ -15,6 +15,15 @@
 #ifndef SPEX_CHOL_INTERNAL_H
 #define SPEX_CHOL_INTERNAL_H
 
+#ifdef GOTCHA
+#undef GOTCHA
+#endif
+#define GOTCHA                                                              \
+{                                                                           \
+    printf ("GOTCHA: %s, line %d\n", __FILE__, __LINE__) ;                  \
+    abort ( ) ;                                                             \
+}
+
 // Definition of SPEX macros, SPEX data structures, etc
 #include "spex_util_internal.h"
 

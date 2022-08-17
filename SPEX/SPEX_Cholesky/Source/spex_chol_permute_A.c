@@ -44,14 +44,18 @@ SPEX_info spex_chol_permute_A
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
+
     ASSERT(A != NULL);
     ASSERT(S != NULL);
     ASSERT(PAP_handle != NULL);
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
+    // FIXME: this is untestable since the caller checks these conditions.
+    // Remove this test.
     if (!PAP_handle || !S || !A || A->type != SPEX_MPZ || A->kind != SPEX_CSC)
     {
+        GOTCHA ;
         return SPEX_INCORRECT_INPUT;
     }
 

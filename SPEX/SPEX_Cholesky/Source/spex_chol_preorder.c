@@ -60,8 +60,8 @@ SPEX_info spex_chol_preorder
     SPEX_info info ;
     if ( !spex_initialized() ) return SPEX_PANIC;
 
-    // All inputs have been checked by the caller so ASSERTS are used instead of ifs
-    // A can have any data type, but must be in sparse CSC format
+    // All inputs have been checked by the caller so ASSERTS are used instead
+    // of ifs A can have any data type, but must be in sparse CSC format
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
@@ -88,7 +88,8 @@ SPEX_info spex_chol_preorder
     SPEX_CHECK (SPEX_matrix_nnz(&anz, A, option)) ;
 
     // Allocate memory for S
-    S = (SPEX_symbolic_analysis*) SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
+    S = (SPEX_symbolic_analysis*)
+        SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
     if (S == NULL)
     {
         SPEX_FREE_ALL ;
@@ -122,10 +123,10 @@ SPEX_info spex_chol_preorder
             amd_l_defaults(Control);              // Set AMD defaults
             double Info [AMD_INFO];
             // Perform AMD
-            // FIXME: amd_l_order returns an error code, but this is not checked!
+            // FIXME: amd_l_order returns an error code, but not checked!
             amd_l_order(n, (SuiteSparse_long *)A->p, (SuiteSparse_long *)A->i,
                         (SuiteSparse_long *)S->P_perm, Control, Info);
-            S->lnz = Info[AMD_LNZ];        // Exact number of nonzeros for Cholesky
+            S->lnz = Info[AMD_LNZ];  // Exact number of nonzeros for Cholesky
             if (pr > 0)   // Output AMD info if desired
             {
                 SPEX_PRINTF("\n****Ordering Information****\n");

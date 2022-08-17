@@ -76,16 +76,20 @@ SPEX_info spex_chol_up_factor
     ASSERT(A->kind == SPEX_CSC) ;
 
     // Check the number of nonzeros in A
-    int64_t anz;
+    int64_t anz = 0 ;
     // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
     // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
     SPEX_info info =  SPEX_matrix_nnz (&anz, A, option);
 
     if (info != SPEX_OK)
+    {
+        GOTCHA ;
         return SPEX_INCORRECT_INPUT;
+    }
 
     if (anz < 0)
     {
+        GOTCHA ;
         return SPEX_INCORRECT_INPUT ;
     }
 
@@ -214,6 +218,7 @@ SPEX_info spex_chol_up_factor
         }
         else
         {
+        GOTCHA ;
             SPEX_FREE_WORKSPACE;
             return SPEX_NOTSPD;
         }
@@ -231,8 +236,8 @@ SPEX_info spex_chol_up_factor
             // Determine the column where x[j] belongs to
             p = c[jnew]++;
 
-            // Place the i index of this nonzero. This should always be k because
-            // at iteration k, the up-looking algorithm computes row k of L
+            // Place the i index of this nonzero. Should always be k because at
+            // iteration k, the up-looking algorithm computes row k of L
             L->i[p] = k;
 
             // Find the number of bits of x[j]
@@ -257,6 +262,7 @@ SPEX_info spex_chol_up_factor
     //--------------------------------------------------------------------------
     // Free memory and set output
     //--------------------------------------------------------------------------
+
     (*L_handle) = L;
     (*rhos_handle) = rhos;
     SPEX_FREE_WORKSPACE;

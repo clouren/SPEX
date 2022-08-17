@@ -19,9 +19,12 @@ extern int64_t malloc_count ;
 #ifdef GOTCHA
 #undef GOTCHA
 #endif
-#define GOTCHA \
-    printf ("%s, line %d, spex_gmp_ntrials = %ld, malloc_count = %ld\n", \
-    __FILE__, __LINE__, spex_gmp_ntrials, malloc_count);
+#define GOTCHA                                                              \
+{                                                                           \
+    printf ("%s, line %d, spex_gmp_ntrials = %ld, malloc_count = %ld\n",    \
+    __FILE__, __LINE__, spex_gmp_ntrials, malloc_count) ;                   \
+    abort ( ) ;                                                             \
+}
 
 #define SPEX_PRINT_INFO(info)                                               \
 {                                                                           \

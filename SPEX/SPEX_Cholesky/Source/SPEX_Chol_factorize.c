@@ -28,10 +28,10 @@
  *              On input it contains the elimination tree and
  *              the number of nonzeros in L.
  *
- * option:      Command options. Default if NULL. Notably, option->chol_type indicates whether
- *              it is performing the default up-looking factorization (SPEX_CHOL_UP)
- *              or the left-looking factorization (SPEX_CHOL_LEFT).
- *
+ * option:      Command options. Default if NULL. Notably, option->chol_type
+ *              indicates whether it is performing the default up-looking
+ *              factorization (SPEX_CHOL_UP) or the left-looking factorization
+ *              (SPEX_CHOL_LEFT).
  */
 
 #define SPEX_FREE_WORKSPACE             \
@@ -51,13 +51,18 @@ SPEX_info SPEX_Chol_factorize
     // Output
     SPEX_factorization **F_handle,  // Cholesky factorization struct
     //Input
-    const SPEX_matrix* A,           // Matrix to be factored. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix* A,           // Matrix to be factored. Must be SPEX_MPZ
+                                    // and SPEX_CSC
+
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
-                                    // elimination tree of A, the column pointers of
-                                    // L, and the exact number of nonzeros of L.
-    const SPEX_options* option      //command options
-                                    // Notably, option->chol_type indicates whether
-                                    // CHOL_UP (default) or CHOL_LEFT is used.
+                                    // elimination tree of A, the column
+                                    // pointers of L, and the exact number of
+                                    // nonzeros of L.
+
+    const SPEX_options* option      // command options.
+                                    // Notably, option->chol_type indicates
+                                    // whether CHOL_UP (default) or CHOL_LEFT
+                                    // is used.
 )
 {
 
@@ -66,17 +71,17 @@ SPEX_info SPEX_Chol_factorize
     // Check inputs for NULL
     if (!F_handle || !A || !S)
     {
-        return SPEX_INCORRECT_INPUT;
+        return (SPEX_INCORRECT_INPUT) ;
     }
 
     // Ensure inputs are in the correct format
     if (A->kind != SPEX_CSC || A->type != SPEX_MPZ
         || S->kind != SPEX_CHOLESKY_FACTORIZATION)
     {
-        return SPEX_INCORRECT_INPUT;
+        return (SPEX_INCORRECT_INPUT) ;
     }
 
-    SPEX_matrix* PAP = NULL ;
+    SPEX_matrix *PAP = NULL ;
     SPEX_factorization *F = NULL ;
 
     //--------------------------------------------------------------------------

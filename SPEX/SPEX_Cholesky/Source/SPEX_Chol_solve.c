@@ -47,10 +47,10 @@ SPEX_info SPEX_Chol_solve
                                 // to the system.
     // input/output:
     SPEX_factorization *F,      // The non-updatable Cholesky factorization.
-                                // Mathematically, F is unchanged.  However, if F
-                                // is updatable on input, it is converted to
-                                // non-updatable.  If F is already non-updatable,
-                                // it is not modified.
+                                // Mathematically, F is unchanged.  However, if
+                                // F is updatable on input, it is converted to
+                                // non-updatable.  If F is already
+                                // non-updatable, it is not modified.
     // input:
     const SPEX_matrix* b,       // Right hand side vector
     const SPEX_options* option  // command options
@@ -69,6 +69,7 @@ SPEX_info SPEX_Chol_solve
 
     if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {
+        GOTCHA ;
         return SPEX_INCORRECT_INPUT;
     }
 

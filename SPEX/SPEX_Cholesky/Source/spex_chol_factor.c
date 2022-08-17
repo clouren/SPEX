@@ -117,7 +117,7 @@ SPEX_info spex_chol_factor
     // FIXME: algo = SPEX_CHOL_UP ; // why was this here?
     switch(algo)
     {
-        case SPEX_ALGORITHM_DEFAULT:
+        case SPEX_ALGORITHM_DEFAULT:    // fall through to up-looking Cholesky
         case SPEX_CHOL_UP:
             SPEX_CHECK( spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option) );
             break;
