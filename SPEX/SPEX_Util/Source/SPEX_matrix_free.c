@@ -61,11 +61,13 @@ SPEX_info SPEX_matrix_free
             {
                 case SPEX_MPZ:
                     if ( A->x.mpz)
-                    for (int64_t i = 0; i < A->nzmax; i++)
                     {
-                        if ( A->x.mpz[i] != NULL)
+                        for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            SPEX_MPZ_CLEAR( A->x.mpz[i]);
+                            if ( A->x.mpz[i] != NULL)
+                            {
+                                SPEX_MPZ_CLEAR( A->x.mpz[i]);
+                            }
                         }
                     }
                     SPEX_FREE (A->x.mpz);
@@ -73,11 +75,13 @@ SPEX_info SPEX_matrix_free
 
                 case SPEX_MPQ:
                     if ( A->x.mpq)
-                    for (int64_t i = 0; i < A->nzmax; i++)
                     {
-                        if ( A->x.mpq[i] != NULL)
+                        for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            SPEX_MPQ_CLEAR( A->x.mpq[i]);
+                            if ( A->x.mpq[i] != NULL)
+                            {
+                                SPEX_MPQ_CLEAR( A->x.mpq[i]);
+                            }
                         }
                     }
                     SPEX_FREE (A->x.mpq);
@@ -85,11 +89,13 @@ SPEX_info SPEX_matrix_free
 
                 case SPEX_MPFR:
                     if ( A->x.mpfr)
-                    for (int64_t i = 0; i < A->nzmax; i++)
                     {
-                        if ( A->x.mpfr[i] != NULL)
+                        for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            SPEX_MPFR_CLEAR( A->x.mpfr[i]);
+                            if ( A->x.mpfr[i] != NULL)
+                            {
+                                SPEX_MPFR_CLEAR( A->x.mpfr[i]);
+                            }
                         }
                     }
                     SPEX_FREE (A->x.mpfr);

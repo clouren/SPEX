@@ -109,12 +109,12 @@ SPEX_info spex_chol_factor
     memcpy(F->P_perm, S->P_perm, n*sizeof(int64_t));
     memcpy(F->Pinv_perm, S->Pinv_perm, n*sizeof(int64_t));
 
+    //--------------------------------------------------------------------------
+    // factorization: up-looking or left-looking
+    //--------------------------------------------------------------------------
 
-    //--------------------------------------------------------------------------
-    // Call factorization
-    //--------------------------------------------------------------------------
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    algo=SPEX_CHOL_UP;
+    // FIXME: algo = SPEX_CHOL_UP ; // why was this here?
     switch(algo)
     {
         case SPEX_ALGORITHM_DEFAULT:
@@ -131,6 +131,7 @@ SPEX_info spex_chol_factor
     //--------------------------------------------------------------------------
     // Set outputs, return ok
     //--------------------------------------------------------------------------
+
     (*F_handle) = F ;
     return SPEX_OK;
 }

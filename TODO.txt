@@ -1,3 +1,9 @@
+FIXME:
+
+    rename demos.c files to give them unique names
+
+--------------------------------------------------------------------------------
+
 user-callable functions for computing SPEX_matrix
 
     don't add them now, but include in the next grant proposal:
@@ -73,14 +79,16 @@ Near-term Papers: (4 or 5)
     perhaps conf paper: on Chol col replacement and LU up/down
         JinHao and Tim
 
-    ACM TOMS paper: code for LU col repl, Chol up/down
+    ACM TOMS Algorithm 10xx+1 paper: code for LU col repl, Chol up/down
         authors: JinHao, Lorena, Chris, Tim, Erick
         submitted by Aug 2022??
+        SPEX v2.1.0
 
-    ACM TOMS paper: Cholesky alone (+code)
+    ACM TOMS Algorithm 10xx paper: Cholesky alone (+code)
         needs some code work, add to user guide, computational results
         authors: Lorena, JinHao, Chris, Erick, Tim
         submitted by Aug 2022??
+        SPEX v2.0.0
 
 Submitted:
     dense QR (submitted to SIAM)
@@ -90,16 +98,6 @@ Future: (add to proposal)
     SIAM paper on sparse QR theory
     ACM TOMS sparse QR code (left-looking Gram-Schmidt)
         starting Fall 2022:
-
-
-
-
-
-
-
-
-
-
 
 ------------ code review for SPEX_Update --------
 

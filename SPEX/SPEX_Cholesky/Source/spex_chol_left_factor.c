@@ -19,6 +19,9 @@
 
 #define SPEX_FREE_ALL               \
 {                                   \
+    /* FIXME: need to free L and rhos!! */  \
+    SPEX_matrix_free(&L, NULL);     \
+    SPEX_matrix_free(&rhos, NULL);  \
     SPEX_FREE_WORKSPACE             \
 }
 
@@ -88,6 +91,7 @@ SPEX_info spex_chol_left_factor
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
+
     SPEX_matrix *L = NULL ;
     SPEX_matrix *rhos = NULL ;
     int64_t *xi = NULL ;
@@ -160,12 +164,6 @@ SPEX_info spex_chol_left_factor
     SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
-    if (!x || !rhos)
-    {
-        SPEX_FREE_WORKSPACE;
-        return SPEX_OUT_OF_MEMORY;
-    }
-
     // initialize the entries of x
     for (i = 0; i < n; i++)
     {
@@ -191,7 +189,6 @@ SPEX_info spex_chol_left_factor
     {
         L->p[k] = c[k] = (S->cp)[k];
     }
-
 
     //--------------------------------------------------------------------------
     // Perform the factorization

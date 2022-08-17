@@ -34,10 +34,14 @@
  *
  */
 
-# define SPEX_FREE_WORKSPACE      \
-{                                 \
-    SPEX_FREE (PAP->x.mpz);       \
-    SPEX_matrix_free(&PAP, NULL); \
+#define SPEX_FREE_WORKSPACE             \
+{                                       \
+    SPEX_matrix_free (&PAP, option) ;   \
+}
+
+#define SPEX_FREE_ALL                   \
+{                                       \
+    SPEX_FREE_WORKSPACE ;               \
 }
 
 #include "spex_chol_internal.h"
@@ -61,20 +65,25 @@ SPEX_info SPEX_Chol_factorize
 
     // Check inputs for NULL
     if (!F_handle || !A || !S)
+    {
         return SPEX_INCORRECT_INPUT;
+    }
 
     // Ensure inputs are in the correct format
-    if (A->kind != SPEX_CSC || A->type != SPEX_MPZ || S->kind!=SPEX_CHOLESKY_FACTORIZATION)
+    if (A->kind != SPEX_CSC || A->type != SPEX_MPZ
+        || S->kind != SPEX_CHOLESKY_FACTORIZATION)
+    {
         return SPEX_INCORRECT_INPUT;
+    }
 
-
-    SPEX_matrix* PAP = NULL;
+    SPEX_matrix* PAP = NULL ;
     SPEX_factorization *F = NULL ;
 
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the row/column ordering from
     // the symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
+
     SPEX_CHECK(spex_chol_permute_A(&PAP, A, true, S));
 
     //--------------------------------------------------------------------------
@@ -82,11 +91,13 @@ SPEX_info SPEX_Chol_factorize
     // A. By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //--------------------------------------------------------------------------
-    SPEX_CHECK(spex_chol_factor(&F, S,PAP, option));
+
+    SPEX_CHECK(spex_chol_factor(&F, S, PAP, option));
 
     //--------------------------------------------------------------------------
     // Set F_handle = F, free all workspace and return success
     //--------------------------------------------------------------------------
+
     (*F_handle) = F ;
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

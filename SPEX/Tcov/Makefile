@@ -21,6 +21,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wno-unused-parameter \
 	-I../SPEX_Backslash/Include/ \
 	-I../SPEX_Util/Source/ \
+	-I../SPEX_Cholesky/Source/ -I../SPEX_Cholesky/Demo/ \
 	-I../SPEX_Left_LU/Source -I../SPEX_Left_LU/Demo \
 	-I../SPEX_Update/Source \
         -I../../SuiteSparse_config -I../../COLAMD/Include \
@@ -33,7 +34,7 @@ LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig
 cov: runtests
 	./covall
 
-all: test4llu SPEXLLU test4luu
+all: test4llu SPEXLLU test4luu test4chol
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
@@ -83,9 +84,9 @@ CS_Util = \
     spex_delete_mpz_array.o \
     SPEX_factorization_convert.o \
     SPEX_factorization_check.o \
-    spex_factorization_basic_check.o
-    #SPEX_determine_symmetry.o \
-    SPEX_transpose.o \
+    spex_factorization_basic_check.o \
+    SPEX_determine_symmetry.o \
+    SPEX_transpose.o
 
 $(CS_Util): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h
 
@@ -168,6 +169,45 @@ spex_update_%.c:
 	- ln -s ../SPEX_Update/Source/$@
 
 #-------------------------------------------------------------------------------
+# link and compile each .c file in SPEX_Cholesky/Source
+
+CS_Cholesky = \
+    SPEX_Chol_analyze.o \
+    SPEX_Chol_backslash.o \
+    spex_chol_backward_sub.o \
+    spex_chol_counts.o \
+    spex_chol_ereach.o \
+    spex_chol_etree.o \
+    spex_chol_factor.o \
+    SPEX_Chol_factorize.o \
+    spex_chol_forward_sub.o \
+    spex_chol_leaf.o \
+    spex_chol_left_factor.o \
+    spex_chol_left_triangular_solve.o \
+    spex_chol_permute_A.o \
+    spex_chol_post.o \
+    spex_chol_pre_left_factor.o \
+    spex_chol_preorder.o \
+    SPEX_Chol_solve.o \
+    spex_chol_symbolic_analysis.o \
+    spex_chol_tdfs.o \
+    spex_chol_up_factor.o \
+    spex_chol_up_triangular_solve.o
+
+$(CS_Cholesky): ../SPEX_Backslash/Include/SPEX.h
+
+.PRECIOUS: SPEX_Chol_%.c spex_chol_%.c
+
+SPEX_Chol_%.c:
+	- ln -s ../SPEX_Cholesky/Source/$@
+
+spex_chol_%.c:
+	- ln -s ../SPEX_Cholesky/Source/$@
+
+chol_demos.c:
+	- ln -s ../SPEX_Cholesky/Demo/$@
+
+#-------------------------------------------------------------------------------
 
 test4llu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_left_LU.c
 	$(CC) $(LDFLAGS) tcov_for_left_LU.c $(CFLAGS) -o tcov_for_left_LU $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
@@ -175,14 +215,16 @@ test4llu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_left_LU.c
 SPEXLLU: $(CS_Util) $(CS_Left_LU) $(CS_Update) spexlu_demo.c demos.c ../SPEX_Left_LU/Demo/demos.h
 	$(CC) $(LDFLAGS) spexlu_demo.c demos.c $(CFLAGS) -o spexlu_demo $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
 
-
 test4luu: $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) tcov_for_update.c simple_rand.c simple_rand.h
 	$(CC) $(LDFLAGS) tcov_for_update.c simple_rand.c $(CFLAGS) -o tcov_for_update $(CS_Tcov) $(CS_Util) $(CS_Left_LU) $(CS_Update) $(LDLIBS)
+
+test4chol: $(CS_Tcov) $(CS_Util) $(CS_Cholesky) tcov_for_cholesky.c simple_rand.c simple_rand.h chol_demos.c
+	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_cholesky.c simple_rand.c chol_demos.c -o tcov_for_cholesky $(CS_Tcov) $(CS_Util) $(CS_Cholesky) $(LDLIBS)
 
 #-------------------------------------------------------------------------------
 
 # run all statement coverage tests
-runtests: runtests4llu runtests4luu
+runtests: runtests4llu runtests4luu runtests4chol
 
 # only run test for SPEX_Left_LU
 runtests4llu: all
@@ -198,6 +240,10 @@ runtests4luu: all
 	- ./tcov_for_update 0 6 > test_for_update1.out
 	- ./tcov_for_update 0 0 26 > test_for_update2.out
 	- ./tcov_for_update 1 6 > test_for_update3.out
+
+# only run test for SPEX_Cholesky
+runtests4chol: test4chol
+	- ./tcov_for_cholesky ../SPEX_Cholesky/ExampleMats/872.mat.txt
 
 #-------------------------------------------------------------------------------
 
@@ -222,11 +268,18 @@ vtests4luu: all
 	- $(V) ./tcov_for_update 0 0 25 > test_for_update2.out
 	- $(V) ./tcov_for_update 1 6 > test_for_update3.out
 
+# run test for SPEX_Cholesky with valgrind
+vtests4chol: test4chol
+	- $(V) --leak-check=full ./tcov_for_cholesky ../SPEX_Cholesky/ExampleMats/872.mat.txt
+
+#-------------------------------------------------------------------------------
+
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
 	- $(RM) tcov_for_left_LU tcov_for_update spexlu_demo *.out *.a cov.sort out Mats4Tcov/SPEX_Update/mat.txt
 	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c demos.c
+	- $(RM) -r tcov_for_cholesky chol_demos.c
 
 purge: distclean
 

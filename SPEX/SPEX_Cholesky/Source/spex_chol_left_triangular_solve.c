@@ -12,9 +12,10 @@
 //------------------------------------------------------------------------------
 
 
-# define SPEX_FREE_ALL            \
-{                                 \
-    SPEX_matrix_free(&x, NULL);   \
+#define SPEX_FREE_ALL               \
+{                                   \
+    /* FIXME: was broken */ \
+    /* SPEX_matrix_free(&x, NULL);   */  \
 }
 
 #include "spex_chol_internal.h"
@@ -104,6 +105,7 @@ SPEX_info spex_chol_left_triangular_solve
     ASSERT(rhos->kind == SPEX_CSC);
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
+    ASSERT(top_output != NULL) ;
 
     int64_t j, i, p, m, top, n;
     int sgn;

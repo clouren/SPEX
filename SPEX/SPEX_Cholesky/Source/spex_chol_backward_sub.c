@@ -11,7 +11,8 @@
 
 #define SPEX_FREE_ALL            \
 {                                \
-    SPEX_matrix_free(&x, NULL);  \
+    /* FIXME: was broken */ \
+    /* SPEX_matrix_free(&x, NULL);  */ \
 }
 
 #include "spex_chol_internal.h"

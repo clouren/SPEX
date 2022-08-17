@@ -37,8 +37,7 @@
 {                                               \
     SPEX_factorization_free(&F, option);        \
     SPEX_symbolic_analysis_free (&S, option);   \
-    SPEX_FREE (PAP->x.mpz);                     \
-    SPEX_matrix_free(&PAP, NULL);               \
+    SPEX_matrix_free (&PAP, option) ;           \
 }
 
 #define SPEX_FREE_ALL             \
@@ -169,10 +168,10 @@ SPEX_info SPEX_Chol_backslash
         SPEX_matrix_free (&x, NULL);
     }
 
-
     //--------------------------------------------------------------------------
     // Free all workspace and return success
     //--------------------------------------------------------------------------
+
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }

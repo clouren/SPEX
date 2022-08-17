@@ -9,10 +9,12 @@
 
 //------------------------------------------------------------------------------
 
-# define SPEX_FREE_ALL            \
-{                                 \
-    SPEX_matrix_free(&x, NULL);   \
-    SPEX_FREE(xi);                \
+#define SPEX_FREE_ALL               \
+{                                   \
+    /* broken: these are allocated in the caller; */ \
+    /* should not be freed here */ \
+    /* SPEX_matrix_free(&x, NULL);     */ \
+    /* SPEX_FREE(xi);                  */ \
 }
 
 #include "spex_chol_internal.h"

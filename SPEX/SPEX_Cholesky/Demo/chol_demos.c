@@ -14,7 +14,7 @@
 // SPEX_read_dense: read a dense matrix from a file.
 // SPEX_Chol_determine_error: error codes for exact factorization
 
-#include "demos.h"
+#include "chol_demos.h"
 #include "spex_gmp.h"
 #include "spex_util_internal.h"
 
@@ -329,6 +329,16 @@ void SPEX_Chol_determine_error
     }
 }
 
+#undef  SPEX_FREE_WORKSPACE
+#define SPEX_FREE_WORKSPACE                 \
+{                                           \
+    SPEX_MPQ_CLEAR(temp);                   \
+    SPEX_MPQ_CLEAR(scale);                  \
+    SPEX_matrix_free(&b2, NULL);            \
+}
+
+#undef  SPEX_FREE_ALL
+#define SPEX_FREE_ALL SPEX_FREE_WORKSPACE
 
 
 SPEX_info SPEX_check_solution
@@ -387,6 +397,7 @@ SPEX_info SPEX_check_solution
                 // b2[p] = b2[p]-temp
                 SPEX_CHECK(SPEX_mpq_add(SPEX_2D(b2, A->i[p], j, mpq),
                                         SPEX_2D(b2, A->i[p], j, mpq),temp));
+                // FIXME: temp is leaking
             }
         }
     }
@@ -452,9 +463,7 @@ SPEX_info SPEX_check_solution
     // Free memory
     //--------------------------------------------------------------------------
 
-    SPEX_MPQ_CLEAR(temp);                   \
-    SPEX_MPQ_CLEAR(scale);                  \
-    SPEX_matrix_free(&b2, NULL);
+    SPEX_FREE_WORKSPACE ;
     return info;
 }
 

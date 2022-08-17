@@ -100,9 +100,9 @@ SPEX_info SPEX_LU_analyze
         amd_l_defaults (Control) ;              // Set AMD defaults
         double Info [AMD_INFO];
         // Perform AMD
-        SuiteSparse_long amd_done = 
-            amd_l_order(n, (SuiteSparse_long *) A->p, (SuiteSparse_long *) A->i,
-                (SuiteSparse_long *) S->Q_perm, Control, Info) ;
+        SuiteSparse_long amd_done = amd_l_order(n, (SuiteSparse_long *) A->p,
+            (SuiteSparse_long *) A->i, (SuiteSparse_long *) S->Q_perm,
+            Control, Info) ;
         //FIXME: allow AMD_OK_BUT_JUMBLED?
         if (amd_done != AMD_OK && amd_done != AMD_OK_BUT_JUMBLED)
         {
@@ -145,10 +145,9 @@ SPEX_info SPEX_LU_analyze
             A2[i] = A->i[i];
         }
         int64_t stats [COLAMD_STATS];
-        SuiteSparse_long colamd_done =
-            colamd_l (n, n, Alen, (SuiteSparse_long *) A2,
-                (SuiteSparse_long *) S->Q_perm, (double *) NULL,
-                (SuiteSparse_long *) stats) ;
+        SuiteSparse_long colamd_done = colamd_l (n, n, Alen,
+            (SuiteSparse_long *) A2, (SuiteSparse_long *) S->Q_perm,
+            (double *) NULL, (SuiteSparse_long *) stats) ;
         SPEX_FREE(A2);  // free workspace
         if (!colamd_done) // check if COLAMD is successful
         {

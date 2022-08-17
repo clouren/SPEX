@@ -35,7 +35,7 @@
 }
 
 
-# include "demos.h"
+#include "chol_demos.h"
 
 
 int main( int argc, char* argv[] )
@@ -95,6 +95,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Perform Analysis of A
     //--------------------------------------------------------------------------
+
     clock_t start_col = clock();
 
     // Symmetric ordering of A. Uncomment the desired one, AMD is recommended
@@ -108,12 +109,13 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Factorize PAP
     //--------------------------------------------------------------------------
+
     //option->algo=SPEX_CHOL_LEFT;
     clock_t start_factor = clock();
 
     DEMO_OK( SPEX_Chol_factorize(&F, A, S, option));
 
-    F->L->m = n;
+    F->L->m = n;        // FIXME what is this doing here???
     clock_t end_factor = clock();
 
     option->print_level=3;
@@ -122,6 +124,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     // Solve linear system
     //--------------------------------------------------------------------------
+
     clock_t start_solve = clock();
 
     DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
@@ -146,10 +149,10 @@ int main( int argc, char* argv[] )
     option->print_level=1;
     DEMO_OK ( SPEX_check_solution(A,x,b,option));
 
-
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
+
     FREE_WORKSPACE;
 }
 

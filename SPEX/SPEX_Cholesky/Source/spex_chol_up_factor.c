@@ -17,9 +17,12 @@
     SPEX_FREE(c);                   \
 }
 
-# define SPEX_FREE_ALL               \
-{                                    \
-    SPEX_FREE_WORKSPACE              \
+#define SPEX_FREE_ALL               \
+{                                   \
+    /* FIXME: need to free L and rhos!! */  \
+    SPEX_matrix_free(&L, NULL);     \
+    SPEX_matrix_free(&rhos, NULL);  \
+    SPEX_FREE_WORKSPACE             \
 }
 
 #include "spex_chol_internal.h"
@@ -89,12 +92,13 @@ SPEX_info spex_chol_up_factor
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
+
     SPEX_matrix *L = NULL ;
     SPEX_matrix *rhos = NULL ;
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
     SPEX_matrix *x = NULL ;
-    int64_t* c = NULL;
+    int64_t *c = NULL;
 
     // Declare variables
     int64_t n = A->n, top, i, j, jnew, k;
@@ -160,12 +164,6 @@ SPEX_info spex_chol_up_factor
     // rhos are initialized to the default size (unlike x).
     SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
-
-    if (!x || !rhos)
-    {
-        SPEX_FREE_WORKSPACE;
-        return SPEX_OUT_OF_MEMORY;
-    }
 
     // initialize the entries of x
     for (i = 0; i < n; i++)

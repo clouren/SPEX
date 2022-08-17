@@ -93,8 +93,8 @@ void *tcov_malloc
 // wrapper for calloc
 void *tcov_calloc
 (
-    size_t n,          // Size of array
-    size_t size        // Size to alloc
+    size_t n,          // Size of array (# of entries)
+    size_t size        // Size of each entry to alloc
 ) ;
 
 // wrapper for realloc
@@ -107,7 +107,7 @@ void *tcov_realloc
 // wrapper for free
 void tcov_free
 (
-    void *p            // Pointer to be free
+    void *p            // Pointer to be freed
 ) ;
 
 // used to test spex_gmp_reallocate
@@ -128,12 +128,5 @@ SPEX_info spex_check_solution
     const SPEX_options* option    // Command options
 );
 
-SPEX_info spex_update_verify
-(
-    bool *Is_correct,         // if the factorization is correct
-    SPEX_factorization *F,    // LU factorization of A
-    const SPEX_matrix *A,     // Input matrix of SPEX_DYNAMIC_CSC MPZ
-    const SPEX_options *option// command options
-);
 #endif
 

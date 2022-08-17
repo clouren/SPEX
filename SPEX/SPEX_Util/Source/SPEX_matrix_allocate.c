@@ -21,8 +21,10 @@
 // allocated as SPEX_vector with zero available entry. Additional reallocation
 // for each column will be needed.
 
-#define SPEX_FREE_ALL \
-    SPEX_matrix_free (&A, option) ;
+#define SPEX_FREE_ALL                       \
+{                                           \
+    SPEX_matrix_free (&A, option) ;         \
+}
 
 #include "spex_util_internal.h"
 
@@ -167,25 +169,37 @@ SPEX_info SPEX_matrix_allocate
                 // allocate the array but do not allocate the individual
                 // mpz, mpq, or mpfr
                 if (init)
+                {
                     A->x.mpz = spex_create_mpz_array (nzmax) ;
+                }
                 else
+                {
                     A->x.mpz = SPEX_calloc(nzmax, sizeof(mpz_t));
+                }
                 ok = ok && (A->x.mpz != NULL) ;
                 break ;
 
             case SPEX_MPQ:
                 if (init)
+                {
                     A->x.mpq = spex_create_mpq_array (nzmax) ;
+                }
                 else
+                {
                     A->x.mpq = SPEX_calloc(nzmax, sizeof(mpq_t));
+                }
                 ok = ok && (A->x.mpq != NULL) ;
                 break ;
 
             case SPEX_MPFR:
                 if (init)
+                {
                     A->x.mpfr = spex_create_mpfr_array (nzmax, option) ;
+                }
                 else
+                {
                     A->x.mpfr = SPEX_calloc(nzmax, sizeof(mpfr_t));
+                }
                 ok = ok && (A->x.mpfr != NULL) ;
                 break ;
 
@@ -199,6 +213,7 @@ SPEX_info SPEX_matrix_allocate
                 ok = ok && (A->x.fp64 != NULL) ;
                 break ;
 
+            // FIXME: need a symbolic case, for PAP->x.mpz NULL
         }
 
         if (!ok)

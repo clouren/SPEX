@@ -9,6 +9,17 @@
 
 //------------------------------------------------------------------------------
 
+#define SPEX_FREE_WORKSPACE     \
+{                               \
+    SPEX_FREE (w) ;             \
+}
+
+#define SPEX_FREE_ALL           \
+{                               \
+    SPEX_FREE (post) ;          \
+    SPEX_FREE_WORKSPACE ;       \
+}
+
 #include "spex_chol_internal.h"
 
 /* Purpose: post order a forest. */
@@ -28,14 +39,18 @@ SPEX_info spex_chol_post
     ASSERT( n >= 0);
 
     // Declare variables
-    int64_t j, k = 0, *post, *w, *head, *next, *stack ;
+    int64_t j, k = 0, *post = NULL, *w = NULL, *head, *next, *stack ;
 
     // Allocate the postordering result
     post = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
 
     // Create a workspace
     w = (int64_t*) SPEX_malloc (3*n* sizeof (int64_t)) ;
-    if (!w || !post) return (SPEX_OUT_OF_MEMORY) ;
+    if ((w == NULL) || (post == NULL))
+    {
+        SPEX_FREE_ALL ;
+        return (SPEX_OUT_OF_MEMORY) ;
+    }
     head = w ; next = w + n ; stack = w + 2*n ;
 
     // Empty linked lists
@@ -54,7 +69,7 @@ SPEX_info spex_chol_post
         if (parent [j] != -1) continue ;    // skip j if it is not a root
         SPEX_CHECK(spex_chol_tdfs (&k, j, head, next, post, stack)) ;
     }
-    SPEX_free(w);
+    SPEX_FREE_WORKSPACE ;
     (*post_handle) = post;
-    return SPEX_OK ;
+    return (SPEX_OK) ;
 }

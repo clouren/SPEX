@@ -32,17 +32,17 @@ all: lib example_extended example_extended_debug example_simple #forCluster_exte
 lib:
 	( cd ../../build ; $(MAKE) )
 
-example_extended: lib example_extended.c demos.h demos.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example_extended example_extended.c demos.c $(LDLIBS)
+example_extended: lib example_extended.c chol_demos.h chol_demos.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o example_extended example_extended.c chol_demos.c $(LDLIBS)
 
 example_extended_debug: lib example_extended.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_extended_debug example_extended.c demos.c $(LDLIBS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_extended_debug example_extended.c chol_demos.c $(LDLIBS)
 
 example_simple: lib example_simple.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_simple example_simple.c demos.c $(LDLIBS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o example_simple example_simple.c chol_demos.c $(LDLIBS)
 
 #forCluster_extended: lib forCluster_extended.c Makefile
-#	$(CC) $(LDFLAGS) $(CF) $(I) -o forCluster_extended forCluster_extended.c demos.c $(LDLIBS)
+#	$(CC) $(LDFLAGS) $(CF) $(I) -o forCluster_extended forCluster_extended.c chol_demos.c $(LDLIBS)
 
 clean:
 	- $(RM) *.o

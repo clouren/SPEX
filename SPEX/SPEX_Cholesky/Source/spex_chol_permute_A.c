@@ -11,6 +11,9 @@
 
 #include "spex_chol_internal.h"
 
+#undef  SPEX_FREE_ALL
+#define SPEX_FREE_ALL { SPEX_matrix_free (&PAP, NULL) ; }
+
 /* Purpose: Given the row/column permutation P stored in S, permute the matrix
  * A and return PAP'
  * Input arguments:
@@ -22,6 +25,7 @@
  * S:            Symbolic analysis struct for Cholesky factorization.
  *               Contains row/column permutation of A
  */
+
 SPEX_info spex_chol_permute_A
 (
     //Output
@@ -53,14 +57,20 @@ SPEX_info spex_chol_permute_A
 
     // Create indices and pinv, the inverse row permutation
     int64_t j, k, t, nz = 0, n = A->n;
+    (*PAP_handle) = NULL ;
     //int64_t* pinv = NULL;
 
     // Allocate memory for PAP which is a permuted copy of A
-    SPEX_matrix* PAP = NULL;
+    SPEX_matrix *PAP = NULL ;
     SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
 
     if(numeric)
     {
+
+        //----------------------------------------------------------------------
+        // construct PAP with numerical values
+        //----------------------------------------------------------------------
+
         // Set PAP scale
         SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
 
@@ -86,7 +96,13 @@ SPEX_info spex_chol_permute_A
     }
     else
     {
-        PAP->x.mpz= NULL ;
+
+        //----------------------------------------------------------------------
+        // construct PAP with just its pattern, not the values
+        //----------------------------------------------------------------------
+
+        SPEX_FREE (PAP->x.mpz) ;
+        ASSERT (PAP->x.mpz == NULL) ;
         PAP->x_shallow = true ;
         
         // Populate the entries in PAP
@@ -114,3 +130,4 @@ SPEX_info spex_chol_permute_A
     (*PAP_handle) = PAP;
     return SPEX_OK;
 }
+

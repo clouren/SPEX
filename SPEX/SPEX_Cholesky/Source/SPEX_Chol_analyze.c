@@ -26,9 +26,15 @@
  *
  */
 
-# define SPEX_FREE_WORKSPACE      \
-{                                 \
-    SPEX_matrix_free(&PAP, NULL); \
+#define SPEX_FREE_WORKSPACE         \
+{                                   \
+    SPEX_matrix_free(&PAP, NULL);   \
+}
+
+#define SPEX_FREE_ALL                               \
+{                                                   \
+    SPEX_FREE_WORKSPACE ;                           \
+    SPEX_symbolic_analysis_free (&S, option) ;      \
 }
 
 #include "spex_chol_internal.h"
@@ -63,7 +69,6 @@ SPEX_info SPEX_Chol_analyze
     SPEX_matrix* PAP = NULL;
     SPEX_symbolic_analysis *S = NULL;
 
-
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
@@ -97,7 +102,8 @@ SPEX_info SPEX_Chol_analyze
     // Set output, free all workspace and return success
     //--------------------------------------------------------------------------
 
-    (*S_handle) = S;
-    SPEX_FREE_WORKSPACE;
-    return SPEX_OK;
+    (*S_handle) = S ;
+    SPEX_FREE_WORKSPACE ;
+    return (SPEX_OK) ;
 }
+
