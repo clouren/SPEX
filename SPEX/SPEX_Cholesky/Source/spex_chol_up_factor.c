@@ -98,7 +98,7 @@ SPEX_info spex_chol_up_factor
 
     // Declare variables
     int64_t n = A->n, top, i, j, jnew, k;
-    int sgn;
+    int sgn, prev_sgn;
     size_t size;
 
     c = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
@@ -201,6 +201,8 @@ SPEX_info spex_chol_up_factor
     //--------------------------------------------------------------------------
     // Iterations 0:n-1 (1:n in standard)
     //--------------------------------------------------------------------------
+    SPEX_CHECK(SPEX_mpz_sgn(&prev_sgn, x->x.mpz[0]));
+
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
@@ -209,15 +211,19 @@ SPEX_info spex_chol_up_factor
 
         // If x[k] is nonzero choose it as pivot. Otherwise, the matrix is
         // not SPD (indeed, it may even be singular).
+        // If current pivot and previous pivot have a different sign then matrix
+        // is not SPD (or SND)
         SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k]));
-        if (sgn != 0)
+        printf("%d, %d\n", prev_sgn, sgn);
+        if (sgn == 0 || sgn!=prev_sgn) //TODO checa cluster //TODO checa por que no compila en laptop!!!
         {
-            SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
+            SPEX_FREE_WORKSPACE;
+            return SPEX_NOTSPD;           
         }
         else
         {
-            SPEX_FREE_WORKSPACE;
-            return SPEX_NOTSPD;
+            SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
+            prev_sgn=sgn;
         }
 
         //----------------------------------------------------------------------
