@@ -126,6 +126,7 @@ SPEX_info spex_chol_factor
                 option) );
             break;
         default:
+            SPEX_FREE_ALL;
             return SPEX_INCORRECT_ALGORITHM;
     }
 
