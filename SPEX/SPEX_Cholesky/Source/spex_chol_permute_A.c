@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_permute_A: Symmetric permutation of matrix A
+// SPEX_Cholesky/spex_chol_permute_A: Symmetric permutation of matrix A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -10,6 +10,9 @@
 //------------------------------------------------------------------------------
 
 #include "spex_chol_internal.h"
+
+#undef  SPEX_FREE_ALL
+#define SPEX_FREE_ALL { SPEX_matrix_free (&PAP, NULL) ; }
 
 /* Purpose: Given the row/column permutation P stored in S, permute the matrix
  * A and return PAP'
@@ -22,6 +25,7 @@
  * S:            Symbolic analysis struct for Cholesky factorization.
  *               Contains row/column permutation of A
  */
+
 SPEX_info spex_chol_permute_A
 (
     //Output
@@ -40,27 +44,29 @@ SPEX_info spex_chol_permute_A
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
+
     ASSERT(A != NULL);
     ASSERT(S != NULL);
     ASSERT(PAP_handle != NULL);
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
-    if (!PAP_handle || !S || !A || A->type != SPEX_MPZ || A->kind != SPEX_CSC)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
     // Create indices and pinv, the inverse row permutation
     int64_t j, k, t, nz = 0, n = A->n;
+    (*PAP_handle) = NULL ;
     //int64_t* pinv = NULL;
 
     // Allocate memory for PAP which is a permuted copy of A
-    SPEX_matrix* PAP = NULL;
+    SPEX_matrix *PAP = NULL ;
     SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
 
     if(numeric)
     {
+
+        //----------------------------------------------------------------------
+        // construct PAP with numerical values
+        //----------------------------------------------------------------------
+
         // Set PAP scale
         SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
 
@@ -69,13 +75,15 @@ SPEX_info spex_chol_permute_A
         {
             // Set the number of nonzeros in the kth column of PAP
             PAP->p[k] = nz;
-            // Column k of PAP is equal to column S->P_perm[k] of A. j is the starting
-            // point for nonzeros and indices for column S->P_perm[k] of A
+            // Column k of PAP is equal to column S->P_perm[k] of A. j is the
+            // starting point for nonzeros and indices for column S->P_perm[k]
+            // of A
             j = S->P_perm[k];
             // Iterate across the nonzeros in column S->P_perm[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
-                // Set the nonzero value and location of the entries in column k of PAP
+                // Set the nonzero value and location of the entries in column
+                // k of PAP
                 SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
                 // Row i of this nonzero is equal to pinv[A->i[t]]
                 PAP->i[nz] = S->Pinv_perm[ A->i[t] ];
@@ -86,16 +94,23 @@ SPEX_info spex_chol_permute_A
     }
     else
     {
-        PAP->x.mpz= NULL ;
+
+        //----------------------------------------------------------------------
+        // construct PAP with just its pattern, not the values
+        //----------------------------------------------------------------------
+
+        // FUTURE: tell SPEX_matrix_allocate not to allocate PAP->x at all.
+        SPEX_FREE (PAP->x.mpz) ;
+        ASSERT (PAP->x.mpz == NULL) ;
         PAP->x_shallow = true ;
-        
+
         // Populate the entries in PAP
         for (k = 0; k < n; k++)
         {
             // Set the number of nonzeros in the kth column of PAP
             PAP->p[k] = nz;
-            // Column k of PAP is equal to column S->p[k] of A. j is the starting
-            // point for nonzeros and indices for column S->p[k] of A
+            // Column k of PAP is equal to column S->p[k] of A. j is the
+            // starting point for nonzeros and indices for column S->p[k] of A
             j = S->P_perm[k];
             // Iterate across the nonzeros in column S->p[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)
@@ -114,3 +129,4 @@ SPEX_info spex_chol_permute_A
     (*PAP_handle) = PAP;
     return SPEX_OK;
 }
+

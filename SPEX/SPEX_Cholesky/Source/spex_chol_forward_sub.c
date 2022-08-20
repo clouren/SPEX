@@ -1,5 +1,5 @@
 ///------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_forward_sub: Solve the system LDx = b
+// SPEX_Cholesky/spex_chol_forward_sub: Solve the system LDx = b
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -28,7 +28,8 @@
 #define SPEX_FREE_ALL            \
 {                                \
     SPEX_FREE_WORKSPACE          \
-    SPEX_matrix_free(&x, NULL);  \
+    /* broken: */ \
+    /* SPEX_matrix_free(&x, NULL);  */ \
 }
 
 #include "spex_chol_internal.h"
@@ -59,7 +60,7 @@ SPEX_info spex_chol_forward_sub
     int sgn;
 
     // Build the history matrix
-    SPEX_matrix *h;
+    SPEX_matrix *h = NULL ;
     SPEX_CHECK(SPEX_matrix_allocate(&h, SPEX_DENSE, SPEX_INT64, x->m, x->n,
                                     x->nzmax, false, true, NULL));
 
@@ -133,7 +134,8 @@ SPEX_info spex_chol_forward_sub
                         // iteration (in which case rhos[i-1] = 1
                         if (i > 0)
                         {
-                            SPEX_CHECK(SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
+                            SPEX_CHECK(
+                                SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
                                 SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[i-1]));
                         }
                     }
@@ -151,7 +153,8 @@ SPEX_info spex_chol_forward_sub
                             // x[m,k] = x[m,k] / rhos[p]
                             if (p > -1)
                             {
-                                SPEX_CHECK(SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
+                                SPEX_CHECK(
+                                    SPEX_mpz_divexact(SPEX_2D(x, mnew, k, mpz),
                                     SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[p]));
                             }
                         }
@@ -167,8 +170,9 @@ SPEX_info spex_chol_forward_sub
                         // x[m,k] = x[m,k] / rhos[i-1]
                         if (i > 0)
                         {
-                            SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(x, mnew, k, mpz),
-                                    SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[i-1]));
+                            SPEX_CHECK(
+                                SPEX_mpz_divexact( SPEX_2D(x, mnew, k, mpz),
+                                SPEX_2D(x, mnew, k, mpz), rhos->x.mpz[i-1]));
                         }
                     }
                     // Update the history value of x[m,k]

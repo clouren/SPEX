@@ -1,18 +1,16 @@
-# Ignore these files:
+# Ignore all files:
 *
 
-# But not these files ...
-!Mats4Tcov/
-!README.txt
+# except these files ...
 !covall
 !cov.awk
 !cover
 !covs
 !gcovs
 !Makefile
-!tcov_for_left_LU.c
-!tcov_for_update.c
-!tcov_malloc_test.c
-!tcov_malloc_test.h
-!simple_rand.c
-!simple_rand.h
+!Mats4Tcov/
+!README.txt
+!simple_*.c
+!simple_*.h
+!tcov_*.c
+!tcov_*.h

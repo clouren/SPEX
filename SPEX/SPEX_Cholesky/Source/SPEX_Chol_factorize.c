@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_factorize: Perform the SPEX Chol factorization of A
+// SPEX_Cholesky/SPEX_Chol_factorize: Perform the SPEX Chol factorization of A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -28,16 +28,20 @@
  *              On input it contains the elimination tree and
  *              the number of nonzeros in L.
  *
- * option:      Command options. Default if NULL. Notably, option->chol_type indicates whether
- *              it is performing the default up-looking factorization (SPEX_CHOL_UP)
- *              or the left-looking factorization (SPEX_CHOL_LEFT).
- *
+ * option:      Command options. Default if NULL. Notably, option->chol_type
+ *              indicates whether it is performing the default up-looking
+ *              factorization (SPEX_CHOL_UP) or the left-looking factorization
+ *              (SPEX_CHOL_LEFT).
  */
 
-# define SPEX_FREE_WORKSPACE      \
-{                                 \
-    SPEX_FREE (PAP->x.mpz);       \
-    SPEX_matrix_free(&PAP, NULL); \
+#define SPEX_FREE_WORKSPACE             \
+{                                       \
+    SPEX_matrix_free (&PAP, option) ;   \
+}
+
+#define SPEX_FREE_ALL                   \
+{                                       \
+    SPEX_FREE_WORKSPACE ;               \
 }
 
 #include "spex_chol_internal.h"
@@ -47,13 +51,18 @@ SPEX_info SPEX_Chol_factorize
     // Output
     SPEX_factorization **F_handle,  // Cholesky factorization struct
     //Input
-    const SPEX_matrix* A,           // Matrix to be factored. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix* A,           // Matrix to be factored. Must be SPEX_MPZ
+                                    // and SPEX_CSC
+
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
-                                    // elimination tree of A, the column pointers of
-                                    // L, and the exact number of nonzeros of L.
-    const SPEX_options* option      //command options
-                                    // Notably, option->chol_type indicates whether
-                                    // CHOL_UP (default) or CHOL_LEFT is used.
+                                    // elimination tree of A, the column
+                                    // pointers of L, and the exact number of
+                                    // nonzeros of L.
+
+    const SPEX_options* option      // command options.
+                                    // Notably, option->chol_type indicates
+                                    // whether CHOL_UP (default) or CHOL_LEFT
+                                    // is used.
 )
 {
 
@@ -61,20 +70,25 @@ SPEX_info SPEX_Chol_factorize
 
     // Check inputs for NULL
     if (!F_handle || !A || !S)
-        return SPEX_INCORRECT_INPUT;
+    {
+        return (SPEX_INCORRECT_INPUT) ;
+    }
 
     // Ensure inputs are in the correct format
-    if (A->kind != SPEX_CSC || A->type != SPEX_MPZ || S->kind!=SPEX_CHOLESKY_FACTORIZATION)
-        return SPEX_INCORRECT_INPUT;
+    if (A->kind != SPEX_CSC || A->type != SPEX_MPZ
+        || S->kind != SPEX_CHOLESKY_FACTORIZATION)
+    {
+        return (SPEX_INCORRECT_INPUT) ;
+    }
 
-
-    SPEX_matrix* PAP = NULL;
+    SPEX_matrix *PAP = NULL ;
     SPEX_factorization *F = NULL ;
 
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the row/column ordering from
     // the symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
+
     SPEX_CHECK(spex_chol_permute_A(&PAP, A, true, S));
 
     //--------------------------------------------------------------------------
@@ -82,11 +96,13 @@ SPEX_info SPEX_Chol_factorize
     // A. By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //--------------------------------------------------------------------------
-    SPEX_CHECK(spex_chol_factor(&F, S,PAP, option));
+
+    SPEX_CHECK(spex_chol_factor(&F, S, PAP, option));
 
     //--------------------------------------------------------------------------
     // Set F_handle = F, free all workspace and return success
     //--------------------------------------------------------------------------
+
     (*F_handle) = F ;
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

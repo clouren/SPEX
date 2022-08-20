@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_Solve: Solve the SPD linear system after factorization
+// SPEX_Cholesky/SPEX_Chol_Solve: Solve the SPD linear system after
+// factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -47,10 +48,10 @@ SPEX_info SPEX_Chol_solve
                                 // to the system.
     // input/output:
     SPEX_factorization *F,      // The non-updatable Cholesky factorization.
-                                // Mathematically, F is unchanged.  However, if F
-                                // is updatable on input, it is converted to
-                                // non-updatable.  If F is already non-updatable,
-                                // it is not modified.
+                                // Mathematically, F is unchanged.  However, if
+                                // F is updatable on input, it is converted to
+                                // non-updatable.  If F is already
+                                // non-updatable, it is not modified.
     // input:
     const SPEX_matrix* b,       // Right hand side vector
     const SPEX_options* option  // command options
@@ -59,7 +60,10 @@ SPEX_info SPEX_Chol_solve
     SPEX_info info;
 
     // Ensure SPEX is initialized
-    if (!spex_initialized()) return SPEX_PANIC;
+    if (!spex_initialized())
+    {
+        return SPEX_PANIC;
+    }
 
     // Check the inputs
     ASSERT(!x_handle);
@@ -99,7 +103,6 @@ SPEX_info SPEX_Chol_solve
 
     SPEX_CHECK(spex_chol_forward_sub(b2, F->L, F->rhos));
 
-
     //--------------------------------------------------------------------------
     // Apply the determinant to b2, b2 = det*b2
     //--------------------------------------------------------------------------
@@ -111,7 +114,6 @@ SPEX_info SPEX_Chol_solve
     // backsolve is integral
     SPEX_CHECK(spex_matrix_mul(b2, (*det) ));
 
-
     //--------------------------------------------------------------------------
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
     //--------------------------------------------------------------------------
@@ -122,6 +124,7 @@ SPEX_info SPEX_Chol_solve
     // get real solution x by applying both permutation and scale
     // x = P*b2/scale
     //--------------------------------------------------------------------------
+
     // Scale is the scaling factor for the solution vectors.
     // When the forward/backsolve is complete, the entries in
     // x/det are rational, but are solving the scaled linear system
@@ -129,6 +132,7 @@ SPEX_info SPEX_Chol_solve
     // and had to be converted to integers). Thus, the scale here is used
     // to convert x into into the actual solution of A x = b.
     // Mathematically, set scale = b->scale * rhos[n-1] / PAP->scale
+
     SPEX_CHECK(SPEX_mpq_set_z(b2->scale, (*det)));
     SPEX_CHECK(SPEX_mpq_mul(b2->scale, b2->scale, b->scale));
     SPEX_CHECK(SPEX_mpq_div(b2->scale, b2->scale, F->scale_for_A));

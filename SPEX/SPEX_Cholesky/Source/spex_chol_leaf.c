@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_leaf: Subroutine for column counts of Cholesky
+// SPEX_Cholesky/spex_chol_leaf: Subroutine for column counts of Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

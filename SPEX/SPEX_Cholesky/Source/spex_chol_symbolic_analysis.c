@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_symbolic_analysis: Symbolic analysis for SPEX Cholesky
+// SPEX_Cholesky/spex_chol_symbolic_analysis: Symbolic analysis for SPEX Cholesky
 //                                        factorization
 //------------------------------------------------------------------------------
 

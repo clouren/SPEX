@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_etree: Compute the elimination tree of a matrix A
+// SPEX_Cholesky/spex_chol_etree: Compute the elimination tree of a matrix A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

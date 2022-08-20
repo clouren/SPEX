@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data
+// SPEX_Cholesky/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data
 //                                type
 //------------------------------------------------------------------------------
 
@@ -33,15 +33,14 @@
  *              factorization. If NULL on input, default values are used.
  */
 
-#define SPEX_FREE_WORKSPACE                 \
-{                                            \
-    SPEX_factorization_free(&F, option);     \
-    SPEX_symbolic_analysis_free (&S, option);\
-    SPEX_FREE (PAP->x.mpz);                  \
-    SPEX_matrix_free(&PAP, NULL);            \
+#define SPEX_FREE_WORKSPACE                     \
+{                                               \
+    SPEX_factorization_free(&F, option);        \
+    SPEX_symbolic_analysis_free (&S, option);   \
+    SPEX_matrix_free (&PAP, option) ;           \
 }
 
-#define SPEX_FREE_ALL            \
+#define SPEX_FREE_ALL             \
 {                                 \
     SPEX_FREE_WORKSPACE           \
     SPEX_matrix_free(&x, NULL);   \
@@ -58,7 +57,8 @@ SPEX_info SPEX_Chol_backslash
     SPEX_type type,               // Type of output desired
                                   // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
     const SPEX_matrix* A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-    const SPEX_matrix* b,         // Right hand side vector(s). Must be SPEX_MPZ and SPEX_DENSE
+    const SPEX_matrix* b,         // Right hand side vector(s). Must be
+                                  // SPEX_MPZ and SPEX_DENSE
     const SPEX_options* option    // Command options (Default if NULL)
 )
 {
@@ -105,7 +105,6 @@ SPEX_info SPEX_Chol_backslash
     SPEX_matrix *x = NULL;
     SPEX_matrix* PAP = NULL;
 
-
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
@@ -113,11 +112,12 @@ SPEX_info SPEX_Chol_backslash
     SPEX_CHECK( spex_chol_preorder(&S, A, option) );
 
     //--------------------------------------------------------------------------
-    // Determine if A is indeed symmetric. If so, we try Cholesky.
-    // This symmetry check checks for both the nonzero pattern and values.
-    // In addition, the symmetry check also checks that no diagonal entry is zero;
-    // as otherwise this indicates that the matrix is not SPD (even if symmetric)
-    // If the symmetry check fails, the appropriate error code is returned
+    // Determine if A is indeed symmetric. If so, we try Cholesky.  This
+    // symmetry check checks for both the nonzero pattern and values.  In
+    // addition, the symmetry check also checks that no diagonal entry is zero;
+    // as otherwise this indicates that the matrix is not SPD (even if
+    // symmetric) If the symmetry check fails, the appropriate error code is
+    // returned
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( SPEX_determine_symmetry((SPEX_matrix*)A, option) );
@@ -170,10 +170,10 @@ SPEX_info SPEX_Chol_backslash
         SPEX_matrix_free (&x, NULL);
     }
 
-
     //--------------------------------------------------------------------------
     // Free all workspace and return success
     //--------------------------------------------------------------------------
+
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }

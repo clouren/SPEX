@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_Up_Factor: Up-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_chol_up_factor: Up-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -17,9 +17,11 @@
     SPEX_FREE(c);                   \
 }
 
-# define SPEX_FREE_ALL               \
-{                                    \
-    SPEX_FREE_WORKSPACE              \
+#define SPEX_FREE_ALL               \
+{                                   \
+    SPEX_matrix_free(&L, NULL);     \
+    SPEX_matrix_free(&rhos, NULL);  \
+    SPEX_FREE_WORKSPACE             \
 }
 
 #include "spex_chol_internal.h"
@@ -69,32 +71,25 @@ SPEX_info spex_chol_up_factor
     // Check inputs
     //--------------------------------------------------------------------------
 
-    ASSERT(A->type == SPEX_MPZ) ;
-    ASSERT(A->kind == SPEX_CSC) ;
-
-    // Check the number of nonzeros in A
-    int64_t anz;
-    // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
-    // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
-    SPEX_info info =  SPEX_matrix_nnz (&anz, A, option);
-
-    if (info != SPEX_OK)
-        return SPEX_INCORRECT_INPUT;
-
-    if (anz < 0)
-    {
-        return SPEX_INCORRECT_INPUT ;
-    }
+    SPEX_info info;
+    ASSERT (A != NULL) ;
+    ASSERT (A->type == SPEX_MPZ);
+    ASSERT (A->kind == SPEX_CSC);
+    ASSERT (L_handle != NULL) ;
+    ASSERT (rhos_handle != NULL) ;
+    (*L_handle) = NULL ;
+    (*rhos_handle) = NULL ;
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
+
     SPEX_matrix *L = NULL ;
     SPEX_matrix *rhos = NULL ;
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
     SPEX_matrix *x = NULL ;
-    int64_t* c = NULL;
+    int64_t *c = NULL;
 
     // Declare variables
     int64_t n = A->n, top, i, j, jnew, k;
@@ -161,12 +156,6 @@ SPEX_info spex_chol_up_factor
     SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
-    if (!x || !rhos)
-    {
-        SPEX_FREE_WORKSPACE;
-        return SPEX_OUT_OF_MEMORY;
-    }
-
     // initialize the entries of x
     for (i = 0; i < n; i++)
     {
@@ -206,24 +195,21 @@ SPEX_info spex_chol_up_factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_chol_up_triangular_solve(&top, xi, x, L, A, k, S->parent,
-                                                 c, rhos, h));
+        SPEX_CHECK(spex_chol_up_triangular_solve(&top, xi, x, L, A, k,
+            S->parent, c, rhos, h));
 
         // If x[k] is nonzero choose it as pivot. Otherwise, the matrix is
         // not SPD (indeed, it may even be singular).
-        // If current pivot and previous pivot have a different sign then matrix
-        // is not SPD (or SND)
         SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k]));
-        printf("%d, %d\n", prev_sgn, sgn);
-        if (sgn == 0 || sgn!=prev_sgn) //TODO checa cluster //TODO checa por que no compila en laptop!!!
+        if (sgn != 0)
         {
-            SPEX_FREE_WORKSPACE;
-            return SPEX_NOTSPD;           
+            SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
         }
         else
         {
-            SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
-            prev_sgn=sgn;
+            // A is not symmetric positive definite
+            SPEX_FREE_ALL ;
+            return SPEX_NOTSPD;
         }
 
         //----------------------------------------------------------------------
@@ -239,8 +225,8 @@ SPEX_info spex_chol_up_factor
             // Determine the column where x[j] belongs to
             p = c[jnew]++;
 
-            // Place the i index of this nonzero. This should always be k because
-            // at iteration k, the up-looking algorithm computes row k of L
+            // Place the i index of this nonzero. Should always be k because at
+            // iteration k, the up-looking algorithm computes row k of L
             L->i[p] = k;
 
             // Find the number of bits of x[j]
@@ -265,6 +251,7 @@ SPEX_info spex_chol_up_factor
     //--------------------------------------------------------------------------
     // Free memory and set output
     //--------------------------------------------------------------------------
+
     (*L_handle) = L;
     (*rhos_handle) = rhos;
     SPEX_FREE_WORKSPACE;

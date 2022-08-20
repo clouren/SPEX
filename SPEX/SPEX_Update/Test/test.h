@@ -15,9 +15,6 @@
 #define FREE_WORKSPACE
 #endif
 
-#define GOTCHA \
-    printf ("%s, line %d\n", __FILE__, __LINE__);
-
 #define SPEX_PRINT_INFO(info)                                               \
 {                                                                           \
     printf ("file %s line %d: ", __FILE__, __LINE__) ;                      \

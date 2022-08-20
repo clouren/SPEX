@@ -165,7 +165,6 @@ int main (int argc, char* argv[])
         glp_simplex(LP, &parm);
         printf("%ld: %d, obj: %lf\n",count++,
             glp_get_status(LP), glp_get_obj_val(LP));
-        GOTCHA;
     }
 
     // create a mpz matrix of b

@@ -17,7 +17,7 @@
  */
 
 // usage:
-// spex_lu_demo Followed by the listed args:
+// spexlu_demo Followed by the listed args:
 //
 // f (or file) Filename. e.g., spex_lu_demo f MATRIX_NAME RHS_NAME, which indicates
 // spex_lu_demo will read matrix from MATRIX_NAME and right hand side from RHS_NAME.

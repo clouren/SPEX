@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol_Pre_Left_Factor: Symbolic left-looking Chol factorization
+// SPEX_Cholesky/spex_chol_pre_left_factor: Symbolic left-looking Chol factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

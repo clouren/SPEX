@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_chol_internal: include file for internal use in SPEX_Cholesky
+// SPEX_Cholesky/spex_chol_internal.h: include file for internal use in SPEX_Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,

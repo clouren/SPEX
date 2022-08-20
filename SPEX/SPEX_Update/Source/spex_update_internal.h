@@ -12,7 +12,7 @@
 // This file is not intended to be #include'd in user applications.  Use
 // SPEX_Update.h instead.
 
-// uncommemd to help debugging
+// uncomment to help debugging
 // #define SPEX_DEBUG
 
 #ifndef SPEX_UPDATE_INTERNAL_H
@@ -35,16 +35,6 @@
         return (info) ;         \
     }                           \
 }
-
-#ifndef GOTCHA
-#define GOTCHA \
-    printf ("GOTCHA: %s, line %d\n", __FILE__, __LINE__);
-#endif
-
-#endif
-
-#ifndef GOTCHA
-    #define GOTCHA
 #endif
 
 // ============================================================================

@@ -1,0 +1,8 @@
+# Ignore these files:
+example_extended
+example_extended_debug
+example_simple
+
+# Do not ignore this file
+!.gitignore
+

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_Left_Factor: Left-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_chol_left_factor: Left-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -19,6 +19,8 @@
 
 #define SPEX_FREE_ALL               \
 {                                   \
+    SPEX_matrix_free(&L, NULL);     \
+    SPEX_matrix_free(&rhos, NULL);  \
     SPEX_FREE_WORKSPACE             \
 }
 
@@ -68,26 +70,20 @@ SPEX_info spex_chol_left_factor
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------
+
     SPEX_info info;
-    ASSERT(A->type == SPEX_MPZ);
-    ASSERT(A->kind == SPEX_CSC);
-
-    // Check the number of nonzeros in A
-    int64_t anz;
-    // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
-    // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
-    info = SPEX_matrix_nnz (&anz, A, option);
-    if (info != SPEX_OK)
-        return SPEX_INCORRECT_INPUT;
-
-    if (anz < 0)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
+    ASSERT (A != NULL) ;
+    ASSERT (A->type == SPEX_MPZ);
+    ASSERT (A->kind == SPEX_CSC);
+    ASSERT (L_handle != NULL) ;
+    ASSERT (rhos_handle != NULL) ;
+    (*L_handle) = NULL ;
+    (*rhos_handle) = NULL ;
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
+
     SPEX_matrix *L = NULL ;
     SPEX_matrix *rhos = NULL ;
     int64_t *xi = NULL ;
@@ -160,12 +156,6 @@ SPEX_info spex_chol_left_factor
     SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
-    if (!x || !rhos)
-    {
-        SPEX_FREE_WORKSPACE;
-        return SPEX_OUT_OF_MEMORY;
-    }
-
     // initialize the entries of x
     for (i = 0; i < n; i++)
     {
@@ -192,7 +182,6 @@ SPEX_info spex_chol_left_factor
         L->p[k] = c[k] = (S->cp)[k];
     }
 
-
     //--------------------------------------------------------------------------
     // Perform the factorization
     //--------------------------------------------------------------------------
@@ -204,7 +193,7 @@ SPEX_info spex_chol_left_factor
     {
         // LDx = A(:,k)
         SPEX_CHECK(spex_chol_left_triangular_solve(&top, x, xi, L, A, k, rhos,
-                                                    h, S->parent, c));
+            h, S->parent, c));
 
         // Set the pivot element If this element is equal to zero, no pivot
         // element exists and the matrix is either not SPD or singular
@@ -215,7 +204,8 @@ SPEX_info spex_chol_left_factor
         }
         else
         {
-            SPEX_FREE_WORKSPACE;
+            // A is not symmetric positive definite
+            SPEX_FREE_ALL;
             return SPEX_NOTSPD;
         }
         //----------------------------------------------------------------------

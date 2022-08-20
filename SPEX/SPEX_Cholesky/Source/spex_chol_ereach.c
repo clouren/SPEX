@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/spex_Chol_ereach: Compute reach of an elimination tree
+// SPEX_Cholesky/spex_chol_ereach: Compute reach of an elimination tree
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
