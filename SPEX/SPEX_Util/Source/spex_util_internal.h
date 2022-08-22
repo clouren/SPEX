@@ -508,6 +508,22 @@ SPEX_info spex_factorization_basic_check
     SPEX_factorization *F // The factorization to check
 );
 
+SPEX_info spex_colamd
+(
+    int64_t **perm_handle,
+    int64_t *nnz,
+    const SPEX_matrix *A,
+    const SPEX_options* option
+);
+
+SPEX_info spex_amd
+(
+    int64_t **perm_handle,
+    int64_t *nnz,
+    const SPEX_matrix *A,
+    const SPEX_options* option
+);
+
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type
 #define SPEX_X(A)                                                           \
     ((A->type == SPEX_MPZ  ) ? (void *) A->x.mpz   :                        \

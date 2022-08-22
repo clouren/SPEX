@@ -77,94 +77,47 @@ SPEX_info SPEX_LU_analyze
     //--------------------------------------------------------------------------
 
     SPEX_preorder order = SPEX_OPTION_ORDER (option) ;
-    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
-
-    if (order == SPEX_NO_ORDERING)
+    switch(order)
     {
-        for (i = 0; i < n+1; i++)
+        default:
+        case SPEX_DEFAULT:
+        case SPEX_COLAMD:
+        // ---AMD ordering is used (DEFAULT)---
+        // S->q is set to AMD's column ordering on A.
+        // The number of nonzeros in L is given as AMD's computed
+        // number of nonzeros in the Cholesky factor L of A which is the exact
+        // nnz(L) for Cholesky factorization (barring numeric cancellation)
         {
-            S->Q_perm[i] = i;
+            spex_colamd(&(S->Q_perm),&(S->unz),A,option);
+            S->lnz = S->unz;
         }
-        // estimates for number of L and U nonzeros
-        S->lnz = S->unz = 10*anz;
-    }
+        break;
 
-    //--------------------------------------------------------------------------
-    // The AMD ordering is used. S->Q_perm is set to AMD's column ordering on
-    // A+A'. The number of nonzeros in L and U is given as AMD's computed
-    // number of nonzeros in the Cholesky factor L of A+A'
-    //--------------------------------------------------------------------------
-    else if (order == SPEX_AMD)
-    {
-        double Control [AMD_CONTROL];           // Declare AMD control
-        amd_l_defaults (Control) ;              // Set AMD defaults
-        double Info [AMD_INFO];
-        // Perform AMD
-        SuiteSparse_long amd_done = amd_l_order(n, (SuiteSparse_long *) A->p,
-            (SuiteSparse_long *) A->i, (SuiteSparse_long *) S->Q_perm,
-            Control, Info) ;
-        if (amd_done != AMD_OK && amd_done != AMD_OK_BUT_JUMBLED)
+        case SPEX_NO_ORDERING:
+        // ---No ordering is used---
+        // S->q is set to [0 ... n] and the number of nonzeros in L is estimated
+        // to be 10 times the number of nonzeros in A.
+        // This is a very crude estimate on the nnz(L)
         {
-            // AMD failed.  This is untestable via SPEX.
-            SPEX_symbolic_analysis_free (&S, option) ;
-            return SPEX_INCORRECT_INPUT;
+            for (i = 0; i < n+1; i++)
+            {
+                S->Q_perm[i] = i;
+            }
+            // Very crude estimate for number of L and U nonzeros
+            S->lnz = S->unz = 10*anz;
         }
-        S->lnz = S->unz = Info[AMD_LNZ];        // estimate for unz and lnz
-        if (pr > 0)   // Output AMD info if desired
-        {
-            SPEX_PRINTF ("\n****Column Ordering Information****\n") ;
-            amd_l_control (Control) ;
-            amd_l_info (Info) ;
-        }
-    }
+        break;
 
-    //--------------------------------------------------------------------------
-    // The COLAMD ordering is used. S->Q_perm is set as COLAMD's column
-    // ordering. The number of nonzeros in L and U is set as 10 times the
-    // number of nonzeros in A. This is a crude estimate.
-    //--------------------------------------------------------------------------
-    else
-    {
-        // Declared as per COLAMD documentation
-        int64_t Alen = 2*anz + 6 *(n+1) + 6*(n+1) + n;
-        int64_t* A2 = (int64_t*) SPEX_malloc(Alen* sizeof(int64_t));
-        if (!A2)
+        case SPEX_AMD:
+        // --- COLAMD ordering is used
+        // S->q is set as COLAMD's column ordering.
+        // The number of nonzeros in L is set as 10 times the number of
+        // nonzeros in A. This is a crude estimate.
         {
-            // out of memory
-            SPEX_symbolic_analysis_free (&S, option) ;
-            return (SPEX_OUT_OF_MEMORY) ;
+            spex_amd(&(S->Q_perm),&(S->unz),A,option);
+            S->lnz = S->unz;
         }
-        // Initialize S->Q_perm as per COLAMD documentation
-        for (i = 0; i < n+1; i++)
-        {
-            S->Q_perm[i] = A->p[i];
-        }
-        // Initialize A2 per COLAMD documentation
-        for (i = 0; i < anz; i++)
-        {
-            A2[i] = A->i[i];
-        }
-        int64_t stats [COLAMD_STATS];
-        SuiteSparse_long colamd_done = colamd_l (n, n, Alen,
-            (SuiteSparse_long *) A2, (SuiteSparse_long *) S->Q_perm,
-            (double *) NULL, (SuiteSparse_long *) stats) ;
-        SPEX_FREE(A2);  // free workspace
-        if (!colamd_done) // check if COLAMD is successful
-        {
-            // COLAMD failed.  This is untestable via SPEX.
-            SPEX_symbolic_analysis_free (&S, option) ;
-            return SPEX_PANIC ;
-        }
-        // estimate for lnz and unz
-        S->lnz = S->unz = 10*anz;
-
-        // Print stats if desired
-        if (pr > 0)
-        {
-            SPEX_PRINTF ("\n****Column Ordering Information****\n") ;
-            colamd_l_report ((SuiteSparse_long *) stats) ;
-            SPEX_PRINTF ("\nEstimated L and U nonzeros: %" PRId64 "\n", S->lnz);
-        }
+        break;
     }
 
     //--------------------------------------------------------------------------

@@ -24,10 +24,6 @@
  * option:  option->order tells the function which ordering scheme to use
  */
 
-#define SPEX_FREE_WORKSPACE                     \
-{                                               \
-    SPEX_FREE(A2);                              \
-}
 
 #define SPEX_FREE_ALL                           \
 {                                               \
@@ -78,11 +74,9 @@ SPEX_info spex_chol_preorder
     //--------------------------------------------------------------------------
 
     SPEX_symbolic_analysis* S = NULL;
-    int64_t *A2 = NULL ;
 
     // declare indices and dimension of matrix
     int64_t i, k, index, n = A->n;
-    int pr = SPEX_OPTION_PRINT_LEVEL(option);
 
     int64_t anz; // Number of nonzeros in A
     SPEX_CHECK (SPEX_matrix_nnz(&anz, A, option)) ;
@@ -119,33 +113,7 @@ SPEX_info spex_chol_preorder
         // number of nonzeros in the Cholesky factor L of A which is the exact
         // nnz(L) for Cholesky factorization (barring numeric cancellation)
         {
-            double Control[AMD_CONTROL];           // Declare AMD control
-            amd_l_defaults(Control);              // Set AMD defaults
-            double Info [AMD_INFO];
-            // Perform AMD
-            SuiteSparse_long amd_result = amd_l_order(n,
-                (SuiteSparse_long *)A->p, (SuiteSparse_long *)A->i,
-                (SuiteSparse_long *)S->P_perm, Control, Info);
-            // FIXME: do this in LU as well:
-            if (pr > 0)   // Output AMD info if desired
-            {
-                SPEX_PRINTF("\n****Ordering Information****\n");
-                amd_l_control(Control);
-                amd_l_info(Info);
-            }
-            if (!(amd_result == AMD_OK || amd_result == AMD_OK_BUT_JUMBLED))
-            {
-                // AMD failed: either out of memory, or bad input
-                SPEX_FREE_ALL ;
-                if (amd_result == AMD_OUT_OF_MEMORY)
-                {
-                    // AMD ran out of memory
-                    return (SPEX_OUT_OF_MEMORY) ;
-                }
-                // input matrix is invalid
-                return (SPEX_INCORRECT_INPUT) ;
-            }
-            S->lnz = Info[AMD_LNZ];  // Exact number of nonzeros for Cholesky
+            spex_amd(&(S->P_perm),&(S->lnz),A,option);
         }
         break;
 
@@ -170,47 +138,7 @@ SPEX_info spex_chol_preorder
         // The number of nonzeros in L is set as 10 times the number of
         // nonzeros in A. This is a crude estimate.
         {
-            // Declared as per COLAMD documentation
-            int64_t Alen = 2*anz + 6 *(n+1) + 6*(n+1) + n;
-            A2 = (int64_t*)SPEX_malloc(Alen*sizeof(int64_t));
-            if (!A2)
-            {
-                // out of memory
-                SPEX_FREE_ALL ;
-                return (SPEX_OUT_OF_MEMORY) ;
-            }
-            // Initialize S->p as per COLAMD documentation
-            for (i = 0; i < n+1; i++)
-            {
-                S->P_perm[i] = A->p[i];
-            }
-            // Initialize A2 per COLAMD documentation
-            for (i = 0; i < anz; i++)
-            {
-                A2[i] = A->i[i];
-            }
-            int64_t stats[COLAMD_STATS];
-            SuiteSparse_long colamd_result = colamd_l (n, n, Alen,
-                (SuiteSparse_long *)A2, (SuiteSparse_long *) S->P_perm,
-                (double *)NULL, (SuiteSparse_long *) stats);
-            if (!colamd_result)
-            {
-                // COLAMD failed; this "cannot" occur (and is untestable)
-                // FIXME make sure this is untestable
-                SPEX_FREE_ALL ;
-                return (SPEX_PANIC) ;
-            }
-            // estimate for lnz and unz
-            S->lnz = 10*anz;
-
-            // Print stats if desired
-            if (pr > 0)
-            {
-                SPEX_PRINTF ("\n****Ordering Information****\n");
-                colamd_l_report ((SuiteSparse_long *) stats);
-                SPEX_PRINTF ("\nEstimated L nonzeros: %" PRId64 "\n", S->lnz);
-            }
-            SPEX_FREE (A2) ;
+            spex_colamd(&(S->P_perm),&(S->lnz),A,option);
         }
         break;
     }
