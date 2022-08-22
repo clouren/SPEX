@@ -76,7 +76,9 @@ OBJ_UTIL = \
     SPEX_determine_symmetry.o SPEX_transpose.o \
     SPEX_factorization_convert.o \
     SPEX_factorization_check.o \
-    spex_factorization_basic_check.o
+    spex_factorization_basic_check.o \
+    spex_colamd.o \
+    spex_amd.o
     # spex_matrix_div.o \
 
 $(OBJ_UTIL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h Makefile
@@ -142,7 +144,7 @@ OBJ_CHOL = \
     spex_chol_left_triangular_solve.o \
     spex_chol_up_triangular_solve.o
 
-$(OBJ_CHOL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky//Source/spex_chol_internal.h Makefile
+$(OBJ_CHOL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky//Source/spex_chol_internal.h ../SPEX_Util/Source/spex_util_internal.h Makefile
 
 SPEX_Chol_%.o: ../SPEX_Cholesky/Source/SPEX_Chol_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_chol_internal.h
 	$(C) $(I) -c $<
