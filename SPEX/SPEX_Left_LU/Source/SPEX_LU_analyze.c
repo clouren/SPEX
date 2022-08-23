@@ -62,13 +62,6 @@ SPEX_info SPEX_LU_analyze
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
     S->kind = SPEX_LU_FACTORIZATION;
 
-    // Allocate memory for column permutation
-    S->Q_perm = (int64_t*) SPEX_malloc((n+1) * sizeof(int64_t));
-    if (S->Q_perm == NULL)
-    {
-        SPEX_FREE(S);
-        return SPEX_OUT_OF_MEMORY;
-    }
 
     //--------------------------------------------------------------------------
     // No ordering is used. S->Q_perm is set to [0...n] and the number of

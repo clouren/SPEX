@@ -28,6 +28,7 @@ SPEX_info spex_amd
     int64_t n = A->n;
     int64_t *perm=NULL;
     
+    // Allocate memory for permutation
     perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
     if (perm == NULL)
     {
