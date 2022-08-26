@@ -62,12 +62,7 @@ SPEX_info spex_update_get_scattered_v
         if (sgn != 0)
         {
             i = v->i[p];
-            if (i < 0 || i >= n)
-            {
-                // v is an invalid vector
-                SPEX_FREE_ALL ;
-                return (SPEX_INCORRECT_INPUT) ;
-            }
+            ASSERT (i >= 0 && i < n) ;
 
             if (next != NULL)
             {

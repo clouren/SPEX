@@ -1,6 +1,6 @@
 SPEX/Tcov: comprehensive test coverage for SPEX.
 
-Requires Linux. Type "make" to compile, and then "make run" to run the
+Requires Linux. Type "make" to compile, and run the
 tests, or "make vtests" to run the tests with valgrind for memory leakage
 checking. 
 
