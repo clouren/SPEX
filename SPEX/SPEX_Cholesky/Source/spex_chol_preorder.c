@@ -113,7 +113,7 @@ SPEX_info spex_chol_preorder
         // number of nonzeros in the Cholesky factor L of A which is the exact
         // nnz(L) for Cholesky factorization (barring numeric cancellation)
         {
-            spex_amd(&(S->P_perm),&(S->lnz),A,option);
+            SPEX_OK( spex_amd(&(S->P_perm),&(S->lnz),A,option));
         }
         break;
 
@@ -138,7 +138,7 @@ SPEX_info spex_chol_preorder
         // The number of nonzeros in L is set as 10 times the number of
         // nonzeros in A. This is a crude estimate.
         {
-            spex_colamd(&(S->P_perm),&(S->lnz),A,option);
+            SPEX_OK( spex_colamd(&(S->P_perm),&(S->lnz),A,option));
         }
         break;
     }

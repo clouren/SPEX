@@ -9,9 +9,14 @@
 
 //------------------------------------------------------------------------------
 
+#define SPEX_FREE_ALL                           \
+{                                               \
+    SPEX_FREE_WORKSPACE ;                       \
+    SPEX_free(&perm_handle, option);            \
+}
+//TODO check this free is correct with valgrind
 
 #include "spex_util_internal.h"
-//FIXME the error is not going to work, do I pass in S just to free it in case of error?
 
 /* Purpose: 
  */
