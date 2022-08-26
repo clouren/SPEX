@@ -40,6 +40,7 @@ SPEX_info spex_colamd
     
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
     
+    // Allocate memory for permutation
     perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
     if (perm == NULL)
     {

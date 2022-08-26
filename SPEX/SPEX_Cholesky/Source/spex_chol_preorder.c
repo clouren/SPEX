@@ -92,14 +92,6 @@ SPEX_info spex_chol_preorder
 
     S->kind = SPEX_CHOLESKY_FACTORIZATION ;
 
-    // Allocate memory for row/column permutation
-    S->P_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
-    if (S->P_perm == NULL)
-    {
-        SPEX_FREE_ALL ;
-        return (SPEX_OUT_OF_MEMORY) ;
-    }
-
     //Check which ordering to use.
     SPEX_preorder order = SPEX_OPTION_ORDER(option);
     switch(order)
