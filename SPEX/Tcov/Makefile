@@ -1,3 +1,4 @@
+
 #-------------------------------------------------------------------------------
 # SPEX/SPEX/Tcov/Makefile: compile and run SLIP test coverage
 #-------------------------------------------------------------------------------
@@ -86,7 +87,9 @@ CS_Util = \
     SPEX_factorization_check.o \
     spex_factorization_basic_check.o \
     SPEX_determine_symmetry.o \
-    SPEX_transpose.o
+    SPEX_transpose.o \
+    spex_amd.o \
+    spex_colamd.o
 
 $(CS_Util): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Util/Source/spex_util_internal.h
 
@@ -116,7 +119,6 @@ CS_Left_LU = \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_Left_LU_solve.o
     #spex_left_lu_permute_x.o \
-
 $(CS_Left_LU): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Left_LU/Source/spex_left_lu_internal.h ../SPEX_Left_LU/Demo/demos.h
 
 .PRECIOUS: SPEX_LU_%.c SPEX_Left_LU_%.c spex_left_lu_%.c spexlu_demo.c demos.c
@@ -284,4 +286,3 @@ clean:
 purge: distclean
 
 distclean: clean
-
