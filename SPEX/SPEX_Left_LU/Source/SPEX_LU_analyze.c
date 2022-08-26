@@ -36,6 +36,8 @@ SPEX_info SPEX_LU_analyze
     // check inputs
     //--------------------------------------------------------------------------
     if (!spex_initialized()) return SPEX_PANIC;
+    
+    SPEX_info info ;
 
     // A can have any data type, but must be in sparse CSC format
     SPEX_REQUIRE_KIND (A, SPEX_CSC) ;
@@ -81,7 +83,7 @@ SPEX_info SPEX_LU_analyze
         // number of nonzeros in the Cholesky factor L of A which is the exact
         // nnz(L) for Cholesky factorization (barring numeric cancellation)
         {
-            SPEX_OK( spex_colamd(&(S->Q_perm),&(S->unz),A,option));
+            SPEX_CHECK( spex_colamd(&(S->Q_perm),&(S->unz),A,option));
             S->lnz = S->unz;
         }
         break;
@@ -92,6 +94,12 @@ SPEX_info SPEX_LU_analyze
         // to be 10 times the number of nonzeros in A.
         // This is a very crude estimate on the nnz(L)
         {
+            S->Q_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
+            if (S->Q_perm == NULL)
+            {
+                SPEX_FREE_ALL ;
+                return (SPEX_OUT_OF_MEMORY) ;
+            }
             for (i = 0; i < n+1; i++)
             {
                 S->Q_perm[i] = i;
@@ -107,7 +115,7 @@ SPEX_info SPEX_LU_analyze
         // The number of nonzeros in L is set as 10 times the number of
         // nonzeros in A. This is a crude estimate.
         {
-            SPEX_OK( spex_amd(&(S->Q_perm),&(S->unz),A,option));
+            SPEX_CHECK( spex_amd(&(S->Q_perm),&(S->unz),A,option));
             S->lnz = S->unz;
         }
         break;
