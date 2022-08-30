@@ -258,6 +258,35 @@ int main (int argc, char *argv [])
     create_test_rhs (&b, A->n) ;
 
     //--------------------------------------------------------------------------
+    // test SPEX_transpose FIXME move?
+    //--------------------------------------------------------------------------
+
+    printf("\n Test SPEX_transpose \n");
+    SPEX_matrix *A_mpq = NULL, *A_mpfr = NULL, *A_int = NULL, *A_fp = NULL;
+    SPEX_matrix *T_mpq = NULL, *T_mpfr = NULL, *T_int = NULL, *T_fp = NULL;
+    // T = A'
+    OK ( SPEX_matrix_copy(&A_mpq, SPEX_CSC, SPEX_MPQ, A, option));
+    OK ( SPEX_transpose(&T_mpq, A_mpq, option) );
+
+    OK ( SPEX_matrix_copy(&A_mpfr, SPEX_CSC, SPEX_MPFR, A, option));
+    OK ( SPEX_transpose(&T_mpfr, A_mpfr, option) );
+
+    OK ( SPEX_matrix_copy(&A_int, SPEX_CSC, SPEX_INT64, A, option));
+    OK ( SPEX_transpose(&T_int, A_int, option) );
+
+    OK ( SPEX_matrix_copy(&A_fp, SPEX_CSC, SPEX_FP64, A, option));
+    OK ( SPEX_transpose(&T_fp, A_fp, option));
+
+    SPEX_matrix_free(&A_mpq,option);
+    SPEX_matrix_free(&A_mpfr,option);
+    SPEX_matrix_free(&A_int,option);
+    SPEX_matrix_free(&A_fp,option);
+    SPEX_matrix_free(&T_mpq,option);
+    SPEX_matrix_free(&T_mpfr,option);
+    SPEX_matrix_free(&T_int,option);
+    SPEX_matrix_free(&T_fp,option);
+
+    //--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------
 
