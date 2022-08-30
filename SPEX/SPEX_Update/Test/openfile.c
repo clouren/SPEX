@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/Test/ptest.c: performance test for SPEX_LU_Update library
+// SPEX_Update/Test/ptest.c: performance test for SPEX_Update
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
@@ -58,7 +58,7 @@ int main( int argc, char* argv[])
     SPEX_vector *tmpv, *vk = NULL, *vk3 = NULL;
     mpz_t z, minz, tmpz;
     mpq_t minq, tmpq, one;
-    SPEX_LU_analysis* analysis = NULL;
+    SPEX_symbolic_analysis* analysis = NULL;
     int64_t *P1_inv = NULL, *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL;
     int64_t *P3 = NULL, *P3_inv = NULL, *Q3 = NULL, *Q3_inv = NULL;
     int64_t *basis = NULL, *h = NULL, *used_as_basis = NULL;
@@ -207,11 +207,11 @@ int main( int argc, char* argv[])
     start_llu = clock();
 
     // We now perform symbolic analysis by getting the column preordering of A
-    OK(SPEX_LU_analyze(&analysis, A1, option));
+    OK(SPEX_lu_analyze(&analysis, A1, option));
 
     // Now we perform the SPEX Left LU factorization to obtain matrices L and U
     // and a row permutation P such that PAQ = LDU.
-    OK(SPEX_LU_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis, option));
+    OK(SPEX_lu_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis, option));
 
     end_llu = clock();
 
@@ -537,11 +537,11 @@ int main( int argc, char* argv[])
         start_llu = clock();
 
         // perform symbolic analysis by getting the column preordering of A
-        OK(SPEX_LU_analyze(&analysis, A1, option));
+        OK(SPEX_lu_analyze(&analysis, A1, option));
 
         // Now we perform the SPEX Left LU factorization to obtain matrices L
         // and U and a row permutation P such that PAQ = LDU.
-        OK(SPEX_LU_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis,
+        OK(SPEX_lu_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis,
             option));
 //        if (info == SPEX_OK) {printf("matrix is not singular!\n");}
 

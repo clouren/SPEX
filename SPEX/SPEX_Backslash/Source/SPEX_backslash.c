@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Backslash/SPEX_Backslash.c: Solve a system Ax=b
+// SPEX_Backslash/SPEX_backslash.c: Solve a system Ax=b
 //------------------------------------------------------------------------------
 
 // SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy, 
@@ -36,7 +36,7 @@
 
 
 
-SPEX_info SPEX_Backslash
+SPEX_info SPEX_backslash
 (
     // Output
     SPEX_matrix **X_handle,       // On output: Final solution vector
@@ -117,7 +117,7 @@ SPEX_info SPEX_Backslash
         // SPEX_NOTSPD:   Cholesky failed. This means
         //                A is not SPD. In this case, we try LU
         // Other error code: Some error. Return the error code and exit
-        info = SPEX_Chol_backslash(&x, type, A, b, backslash_options);
+        info = SPEX_cholesky_backslash(&x, type, A, b, backslash_options);
         if (info == SPEX_OK)
         {
             // Cholesky was successful. Set X_handle = x
@@ -142,7 +142,7 @@ SPEX_info SPEX_Backslash
             // SPEX_OK: LU success, x is the exact solution
             // Other error code: Some error. Return the error
             //                   code and exit
-            info = SPEX_LU_backslash(&x, type, A, b, backslash_options);
+            info = SPEX_lu_backslash(&x, type, A, b, backslash_options);
             if (info == SPEX_OK)
             {
                 // LU success, set X_h// A must be CSC and MPZandle = x
@@ -188,7 +188,7 @@ SPEX_info SPEX_Backslash
         // SPEX_OK: LU success, x is the exact solution
         // Other error code: Some error. Return the error
         //                   code and exit
-        info = SPEX_LU_backslash(&x, type, A, b, backslash_options);
+        info = SPEX_lu_backslash(&x, type, A, b, backslash_options);
         if (info == SPEX_OK)
         {
             // LU factorization was successful. Set X_handle = x

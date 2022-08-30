@@ -180,7 +180,7 @@ int main (int argc, char* argv[])
 
     //--------------------------------------------------------------------------
     // We now perform symbolic analysis by getting the column preordering of
-    // the matrix A. This is done via the SPEX_LU_analyze function. The output
+    // the matrix A. This is done via the SPEX_lu_analyze function. The output
     // of this function is a column permutation Q where we factor the matrix AQ
     // and an estimate of the number of nonzeros in L and U.
     //
@@ -192,7 +192,7 @@ int main (int argc, char* argv[])
     clock_t start_col = clock();
 
     // Column ordering using either AMD, COLAMD or nothing
-    OK(SPEX_LU_analyze(&S, A, option));
+    OK(SPEX_lu_analyze(&S, A, option));
     if (option->print_level > 0)
     {
         SPEX_print_options(option);
@@ -208,7 +208,7 @@ int main (int argc, char* argv[])
 
     clock_t start_factor = clock();
 
-    OK(SPEX_LU_factorize(&F, A, S, option));
+    OK(SPEX_lu_factorize(&F, A, S, option));
 
     clock_t end_factor = clock();
 
@@ -233,7 +233,7 @@ int main (int argc, char* argv[])
     //option->check = true; 
     
     // Solve LDU x = b
-    OK(SPEX_LU_solve(&x, F, b, option));
+    OK(SPEX_lu_solve(&x, F, b, option));
 
     clock_t end_solve = clock();
 
@@ -268,6 +268,7 @@ int main (int argc, char* argv[])
 
     FREE_WORKSPACE;
     printf ("\n%s: all tests passed\n\n", __FILE__) ;
+    fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
     return 0;
 }
 

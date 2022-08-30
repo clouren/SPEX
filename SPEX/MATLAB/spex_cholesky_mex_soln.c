@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX/MATLAB/SPEX_Chol_mex_soln: Use SPEX Chol within MATLAB
+// SPEX/MATLAB/spex_cholesky_mex_soln: Use SPEX Chol within MATLAB
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 /* Purpose: The .c file defining the SPEX Chol MATLAB interfacee
- * This function defines: x = SPEX_Chol_mex_soln (A, b, option)
+ * This function defines: x = spex_cholesky_mex_soln (A, b, option)
  */
 
 
@@ -100,7 +100,7 @@ void mexFunction
     //--------------------------------------------------------------------------
 
     SPEX_matrix *x = NULL ;
-    SPEX_MEX_OK (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option)) ;
+    SPEX_MEX_OK (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option)) ;
 
     //--------------------------------------------------------------------------
     // print the result, if requested

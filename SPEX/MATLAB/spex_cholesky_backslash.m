@@ -1,6 +1,6 @@
-function x = SPEX_Chol_backslash (A,b,option)
-%SPEX_Chol_BACKSLASH: solve Ax=b via sparse integer-preserving Cholesky
-% SPEX_Chol_backslash: computes the exact solution to the sparse linear system Ax =
+function x = spex_cholesky_backslash (A,b,option)
+%spex_cholesky_BACKSLASH: solve Ax=b via sparse integer-preserving Cholesky
+% spex_cholesky_backslash: computes the exact solution to the sparse linear system Ax =
 % b where A and b are stored as doubles. A must be stored as a sparse matrix and be SPD. b
 % must be stored as a dense set of right hand side vectors. b can be either 1
 % or multiple vector(s).  The result x is computed exactly, represented in
@@ -15,9 +15,9 @@ function x = SPEX_Chol_backslash (A,b,option)
 %
 % Usage:
 %
-% x = SPEX_Chol_backslash (A,b) returns the solution to Ax=b using default settings.
+% x = spex_cholesky_backslash (A,b) returns the solution to Ax=b using default settings.
 %
-% x = SPEX_Chol_backslash (A,b,options) returns the solution to Ax=b with user
+% x = spex_cholesky_backslash (A,b,options) returns the solution to Ax=b with user
 %   defined settings in an options struct.  Entries not present are treated as
 %   defaults.
 %
@@ -49,8 +49,8 @@ function x = SPEX_Chol_backslash (A,b,option)
 %
 % Example:
 %
-%   % In this first example, x = SPEX_Chol_backslash (A,b) returns an approximate
-%   % solution, not because it was computed incorrectly in SPEX_Chol_backslash.  It
+%   % In this first example, x = spex_cholesky_backslash (A,b) returns an approximate
+%   % solution, not because it was computed incorrectly in spex_cholesky_backslash.  It
 %   % is computed exactly as a rational result in SPEX_backslash with arbitrary
 %   % precision, but then converted to double precision on output.
 %
@@ -60,12 +60,12 @@ function x = SPEX_Chol_backslash (A,b,option)
 %   n = size (A, 1) ;
 %   xtrue = rand (n,1) ;
 %   b = A*xtrue ;
-%   x = SPEX_Chol_backslash (A, b) ;
+%   x = spex_cholesky_backslash (A, b) ;
 %   err = norm (x-xtrue)
 %   x = A\b ;
 %   err = norm (x-xtrue)
 %
-%   % In this example, x = SPEX_Chol_backslash (A,b) is returned exactly in the
+%   % In this example, x = spex_cholesky_backslash (A,b) is returned exactly in the
 %   % MATLAB vector x, because x contains only integers representable exactly
 %   % in double precision.  x = A\b results in floating-point roundoff error.
 %
@@ -82,7 +82,7 @@ function x = SPEX_Chol_backslash (A,b,option)
 %   err = norm (x-xtrue)
 %   resid = norm (A*x-b)
 %
-% See also vpa, SPEX_install, SPEX_test, SPEX_demo, SPEX_LU_backslash
+% See also vpa, spex_mex_install, spex_mex_test, spex_mex_demo, spex_lu_backslash
 
 % SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
 % Erick Moreno-Centeno, Timothy A. Davis, Texas A&M University.  All Rights Reserved.  
@@ -110,7 +110,7 @@ end
 
 
 % Preprocessing complete. Now use SPEX Chol to solve A*x=b.
-x=SPEX_Chol_mex_soln (A, b, option) ;
+x=spex_cholesky_mex_soln (A, b, option) ;
 
 % convert to vpa, if requested
 if (isfield (option, 'solution') && isequal (option.solution, 'vpa'))

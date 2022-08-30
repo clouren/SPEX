@@ -20,7 +20,7 @@
  */
 
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
 SPEX_info spex_left_lu_back_sub  // performs sparse REF backward substitution
 (

@@ -105,7 +105,7 @@ SPEX_info spex_update_debug
     //--------------------------------------------------------------------------
     SPEX_CHECK(SPEX_create_default_options(&opt1));
     opt1->pivot = SPEX_DIAGONAL;
-    SPEX_CHECK(SPEX_LU_factorize(&Ftmp, Atmp, Stmp, opt1));
+    SPEX_CHECK(SPEX_lu_factorize(&Ftmp, Atmp, Stmp, opt1));
 
     SPEX_CHECK(SPEX_mpq_init(tmpq));
     for (int64_t jcol = 0; jcol < n; jcol++)

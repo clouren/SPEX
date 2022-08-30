@@ -1,6 +1,6 @@
-function x = SPEX_LU_backslash (A,b,option)
+function x = SPEX_lu_backslash (A,b,option)
 % SPEX_LU_BACKSLASH: solve Ax=b via sparse left-looking integer-preserving LU
-% SPEX_LU_backslash: computes the exact solution to the sparse linear system Ax =
+% spex_lu_backslash: computes the exact solution to the sparse linear system Ax =
 % b where A and b are stored as doubles. A must be stored as a sparse matrix. b
 % must be stored as a dense set of right hand side vectors. b can be either 1
 % or multiple vector(s).  The result x is computed exactly, represented in
@@ -15,9 +15,9 @@ function x = SPEX_LU_backslash (A,b,option)
 %
 % Usage:
 %
-% x = SPEX_LU_backslash (A,b) returns the solution to Ax=b using default settings.
+% x = spex_lu_backslash (A,b) returns the solution to Ax=b using default settings.
 %
-% x = SPEX_LU_backslash (A,b,options) returns the solution to Ax=b with user
+% x = spex_lu_backslash (A,b,options) returns the solution to Ax=b with user
 %   defined settings in an options struct.  Entries not present are treated as
 %   defaults.
 %
@@ -70,7 +70,7 @@ function x = SPEX_LU_backslash (A,b,option)
 %   n = size (A, 1) ;
 %   xtrue = rand (n,1) ;
 %   b = A*xtrue ;
-%   x = SPEX_LU_backslash (A, b) ;
+%   x = spex_lu_backslash (A, b) ;
 %   err = norm (x-xtrue)
 %   x = A\b ;
 %   err = norm (x-xtrue)
@@ -113,7 +113,7 @@ if (~issparse (A))
 end
 
 % Preprocessing complete. Now use SPEX Left LU to solve A*x=b.
-x = SPEX_LU_mex_soln (A, b, option) ;
+x = spex_lu_mex_soln (A, b, option) ;
 
 % convert to vpa, if requested
 if (isfield (option, 'solution') && isequal (option.solution, 'vpa'))

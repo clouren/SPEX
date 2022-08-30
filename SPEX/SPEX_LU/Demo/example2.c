@@ -110,7 +110,7 @@ int main (int argc, char **argv)
     //option->check = true;
    
     // Solve the system and give MPQ solution
-    OK(SPEX_LU_backslash( &x, SPEX_MPQ, A, b, option));
+    OK(SPEX_lu_backslash( &x, SPEX_MPQ, A, b, option));
     
     clock_t end_s = clock();
 

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/SPEX_LU_solve: exact solution of Ax=b
+// SPEX_LU/SPEX_lu_solve: exact solution of Ax=b
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -36,9 +36,9 @@
     SPEX_FREE_WORKSPACE                 \
     SPEX_matrix_free (&x, NULL) ;
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
-SPEX_info SPEX_LU_solve     // solves the linear system LD^(-1)U x = b
+SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
     SPEX_matrix **x_handle,  // rational solution to the system

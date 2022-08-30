@@ -31,7 +31,7 @@
     ok = method ;                       \
     if (ok != SPEX_OK)                  \
     {                                   \
-        SPEX_Chol_determine_error(ok);  \
+        SPEX_cholesky_determine_error(ok);  \
         FREE_WORKSPACE ;                \
         return 0 ;                      \
     }                                   \
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
     clock_t start_s = clock();
     option->algo=SPEX_CHOL_LEFT;
 
-    DEMO_OK(SPEX_Chol_backslash( &x, SPEX_MPQ, A, b, option));
+    DEMO_OK(SPEX_cholesky_backslash( &x, SPEX_MPQ, A, b, option));
 
     clock_t end_s = clock();
 

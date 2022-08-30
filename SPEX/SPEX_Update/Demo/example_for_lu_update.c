@@ -66,8 +66,8 @@ int main()
 
     clock_t start = clock();
 
-    OK(SPEX_LU_analyze(&S, A, option));
-    OK(SPEX_LU_factorize(&F, A, S, option));
+    OK(SPEX_lu_analyze(&S, A, option));
+    OK(SPEX_lu_factorize(&F, A, S, option));
 
     clock_t end = clock();
 

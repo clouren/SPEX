@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// SPEX_LU/SPEX_LU_factorize: exact sparse LU factorization
+// SPEX_LU/SPEX_lu_factorize: exact sparse LU factorization
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -31,9 +31,9 @@
     SPEX_FREE_WORKSPACE;            \
     SPEX_factorization_free(&F, option);
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
-SPEX_info SPEX_LU_factorize
+SPEX_info SPEX_lu_factorize
 (
     // output:
     SPEX_factorization **F_handle, // LU factorization

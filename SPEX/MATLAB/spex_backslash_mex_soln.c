@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX/MATLAB/SPEX_Backslash_mex_soln: Use SPEX Backslash within MATLAB
+// SPEX/MATLAB/spex_backslash_mex_soln: Use SPEX Backslash within MATLAB
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 /* Purpose: The .c file defining the SPEX Backslash MATLAB interface
- * This function defines: x = SPEX_Backslash_mex_soln(A, b, option)
+ * This function defines: x = spex_backslash_mex_soln(A, b, option)
  */
 
 
@@ -99,11 +99,11 @@ void mexFunction
     }
 
     //--------------------------------------------------------------------------
-    // x = A\b via SPEX_Backslash, returning result as SPEX_MPQ
+    // x = A\b via SPEX_backslash, returning result as SPEX_MPQ
     //--------------------------------------------------------------------------
 
     SPEX_matrix *x = NULL ;
-    SPEX_MEX_OK(SPEX_Backslash(&x, SPEX_MPQ, A, b, option));
+    SPEX_MEX_OK(SPEX_backslash(&x, SPEX_MPQ, A, b, option));
 
     //--------------------------------------------------------------------------
     // print the result, if requested

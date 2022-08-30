@@ -92,11 +92,11 @@ spex_%.o: ../SPEX_Utilities/Source/spex_%.c ../SPEX_Backslash/Include/SPEX.h ../
 #-------------------------------------------------------------------------------
 
 OBJ_LEFTLU = \
-    SPEX_LU_analyze.o \
-    SPEX_LU_backslash.o \
+    SPEX_lu_analyze.o \
+    SPEX_lu_backslash.o \
     spex_left_lu_back_sub.o \
     spex_left_lu_dfs.o \
-    SPEX_LU_factorize.o \
+    SPEX_lu_factorize.o \
     spex_left_lu_forward_sub.o \
     spex_left_lu_get_largest_pivot.o \
     spex_left_lu_get_nonzero_pivot.o \
@@ -104,52 +104,50 @@ OBJ_LEFTLU = \
     spex_left_lu_get_smallest_pivot.o \
     spex_left_lu_reach.o \
     spex_left_lu_ref_triangular_solve.o \
-    SPEX_LU_solve.o
-    #spex_left_lu_permute_x.o \
+    SPEX_lu_solve.o
 
+$(OBJ_LEFTLU): ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h Makefile
 
-$(OBJ_LEFTLU): ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_left_lu_internal.h Makefile
-
-SPEX_LU_%.o: ../SPEX_LU/Source/SPEX_LU_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_left_lu_internal.h
+SPEX_lu_%.o: ../SPEX_LU/Source/SPEX_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
 	$(C) $(I) -c $<
 
-SPEX_LU_%.o: ../SPEX_LU/Source/SPEX_LU_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_left_lu_internal.h
+SPEX_lu_%.o: ../SPEX_LU/Source/SPEX_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
 	$(C) $(I) -c $<
 
-spex_left_lu_%.o: ../SPEX_LU/Source/spex_left_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_left_lu_internal.h
+spex_left_lu_%.o: ../SPEX_LU/Source/spex_left_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
 
 OBJ_CHOL = \
-    SPEX_Chol_analyze.o \
-    SPEX_Chol_backslash.o \
-    spex_chol_backward_sub.o \
-    spex_chol_counts.o \
-    spex_chol_ereach.o \
-    spex_chol_etree.o \
-    spex_chol_factor.o \
-    SPEX_Chol_factorize.o \
-    spex_chol_forward_sub.o \
-    spex_chol_leaf.o \
-    spex_chol_left_factor.o \
-    spex_chol_permute_A.o \
-    spex_chol_post.o \
-    spex_chol_pre_left_factor.o \
-    spex_chol_preorder.o \
-    SPEX_Chol_solve.o \
-    spex_chol_symbolic_analysis.o \
-    spex_chol_tdfs.o \
-    spex_chol_up_factor.o \
-    spex_chol_left_triangular_solve.o \
-    spex_chol_up_triangular_solve.o
+    SPEX_cholesky_analyze.o \
+    SPEX_cholesky_backslash.o \
+    spex_cholesky_backward_sub.o \
+    spex_cholesky_counts.o \
+    spex_cholesky_ereach.o \
+    spex_cholesky_etree.o \
+    spex_cholesky_factor.o \
+    SPEX_cholesky_factorize.o \
+    spex_cholesky_forward_sub.o \
+    spex_cholesky_leaf.o \
+    spex_cholesky_left_factor.o \
+    spex_cholesky_permute_A.o \
+    spex_cholesky_post.o \
+    spex_cholesky_pre_left_factor.o \
+    spex_cholesky_preorder.o \
+    SPEX_cholesky_solve.o \
+    spex_cholesky_symbolic_analysis.o \
+    spex_cholesky_tdfs.o \
+    spex_cholesky_up_factor.o \
+    spex_cholesky_left_triangular_solve.o \
+    spex_cholesky_up_triangular_solve.o
 
-$(OBJ_CHOL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky//Source/spex_chol_internal.h ../SPEX_Utilities/Source/spex_util_internal.h Makefile
+$(OBJ_CHOL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky//Source/spex_cholesky_internal.h ../SPEX_Utilities/Source/spex_util_internal.h Makefile
 
-SPEX_Chol_%.o: ../SPEX_Cholesky/Source/SPEX_Chol_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_chol_internal.h
+SPEX_cholesky_%.o: ../SPEX_Cholesky/Source/SPEX_cholesky_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
 	$(C) $(I) -c $<
 
-spex_chol_%.o: ../SPEX_Cholesky/Source/spex_chol_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_chol_internal.h
+spex_cholesky_%.o: ../SPEX_Cholesky/Source/spex_cholesky_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
@@ -186,17 +184,10 @@ spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include
 #-------------------------------------------------------------------------------
 
 OBJ_BACKSLASH = \
-    SPEX_Backslash.o
+    SPEX_backslash.o
 
-$(OBJ_BACKSLASH): ../SPEX_Backslash/Include/SPEX.h Makefile
-
-SPEX_Backslash.o: ../SPEX_Backslash/Source/SPEX_Backslash.c ../SPEX_Backslash/Include/SPEX.h
+SPEX_backslash.o: ../SPEX_Backslash/Source/SPEX_backslash.c ../SPEX_Backslash/Include/SPEX.h
 	$(C) $(I) -c $<
-
-# Curently no internal
-#spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
-#	$(C) $(I) -c $<
-
 
 #-------------------------------------------------------------------------------
 # Create the bin

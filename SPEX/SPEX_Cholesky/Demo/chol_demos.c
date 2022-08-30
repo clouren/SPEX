@@ -9,10 +9,10 @@
 
 //------------------------------------------------------------------------------
 
-// SPEX_Chol_process_command_line: process command line for demo programs.
+// SPEX_cholesky_process_command_line: process command line for demo programs.
 // SPEX_tripread_double: read a double matrix from a file in triplet format.
 // SPEX_read_dense: read a dense matrix from a file.
-// SPEX_Chol_determine_error: error codes for exact factorization
+// SPEX_cholesky_determine_error: error codes for exact factorization
 
 #include "chol_demos.h"
 #include "spex_gmp.h"
@@ -23,11 +23,11 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 //------------------------------------------------------------------------------
-// SPEX_Chol_process_command_line
+// SPEX_cholesky_process_command_line
 //------------------------------------------------------------------------------
 
 /* Purpose: This processes the command line for user specified options */
-SPEX_info SPEX_Chol_process_command_line //processes the command line
+SPEX_info SPEX_cholesky_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char* argv[],           // set of command line arguments
@@ -307,7 +307,7 @@ SPEX_info SPEX_read_dense
 
 /* Purpose: Determine why a SPEX_Chol function failed
  */
-void SPEX_Chol_determine_error
+void SPEX_cholesky_determine_error
 (
     SPEX_info ok
 )

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_tdfs: DFS of a tree rooted at a node
+// SPEX_Cholesky/spex_cholesky_tdfs: DFS of a tree rooted at a node
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -9,12 +9,12 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
 
-SPEX_info spex_chol_tdfs
+SPEX_info spex_cholesky_tdfs
 (
     int64_t* k,     // Index (kth node)
     const int64_t j,// Root node

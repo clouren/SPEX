@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_backward_sub: Solve the system L' x = b for Cholesky
+// SPEX_Cholesky/spex_cholesky_backward_sub: Solve the system L' x = b for Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -11,7 +11,7 @@
 
 #define SPEX_FREE_ALL ;
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 
 /* Purpose: This function solves the linear system L' x = x for Cholesky
@@ -20,7 +20,7 @@
  * of the system Ax = (det A)*b L is the lower triangular REF Cholesky factor of
  * A. It is not modified on input/output
  */
-SPEX_info spex_chol_backward_sub
+SPEX_info spex_cholesky_backward_sub
 (
     // Output
     SPEX_matrix* x,         // Solution vector to A x = det(A) * b

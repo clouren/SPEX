@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
 /* Purpose: This function computes the reach of column k of A on the graph of L
  * mathematically that is: xi = Reach(A(:,k))_G_L

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_post: Postorder a forest
+// SPEX_Cholesky/spex_cholesky_post: Postorder a forest
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -20,10 +20,10 @@
     SPEX_FREE_WORKSPACE ;       \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: post order a forest. */
-SPEX_info spex_chol_post
+SPEX_info spex_cholesky_post
 (
     // Output
     int64_t** post_handle, // On output: post-order of the forest
@@ -67,7 +67,7 @@ SPEX_info spex_chol_post
     for (j = 0 ; j < n ; j++)
     {
         if (parent [j] != -1) continue ;    // skip j if it is not a root
-        SPEX_CHECK(spex_chol_tdfs (&k, j, head, next, post, stack)) ;
+        SPEX_CHECK(spex_cholesky_tdfs (&k, j, head, next, post, stack)) ;
     }
     SPEX_FREE_WORKSPACE ;
     (*post_handle) = post;

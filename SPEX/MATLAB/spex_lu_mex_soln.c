@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX/MATLAB/SPEX_LU_mex_soln: Use SPEX Left LU within MATLAB
+// SPEX/MATLAB/spex_lu_mex_soln: Use SPEX Left LU within MATLAB
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
@@ -93,7 +93,7 @@ void mexFunction
     //--------------------------------------------------------------------------
 
     SPEX_matrix *x = NULL ;
-    SPEX_MEX_OK (SPEX_LU_backslash (&x, SPEX_MPQ, A, b, option)) ;
+    SPEX_MEX_OK (SPEX_lu_backslash (&x, SPEX_MPQ, A, b, option)) ;
 
     //--------------------------------------------------------------------------
     // print the result, if requested

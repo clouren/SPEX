@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/SPEX_Chol_analyze: Perform the symbolic analysis of A
+// SPEX_Cholesky/SPEX_cholesky_analyze: Perform the symbolic analysis of A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -37,9 +37,9 @@
     SPEX_symbolic_analysis_free (&S, option) ;      \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
-SPEX_info SPEX_Chol_analyze
+SPEX_info SPEX_cholesky_analyze
 (
     // Output
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure
@@ -73,7 +73,7 @@ SPEX_info SPEX_Chol_analyze
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_chol_preorder(&S, A, option) );
+    SPEX_CHECK( spex_cholesky_preorder(&S, A, option) );
 
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky.
@@ -90,13 +90,13 @@ SPEX_info SPEX_Chol_analyze
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_chol_permute_A(&PAP, A, false, S) );
+    SPEX_CHECK( spex_cholesky_permute_A(&PAP, A, false, S) );
 
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of PAP
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_chol_symbolic_analysis(S, PAP, option) );
+    SPEX_CHECK( spex_cholesky_symbolic_analysis(S, PAP, option) );
 
     //--------------------------------------------------------------------------
     // Set output, free all workspace and return success

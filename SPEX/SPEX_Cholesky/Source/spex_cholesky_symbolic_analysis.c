@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_symbolic_analysis: Symbolic analysis for SPEX Cholesky
+// SPEX_Cholesky/spex_cholesky_symbolic_analysis: Symbolic analysis for SPEX Cholesky
 //                                        factorization
 //------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@
     SPEX_FREE_WORKSPACE              \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: perform the symbolic analysis for the SPEX Cholesky factorization,
  * that is, computing and postordering the elimination tree, getting the column
@@ -42,7 +42,7 @@
  * option:      Command options
  */
 
-SPEX_info spex_chol_symbolic_analysis
+SPEX_info spex_cholesky_symbolic_analysis
 (
     //Output
     SPEX_symbolic_analysis* S, //Symbolic analysis
@@ -67,13 +67,13 @@ SPEX_info spex_chol_symbolic_analysis
     int64_t* c = NULL;
 
     // Obtain elimination tree of A
-    SPEX_CHECK( spex_chol_etree(&S->parent, A) );
+    SPEX_CHECK( spex_cholesky_etree(&S->parent, A) );
 
     // Postorder the elimination tree of A
-    SPEX_CHECK( spex_chol_post(&post, S->parent, n) );
+    SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
     // Get the column counts of A
-    SPEX_CHECK( spex_chol_counts(&c, A, S->parent, post) );
+    SPEX_CHECK( spex_cholesky_counts(&c, A, S->parent, post) );
 
     // Set the column pointers of L
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));

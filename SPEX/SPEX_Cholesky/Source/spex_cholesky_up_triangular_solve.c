@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_up_triangular_solve: Sparse symmetric REF Triangular solve
+// SPEX_Cholesky/spex_cholesky_up_triangular_solve: Sparse symmetric REF Triangular solve
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -9,15 +9,9 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALL               \
-{                                   \
-    /* broken: these are allocated in the caller; */ \
-    /* should not be freed here */ \
-    /* SPEX_matrix_free(&x, NULL);     */ \
-    /* SPEX_FREE(xi);                  */ \
-}
+#define SPEX_FREE_ALL ;
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve for
  * the up-looking Cholesky factorization. i,e, LD x = A(1:k-1, k). At the end of
@@ -65,7 +59,7 @@ static inline int compare (const void * a, const void * b)
 }
 
 
-SPEX_info spex_chol_up_triangular_solve
+SPEX_info spex_cholesky_up_triangular_solve
 (
     //Output
     int64_t* top_output,               // On input NULL. On output contains the
@@ -110,7 +104,7 @@ SPEX_info spex_chol_up_triangular_solve
     // Obtain the nonzero pattern of the kth row of L by analyzing the
     // elimination tree of A. The indices of these nonzeros are stored in
     // xi[top..n-1]
-    SPEX_CHECK(spex_chol_ereach(&top, xi, A, k, parent, c));
+    SPEX_CHECK(spex_cholesky_ereach(&top, xi, A, k, parent, c));
 
     // Sort the nonzero pattern using quicksort (required by IPGE unlike in GE)
     qsort(&xi[top], n-top, sizeof(int64_t*), compare);

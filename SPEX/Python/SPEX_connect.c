@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/Python/SPEX_Chol_connect.c: use SPEX_Chol in Python
+// SPEX_Cholesky/Python/spex_cholesky_connect.c: use SPEX_Chol in Python
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 
@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 #include "SPEX_connect.h"
-#include "spex_chol_internal.h" 
+#include "spex_cholesky_internal.h" 
 
 #define FREE_WORKSPACE              \
     SPEX_matrix_free(&A, option);   \
@@ -39,7 +39,7 @@ SPEX_info spex_python
      bool charOut    // True if char** output, false if double
 )
 {
-    //this function will make the SPEX_matrix A, b and x and call SPEX_Chol_backslash
+    //this function will make the SPEX_matrix A, b and x and call spex_cholesky_backslash
     SPEX_info info;
 
     //--------------------------------------------------------------------------
@@ -106,13 +106,13 @@ SPEX_info spex_python
     switch(algorithm)
     {
         case 1:
-            SPEX_CHECK( SPEX_Backslash(&x, SPEX_MPQ, A, b, option));
+            SPEX_CHECK( SPEX_backslash(&x, SPEX_MPQ, A, b, option));
             break;
         case 2:
-            SPEX_CHECK( SPEX_LU_backslash(&x, SPEX_MPQ, A, b, option));
+            SPEX_CHECK( SPEX_lu_backslash(&x, SPEX_MPQ, A, b, option));
             break;
         case 3:
-            SPEX_CHECK( SPEX_Chol_backslash(&x, SPEX_MPQ, A, b, option)); 
+            SPEX_CHECK( SPEX_cholesky_backslash(&x, SPEX_MPQ, A, b, option)); 
             break;
         default:
             return SPEX_INCORRECT_INPUT;

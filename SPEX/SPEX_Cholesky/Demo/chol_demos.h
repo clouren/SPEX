@@ -13,7 +13,7 @@
 
 #define SPEX_MIN(a,b) (((a) < (b)) ? (a) : (b))
 /* Purpose: This processes the command line for user specified options */
-SPEX_info SPEX_Chol_process_command_line //processes the command line
+SPEX_info SPEX_cholesky_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char* argv[],           // set of command line arguments
@@ -63,7 +63,7 @@ SPEX_info SPEX_read_dense
 
 /* Purpose: Print error codes for Chol factorization
  */
-void SPEX_Chol_determine_error
+void SPEX_cholesky_determine_error
 (
     SPEX_info ok
 );

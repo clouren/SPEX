@@ -220,7 +220,7 @@ Definitions of these macros:
 // SPEX_CHOL_LEFT = 2,            Left looking Cholesky factorization
 // SPEX_CHOL_UP = 3,              Up looking Cholesky factorization
 // SPEX_QR_GRAM = 4               Default factorization for QR
-#define SPEX_DEFAULT_ALGORITHM SPEX_ALGORITHM_DEFAULT
+#define SPEX_DEFAULT_ALGORITHM SPEX_DEFAULT
 
 //------------------------------------------------------------------------------
 // Type of MPFR rounding used.

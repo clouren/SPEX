@@ -9,10 +9,9 @@
 
 //------------------------------------------------------------------------------
 
-// SPEX_Chol_process_command_line: process command line for demo programs.
+// SPEX_backslash_process_command_line: process command line for demo programs.
 // SPEX_tripread_double: read a double matrix from a file in triplet format.
 // SPEX_read_dense: read a dense matrix from a file.
-// SPEX_Chol_determine_error: error codes for exact factorization
 
 #include "demos.h"
 
@@ -20,11 +19,11 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 //------------------------------------------------------------------------------
-// SPEX_Backslash_process_command_line
+// SPEX_backslash_process_command_line
 //------------------------------------------------------------------------------
 
 /* Purpose: This processes the command line for user specified options */
-SPEX_info SPEX_Backslash_process_command_line //processes the command line
+SPEX_info SPEX_backslash_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char* argv[],           // set of command line arguments

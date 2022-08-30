@@ -103,7 +103,7 @@ int main (void)
     clock_t start_s = clock();
    
     // Solve the system and give double solution
-    OK(SPEX_LU_backslash( &x, SPEX_FP64, A, b, option));
+    OK(SPEX_lu_backslash( &x, SPEX_FP64, A, b, option));
          
     clock_t end_s = clock();
 

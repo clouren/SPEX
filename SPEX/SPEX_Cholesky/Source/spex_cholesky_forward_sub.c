@@ -1,5 +1,5 @@
 ///------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_forward_sub: Solve the system LDx = b
+// SPEX_Cholesky/spex_cholesky_forward_sub: Solve the system LDx = b
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -28,13 +28,11 @@
 #define SPEX_FREE_ALL            \
 {                                \
     SPEX_FREE_WORKSPACE          \
-    /* broken: */ \
-    /* SPEX_matrix_free(&x, NULL);  */ \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
-SPEX_info spex_chol_forward_sub
+SPEX_info spex_cholesky_forward_sub
 (
     // Input/Output
     SPEX_matrix* x,              // Right hand side matrix.

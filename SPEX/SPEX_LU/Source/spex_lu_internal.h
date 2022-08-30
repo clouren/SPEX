@@ -135,20 +135,6 @@ SPEX_info spex_left_lu_get_smallest_pivot
 );
 
 
-#if 0
-/* Purpose: SPEX_permute_x permutes x to get it back in its original form.
- * That is x = Q*x.
- */
-SPEX_info spex_left_lu_permute_x
-(
-    SPEX_matrix **x_handle,    // permuted Solution vector
-    SPEX_matrix *x2,           // unpermuted Solution vector (not modified)
-    SPEX_LU_analysis *S,  // symbolic analysis with the column ordering Q
-    const SPEX_options* option  // Command options
-                          // has been checked in the only caller SPEX_LU_solve
-) ;
-#endif
-
 /* Purpose: This function computes the reach of column k of A on the graph of L
  * mathematically that is: xi = Reach(A(:,k))_G_L.
  */

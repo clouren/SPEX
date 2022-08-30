@@ -787,7 +787,7 @@ int main( int argc, char* argv[])
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // test SPEX_LU_solve, SPEX_Update_solve and
+                    // test SPEX_lu_solve, SPEX_Update_solve and
                     // SPEX_Update_tsolve
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // allocate b so as to use solver functions
@@ -801,7 +801,7 @@ int main( int argc, char* argv[])
                     }
                     if (pretend_to_fail) {continue;}
 
-                    TEST_CHECK(SPEX_LU_solve(&b_sol, F, b, option));
+                    TEST_CHECK(SPEX_lu_solve(&b_sol, F, b, option));
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}
@@ -1149,6 +1149,7 @@ int main( int argc, char* argv[])
     }
 
     printf("test finished\n");
+    fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
     return 0;
 }
 
@@ -1274,8 +1275,9 @@ SPEX_info spex_update_verify
     else
     {
         // This can never happen.
-        SPEX_PR1 ("ERROR! Factorization is wrong. This is a bug; please "
-                  "contact the authors of SPEX.\n") ;
+        fprintf (stderr,
+            "ERROR! Factorization is wrong. This is a bug; please "
+            "contact the authors of SPEX.\n") ;
     }
 
     SPEX_FREE_ALL;

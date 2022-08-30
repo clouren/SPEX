@@ -74,9 +74,9 @@ verbose = '' ;
 
 % Generate the mex commands here
 % having -R2018a here for function mxGetDoubles
-m1 = ['mex ', verbose, ' -R2018a ', includes, ' SPEX_LU_mex_soln.c ' , src, ' ', flags, ' ', libs];
-m2 = ['mex ', verbose, ' -R2018a ', includes, ' SPEX_Chol_mex_soln.c ' , src, ' ', flags, ' ', libs];
-m3 = ['mex ', verbose, ' -R2018a ', includes, ' SPEX_Backslash_mex_soln.c ' , src, ' ', flags, ' ', libs];
+m1 = ['mex ', verbose, ' -R2018a ', includes, ' spex_lu_mex_soln.c ' , src, ' ', flags, ' ', libs];
+m2 = ['mex ', verbose, ' -R2018a ', includes, ' spex_cholesky_mex_soln.c ' , src, ' ', flags, ' ', libs];
+m3 = ['mex ', verbose, ' -R2018a ', includes, ' spex_backslash_mex_soln.c ' , src, ' ', flags, ' ', libs];
 
 if (~isempty (verbose))
     fprintf ('%s\n', m1) ;

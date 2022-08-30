@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_leaf: Subroutine for column counts of Cholesky
+// SPEX_Cholesky/spex_cholesky_leaf: Subroutine for column counts of Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -9,13 +9,13 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return
  * the Least Common Ancestor (lca(jprev,j))
  * Used to determine Column counts of Cholesky factor
  */
-SPEX_info spex_chol_leaf
+SPEX_info spex_cholesky_leaf
 (
     int64_t* lca_handle,    // Least common ancestor (jprev,j)
     const int64_t i,        // Index (subtree i)

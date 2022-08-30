@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/SPEX_Chol_factorize: Perform the SPEX Chol factorization of A
+// SPEX_Cholesky/SPEX_cholesky_factorize: Perform the SPEX Chol factorization of A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -44,9 +44,9 @@
     SPEX_FREE_WORKSPACE ;               \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
-SPEX_info SPEX_Chol_factorize
+SPEX_info SPEX_cholesky_factorize
 (
     // Output
     SPEX_factorization **F_handle,  // Cholesky factorization struct
@@ -89,7 +89,7 @@ SPEX_info SPEX_Chol_factorize
     // the symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_permute_A(&PAP, A, true, S));
+    SPEX_CHECK(spex_cholesky_permute_A(&PAP, A, true, S));
 
     //--------------------------------------------------------------------------
     // Factorization: Perform the REF Cholesky factorization of
@@ -97,7 +97,7 @@ SPEX_info SPEX_Chol_factorize
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_factor(&F, S, PAP, option));
+    SPEX_CHECK(spex_cholesky_factor(&F, S, PAP, option));
 
     //--------------------------------------------------------------------------
     // Set F_handle = F, free all workspace and return success

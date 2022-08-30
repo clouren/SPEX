@@ -28,7 +28,7 @@
     SPEX_MPQ_CLEAR (tol) ;      \
     SPEX_MPQ_CLEAR (ratio) ;
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
 SPEX_info spex_left_lu_get_pivot
 (
@@ -56,14 +56,6 @@ SPEX_info spex_left_lu_get_pivot
     SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
     SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
 
-    // inputs have been checked in the only caller SPEX_LU_factorize
-    // they are kept here for future reference
-#if 0
-    if (!pivot || !pivs || !xi || !pinv || !row_perm )
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-#endif
     // pivoting method to use (see above description)
     SPEX_pivot order = SPEX_OPTION_PIVOT(option);
     // tolerance used if some tol-based pivoting is used

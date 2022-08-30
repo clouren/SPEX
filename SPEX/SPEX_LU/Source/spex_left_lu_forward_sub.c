@@ -22,7 +22,7 @@
 #define SPEX_FREE_ALL           \
     SPEX_matrix_free(&h, NULL)  ;
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
 SPEX_info spex_left_lu_forward_sub
 (

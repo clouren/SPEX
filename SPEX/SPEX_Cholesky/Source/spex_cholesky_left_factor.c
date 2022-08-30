@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_left_factor: Left-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_cholesky_left_factor: Left-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -24,7 +24,7 @@
     SPEX_FREE_WORKSPACE             \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: This function performs the left-looking REF Cholesky factorization.
  * In order to compute the L matrix, it performs n iterations of a sparse REF
@@ -53,7 +53,7 @@
  *
  */
 
-SPEX_info spex_chol_left_factor
+SPEX_info spex_cholesky_left_factor
 (
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
@@ -174,7 +174,7 @@ SPEX_info spex_chol_left_factor
     // a more efficient method to allocate these values is done inside the
     // factorization to reduce memory usage.
 
-    SPEX_CHECK(spex_chol_pre_left_factor(&(L), xi, A, S));
+    SPEX_CHECK(spex_cholesky_pre_left_factor(&(L), xi, A, S));
 
     // Set the column pointers of L
     for (k = 0; k < n; k++)
@@ -192,7 +192,7 @@ SPEX_info spex_chol_left_factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_chol_left_triangular_solve(&top, x, xi, L, A, k, rhos,
+        SPEX_CHECK(spex_cholesky_left_triangular_solve(&top, x, xi, L, A, k, rhos,
             h, S->parent, c));
 
         // Set the pivot element If this element is equal to zero, no pivot

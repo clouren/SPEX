@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_up_factor: Up-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_cholesky_up_factor: Up-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -24,7 +24,7 @@
     SPEX_FREE_WORKSPACE             \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: This function performs the up-looking REF Cholesky factorization.
  * In order to compute the L matrix, it performs n iterations of a sparse REF
@@ -54,7 +54,7 @@
  */
 
 
-SPEX_info spex_chol_up_factor
+SPEX_info spex_cholesky_up_factor
 (
     // Output
     SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
@@ -195,7 +195,7 @@ SPEX_info spex_chol_up_factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_chol_up_triangular_solve(&top, xi, x, L, A, k,
+        SPEX_CHECK(spex_cholesky_up_triangular_solve(&top, xi, x, L, A, k,
             S->parent, c, rhos, h));
 
         // If x[k] is nonzero choose it as pivot. Otherwise, the matrix is

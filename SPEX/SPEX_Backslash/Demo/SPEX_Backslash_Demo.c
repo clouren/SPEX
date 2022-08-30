@@ -65,7 +65,7 @@ int main( int argc, char* argv[] )
     int64_t rat = 1;
     
     // Process the command line
-    DEMO_OK(SPEX_Backslash_process_command_line(argc, argv, option,
+    DEMO_OK(SPEX_backslash_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
     
     //--------------------------------------------------------------------------
@@ -113,7 +113,7 @@ int main( int argc, char* argv[] )
     
     option->print_level = 0;
     
-    DEMO_OK( SPEX_Backslash(&x, SPEX_FP64, A, b, option));
+    DEMO_OK( SPEX_backslash(&x, SPEX_FP64, A, b, option));
     
     clock_t end = clock();
          

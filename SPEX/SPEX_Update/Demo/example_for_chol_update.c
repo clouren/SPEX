@@ -65,8 +65,8 @@ int main()
 
     clock_t start = clock();
 
-    OK(SPEX_Chol_analyze(&S, A, option));
-    OK(SPEX_Chol_factorize(&F, A, S, option));
+    OK(SPEX_cholesky_analyze(&S, A, option));
+    OK(SPEX_cholesky_factorize(&F, A, S, option));
 
     clock_t end = clock();
 

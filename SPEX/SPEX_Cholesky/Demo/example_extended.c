@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Chol/SPEX_Chol: Demo main program for SPEX_Chol
+// SPEX_Cholesky/Demo/example_extended: Demo main program for SPEX_Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -28,7 +28,7 @@
     ok = method ;                       \
     if (ok != SPEX_OK)                  \
     {                                   \
-        SPEX_Chol_determine_error(ok);  \
+        SPEX_cholesky_determine_error(ok);  \
         FREE_WORKSPACE ;                \
         return 0 ;                      \
     }                                   \
@@ -67,7 +67,7 @@ int main( int argc, char* argv[] )
     int64_t rat = 1;
 
     // Process the command line
-    DEMO_OK(SPEX_Chol_process_command_line(argc, argv, option,
+    DEMO_OK(SPEX_cholesky_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -102,8 +102,8 @@ int main( int argc, char* argv[] )
     //option->order = SPEX_NO_ORDERING;  // No ordering
     option->order = SPEX_AMD;  // AMD
     //option->order = SPEX_COLAMD; // COLAMD
-    DEMO_OK(SPEX_Chol_analyze(&S, A, option));
-    //DEMO_OK(SPEX_Chol_preorder(&S, A, option));
+    DEMO_OK(SPEX_cholesky_analyze(&S, A, option));
+    //DEMO_OK(SPEX_cholesky_preorder(&S, A, option));
     clock_t end_col = clock();
 
     //--------------------------------------------------------------------------
@@ -113,7 +113,7 @@ int main( int argc, char* argv[] )
     //option->algo=SPEX_CHOL_LEFT;
     clock_t start_factor = clock();
 
-    DEMO_OK( SPEX_Chol_factorize(&F, A, S, option));
+    DEMO_OK( SPEX_cholesky_factorize(&F, A, S, option));
 
     clock_t end_factor = clock();
 
@@ -126,7 +126,7 @@ int main( int argc, char* argv[] )
 
     clock_t start_solve = clock();
 
-    DEMO_OK( SPEX_Chol_solve(&x, F, b, option));
+    DEMO_OK( SPEX_cholesky_solve(&x, F, b, option));
 
     clock_t end_solve = clock();
 

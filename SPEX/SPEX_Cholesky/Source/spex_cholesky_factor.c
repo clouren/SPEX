@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_factor: Integer preserving Cholesky factorization
+// SPEX_Cholesky/spex_cholesky_factor: Integer preserving Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -15,7 +15,7 @@
 }
 
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: This function performs the integer preserving Cholesky factorization.
  * It allows either the left-looking or up-looking integer-preserving Cholesky
@@ -43,7 +43,7 @@
  *              factorization (SPEX_CHOL_UP) (default)
  */
 
-SPEX_info spex_chol_factor
+SPEX_info spex_cholesky_factor
 (
     // Output
     SPEX_factorization **F_handle, // Cholesky factorization
@@ -119,10 +119,10 @@ SPEX_info spex_chol_factor
         case SPEX_ALGORITHM_DEFAULT:
             // fall through to up-looking Cholesky (the default)
         case SPEX_CHOL_UP:
-            SPEX_CHECK( spex_chol_up_factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK( spex_cholesky_up_factor(&(F->L), &(F->rhos), S, A, option));
             break;
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK( spex_chol_left_factor(&(F->L), &(F->rhos), S, A,
+            SPEX_CHECK( spex_cholesky_left_factor(&(F->L), &(F->rhos), S, A,
                 option) );
             break;
         default:

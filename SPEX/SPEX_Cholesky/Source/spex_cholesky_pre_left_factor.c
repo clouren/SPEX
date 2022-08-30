@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_pre_left_factor: Symbolic left-looking Chol factorization
+// SPEX_Cholesky/spex_cholesky_pre_left_factor: Symbolic left-looking Chol factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -20,7 +20,7 @@
     SPEX_matrix_free(&L, NULL);      \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 
 /* Purpose: This function performs a symbolic left-looking factorization.
@@ -44,7 +44,7 @@
  *               function such as the row/column permutation
  *               On output it contains the number of nonzeros in L.
  */
-SPEX_info spex_chol_pre_left_factor
+SPEX_info spex_cholesky_pre_left_factor
 (
     // Output
     SPEX_matrix** L_handle,       // On output: partial L matrix
@@ -100,7 +100,7 @@ SPEX_info spex_chol_pre_left_factor
     for (k = 1; k < n; k++)
     {
         // Obtain nonzero pattern in xi[top..n]
-        SPEX_CHECK(spex_chol_ereach(&top, xi, A, k, S->parent, c));
+        SPEX_CHECK(spex_cholesky_ereach(&top, xi, A, k, S->parent, c));
 
         //----------------------------------------------------------------------
         // Iterate accross the nonzeros in x

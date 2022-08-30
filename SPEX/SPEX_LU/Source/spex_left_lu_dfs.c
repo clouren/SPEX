@@ -13,7 +13,7 @@
  * indices in the xi vector.  This function is modified from CSparse/cs_dfs.
  */
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
 void spex_left_lu_dfs // performs a dfs of the graph of the matrix starting at node j
 (

@@ -1,10 +1,6 @@
-function x = SPEX_Backslash(A, b, option)
-% SPEX_backslash is a wrapper for the exact routines contained within the SPEX software package.
-% In order to use SPEX_backslash you must install the MATLAB interfaces of all SPEX packages. 
-% Typing SPEX_backslash_install in this directory should do this correctly.
-
+function x = spex_backslash(A, b, option)
 % SPEX_BACKSLASH: solve Ax=b via sparse integer-preserving factorization.
-% SPEX_backslash: computes the exact solution to the sparse linear system Ax = b
+% spex_backslash: computes the exact solution to the sparse linear system Ax = b
 % where A and b are stored as doubles. A must be stored as a sparse matrix. b
 % must be stored as a set of dense right hand side vectors (b can be either 1
 % or multiple vector(s)).  SPEX compues the result, x, exactly in
@@ -21,9 +17,9 @@ function x = SPEX_Backslash(A, b, option)
 %
 % Usage:
 %
-% x = SPEX_backslash(A, b) returns the solution to Ax = b using default settings.
+% x = spex_backslash(A, b) returns the solution to Ax = b using default settings.
 %
-% x = SPEX_backslash(A, b, options) returns the solution to Ax = b with user
+% x = spex_backslash(A, b, options) returns the solution to Ax = b with user
 %   defined settings in an options struct.  Entries not present are treated as
 %   defaults.
 %
@@ -52,7 +48,7 @@ function x = SPEX_Backslash(A, b, option)
 %
 % Example:
 %
-%   % In this first example, x = SPEX_backslash(A, b) returns an approximate
+%   % In this first example, x = spex_backslash(A, b) returns an approximate
 %   % solution. Note that, since SPEX computes the solution exactly, 
 %   % the only source of round-of-errors is the final rationa-to-double conversion.
 %
@@ -61,12 +57,12 @@ function x = SPEX_Backslash(A, b, option)
 %   n = size (A, 1) ;
 %   xtrue = rand (n,1) ;
 %   b = A*xtrue ;
-%   x = SPEX_LU_backslash (A, b) ;
+%   x = spex_backslash (A, b) ;
 %   err = norm (x-xtrue)
 %   x = A\b ;
 %   err = norm (x-xtrue)
 %
-%   % In this example, x = SPEX_backslash(A,b) is returned exactly in the
+%   % In this example, x = spex_backslash(A,b) is returned exactly in the
 %   % MATLAB vector x, because x contains only integers representable exactly
 %   % in double precision. 
 %   % In contrast using x = A\b results in floating-point roundoff error.
@@ -75,7 +71,7 @@ function x = SPEX_Backslash(A, b, option)
 %   A = floor (2^20 * (A / amax)) + n * speye (n) ;
 %   xtrue = floor (64 * xtrue) ;
 %   b = A*xtrue ;
-%   x = SPEX_backslash (A, b) ;
+%   x = spex_backslash (A, b) ;
 %   % error and residual will be exactly zero:
 %   err = norm (x-xtrue)
 %   resid = norm (A*x-b)
@@ -84,7 +80,12 @@ function x = SPEX_Backslash(A, b, option)
 %   err = norm (x-xtrue)
 %   resid = norm (A*x-b)
 %
-% See also vpa, SPEX_install, SPEX_test, SPEX_demo.
+% See also vpa, spex_mex_install, spex_mex_test, spex_mex_demo.
+
+% spex_backslash is a wrapper for the exact routines contained within the SPEX
+% software package.  In order to use spex_backslash you must install the MATLAB
+% interfaces of all SPEX packages.  Typing spex_mex_install in this directory
+% should do this correctly.
 
 if (nargin < 3)
     option = [ ];   % use default options
@@ -101,7 +102,7 @@ if (~issparse(A))
 end
 
 % Preprocessing complete. Now use SPEX Backslash to solve Ax = b.
-x = SPEX_Backslash_mex_soln(A, b, option);
+x = spex_backslash_mex_soln(A, b, option);
 
 % At this point, depending on the user options, x is either 
 % (a) a 64-bit floating-point (i.e., double) approximate solution

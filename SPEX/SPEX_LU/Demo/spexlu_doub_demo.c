@@ -177,7 +177,7 @@ int main (int argc, char* argv[])
 
     //--------------------------------------------------------------------------
     // We now perform symbolic analysis by getting the column preordering of
-    // the matrix A. This is done via the SPEX_LU_analyze function. The output
+    // the matrix A. This is done via the SPEX_lu_analyze function. The output
     // of this function is a column permutation Q where we factor the matrix AQ
     // and an estimate of the number of nonzeros in L and U.
     //
@@ -189,7 +189,7 @@ int main (int argc, char* argv[])
     clock_t start_col = clock();
 
     // Column ordering using either AMD, COLAMD or nothing
-    OK(SPEX_LU_analyze(&S, A, option));
+    OK(SPEX_lu_analyze(&S, A, option));
     if (option->print_level > 0)
     {
         SPEX_print_options(option);
@@ -205,7 +205,7 @@ int main (int argc, char* argv[])
 
     clock_t start_factor = clock();
 
-    ok = SPEX_LU_factorize(&F, A, S, option);
+    ok = SPEX_lu_factorize(&F, A, S, option);
     if (ok != SPEX_OK)
     {
         if (ok == SPEX_SINGULAR)

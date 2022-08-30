@@ -31,6 +31,8 @@
     {                                           \
         printf ("SPEX Cholesky test failure, line %d, info %d\n", \
             __LINE__, info) ;                   \
+        fprintf (stderr, "SPEX Cholesky test failure, line %d, info %d\n", \
+            __LINE__, info) ;                   \
         abort ( ) ;                             \
     }                                           \
 }
@@ -92,7 +94,7 @@ void create_test_rhs (SPEX_matrix **b_handle, int64_t n)
 }
 
 //------------------------------------------------------------------------------
-// spex_test_chol_backslash: test SPEX_Chol_backslash
+// spex_test_chol_backslash: test SPEX_cholesky_backslash
 //------------------------------------------------------------------------------
 
 #undef  SPEX_FREE_ALL
@@ -111,7 +113,7 @@ bool spex_test_chol_backslash (SPEX_matrix *A, SPEX_matrix *b,
     bool pretend_to_fail = false ;
     SPEX_matrix *x = NULL ;
     // solve Ax=b
-    TEST_CHECK (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option)) ;
+    TEST_CHECK (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option)) ;
     // disable memory testing when checking the solution
     int64_t save = malloc_count ; malloc_count = INT64_MAX ;
     TEST_CHECK (SPEX_check_solution (A, x, b, option)) ;
@@ -122,7 +124,7 @@ bool spex_test_chol_backslash (SPEX_matrix *A, SPEX_matrix *b,
 }
 
 //------------------------------------------------------------------------------
-// spex_test_chol_afs: test SPEX_Chol_[analyze,factorize,solve]
+// spex_test_chol_afs: test SPEX_cholesky_[analyze,factorize,solve]
 //------------------------------------------------------------------------------
 
 #undef  SPEX_FREE_ALL
@@ -143,9 +145,9 @@ bool spex_test_chol_afs (SPEX_matrix *A, SPEX_matrix *b, SPEX_options *option)
     SPEX_factorization *F = NULL ;
     SPEX_matrix *x = NULL ;
     // solve Ax=b
-    TEST_CHECK (SPEX_Chol_analyze (&S, A, option)) ;
-    TEST_CHECK (SPEX_Chol_factorize (&F, A, S, option)) ;
-    TEST_CHECK (SPEX_Chol_solve (&x, F, b, option)) ;
+    TEST_CHECK (SPEX_cholesky_analyze (&S, A, option)) ;
+    TEST_CHECK (SPEX_cholesky_factorize (&F, A, S, option)) ;
+    TEST_CHECK (SPEX_cholesky_solve (&x, F, b, option)) ;
     // disable memory testing when checking the solution
     int64_t save = malloc_count ; malloc_count = INT64_MAX ;
     TEST_CHECK (SPEX_check_solution (A, x, b, option)) ;
@@ -207,7 +209,7 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for unsymmetric matrix (1)\n") ;
     read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test1.mat.txt") ;
     create_test_rhs (&b, A->n) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_UNSYMMETRIC) ;
     OK (SPEX_matrix_free (&A, option)) ;
     OK (SPEX_matrix_free (&b, option)) ;
@@ -216,7 +218,7 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for unsymmetric matrix (2)\n") ;
     read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test2.mat.txt") ;
     create_test_rhs (&b, A->n) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_UNSYMMETRIC) ;
     OK (SPEX_matrix_free (&A, option)) ;
     OK (SPEX_matrix_free (&b, option)) ;
@@ -225,7 +227,7 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for unsymmetric matrix (3)\n") ;
     read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test3.mat.txt") ;
     create_test_rhs (&b, A->n) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_UNSYMMETRIC) ;
     OK (SPEX_matrix_free (&A, option)) ;
     OK (SPEX_matrix_free (&b, option)) ;
@@ -235,10 +237,10 @@ int main (int argc, char *argv [])
     read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test4.mat.txt") ;
     create_test_rhs (&b, A->n) ;
     option->algo = SPEX_CHOL_UP ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_NOTSPD) ;
     option->algo = SPEX_CHOL_LEFT ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_NOTSPD) ;
     option->algo = SPEX_CHOL_UP ;
     OK (SPEX_matrix_free (&A, option)) ;
@@ -297,48 +299,48 @@ int main (int argc, char *argv [])
         SPEX_INCORRECT_INPUT) ;
     TEST_CHECK_FAILURE (SPEX_matrix_nnz (&anz, NULL, NULL),
         SPEX_INCORRECT_INPUT) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_analyze (NULL, NULL, NULL),
+    TEST_CHECK_FAILURE (SPEX_cholesky_analyze (NULL, NULL, NULL),
         SPEX_INCORRECT_INPUT) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (NULL, SPEX_MPQ, NULL, NULL, NULL),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (NULL, SPEX_MPQ, NULL, NULL, NULL),
         SPEX_INCORRECT_INPUT) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_factorize (NULL, NULL, NULL, NULL),
+    TEST_CHECK_FAILURE (SPEX_cholesky_factorize (NULL, NULL, NULL, NULL),
         SPEX_INCORRECT_INPUT) ;
     TEST_CHECK_FAILURE (SPEX_determine_symmetry (NULL, NULL ),
         SPEX_INCORRECT_INPUT) ;
 
     // type cannot be int64
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_INT64, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_INT64, A, b, option),
         SPEX_INCORRECT_INPUT) ;
 
     // mangle the matrix: invalid dimensions
     A->n = 0 ;
     A->m = 0 ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_INPUT) ;
     A->n = n ;
     A->m = n ;
 
     // mangle the matrix: invalid type
     A->type = SPEX_INT64 ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_INPUT) ;
     TEST_CHECK_FAILURE (SPEX_determine_symmetry (A, option),
         SPEX_INCORRECT_INPUT) ;
     A->type = SPEX_MPZ ;
 
     // valid analysis, but break the factorization
-    OK (SPEX_Chol_analyze (&S, A, option)) ;
+    OK (SPEX_cholesky_analyze (&S, A, option)) ;
     A->type = SPEX_INT64 ;
-    TEST_CHECK_FAILURE (SPEX_Chol_factorize (&F, A, S, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_factorize (&F, A, S, option),
         SPEX_INCORRECT_INPUT) ;
     A->type = SPEX_MPZ ;
     OK (SPEX_symbolic_analysis_free (&S, option)) ;
 
     // valid analysis and factorization, but break the solve
-    OK (SPEX_Chol_analyze (&S, A, option)) ;
-    OK (SPEX_Chol_factorize (&F, A, S, option)) ;
+    OK (SPEX_cholesky_analyze (&S, A, option)) ;
+    OK (SPEX_cholesky_factorize (&F, A, S, option)) ;
     b->type = SPEX_INT64 ;
-    TEST_CHECK_FAILURE (SPEX_Chol_solve (&x, F, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_solve (&x, F, b, option),
         SPEX_INCORRECT_INPUT) ;
     b->type = SPEX_MPZ ;
     OK (SPEX_symbolic_analysis_free (&S, option)) ;
@@ -346,12 +348,12 @@ int main (int argc, char *argv [])
 
     // invalid algorithm
     option->algo = SPEX_QR_GRAM ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (&x, SPEX_MPQ, A, b, option),
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_ALGORITHM) ;
     option->algo = SPEX_CHOL_UP ;
 
     //--------------------------------------------------------------------------
-    // solve Ax=b with SPEX_Chol_backslash and check the solution
+    // solve Ax=b with SPEX_cholesky_backslash and check the solution
     //--------------------------------------------------------------------------
 
     option->order = SPEX_AMD ;
@@ -376,7 +378,7 @@ int main (int argc, char *argv [])
     OK (ok ? SPEX_OK : SPEX_PANIC) ;
 
     printf ("Cholesky backslash, no malloc testing, return x as MPFR:\n") ;
-    TEST_CHECK (SPEX_Chol_backslash (&x, SPEX_MPFR, A, b, option)) ;
+    TEST_CHECK (SPEX_cholesky_backslash (&x, SPEX_MPFR, A, b, option)) ;
     // FIXME: check the solution to Ax=b
     // TODO: cast x back to mpz and check solution
     OK (SPEX_matrix_free (&x, option)) ;
@@ -394,7 +396,7 @@ int main (int argc, char *argv [])
     BRUTAL (spex_test_chol_backslash (A, b, option)) ;
 
     //--------------------------------------------------------------------------
-    // solve Ax=b with SPEX_Chol_[analyze,factorize,solve] and check solution
+    // solve Ax=b with SPEX_cholesky_[analyze,factorize,solve] and check solution
     //--------------------------------------------------------------------------
 
     option->algo = SPEX_CHOL_UP ;
@@ -422,10 +424,12 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     // SPEX not initialized
-    TEST_CHECK_FAILURE (SPEX_Chol_analyze (NULL, NULL, NULL), SPEX_PANIC) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_solve (NULL, NULL, NULL, NULL), SPEX_PANIC) ;
-    TEST_CHECK_FAILURE (SPEX_Chol_backslash (NULL, SPEX_MPQ, NULL, NULL, NULL),
+    TEST_CHECK_FAILURE (SPEX_cholesky_analyze (NULL, NULL, NULL), SPEX_PANIC) ;
+    TEST_CHECK_FAILURE (SPEX_cholesky_solve (NULL, NULL, NULL, NULL), SPEX_PANIC) ;
+    TEST_CHECK_FAILURE (SPEX_cholesky_backslash (NULL, SPEX_MPQ, NULL, NULL, NULL),
         SPEX_PANIC) ;
 
+    printf ("\nSPEX_cholesky: all tests passed\n") ;
+    fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
 }
 

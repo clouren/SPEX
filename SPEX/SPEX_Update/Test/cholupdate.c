@@ -243,8 +243,8 @@ int main( int argc, char* argv[])
     //--------------------------------------------------------------------------
     printf("compute initial Cholesky factorization for A....\n");
     option->algo = SPEX_CHOL_LEFT;// or SPEX_CHOL_UP
-    OK(SPEX_Chol_analyze(&analysis, A1, option));
-    OK(SPEX_Chol_factorize(&F_update, A1, analysis, option));
+    OK(SPEX_cholesky_analyze(&analysis, A1, option));
+    OK(SPEX_cholesky_factorize(&F_update, A1, analysis, option));
     //OK(SPEX_factorization_convert(F_update, true, option));
 
     //--------------------------------------------------------------------------
@@ -301,18 +301,18 @@ int main( int argc, char* argv[])
         start2 = clock();
         if (iter == 0)
         {
-            OK(SPEX_Chol_analyze(&analysis, A2, option));
-            OK(SPEX_Chol_factorize(&Ftmp, A2, analysis, option));
+            OK(SPEX_cholesky_analyze(&analysis, A2, option));
+            OK(SPEX_cholesky_factorize(&Ftmp, A2, analysis, option));
         }
         else if (iter == 1)
         {
-            OK(SPEX_Chol_analyze(&analysis, A3, option));
-            OK(SPEX_Chol_factorize(&Ftmp, A3, analysis, option));
+            OK(SPEX_cholesky_analyze(&analysis, A3, option));
+            OK(SPEX_cholesky_factorize(&Ftmp, A3, analysis, option));
         }
         else if(iter == 3)
         {
-            OK(SPEX_Chol_analyze(&analysis, A1, option));
-            OK(SPEX_Chol_factorize(&Ftmp, A1, analysis, option));
+            OK(SPEX_cholesky_analyze(&analysis, A1, option));
+            OK(SPEX_cholesky_factorize(&Ftmp, A1, analysis, option));
         }
         end2 = clock();
 

@@ -68,7 +68,7 @@
  */
 
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
 // Sorting function
 static inline int compare (const void * a, const void * b)
@@ -96,7 +96,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangula
     // check inputs
     //--------------------------------------------------------------------------
 
-    // inputs have been validated in SPEX_LU_factorize.c
+    // inputs have been validated in SPEX_lu_factorize
     SPEX_info info ;
     SPEX_REQUIRE(L, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);

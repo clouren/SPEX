@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_preorder: Symbolic ordering and analysis for SPEX Cholesky
+// SPEX_Cholesky/spex_cholesky_preorder: Symbolic ordering and analysis for SPEX Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -31,9 +31,9 @@
     SPEX_symbolic_analysis_free(&S, option);    \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
-SPEX_info spex_chol_preorder
+SPEX_info spex_cholesky_preorder
 (
     // Output
     SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure

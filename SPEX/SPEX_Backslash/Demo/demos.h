@@ -21,7 +21,7 @@
 #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 #define SPEX_MIN(a,b) (((a) < (b)) ? (a) : (b))
 /* Purpose: This processes the command line for user specified options */
-SPEX_info SPEX_Backslash_process_command_line //processes the command line
+SPEX_info SPEX_backslash_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char* argv[],           // set of command line arguments

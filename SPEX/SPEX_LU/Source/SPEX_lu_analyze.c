@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/SPEX_LU_analyze: symbolic ordering and analysis for sparse LU
+// SPEX_Utilities/SPEX_lu_analyze: symbolic ordering and analysis for sparse LU
 //------------------------------------------------------------------------------
 
 // SPEX_Utilities: (c) 2019-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
@@ -22,9 +22,9 @@
  *
  */
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
-SPEX_info SPEX_LU_analyze
+SPEX_info SPEX_lu_analyze
 (
     SPEX_symbolic_analysis** S_handle, // symbolic analysis including
                                  // column perm. and nnz of L and U

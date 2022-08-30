@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/SPEX_Chol_backslash: solve Ax=b, returning solution as desired data
+// SPEX_Cholesky/SPEX_cholesky_backslash: solve Ax=b, returning solution as desired data
 //                                type
 //------------------------------------------------------------------------------
 
@@ -46,9 +46,9 @@
     SPEX_matrix_free(&x, NULL);   \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
-SPEX_info SPEX_Chol_backslash
+SPEX_info SPEX_cholesky_backslash
 (
     // Output
     SPEX_matrix** x_handle,       // On input: undefined.
@@ -109,7 +109,7 @@ SPEX_info SPEX_Chol_backslash
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_chol_preorder(&S, A, option) );
+    SPEX_CHECK( spex_cholesky_preorder(&S, A, option) );
 
     //--------------------------------------------------------------------------
     // Determine if A is indeed symmetric. If so, we try Cholesky.  This
@@ -127,13 +127,13 @@ SPEX_info SPEX_Chol_backslash
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_chol_permute_A(&PAP, A, true, S) );
+    SPEX_CHECK( spex_cholesky_permute_A(&PAP, A, true, S) );
     
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of PAP
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_chol_symbolic_analysis(S, PAP, option) );
+    SPEX_CHECK( spex_cholesky_symbolic_analysis(S, PAP, option) );
 
     //--------------------------------------------------------------------------
     // Factorization: Perform the REF Cholesky factorization of PAP.
@@ -141,7 +141,7 @@ SPEX_info SPEX_Chol_backslash
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_chol_factor(&F, S, PAP, option) );
+    SPEX_CHECK( spex_cholesky_factor(&F, S, PAP, option) );
 
     //--------------------------------------------------------------------------
     // Solve: Solve Ax = b using the REF Cholesky factorization. That is,
@@ -150,7 +150,7 @@ SPEX_info SPEX_Chol_backslash
     // Ax = b stored as a set of numerators and denominators (mpq_t)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( SPEX_Chol_solve(&x, F, b, option) );
+    SPEX_CHECK( SPEX_cholesky_solve(&x, F, b, option) );
 
     //--------------------------------------------------------------------------
     // At this point x is stored as mpq_t. If the user desires the output

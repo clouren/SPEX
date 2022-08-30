@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/SPEX_Chol_Solve: Solve the SPD linear system after
+// SPEX_Cholesky/SPEX_cholesky_Solve: Solve the SPD linear system after
 // factorization
 //------------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@
     SPEX_matrix_free(&x, NULL);    \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 /* Purpose: This function solves the linear system LDL' x = b.
  *
@@ -40,7 +40,7 @@
  * option:          Command options *
  */
 
-SPEX_info SPEX_Chol_solve
+SPEX_info SPEX_cholesky_solve
 (
     // Output
     SPEX_matrix** x_handle,     // On input: undefined.
@@ -101,7 +101,7 @@ SPEX_info SPEX_Chol_solve
     // Forward substitution, b2 = L \ b2. Note that b2 is overwritten
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_forward_sub(b2, F->L, F->rhos));
+    SPEX_CHECK(spex_cholesky_forward_sub(b2, F->L, F->rhos));
 
     //--------------------------------------------------------------------------
     // Apply the determinant to b2, b2 = det*b2
@@ -118,7 +118,7 @@ SPEX_info SPEX_Chol_solve
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_chol_backward_sub(b2, F->L));
+    SPEX_CHECK(spex_cholesky_backward_sub(b2, F->L));
 
     //--------------------------------------------------------------------------
     // get real solution x by applying both permutation and scale

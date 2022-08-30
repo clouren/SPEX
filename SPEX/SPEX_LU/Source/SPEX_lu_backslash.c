@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/SPEX_LU_backslash: solve Ax=b, returning solution as desired data type
+// SPEX_LU/SPEX_lu_backslash: solve Ax=b, returning solution as desired data type
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -39,9 +39,9 @@
     SPEX_FREE_WORKSPACE             \
     SPEX_matrix_free(&x, NULL);     \
 
-#include "spex_left_lu_internal.h"
+#include "spex_lu_internal.h"
 
-SPEX_info SPEX_LU_backslash
+SPEX_info SPEX_lu_backslash
 (
     // Output
     SPEX_matrix **X_handle,       // Final solution vector
@@ -83,19 +83,19 @@ SPEX_info SPEX_LU_backslash
     // Symbolic Analysis
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_LU_analyze(&S, A, option));
+    SPEX_CHECK(SPEX_lu_analyze(&S, A, option));
 
     //--------------------------------------------------------------------------
     // LU Factorization
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_LU_factorize(&F, A, S, option));
+    SPEX_CHECK(SPEX_lu_factorize(&F, A, S, option));
 
     //--------------------------------------------------------------------------
     // Solve
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK (SPEX_LU_solve (&x, F, b, option)) ;
+    SPEX_CHECK (SPEX_lu_solve (&x, F, b, option)) ;
 
     //--------------------------------------------------------------------------
     // Now, x contains the exact solution of the linear system in mpq_t

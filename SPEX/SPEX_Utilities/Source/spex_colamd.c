@@ -69,7 +69,7 @@ SPEX_info spex_colamd
     if (!colamd_result)
     {
         // COLAMD failed; this "cannot" occur (and is untestable)
-        // FIXME make sure this is untestable
+        // FIXME test this
         SPEX_FREE_ALL ;
         return (SPEX_PANIC) ;
     }
@@ -81,7 +81,7 @@ SPEX_info spex_colamd
     {
         SPEX_PRINTF ("\n****Ordering Information****\n");
         colamd_l_report ((SuiteSparse_long *) stats);
-        SPEX_PRINTF ("\nEstimated L nonzeros: %" PRId64 "\n", nnz);
+//      SPEX_PRINTF ("\nEstimated L nonzeros: %" PRId64 "\n", (*nnz));
     }
     SPEX_FREE (A2) ;
     

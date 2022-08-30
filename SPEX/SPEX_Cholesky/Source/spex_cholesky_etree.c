@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_chol_etree: Compute the elimination tree of a matrix A
+// SPEX_Cholesky/spex_cholesky_etree: Compute the elimination tree of a matrix A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -20,12 +20,12 @@
     SPEX_FREE(parent);      \
 }
 
-#include "spex_chol_internal.h"
+#include "spex_cholesky_internal.h"
 
 
 /* Purpose: Compute the elimination tree of A */
 
-SPEX_info spex_chol_etree
+SPEX_info spex_cholesky_etree
 (
     // Output
     int64_t** tree_handle,      // On output: contains the elimination tree of A

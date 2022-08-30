@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/Python/SPEX_Chol_connect.h: include file to use SPEX_Chol in Python
+// SPEX_Cholesky/Python/SPEX_connect.h: include file to use SPEX_Cholesky in Python
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy, 

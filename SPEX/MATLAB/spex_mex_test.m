@@ -99,7 +99,7 @@ if (exist ('ssget') ~= 0)
     [m n] = size(A);
     b = rand(m, 1);
     fprintf ('.') ;
-    x = SPEX_Chol_backslash(A,b);
+    x = spex_cholesky_backslash(A,b);
     x2 = A\b;
     err = norm(x-x2)/norm(x);
     maxerr = max (maxerr, err) ;
@@ -108,7 +108,7 @@ if (exist ('ssget') ~= 0)
     A = floor (2^20 * A) ;
     b = floor (2^20 * b) ;
     fprintf ('.') ;
-    x = SPEX_Chol_backslash (A, b) ;
+    x = spex_cholesky_backslash (A, b) ;
     x2 = A\b;
     err = norm(x-x2)/norm(x);
     maxerr = max (maxerr, err) ;
@@ -137,7 +137,7 @@ for n = [1 10 100]
 %                    option.tol   = tol ;
 
                     fprintf ('.') ;
-                    x = SPEX_Chol_backslash(A,b, option);
+                    x = spex_cholesky_backslash(A,b, option);
                     x2 = A\b;
                     err = norm(x-x2)/norm(x);
                     maxerr = max (maxerr, err) ;
@@ -145,7 +145,7 @@ for n = [1 10 100]
                     % now convert to an integer problem (x will not be integer)
                     A = floor (2^20 * A) ;
                     b = floor (2^20 * b) ;
-                    x = SPEX_Chol_backslash(A,b, option);
+                    x = spex_cholesky_backslash(A,b, option);
                     x2 = A\b;
                     err = norm(x-x2)/norm(x);
                     maxerr = max (maxerr, err) ;
@@ -160,7 +160,7 @@ fprintf ('\nmaxerr: %g\n', maxerr) ;
 if (maxerr < 1e-6)
     fprintf('\nSPEX Cholesky installation successful\n')
 else
-    error ('SPEX_Chol_backslash:test', '\nTesting failure!  error too high, please reinstall\n')
+    error ('spex_cholesky_backslash:test', '\nTesting failure!  error too high, please reinstall\n')
 end
 
 
@@ -184,7 +184,7 @@ for n = [1 10 100]
 %                    option.tol   = tol ;
 
                     fprintf ('.') ;
-                    x = SPEX_Chol_backslash(A2,b, option);
+                    x = spex_cholesky_backslash(A2,b, option);
                     x2 = A2\b;
                     err = norm(x-x2)/norm(x);
                     maxerr = max (maxerr, err) ;
@@ -198,7 +198,7 @@ for n = [1 10 100]
                     % now convert to an integer problem (x will not be integer)
                     A2 = floor (2^20 * A2) ;
                     b = floor (2^20 * b) ;
-                    x = SPEX_Chol_backslash(A2,b, option);
+                    x = spex_cholesky_backslash(A2,b, option);
                     x2 = A2\b;
                     err = norm(x-x2)/norm(x);
                     maxerr = max (maxerr, err) ;

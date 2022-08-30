@@ -205,6 +205,8 @@ SPEX_preorder ;
 
 // A code in SPEX_options to tell SPEX which factorization algorithm to use 
 
+// FIXME rename SPEX_CHOL_*
+
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
@@ -572,7 +574,7 @@ typedef enum
 
 // This struct stores the results of symbolic analysis
 
-// This object is constructed by SPEX_LU_analyze, SPEX_Chol_analyze,
+// This object is constructed by SPEX_lu_analyze, SPEX_cholesky_analyze,
 // and SPEX_QR_analyze. All these functions allocate space and assign values,
 // and thus do not require user to perform any memory allocation. Certain
 // components of this object can still be NULL after it is constructed. User
@@ -656,8 +658,8 @@ SPEX_info SPEX_symbolic_analysis_free
 // application.  However, they should only be modified by calling SPEX_*
 // methods.  Changing them directly can lead to undefined behavior.
 
-// To create this object, users can call SPEX_LU_factorize,
-// SPEX_Chol_factorize, or SPEX_QR_factorize. All these function will create a
+// To create this object, users can call SPEX_lu_factorize,
+// SPEX_cholesky_factorize, or SPEX_QR_factorize. All these function will create a
 // static factorization of corresponding kind.
 //
 // To convert between updatable and non-updatable (static) factorization, user
@@ -1195,12 +1197,12 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 // Primary factorization & solve routines
 //------------------------------------------------------------------------------
 
-// SPEX_LU_backslash solves the linear system Ax = b via LU factorization
+// SPEX_lu_backslash solves the linear system Ax = b via LU factorization
 // of A. This is the simplest way to use the SPEX Left LU package. This
 // function encompasses both factorization and solve and returns the solution
 // vector in the user desired type.  It can be thought of as an exact version
 // of MATLAB sparse backslash.
-SPEX_info SPEX_LU_backslash
+SPEX_info SPEX_lu_backslash
 (
     // Output
     SPEX_matrix **X_handle,       // Final solution matrix
@@ -1214,7 +1216,7 @@ SPEX_info SPEX_LU_backslash
     const SPEX_options* option
 ) ;
 
-SPEX_info SPEX_LU_analyze
+SPEX_info SPEX_lu_analyze
 (
     // output:
     SPEX_symbolic_analysis** S_handle, // symbolic analysis including
@@ -1224,7 +1226,7 @@ SPEX_info SPEX_LU_analyze
     const SPEX_options *option    // Control parameters, if NULL, use default
 );
 
-SPEX_info SPEX_LU_factorize
+SPEX_info SPEX_lu_factorize
 (
     // output:
     SPEX_factorization **F_handle, // LU factorization
@@ -1235,7 +1237,7 @@ SPEX_info SPEX_LU_factorize
 );
 
 // solves the linear system Ax = b via LU factorization
-SPEX_info SPEX_LU_solve
+SPEX_info SPEX_lu_solve
 (
     // Output
     SPEX_matrix **x_handle,       // rational solution to the system
@@ -1348,7 +1350,7 @@ SPEX_info SPEX_LU_solve
  * On input, A is expected to be SPD and x is NULL
  * On output, x contains the solution of the linear system
  */
-SPEX_info SPEX_Chol_backslash
+SPEX_info SPEX_cholesky_backslash
 (
     // Output
     SPEX_matrix** x_handle,       // On input: undefined. 
@@ -1362,7 +1364,7 @@ SPEX_info SPEX_Chol_backslash
     const SPEX_options* option    // Command options
 );
 
-SPEX_info SPEX_Chol_analyze
+SPEX_info SPEX_cholesky_analyze
 (
     // Output
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure 
@@ -1371,7 +1373,7 @@ SPEX_info SPEX_Chol_analyze
     const SPEX_options* option    // Command options
 );
 
-SPEX_info SPEX_Chol_factorize
+SPEX_info SPEX_cholesky_factorize
 (
     // Output
     SPEX_factorization** F_handle,// Cholesky factorization
@@ -1395,7 +1397,7 @@ SPEX_info SPEX_Chol_factorize
  * On output x contains the rational solution of the system LDL' x = b
  */
 
-SPEX_info SPEX_Chol_solve
+SPEX_info SPEX_cholesky_solve
 (
     // Output
     SPEX_matrix** x_handle,       // On input: undefined.
@@ -1604,7 +1606,7 @@ SPEX_info SPEX_Update_tsolve
 // Purpose: Solve Ax = b by analyzing the input matrix and applying the
 // appropiate factorization approach
 //------------------------------------------------------------------------------
-SPEX_info SPEX_Backslash
+SPEX_info SPEX_backslash
 (
     // Output
     SPEX_matrix **X_handle,       // Final solution vector

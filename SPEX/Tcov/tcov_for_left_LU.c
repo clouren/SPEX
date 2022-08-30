@@ -311,15 +311,15 @@ int main( int argc, char* argv[])
                         option));
                     if (pretend_to_fail) continue ;
                     // to trigger SPEX_SINGULAR 
-                    TEST_CHECK_FAILURE(SPEX_LU_backslash(&sol, SPEX_MPQ, A,
+                    TEST_CHECK_FAILURE(SPEX_lu_backslash(&sol, SPEX_MPQ, A,
                         b, option), SPEX_SINGULAR);
                     if (pretend_to_fail) continue ;
                     option->pivot = SPEX_LARGEST;
-                    TEST_CHECK_FAILURE(SPEX_LU_backslash(&sol, SPEX_MPQ, A,
+                    TEST_CHECK_FAILURE(SPEX_lu_backslash(&sol, SPEX_MPQ, A,
                         b, option), SPEX_SINGULAR);
                     if (pretend_to_fail) continue ;
                     option->pivot = SPEX_FIRST_NONZERO;
-                    TEST_CHECK_FAILURE(SPEX_LU_backslash(&sol, SPEX_MPQ, A,
+                    TEST_CHECK_FAILURE(SPEX_lu_backslash(&sol, SPEX_MPQ, A,
                        b, option), SPEX_SINGULAR);
                     if (pretend_to_fail) continue ;
 
@@ -603,11 +603,11 @@ int main( int argc, char* argv[])
                     // just perform once to try some failure cases
                     if (tk == 0 && tk1 == 0)
                     {
-                        // fail SPEX_LU_solve
+                        // fail SPEX_lu_solve
                         TEST_CHECK(SPEX_matrix_allocate(&b, SPEX_DENSE,
                             SPEX_MPZ, 1, 1, 1, true, true, option));
                         if (pretend_to_fail) break ;
-                        TEST_CHECK_FAILURE(SPEX_LU_solve(NULL, NULL,
+                        TEST_CHECK_FAILURE(SPEX_lu_solve(NULL, NULL,
                             b, option), SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         TEST_OK (SPEX_matrix_free (&b, option)) ;
@@ -663,7 +663,7 @@ int main( int argc, char* argv[])
                         if (pretend_to_fail) break ;
 
                         // Incorrect calling with NULL pointer(s)
-                        TEST_CHECK_FAILURE(SPEX_LU_analyze(NULL,A,NULL),
+                        TEST_CHECK_FAILURE(SPEX_lu_analyze(NULL,A,NULL),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
 
@@ -828,7 +828,7 @@ int main( int argc, char* argv[])
                 // SPEX Left LU backslash
                 // solve Ax=b in full precision rational arithmetic
                 //--------------------------------------------------------------
-		TEST_CHECK(SPEX_LU_backslash(&sol, SPEX_MPQ, A, b,option));
+		TEST_CHECK(SPEX_lu_backslash(&sol, SPEX_MPQ, A, b,option));
                 if (pretend_to_fail) continue ;
 
                 // perform solution check if user wish to do so
@@ -844,7 +844,7 @@ int main( int argc, char* argv[])
                 // solve Ax=b in double precision
                 //--------------------------------------------------------------
                 SPEX_matrix *sol_doub;
-		TEST_CHECK(SPEX_LU_backslash(&sol_doub, SPEX_FP64, A, b,
+		TEST_CHECK(SPEX_lu_backslash(&sol_doub, SPEX_FP64, A, b,
                     option));
                 if (pretend_to_fail) continue ;
                 TEST_OK (SPEX_matrix_free(&sol_doub, option));
@@ -852,15 +852,15 @@ int main( int argc, char* argv[])
                 // failure case
                 if (Ab_type == 1)
                 {
-                    TEST_CHECK_FAILURE(SPEX_LU_factorize(NULL,
+                    TEST_CHECK_FAILURE(SPEX_lu_factorize(NULL,
                         A, NULL, NULL), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // incorrect solution type
-                    TEST_CHECK_FAILURE(SPEX_LU_backslash(&sol, SPEX_MPZ,
+                    TEST_CHECK_FAILURE(SPEX_lu_backslash(&sol, SPEX_MPZ,
                         A, b, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // NULL solution pointer
-                    TEST_CHECK_FAILURE(SPEX_LU_backslash(NULL, SPEX_MPZ,
+                    TEST_CHECK_FAILURE(SPEX_lu_backslash(NULL, SPEX_MPZ,
                         A, b, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) continue ;
                     // invalid kind
@@ -911,6 +911,7 @@ int main( int argc, char* argv[])
         printf("\nSPEX LU: brutal tests finished, all tests passed\n");
     }
 
+    fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
     return 0;
 }
 
