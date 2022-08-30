@@ -874,6 +874,31 @@ int main( int argc, char* argv[])
             }
 
             //------------------------------------------------------------------
+            // test spex_amd and spex_colamd
+            //------------------------------------------------------------------
+
+            int64_t *ignore = NULL, nnz = 0 ;
+
+            if (A != NULL)
+            {
+                int64_t nsave = A->n ;
+                A->n = -1 ;
+                TEST_CHECK_FAILURE (spex_amd (&ignore, &nnz, A, NULL),
+                    SPEX_INCORRECT_INPUT) ;
+                if (pretend_to_fail) continue ;
+                if (A != NULL) A->n = nsave ;
+            }
+
+            if (A != NULL)
+            {
+                A->p [0] = 1 ;
+                TEST_CHECK_FAILURE (spex_colamd (&ignore, &nnz, A, NULL),
+                    SPEX_INCORRECT_INPUT) ;
+                if (pretend_to_fail) continue ;
+                if (A != NULL) A->p [0] = 0 ;
+            }
+
+            //------------------------------------------------------------------
             // Free Memory
             //------------------------------------------------------------------
 

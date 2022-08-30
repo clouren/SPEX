@@ -22,6 +22,11 @@
  *
  */
 
+#define SPEX_FREE_ALL                           \
+{                                               \
+    SPEX_symbolic_analysis_free (&S, option) ;  \
+}
+
 #include "spex_lu_internal.h"
 
 SPEX_info SPEX_lu_analyze
@@ -35,13 +40,13 @@ SPEX_info SPEX_lu_analyze
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
+
     if (!spex_initialized()) return SPEX_PANIC;
-    
     SPEX_info info ;
 
     // A can have any data type, but must be in sparse CSC format
     SPEX_REQUIRE_KIND (A, SPEX_CSC) ;
-    
+
     if (!S_handle || A->n != A->m)
     {
         return SPEX_INCORRECT_INPUT;
@@ -96,7 +101,7 @@ SPEX_info SPEX_lu_analyze
             S->Q_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
             if (S->Q_perm == NULL)
             {
-                // FIXME: need to free S, and add to test coverage
+                // out of memory
                 SPEX_FREE_ALL ;
                 return (SPEX_OUT_OF_MEMORY) ;
             }

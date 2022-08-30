@@ -76,16 +76,16 @@ SPEX_info spex_update_debug
     //--------------------------------------------------------------------------
     if(finish_update)
     {
-        SPEX_CHECK(SPEX_Update_matrix_colrep(A, vk, k, option));
+        SPEX_CHECK(SPEX_update_matrix_colrep(A, vk, k, option));
         SPEX_CHECK(spex_update_verify(Is_correct, F, A, option));
         if (*Is_correct)
         {
-            SPEX_CHECK(SPEX_Update_matrix_colrep(A, vk, k, option));
+            SPEX_CHECK(SPEX_update_matrix_colrep(A, vk, k, option));
             SPEX_FREE_ALL;
             return SPEX_OK;
         }
         SPEX_CHECK(SPEX_matrix_copy(&Atmp, SPEX_CSC, SPEX_MPZ, A, option));
-        SPEX_CHECK(SPEX_Update_matrix_colrep(A, vk, k, option));
+        SPEX_CHECK(SPEX_update_matrix_colrep(A, vk, k, option));
     }
     else
     {

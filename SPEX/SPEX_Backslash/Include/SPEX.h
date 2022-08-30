@@ -642,9 +642,9 @@ SPEX_info SPEX_symbolic_analysis_free
 
 // The SPEX_factorization object holds an LU, Cholesky, or QR numerical
 // factorization, in either non-updatable (static) or updatable form. All
-// SPEX_Update_* functions require and output updatable factorization with L
+// SPEX_update_* functions require and output updatable factorization with L
 // (and U if exists) in SPEX_DYNAMIC_CSC MPZ form. All solvers (except
-// SPEX_Update_(t)solve) and functions that create factorization return
+// SPEX_update_(t)solve) and functions that create factorization return
 // non-updatable factorization with L (and U if exists) in SPEX_CSC MPZ form.
 //
 // Aside from that Qinv_perm will be generated for updatable LU factorization,
@@ -670,7 +670,7 @@ SPEX_info SPEX_symbolic_analysis_free
 //
 // To update the factorization due to a simple change to original matrix A
 // (e.g., single column replacement or rank-1 update/downdate), user can call
-// the corresponding SPEX_Update_LU_ColRep or SPEX_Update_Chol_Rank1.
+// the corresponding SPEX_update_lu_colrep or SPEX_update_cholesky_rank1.
 //
 // To check if the factorization is correct and/or print the factorization, call
 // SPEX_factorization_check.
@@ -1460,10 +1460,10 @@ SPEX_info SPEX_cholesky_solve
 // if this function fails for any reason.
 //
 // The matrix vk is not modified during the update. If needed, user can call
-// SPEX_Update_matrix_colrep to obtain the updated matrix A *AFTER* calling this
+// SPEX_update_matrix_colrep to obtain the updated matrix A *AFTER* calling this
 // function.
 
-SPEX_info SPEX_Update_LU_ColRep
+SPEX_info SPEX_update_lu_colrep
 (
     // Input/Output:
     SPEX_factorization* F,  // The SPEX LU factorization of a n-by-n matrix A,
@@ -1485,7 +1485,7 @@ SPEX_info SPEX_Update_LU_ColRep
 // column from a m-by-1 matrix vk. Both matrices must be of SPEX_DYNAMIC_CSC
 // SPEX_MPZ and have the same row order. On output, both matrices are modified.
 
-SPEX_info SPEX_Update_matrix_colrep// performs column replacement
+SPEX_info SPEX_update_matrix_colrep// performs column replacement
 (
     // Input/Output:
     SPEX_matrix *A,         // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
@@ -1516,7 +1516,7 @@ SPEX_info SPEX_Update_matrix_colrep// performs column replacement
 // user can compute A = A + sigma*w*w' *BEFORE* using this function (since w
 // will be modified). TODO: describe how to do this.
 
-SPEX_info SPEX_Update_Chol_Rank1
+SPEX_info SPEX_update_cholesky_rank1
 (
     // Input/Output:
     SPEX_factorization *F,  // The SPEX Cholesky factorization of a n-by-n
@@ -1539,7 +1539,7 @@ SPEX_info SPEX_Update_Chol_Rank1
 // of matrix A
 //------------------------------------------------------------------------------
 
-SPEX_info SPEX_Update_solve
+SPEX_info SPEX_update_solve
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
@@ -1562,7 +1562,7 @@ SPEX_info SPEX_Update_solve
 // of matrix A
 //------------------------------------------------------------------------------
 
-SPEX_info SPEX_Update_tsolve
+SPEX_info SPEX_update_tsolve
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to

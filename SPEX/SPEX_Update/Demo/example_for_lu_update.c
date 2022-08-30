@@ -111,7 +111,7 @@ int main()
     // compute the factorization of A after replacing the k-th column of A
     // with vk->v[0]
     int64_t k = 0;
-    OK(SPEX_Update_LU_ColRep(F, vk, k, option));
+    OK(SPEX_update_lu_colrep(F, vk, k, option));
 
     end = clock();
 
@@ -126,7 +126,7 @@ int main()
     // obtain A in SPEX_DYNAMIC_CSC MPZ
     OK(SPEX_matrix_copy(&A_DCSC, SPEX_DYNAMIC_CSC, SPEX_MPZ, A, option));
     // get the updated matrix A
-    OK(SPEX_Update_matrix_colrep(A_DCSC, vk, 0, option));
+    OK(SPEX_update_matrix_colrep(A_DCSC, vk, 0, option));
 
     //--------------------------------------------------------------------------
     // free memory

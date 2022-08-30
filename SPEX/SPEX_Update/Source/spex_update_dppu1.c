@@ -436,7 +436,7 @@ SPEX_info spex_update_dppu1
     // If this is the last iteration, then we don't need to perform the
     // remaining IPGE update, since L(:,k) will be deleted and updated with
     // inserted column.
-    // However, the current heurestic used in SPEX_Update_LU_ColRep will always
+    // However, the current heurestic used in SPEX_update_lu_colrep will always
     // handle such case with cppu instead. In case the heurestic is changed in
     // the furture, and thus this case become possible for dppu1 (the following
     // assert is triggered), enable the following if clause.

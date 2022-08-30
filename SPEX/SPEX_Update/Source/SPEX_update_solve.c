@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_solve: find the exact solution for Ax=b with the
+// SPEX_Update/SPEX_update_solve: find the exact solution for Ax=b with the
 // the updatable LU factorizaiton of A.
 //------------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_solve // solves Ax = b via LU or Cholesky factorization
+SPEX_info SPEX_update_solve // solves Ax = b via LU or Cholesky factorization
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to

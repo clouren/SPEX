@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function is called by SPEX_Update_solve or SPEX_Update_tsolve
+/* Purpose: This function is called by SPEX_update_solve or SPEX_update_tsolve
  * to solve the linear system Ax = b or ATx=b.
  *
  * Input/output arguments:

@@ -9,11 +9,16 @@
 
 //------------------------------------------------------------------------------
 
+#define SPEX_FREE_ALL       \
+{                           \
+    SPEX_free (perm) ;      \
+}
 
 #include "spex_util_internal.h"
 
-/* Purpose: 
+/* Purpose: SPEX interface to AMD
  */
+
 SPEX_info spex_amd
 (
     int64_t **perm_handle,
@@ -22,11 +27,13 @@ SPEX_info spex_amd
     const SPEX_options* option
 )
 {
-    
+    (*nnz) = 0 ;
+    (*perm_handle) = NULL ;
+
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
     int64_t n = A->n;
-    int64_t *perm=NULL;
-    
+    int64_t * perm= NULL ;
+
     // Allocate memory for permutation
     perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
     if (perm == NULL)
@@ -34,7 +41,7 @@ SPEX_info spex_amd
         SPEX_FREE_ALL ;
         return (SPEX_OUT_OF_MEMORY) ;
     }
-    
+
     double Control[AMD_CONTROL];           // Declare AMD control
     amd_l_defaults(Control);              // Set AMD defaults
     double Info [AMD_INFO];
@@ -60,8 +67,9 @@ SPEX_info spex_amd
         // input matrix is invalid
         return (SPEX_INCORRECT_INPUT) ;
     }
+
     (*nnz) = Info[AMD_LNZ];  // Exact number of nonzeros for Cholesky
-    
     (*perm_handle)=perm;
     return SPEX_OK;
 }
+

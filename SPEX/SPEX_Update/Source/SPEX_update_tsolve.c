@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_tsolve: find the exact solution for Ax=b with the
+// SPEX_Update/SPEX_update_tsolve: find the exact solution for Ax=b with the
 // the updatable LU factorizaiton of A.
 //------------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_tsolve // solves A^T*x = b
+SPEX_info SPEX_update_tsolve // solves A^T*x = b
 (
     // Output
     SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to

@@ -154,7 +154,7 @@ spex_cholesky_%.o: ../SPEX_Cholesky/Source/spex_cholesky_%.c ../SPEX_Backslash/I
 
 OBJ_UPDATE = \
     spex_update_backward_sub.o \
-    SPEX_Update_Chol_Rank1.o \
+    SPEX_update_cholesky_rank1.o \
     spex_update_cppu.o \
     spex_update_dppu1.o \
     spex_update_dppu2.o \
@@ -163,10 +163,10 @@ OBJ_UPDATE = \
     spex_update_get_scattered_v.o \
     spex_update_insert_new_entry.o \
     spex_update_ipge.o \
-    SPEX_Update_LU_ColRep.o \
-    SPEX_Update_matrix_colrep.o \
-    SPEX_Update_solve.o \
-    SPEX_Update_tsolve.o \
+    SPEX_update_lu_colrep.o \
+    SPEX_update_matrix_colrep.o \
+    SPEX_update_solve.o \
+    SPEX_update_tsolve.o \
     spex_update_solve_internal.o \
     spex_update_triangular_solve.o \
     spex_update_debug.o \
@@ -175,7 +175,7 @@ OBJ_UPDATE = \
 
 $(OBJ_UPDATE): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update//Source/spex_update_internal.h Makefile
 
-SPEX_Update_%.o: ../SPEX_Update/Source/SPEX_Update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+SPEX_update_%.o: ../SPEX_Update/Source/SPEX_update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
 	$(C) $(I) -c $<
 
 spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h

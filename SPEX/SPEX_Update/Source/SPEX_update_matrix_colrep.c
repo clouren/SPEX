@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_matrix_colrep: perform a single column replacement
+// SPEX_Update/SPEX_update_matrix_colrep: perform a single column replacement
 // for target matrix
 //------------------------------------------------------------------------------
 
@@ -17,7 +17,7 @@
 
 #include "spex_update_internal.h"
 
-SPEX_info SPEX_Update_matrix_colrep// performs column replacement
+SPEX_info SPEX_update_matrix_colrep// performs column replacement
 (
     SPEX_matrix *A,         // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
     SPEX_matrix *vk,        // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains

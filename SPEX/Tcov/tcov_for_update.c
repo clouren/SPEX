@@ -14,7 +14,7 @@
  *                A=LD^(-1)U is computed correspondingly. Then a n-by-1 sparse
  *                vector to be swapped with the k-th(randomly selected) column
  *                of A is randomly generated. Finally, all these components are
- *                used as input for the SPEX_Update_LU_ColRep for test. For
+ *                used as input for the SPEX_update_lu_colrep for test. For
  *                each given n, the above process will run for 100 times
  *
  * usage:
@@ -633,7 +633,7 @@ int main( int argc, char* argv[])
                         TEST_CHECK(SPEX_factorization_check(F, option));
                         if (pretend_to_fail) {continue;}
 
-                        info = SPEX_Update_LU_ColRep(F, vk, k, option);
+                        info = SPEX_update_lu_colrep(F, vk, k, option);
                         Q_inv = F->Qinv_perm;
                     }
                     else if (test_type == 1)
@@ -656,7 +656,7 @@ int main( int argc, char* argv[])
                             option));
                         if (pretend_to_fail) {break;}
 
-                        info = SPEX_Update_Chol_Rank1(F, vk, sigma, option);
+                        info = SPEX_update_cholesky_rank1(F, vk, sigma, option);
                     }
                         
                     if (info == SPEX_SINGULAR)
@@ -673,8 +673,8 @@ int main( int argc, char* argv[])
 
                     if (test_type == 0)
                     {
-                        // use SPEX_Update_matrix_colrep
-                        TEST_CHECK(SPEX_Update_matrix_colrep(A, vk, k, option));
+                        // use SPEX_update_matrix_colrep
+                        TEST_CHECK(SPEX_update_matrix_colrep(A, vk, k, option));
                         if (pretend_to_fail) {continue;}
 
                         // verify solution
@@ -787,8 +787,8 @@ int main( int argc, char* argv[])
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // test SPEX_lu_solve, SPEX_Update_solve and
-                    // SPEX_Update_tsolve
+                    // test SPEX_lu_solve, SPEX_update_solve and
+                    // SPEX_update_tsolve
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // allocate b so as to use solver functions
                     TEST_CHECK(SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ,
@@ -806,18 +806,18 @@ int main( int argc, char* argv[])
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}
 
-                    TEST_CHECK(SPEX_Update_solve(&b_sol, F, b, option));
+                    TEST_CHECK(SPEX_update_solve(&b_sol, F, b, option));
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}
 
-                    TEST_CHECK(SPEX_Update_tsolve(&b_sol, F, b, option));
+                    TEST_CHECK(SPEX_update_tsolve(&b_sol, F, b, option));
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}
 
                     F->kind = SPEX_CHOLESKY_FACTORIZATION;
-                    TEST_CHECK(SPEX_Update_solve(&b_sol, F, b, option));
+                    TEST_CHECK(SPEX_update_solve(&b_sol, F, b, option));
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}
@@ -828,23 +828,23 @@ int main( int argc, char* argv[])
                     // failure cases
                     //----------------------------------------------------------
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_Update_LU_ColRep
+                    // fail SPEX_update_lu_colrep
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_LU_ColRep(F, vk, -1,
+                    TEST_CHECK_FAILURE(SPEX_update_lu_colrep(F, vk, -1,
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_Update_Chol_Rank1
+                    // fail SPEX_update_cholesky_rank1
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_Chol_Rank1(F, vk, 0,
+                    TEST_CHECK_FAILURE(SPEX_update_cholesky_rank1(F, vk, 0,
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_Update_matrix_colrep
+                    // fail SPEX_update_matrix_colrep
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_matrix_colrep(A, vk, -1,
+                    TEST_CHECK_FAILURE(SPEX_update_matrix_colrep(A, vk, -1,
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
@@ -858,13 +858,13 @@ int main( int argc, char* argv[])
                     F->kind = SPEX_LU_FACTORIZATION;
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_Update_tsolve and SPEX_Update_solve
+                    // fail SPEX_update_tsolve and SPEX_update_solve
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // case 1: make the permutation broken so as to fail
-                    // spex_update_ipge, which is called by SPEX_Update_solve
+                    // spex_update_ipge, which is called by SPEX_update_solve
                     int64_t P0 = P[0]; P[0] = P[1]; P[1] = P0;
                     // get the static F
-                    TEST_CHECK_FAILURE(SPEX_Update_solve(&b_sol, F, b, option),
+                    TEST_CHECK_FAILURE(SPEX_update_solve(&b_sol, F, b, option),
                         SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
@@ -872,10 +872,10 @@ int main( int argc, char* argv[])
                     P0 = P[1]; P[1] = P[0]; P[0] = P0;
 
                     // case 2: input NULL pointer(s)
-                    TEST_CHECK_FAILURE(SPEX_Update_tsolve(NULL, NULL, NULL,
+                    TEST_CHECK_FAILURE(SPEX_update_tsolve(NULL, NULL, NULL,
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
-                    TEST_CHECK_FAILURE(SPEX_Update_solve(NULL, F, b,
+                    TEST_CHECK_FAILURE(SPEX_update_solve(NULL, F, b,
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
@@ -1094,16 +1094,16 @@ int main( int argc, char* argv[])
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_Update_LU_ColRep
+                    // fail SPEX_update_lu_colrep
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_LU_ColRep(NULL, NULL, k,
+                    TEST_CHECK_FAILURE(SPEX_update_lu_colrep(NULL, NULL, k,
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_Update_Chol_Rank1
+                    // fail SPEX_update_cholesky_rank1
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_Update_Chol_Rank1(
+                    TEST_CHECK_FAILURE(SPEX_update_cholesky_rank1(
                         NULL, NULL, 1, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
@@ -1210,7 +1210,7 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     // solve LD^(-1)Ux = b for x
     // -------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_Update_solve(&x, F, b, option));
+    SPEX_CHECK(SPEX_update_solve(&x, F, b, option));
 
     // -------------------------------------------------------------------------
     // compute b2 = A*x

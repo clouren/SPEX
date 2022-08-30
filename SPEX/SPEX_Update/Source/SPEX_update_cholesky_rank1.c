@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_Chol_Rank1: perform Cholesky rank-1 update
+// SPEX_Update/SPEX_update_cholesky_rank1: perform Cholesky rank-1 update
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -36,7 +36,7 @@
 #include "spex_update_internal.h"
 
 // TODO allow w->v[0]->scale != 1
-SPEX_info SPEX_Update_Chol_Rank1
+SPEX_info SPEX_update_cholesky_rank1
 (
     SPEX_factorization *F,  // The SPEX Cholesky factorization of A, including
                             // L, rhos, P and Pinv. This factorization will be

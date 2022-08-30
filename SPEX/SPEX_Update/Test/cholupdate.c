@@ -287,7 +287,7 @@ int main( int argc, char* argv[])
         printf("computing Cholesky rank-1 update if col %ld is %s B...\n",
             new_col, iter < 2?"added to":"removed from");
         start1 = clock();
-        OK(SPEX_Update_Chol_Rank1(F_update, w, sigma, option));
+        OK(SPEX_update_cholesky_rank1(F_update, w, sigma, option));
         end1 = clock();
 
         //----------------------------------------------------------------------

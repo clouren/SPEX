@@ -1,6 +1,7 @@
 FIXME:
 
     rename demos.c files to give them unique names
+    remove test files from SPEX_Update; just keep a few
 
 --------------------------------------------------------------------------------
 

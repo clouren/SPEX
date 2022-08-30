@@ -587,7 +587,7 @@ int main( int argc, char* argv[])
         start2 = clock();
         // solve for x_basic
         OK(SPEX_matrix_free (&basic_sol, option));
-        OK(SPEX_Update_solve(&basic_sol, F1, b, option));
+        OK(SPEX_update_solve(&basic_sol, F1, b, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
@@ -657,7 +657,7 @@ int main( int argc, char* argv[])
         // solve A'*c_new = c for updated coefficient for objective function
         SPEX_matrix_free(&c_new, option);
         start2 = clock();
-        OK(SPEX_Update_tsolve(&c_new, F1, c, option));
+        OK(SPEX_update_tsolve(&c_new, F1, c, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
@@ -741,7 +741,7 @@ int main( int argc, char* argv[])
         // solve for Ay_sol = y
         SPEX_matrix_free(&y_sol, option);
         start2 = clock();
-        OK(SPEX_Update_solve(&y_sol, F1, y, option));
+        OK(SPEX_update_solve(&y_sol, F1, y, option));
         end2 = clock();
         t_solve += (double) (end2 - start2) / CLOCKS_PER_SEC;
 
@@ -848,7 +848,7 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         start_luu = clock();
 
-        OK(SPEX_Update_LU_ColRep(F1, vk, k, option));
+        OK(SPEX_update_lu_colrep(F1, vk, k, option));
 
         end_luu = clock();
 
@@ -863,7 +863,7 @@ int main( int argc, char* argv[])
 
             start_luu3 = clock();
 
-            OK(SPEX_Update_LU_ColRep(F2, vk, k, option));
+            OK(SPEX_update_lu_colrep(F2, vk, k, option));
 
             end_luu3 = clock();
 
@@ -887,7 +887,7 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         // generate new matrix with vk inserted
         //----------------------------------------------------------------------
-        OK(SPEX_Update_matrix_colrep(A_DCSC, vk, k, option));
+        OK(SPEX_update_matrix_colrep(A_DCSC, vk, k, option));
         OK(SPEX_matrix_free(&A_CSC, option));
         OK(SPEX_matrix_copy(&A_CSC, SPEX_CSC, SPEX_MPZ, A_DCSC, option));
 

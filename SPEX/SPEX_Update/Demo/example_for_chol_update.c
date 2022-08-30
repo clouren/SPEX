@@ -109,7 +109,7 @@ int main()
     start = clock();
     // compute the factorization of A = A + sigma*w*w^T by updating F
     int64_t sigma = 1; // sigma > 0 for update and sigma < 0 for downdate
-    OK(SPEX_Update_Chol_Rank1(F, w, sigma, option));
+    OK(SPEX_update_cholesky_rank1(F, w, sigma, option));
 
     end = clock();
 

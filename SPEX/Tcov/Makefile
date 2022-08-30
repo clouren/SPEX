@@ -140,7 +140,7 @@ demos.c:
 
 OBJ_Update = \
     spex_update_backward_sub.o \
-    SPEX_Update_Chol_Rank1.o \
+    SPEX_update_cholesky_rank1.o \
     spex_update_cppu.o \
     spex_update_dppu1.o \
     spex_update_dppu2.o \
@@ -149,19 +149,19 @@ OBJ_Update = \
     spex_update_get_scattered_v.o \
     spex_update_insert_new_entry.o \
     spex_update_ipge.o \
-    SPEX_Update_LU_ColRep.o \
-    SPEX_Update_matrix_colrep.o \
-    SPEX_Update_solve.o \
-    SPEX_Update_tsolve.o \
+    SPEX_update_lu_colrep.o \
+    SPEX_update_matrix_colrep.o \
+    SPEX_update_solve.o \
+    SPEX_update_tsolve.o \
     spex_update_solve_internal.o \
     spex_update_triangular_solve.o
 
 
 $(OBJ_Update): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
 
-.PRECIOUS: SPEX_Update_%.c spex_update_%.c
+.PRECIOUS: SPEX_update_%.c spex_update_%.c
 
-SPEX_Update_%.c:
+SPEX_update_%.c:
 	- ln -s ../SPEX_Update/Source/$@
 
 spex_update_%.c:
@@ -208,8 +208,8 @@ chol_demos.c:
 
 #-------------------------------------------------------------------------------
 
-test4llu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_left_LU.c
-	$(CC) $(LDFLAGS) tcov_for_left_LU.c $(CFLAGS) -o tcov_for_left_LU $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
+test4llu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
+	$(CC) $(LDFLAGS) tcov_for_lu.c $(CFLAGS) -o tcov_for_lu $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
 SPEXLLU: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spexlu_demo.c demos.c ../SPEX_LU/Demo/demos.h
 	$(CC) $(LDFLAGS) spexlu_demo.c demos.c $(CFLAGS) -o spexlu_demo $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
@@ -231,8 +231,8 @@ runtests4llu: all
 	- ./spexlu_demo p 3 q 2 o 1 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu2.out
 	- ./spexlu_demo p 4 q 3 o 1 f ../SPEX_LU/ExampleMats/test_mat.txt ../SPEX_LU/ExampleMats/test_rhs.txt > lu3.out
 	- ./spexlu_demo p 5 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu4.out
-	- ./tcov_for_left_LU > test_for_left_LU.out
-	- ./tcov_for_left_LU 0 1 1 > lu5.out
+	- ./tcov_for_lu > test_for_lu.out
+	- ./tcov_for_lu 0 1 1 > lu5.out
 
 # only run test for SPEX_Update
 runtests4luu: all
@@ -258,8 +258,8 @@ vtests4llu: all
 	- $(V) ./spexlu_demo p 3 q 1 o 1 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu2.out
 	- $(V) ./spexlu_demo p 4 q 2 o 1 f ../SPEX_LU/ExampleMats/test_mat.txt ../SPEX_LU/ExampleMats/test_rhs.txt > lu3.out
 	- $(V) ./spexlu_demo p 5 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu4.out
-	- $(V) ./tcov_for_left_LU > test_for_left_LU.out
-	- $(V) ./tcov_for_left_LU 0 1 1 > lu5.out
+	- $(V) ./tcov_for_lu > test_for_lu.out
+	- $(V) ./tcov_for_lu 0 1 1 > lu5.out
 
 # run test for SPEX_Update with valgrind
 vtests4luu: all
@@ -276,7 +276,7 @@ vtests4chol: test4chol
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_for_left_LU tcov_for_update spexlu_demo *.out *.a cov.sort out Mats4Tcov/SPEX_Update/mat.txt
+	- $(RM) tcov_for_lu tcov_for_update spexlu_demo *.out *.a cov.sort out Mats4Tcov/SPEX_Update/mat.txt
 	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c demos.c
 	- $(RM) -r tcov_for_cholesky chol_demos.c
 

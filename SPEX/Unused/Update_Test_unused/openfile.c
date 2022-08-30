@@ -555,7 +555,7 @@ int main( int argc, char* argv[])
         {
             start_luu3 = clock();
 
-            OK(SPEX_Update_LU_ColRep(A3, L3, U3, rhos3, P3, P3_inv, Q3, Q3_inv,
+            OK(SPEX_update_lu_colrep(A3, L3, U3, rhos3, P3, P3_inv, Q3, Q3_inv,
                 &vk3, k, option));
 
             end_luu3 = clock();
@@ -603,7 +603,7 @@ int main( int argc, char* argv[])
         //----------------------------------------------------------------------
         start_luu = clock();
 
-        OK(SPEX_Update_LU_ColRep(A2, L2, U2, rhos2, P, P_inv, Q, Q_inv, &vk, k,
+        OK(SPEX_update_lu_colrep(A2, L2, U2, rhos2, P, P_inv, Q, Q_inv, &vk, k,
             option));
 
         end_luu = clock();

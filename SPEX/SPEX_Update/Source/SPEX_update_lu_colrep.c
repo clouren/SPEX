@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_Update_LU_ColRep.c: perform LU update for column replacement
+// SPEX_Update/SPEX_update_lu_colrep.c: perform LU update for column replacement
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -18,7 +18,7 @@
 // if this function fails for any reason.
 //
 // The matrix vk is not modified during the update. If needed, user can call
-// SPEX_Update_matrix_colrep to obtain the updated matrix A *AFTER* calling this
+// SPEX_update_matrix_colrep to obtain the updated matrix A *AFTER* calling this
 // function.
 
 
@@ -47,7 +47,7 @@ SPEX_matrix *A_debug = NULL ;
 #endif
 
 // TODO allow vk->v[0]->scale != 1?
-SPEX_info SPEX_Update_LU_ColRep
+SPEX_info SPEX_update_lu_colrep
 (
     SPEX_factorization* F,  // The SPEX factorization of A, including L, U,
                             // rhos, P, Pinv, Q and Qinv. The factorization

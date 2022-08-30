@@ -40,6 +40,9 @@ ptest: lib ptest.c test.c test.h Makefile
 test_optimal: lib test_optimal.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o test_optimal test_optimal.c test.c $(LDLIBS)
 
+openfile: lib openfile.c test.c test.h Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o openfile openfile.c test.c $(LDLIBS)
+
 chol: lib cholupdate.c test.c test.h Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o cholupdate cholupdate.c test.c $(LDLIBS)
 
@@ -47,7 +50,7 @@ clean:
 	- $(RM) *.o
 
 purge: distclean
-	- $(RM) -r test_optimal ptest cholupdate
+	- $(RM) -r openfile test_optimal ptest cholupdate
 
 distclean: clean
 	- $(RM) -r ptest *.a *.dSYM *.obj *.dll *.out

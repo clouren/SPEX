@@ -1,8 +1,5 @@
 # Ignore these files:
-ptest
-cholupdate
-test_optimal
-*.out
+SPEX_Backslash_Demo
 
 # Do not ignore this file
 !.gitignore
