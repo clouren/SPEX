@@ -12,7 +12,8 @@
 // This file is not intended to be #include'd in user applications.  Use
 // SPEX_Update.h instead.
 
-// uncomment to help debugging
+// uncomment to help debugging : FIXME move to spex_util_internal.h
+#undef SPEX_DEBUG
 // #define SPEX_DEBUG
 
 #ifndef SPEX_UPDATE_INTERNAL_H
@@ -20,6 +21,7 @@
 
 #include "spex_util_internal.h"
 
+// FIXME: move this to spex_util_internal.h:
 #ifdef SPEX_DEBUG
 // redefine SPEX_CHECK to print the file name and line
 #ifdef SPEX_CHECK
