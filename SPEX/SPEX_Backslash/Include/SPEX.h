@@ -103,14 +103,35 @@
 #include "SuiteSparse_config.h"
 
 //------------------------------------------------------------------------------
-// Version
+// SPEX Version
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_VERSION "2.0.0"
+#define SPEX_VERSION_STRING "2.0.0"
 #define SPEX_VERSION_MAJOR 2
 #define SPEX_VERSION_MINOR 0
 #define SPEX_VERSION_SUB   0
+#define SPEX_VERSION_NUMBER(major,minor,sub) \
+    (((major)*1000ULL + (minor))*1000ULL + (sub))
+#define SPEX_VERSION \
+    SPEX_VERSION_NUMBER (SPEX_VERSION_MAJOR, \
+                         SPEX_VERSION_MINOR, \
+                         SPEX_VERSION_SUB)
+
+// Requirements: SPEX requires GMP 6.1.2 or later, and MPFR 4.0.2 or later.
+// NOTE that these version numbers are from the original source distributions.
+// It is NOT the "number 10" assigned to libgmp.so.10 in the Ubuntu linux
+// distro.
+
+// GMP v6.1.2 or later is required:
+#if __GNU_MP_RELEASE < 60102
+#error "GMP v6.1.2 or later is required."
+#endif
+
+// MPFR v4.0.2 or later is required:
+#if MPFR_VERSION < MPFR_VERSION_NUM(4,0,2)
+#error "MPFR v4.0.2 or later is required."
+#endif
 
 //------------------------------------------------------------------------------
 // Error codes

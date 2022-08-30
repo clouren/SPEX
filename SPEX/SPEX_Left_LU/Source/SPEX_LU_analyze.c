@@ -64,7 +64,6 @@ SPEX_info SPEX_LU_analyze
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
     S->kind = SPEX_LU_FACTORIZATION;
 
-
     //--------------------------------------------------------------------------
     // No ordering is used. S->Q_perm is set to [0...n] and the number of
     // nonzeros in L and U is estimated to be 10 times the number of nonzeros
@@ -97,6 +96,7 @@ SPEX_info SPEX_LU_analyze
             S->Q_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
             if (S->Q_perm == NULL)
             {
+                // FIXME: need to free S, and add to test coverage
                 SPEX_FREE_ALL ;
                 return (SPEX_OUT_OF_MEMORY) ;
             }

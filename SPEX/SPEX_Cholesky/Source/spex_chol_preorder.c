@@ -118,6 +118,7 @@ SPEX_info spex_chol_preorder
             S->P_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
             if (S->P_perm == NULL)
             {
+                // FIXME: need to free S, and add to test coverage
                 SPEX_FREE_ALL ;
                 return (SPEX_OUT_OF_MEMORY) ;
             }

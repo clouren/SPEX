@@ -33,14 +33,18 @@ mpz_t* spex_create_mpz_array
     if (!x) {return NULL;}
     for (int64_t i = 0; i < n; i++)
     {
-        if (SPEX_mpz_init(x[i]) != SPEX_OK)
+        #if __GNU_MP_RELEASE < 60200
+        SPEX_info info =
+        #endif
+        SPEX_mpz_init (x [i])  ;
+        #if __GNU_MP_RELEASE < 60200
+        if (info != SPEX_OK)
         {
-            // out of memory
-            // NOTE: This can be triggered only when using GMP v6.1.2 or earlier
-            // versions. For GMP v6.2.1 or later versions, there will be no
-            // memory allocation, and thus such failure will never occur.
-            // As a result, this code will be untested by the tests in
-            // SPEX/Tcov, when using GMP v6.2.1 or later.
+            // out of memory.  NOTE: This can be triggered only when using GMP
+            // v6.1.2 or earlier versions. For GMP v6.2.0 or later versions,
+            // there is no memory allocation, and thus such failure will never
+            // occur.  As a result, this code cannot be untested by the tests
+            // in SPEX/Tcov, when using GMP v6.2.0 or later.
             SPEX_MPZ_SET_NULL(x[i]);
             for (int64_t j = 0; j < i; j++)
             {
@@ -52,6 +56,7 @@ mpz_t* spex_create_mpz_array
             SPEX_FREE(x);
             return NULL;
         }
+        #endif
     }
     return x;
 }
