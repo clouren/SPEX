@@ -12,32 +12,10 @@
 // This file is not intended to be #include'd in user applications.  Use
 // SPEX_Update.h instead.
 
-// uncomment to help debugging : FIXME move to spex_util_internal.h
-#undef SPEX_DEBUG
-// #define SPEX_DEBUG
-
 #ifndef SPEX_UPDATE_INTERNAL_H
 #define SPEX_UPDATE_INTERNAL_H
 
 #include "spex_util_internal.h"
-
-// FIXME: move this to spex_util_internal.h:
-#ifdef SPEX_DEBUG
-// redefine SPEX_CHECK to print the file name and line
-#ifdef SPEX_CHECK
-#undef SPEX_CHECK
-#endif
-#define SPEX_CHECK(method)      \
-{                               \
-    info = (method) ;           \
-    if (info != SPEX_OK)        \
-    {                           \
-        printf("file %s line %d\n",__FILE__,__LINE__);\
-        SPEX_FREE_ALL ;         \
-        return (info) ;         \
-    }                           \
-}
-#endif
 
 // ============================================================================
 //                           Internal Functions
@@ -256,6 +234,7 @@ SPEX_info spex_update_solve_internal
 );
 
 #ifdef SPEX_DEBUG
+
 SPEX_info spex_update_debug
 (
     bool *Is_correct,     // if factorization is correct

@@ -41,11 +41,6 @@
 #define SL(k) (L->v[(k)]->scale)
 #define SU(k) (UT->v[(k)]->scale)
 
-#ifdef SPEX_DEBUG
-// global variable, only used FIXME
-SPEX_matrix *A_debug = NULL ;
-#endif
-
 // TODO allow vk->v[0]->scale != 1?
 SPEX_info SPEX_update_lu_colrep
 (
@@ -55,9 +50,6 @@ SPEX_info SPEX_update_lu_colrep
                             // Therefore, if this function fails for any
                             // reason, the returned F should be considered as
                             // undefined.
-
-    // FIXME: A is needed for debug mode
-    //SPEX_matrix *A,         // Input matrix, must be dynamic CSC
 
     // TODO: decide on utilities to help create this n-by-1 matrix:
     SPEX_matrix *vk,        // Pointer to a n-by-1 dynamic_CSC matrix
@@ -292,6 +284,7 @@ SPEX_info SPEX_update_lu_colrep
             }
         }
 
+        #if 0
         // exactly verify each entry of the factorization
         if (A != NULL)
         {
@@ -308,6 +301,7 @@ SPEX_info SPEX_update_lu_colrep
                 ASSERT(is_correct);
             }
         }
+        #endif
 
         if (jnext < n)
         {
@@ -818,8 +812,8 @@ SPEX_info SPEX_update_lu_colrep
     SPEX_CHECK(SPEX_mpq_set_ui(SL(k), 1, 1));
     SPEX_CHECK(SPEX_mpq_set_ui(SU(k), 1, 1));
 
-#ifdef SPEX_DEBUG
-    // FIXME
+    #if 0
+    #ifdef SPEX_DEBUG
     // exactly verify each entry of the factorization
     if (A != NULL)
     {
@@ -836,7 +830,8 @@ SPEX_info SPEX_update_lu_colrep
             ASSERT(is_correct);
         }
     }
-#endif
+    #endif
+    #endif
 
     SPEX_FREE_ALL;
     return SPEX_OK;

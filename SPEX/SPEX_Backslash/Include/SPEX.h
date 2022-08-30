@@ -1469,7 +1469,6 @@ SPEX_info SPEX_update_lu_colrep
     SPEX_factorization* F,  // The SPEX LU factorization of a n-by-n matrix A,
                             // including L, U, rhos, P, Pinv, Q and Qinv.
     // Input:
-    // FIXME: SPEX_vector *vk
     SPEX_matrix *vk,        // Pointer to a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix
                             // which contains the column to be inserted.
                             // The rows of vk are in the same order as A.
@@ -1489,7 +1488,6 @@ SPEX_info SPEX_update_matrix_colrep// performs column replacement
 (
     // Input/Output:
     SPEX_matrix *A,         // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
-    // FIXME: SPEX_vector *vk
     SPEX_matrix *vk,        // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
                             // the column vector to replace the k-th column of A
                             // vk->scale = A->scale and vk->v[0]->scale = 1.

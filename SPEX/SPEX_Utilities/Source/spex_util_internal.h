@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 
 // Standard C libraries
-#include <setjmp.h> 
+#include <setjmp.h>
 #include <stdarg.h>
 
 // SuiteSparse headers
@@ -40,6 +40,10 @@
 //------------------------------------------------------------------------------
 // debugging
 //------------------------------------------------------------------------------
+
+#undef SPEX_DEBUG
+// uncomment this line to enable debugging
+// #define SPEX_DEBUG
 
 #ifdef SPEX_DEBUG
 
@@ -97,13 +101,9 @@
 // frees all workspace if an error occurs. The method can be a scalar as well,
 // so that SPEX_CHECK(info) works.
 
-// the default is to free nothing
-// TODO remove this!!! and fix 80char
+// To create a SPEX_FREE_WORKSPACE and SPEX_FREE_ALL, use this approach:
 
-/* Comment by Tim:  this should not be removed.  The default is that nothing
-needs to be freed.  If you need to define a SPEX_FREE_ALL then it should be
-defined *before* including any other file.  Thus
-
+/*
     #define SPEX_FREE_WORKSPACE \
     {                           \
         free all workspace      \
@@ -114,47 +114,62 @@ defined *before* including any other file.  Thus
         free all output objects \
     }
     #include "this file.h"
-
-then, since SPEC_FREE_ALL is already defined, it isn't #defined below.
-
-Definitions of these macros:
-
-    SPEX_FREE_ALL:  frees everything, including both workspace and the result
-    SPEX_FREE_WORKSPACE: frees just the internal workspace of the method, not
-    the final result
-
 */
 
-// Frees workspace and memory that would be returned. Only used when there is
-// an error and we need to cleanly close things (like out of memory conditions
-// and failed SPEX_CHECK)
+// then, since SPEC_FREE_ALL is already defined, it isn't #defined below.
+//
+// Definitions of these macros:
+//
+//  SPEX_FREE_ALL:  frees everything, including both workspace and the result
+//  SPEX_FREE_WORKSPACE: frees just the internal workspace of the method, not
+//  the final result
+
+// SPEX_FREE_ALL: Frees workspace and memory that would be returned. Only used
+// when there is an error and we need to cleanly close things (like out of
+// memory conditions and failed SPEX_CHECK)
 
 #ifndef SPEX_FREE_ALL
 #define SPEX_FREE_ALL
 #endif
 
-// Frees all workspace (but not memory that was allocated and meant to be
-// returned). Used usually at the end of the function.  This workspace
-// mechanism should be used even if the function only has one workspace
-// variable (it can be risky otherwise with further development)
+// SPEX_FREE_WORKSPACE: Frees all workspace (but not memory that was allocated
+// and meant to be returned). Used usually at the end of the function.  This
+// workspace mechanism should be used even if the function only has one
+// workspace variable (it can be risky otherwise with further development)
 
 #ifndef SPEX_FREE_WORKSPACE
 #define SPEX_FREE_WORKSPACE
 #endif
 
-// Local variables (only declared, allocated and freed inside an if, for example) do not go inside 
-// the workspace
+// Local variables (only declared, allocated and freed inside an if, for
+// example) do not go inside the workspace.
 
-#define SPEX_CHECK(method)      \
-{                               \
-    info = (method) ;           \
-    if (info != SPEX_OK)        \
-    {                           \
-        SPEX_FREE_ALL ;         \
-        return (info) ;         \
-    }                           \
-}
+#ifdef SPEX_DEBUG
 
+    #define SPEX_CHECK(method)      \
+    {                               \
+        info = (method) ;           \
+        if (info != SPEX_OK)        \
+        {                           \
+            printf("file %s line %d\n",__FILE__,__LINE__);\
+            SPEX_FREE_ALL ;         \
+            return (info) ;         \
+        }                           \
+    }
+
+#else
+
+    #define SPEX_CHECK(method)      \
+    {                               \
+        info = (method) ;           \
+        if (info != SPEX_OK)        \
+        {                           \
+            SPEX_FREE_ALL ;         \
+            return (info) ;         \
+        }                           \
+    }
+
+#endif
 
 //------------------------------------------------------------------------------
 // printing control
@@ -552,7 +567,7 @@ SPEX_info spex_amd
 #define ASSERT_MATRIX(A,required_kind,required_type)    \
     ASSERT_KIND (A,required_kind) ;                     \
     ASSERT_TYPE (A,required_type) ;
-    
+
 //------------------------------------------------------------------------------
 // SPEX_matrix macros
 //------------------------------------------------------------------------------
@@ -569,5 +584,3 @@ SPEX_info spex_amd
 
 #endif
 
-
-    

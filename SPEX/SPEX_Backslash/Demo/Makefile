@@ -21,6 +21,8 @@ I = -I../../../include
 LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspex
 
 
+# FIXME: the 2nd command reports an error when openning the RHS file,
+# then generates its own RHS.
 all: SPEX_Backslash_Demo
 	- ./SPEX_Backslash_Demo
 	- ./SPEX_Backslash_Demo f ../ExampleMats/2209.mat.txt s

@@ -26,7 +26,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 	-I../SPEX_Update/Source \
         -I../../SuiteSparse_config -I../../COLAMD/Include \
 	-I../../AMD/Include \
-        -DSPEX_GMP_LIST_INIT=2 #-DSPEX_DEBUG
+        -DSPEX_GMP_LIST_INIT=2
 
 LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig
 
