@@ -211,7 +211,7 @@ int main( int argc, char* argv[])
 
     // Now we perform the SPEX Left LU factorization to obtain matrices L and U
     // and a row permutation P such that PAQ = LDU.
-    OK(SPEX_Left_LU_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis, option));
+    OK(SPEX_LU_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis, option));
 
     end_llu = clock();
 
@@ -541,7 +541,7 @@ int main( int argc, char* argv[])
 
         // Now we perform the SPEX Left LU factorization to obtain matrices L
         // and U and a row permutation P such that PAQ = LDU.
-        OK(SPEX_Left_LU_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis,
+        OK(SPEX_LU_factorize(&L1, &U1, &rhos, &P1_inv, A1, analysis,
             option));
 //        if (info == SPEX_OK) {printf("matrix is not singular!\n");}
 

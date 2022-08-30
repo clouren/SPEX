@@ -236,7 +236,7 @@ int main (int argc, char* argv[])
 
     // perform the SPEX Left LU factorization to obtain matrices L
     // and U and a row permutation P such that PAQ = LDU.
-    OK(SPEX_Left_LU_factorize(&F1, A_CSC, analysis, option));
+    OK(SPEX_LU_factorize(&F1, A_CSC, analysis, option));
 
     //end_llu = clock();
 
@@ -244,7 +244,7 @@ int main (int argc, char* argv[])
     // Solve LDU x = b
     //------------------------------------------------------------------
 
-    OK(SPEX_Left_LU_solve(&x1, F1, b, option));
+    OK(SPEX_LU_solve(&x1, F1, b, option));
 
     // check if any solution is infeasible
     double max_diff = 0, diff;

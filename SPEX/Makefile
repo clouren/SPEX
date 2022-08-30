@@ -17,7 +17,7 @@ include ../SuiteSparse_config/SuiteSparse_config.mk
 # Compile the default rules for each package
 go:
 	( cd build && $(MAKE) )
-	( cd SPEX_Left_LU && $(MAKE) )
+	( cd SPEX_LU && $(MAKE) )
 	( cd SPEX_Update && $(MAKE) )
 	( cd SPEX_Cholesky && $(MAKE) )
 	( cd SPEX_Backslash && $(MAKE) )
@@ -49,7 +49,7 @@ cov:
 # Remove all files not in the original distribution
 purge:
 	- ( cd build && $(MAKE) purge )
-	- ( cd SPEX_Left_LU && $(MAKE) purge )
+	- ( cd SPEX_LU && $(MAKE) purge )
 	- ( cd SPEX_Update && $(MAKE) purge )
 	- ( cd SPEX_Cholesky && $(MAKE) purge )
 	- ( cd Tcov && $(MAKE) purge )

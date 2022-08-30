@@ -102,13 +102,8 @@
 #include <gmp.h>
 #include <mpfr.h>
 
-// SPEX Util
-#include "SPEX_Util.h"
-
-// SuiteSparse headers
-#include "SuiteSparse_config.h"
-#include "colamd.h"
-#include "amd.h"
+// SPEX
+#include "SPEX.h"
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -124,7 +119,7 @@
 #define SPEX_CHOL_VERSION_MINOR 0
 #define SPEX_CHOL_VERSION_SUB   1
 
-// Should be defined in SPEX_Util
+// Should be defined in SPEX_Utilities
 //#define ASSERT assert
 
 /* Compute the dot product of two integer vectors x,y and return in z */

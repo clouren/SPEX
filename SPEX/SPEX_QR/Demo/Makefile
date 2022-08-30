@@ -15,14 +15,14 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 # uncomment for extra error checking:
 #CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
-PATH_TO_SPEX_UTIL=-Wl,-rpath,"../../SPEX_Util/Lib/"
+PATH_TO_SPEX_UTIL=-Wl,-rpath,"../../SPEX_Utilities/Lib/"
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX_UTIL) -O
 I = -I../Include -I../Source -I../../../SuiteSparse_config \
--I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Util/Include \
--I../../SPEX_Util/Source -I../../SPEX_Util/Lib
+-I../../../COLAMD/Include -I../../../AMD/Include -I../../SPEX_Utilities/Include \
+-I../../SPEX_Utilities/Source -I../../SPEX_Utilities/Lib
 
 LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd \
--lamd -L../../SPEX_Util/Lib/ -lspexutil 
+-lamd -L../../SPEX_Utilities/Lib/ -lspexutil 
 
 CS = ../Lib/libspexqr.a $(LDLIBS)
 

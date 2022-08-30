@@ -17,7 +17,7 @@ include ../../SuiteSparse_config/SuiteSparse_config.mk
 PATH_TO_SPEX=-Wl,-rpath,"../lib/"
 CF =  $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $(PATH_TO_SPEX) -O 
 
-I = -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Util/Source -I../SPEX_Left_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source
+I = -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Utilities/Source -I../SPEX_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source
 
 LDLIBS += -lsuitesparseconfig -lcolamd -lamd \
            -lgmp -lm\

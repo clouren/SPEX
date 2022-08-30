@@ -2,9 +2,9 @@ This file lists all licenses for all packages in SPEX, for your
 convenience.  Each package has its own separate license, which can be
 found in the lists below.
 
-==> SPEX_Left_LU/License/license.txt <==
+==> SPEX/LICENSE <==
 
-    SPEX Left LU: a Sparse Left-looking Integer-Preserving LU Factorization
+    FIXME: SPEX Left LU: a Sparse Left-looking Integer-Preserving LU Factorization
 
     Copyright (c) 2019-2021, Christopher Lourenco, JinHao Chen, Erick Moreno-
     Centeno, and Timothy A. Davis.

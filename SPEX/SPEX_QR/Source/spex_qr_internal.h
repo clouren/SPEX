@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // This file is not intended to be #include'd in user applications.  Use
-// SPEX_Left_LU.h instead.
+// SPEX.h instead.
 
 #ifndef SPEX_QR_INTERNAL_H
 #define SPEX_QR_INTERNAL_H

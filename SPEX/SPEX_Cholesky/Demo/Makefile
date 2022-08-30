@@ -18,7 +18,7 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 CFLAGS += -Wall -Wextra -Wpedantic -Werror
 
 CF = $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -O
-I = -I../../../include -I../../SPEX_Util/Source
+I = -I../../../include -I../../SPEX_Utilities/Source
 
 LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspex
 

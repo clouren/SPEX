@@ -29,7 +29,7 @@ include ../../../SuiteSparse_config/SuiteSparse_config.mk
 # SPEX_Chol depends on SuiteSparse_config, AMD, COLAMD, M, GMP, and MPFR
 LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lspexutil -lm -lgmp -lmpfr
 
-C = $(CC) $(CF) -g -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Util/Include -I../../SPEX_Util/Source
+C = $(CC) $(CF) -g -I../Include -I../../../COLAMD/Include -I../../../AMD/Include -I../../../SuiteSparse_config -I../../../include/ -I../../SPEX_Utilities/Include -I../../SPEX_Utilities/Source
 
 all: install
 

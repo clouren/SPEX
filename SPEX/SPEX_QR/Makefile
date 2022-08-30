@@ -43,18 +43,12 @@ clean:
 	( cd Lib ; $(MAKE) clean )
 	( cd Demo ; $(MAKE) clean )
 	( cd Tcov ; $(MAKE) clean )
-	- ( cd MATLAB/Source ; $(RM) *.o )
-	- ( cd MATLAB    ; $(RM) *.o )
-#	( cd Doc ; $(MAKE) clean )
 
 # remove all files not in the distribution
 purge:
 	( cd Lib ; $(MAKE) purge )
 	( cd Demo ; $(MAKE) purge )
 	( cd Tcov ; $(MAKE) purge )
-	- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
-	- ( cd MATLAB    ; $(RM) *.o *.mex* )
-#	( cd Doc ; $(MAKE) clean )
 
 distclean: purge
 

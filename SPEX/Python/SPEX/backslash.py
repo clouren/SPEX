@@ -64,7 +64,7 @@ def left_lu( A, b, options=Options('double', 'colamd')):
     ##--------------------------------------------------------------------------
     ## Call SPEX
     ##--------------------------------------------------------------------------
-    x=spex_connect(A,b,options.order(),options.charOut(),2) #3 calls Left_LU
+    x=spex_connect(A,b,options.order(),options.charOut(),2) #3 calls lu
 
     return x
 

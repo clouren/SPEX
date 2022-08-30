@@ -142,7 +142,7 @@ SPEX_info SPEX_Backslash
             // SPEX_OK: LU success, x is the exact solution
             // Other error code: Some error. Return the error
             //                   code and exit
-            info = SPEX_Left_LU_backslash(&x, type, A, b, backslash_options);
+            info = SPEX_LU_backslash(&x, type, A, b, backslash_options);
             if (info == SPEX_OK)
             {
                 // LU success, set X_h// A must be CSC and MPZandle = x
@@ -188,7 +188,7 @@ SPEX_info SPEX_Backslash
         // SPEX_OK: LU success, x is the exact solution
         // Other error code: Some error. Return the error
         //                   code and exit
-        info = SPEX_Left_LU_backslash(&x, type, A, b, backslash_options);
+        info = SPEX_LU_backslash(&x, type, A, b, backslash_options);
         if (info == SPEX_OK)
         {
             // LU factorization was successful. Set X_handle = x

@@ -33,7 +33,7 @@
 
 \begin{center}
 \begin{large}
-\textbf{User Guide for the SPEX Software Package} \\
+\textbf{FIXME: OLD: User Guide for the SPEX Software Package} \\
 \vspace{5mm}
 Version 1.1.1, March 2021 % VERSION
 \vspace{20mm}
@@ -172,9 +172,9 @@ Installation of SPEX Util requires the \verb|make| utility in Linux/MacOS, or
 under the main directory will compile AMD, COLAMD and SPEX Util to the respective
 \verb|SPEX/Lib| folder. To further install the libraries onto your computer,
 simply type \verb|make install|.  Thereafter, to use the code inside of your
-program, precede your code with \newline \verb|#include "SPEX_Util.h"|. This is done
+program, precede your code with \newline \verb|#include "SPEX.h"|. This is done
 by default in all SPEX factorization routines, thus a user should never have to
-directly include \verb|SPEX_Util|.
+directly include \verb|SPEX_Utilities|.
 
 %-------------------------------------------------------------------------------
 \section{Managing the SPEX environment} \label{s:user:setup}
@@ -185,7 +185,7 @@ directly include \verb|SPEX_Util|.
 %-------------------------------------------------------------------------------
 
 SPEX Util defines the following strings with \verb|#define|. Refer to
-the \verb|SPEX_Util.h| file for details.
+the \verb|SPEX.h| file for details.
 
 %----------------------------------------
 \begin{center}
@@ -1245,7 +1245,7 @@ with the added prefix \verb|SPEX_|. For example, the default GMP function
 returns \verb|SPEX_OK| if successful or the correct error code if not. The
 following table gives a brief list of each currently covered SPEX GMP/MPFR
 function. For a detailed description of each function, refer to
-\verb|SPEX/SPEX/SPEX_Util/Source/SPEX_gmp.c|.
+\verb|SPEX/SPEX/SPEX_Utilities/Source/SPEX_gmp.c|.
 
 If additional GMP and MPFR functions are needed in the end-user application,
 this wrapper mechanism can be extended to those functions.  Below are
@@ -1562,7 +1562,7 @@ to provide a framework for other solvers to benchmark the reliability and
 stability of their linear solvers, as our final solution vector $x$ is
 \ul{guaranteed} to be exact. SPEX Left LU is written in ANSI C and is accompanied by a MATLAB interface.
 
-For all primary computational routines in Section \ref{s:LeftLU:SPEX_Left_LU_factorize}, the input
+For all primary computational routines in Section \ref{s:LeftLU:SPEX_LU_factorize}, the input
 argument $A$ must be stored in a compressed sparse column (CSC) matrix with
 entries in \verb|mpz_t| type (referred to as CSC \verb|mpz_t| matrix henceforth), while $b$ must be stored as a dense \verb|mpz_t| matrix (i.e., a
 dense matrix with entries in \verb|mpz_t| type).  However, the original data type of entries in the input matrix $A$ and right hand side (RHS) vectors $b$ can be any one of: \verb|double|, \verb|int64_t|, \verb|mpq_t|,
@@ -1618,7 +1618,7 @@ Installation of SPEX Left LU requires the \verb|make| utility in Linux/MacOS, or
 under the main directory will compile AMD, COLAMD and SPEX Left LU to the respective
 \verb|SPEX/Lib| folder. To further install the libraries onto your computer,
 simply type \verb|make install|.  Thereafter, to use the code inside of your
-program, precede your code with \newline \verb|#include "SPEX_Left_LU.h"|.
+program, precede your code with \newline \verb|#include "SPEX.h"|.
 
 To run the statement coverage tests, go to the \verb|Tcov| folder and
 type \verb|make|.  The last line of output should read:
@@ -1628,21 +1628,22 @@ type \verb|make|.  The last line of output should read:
 \end{verbatim}
 
 If you want to use SPEX Left LU within MATLAB, 
-\verb|cd| in MATLAB to the folder \verb|SPEX/SPEX/SPEX_Left_LU/MATLAB| then type
-\newline \verb|SPEX_Left_LU_install|. This compiles the necessary code so that you can use
-the \verb|SPEX_Left_LU_backslash| function within MATLAB. Note that
-\newline \verb|SPEX_Left_LU_install| does not add the correct directory to your path; therefore,
-if you want to use \verb|SPEX_Left_LU_backslash| in future sessions, type
+\verb|cd| in MATLAB to the folder \verb|SPEX/SPEX/MATLAB| then type
+\newline \verb|SPEX_mex_install|. This compiles the necessary code so that you can use
+% FIXME: update this
+the \verb|SPEX_*| functions within MATLAB. Note that
+\newline \verb|SPEX_mex_install| does not add the correct directory to your path; therefore,
+if you want to use the \verb|SPEX_*| functions in future sessions, type
 \verb|pathtool| and save your path for future MATLAB sessions. If you cannot
 save your path because of file permissions, edit your \verb|startup.m| by
 adding \verb|addpath| commands (for more information on how this is done, please type \verb|doc startup| and \verb|doc addpath|).
 
 %-------------------------------------------------------------------------------
-\cprotect\section{\verb|SPEX_Left_LU_VERSION|: the software package version}
+\cprotect\section{\verb|SPEX_VERSION|: the software package version}
 %-------------------------------------------------------------------------------
 
 SPEX Left LU defines the following strings with \verb|#define|. Refer to
-the \verb|SPEX_Left_LU.h| file for details.
+the \verb|SPEX.h| file for details.
 
 %----------------------------------------
 \begin{center}
@@ -1650,10 +1651,10 @@ the \verb|SPEX_Left_LU.h| file for details.
 \hline
 Macro & purpose \\
 \hline
-\verb|SPEX_Left_LU_VERSION|       & current version of the code (as a string)\\
-\verb|SPEX_Left_LU_VERSION_MAJOR| & major version of the code\\
-\verb|SPEX_Left_LU_VERSION_MINOR| & minor version of the code   \\
-\verb|SPEX_Left_LU_VERSION_SUB|   & sub version of the code\\
+\verb|SPEX_LU_VERSION|       & current version of the code (as a string)\\
+\verb|SPEX_LU_VERSION_MAJOR| & major version of the code\\
+\verb|SPEX_LU_VERSION_MINOR| & minor version of the code   \\
+\verb|SPEX_LU_VERSION_SUB|   & sub version of the code\\
 \hline
 \end{tabular}
 \end{center}
@@ -1661,14 +1662,14 @@ Macro & purpose \\
 \section{Factorization and Solve Routines}
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{\verb|SPEX_Left_LU_factorize|: perform LU factorization}
-\label{s:LeftLU:SPEX_Left_LU_factorize}
+\cprotect\subsection{\verb|SPEX_LU_factorize|: perform LU factorization}
+\label{s:LeftLU:SPEX_LU_factorize}
 %-------------------------------------------------------------------------------
 
 \begin{mdframed}[userdefinedwidth=6in]
 {\footnotesize
 \begin{verbatim}
-    SPEX_info SPEX_Left_LU_factorize
+    SPEX_info SPEX_LU_factorize
     (
         // output:
         SPEX_matrix **L_handle,     // lower triangular matrix
@@ -1684,12 +1685,12 @@ Macro & purpose \\
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_Left_LU_factorize| performs the SPEX Left-looking LU factorization.
+\verb|SPEX_LU_factorize| performs the SPEX Left-looking LU factorization.
 This factorization is done via $n$ (number of rows or columns of the square
 matrix $A$) iterations of the sparse REF triangular solve function. The overall
 factorization is $PAQ = LDU$.  This routine allows the factorization and solve
 to be split into separate phases.  For example codes, refer to either
-\verb|SPEX/SPEX/SPEX_Left_LU/Demos/spexlu_denmo.c| or Section \ref{s:Using:expert}.
+\verb|SPEX/SPEX/SPEX_LU/Demos/spexlu_denmo.c| or Section \ref{s:Using:expert}.
 
 On input, \verb|L|, \verb|U|, \verb|rhos|, and \verb|pinv| are undefined and
 ignored.  \verb|A| must be a CSC \verb|mpz| matrix. Default settings are used
@@ -1719,14 +1720,14 @@ another error occurs, \verb|L|, \verb|U|, \verb|rhos|, and \verb|pinv| are all
 returned as \verb|NULL|, and an error code will be returned correspondingly.
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{\verb|SPEX_Left_LU_solve|: solve the linear system $Ax=b$}
-\label{ss:SPEX_Left_LU_solve}
+\cprotect\subsection{\verb|SPEX_LU_solve|: solve the linear system $Ax=b$}
+\label{ss:SPEX_LU_solve}
 %-------------------------------------------------------------------------------
 
 \begin{mdframed}[userdefinedwidth=6in]
 {\footnotesize
 \begin{verbatim}
-    SPEX_info SPEX_Left_LU_solve    // solves the linear system LD^(-1)U x = b
+    SPEX_info SPEX_LU_solve    // solves the linear system LD^(-1)U x = b
     (
         // Output
         SPEX_matrix **X_handle,     // rational solution to the system
@@ -1743,9 +1744,9 @@ returned as \verb|NULL|, and an error code will be returned correspondingly.
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_Left_LU_solve| obtains the solution of \verb|mpq_t| type to the
+\verb|SPEX_LU_solve| obtains the solution of \verb|mpq_t| type to the
 linear system $Ax=b$ upon a successful factorization.  This function may be
-called after a successful return from \verb|SPEX_Left_LU_factorize|, which
+called after a successful return from \verb|SPEX_LU_factorize|, which
 computes \verb|L|, \verb|U|, \verb|rhos|, and \verb|pinv|. 
 
 On input, \verb|SPEX_matrix *x| is undefined. \verb|A|, \verb|L| and \verb|U|
@@ -1765,19 +1766,19 @@ exact solution. Otherwise (in case of error occurred), the function returns
 corresponding error code.
 
 This function is primarily for applications that require intermediate results.
-For additional information, refer to either \verb|SPEX/SPEX/SPEX_Left_LU/Demos/spexlu_demo.c| or
+For additional information, refer to either \verb|SPEX/SPEX/SPEX_LU/Demos/spexlu_demo.c| or
 Section \ref{s:Using:expert}.  Returns \verb|SPEX_PANIC| if SPEX has not
 been initialized.
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{\verb|SPEX_Left_LU_backslash|: solve $Ax=b$}
-\label{ss:SPEX_Left_LU_backslash}
+\cprotect\subsection{\verb|SPEX_LU_backslash|: solve $Ax=b$}
+\label{ss:SPEX_LU_backslash}
 %-------------------------------------------------------------------------------
 
 \begin{mdframed}[userdefinedwidth=6in]
 {\footnotesize
 \begin{verbatim}
-    SPEX_info SPEX_Left_LU_backslash
+    SPEX_info SPEX_LU_backslash
     (
         // Output
         SPEX_matrix **X_handle,       // Final solution vector
@@ -1792,7 +1793,7 @@ been initialized.
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_Left_LU_backslash| solves the linear system $Ax=b$ and returns the solution
+\verb|SPEX_LU_backslash| solves the linear system $Ax=b$ and returns the solution
 as a dense matrix of \verb|mpq_t|, \verb|mpfr_t| or \verb|double| numbers. This
 function performs symbolic analysis, factorization, and solving all in one line. 
 It can be thought of as an exact version of MATLAB sparse backslash.
@@ -1814,8 +1815,8 @@ returns corresponding error code.
 
 Returns \verb|SPEX_PANIC| if SPEX has not been initialized.
 
-For a complete example, refer to \verb|SPEX/SPEX/SPEX_Left_LU/Demos/example.c|,  \\
-\verb|SPEX/SPEX/SPEX_Left_LU/Demos/example2.c|, or Section \ref{s:Using:simple}.
+For a complete example, refer to \verb|SPEX/SPEX/SPEX_LU/Demos/example.c|,  \\
+\verb|SPEX/SPEX/SPEX_LU/Demos/example2.c|, or Section \ref{s:Using:simple}.
 
 %-------------------------------------------------------------------------------
 \cprotect\section{Using SPEX Left LU in C} \label{s:Using}
@@ -1914,12 +1915,12 @@ in column-oriented format, that is, the $(i,j)$th entry in \verb|A|
 is \verb|A->x.TYPE[p]| with $p = i+j$*\verb|A->m|.
 
 If the data for matrices are in file format to be read, refer to
-\newline \verb|SPEX/SPEX/SPEX_Left_LU/Demo| \verb|/example2.c| on how to read in data and construct
+\newline \verb|SPEX/SPEX/SPEX_LU/Demo| \verb|/example2.c| on how to read in data and construct
 \verb|A| and \verb|b|. If the data for matrices are already stored in vectors
 corresponding to CSC form, sparse triplet form or dense form, allocate a
 shallow \verb|SPEX_matrix| and assign vectors accordingly, then use
 \verb|SPEX_matrix_copy| to get a \verb|SPEX_matrix| in the desired kind and
-type. For more details, refer to \verb|SPEX/SPEX/SPEX_Left_LU/Demo/example.c|. In a case when
+type. For more details, refer to \verb|SPEX/SPEX/SPEX_LU/Demo/example.c|. In a case when
 \verb|A| is available in format other than CSC \verb|mpz|, and/or \verb|b| is
 available in format other than dense \verb|mpz|, the following code snippet
 shows how to get \verb|A| and \verb|b| in a required format.
@@ -1945,17 +1946,17 @@ shows how to get \verb|A| and \verb|b| in a required format.
 %-------------------------------------------------------------------------------
 
 After initializing the necessary data structures, SPEX obtains the solution
-to $Ax=b$ using the simple interface of SPEX Left LU, \verb|SPEX_Left_LU_backslash|.  The 
-\newline \verb|SPEX_Left_LU_backslash| function can return \verb|x| as \verb|double|,
+to $Ax=b$ using the simple interface of SPEX Left LU, \verb|SPEX_LU_backslash|.  The 
+\newline \verb|SPEX_LU_backslash| function can return \verb|x| as \verb|double|,
 \verb|mpq_t|, or \verb|mpfr_t| with an associated precision.  See Section
-\ref{ss:SPEX_Left_LU_backslash} for more details.  The following code snippet shows how
+\ref{ss:SPEX_LU_backslash} for more details.  The following code snippet shows how
 to get solution as a dense \verb|mpq_t| matrix.
 
 {\small
 \begin{verbatim}
     SPEX_matrix *x;
     SPEX_type my_type = SPEX_MPQ; // SPEX_MPQ, SPEX_MPFR, SPEX_FP64
-    SPEX_Left_LU_backslash(&x, my_type, A, b, option) ; \end{verbatim} }
+    SPEX_LU_backslash(&x, my_type, A, b, option) ; \end{verbatim} }
 
 On successful return, this function returns \verb|SPEX_OK| (see Section
 \ref{ss:SPEX_info}).
@@ -1966,7 +1967,7 @@ On successful return, this function returns \verb|SPEX_OK| (see Section
 %-------------------------------------------------------------------------------
 
 If the $L$ and $U$ factors from the SPEX Left LU factorization of the matrix $A$
-are required, the steps performed by \verb|SPEX_Left_LU_backslash| can be done with
+are required, the steps performed by \verb|SPEX_LU_backslash| can be done with
 a sequence of calls to SPEX functions:
 
 \begin{enumerate}
@@ -2016,8 +2017,8 @@ The symbolic analysis phase of an LU factorization entails computing the symboli
 %-------------------------------------------------------------------------------
 
 The matrices \verb|L| and \verb|U|, the pivot sequence \verb|rhos|, and the row
-permutation \verb|pinv| are computed via the \verb|SPEX_Left_LU_factorize| function
-(Section \ref{s:LeftLU:SPEX_Left_LU_factorize}).  Upon successful completion, this
+permutation \verb|pinv| are computed via the \verb|SPEX_LU_factorize| function
+(Section \ref{s:LeftLU:SPEX_LU_factorize}).  Upon successful completion, this
 function returns \verb|SPEX_OK|.
 
 %-------------------------------------------------------------------------------
@@ -2026,12 +2027,12 @@ function returns \verb|SPEX_OK|.
 
 After factorization, the next step is to solve the linear system and store the
 solution as a dense matrix \verb|x| with entries of rational number
-\verb|mpq_t|. This solution is done via the \verb|SPEX_Left_LU_solve|
-function (Section \ref{ss:SPEX_Left_LU_solve}). 
+\verb|mpq_t|. This solution is done via the \verb|SPEX_LU_solve|
+function (Section \ref{ss:SPEX_LU_solve}). 
 Upon successful completion, this function returns \verb|SPEX_OK|.
 
 In this step, \verb|option->check| can be set to \verb|true| to enable the
-solution check process as discussed in Section \ref{ss:SPEX_Left_LU_solve}.  The
+solution check process as discussed in Section \ref{ss:SPEX_LU_solve}.  The
 process can verify that the solution vector x satisfies $Ax=b$ in perfect
 precision intended for debugging.  This step is not needed, since the solution
 returned is guaranteed to be exact.   It appears here simply as debugging tool,
@@ -2091,20 +2092,20 @@ library.
 \label{s:Using:Examples}
 %-------------------------------------------------------------------------------
 
-The \verb|SPEX/SPEX/SPEX_Left_LU/Demo| folder contains three sample C codes
+The \verb|SPEX/SPEX/SPEX_LU/Demo| folder contains three sample C codes
 which utilize SPEX. These files demonstrate the usage of SPEX as
 follows:
 
 \begin{itemize}
 \item \verb|example.c|: This example generates a random dense $50 \times 50$
 matrix and a random dense $50 \times 1$ right hand side vector $b$ and
-solves the linear system. In this function, the \verb|SPEX_Left_LU_backslash|
+solves the linear system. In this function, the \verb|SPEX_LU_backslash|
 function is used; and the output is given as a double matrix.
 
 \item \verb|example2.c|: This example reads in a matrix stored in triplet
 format from the \verb|ExampleMats| folder. Additionally, it reads in a
 right hand side vector from this folder and solves the associated linear system
-via the \verb|SPEX_Left_LU_backslash| function, and, the solution is given as a matrix
+via the \verb|SPEX_LU_backslash| function, and, the solution is given as a matrix
 of rational numbers.
 
 \item \verb|spexlu_demo.c|: This example reads in a matrix and right hand side
@@ -2122,10 +2123,10 @@ to replicate the results from \cite{lourenco2019exact}.
 
 After following the installation steps discussed in Section \ref{s:install},
 using the SPEX Left LU factorization within MATLAB can be done via the
-\verb|SPEX_Left_LU_backslash.m| function. First, this section describes the
+\verb|SPEX_LU_backslash.m| function. First, this section describes the
 \verb|option| struct in Section \ref{s:Use:MATLAB:setup}.
 The use of the factorization is discussed in Section \ref{s:Use:MATLAB:factor}.
-The \verb|SPEX/SPEX/SPEX_Left_LU/MATLAB| folder must be in your MATLAB path.
+The \verb|SPEX/SPEX/SPEX_LU/MATLAB| folder must be in your MATLAB path.
 
 %-------------------------------------------------------------------------------
 \cprotect\subsection{Optional parameter settings}
@@ -2203,11 +2204,11 @@ parameter can take any value in the range $(0,1]$.
 \end{itemize}
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{\verb|SPEX_Left_LU_backslash.m|}
+\cprotect\subsection{\verb|SPEX_LU_backslash.m|}
 \label{s:Use:MATLAB:factor}
 %-------------------------------------------------------------------------------
 
-The \verb|SPEX_Left_LU_backslash.m| function solves the linear system $A x = b$ where
+The \verb|SPEX_LU_backslash.m| function solves the linear system $A x = b$ where
 $A \in \mathtt{R}^{n \times n}$, $x \in \mathtt{R}^{n \times m}$ and $b \in
 \mathtt{R}^{n \times m}$. The final solution vector(s) obtained via this
 function are exact prior to their conversion to double precision.
@@ -2218,12 +2219,12 @@ Currently, there are 2 ways to use this function outlined below:
 
 \begin{itemize}
 
-\item \verb|x = SPEX_Left_LU_backslash(A,b)| returns the solution to $A x =
+\item \verb|x = SPEX_LU_backslash(A,b)| returns the solution to $A x =
 b$ using default settings. The solution vectors are more accurate than
 the solution obtained via \verb|x = A \ b|.  The solution \verb|x| is
 returned as a MATLAB double matrix.
 
-\item \verb|x = SPEX_Left_LU_backslash(A,b,option)| returns the solution to $A x =
+\item \verb|x = SPEX_LU_backslash(A,b,option)| returns the solution to $A x =
 b$ using non-default settings from the \verb|option| struct.
 
 \end{itemize}

@@ -23,15 +23,9 @@ demos:
 # remove files not in the distribution, but keep compiled libraries
 clean:
 	( cd Demo ; $(MAKE) clean )
-	#( cd Test ; $(MAKE) clean )
-	#- ( cd MATLAB/Source ; $(RM) *.o )
-	#- ( cd MATLAB    ; $(RM) *.o )
 
 # remove all files not in the distribution
 purge:
 	( cd Demo ; $(MAKE) purge )
-	#( cd Test ; $(MAKE) purge )
-	#- ( cd MATLAB/Source ; $(RM) *.o *.mex* )
-	#- ( cd MATLAB    ; $(RM) *.o *.mex* )
 
 distclean: purge

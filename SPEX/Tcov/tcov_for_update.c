@@ -787,7 +787,7 @@ int main( int argc, char* argv[])
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // test SPEX_Left_LU_solve, SPEX_Update_solve and
+                    // test SPEX_LU_solve, SPEX_Update_solve and
                     // SPEX_Update_tsolve
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // allocate b so as to use solver functions
@@ -801,7 +801,7 @@ int main( int argc, char* argv[])
                     }
                     if (pretend_to_fail) {continue;}
 
-                    TEST_CHECK(SPEX_Left_LU_solve(&b_sol, F, b, option));
+                    TEST_CHECK(SPEX_LU_solve(&b_sol, F, b, option));
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}

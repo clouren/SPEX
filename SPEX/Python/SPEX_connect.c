@@ -109,7 +109,7 @@ SPEX_info spex_python
             SPEX_CHECK( SPEX_Backslash(&x, SPEX_MPQ, A, b, option));
             break;
         case 2:
-            SPEX_CHECK( SPEX_Left_LU_backslash(&x, SPEX_MPQ, A, b, option));
+            SPEX_CHECK( SPEX_LU_backslash(&x, SPEX_MPQ, A, b, option));
             break;
         case 3:
             SPEX_CHECK( SPEX_Chol_backslash(&x, SPEX_MPQ, A, b, option)); 
