@@ -87,24 +87,30 @@ void spex_gmp_failure (int status) ;
  * successfully initialized.
  */
 
-#define SPEX_MPZ_SET_NULL(x)                \
-    SPEX_MPZ_PTR(x) = NULL;                 \
-    SPEX_MPZ_SIZ(x) = 0;                    \
-    SPEX_MPZ_ALLOC(x) = 0;
+#define SPEX_MPZ_SET_NULL(x)                     \
+{                                                \
+    SPEX_MPZ_PTR(x) = NULL;                      \
+    SPEX_MPZ_SIZ(x) = 0;                         \
+    SPEX_MPZ_ALLOC(x) = 0;                       \
+}
 
 #define SPEX_MPQ_SET_NULL(x)                     \
+{                                                \
     SPEX_MPZ_PTR(SPEX_MPQ_NUM(x)) = NULL;        \
     SPEX_MPZ_SIZ(SPEX_MPQ_NUM(x)) = 0;           \
     SPEX_MPZ_ALLOC(SPEX_MPQ_NUM(x)) = 0;         \
     SPEX_MPZ_PTR(SPEX_MPQ_DEN(x)) = NULL;        \
     SPEX_MPZ_SIZ(SPEX_MPQ_DEN(x)) = 0;           \
-    SPEX_MPZ_ALLOC(SPEX_MPQ_DEN(x)) = 0;
+    SPEX_MPZ_ALLOC(SPEX_MPQ_DEN(x)) = 0;         \
+}
 
-#define SPEX_MPFR_SET_NULL(x)               \
-    SPEX_MPFR_MANT(x) = NULL;               \
-    SPEX_MPFR_PREC(x) = 0;                  \
-    SPEX_MPFR_SIGN(x) = 1;                  \
-    SPEX_MPFR_EXP(x) = SPEX_MPFR_EXP_INVALID;
+#define SPEX_MPFR_SET_NULL(x)                    \
+{                                                \
+    SPEX_MPFR_MANT(x) = NULL;                    \
+    SPEX_MPFR_PREC(x) = 0;                       \
+    SPEX_MPFR_SIGN(x) = 1;                       \
+    SPEX_MPFR_EXP(x) = SPEX_MPFR_EXP_INVALID;    \
+}
 
 /* GMP does not give a mechanism to tell a user when an mpz, mpq, or mpfr
  * item has been cleared; thus, if mp*_clear is called on an object that
@@ -123,19 +129,19 @@ void spex_gmp_failure (int status) ;
     }                                            \
 }
 
-#define SPEX_MPQ_CLEAR(x)                   \
-{                                           \
-    SPEX_MPZ_CLEAR(SPEX_MPQ_NUM(x));        \
-    SPEX_MPZ_CLEAR(SPEX_MPQ_DEN(x));        \
+#define SPEX_MPQ_CLEAR(x)                        \
+{                                                \
+    SPEX_MPZ_CLEAR(SPEX_MPQ_NUM(x));             \
+    SPEX_MPZ_CLEAR(SPEX_MPQ_DEN(x));             \
 }
 
-#define SPEX_MPFR_CLEAR(x)                        \
-{                                                 \
-    if ((x) != NULL && SPEX_MPFR_MANT(x) != NULL) \
-    {                                             \
-        mpfr_clear(x);                            \
-        SPEX_MPFR_SET_NULL(x);                    \
-    }                                             \
+#define SPEX_MPFR_CLEAR(x)                       \
+{                                                \
+    if ((x) != NULL && SPEX_MPFR_MANT(x) != NULL)\
+    {                                            \
+        mpfr_clear(x);                           \
+        SPEX_MPFR_SET_NULL(x);                   \
+    }                                            \
 }
 
 //------------------------------------------------------------------------------

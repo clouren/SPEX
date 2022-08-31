@@ -43,7 +43,7 @@
 
 #undef SPEX_DEBUG
 // uncomment this line to enable debugging
-// #define SPEX_DEBUG
+ #define SPEX_DEBUG
 
 #ifdef SPEX_DEBUG
 
@@ -321,7 +321,7 @@ mpq_t* spex_create_mpq_array
     int64_t n              // size of the array
 );
 
-
+SPEX_info spex_create_mpq (mpq_t x);
 //------------------------------------------------------------------------------
 // spex_create_mpz_array: create a 1D mpz_t array
 //------------------------------------------------------------------------------

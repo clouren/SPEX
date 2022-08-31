@@ -101,8 +101,7 @@ SPEX_info SPEX_matrix_allocate
     A->x_shallow = false ;
 
     // A->scale = 1
-    SPEX_MPQ_SET_NULL (A->scale) ;
-    SPEX_CHECK (SPEX_mpq_init (A->scale)) ;
+    SPEX_CHECK (spex_create_mpq (A->scale)) ;
     SPEX_CHECK (SPEX_mpq_set_ui (A->scale, 1, 1)) ;
 
     //--------------------------------------------------------------------------

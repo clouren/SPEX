@@ -1,5 +1,4 @@
-This software package is used for sparse exact factorization update for column replacement.
-
-
 *********SLIP_update*********
-Purpose: Exactly update LU factorization for column replacement
+is used for exactly updating sparse exact factorizations for either of the two following cases
+1. Sparse exact LU update for column replacement;
+2. Sparse exact Cholesky rank-1 update/downdate

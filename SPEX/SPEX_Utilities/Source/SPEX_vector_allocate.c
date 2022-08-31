@@ -43,10 +43,10 @@ SPEX_info SPEX_vector_allocate
     v->i = NULL;
     v->nzmax = nzmax;
     v->nz = 0;
-    SPEX_MPQ_SET_NULL(v->scale);
+    //SPEX_MPQ_SET_NULL(v->scale);
 
     // initialize and set v->scale = 1
-    SPEX_CHECK(SPEX_mpq_init(v->scale));
+    SPEX_CHECK(spex_create_mpq(v->scale));
     SPEX_CHECK(SPEX_mpq_set_ui(v->scale, 1, 1));
 
     // if nzmax == 0
