@@ -88,7 +88,10 @@ OBJ_Util = \
     SPEX_determine_symmetry.o \
     SPEX_transpose.o \
     spex_amd.o \
-    spex_colamd.o
+    spex_colamd.o \
+    spex_create_mpq.o \
+    spex_create_mpz.o \
+    spex_create_mpfr.o
 
 $(OBJ_Util): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
 
@@ -154,7 +157,8 @@ OBJ_Update = \
     SPEX_update_solve.o \
     SPEX_update_tsolve.o \
     spex_update_solve_internal.o \
-    spex_update_triangular_solve.o
+    spex_update_triangular_solve.o \
+    spex_update_verify.o
 
 
 $(OBJ_Update): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h

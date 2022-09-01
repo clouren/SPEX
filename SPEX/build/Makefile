@@ -79,7 +79,9 @@ OBJ_UTIL = \
     spex_factorization_basic_check.o \
     spex_colamd.o \
     spex_amd.o \
-    spex_create_mpq.o
+    spex_create_mpq.o \
+    spex_create_mpfr.o \
+    spex_create_mpz.o
     # spex_matrix_div.o \
 
 $(OBJ_UTIL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h Makefile
