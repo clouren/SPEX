@@ -90,7 +90,7 @@ SPEX_info spex_cholesky_up_triangular_solve
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
     ASSERT(rhos->type == SPEX_MPZ);
-    ASSERT(rhos->kind == SPEX_CSC);
+    ASSERT(rhos->kind == SPEX_DENSE);
 
     int64_t j, i, p, m, top, n = A->n;
     int sgn;

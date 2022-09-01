@@ -66,12 +66,7 @@ SPEX_info SPEX_cholesky_solve
     }
 
     // Check the inputs
-    ASSERT(!x_handle);
-    ASSERT(b->type == SPEX_MPZ);
-    ASSERT(b->kind == SPEX_DENSE);
-    ASSERT(F->kind==SPEX_CHOLESKY_FACTORIZATION);
-
-    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
+    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE || F->kind != SPEX_CHOLESKY_FACTORIZATION)
     {
         return SPEX_INCORRECT_INPUT;
     }

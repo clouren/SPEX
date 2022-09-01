@@ -106,7 +106,7 @@ SPEX_info spex_cholesky_left_triangular_solve
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(rhos->type == SPEX_MPZ);
-    ASSERT(rhos->kind == SPEX_CSC);
+    ASSERT(rhos->kind == SPEX_DENSE);
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
 
