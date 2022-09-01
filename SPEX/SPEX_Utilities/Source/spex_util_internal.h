@@ -43,7 +43,7 @@
 
 #undef SPEX_DEBUG
 // uncomment this line to enable debugging
- #define SPEX_DEBUG
+// #define SPEX_DEBUG
 
 #ifdef SPEX_DEBUG
 

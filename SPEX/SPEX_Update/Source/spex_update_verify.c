@@ -70,6 +70,7 @@ SPEX_info spex_update_verify
         {
             int64_t j = A->v[i]->i[p];
             SPEX_CHECK(SPEX_mpq_set_z(temp, A->v[i]->x[p]));
+            SPEX_CHECK(SPEX_mpq_mul(temp, temp, A->v[i]->scale));
             // b2[j] += x[i]*A(j,i)
             SPEX_CHECK(SPEX_mpq_mul(temp, temp, x->x.mpq[i]));
             SPEX_CHECK(SPEX_mpq_add(b2->x.mpq[j], b2->x.mpq[j], temp));
