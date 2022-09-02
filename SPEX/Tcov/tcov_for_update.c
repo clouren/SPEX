@@ -537,6 +537,17 @@ int main( int argc, char* argv[])
                 if (pretend_to_fail) {continue;}
                 fclose(mat_file); mat_file = NULL;
 
+                // allocate b so as to use solver functions
+                TEST_CHECK(SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ,
+                    An, 1, An, false, true, option));
+                if (pretend_to_fail) {continue;}
+                for (i = 0; i < An && !pretend_to_fail; i++)
+                {
+                    TEST_CHECK(SPEX_mpz_set_si(b->x.mpz[i], i+1));
+                    if (pretend_to_fail) {break;}
+                }
+                if (pretend_to_fail) {continue;}
+
                 // create rhos as ones(An,1), and P, Q, P_inv, Q_inv as 0:An-1 
                 P     = (int64_t*) SPEX_malloc(An*sizeof(int64_t));
                 if (P     == NULL) {TEST_CHECK(SPEX_OUT_OF_MEMORY); continue;}
@@ -669,10 +680,18 @@ int main( int argc, char* argv[])
                         TEST_CHECK(SPEX_update_matrix_colrep(A, vk, k, option));
                         if (pretend_to_fail) {continue;}
 
+#if 0
                         // verify solution
                         bool Is_correct;
                         TEST_CHECK(spex_update_verify(&Is_correct, F, A,
                             option));
+                        if (pretend_to_fail) {continue;}
+#endif
+
+                        // use SPEX_update_solve
+                        TEST_CHECK(SPEX_update_solve(&b_sol, F, b, option));
+                        if (pretend_to_fail) {continue;}
+                        TEST_OK(SPEX_matrix_free(&b_sol, option));
                         if (pretend_to_fail) {continue;}
                     }
 
@@ -782,17 +801,6 @@ int main( int argc, char* argv[])
                     // test SPEX_lu_solve, SPEX_update_solve and
                     // SPEX_update_tsolve
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // allocate b so as to use solver functions
-                    TEST_CHECK(SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ,
-                        An, 1, An, false, true, option));
-                    if (pretend_to_fail) {continue;}
-                    for (i = 0; i < An && !pretend_to_fail; i++)
-                    {
-                        TEST_CHECK(SPEX_mpz_set_si(b->x.mpz[i], i+1));
-                        if (pretend_to_fail) {break;}
-                    }
-                    if (pretend_to_fail) {continue;}
-
                     TEST_CHECK(SPEX_lu_solve(&b_sol, F, b, option));
                     if (pretend_to_fail) {continue;}
                     TEST_OK(SPEX_matrix_free(&b_sol, option));

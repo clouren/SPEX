@@ -8,7 +8,11 @@
 
 //------------------------------------------------------------------------------
 
-// Purpose: This function is to verify if A=L(P,:)D^(-1)U(:,Q)
+// Purpose: This function is to verify if A=L(P,:)D^(-1)U(:,Q) after
+// factorization update. This is done by solving LD^(-1)U*x=b via the updated
+// factorization, and check if A*x=b holds rational-arthmetically. This
+// function is only used for debugging purposes, as the routines
+// within SPEX are gauranteed to be exact.
 
 #define SPEX_FREE_ALL                 \
     SPEX_matrix_free(&b, option);     \
