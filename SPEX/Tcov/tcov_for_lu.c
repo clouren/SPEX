@@ -51,6 +51,7 @@
     TEST_OK (SPEX_matrix_free(&B, option));      \
     TEST_OK (SPEX_matrix_free(&Ax, option));     \
     TEST_OK (SPEX_matrix_free(&sol, option));    \
+    TEST_OK (SPEX_symbolic_analysis_free(&S, option));\
     SPEX_FREE(option);                           \
     TEST_OK (SPEX_finalize()) ;                  \
 }
@@ -246,6 +247,9 @@ int main( int argc, char* argv[])
             SPEX_matrix *A = NULL ;
             SPEX_matrix *b = NULL ;
             SPEX_matrix *sol = NULL;
+
+            // Column permutation
+            SPEX_symbolic_analysis *S = NULL ;
 
             /*mpz_t mpz1, mpz2, mpz3;
             SPEX_MPZ_SET_NULL(mpz1);
@@ -871,6 +875,19 @@ int main( int argc, char* argv[])
                     if (pretend_to_fail) continue ;
                     A->kind = SPEX_CSC;
                 }
+            }
+
+
+            //------------------------------------------------------------------
+            // test SPEX_lu_analyze
+            //------------------------------------------------------------------
+            if (A != NULL && option != NULL)
+            {
+                SPEX_preorder saved_order = option->order;
+                option->order = SPEX_NO_ORDERING;
+                TEST_CHECK(SPEX_lu_analyze(&S, A, option));
+                if (pretend_to_fail) continue ;
+                if (option != NULL) option->order = saved_order;
             }
 
             //------------------------------------------------------------------
