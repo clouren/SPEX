@@ -379,16 +379,19 @@ int main (int argc, char *argv [])
 
     printf ("Cholesky backslash, no malloc testing, return x as MPFR:\n") ;
     TEST_CHECK (SPEX_cholesky_backslash (&x, SPEX_MPFR, A, b, option)) ;
-    // FIXME: check the solution to Ax=b
-    // TODO: cast x back to mpz and check solution
+    // FIXME: check the solution to Ax=b test doesn't come out right
     OK (SPEX_matrix_free (&x, option)) ;
 
     printf ("Cholesky backslash, up-looking with malloc testing, colamd:\n") ;
     option->order = SPEX_COLAMD ;
     BRUTAL (spex_test_chol_backslash (A, b, option)) ;
 
-    printf ("Cholesky backslash, up-looking with malloc testing:\n") ;
+    printf ("Cholesky backslash, up-looking with malloc testing, amd:\n") ;
     option->order = SPEX_AMD ;
+    BRUTAL (spex_test_chol_backslash (A, b, option)) ;
+    
+    printf ("Cholesky backslash, up-looking with malloc testing, no ordering:\n") ;
+    option->order = SPEX_NO_ORDERING ;
     BRUTAL (spex_test_chol_backslash (A, b, option)) ;
 
     printf ("Cholesky backslash, left-looking with malloc testing:\n") ;
