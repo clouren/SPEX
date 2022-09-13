@@ -260,7 +260,7 @@ int main (int argc, char *argv [])
     create_test_rhs (&b, A->n) ;
 
     //--------------------------------------------------------------------------
-    // test SPEX_transpose FIXME move?
+    // test SPEX_transpose
     //--------------------------------------------------------------------------
 
     printf("\n Test SPEX_transpose \n");
@@ -379,7 +379,8 @@ int main (int argc, char *argv [])
 
     printf ("Cholesky backslash, no malloc testing, return x as MPFR:\n") ;
     TEST_CHECK (SPEX_cholesky_backslash (&x, SPEX_MPFR, A, b, option)) ;
-    // FIXME: check the solution to Ax=b test doesn't come out right
+    //NOTE: mpfr solution can't be checked because mpfr->mpz isn't guaranteed
+    //      to be exact
     OK (SPEX_matrix_free (&x, option)) ;
 
     printf ("Cholesky backslash, up-looking with malloc testing, colamd:\n") ;
