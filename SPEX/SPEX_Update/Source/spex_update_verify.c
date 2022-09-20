@@ -22,6 +22,8 @@
 
 #include "spex_update_internal.h"
 
+#ifdef SPEX_DEBUG
+
 SPEX_info spex_update_verify
 (
     bool *Is_correct,     // if factorization is correct
@@ -31,7 +33,6 @@ SPEX_info spex_update_verify
 )
 {
     SPEX_info info = SPEX_OK;
-#ifdef SPEX_DEBUG
     int64_t tmp, i, n = F->L->n;
     int r;
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
@@ -128,6 +129,6 @@ SPEX_info spex_update_verify
     }
 
     SPEX_FREE_ALL;
-#endif
     return info;
 }
+#endif

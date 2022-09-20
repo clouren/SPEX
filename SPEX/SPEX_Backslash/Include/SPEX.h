@@ -901,8 +901,6 @@ SPEX_info SPEX_finalize (void) ;
 // SPEX matrix utilities
 //------------------------------------------------------------------------------
 
-/* FIXME: These functions have not been test covered!*/
-
 /* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
  */
