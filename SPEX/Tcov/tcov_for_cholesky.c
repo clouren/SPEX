@@ -86,7 +86,9 @@ void create_test_rhs (SPEX_matrix **b_handle, int64_t n)
     OK (SPEX_matrix_allocate (b_handle, SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
         true, NULL)) ;
     SPEX_matrix *b = *(b_handle) ;
-    for (int64_t k = 0 ; k < n ; k++)
+    // b(0)=0
+    OK (SPEX_mpz_set_ui (b->x.mpz [0], 0)) ;
+    for (int64_t k = 1 ; k < n ; k++)
     {
         // b(k) = 1
         OK (SPEX_mpz_set_ui (b->x.mpz [k], 1)) ;
@@ -287,6 +289,7 @@ int main (int argc, char *argv [])
     SPEX_matrix_free(&T_mpfr,option);
     SPEX_matrix_free(&T_int,option);
     SPEX_matrix_free(&T_fp,option);
+    
 
     //--------------------------------------------------------------------------
     // error handling
