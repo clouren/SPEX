@@ -285,6 +285,7 @@ SPEX_info SPEX_update_lu_colrep
         }
 
         #if 0
+        #ifdef SPEX_DEBUG
         // exactly verify each entry of the factorization
         if (A != NULL)
         {
@@ -301,6 +302,7 @@ SPEX_info SPEX_update_lu_colrep
                 ASSERT(is_correct);
             }
         }
+        #endif
         #endif
 
         if (jnext < n)

@@ -2,6 +2,9 @@
 // SPEX_Utilities/spex_create_mpfr: create an mpfr_t entry
 //------------------------------------------------------------------------------
 
+// FIXME: delete this file
+#if 0
+
 // SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
@@ -30,3 +33,4 @@ SPEX_info spex_create_mpfr
     return SPEX_OK;
 }
 
+#endif

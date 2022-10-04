@@ -23,6 +23,9 @@
 
 #include "spex_update_internal.h"
 
+#ifdef SPEX_DEBUG
+// This function is only compiled in debug mode.
+
 #define SL(k) (F->L->v[(k)]->scale)
 #define SU(k) (F->U->v[(k)]->scale)
 
@@ -41,7 +44,6 @@ SPEX_info spex_update_debug
 {
     SPEX_info info = SPEX_OK;
     *Is_correct = true;
-#ifdef SPEX_DEBUG
     int64_t n = F->L->n, *P = F->P_perm, *Q = F->Q_perm;
     int r;
     SPEX_symbolic_analysis* Stmp = NULL;
@@ -392,6 +394,7 @@ SPEX_info spex_update_debug
     }
 
     SPEX_FREE_ALL;
-#endif
     return info;
 }
+
+#endif
