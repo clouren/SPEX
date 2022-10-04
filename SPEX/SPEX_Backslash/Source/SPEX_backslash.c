@@ -51,7 +51,6 @@ SPEX_info SPEX_backslash
 {
     SPEX_info info;
     // Check inputs
-    // TODO: Make sure this line is in all the Cholesky functions. Please delete when done
     if (!spex_initialized()) return SPEX_PANIC;
     
     // Check for NULL pointers

@@ -165,7 +165,9 @@ SPEX_info ;
 // Pivot scheme codes
 //------------------------------------------------------------------------------
 
-// TODO: How are we going to handle the defaults with LU/Cholesky?
+// SPEX_DEFAULT is only used to define the defaults for the following enums but 
+// in all other places we use the appropiate default (ie SPEX_DEFAULT_ORDERING)
+// for ease of reading
 #define SPEX_DEFAULT 0
 
 // A code in SPEX_options to tell SPEX what type of pivoting to use for pivoting
@@ -204,8 +206,6 @@ SPEX_preorder ;
 //------------------------------------------------------------------------------
 
 // A code in SPEX_options to tell SPEX which factorization algorithm to use 
-
-// FIXME rename SPEX_CHOL_*
 
 typedef enum
 {
@@ -900,8 +900,6 @@ SPEX_info SPEX_finalize (void) ;
 //------------------------------------------------------------------------------
 // SPEX matrix utilities
 //------------------------------------------------------------------------------
-
-/* FIXME: These functions have not been test covered!*/
 
 /* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'

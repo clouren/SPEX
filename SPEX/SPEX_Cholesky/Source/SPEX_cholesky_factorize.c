@@ -68,6 +68,11 @@ SPEX_info SPEX_cholesky_factorize
 
     SPEX_info info;
 
+    if (!spex_initialized())
+    {
+        return SPEX_PANIC;
+    }
+
     // Check inputs for NULL
     if (!F_handle || !A || !S)
     {

@@ -90,7 +90,7 @@ int main( int argc, char* argv[] )
     FILE* rhs_file = fopen(rhs_name,"r");
     if( rhs_file == NULL )
     {
-        printf("\nError while opening the RHS file");
+        printf("\nNo RHS file provided");
         printf("\nWill generate a RHS of all 1s");
         SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, 
                              false, true, option);
