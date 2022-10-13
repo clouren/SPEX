@@ -15,7 +15,6 @@
 //------------------------------------------------------------------------------
 // global variable access
 //------------------------------------------------------------------------------
-// TODO this is not thread-safe
 
 // a global variable, but only accessible within this file.
 extern bool spex_initialize_has_been_called ;

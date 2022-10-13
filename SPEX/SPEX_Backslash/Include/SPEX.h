@@ -12,7 +12,7 @@
 #ifndef SPEX_H
 #define SPEX_H
 
-// TODO: Shouldn't this be in a top level folder SPEX/Include instead of here?
+// TODO: move to top level folder SPEX/Include instead of here
 
 // SPEX is a collection of functions for the SParse EXact package.
 // Included are several routines for memory management, matrix operations, and 
@@ -927,8 +927,6 @@ SPEX_info SPEX_determine_symmetry
 //---------------------------SPEX GMP/MPFR Functions----------------------------
 //------------------------------------------------------------------------------
 
-// FIXME: update this
-
 // The following functions are the SPEX interface to the GMP/MPFR libary.
 // Each corresponding GMP/MPFR function is given a wrapper to ensure that no
 // memory leaks or crashes occur. All covered GMP functions can be found in
@@ -1101,8 +1099,6 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 #endif
 
 
-
-// TODO: start here on May 31, 2022:
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1510,14 +1506,16 @@ SPEX_info SPEX_update_matrix_colrep// performs column replacement
 
 // The matrix w is modified during the update. If the updated A is needed,
 // user can compute A = A + sigma*w*w' *BEFORE* using this function (since w
-// will be modified). TODO: describe how to do this.
+// will be modified).
+
+// TODO: describe how to create w n-by-1 matrix for update/downdate.
 
 SPEX_info SPEX_update_cholesky_rank1
 (
     // Input/Output:
     SPEX_factorization *F,  // The SPEX Cholesky factorization of a n-by-n
                             // matrix A, including L, rhos, P and Pinv.
-    // FIXME: SPEX_vector *w
+
     SPEX_matrix *w,         // a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix with
                             // the vector to modify the original matrix A, the
                             // resulting A is A+sigma*w*w'. w->scale = A->scale

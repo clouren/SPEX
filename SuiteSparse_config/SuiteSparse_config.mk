@@ -328,9 +328,6 @@ SUITESPARSE_VERSION = 5.8.0
     TBB ?=
     # TBB = -ltbb -DSPQR_CONFIG=-DHAVE_TBB
 
-    # TODO: this *mk file should auto-detect the presence of Intel's TBB,
-    # and set the compiler flags accordingly.
-
 #===============================================================================
 # System-dependent configurations
 #===============================================================================
