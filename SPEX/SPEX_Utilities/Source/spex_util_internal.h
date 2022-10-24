@@ -43,7 +43,7 @@
 
 #undef SPEX_DEBUG
 // uncomment this line to enable debugging
-// #define SPEX_DEBUG
+//#define SPEX_DEBUG
 
 #ifdef SPEX_DEBUG
 
@@ -199,8 +199,6 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// TODO: What should we do to fix this?
-
 // Tolerance used in the pivoting schemes. This number can be anything in
 // between 0 and 1. A value of 0 selects the diagonal element exclusively and a
 // value of 1 selects the smallest or largest pivot exclusively only in a
@@ -218,10 +216,11 @@
 #define SPEX_DEFAULT_PIVOT SPEX_SMALLEST
 
 // Column ordering used.
-//  SPEX_NO_ORDERING = 0,           None: Not recommended for sparse matrices
-//  SPEX_COLAMD = 1,                COLAMD: Default
-//  SPEX_AMD = 2                    AMD
-#define SPEX_DEFAULT_ORDER SPEX_DEFAULT_ORDERING
+//  SPEX_DEFAULT_ORDERING = 0,      COLAMD for LU, AMD for Cholesky
+//  SPEX_NO_ORDERING = 1,           None: Not recommended for sparse matrices
+//  SPEX_COLAMD = 2,                COLAMD
+//  SPEX_AMD = 3                    AMD
+#define SPEX_DEFAULT_ORDER SPEX_DEFAULT
 
 // Defines printing to be done
 #define SPEX_DEFAULT_PRINT_LEVEL 0
@@ -230,7 +229,7 @@
 #define SPEX_DEFAULT_PRECISION 128
 
 // Defines the algorithm used
-// SPEX_ALGORITHM_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Gram for QR looking LU factorization //TODO maybe rename default...
+// SPEX_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Gram for QR looking LU factorization 
 // SPEX_LU_LEFT = 1,              Left looking LU factorization
 // SPEX_CHOL_LEFT = 2,            Left looking Cholesky factorization
 // SPEX_CHOL_UP = 3,              Up looking Cholesky factorization

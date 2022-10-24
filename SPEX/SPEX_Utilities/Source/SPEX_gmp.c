@@ -69,7 +69,8 @@
 //------------------------------------------------------------------------------
 // global variables
 //------------------------------------------------------------------------------
-// FIXME: this is not thread-safe.
+
+// FIXME: this is not thread-safe.  Consider using OpenMP thread-local storage.
 
 jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
 int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in SPEX_gmp_list

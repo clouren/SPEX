@@ -3,120 +3,22 @@ FIXME:
     rename demos.c files to give them unique names
     remove test files from SPEX_Update; just keep a few
 
---------------------------------------------------------------------------------
+    use cmake
+    licence folder
+    copyright dates
+    user guide polish (see Overleaf, and copy here)
 
-user-callable functions for computing SPEX_matrix
+    remove Update folder for SPEX 2.0.0, add back for SPEX 2.1.0
+    remove SPEX_QR for SPEX 2.0.0.
 
-    don't add them now, but include in the next grant proposal:
+    spex.h: should we have a master Include folder? Yes.
 
-        C = A*B
-        C MPZ = sparse CSC MPZ * sparse CSC MPZ
-        C MPQ = sparse CSC MPZ * sparse CSC MPQ
-        C MPQ = sparse CSC MPQ * sparse CSC MPZ
-        C MPQ = sparse CSC MPQ * sparse CSC MPQ
+    SPEX_Update for v2.1.0: how to create vk or w
 
-        gaxpy: y = A*x+y
-        full MPZ += (sparse CSC MPZ) * full MPZ
-        full MPQ += (sparse CSC MPZ) * full MPQ
-        full MPQ += (sparse CSC MPQ) * full MPQ
+    (SPEX_matrix *)
 
-        add: C = alpha*A + beta*B
-        sparse CSC MPZ = alpha * (sparse CSC MPZ) + beta * (sparse CSC MPZ)
-        sparse CSC MPQ = alpha * (sparse CSC MPZ) + beta * (sparse CSC MPQ)
-        sparse CSC MPQ = alpha * (sparse CSC MPQ) + beta * (sparse CSC MPZ)
-        sparse CSC MPQ = alpha * (sparse CSC MPQ) + beta * (sparse CSC MPQ)
+    user guide: state taht SPEX_initialize cannot be called by multiple
+        user threads.  Just one.
 
-        C = P*A*Q permute (unsymmetric)
-        C = P*A*P' symmetric
-
-    Grant proposal: scaling!!
-
-        scale factors per row or per column.  impact on LU, Cholesky,
-        C=A*B, gaxpy, add, ...
-
-        S = diagonal matrix of scale factors
-        A (is MPZ) * S (MPQ) implicitly held
-        S*A
-        or both :  Rs * A * Cs
-
-        LU = Rs * A * Cs
-
-        can LU have new scale factors?
-        effect on rhos?
-
-    driver:  PDE?  LP solver??
-        include SPEX into SOPLEX?
-
-    propose: factorize L*U = P*A*Q, then solve A'x=b, for static factorization
-
-    propose: thread-safe GMP wrapper, more general wrapper, extensible ...
-
-TODO: start here, May 17:
-
-check names of user-visible functions, be consistent: 
-    SPEX_LU_analyze or SPEX_Left_LU_analyze (as SPEX_Left_LU_solve)
-    consistent name scheme. SPEX_all_lower_case ?
-       SPEX_left_lu_...
-       SPEX_chol_...
-    
-OK: move SPEX_gmp functions to the end of SPEX.h? Not needed.
-OK: user cannot create their own wrapped gmp/mpfr functions! This is oK.
-
-SPEX_Left_LU/MATLAB/html
-fl(0.9)
-
-licence folder
-
-user guide and cmake
-
-Near-term Papers: (4 or 5)
-
-    SIAM paper: LU column replacement (and Chol col replacement?)
-        theory: JinHao and Tim
-        submitted by Aug 2022
-    SIAM paper: Cholesky update/downdate (and LU up/down?)
-        theory: JinHao and Tim
-        submitted by Aug 2022
-    perhaps conf paper: on Chol col replacement and LU up/down
-        JinHao and Tim
-
-    ACM TOMS Algorithm 10xx+1 paper: code for LU col repl, Chol up/down
-        authors: JinHao, Lorena, Chris, Tim, Erick
-        submitted by Aug 2022??
-        SPEX v2.1.0
-
-    ACM TOMS Algorithm 10xx paper: Cholesky alone (+code)
-        needs some code work, add to user guide, computational results
-        authors: Lorena, JinHao, Chris, Erick, Tim
-        submitted by Aug 2022??
-        SPEX v2.0.0
-
-Submitted:
-    dense QR (submitted to SIAM)
-
-Future: (add to proposal)
-    SIAM on dense Gram-Schmidt, theory
-    SIAM paper on sparse QR theory
-    ACM TOMS sparse QR code (left-looking Gram-Schmidt)
-        starting Fall 2022:
-
------------- code review for SPEX_Update --------
-
-spex_update_triangular_solve
-
-how to create vk or w
-
-
------------ TODO from Util ----------
-
-spex_expand_mpfr: Should we do a conversion of mpfr->mpq->mpz instead
-of how we currently treat it like a big double
-
-default_options: how should we handle this for cholesky vs LU; current
-approach doesnt make sense
-
-SPEX_DEFAULT in spex.h: how do we handle this for LU/Cholesky
-
-spex.h: should we have a master Include folder?
-
+    see other FIXMEs in the code
 

@@ -79,7 +79,7 @@ SPEX_info SPEX_lu_analyze
     switch(order)
     {
         default:
-        case SPEX_DEFAULT:
+        case SPEX_DEFAULT_ORDERING:
         case SPEX_COLAMD:
         // ---AMD ordering is used (DEFAULT)---
         // S->q is set to AMD's column ordering on A.

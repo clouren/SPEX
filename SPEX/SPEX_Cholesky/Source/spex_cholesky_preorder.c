@@ -97,7 +97,7 @@ SPEX_info spex_cholesky_preorder
     switch(order)
     {
         default:
-        case SPEX_DEFAULT:
+        case SPEX_DEFAULT_ORDERING:
         case SPEX_AMD:
         // ---AMD ordering is used (DEFAULT)---
         // S->p is set to AMD's column ordering on A.
