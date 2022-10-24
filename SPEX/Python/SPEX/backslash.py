@@ -39,7 +39,7 @@ def general( A, b, options=Options('double')):
 
     return x
 
-def left_lu( A, b, options=Options('double', 'colamd')): 
+def lu( A, b, options=Options('double', 'colamd')): 
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     ## options is a dictionary that specifies what tipe the solution should be, this by default is double

@@ -47,7 +47,7 @@ b=np.ones(3,dtype=np.float64)
 
 # Solve
 options=Options("string")
-x=backslash.left_lu(A,b,options)
+x=backslash.lu(A,b,options)
 print(x)
 
 ##--------------------------------------------------------------------------
