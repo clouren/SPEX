@@ -1,24 +1,31 @@
-FIXME:
 
+Lorena:
+    spex.h: should we have a master Include folder? Yes.
     rename demos.c files to give them unique names
     remove test files from SPEX_Update; just keep a few
+    ExampleMats: consolidate
 
-    use cmake
-    licence folder
-    copyright dates
-    user guide polish (see Overleaf, and copy here)
-
+later:
     remove Update folder for SPEX 2.0.0, add back for SPEX 2.1.0
     remove SPEX_QR for SPEX 2.0.0.
-
-    spex.h: should we have a master Include folder? Yes.
-
     SPEX_Update for v2.1.0: how to create vk or w
 
-    (SPEX_matrix *)
-
-    user guide: state taht SPEX_initialize cannot be called by multiple
+    user guide: state that SPEX_initialize cannot be called by multiple
         user threads.  Just one.
+        later: copy in user guide from Overleaf
 
     see other FIXMEs in the code
 
+Erick:
+    licence folder
+    copyright dates (wait for Chris to ask USNA)
+
+Tim:
+    use cmake
+    FindGMP.cmake
+    FindMPFR.cmake
+    FindSPEX.cmake
+    (SPEX_matrix *)
+
+in parallel:
+    user guide polish (see Overleaf)

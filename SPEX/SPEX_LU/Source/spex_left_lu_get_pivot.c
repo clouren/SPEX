@@ -2,8 +2,8 @@
 // SPEX_LU/spex_left_lu_get_pivot: find a pivot entry in a column
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_LU: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
