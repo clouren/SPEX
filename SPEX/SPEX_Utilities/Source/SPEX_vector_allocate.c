@@ -33,7 +33,7 @@ SPEX_info SPEX_vector_allocate
     *v_handle = NULL;
 
     SPEX_info info;
-    SPEX_vector *v = (SPEX_vector*) SPEX_malloc(sizeof(SPEX_vector));
+    SPEX_vector *v = (SPEX_vector*) SPEX_calloc(1, sizeof(SPEX_vector));
     if (!v)
     {
         return SPEX_OUT_OF_MEMORY;

@@ -18,7 +18,17 @@
     SPEX_MPZ_CLEAR(gcd);            \
     SPEX_MPZ_CLEAR(one);            \
     SPEX_MPQ_CLEAR(temp);           \
-    SPEX_matrix_free(&x3, NULL);    \
+    if (x_mpq)                      \
+    {                               \
+        for (i = 0; i < n; i++)     \
+        {                           \
+            if ( x_mpq[i] != NULL)  \
+            {                       \
+                SPEX_MPQ_CLEAR(x_mpq[i]);\
+            }                       \
+        }                           \
+    }                               \
+    SPEX_FREE (x_mpq);
 
 #include "spex_util_internal.h"
 
@@ -47,7 +57,7 @@ SPEX_info spex_expand_mpfr_array
     int r1, r2 = 1 ;
     bool nz_found = false;
     mpz_t gcd, one;
-    SPEX_matrix* x3 = NULL;
+    mpq_t* x_mpq = NULL;
     SPEX_MPZ_SET_NULL(gcd);
     SPEX_MPZ_SET_NULL(one);
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
@@ -56,11 +66,17 @@ SPEX_info spex_expand_mpfr_array
     SPEX_CHECK(SPEX_mpz_init(gcd));
     SPEX_CHECK(SPEX_mpz_init(one));
 
-    SPEX_CHECK (SPEX_matrix_allocate(&x3, SPEX_DENSE, SPEX_MPFR, n, 1, n,
-        false, true, option));
+    x_mpq = spex_create_mpq_array (n) ;
+    if (x_mpq == NULL)
+    {
+        SPEX_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
+    }
 
-    SPEX_CHECK(spex_cast_array(x3,SPEX_MPQ,x,SPEX_MPFR,n,NULL,NULL,option));
-    SPEX_CHECK(spex_cast_array(x_out,SPEX_MPZ,x3,SPEX_MPQ,n,scale,NULL,option));
+    SPEX_CHECK(spex_cast_array(x_mpq, SPEX_MPQ,   x  , SPEX_MPFR,n, NULL,  NULL,
+        option));
+    SPEX_CHECK(spex_cast_array(x_out, SPEX_MPZ, x_mpq, SPEX_MPQ, n, scale, NULL,
+        option));
 
     //--------------------------------------------------------------------------
     // Find the gcd to reduce scale
