@@ -62,8 +62,8 @@ int main( int argc, char* argv[] )
     // Default options.
     SPEX_options *option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
-    char* mat_name = "../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
-    char* rhs_name = "../ExampleMats/2.mat.soln.txt";
+    char* mat_name = "../../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
+    char* rhs_name = "../../ExampleMats/2.mat.soln.txt";
     int64_t rat = 1;
 
     // Process the command line

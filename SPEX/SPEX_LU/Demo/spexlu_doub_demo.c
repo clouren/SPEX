@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "demos.h"
+#include "lu_demos.h"
 
 /* This program will exactly solve the sparse linear system Ax = b by
  * performing the SPEX Left LU factorization. This is intended to be a demonstration
@@ -122,8 +122,8 @@ int main (int argc, char* argv[])
     // Extra parameters used to obtain A, b, etc
     char *mat_name, *rhs_name;
     SPEX_type rat;
-    mat_name = "../ExampleMats/10teams_mat.txt";// Set demo matrix and RHS name
-    rhs_name = "../ExampleMats/10teams_v.txt";
+    mat_name = "../../ExampleMats/10teams_mat.txt";// Set demo matrix and RHS name
+    rhs_name = "../../ExampleMats/10teams_v.txt";
     
     //--------------------------------------------------------------------------
     // After initializing memory, we process the command line for this function.

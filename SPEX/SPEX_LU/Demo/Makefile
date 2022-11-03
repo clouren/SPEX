@@ -32,14 +32,14 @@ lib:
 example: lib example.c Makefile
 	$(CC) $(LDFLAGS) $(CF) $(I) -o example example.c $(LDLIBS)
 
-example2: lib example2.c demos.h demos.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example2 example2.c demos.c $(LDLIBS)
+example2: lib example2.c lu_demos.h lu_demos.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o example2 example2.c lu_demos.c $(LDLIBS)
 
-spexlu_demo: lib spexlu_demo.c demos.h demos.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o spexlu_demo spexlu_demo.c demos.c $(LDLIBS)
+spexlu_demo: lib spexlu_demo.c lu_demos.h lu_demos.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o spexlu_demo spexlu_demo.c lu_demos.c $(LDLIBS)
 
-spexlu_doub_demo: lib spexlu_doub_demo.c demos.h demos.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o spexlu_doub_demo spexlu_doub_demo.c demos.c $(LDLIBS)
+spexlu_doub_demo: lib spexlu_doub_demo.c lu_demos.h lu_demos.c Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o spexlu_doub_demo spexlu_doub_demo.c lu_demos.c $(LDLIBS)
 
 clean:
 	- $(RM) *.o

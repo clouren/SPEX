@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "demos.h"
+#include "lu_demos.h"
 
 // This example shows how to use SPEX Left LU within your code 
 // Unlike example1, the input matrix here is directly read in from the 
@@ -43,8 +43,8 @@ int main (int argc, char **argv)
     // Get matrix and right hand side file names
     //--------------------------------------------------------------------------
     char *mat_name, *rhs_name;
-    mat_name = "../ExampleMats/10teams_mat.txt";
-    rhs_name = "../ExampleMats/10teams_v.txt";
+    mat_name = "../../ExampleMats/10teams_mat.txt";
+    rhs_name = "../../ExampleMats/10teams_v.txt";
     if (argc > 2)
     {
         mat_name = argv[1];

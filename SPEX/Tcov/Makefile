@@ -19,7 +19,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wall -W -Wshadow -Wmissing-prototypes -Wstrict-prototypes \
         -Wredundant-decls -Wnested-externs -Wdisabled-optimization -std=c99 \
         -Wno-unused-parameter \
-	-I../SPEX_Backslash/Include/ \
+	-I../Include/ \
 	-I../SPEX_Utilities/Source/ \
 	-I../SPEX_Cholesky/Source/ -I../SPEX_Cholesky/Demo/ \
 	-I../SPEX_LU/Source -I../SPEX_LU/Demo \
@@ -89,11 +89,9 @@ OBJ_Util = \
     SPEX_transpose.o \
     spex_amd.o \
     spex_colamd.o \
-    spex_create_mpq.o \
-    spex_create_mpz.o \
-    spex_create_mpfr.o
+    spex_create_mpq.o 
 
-$(OBJ_Util): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
+$(OBJ_Util): ../Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
 
 .PRECIOUS: SPEX_%.c spex_%.c
 
@@ -121,7 +119,7 @@ OBJ_LU = \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_lu_solve.o
 
-.PRECIOUS: SPEX_lu_%.c SPEX_lu_%.c spex_left_lu_%.c spexlu_demo.c demos.c
+.PRECIOUS: SPEX_lu_%.c SPEX_lu_%.c spex_left_lu_%.c spexlu_demo.c lu_demos.c
 
 SPEX_lu_%.c:
 	- ln -s ../SPEX_LU/Source/$@
@@ -135,7 +133,7 @@ spex_left_lu_%.c:
 spexlu_demo.c:
 	- ln -s ../SPEX_LU/Demo/$@
 
-demos.c:
+lu_demos.c:
 	- ln -s ../SPEX_LU/Demo/$@
 
 #-------------------------------------------------------------------------------
@@ -161,7 +159,7 @@ OBJ_Update = \
     spex_update_verify.o
 
 
-$(OBJ_Update): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+$(OBJ_Update): ../Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
 
 .PRECIOUS: SPEX_update_%.c spex_update_%.c
 
@@ -197,7 +195,7 @@ OBJ_Cholesky = \
     spex_cholesky_up_factor.o \
     spex_cholesky_up_triangular_solve.o
 
-$(OBJ_Cholesky): ../SPEX_Backslash/Include/SPEX.h
+$(OBJ_Cholesky): ../Include/SPEX.h
 
 .PRECIOUS: SPEX_cholesky_%.c spex_cholesky_%.c
 
@@ -215,8 +213,8 @@ chol_demos.c:
 test4llu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
 	$(CC) $(LDFLAGS) tcov_for_lu.c $(CFLAGS) -o tcov_for_lu $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
-SPEXLLU: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spexlu_demo.c demos.c ../SPEX_LU/Demo/demos.h
-	$(CC) $(LDFLAGS) spexlu_demo.c demos.c $(CFLAGS) -o spexlu_demo $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
+SPEXLLU: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spexlu_demo.c lu_demos.c ../SPEX_LU/Demo/lu_demos.h
+	$(CC) $(LDFLAGS) spexlu_demo.c lu_demos.c $(CFLAGS) -o spexlu_demo $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
 test4luu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_update.c simple_rand.c simple_rand.h
 	$(CC) $(LDFLAGS) tcov_for_update.c simple_rand.c $(CFLAGS) -o tcov_for_update $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
@@ -231,10 +229,10 @@ runtests: runtests4llu runtests4luu runtests4chol
 
 # only run test for SPEX_LU
 runtests4llu: all
-	- ./spexlu_demo p 2 q 1 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu1.out
-	- ./spexlu_demo p 3 q 2 o 1 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu2.out
-	- ./spexlu_demo p 4 q 3 o 1 f ../SPEX_LU/ExampleMats/test_mat.txt ../SPEX_LU/ExampleMats/test_rhs.txt > lu3.out
-	- ./spexlu_demo p 5 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu4.out
+	- ./spexlu_demo p 2 q 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu1.out
+	- ./spexlu_demo p 3 q 2 o 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu2.out
+	- ./spexlu_demo p 4 q 3 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt > lu3.out
+	- ./spexlu_demo p 5 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu4.out
 	- ./tcov_for_lu > test_for_lu.out
 	- ./tcov_for_lu 0 1 1 > lu5.out
 
@@ -246,7 +244,7 @@ runtests4luu: all
 
 # only run test for SPEX_Cholesky
 runtests4chol: test4chol
-	- ./tcov_for_cholesky ../SPEX_Cholesky/ExampleMats/872.mat.txt > test_for_cholesky.out
+	- ./tcov_for_cholesky ../ExampleMats/872.mat.txt > test_for_cholesky.out
 
 #-------------------------------------------------------------------------------
 
@@ -258,10 +256,10 @@ vtests: vtests4llu vtests4luu vtests4chol
 
 # run test for SPEX_LU with valgrind
 vtests4llu: all
-	- $(V) ./spexlu_demo p 2 q 0 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu1.out
-	- $(V) ./spexlu_demo p 3 q 1 o 1 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu2.out
-	- $(V) ./spexlu_demo p 4 q 2 o 1 f ../SPEX_LU/ExampleMats/test_mat.txt ../SPEX_LU/ExampleMats/test_rhs.txt > lu3.out
-	- $(V) ./spexlu_demo p 5 f ../SPEX_LU/ExampleMats/10teams_mat.txt ../SPEX_LU/ExampleMats/10teams_v.txt > lu4.out
+	- $(V) ./spexlu_demo p 2 q 0 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu1.out
+	- $(V) ./spexlu_demo p 3 q 1 o 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu2.out
+	- $(V) ./spexlu_demo p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt > lu3.out
+	- $(V) ./spexlu_demo p 5 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu4.out
 	- $(V) ./tcov_for_lu > test_for_lu.out
 	- $(V) ./tcov_for_lu 0 1 1 > lu5.out
 
@@ -273,7 +271,7 @@ vtests4luu: all
 
 # run test for SPEX_Cholesky with valgrind
 vtests4chol: test4chol
-	- $(V) --leak-check=full ./tcov_for_cholesky ../SPEX_Cholesky/ExampleMats/872.mat.txt > test_for_cholesky.out
+	- $(V) --leak-check=full ./tcov_for_cholesky ../ExampleMats/872.mat.txt > test_for_cholesky.out
 
 #-------------------------------------------------------------------------------
 
@@ -281,7 +279,7 @@ vtests4chol: test4chol
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
 	- $(RM) tcov_for_lu tcov_for_update spexlu_demo *.out *.a cov.sort out Mats4Tcov/SPEX_Update/mat.txt
-	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c demos.c
+	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c lu_demos.c
 	- $(RM) -r tcov_for_cholesky chol_demos.c
 
 purge: distclean

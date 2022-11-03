@@ -306,9 +306,6 @@ mpfr_t* spex_create_mpfr_array
     const SPEX_options* option
 );
 
-// Create and initialize a single mpfr_t variable
-SPEX_info spex_create_mpfr (mpfr_t x, const SPEX_options *option);
-
 //------------------------------------------------------------------------------
 // spex_create_mpq_array: Creates a 1D array, whose entries are all mpq_t type.
 //------------------------------------------------------------------------------
@@ -340,8 +337,6 @@ mpz_t* spex_create_mpz_array
     int64_t n              // Size of x
 );
 
-// Create and initialize a single mpz_t variable
-SPEX_info spex_create_mpz (mpz_t x);
 
 
 //------------------------------------------------------------------------------

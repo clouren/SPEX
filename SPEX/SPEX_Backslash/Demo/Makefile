@@ -23,13 +23,13 @@ LDLIBS += -lm -lsuitesparseconfig -lgmp -lmpfr -lcolamd -lamd -lspex
 
 all: SPEX_Backslash_Demo
 	- ./SPEX_Backslash_Demo
-	- ./SPEX_Backslash_Demo f ../ExampleMats/2209.mat.txt s
+	- ./SPEX_Backslash_Demo f ../../ExampleMats/2209.mat.txt s
 
 lib:
 	( cd ../ ; $(MAKE lib) )
 
 SPEX_Backslash_Demo: lib SPEX_Backslash_Demo.c Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -g -o SPEX_Backslash_Demo SPEX_Backslash_Demo.c demos.c $(LDLIBS)
+	$(CC) $(LDFLAGS) $(CF) $(I) -g -o SPEX_Backslash_Demo SPEX_Backslash_Demo.c back_demos.c $(LDLIBS)
 
 
 clean:

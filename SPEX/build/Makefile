@@ -31,7 +31,7 @@ LDLIBS += -lsuitesparseconfig -lamd -lcolamd -lm -lgmp -lmpfr
 # uncomment for debugging
 #CF += -g
 
-C = $(CC) $(CF) -I../SPEX_Backslash/Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Utilities/Source -I../SPEX_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source -I../SPEX_Backslash/Source
+C = $(CC) $(CF) -I../Include -I../../COLAMD/Include -I../../AMD/Include -I../../SuiteSparse_config -I../SPEX_Utilities/Source -I../SPEX_LU/Source -I../SPEX_Cholesky/Source -I../SPEX_Update/Source -I../SPEX_Backslash/Source
 
 all: install
 
@@ -79,17 +79,15 @@ OBJ_UTIL = \
     spex_factorization_basic_check.o \
     spex_colamd.o \
     spex_amd.o \
-    spex_create_mpq.o \
-    spex_create_mpfr.o \
-    spex_create_mpz.o
+    spex_create_mpq.o 
     # spex_matrix_div.o \
 
-$(OBJ_UTIL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h Makefile
+$(OBJ_UTIL): ../Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h Makefile
 
-SPEX_%.o: ../SPEX_Utilities/Source/SPEX_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
+SPEX_%.o: ../SPEX_Utilities/Source/SPEX_%.c ../Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
 	$(C) $(I) -c $<
 
-spex_%.o: ../SPEX_Utilities/Source/spex_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
+spex_%.o: ../SPEX_Utilities/Source/spex_%.c ../Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
@@ -109,15 +107,15 @@ OBJ_LEFTLU = \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_lu_solve.o
 
-$(OBJ_LEFTLU): ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h Makefile
+$(OBJ_LEFTLU): ../Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h Makefile
 
-SPEX_lu_%.o: ../SPEX_LU/Source/SPEX_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
+SPEX_lu_%.o: ../SPEX_LU/Source/SPEX_lu_%.c ../Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
 	$(C) $(I) -c $<
 
-SPEX_lu_%.o: ../SPEX_LU/Source/SPEX_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
+SPEX_lu_%.o: ../SPEX_LU/Source/SPEX_lu_%.c ../Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
 	$(C) $(I) -c $<
 
-spex_left_lu_%.o: ../SPEX_LU/Source/spex_left_lu_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
+spex_left_lu_%.o: ../SPEX_LU/Source/spex_left_lu_%.c ../Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
@@ -145,12 +143,12 @@ OBJ_CHOL = \
     spex_cholesky_left_triangular_solve.o \
     spex_cholesky_up_triangular_solve.o
 
-$(OBJ_CHOL): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky//Source/spex_cholesky_internal.h ../SPEX_Utilities/Source/spex_util_internal.h Makefile
+$(OBJ_CHOL): ../Include/SPEX.h ../SPEX_Cholesky//Source/spex_cholesky_internal.h ../SPEX_Utilities/Source/spex_util_internal.h Makefile
 
-SPEX_cholesky_%.o: ../SPEX_Cholesky/Source/SPEX_cholesky_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
+SPEX_cholesky_%.o: ../SPEX_Cholesky/Source/SPEX_cholesky_%.c ../Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
 	$(C) $(I) -c $<
 
-spex_cholesky_%.o: ../SPEX_Cholesky/Source/spex_cholesky_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
+spex_cholesky_%.o: ../SPEX_Cholesky/Source/spex_cholesky_%.c ../Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
@@ -174,12 +172,12 @@ OBJ_UPDATE = \
     spex_update_triangular_solve.o \
     spex_update_debug.o
 
-$(OBJ_UPDATE): ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update//Source/spex_update_internal.h Makefile
+$(OBJ_UPDATE): ../Include/SPEX.h ../SPEX_Update//Source/spex_update_internal.h Makefile
 
-SPEX_update_%.o: ../SPEX_Update/Source/SPEX_update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+SPEX_update_%.o: ../SPEX_Update/Source/SPEX_update_%.c ../Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
 	$(C) $(I) -c $<
 
-spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
@@ -187,7 +185,7 @@ spex_update_%.o: ../SPEX_Update/Source/spex_update_%.c ../SPEX_Backslash/Include
 OBJ_BACKSLASH = \
     SPEX_backslash.o
 
-SPEX_backslash.o: ../SPEX_Backslash/Source/SPEX_backslash.c ../SPEX_Backslash/Include/SPEX.h
+SPEX_backslash.o: ../SPEX_Backslash/Source/SPEX_backslash.c ../Include/SPEX.h
 	$(C) $(I) -c $<
 
 #-------------------------------------------------------------------------------
@@ -217,7 +215,7 @@ $(INSTALL_LIB)/$(SO_TARGET): $(OBJ_UTIL) $(OBJ_LEFTLU) $(OBJ_UPDATE) $(OBJ_CHOL)
 	$(CC) $(SO_OPTS) $^ -o $@ $(LDLIBS)
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_PLAIN) )
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_MAIN) )
-	$(CP) ../SPEX_Backslash/Include/SPEX.h $(INSTALL_INCLUDE)
+	$(CP) ../Include/SPEX.h $(INSTALL_INCLUDE)
 	#$(CP) ../Doc/SPEX_UserGuide.pdf $(INSTALL_DOC)
 	#$(CP) ../README.md $(INSTALL_DOC)/SPEX_README.md
 	chmod 644 $(INSTALL_INCLUDE)/SPEX.h

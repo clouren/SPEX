@@ -209,7 +209,7 @@ int main (int argc, char *argv [])
 
     // unsymmetric matrix (row counts != col counts)
     printf ("Cholesky: error handling for unsymmetric matrix (1)\n") ;
-    read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test1.mat.txt") ;
+    read_test_matrix (&A, "../ExampleMats/test1.mat.txt") ;
     create_test_rhs (&b, A->n) ;
     TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_UNSYMMETRIC) ;
@@ -218,7 +218,7 @@ int main (int argc, char *argv [])
 
     // unsymmetric matrix (unsymmetric pattern)
     printf ("Cholesky: error handling for unsymmetric matrix (2)\n") ;
-    read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test2.mat.txt") ;
+    read_test_matrix (&A, "../ExampleMats/test2.mat.txt") ;
     create_test_rhs (&b, A->n) ;
     TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_UNSYMMETRIC) ;
@@ -227,7 +227,7 @@ int main (int argc, char *argv [])
 
     // unsymmetric matrix (unsymmetric values)
     printf ("Cholesky: error handling for unsymmetric matrix (3)\n") ;
-    read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test3.mat.txt") ;
+    read_test_matrix (&A, "../ExampleMats/test3.mat.txt") ;
     create_test_rhs (&b, A->n) ;
     TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_UNSYMMETRIC) ;
@@ -236,7 +236,7 @@ int main (int argc, char *argv [])
 
     // symmetric indefinite matrix
     printf ("Cholesky: error handling for symmetric indefinite matrix (4)\n") ;
-    read_test_matrix (&A, "../SPEX_Cholesky/ExampleMats/test4.mat.txt") ;
+    read_test_matrix (&A, "../ExampleMats/test4.mat.txt") ;
     create_test_rhs (&b, A->n) ;
     option->algo = SPEX_CHOL_UP ;
     TEST_CHECK_FAILURE (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),

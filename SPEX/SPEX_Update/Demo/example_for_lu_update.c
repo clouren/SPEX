@@ -22,7 +22,7 @@
     SPEX_FREE(option);                           \
     SPEX_finalize( ) ;
 
-#include "demos.h"
+#include "lu_demos.h"
 
 
 int main()
@@ -49,7 +49,7 @@ int main()
     // read matrix and store as a SPEX_CSC SPEX_MPZ matrix A
     //--------------------------------------------------------------------------
 
-    char *mat_name = "../ExampleMats/10teams_mat.txt";
+    char *mat_name = "../../ExampleMats/10teams_mat.txt";
     FILE *mat_file = fopen(mat_name, "r");
     if (mat_file == NULL)
     {

@@ -50,7 +50,7 @@ int main (int argc, char **argv)
     // Get matrix file name
     //--------------------------------------------------------------------------
     char *mat_name;
-    mat_name = "../ExampleMats/872.mat.txt";
+    mat_name = "../../ExampleMats/872.mat.txt";
     printf("%s\n", mat_name);
     if (argc > 2)
     {

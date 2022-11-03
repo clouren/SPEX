@@ -32,7 +32,7 @@
 }
 
 
-# include "demos.h"
+# include "back_demos.h"
 
 /* A demo of SPEX_Backslash in C
  */
@@ -60,8 +60,8 @@ int main( int argc, char* argv[] )
     SPEX_options *option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     
-    char* mat_name = "../ExampleMats/10teams_mat.txt"; // Set demo matrix and RHS name
-    char* rhs_name = "../ExampleMats/10teams_v.txt";
+    char* mat_name = "../../ExampleMats/10teams_mat.txt"; // Set demo matrix and RHS name
+    char* rhs_name = "../../ExampleMats/10teams_v.txt";
     int64_t rat = 1;
     
     // Process the command line

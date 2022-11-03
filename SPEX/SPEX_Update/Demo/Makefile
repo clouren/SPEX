@@ -28,11 +28,11 @@ all: lib luupdate cholupdate
 lib:
 	( cd ../../build ; $(MAKE) )
 
-luupdate: lib example_for_lu_update.c ../../SPEX_LU/Demo/demos.c ../../SPEX_LU/Demo/demos.h Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example_for_lu_update example_for_lu_update.c ../../SPEX_LU/Demo/demos.c $(LDLIBS)
+luupdate: lib example_for_lu_update.c ../../SPEX_LU/Demo/lu_demos.c ../../SPEX_LU/Demo/lu_demos.h Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o example_for_lu_update example_for_lu_update.c ../../SPEX_LU/Demo/lu_demos.c $(LDLIBS)
 
-cholupdate: lib example_for_chol_update.c ../../SPEX_LU/Demo/demos.c ../../SPEX_LU/Demo/demos.h Makefile
-	$(CC) $(LDFLAGS) $(CF) $(I) -o example_for_chol_update example_for_chol_update.c ../../SPEX_LU/Demo/demos.c $(LDLIBS)
+cholupdate: lib example_for_chol_update.c ../../SPEX_LU/Demo/lu_demos.c ../../SPEX_LU/Demo/lu_demos.h Makefile
+	$(CC) $(LDFLAGS) $(CF) $(I) -o example_for_chol_update example_for_chol_update.c ../../SPEX_LU/Demo/lu_demos.c $(LDLIBS)
 
 clean:
 	- $(RM) *.o

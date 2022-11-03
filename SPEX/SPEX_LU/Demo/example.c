@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 
-#include "demos.h"
+#include "lu_demos.h"
 
 
 /* This example shows how to use SPEX Left LU with a given input matrix and a double
