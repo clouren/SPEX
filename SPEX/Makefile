@@ -1,67 +1,99 @@
 #-------------------------------------------------------------------------------
-# Makefile for SPEX: SParse EXact linear algebra
-#
-# SPEX (c) 2019-2021 Christopher Lourenco, Timothy Davis, Erick Moreno-Centeno
-#                    Jinhao Chen, All rights reserved.
-#
+# SuiteSparse/SPEX/Makefile
 #-------------------------------------------------------------------------------
 
-SUITESPARSE ?= $(realpath $(CURDIR)/..)
-export SUITESPARSE
+# SPEX_Left_LU: (c) 2019-2022, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-default: go
+#-------------------------------------------------------------------------------
 
-include ../SuiteSparse_config/SuiteSparse_config.mk
+# A simple Makefile for SPEX, which relies on cmake to do the
+# actual build.  All the work is done in cmake so this Makefile is just for
+# convenience.
 
+# To compile with an alternate compiler:
+#
+#       make CC=gcc CXX=g++
+#
+# To compile/install for system-wide usage:
+#
+#       make
+#       sudo make install
+#
+# To compile/install for local usage (../lib and ../include):
+#
+#       make local
+#       make install
+#
+# To clean up the files:
+#
+#       make clean
 
-# Compile the default rules for each package
-go:
-	( cd build && $(MAKE) )
-	( cd SPEX_LU && $(MAKE) )
-	( cd SPEX_Update && $(MAKE) )
-	( cd SPEX_Cholesky && $(MAKE) )
-	( cd SPEX_Backslash && $(MAKE) )
-	#( cd SPEX_QR && $(MAKE) )
+JOBS ?= 8
 
-# install all packages in /usr/local/lib and /usr/local/include
-# (note that CSparse is not installed; CXSparse is installed instead)
-install:
-	( cd build && $(MAKE)  install )
-	$(CP) Doc/SPEX_UserGuide.pdf $(INSTALL_DOC)
-	$(CP) README.md $(INSTALL_DOC)/SPEX_README.md
-	chmod 755 $(INSTALL_LIB)/$(SO_TARGET)
-	chmod 644 $(INSTALL_DOC)/SPEX_UserGuide.pdf
-	chmod 644 $(INSTALL_DOC)/SPEX_README.md
+default: library
 
-# uninstall all packages
-uninstall:
-	( cd build && $(MAKE) uninstall )
+# default is to install only in /usr/local
+library:
+	( cd build && cmake $(CMAKE_OPTIONS) .. && $(MAKE) --jobs=${JOBS} )
 
-# compile the libraries.
-library: go
+# install only in ../lib and ../include
+local:
+	( cd build && cmake $(CMAKE_OPTIONS) -DGLOBAL_INSTALL=0 -DLOCAL_INSTALL=1 .. && $(MAKE) --jobs=${JOBS} )
 
-static: go
+# install only in /usr/local (default)
+global:
+	( cd build && cmake $(CMAKE_OPTIONS) -DGLOBAL_INSTALL=1 -DLOCAL_INSTALL=0 .. && $(MAKE) --jobs=${JOBS} )
 
-# test coverage:
+# install in ../lib both and ../include and /usr/local
+both:
+	( cd build && cmake $(CMAKE_OPTIONS) -DGLOBAL_INSTALL=1 -DLOCAL_INSTALL=1 .. && $(MAKE) --jobs=${JOBS} )
+
+debug:
+	( cd build && cmake $(CMAKE_OPTIONS) -DCMAKE_BUILD_TYPE=Debug .. && $(MAKE) --jobs=${JOBS} )
+
+all: library
+
+demos: library
+	( cd build && cmake $(CMAKE_OPTIONS) -DDEMO=1 .. && $(MAKE) --jobs=${JOBS} )
+	( cd SPEX_LU/Demo && ../../build/example  )
+	( cd SPEX_LU/Demo && ../../build/example2 )
+	( cd SPEX_LU/Demo && ../../build/spexlu_demo )
+	( cd SPEX_LU/Demo && ../../build/spexlu_doub_demo )
+	( cd SPEX_Backslash/Demo && ../../build/SPEX_Backslash_Demo )
+	( cd SPEX_Backslash/Demo && ../../build/SPEX_Backslash_Demo f ../../ExampleMats/2209.mat.txt s )
+	( cd SPEX_Cholesky/Demo && ../../build/example_simple )
+	( cd SPEX_Cholesky/Demo && ../../build/example_extended )
+	( cd SPEX_Update/Demo && ../../build/example_for_lu_update )
+	( cd SPEX_Update/Demo && ../../build/example_for_chol_update )
+
 cov:
-	( cd Tcov && $(MAKE) cov )
+	( cd SPEX/Tcov && $(MAKE) )
 
-# Remove all files not in the original distribution
-purge:
-	- ( cd build && $(MAKE) purge )
-	- ( cd SPEX_LU && $(MAKE) purge )
-	- ( cd SPEX_Update && $(MAKE) purge )
-	- ( cd SPEX_Cholesky && $(MAKE) purge )
-	- ( cd Tcov && $(MAKE) purge )
-	- ( cd SPEX_Backslash && $(MAKE) purge )
-	#- ( cd SPEX_QR && $(MAKE) purge )
+# just compile after running cmake; do not run cmake again
+remake:
+	( cd build && $(MAKE) --jobs=${JOBS} )
 
-# Remove all files not in the original distribution, but keep the libraries
-clean: purge
+# just run cmake to set things up
+setup:
+	( cd build && cmake $(CMAKE_OPTIONS) .. )
 
-# Create the PDF documentation
+install:
+	( cd build && $(MAKE) install )
+
+# remove any installed libraries and #include files
+uninstall:
+	- xargs rm < build/install_manifest.txt
+
+# remove all files not in the distribution
+clean:
+	- $(RM) -rf build/* Config/*.tmp MATLAB/*.o MATLAB/*.mex*
+	( cd SPEX/Tcov && $(MAKE) clean )
+
+purge: clean
+
+distclean: clean
+
 docs:
-	( cd Doc && $(MAKE) docs )
-
-distclean: purge
-
+	( cd Doc && $(MAKE) )
