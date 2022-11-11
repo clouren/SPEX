@@ -37,8 +37,8 @@ SPEX_info spex_update_debug
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     bool finish_update,   // if the update process has finished
-    SPEX_matrix *vk,      // inserted column
-    SPEX_matrix *A,       // Input matrix Dynamic_CSC MPZ
+    SPEX_matrix vk,      // inserted column
+    SPEX_matrix A,       // Input matrix Dynamic_CSC MPZ
     const SPEX_options *option// Command parameters
 )
 {
@@ -47,8 +47,8 @@ SPEX_info spex_update_debug
     int64_t n = F->L->n, *P = F->P_perm, *Q = F->Q_perm;
     int r;
     SPEX_symbolic_analysis* Stmp = NULL;
-    SPEX_matrix *Atmp = NULL;
-    SPEX_matrix *UT = NULL;
+    SPEX_matrix Atmp = NULL;
+    SPEX_matrix UT = NULL;
     SPEX_factorization *Ftmp = NULL;
     SPEX_options *opt1 = NULL;
     mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);

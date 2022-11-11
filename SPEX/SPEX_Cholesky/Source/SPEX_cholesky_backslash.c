@@ -51,13 +51,13 @@
 SPEX_info SPEX_cholesky_backslash
 (
     // Output
-    SPEX_matrix** x_handle,       // On input: undefined.
+    SPEX_matrix* x_handle,       // On input: undefined.
                                   // On output: solution vector(s)
     // Input
     SPEX_type type,               // Type of output desired
                                   // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
-    const SPEX_matrix* A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-    const SPEX_matrix* b,         // Right hand side vector(s). Must be
+    const SPEX_matrix A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix b,         // Right hand side vector(s). Must be
                                   // SPEX_MPZ and SPEX_DENSE
     const SPEX_options* option    // Command options (Default if NULL)
 )
@@ -102,8 +102,8 @@ SPEX_info SPEX_cholesky_backslash
     // Declare memory
     SPEX_symbolic_analysis *S = NULL;
     SPEX_factorization *F = NULL ;
-    SPEX_matrix *x = NULL;
-    SPEX_matrix* PAP = NULL;
+    SPEX_matrix x = NULL;
+    SPEX_matrix PAP = NULL;
 
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of A (Default is AMD)
@@ -120,7 +120,7 @@ SPEX_info SPEX_cholesky_backslash
     // returned
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( SPEX_determine_symmetry((SPEX_matrix*)A, option) );
+    SPEX_CHECK( SPEX_determine_symmetry(A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the
@@ -164,7 +164,7 @@ SPEX_info SPEX_cholesky_backslash
     }
     else
     {
-        SPEX_matrix* x2 = NULL;
+        SPEX_matrix x2 = NULL;
         SPEX_CHECK( SPEX_matrix_copy(&x2, SPEX_DENSE, type, x, option) );
         (*x_handle) = x2;
         SPEX_matrix_free (&x, NULL);

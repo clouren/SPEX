@@ -61,10 +61,10 @@ int main (int argc, char **argv)
     // Declare our data structures
     //--------------------------------------------------------------------------
     SPEX_info ok;
-    SPEX_matrix* A = NULL ;                     // input matrix with mpz values
-    SPEX_matrix* b = NULL ;                     // Right hand side vector
-    SPEX_matrix* x = NULL ;                     // Solution vectors
-    SPEX_matrix* x2 = NULL ;                     // copy of solution vectors
+    SPEX_matrix A = NULL ;                     // input matrix with mpz values
+    SPEX_matrix b = NULL ;                     // Right hand side vector
+    SPEX_matrix x = NULL ;                     // Solution vectors
+    SPEX_matrix x2 = NULL ;                     // copy of solution vectors
     SPEX_options* option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     if (option == NULL)

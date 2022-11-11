@@ -17,9 +17,9 @@
 
 SPEX_info SPEX_QR_PURSELL
 (
-    SPEX_matrix *A,            // Matrix to be factored
-    SPEX_matrix **R_handle,    // upper triangular matrix
-    SPEX_matrix **Q_handle     // orthogonal triangular matrix
+    SPEX_matrix A,            // Matrix to be factored
+    SPEX_matrix *R_handle,    // upper triangular matrix
+    SPEX_matrix *Q_handle     // orthogonal triangular matrix
 )
 {
     SPEX_info info;
@@ -34,9 +34,9 @@ SPEX_info SPEX_QR_PURSELL
     int64_t i, j, k;
     
     // A_transpose, will be overwritten with Q
-    SPEX_matrix *A_T;
+    SPEX_matrix A_T;
     // A2 = A_T A // Will be overwritten with R
-    SPEX_matrix *A2;
+    SPEX_matrix A2;
     
     // Allocate A_T
     SPEX_CHECK(SPEX_matrix_allocate(&A_T, SPEX_DENSE, SPEX_MPZ, n, m, n*m,

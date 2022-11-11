@@ -446,23 +446,23 @@ SPEX_info spex_cast_array
 
 SPEX_info spex_cast_matrix
 (
-    SPEX_matrix **Y_handle,     // nz-by-1 dense matrix to create
+    SPEX_matrix *Y_handle,     // nz-by-1 dense matrix to create
     SPEX_type Y_type,           // type of Y
-    const SPEX_matrix *A,             // matrix with nz entries
+    const SPEX_matrix A,             // matrix with nz entries
     const SPEX_options *option
 ) ;
 
 SPEX_info spex_CSC_mpz_to_dynamic
 (
-    SPEX_matrix **A_handle,       // converted SPEX_mat matrix
-    const SPEX_matrix *B,         // original matrix
+    SPEX_matrix *A_handle,       // converted SPEX_mat matrix
+    const SPEX_matrix B,         // original matrix
     const SPEX_options *option
 );
 
 SPEX_info spex_dynamic_to_CSC_mpz
 (
-    SPEX_matrix **A_handle,       // converted CSC matrix
-    const SPEX_matrix *B,         // original matrix
+    SPEX_matrix *A_handle,       // converted CSC matrix
+    const SPEX_matrix B,         // original matrix
     const int64_t nnz,            // number of nonzeros in B
     const SPEX_options *option
 );
@@ -475,7 +475,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
  */
 SPEX_info spex_sparse_collapse
 (
-    SPEX_matrix* A // matrix to be shrunk
+    SPEX_matrix A // matrix to be shrunk
 );
 
 /* Purpose: This function expands a SPEX matrix by doubling its size. It
@@ -483,7 +483,7 @@ SPEX_info spex_sparse_collapse
  */
 SPEX_info spex_sparse_realloc
 (
-    SPEX_matrix* A // the matrix to be expanded
+    SPEX_matrix A // the matrix to be expanded
 );
 
 /* Purpose: This function gets a copy of a row-wise permuted dense matrix as
@@ -492,8 +492,8 @@ SPEX_info spex_sparse_realloc
 
 SPEX_info spex_permute_dense_matrix
 (
-    SPEX_matrix **A_handle,     // permuted A
-    const SPEX_matrix *A_in,    // unpermuted A (not modified)
+    SPEX_matrix *A_handle,     // permuted A
+    const SPEX_matrix A_in,    // unpermuted A (not modified)
     const int64_t *P,           // row permutation
     const SPEX_options* option
 );
@@ -502,7 +502,7 @@ SPEX_info spex_permute_dense_matrix
  */
 SPEX_info spex_matrix_mul   // multiplies x by a scalar
 (
-    SPEX_matrix *x,         // matrix to be multiplied
+    SPEX_matrix x,         // matrix to be multiplied
     const mpz_t scalar      // scalar to multiply by
 ) ;
 
@@ -527,7 +527,7 @@ SPEX_info spex_colamd
 (
     int64_t **perm_handle,
     int64_t *nnz,
-    const SPEX_matrix *A,
+    const SPEX_matrix A,
     const SPEX_options* option
 );
 
@@ -535,7 +535,7 @@ SPEX_info spex_amd
 (
     int64_t **perm_handle,
     int64_t *nnz,
-    const SPEX_matrix *A,
+    const SPEX_matrix A,
     const SPEX_options* option
 );
 

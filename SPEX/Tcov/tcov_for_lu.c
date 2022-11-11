@@ -240,13 +240,13 @@ int main( int argc, char* argv[])
             // Define variables
             //------------------------------------------------------------------
             // used in as source in different Ab_type for A and b
-            SPEX_matrix *B   = NULL;
-            SPEX_matrix *Ax  = NULL;
+            SPEX_matrix B   = NULL;
+            SPEX_matrix Ax  = NULL;
 
             // matrix A, b and solution
-            SPEX_matrix *A = NULL ;
-            SPEX_matrix *b = NULL ;
-            SPEX_matrix *sol = NULL;
+            SPEX_matrix A = NULL ;
+            SPEX_matrix b = NULL ;
+            SPEX_matrix sol = NULL;
 
             // Column permutation
             SPEX_symbolic_analysis *S = NULL ;
@@ -847,7 +847,7 @@ int main( int argc, char* argv[])
                 // SPEX Left LU backslash
                 // solve Ax=b in double precision
                 //--------------------------------------------------------------
-                SPEX_matrix *sol_doub;
+                SPEX_matrix sol_doub;
 		TEST_CHECK(SPEX_lu_backslash(&sol_doub, SPEX_FP64, A, b,
                     option));
                 if (pretend_to_fail) continue ;

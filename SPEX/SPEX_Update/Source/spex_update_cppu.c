@@ -38,9 +38,9 @@
 
 SPEX_info spex_update_cppu
 (
-    SPEX_matrix *L,     // matrix L
-    SPEX_matrix *U,     // matrix U
-    SPEX_matrix *rhos,// array of scaled pivots
+    SPEX_matrix L,     // matrix L
+    SPEX_matrix U,     // matrix U
+    SPEX_matrix rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
@@ -238,7 +238,7 @@ SPEX_info spex_update_cppu
 
                 // perform i-th IPGE update for Lk_dense_col
                 SPEX_CHECK(spex_update_ipge(Lk_dense_col, h, NULL, L->v[i],
-                    P, P_inv, (const SPEX_matrix*)rhos, i));
+                    P, P_inv, (const SPEX_matrix)rhos, i));
 
                 // perform RwSOP for row i with flipped-sign entries in
                 // Lk_dense_col. All entries in row i of U must be SCALEUP such

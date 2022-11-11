@@ -22,8 +22,8 @@
  */
 SPEX_info SPEX_transpose
 (
-    SPEX_matrix **C_handle,     // C = A'
-    SPEX_matrix *A,             // Matrix to be transposed
+    SPEX_matrix *C_handle,     // C = A'
+    SPEX_matrix A,             // Matrix to be transposed
     const SPEX_options *option
 )
 {
@@ -35,7 +35,7 @@ SPEX_info SPEX_transpose
 
     // Declare workspace and C
     int64_t* w = NULL;
-    SPEX_matrix* C = NULL;
+    SPEX_matrix C = NULL;
     int64_t nz;                            // Number of nonzeros in A
     int64_t p, q, j, n, m;
     info = SPEX_matrix_nnz(&nz, A, option);

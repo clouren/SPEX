@@ -34,7 +34,7 @@ SPEX_info spex_cholesky_counts
     int64_t** c_handle,     // On ouptut: column counts
                             // On input: undefined
     // Input
-    const SPEX_matrix *A,   // Input matrix
+    const SPEX_matrix A,   // Input matrix
     const int64_t* parent,  // Elimination tree
     const int64_t* post     // Post-order of the tree
 )

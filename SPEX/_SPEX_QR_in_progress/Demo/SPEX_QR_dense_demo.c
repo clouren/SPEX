@@ -90,24 +90,24 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
 
     SPEX_info ok;
-    SPEX_matrix *A = NULL ;     // Integer matrix to be factorized
-    SPEX_matrix *A2 = NULL;     // Matrix to be randomly generated
+    SPEX_matrix A = NULL ;     // Integer matrix to be factorized
+    SPEX_matrix A2 = NULL;     // Matrix to be randomly generated
     
     // Next we define 3 Q R pairs. Each pair is generated via a different dense
     // algorithm
-    SPEX_matrix *Q = NULL;
-    SPEX_matrix *R = NULL;
-    SPEX_matrix *Q2 = NULL;
-    SPEX_matrix *R2 = NULL;
-    SPEX_matrix *Q3 = NULL;
-    SPEX_matrix *R3 = NULL;
+    SPEX_matrix Q = NULL;
+    SPEX_matrix R = NULL;
+    SPEX_matrix Q2 = NULL;
+    SPEX_matrix R2 = NULL;
+    SPEX_matrix Q3 = NULL;
+    SPEX_matrix R3 = NULL;
     
     // RHS and solution vectors
-    SPEX_matrix *b = NULL;
-    SPEX_matrix *b2 = NULL;
-    SPEX_matrix *b_new = NULL;
-    SPEX_matrix *x = NULL;
-    SPEX_matrix *x_doub = NULL;
+    SPEX_matrix b = NULL;
+    SPEX_matrix b2 = NULL;
+    SPEX_matrix b_new = NULL;
+    SPEX_matrix x = NULL;
+    SPEX_matrix x_doub = NULL;
     
     // SPEX Options
     SPEX_options *option = NULL;

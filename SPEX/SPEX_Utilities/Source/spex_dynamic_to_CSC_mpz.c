@@ -20,9 +20,9 @@
 
 SPEX_info spex_dynamic_to_CSC_mpz
 (
-    SPEX_matrix **A_handle,       // converted CSC matrix
+    SPEX_matrix *A_handle,       // converted CSC matrix
     // input:
-    const SPEX_matrix *B,         // original matrix (not modified)
+    const SPEX_matrix B,         // original matrix (not modified)
     const int64_t nnz,            // number of nonzeros in B
     const SPEX_options *option
 )
@@ -35,7 +35,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
     int sgn;
     int64_t i, j, Ap = 0, Bp;
     (*A_handle) = NULL;
-    SPEX_matrix *A = NULL;
+    SPEX_matrix A = NULL;
 
     // allocate space for A
     SPEX_CHECK(SPEX_matrix_allocate(&A, SPEX_CSC, SPEX_MPZ, B->m, B->n, nnz,

@@ -109,8 +109,8 @@ bool spex_mex_check_for_inf     // true if x can be represented as int64_t
 /* Purpose: This function reads in the A matrix and right hand side vectors. */
 void spex_mex_get_A_and_b
 (
-    SPEX_matrix **A_handle,     // Internal SPEX Mat stored in CSC
-    SPEX_matrix **b_handle,     // mpz matrix used internally
+    SPEX_matrix *A_handle,     // Internal SPEX Mat stored in CSC
+    SPEX_matrix *b_handle,     // mpz matrix used internally
     const mxArray* pargin[],    // The input A matrix and options
     SPEX_options* option
 ) ;

@@ -49,7 +49,7 @@ void SPEX_show_usage(void);
  */
 SPEX_info SPEX_tripread
 (
-    SPEX_matrix **A_handle,     // Matrix to be constructed
+    SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE* file,                 // file to read from (must already be open)
     SPEX_options* option
 ) ;
@@ -59,7 +59,7 @@ SPEX_info SPEX_tripread
  */
 SPEX_info SPEX_tripread_double
 (
-    SPEX_matrix **A_handle,     // Matrix to be constructed
+    SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE* file,                 // file to read from (must already be open)
     SPEX_options* option
 ) ;
@@ -67,7 +67,7 @@ SPEX_info SPEX_tripread_double
 /* Purpose: SPEX_read_dense: read a dense matrix. */
 SPEX_info SPEX_read_dense
 (
-    SPEX_matrix **b_handle,      // Matrix to be constructed
+    SPEX_matrix *b_handle,      // Matrix to be constructed
     FILE* file,                  // file to read from (must already be open)
     SPEX_options* option
 ) ;

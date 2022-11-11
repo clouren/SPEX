@@ -19,7 +19,7 @@ void spex_left_lu_dfs // performs a dfs of the graph of the matrix starting at n
 (
     int64_t *top,          // beginning of stack
     int64_t j,             // What node to start DFS at
-    SPEX_matrix* L,        // matrix which represents the Graph of L
+    SPEX_matrix L,        // matrix which represents the Graph of L
     int64_t* xi,           // the nonzero pattern
     int64_t* pstack,       // workspace vector
     const int64_t* pinv    // row permutation

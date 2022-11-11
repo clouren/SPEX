@@ -110,7 +110,7 @@ int main (int argc, char* argv[])
     //          set to default values and is almost always the last input argument
     //          for SPEX Left LU functions (except SPEX_malloc and such)
     //--------------------------------------------------------------------------
-    SPEX_matrix *A = NULL;
+    SPEX_matrix A = NULL;
     SPEX_symbolic_analysis* S = NULL;
     SPEX_factorization *F = NULL;
     SPEX_info ok ;

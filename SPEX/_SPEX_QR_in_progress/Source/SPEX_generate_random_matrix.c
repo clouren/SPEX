@@ -12,7 +12,7 @@
 
 SPEX_info SPEX_generate_random_matrix
 (
-    SPEX_matrix **A_handle, // Matrix to be created. Null on input
+    SPEX_matrix *A_handle, // Matrix to be created. Null on input
     int64_t m,              // Rows of the matrix
     int64_t n,              // Columns of the matrix
     unsigned int seed,      // Random number seed
@@ -26,7 +26,7 @@ SPEX_info SPEX_generate_random_matrix
     ASSERT(lower < upper);
     
     SPEX_info info;
-    SPEX_matrix* A = NULL; 
+    SPEX_matrix A = NULL; 
     // A is a m*n triplet matrix whose entries are FP64 Note that the first
     // boolean parameter says that the matrix is not shallow, so that A->i,
     // A->j, and A->x are calloc'd. The second boolean parameter is meaningless

@@ -179,9 +179,9 @@ int main( int argc, char* argv[])
 
                 SPEX_options* option = NULL;
                 SPEX_factorization *F = NULL;
-                SPEX_matrix *A = NULL, *tmpA = NULL, *vk = NULL;
-                SPEX_matrix *b = NULL, *b_sol = NULL;
-                SPEX_matrix *L = NULL, *U = NULL, *rhos = NULL;
+                SPEX_matrix A = NULL, tmpA = NULL, vk = NULL;
+                SPEX_matrix b = NULL, b_sol = NULL;
+                SPEX_matrix L = NULL, U = NULL, rhos = NULL;
                 int64_t *P = NULL, *P_inv = NULL, *Q = NULL, *Q_inv = NULL;
                 mpz_t tmpz1; SPEX_MPZ_SET_NULL(tmpz1);
                 mpz_t tmpz2; SPEX_MPZ_SET_NULL(tmpz2);

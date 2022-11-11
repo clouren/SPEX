@@ -35,9 +35,9 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
                         // could be NULL if not needed
     const int64_t k,    // compute x up to k-th IPGE iteration, that is, using
                         // the first k-1 columns of L
-    const SPEX_matrix *L,  // matrix L
-    const SPEX_matrix *U,  // matrix U
-    const SPEX_matrix *rhos,// array of scaled pivots
+    const SPEX_matrix L,  // matrix L
+    const SPEX_matrix U,  // matrix U
+    const SPEX_matrix rhos,// array of scaled pivots
     const int64_t *P,   // row permutation
     const int64_t *P_inv// inverse of row permutation
 )

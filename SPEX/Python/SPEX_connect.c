@@ -71,11 +71,11 @@ SPEX_info spex_python
     //--------------------------------------------------------------------------
     // Declare our data structures
     //--------------------------------------------------------------------------
-    SPEX_matrix* A_in = NULL;       //input matrix
-    SPEX_matrix* b_in = NULL;       //input rhs
-    SPEX_matrix* A = NULL;          //copy of input matrix in CSC MPZ 
-    SPEX_matrix* b = NULL;          //copy of input rhs in CSC MPZ 
-    SPEX_matrix* x = NULL;          //solution
+    SPEX_matrix A_in = NULL;       //input matrix
+    SPEX_matrix b_in = NULL;       //input rhs
+    SPEX_matrix A = NULL;          //copy of input matrix in CSC MPZ 
+    SPEX_matrix b = NULL;          //copy of input rhs in CSC MPZ 
+    SPEX_matrix x = NULL;          //solution
     
     SPEX_options *option = NULL;
     SPEX_create_default_options(&option); 
@@ -144,7 +144,7 @@ SPEX_info spex_python
     else
     {
         //solution as double
-        SPEX_matrix* x2 = NULL ;
+        SPEX_matrix x2 = NULL ;
         SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option);
         /*for (int i = 0; i < n; ++i)
         {   

@@ -43,7 +43,7 @@
 SPEX_info SPEX_cholesky_solve
 (
     // Output
-    SPEX_matrix** x_handle,     // On input: undefined.
+    SPEX_matrix* x_handle,     // On input: undefined.
                                 // On output: Rational solution (SPEX_MPQ)
                                 // to the system.
     // input/output:
@@ -53,7 +53,7 @@ SPEX_info SPEX_cholesky_solve
                                 // non-updatable.  If F is already
                                 // non-updatable, it is not modified.
     // input:
-    const SPEX_matrix* b,       // Right hand side vector
+    const SPEX_matrix b,       // Right hand side vector
     const SPEX_options* option  // command options
 )
 {
@@ -79,9 +79,9 @@ SPEX_info SPEX_cholesky_solve
     // Declare workspace and output
     //--------------------------------------------------------------------------
     // x is the permuted final solution vector returned to the user
-    SPEX_matrix *x = NULL;
+    SPEX_matrix x = NULL;
     // b2 is the permuted right hand side vector(s)
-    SPEX_matrix *b2 = NULL;
+    SPEX_matrix b2 = NULL;
 
     //--------------------------------------------------------------------------
     // get b2 = Pinv*b

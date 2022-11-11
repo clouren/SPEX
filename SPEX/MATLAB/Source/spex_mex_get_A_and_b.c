@@ -14,8 +14,8 @@
 
 void spex_mex_get_A_and_b
 (
-    SPEX_matrix **A_handle,     // Internal SPEX Mat stored in CSC
-    SPEX_matrix **b_handle,     // mpz matrix used internally
+    SPEX_matrix *A_handle,     // Internal SPEX Mat stored in CSC
+    SPEX_matrix *b_handle,     // mpz matrix used internally
     const mxArray* pargin[],    // The input A matrix and options
     SPEX_options* option
 )
@@ -66,8 +66,8 @@ void spex_mex_get_A_and_b
     // check the values of A
     bool A_has_int64_values = spex_mex_check_for_inf (Ax, Anz) ;
 
-    SPEX_matrix* A = NULL;
-    SPEX_matrix* A_matlab = NULL;
+    SPEX_matrix A = NULL;
+    SPEX_matrix A_matlab = NULL;
 
     if (A_has_int64_values)
     {
@@ -115,8 +115,8 @@ void spex_mex_get_A_and_b
     // Read in b
     //--------------------------------------------------------------------------
 
-    SPEX_matrix* b = NULL;
-    SPEX_matrix* b_matlab = NULL;
+    SPEX_matrix b = NULL;
+    SPEX_matrix b_matlab = NULL;
 
     bx = mxGetDoubles (pargin[1]) ;
     if (!bx)

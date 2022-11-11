@@ -24,8 +24,8 @@
 
 SPEX_info spex_left_lu_back_sub  // performs sparse REF backward substitution
 (
-    const SPEX_matrix *U,   // input upper triangular matrix
-    SPEX_matrix *bx         // right hand side matrix
+    const SPEX_matrix U,   // input upper triangular matrix
+    SPEX_matrix bx         // right hand side matrix
 )
 {
 

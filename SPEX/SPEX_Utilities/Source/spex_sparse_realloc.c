@@ -18,7 +18,7 @@
 
 SPEX_info spex_sparse_realloc
 (
-    SPEX_matrix* A // the matrix to be expanded
+    SPEX_matrix A // the matrix to be expanded
 )
 {
 

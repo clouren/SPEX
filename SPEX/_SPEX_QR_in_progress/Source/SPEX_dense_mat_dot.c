@@ -18,9 +18,9 @@
  */
 SPEX_info SPEX_dense_mat_dot
 (
-    SPEX_matrix* A,     // Matrix we obtain A(:,i) from
+    SPEX_matrix A,     // Matrix we obtain A(:,i) from
     int64_t i,          // ith column of A
-    SPEX_matrix* B,     // Matrix we obtain B(:,j) from
+    SPEX_matrix B,     // Matrix we obtain B(:,j) from
     int64_t j,          // jth column of B
     mpz_t prod          // Dot product of A(:,i) and B(:,j).
                         // Should be allocated and initialized on input

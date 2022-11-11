@@ -20,8 +20,8 @@
 void spex_left_lu_reach    // compute the reach of column k of A on the graph of L
 (
     int64_t *top,
-    SPEX_matrix* L,         // matrix representing graph of L
-    const SPEX_matrix* A,   // input matrix
+    SPEX_matrix L,         // matrix representing graph of L
+    const SPEX_matrix A,   // input matrix
     int64_t k,              // column of A of interest
     int64_t* xi,            // nonzero pattern
     const int64_t* pinv     // row permutation

@@ -68,16 +68,16 @@ SPEX_info spex_cholesky_left_triangular_solve
                              // L(:,k). The nonzero pattern is contained in
                              // xi[top_output...n-1]
                              // On input: undefined
-    SPEX_matrix* x,          // On output: Solution of LD x = A(:,k) ==> kth row
+    SPEX_matrix x,          // On output: Solution of LD x = A(:,k) ==> kth row
                              // of L but really, the ONLY valid values of x are
                              // those in x[xi] since x is a working vector its
                              // other positions are jumbled.
     int64_t* xi,             // On output: Nonzero pattern vector
     // Input
-    const SPEX_matrix* L,    // Partial L matrix
-    const SPEX_matrix* A,    // Input matrix
+    const SPEX_matrix L,    // Partial L matrix
+    const SPEX_matrix A,    // Input matrix
     const int64_t k,         // Iteration of algorithm
-    const SPEX_matrix* rhos, // Partial sequence of pivots
+    const SPEX_matrix rhos, // Partial sequence of pivots
     int64_t* h,              // History vector
     const int64_t* parent,   // Elimination tree
     int64_t* c               // Column pointers of L but they don't point to the

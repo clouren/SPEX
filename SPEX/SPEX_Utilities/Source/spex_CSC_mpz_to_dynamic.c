@@ -20,9 +20,9 @@
 
 SPEX_info spex_CSC_mpz_to_dynamic
 (
-    SPEX_matrix **A_handle,      // converted SPEX_matrix of dynamic_CSC
+    SPEX_matrix *A_handle,      // converted SPEX_matrix of dynamic_CSC
     // input:
-    const SPEX_matrix *B,         // original matrix (unmodified)
+    const SPEX_matrix B,         // original matrix (unmodified)
     const SPEX_options *option
 )
 {
@@ -31,7 +31,7 @@ SPEX_info spex_CSC_mpz_to_dynamic
 
     SPEX_info info;
     (*A_handle) = NULL;
-    SPEX_matrix *A = NULL;
+    SPEX_matrix A = NULL;
     int64_t *Bp = B->p;
 
     int64_t i, j, p, Ap = 0;

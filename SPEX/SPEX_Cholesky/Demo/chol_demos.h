@@ -37,7 +37,7 @@ SPEX_info SPEX_cholesky_process_command_line //processes the command line
 
 SPEX_info SPEX_tripread_double
 (
-    SPEX_matrix **A_handle,     // Matrix to be populated
+    SPEX_matrix *A_handle,     // Matrix to be populated
     FILE* file,                 // file to read from (must already be open)
     SPEX_options* option        // Command options
 );
@@ -52,7 +52,7 @@ SPEX_info SPEX_tripread_double
 
 SPEX_info SPEX_read_dense
 (
-    SPEX_matrix **b_handle, // Matrix to be constructed
+    SPEX_matrix *b_handle, // Matrix to be constructed
     FILE* file,             // file to read from (must already be open)
     SPEX_options* option
 );
@@ -71,8 +71,8 @@ void SPEX_cholesky_determine_error
 
 SPEX_info SPEX_check_solution
 (
-    const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *x,         // Solution vectors
-    const SPEX_matrix *b,         // Right hand side vectors
+    const SPEX_matrix A,         // Input matrix
+    const SPEX_matrix x,         // Solution vectors
+    const SPEX_matrix b,         // Right hand side vectors
     const SPEX_options* option    // Command options
 );

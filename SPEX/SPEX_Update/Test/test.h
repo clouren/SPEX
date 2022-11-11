@@ -110,7 +110,7 @@ MM_storage_enum ;
 
 SPEX_info SPEX_mmread
 (
-    SPEX_matrix **A_handle,// handle of matrix to create
+    SPEX_matrix *A_handle,// handle of matrix to create
     FILE *f,             // file to read from, already open
     SPEX_options *option
 );
@@ -119,9 +119,9 @@ SPEX_info SPEX_mmread
 SPEX_info SPEX_construct_LP
 (
     glp_prob *LP,
-    SPEX_matrix **A_handle,
-    SPEX_matrix **b_handle,
-    SPEX_matrix **c_handle,
+    SPEX_matrix *A_handle,
+    SPEX_matrix *b_handle,
+    SPEX_matrix *c_handle,
     double *z0_handle,
     char *file_name,
     SPEX_options *option
@@ -130,16 +130,16 @@ SPEX_info SPEX_construct_LP
 
 SPEX_info SPEX_A_plus_vvT
 (
-    SPEX_matrix *A0,
-    const SPEX_matrix *M,
+    SPEX_matrix A0,
+    const SPEX_matrix M,
     const int64_t j
 );
 
 SPEX_info SPEX_matrix_equal
 (
     bool *Isequal,
-    const SPEX_matrix *L1,
-    const SPEX_matrix *L_update,
+    const SPEX_matrix L1,
+    const SPEX_matrix L_update,
     const int64_t *P_update
 );
 
@@ -147,6 +147,6 @@ SPEX_info MY_update_verify
 (
     bool *Is_correct,     // if the factorization is correct
     SPEX_factorization *F,// LU factorization of A
-    const SPEX_matrix *A,     // Input matrix
+    const SPEX_matrix A,     // Input matrix
     const SPEX_options *option// command options
 );

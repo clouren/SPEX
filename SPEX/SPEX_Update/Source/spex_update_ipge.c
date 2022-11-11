@@ -70,7 +70,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
                     // the vector v in the equations mentioned above
     const int64_t *perm, // permutation
     const int64_t *perm_inv, // inverse of perm, can be NULL if prev == NULL
-    const SPEX_matrix *rhos,// array of scaled pivots
+    const SPEX_matrix rhos,// array of scaled pivots
     const int64_t j // column index of v
 )
 {

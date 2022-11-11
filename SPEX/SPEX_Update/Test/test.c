@@ -327,7 +327,7 @@ static inline void negate_scalar
 
 static inline SPEX_info set_value
 (
-    SPEX_matrix *A,
+    SPEX_matrix A,
     SPEX_type type,
     int64_t i,
     int64_t j,
@@ -363,7 +363,7 @@ static inline SPEX_info set_value
 
 SPEX_info SPEX_mmread
 (
-    SPEX_matrix **A_handle,// handle of matrix to create
+    SPEX_matrix *A_handle,// handle of matrix to create
     FILE *f,             // file to read from, already open
     SPEX_options *option
 )
@@ -380,7 +380,7 @@ SPEX_info SPEX_mmread
         return (SPEX_INCORRECT_INPUT) ;
     }
     *A_handle = NULL;
-    SPEX_matrix *A = NULL;
+    SPEX_matrix A = NULL;
 
     //--------------------------------------------------------------------------
     // set the default properties
@@ -850,9 +850,9 @@ SPEX_info SPEX_mmread
 SPEX_info SPEX_construct_LP
 (
     glp_prob *LP,
-    SPEX_matrix **A_handle,
-    SPEX_matrix **b_handle,
-    SPEX_matrix **c_handle,
+    SPEX_matrix *A_handle,
+    SPEX_matrix *b_handle,
+    SPEX_matrix *c_handle,
     double *z0_handle,
     char *file_name,
     SPEX_options *option
@@ -861,8 +861,8 @@ SPEX_info SPEX_construct_LP
     SPEX_info info;
     double lb, ub;
     int file_name_len = strlen(file_name);
-    SPEX_matrix *MA = NULL, *Mb = NULL, *Mc = NULL, *Mlb = NULL, *Mub = NULL;
-    SPEX_matrix *MA_CSC = NULL, *tmp = NULL;
+    SPEX_matrix MA = NULL, Mb = NULL, Mc = NULL, Mlb = NULL, Mub = NULL;
+    SPEX_matrix MA_CSC = NULL, tmp = NULL;
     int *I = NULL, *J = NULL;
     double *X = NULL;
     FILE *File = NULL;
@@ -1353,8 +1353,8 @@ SPEX_info SPEX_construct_LP
 
 SPEX_info SPEX_A_plus_vvT
 (
-    SPEX_matrix *A0, // m-by-n SPEX_DYNAMIC_CSC matrix as A
-    const SPEX_matrix *M, // m-by-k SPEX_CSC matrix, whose j-th column is v
+    SPEX_matrix A0, // m-by-n SPEX_DYNAMIC_CSC matrix as A
+    const SPEX_matrix M, // m-by-k SPEX_CSC matrix, whose j-th column is v
     const int64_t j // j-th column of M is used as v
 )
 {
@@ -1424,8 +1424,8 @@ SPEX_info SPEX_A_plus_vvT
 SPEX_info SPEX_matrix_equal
 (
     bool *Isequal,
-    const SPEX_matrix *L1,
-    const SPEX_matrix *L_update,
+    const SPEX_matrix L1,
+    const SPEX_matrix L_update,
     const int64_t *P_update
 )
 {
@@ -1536,7 +1536,7 @@ SPEX_info MY_update_verify
 (
     bool *Is_correct,     // if the factorization is correct
     SPEX_factorization *F,// LU factorization of A
-    const SPEX_matrix *A,     // Input matrix of CSC MPZ
+    const SPEX_matrix A,     // Input matrix of CSC MPZ
     const SPEX_options *option// command options
 )
 {
@@ -1544,9 +1544,9 @@ SPEX_info MY_update_verify
     int64_t tmp, i, n = F->L->n;
     int r;
     mpq_t temp;
-    SPEX_matrix *b = NULL; // the dense right-hand-side matrix to be generated
-    SPEX_matrix *x = NULL; // the dense solution matrix to be generated
-    SPEX_matrix *b2 = NULL; // the dense matrix to store the result of A*x
+    SPEX_matrix b = NULL; // the dense right-hand-side matrix to be generated
+    SPEX_matrix x = NULL; // the dense solution matrix to be generated
+    SPEX_matrix b2 = NULL; // the dense matrix to store the result of A*x
 
     OK1(SPEX_mpq_init(temp));
     OK1(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,

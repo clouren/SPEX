@@ -25,7 +25,7 @@
 SPEX_info spex_left_lu_get_largest_pivot
 (
     int64_t *pivot,         // the index of largest pivot
-    SPEX_matrix* x,         // kth column of L and U
+    SPEX_matrix x,         // kth column of L and U
     int64_t* pivs,          // vector which indicates whether each row
                             // has been pivotal
     int64_t n,              // dimension of problem

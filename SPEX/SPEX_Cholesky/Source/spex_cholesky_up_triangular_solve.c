@@ -67,14 +67,14 @@ SPEX_info spex_cholesky_up_triangular_solve
                                        // The nonzero pattern is contained in
                                        // xi[top_output...n-1]
     int64_t* xi,                       // Nonzero pattern vector
-    SPEX_matrix* x,                    // Solution of system ==> kth row of L
+    SPEX_matrix x,                    // Solution of system ==> kth row of L
     // Input
-    const SPEX_matrix* L,              // Partial L matrix
-    const SPEX_matrix* A,              // Input matrix
+    const SPEX_matrix L,              // Partial L matrix
+    const SPEX_matrix A,              // Input matrix
     const int64_t k,                   // Iteration of algorithm
     const int64_t* parent,             // Elimination tree
     int64_t* c,                        // Column pointers
-    const SPEX_matrix* rhos,           // sequence of pivots
+    const SPEX_matrix rhos,           // sequence of pivots
     int64_t* h                         // History vector
 )
 {

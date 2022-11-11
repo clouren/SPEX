@@ -15,9 +15,9 @@
 
 SPEX_info SPEX_Qtb
 (
-    SPEX_matrix* Q,        // Q matrix, want Q'
-    SPEX_matrix* b,        // Original RHS Vector
-    SPEX_matrix** b_handle // Null on input. Contains Q'*b on output
+    SPEX_matrix Q,        // Q matrix, want Q'
+    SPEX_matrix b,        // Original RHS Vector
+    SPEX_matrix* b_handle // Null on input. Contains Q'*b on output
 )
 {
     SPEX_info info;
@@ -29,7 +29,7 @@ SPEX_info SPEX_Qtb
     ASSERT( Q->kind == SPEX_DENSE);
     ASSERT( b->kind == SPEX_DENSE);
     
-    SPEX_matrix* b_new = NULL;
+    SPEX_matrix b_new = NULL;
     
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, Q->n, b->n, Q->n*b->n,

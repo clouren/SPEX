@@ -23,7 +23,7 @@ SPEX_info spex_amd
 (
     int64_t **perm_handle,
     int64_t *nnz,
-    const SPEX_matrix *A,
+    const SPEX_matrix A,
     const SPEX_options* option
 )
 {

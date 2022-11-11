@@ -31,7 +31,7 @@ SPEX_info spex_cholesky_etree
     int64_t** tree_handle,      // On output: contains the elimination tree of A
                                 // On input: undefined.
     // Input
-    const SPEX_matrix* A        // Input matrix (must be SPD).
+    const SPEX_matrix A        // Input matrix (must be SPD).
 )
 {
     // All inputs are checked by the caller so asserts are used here as a reminder

@@ -112,9 +112,9 @@ int spex_gmp_realloc_test
 SPEX_info spex_check_solution
 (
     bool *Is_correct,             // if the solution is correct
-    const SPEX_matrix *A,         // Input matrix of CSC MPZ
-    const SPEX_matrix *x,         // Solution vectors
-    const SPEX_matrix *b,         // Right hand side vectors
+    const SPEX_matrix A,         // Input matrix of CSC MPZ
+    const SPEX_matrix x,         // Solution vectors
+    const SPEX_matrix b,         // Right hand side vectors
     const SPEX_options* option    // Command options
 )
 {
@@ -134,7 +134,7 @@ SPEX_info spex_check_solution
     //--------------------------------------------------------------------------
 
     int64_t p, j, i ;
-    SPEX_matrix *b2 = NULL;   // b2 stores the solution of A*x
+    SPEX_matrix b2 = NULL;   // b2 stores the solution of A*x
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
     mpq_t scale; SPEX_MPQ_SET_NULL(scale);
 

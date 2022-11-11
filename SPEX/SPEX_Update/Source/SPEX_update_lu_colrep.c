@@ -52,7 +52,7 @@ SPEX_info SPEX_update_lu_colrep
                             // undefined.
 
     // TODO: decide on utilities to help create this n-by-1 matrix:
-    SPEX_matrix *vk,        // Pointer to a n-by-1 dynamic_CSC matrix
+    SPEX_matrix vk,        // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
                             // The rows of vk are in the same order as A.
@@ -87,7 +87,7 @@ SPEX_info SPEX_update_lu_colrep
     // initialize workspace
     //--------------------------------------------------------------------------
     int sgn_vkk, sgn_vkn, r;
-    SPEX_matrix *L = F->L, *UT = F->U, *rhos = F->rhos;
+    SPEX_matrix L = F->L, UT = F->U, rhos = F->rhos;
     int64_t ks, p, i, j, inext, jnext, n = L->n;
     int64_t *h = NULL, *h_for_vk = NULL, *Lr_offdiag = NULL, *Uc_offdiag = NULL,
         *Uci = NULL, *Ucx = NULL, *map = NULL;
@@ -331,7 +331,7 @@ SPEX_info SPEX_update_lu_colrep
         //----------------------------------------------------------------------
         SPEX_CHECK(spex_update_triangular_solve(vk_dense, &vk_top, h_for_vk,
             &last_update, &vk_2ndlastnz, k, L, UT,
-            (const SPEX_matrix*)rhos, P, P_inv));
+            (const SPEX_matrix)rhos, P, P_inv));
         SPEX_CHECK(SPEX_mpz_sgn(&sgn_vkk, vk_dense->x[P[k]]));
         SPEX_CHECK(SPEX_mpz_sgn(&sgn_vkn, vk_dense->x[P[n-1]]));
 
@@ -389,7 +389,7 @@ SPEX_info SPEX_update_lu_colrep
             // updated by scaling after CPPU.
             ks = n;
             SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense, h_for_vk,
-                UT, L, (const SPEX_matrix*)rhos, Q, P_inv, k, k, option));
+                UT, L, (const SPEX_matrix)rhos, Q, P_inv, k, k, option));
 
             SPEX_CHECK(spex_update_cppu(L, UT, rhos, Lk_dense_col,
                 Uk_dense_row, &inext, &jnext, h, Q, Q_inv,
@@ -555,7 +555,7 @@ SPEX_info SPEX_update_lu_colrep
             if (ks == n-1 && use_col_n == 1)
             {
                 SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense,
-                    h_for_vk, UT, L, (const SPEX_matrix*)rhos, Q, P_inv, k,
+                    h_for_vk, UT, L, (const SPEX_matrix)rhos, Q, P_inv, k,
                     n-1, option));
                 ks = n;
             }
@@ -646,7 +646,7 @@ SPEX_info SPEX_update_lu_colrep
                         // perform diagnal swapping with columns n
                         ks = n;
                         SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense,
-                            h_for_vk, UT, L, (const SPEX_matrix*)rhos, Q,
+                            h_for_vk, UT, L, (const SPEX_matrix)rhos, Q,
                             P_inv, k, n-1, option));
                         SPEX_CHECK(spex_update_dppu1(L, UT, rhos, Lk_dense_col,
                             Uk_dense_row, &inext, h, Q, Q_inv, P,
@@ -663,7 +663,7 @@ SPEX_info SPEX_update_lu_colrep
                     // column n-1 needs to be performed.
                     ks = n;
                     SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense,
-                        h_for_vk, UT, L, (const SPEX_matrix*)rhos, Q,
+                        h_for_vk, UT, L, (const SPEX_matrix)rhos, Q,
                         P_inv, k, k, option));
                     SPEX_CHECK(spex_update_cppu(L, UT, rhos, Lk_dense_col,
                         Uk_dense_row, &inext, &jnext, h, Q, Q_inv, P, P_inv,
@@ -766,7 +766,7 @@ SPEX_info SPEX_update_lu_colrep
     {
         SPEX_CHECK(spex_update_triangular_solve(vk_dense, &vk_top, h_for_vk, 
             &last_update, NULL /*&vk_2ndlastnz*/, k, L, UT,
-            (const SPEX_matrix*)rhos, P, P_inv));
+            (const SPEX_matrix)rhos, P, P_inv));
         // check again in case k is initially n-1
         SPEX_CHECK(SPEX_mpz_sgn(&sgn_vkn, vk_dense->x[P[n-1]]));
         if (sgn_vkn == 0)
@@ -775,7 +775,7 @@ SPEX_info SPEX_update_lu_colrep
             return SPEX_SINGULAR;
         }
         SPEX_CHECK(spex_update_finalize_and_insert_vk(vk_dense, h_for_vk, UT, L,
-            (const SPEX_matrix*)rhos, Q, P_inv, k, k, option));
+            (const SPEX_matrix)rhos, Q, P_inv, k, k, option));
         // sd[n-1]       = L(P(n-1),n-1)
         SPEX_CHECK(SPEX_mpz_set(sd[n-1],         L->v[n-1]->x[0]));
         // U(n-1,Q(n-1)) = L(P(n-1),n-1)

@@ -41,8 +41,8 @@ int main()
     SPEX_options* option = NULL;
     SPEX_factorization *F = NULL;
     SPEX_symbolic_analysis *S = NULL;
-    SPEX_matrix *A = NULL, *A_DCSC = NULL;
-    SPEX_matrix *vk = NULL;
+    SPEX_matrix A = NULL, A_DCSC = NULL;
+    SPEX_matrix vk = NULL;
     OK(SPEX_create_default_options(&option));
 
     //--------------------------------------------------------------------------

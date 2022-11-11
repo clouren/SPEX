@@ -23,9 +23,9 @@
 SPEX_info spex_cholesky_backward_sub
 (
     // Output
-    SPEX_matrix* x,         // Solution vector to A x = det(A) * b
+    SPEX_matrix x,         // Solution vector to A x = det(A) * b
     // Input
-    const SPEX_matrix* L    // The lower triangular matrix
+    const SPEX_matrix L    // The lower triangular matrix
 )
 {
     SPEX_info info;

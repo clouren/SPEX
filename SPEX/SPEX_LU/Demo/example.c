@@ -46,11 +46,11 @@ int main (void)
 
     SPEX_info ok;
     int64_t n = 50, nz = 2500, num=0;
-    SPEX_matrix *A = NULL ;                     // input matrix
-    SPEX_matrix *R = NULL ;                     // Random matrix to create A
-    SPEX_matrix *Rb = NULL;                     // Random matrix to create b
-    SPEX_matrix *b = NULL ;                     // Right hand side vector
-    SPEX_matrix *x = NULL ;                     // Solution vectors
+    SPEX_matrix A = NULL ;                     // input matrix
+    SPEX_matrix R = NULL ;                     // Random matrix to create A
+    SPEX_matrix Rb = NULL;                     // Random matrix to create b
+    SPEX_matrix b = NULL ;                     // Right hand side vector
+    SPEX_matrix x = NULL ;                     // Solution vectors
     SPEX_options *option = NULL;
     OK(SPEX_create_default_options(&option));
 

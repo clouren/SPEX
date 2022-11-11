@@ -19,9 +19,9 @@
 
 SPEX_info spex_cast_matrix
 (
-    SPEX_matrix **Y_handle,     // nz-by-1 dense matrix to create
+    SPEX_matrix *Y_handle,     // nz-by-1 dense matrix to create
     SPEX_type Y_type,           // type of Y
-    const SPEX_matrix *A,             // matrix with nz entries
+    const SPEX_matrix A,             // matrix with nz entries
     const SPEX_options *option  // Command options, if NULL defaults are used
 )
 {
@@ -45,7 +45,7 @@ SPEX_info spex_cast_matrix
 
     int64_t nz;
     SPEX_info info = SPEX_OK ;
-    SPEX_matrix *Y = NULL ;
+    SPEX_matrix Y = NULL ;
     SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;
 
 

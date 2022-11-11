@@ -115,9 +115,9 @@ int spex_gmp_realloc_test
 SPEX_info spex_check_solution
 (
     bool *Is_correct,             // if the solution is correct
-    const SPEX_matrix *A,         // Input matrix of CSC MPZ
-    const SPEX_matrix *x,         // Solution vectors
-    const SPEX_matrix *b,         // Right hand side vectors
+    const SPEX_matrix A,         // Input matrix of CSC MPZ
+    const SPEX_matrix x,         // Solution vectors
+    const SPEX_matrix b,         // Right hand side vectors
     const SPEX_options* option    // Command options
 );
 

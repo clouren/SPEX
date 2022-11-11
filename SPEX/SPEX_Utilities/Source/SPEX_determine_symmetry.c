@@ -26,7 +26,7 @@
 
 SPEX_info SPEX_determine_symmetry
 (
-    SPEX_matrix* A,            // Input matrix to be checked for symmetry
+    const SPEX_matrix A,            // Input matrix to be checked for symmetry
     const SPEX_options* option // Command options
 )
 {    
@@ -49,7 +49,7 @@ SPEX_info SPEX_determine_symmetry
     int64_t j;
 
     // Declare matrices T and R. T = A' and R = T' = A''
-    SPEX_matrix *T = NULL, *R = NULL ;
+    SPEX_matrix T = NULL, R = NULL ;
     // T = A'
     SPEX_CHECK( SPEX_transpose(&T, A, option) );
 

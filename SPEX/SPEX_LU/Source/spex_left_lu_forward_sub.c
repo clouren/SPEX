@@ -16,7 +16,7 @@
  * system to solve is L*D*x_output = x_input, overwriting the right-hand-side
  * with the solution.
  *
- * On output, the SPEX_matrix* x structure is modified.
+ * On output, the SPEX_matrix x is modified.
  */
 
 #define SPEX_FREE_ALL           \
@@ -26,9 +26,9 @@
 
 SPEX_info spex_left_lu_forward_sub
 (
-    const SPEX_matrix *L,   // lower triangular matrix
-    SPEX_matrix *x,         // right hand side matrix of size n*numRHS
-    const SPEX_matrix *rhos // sequence of pivots used in factorization
+    const SPEX_matrix L,   // lower triangular matrix
+    SPEX_matrix x,         // right hand side matrix of size n*numRHS
+    const SPEX_matrix rhos // sequence of pivots used in factorization
 )
 {
 
@@ -47,7 +47,7 @@ SPEX_info spex_left_lu_forward_sub
     int sgn ;
 
     // Build the history matrix
-    SPEX_matrix *h;
+    SPEX_matrix h;
     SPEX_CHECK (SPEX_matrix_allocate(&h, SPEX_DENSE, SPEX_INT64, x->m, x->n,
         x->nzmax, false, true, NULL));
 

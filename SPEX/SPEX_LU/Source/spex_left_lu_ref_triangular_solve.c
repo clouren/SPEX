@@ -79,16 +79,16 @@ static inline int compare (const void * a, const void * b)
 SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangular solve
 (
     int64_t *top_output,      // Output the beginning of nonzero pattern
-    SPEX_matrix* L,           // partial L matrix
-    const SPEX_matrix* A,     // input matrix
+    SPEX_matrix L,           // partial L matrix
+    const SPEX_matrix A,     // input matrix
     int64_t k,                // constructing L(:,k)
     int64_t* xi,              // nonzero pattern vector
     const int64_t* q,         // column permutation, not modified
-    SPEX_matrix* rhos,        // sequence of pivots
+    SPEX_matrix rhos,        // sequence of pivots
     const int64_t* pinv,      // inverse row permutation
     const int64_t* row_perm,  // row permutation
     int64_t* h,               // history vector
-    SPEX_matrix* x            // solution of system ==> kth column of L and U
+    SPEX_matrix x            // solution of system ==> kth column of L and U
 )
 {
 

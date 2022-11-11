@@ -29,8 +29,8 @@
 SPEX_info spex_update_backward_sub// performs sparse REF backward substitution
 (
     SPEX_vector *x,         // right hand side vector
-    const SPEX_matrix *U,   // input upper triangular matrix
-    const SPEX_matrix *rhos,// array of scaled pivots
+    const SPEX_matrix U,   // input upper triangular matrix
+    const SPEX_matrix rhos,// array of scaled pivots
     const int64_t *P,       // row permutation
     const int64_t *Q_inv    // inverse of column permutation
 )

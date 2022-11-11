@@ -39,9 +39,9 @@
 
 SPEX_info spex_update_dppu1
 (
-    SPEX_matrix *L,     // matrix L
-    SPEX_matrix *U,     // matrix U
-    SPEX_matrix *rhos,// array of scaled pivots
+    SPEX_matrix L,     // matrix L
+    SPEX_matrix U,     // matrix U
+    SPEX_matrix rhos,// array of scaled pivots
     spex_scattered_vector *Lk_dense_col,// scattered column k of L
     spex_scattered_vector *Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L

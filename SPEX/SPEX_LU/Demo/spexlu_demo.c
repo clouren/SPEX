@@ -113,11 +113,11 @@ int main (int argc, char* argv[])
     //          set to default values and is almost always the last input argument
     //          for SPEX Left LU functions (except SPEX_malloc and such)
     //--------------------------------------------------------------------------
-    SPEX_matrix *A = NULL;
+    SPEX_matrix A = NULL;
     SPEX_symbolic_analysis* S = NULL;
     SPEX_factorization *F = NULL;
-    SPEX_matrix *x = NULL;
-    SPEX_matrix *b = NULL;
+    SPEX_matrix x = NULL;
+    SPEX_matrix b = NULL;
     SPEX_info ok ;
     
     // Initialize option, command options for the factorization
@@ -248,7 +248,7 @@ int main (int argc, char* argv[])
     // SPEX_kind my_kind = SPEX_DENSE;  // SPEX_CSC, SPEX_TRIPLET or SPEX_DENSE
     // SPEX_type my_type = SPEX_FP64;   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     //
-    // SPEX_matrix* my_x = NULL;        // New output
+    // SPEX_matrix my_x = NULL;        // New output
     // Create copy which is stored as my_kind and my_type:
     // SPEX_matrix_copy( &my_x, my_kind, my_type, x, option);
 

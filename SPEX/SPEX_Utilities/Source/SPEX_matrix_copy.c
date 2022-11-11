@@ -35,11 +35,11 @@
 
 SPEX_info SPEX_matrix_copy
 (
-    SPEX_matrix **C_handle, // matrix to create (never shallow)
+    SPEX_matrix *C_handle, // matrix to create (never shallow)
     // inputs, not modified:
     SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic_CSC
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
-    const SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
+    const SPEX_matrix A,         // matrix to make a copy of (may be shallow)
     const SPEX_options *option
 )
 {
@@ -51,9 +51,9 @@ SPEX_info SPEX_matrix_copy
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     int64_t nz;
-    SPEX_matrix *C = NULL ;
-    SPEX_matrix *Y = NULL ;
-    SPEX_matrix *T = NULL ;
+    SPEX_matrix C = NULL ;
+    SPEX_matrix Y = NULL ;
+    SPEX_matrix T = NULL ;
     int64_t *W = NULL ;
 
     SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;

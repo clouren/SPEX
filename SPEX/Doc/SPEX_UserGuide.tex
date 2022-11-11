@@ -767,7 +767,7 @@ The SPEX library provides five data types for matrix entries: \verb|mpz_t|,
 \cprotect\subsection{\verb|SPEX_matrix| structure}
 %-------------------------------------------------------------------------------
 
-A matrix \verb|SPEX_matrix *A| has the following components:
+A matrix \verb|SPEX_matrix A| has the following components:
 
 \begin{itemize}
 \item \verb|A->m|: Number of rows in the matrix. Data Type: \verb|int64_t|.
@@ -887,13 +887,13 @@ following macros (Note that the \verb|TYPE| parameter in the macros is one of:
 
 \item
 \verb|SPEX_1D(A,k,TYPE)|: used to access the $k$th entry in
-                         \verb|SPEX_matrix *A| using 1D linear addressing for
+                         \verb|SPEX_matrix A| using 1D linear addressing for
                          any matrix kind (CSC, triplet or dense), in any type
                          with \verb|TYPE| specified corresponding
 
 \item
 \verb|SPEX_2D(A,i,j,TYPE)|: used to access the $(i,j)$th entry in a dense
-                            \verb|SPEX_matrix *A|.
+                            \verb|SPEX_matrix A|.
 
 \end{itemize}
 
@@ -938,7 +938,7 @@ function name & description & section \\
 \begin{verbatim}
     SPEX_info SPEX_matrix_allocate
     (
-        SPEX_matrix **A_handle, // matrix to allocate
+        SPEX_matrix *A_handle, // matrix to allocate
         SPEX_kind kind,         // CSC, triplet, or dense
         SPEX_type type,         // mpz, mpq, mpfr, int64, or double (fp64)
         int64_t m,              // # of rows
@@ -986,14 +986,14 @@ Returns \verb|SPEX_PANIC| if SPEX has not been initialized.
 \begin{verbatim}
     SPEX_info SPEX_matrix_free
     (
-        SPEX_matrix **A_handle, // matrix to free
+        SPEX_matrix *A_handle, // matrix to free
         const SPEX_options *option
     ) ;
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_matrix_free| frees the \verb|SPEX_matrix *A|.  Note that the input
-of the function is the pointer to the pointer of a \verb|SPEX_matrix|
+\verb|SPEX_matrix_free| frees the \verb|SPEX_matrix A|.  Note that the input
+of the function is the pointer the \verb|SPEX_matrix|
 structure. This is because this function internally sets the pointer of a
 \verb|SPEX_matrix| to be \verb|NULL| to prevent potential segmentation fault
 that could be caused by double \verb|free|.  If default settings are desired,
@@ -1009,18 +1009,18 @@ that could be caused by double \verb|free|.  If default settings are desired,
 \begin{verbatim}
     SPEX_info SPEX_matrix_copy
     (
-        SPEX_matrix **C,        // matrix to create (never shallow)
+        SPEX_matrix *C,        // matrix to create (never shallow)
         // inputs, not modified:
         SPEX_kind kind,         // CSC, triplet, or dense
         SPEX_type type,         // mpz_t, mpq_t, mpfr_t, int64_t, or fp64
-        SPEX_matrix *A,         // matrix to make a copy of (may be shallow)
+        SPEX_matrix A,         // matrix to make a copy of (may be shallow)
         const SPEX_options *option
     ) ;
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_matrix_copy| creates a \verb|SPEX_matrix *C| which is a modified
-copy of a \verb|SPEX_matrix *A|. This function can convert between any pair of
+\verb|SPEX_matrix_copy| creates a \verb|SPEX_matrix C| which is a modified
+copy of a \verb|SPEX_matrix A|. This function can convert between any pair of
 the 15 kinds of matrices, so the new matrix \verb|C| can be of any type or kind
 different than \verb|A|.  On input \verb|C| must be non-\verb|NULL|, and the
 value of \verb|*C| is ignored; it is overwritten, output with the matrix
@@ -1043,13 +1043,13 @@ Results are undefined for an invalid input matrix \verb|A|.  Returns
     SPEX_info SPEX_matrix_nnz     // return # of entries in A, or -1 on error
     (
         int64_t *nnz,
-        const SPEX_matrix *A,         // matrix to query
+        const SPEX_matrix A,         // matrix to query
         const SPEX_options *option
     ) ;
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_matrix_nnz| returns an integer, \verb|nnz|, which is equal to the number of entries in a \verb|SPEX_matrix *A|.
+\verb|SPEX_matrix_nnz| returns an integer, \verb|nnz|, which is equal to the number of entries in a \verb|SPEX_matrix A|.
 For details regarding how the number of entries is obtained for different kinds
 of matrices, refer to Section \ref{ss:SPEX_matrix}.
 For any matrix with invalid dimension(s), nnz is returned as -1.
@@ -1066,13 +1066,13 @@ Returns \verb|SPEX_PANIC| if the SPEX working environment has not been initializ
 \begin{verbatim}
     SPEX_info SPEX_matrix_check     // returns a SPEX status code
     (
-        const SPEX_matrix *A,       // matrix to check
+        const SPEX_matrix A,       // matrix to check
         const SPEX_options* option  // defines the print level
     ) ;
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_matrix_check| checks the validity of a \verb|SPEX_matrix *A| in any
+\verb|SPEX_matrix_check| checks the validity of a \verb|SPEX_matrix A| in any
 of the 15 different matrix types (CSC, triplet, dense) $\times$ (\verb|mpz|,
 \verb|mpq|, \verb|mpfr|, \verb|int64|, \verb|fp64|). The print level can be
 changed via \verb|option->print_level| (refer to Section \ref{ss:SPEX_options}
@@ -1090,8 +1090,8 @@ as \verb|NULL|.  Returns \verb|SPEX_PANIC| if SPEX has not been initialized.
 \begin{verbatim}
 SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
 (
-    SPEX_matrix **x2_handle,    // x2 = x/scalar
-    SPEX_matrix* x,             // input vector x
+    SPEX_matrix *x2_handle,    // x2 = x/scalar
+    SPEX_matrix x,             // input vector x
     const mpz_t scalar,         // the scalar
     const SPEX_options *option
 );
@@ -1109,7 +1109,7 @@ This function divides the matrix \verb|x| by the scalar \verb|scalar|. On input,
 \begin{verbatim}
 SPEX_matrix_mul   // multiplies x by a scalar
 (
-    SPEX_matrix *x,         // matrix to be multiplied
+    SPEX_matrix x,         // matrix to be multiplied
     const mpz_t scalar      // scalar to multiply by
 );
 \end{verbatim}
@@ -1181,7 +1181,7 @@ function/macro name & description & section \\
     (
         SPEX_lu_analysis **S, // symbolic analysis (column permutation
                               // and nnz L,U)
-        const SPEX_matrix *A, // Input matrix
+        const SPEX_matrix A, // Input matrix
         const SPEX_options *option  // Control parameters
     ) ;
 \end{verbatim}
@@ -1193,7 +1193,7 @@ there are three options: no ordering, COLAMD, or AMD, which are passed in by
 Section \ref{ss:SPEX_options}.
 
 The \verb|SPEX_lu_analysis *S| is created by calling
-\verb|SPEX_lu_analyze(&S, A, option)| with \verb|SPEX_matrix *A| properly
+\verb|SPEX_lu_analyze(&S, A, option)| with \verb|SPEX_matrix A| properly
 initialized as CSC matrix and \verb|option| be \verb|NULL| if default ordering
 (COLAMD) is desired. The value of \verb|S| is ignored on input.  On output,
 \verb|S| is a pointer to the newly created symbolic analysis structure and
@@ -1530,9 +1530,9 @@ SPEX_info SPEX_cumsum
 \begin{verbatim}
 SPEX_info SPEX_check_solution
 (
-    const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *x,         // Solution vectors
-    const SPEX_matrix *b,         // Right hand side vectors
+    const SPEX_matrix A,         // Input matrix
+    const SPEX_matrix x,         // Solution vectors
+    const SPEX_matrix b,         // Right hand side vectors
     const SPEX_options* option    // Command options
 );
 \end{verbatim}
@@ -1672,12 +1672,12 @@ Macro & purpose \\
     SPEX_info SPEX_lu_factorize
     (
         // output:
-        SPEX_matrix **L_handle,     // lower triangular matrix
-        SPEX_matrix **U_handle,     // upper triangular matrix
-        SPEX_matrix **rhos_handle,  // sequence of pivots
+        SPEX_matrix *L_handle,     // lower triangular matrix
+        SPEX_matrix *U_handle,     // upper triangular matrix
+        SPEX_matrix *rhos_handle,  // sequence of pivots
         int64_t **pinv_handle,      // inverse row permutation
         // input:
-        const SPEX_matrix *A,        // matrix to be factored
+        const SPEX_matrix A,        // matrix to be factored
         const SPEX_lu_analysis *S,   // column permutation and estimates
                                      // of nnz in L and U 
         const SPEX_options* option
@@ -1730,13 +1730,13 @@ returned as \verb|NULL|, and an error code will be returned correspondingly.
     SPEX_info SPEX_lu_solve    // solves the linear system LD^(-1)U x = b
     (
         // Output
-        SPEX_matrix **X_handle,     // rational solution to the system
+        SPEX_matrix *X_handle,     // rational solution to the system
         // input:
-        const SPEX_matrix *b,       // right hand side vector
-        const SPEX_matrix *A,       // Input matrix
-        const SPEX_matrix *L,       // lower triangular matrix
-        const SPEX_matrix *U,       // upper triangular matrix
-        const SPEX_matrix *rhos,    // sequence of pivots
+        const SPEX_matrix b,       // right hand side vector
+        const SPEX_matrix A,       // Input matrix
+        const SPEX_matrix L,       // lower triangular matrix
+        const SPEX_matrix U,       // upper triangular matrix
+        const SPEX_matrix rhos,    // sequence of pivots
         const SPEX_lu_analysis *S,  // symbolic analysis struct
         const int64_t *pinv,        // inverse row permutation
         const SPEX_options* option
@@ -1749,7 +1749,7 @@ linear system $Ax=b$ upon a successful factorization.  This function may be
 called after a successful return from \verb|SPEX_lu_factorize|, which
 computes \verb|L|, \verb|U|, \verb|rhos|, and \verb|pinv|. 
 
-On input, \verb|SPEX_matrix *x| is undefined. \verb|A|, \verb|L| and \verb|U|
+On input, \verb|SPEX_matrix x| is undefined. \verb|A|, \verb|L| and \verb|U|
 must be CSC \verb|mpz_t| matrices while \verb|b| and \verb|rhos| must be dense
 \verb|mpz_t|  matrices. All matrices must have matched dimensions: the matrices
 \verb|L| and \verb|U| must be square lower and upper triangular matrices the
@@ -1781,13 +1781,13 @@ been initialized.
     SPEX_info SPEX_lu_backslash
     (
         // Output
-        SPEX_matrix **X_handle,       // Final solution vector
+        SPEX_matrix *X_handle,       // Final solution vector
         // Input
         SPEX_type type,               // Type of output desired:
                                       // Must be SPEX_MPQ, SPEX_MPFR,
                                       // or SPEX_FP64
-        const SPEX_matrix *A,         // Input matrix
-        const SPEX_matrix *b,         // Right hand side vector(s)
+        const SPEX_matrix A,         // Input matrix
+        const SPEX_matrix b,         // Right hand side vector(s)
         const SPEX_options* option
     ) ;
 \end{verbatim}
@@ -1798,7 +1798,7 @@ as a dense matrix of \verb|mpq_t|, \verb|mpfr_t| or \verb|double| numbers. This
 function performs symbolic analysis, factorization, and solving all in one line. 
 It can be thought of as an exact version of MATLAB sparse backslash.
 
-On input, \verb|SPEX_matrix *x| is undefined. \verb|type| must be one of:
+On input, \verb|SPEX_matrix x| is undefined. \verb|type| must be one of:
 \verb|SPEX_MPQ|, \verb|SPEX_MPFR| or \verb|SPEX_FP64| to specify the data type
 of the solution entries. \verb|A| should be a square CSC \verb|mpz_t| matrix
 while \verb|b| should be a dense \verb|mpz_t| matrix. In addition, \verb|A->m|
@@ -1879,7 +1879,7 @@ SPEX function:
 SPEX assumes three specific input options for all functions. These are:
 
 \begin{itemize}
-\item \verb|SPEX_matrix* A| and \verb|SPEX_matrix *b|: \verb|A| contains the
+\item \verb|SPEX_matrix A| and \verb|SPEX_matrix b|: \verb|A| contains the
 input coefficient matrix, while \verb|b| contains the right hand side vector(s)
 of the linear system $Ax=b$.
 
@@ -1933,7 +1933,7 @@ shows how to get \verb|A| and \verb|b| in a required format.
        with mpq_t entries. (for A1 and b1 in any other form,
        the exact same code will work) */
 
-    SPEX_matrix *A, *b;
+    SPEX_matrix A, b;
     // A is a copy of the A1. A is a CSC matrix with mpz_t entries
     SPEX_matrix_copy(&A, SPEX_CSC,   SPEX_MPZ, A1, option);
     // b is a copy of the b1. b is a dense matrix with mpz_t entries. 
@@ -1954,7 +1954,7 @@ to get solution as a dense \verb|mpq_t| matrix.
 
 {\small
 \begin{verbatim}
-    SPEX_matrix *x;
+    SPEX_matrix x;
     SPEX_type my_type = SPEX_MPQ; // SPEX_MPQ, SPEX_MPFR, SPEX_FP64
     SPEX_lu_backslash(&x, my_type, A, b, option) ; \end{verbatim} }
 
@@ -1989,10 +1989,10 @@ Using SPEX in this form requires the intermediate variables be declared, such as
 {\small
 \begin{verbatim}
     // A and b are in required type and ready to use
-    SPEX_matrix *L = NULL;
-    SPEX_matrix *U = NULL;
-    SPEX_matrix *x = NULL;
-    SPEX_matrix *rhos = NULL;
+    SPEX_matrix L = NULL;
+    SPEX_matrix U = NULL;
+    SPEX_matrix x = NULL;
+    SPEX_matrix rhos = NULL;
     int64_t* pinv = NULL;
     SPEX_lu_analysis* S = NULL;
 
@@ -2057,7 +2057,7 @@ longer be exact, even though \verb|x| is the exact solution.
 \begin{verbatim}
     SPEX_kind my_kind = SPEX_DENSE;  // SPEX_CSC, SPEX_TRIPLET or SPEX_DENSE
     SPEX_type my_type = SPEX_FP64;   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    SPEX_matrix* my_x = NULL;        // New output
+    SPEX_matrix my_x = NULL;        // New output
     // Create copy which is stored as my_kind and my_type:
     SPEX_matrix_copy( &my_x, my_kind, my_type, x, option);\end{verbatim} }
 
@@ -2070,7 +2070,7 @@ As described in Section \ref{s:user:memmanag}, SPEX provides a number
 of functions/macros to free SPEX structures:
 
 \begin{itemize}
-\item \verb|SPEX_matrix*|: A \verb|SPEX_matrix* A| data structure can be freed
+\item \verb|SPEX_matrix|: A \verb|SPEX_matrix A| data structure can be freed
 with a call to \verb|SPEX_matrix_free(&A, NULL) ;|
 
 \item \verb|SPEX_lu_analysis*|: A \verb|SPEX_lu_analysis* S| data structure can

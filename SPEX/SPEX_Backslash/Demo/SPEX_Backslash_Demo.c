@@ -52,9 +52,9 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     int64_t n = 0, ok;
     
-    SPEX_matrix *A = NULL;
-    SPEX_matrix *b = NULL;
-    SPEX_matrix* x = NULL;
+    SPEX_matrix A = NULL;
+    SPEX_matrix b = NULL;
+    SPEX_matrix x = NULL;
     
     // Set default options
     SPEX_options *option = NULL;

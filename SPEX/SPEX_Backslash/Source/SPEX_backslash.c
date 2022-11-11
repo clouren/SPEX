@@ -39,13 +39,13 @@
 SPEX_info SPEX_backslash
 (
     // Output
-    SPEX_matrix **X_handle,       // On output: Final solution vector
+    SPEX_matrix *X_handle,       // On output: Final solution vector
                                   // On input: undefined
     // Input
     const SPEX_type type,         // Type of output desired
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *b,         // Right hand side vector(s)
+    const SPEX_matrix A,         // Input matrix
+    const SPEX_matrix b,         // Right hand side vector(s)
     SPEX_options* option          // Command options (NULL: means use defaults)
 )
 {
@@ -91,14 +91,14 @@ SPEX_info SPEX_backslash
         
     
     // Declare output
-    SPEX_matrix* x = NULL;
+    SPEX_matrix x = NULL;
     
     // Determine if A is symmetric by checking both the pattern
     // and values. The output of this function is either:
     // SPEX_OK:          Matrix is symmetric, try Cholesky
     // SPEX_UNSYMMETRIC: Matrix is unsymmetric, try LU
     // Other error code: Some error occured. Return the error
-    info = SPEX_determine_symmetry( (SPEX_matrix*) A, backslash_options);
+    info = SPEX_determine_symmetry(A, backslash_options);
 
     if (info == SPEX_OK)
     {

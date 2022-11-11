@@ -24,7 +24,7 @@ SPEX_info spex_cholesky_ereach
                             // xi[top..n-1]
                             // On input: undefined
     // Input
-    const SPEX_matrix* A,   // Matrix to be analyzed
+    const SPEX_matrix A,   // Matrix to be analyzed
     const int64_t k,        // Node to start at
     const int64_t* parent,  // Elimination tree of A
     int64_t* w              // Workspace array

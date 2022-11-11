@@ -59,7 +59,7 @@ SPEX_info spex_expand_double_array
     // Convert the input x into a quad precision matrix. This is to handle the (rare)
     // case that the user gives an input double which is close to DOUBLE_MAX. In that case
     // the multiplication could lead to inf.
-    SPEX_matrix* x3 = NULL;
+    SPEX_matrix x3 = NULL;
     mpz_t gcd, one; SPEX_MPZ_SET_NULL(gcd); SPEX_MPZ_SET_NULL(one);
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
 

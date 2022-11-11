@@ -38,7 +38,7 @@ SPEX_info SPEX_lu_factorize
     // output:
     SPEX_factorization **F_handle, // LU factorization
     // input:
-    const SPEX_matrix *A,      // matrix to be factored
+    const SPEX_matrix A,      // matrix to be factored
     const SPEX_symbolic_analysis *S, // symbolic analysis
     const SPEX_options* option // command options
 )
@@ -72,7 +72,7 @@ SPEX_info SPEX_lu_factorize
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
     int64_t *pivs = NULL ;
-    SPEX_matrix *x = NULL ;
+    SPEX_matrix x = NULL ;
 
     int64_t n = A->n ;
 

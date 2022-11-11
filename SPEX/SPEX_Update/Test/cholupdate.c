@@ -64,9 +64,9 @@ int main( int argc, char* argv[])
     SPEX_options *option = NULL;
     SPEX_symbolic_analysis *analysis = NULL;
     SPEX_factorization *F_update = NULL, *Ftmp = NULL;
-    SPEX_matrix *Prob_A = NULL, *Prob_b = NULL, *Prob_c = NULL;
-    SPEX_matrix *A1 = NULL, *A2 = NULL, *A3 = NULL;
-    SPEX_matrix *A0 = NULL, *w = NULL;
+    SPEX_matrix Prob_A = NULL, Prob_b = NULL, Prob_c = NULL;
+    SPEX_matrix A1 = NULL, A2 = NULL, A3 = NULL;
+    SPEX_matrix A0 = NULL, w = NULL;
     mpz_t tmpz;
     int64_t *basis = NULL, *used= NULL;
     clock_t start, end, start1, start2, end1, end2;

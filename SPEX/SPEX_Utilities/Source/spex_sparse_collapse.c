@@ -19,7 +19,7 @@
 
 SPEX_info spex_sparse_collapse
 (
-    SPEX_matrix* A // matrix to be shrunk
+    SPEX_matrix A // matrix to be shrunk
 )
 {
 

@@ -24,7 +24,7 @@
 SPEX_info spex_left_lu_get_nonzero_pivot // find the first eligible nonzero pivot
 (
     int64_t *pivot,         // the index of first eligible nonzero pivot
-    SPEX_matrix* x,         // kth column of L and U
+    SPEX_matrix x,         // kth column of L and U
     int64_t* pivs,          // vector indicating which rows are pivotal
     int64_t n,              // size of x
     int64_t top,            // nonzero pattern is located in xi[top..n-1]

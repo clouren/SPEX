@@ -41,7 +41,7 @@
 SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
-    SPEX_matrix **x_handle,  // rational solution to the system
+    SPEX_matrix *x_handle,  // rational solution to the system
     // input/output:
     SPEX_factorization *F,  // The non-updatable LU factorization.
                             // Mathematically, F is unchanged.  However, if F
@@ -49,7 +49,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
                             // non-updatable.  If F is already non-updatable,
                             // it is not modified.
     // input:
-    const SPEX_matrix *b,   // right hand side vector
+    const SPEX_matrix b,   // right hand side vector
     const SPEX_options* option // Command options
 )
 {
@@ -84,8 +84,8 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     *x_handle = NULL;
     int64_t n = F->L->n;
 
-    SPEX_matrix *x = NULL;   // final solution
-    SPEX_matrix *b2 = NULL;  // permuted b
+    SPEX_matrix x = NULL;   // final solution
+    SPEX_matrix b2 = NULL;  // permuted b
 
     //--------------------------------------------------------------------------
     // b2 (Pinv_perm) = b

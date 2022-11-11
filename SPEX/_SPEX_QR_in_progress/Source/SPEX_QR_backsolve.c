@@ -17,9 +17,9 @@
 
 SPEX_info SPEX_QR_backsolve
 (
-    SPEX_matrix* R,        // Upper triangular matrix
-    SPEX_matrix* b,        // Q^T * b
-    SPEX_matrix** x_handle // Solution
+    SPEX_matrix R,        // Upper triangular matrix
+    SPEX_matrix b,        // Q^T * b
+    SPEX_matrix* x_handle // Solution
 )
 {
     SPEX_info info;
@@ -34,7 +34,7 @@ SPEX_info SPEX_QR_backsolve
     ASSERT( b->kind == SPEX_DENSE);
     
     // Solution vector
-    SPEX_matrix* x = NULL;
+    SPEX_matrix x = NULL;
     
     // Set x = b
     SPEX_matrix_copy(&x, SPEX_DENSE, SPEX_MPZ, b, NULL);

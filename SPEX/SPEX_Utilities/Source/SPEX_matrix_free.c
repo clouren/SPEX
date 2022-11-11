@@ -14,7 +14,7 @@
 
 SPEX_info SPEX_matrix_free
 (
-    SPEX_matrix **A_handle, // matrix to free
+    SPEX_matrix *A_handle, // matrix to free
     const SPEX_options *option
 )
 {
@@ -30,7 +30,7 @@ SPEX_info SPEX_matrix_free
         // nothing to free (not an error)
         return (SPEX_OK) ;
     }
-    SPEX_matrix *A = (*A_handle) ;
+    SPEX_matrix A = (*A_handle) ;
 
     //--------------------------------------------------------------------------
     // free any non-shallow components

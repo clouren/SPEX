@@ -29,10 +29,10 @@
 SPEX_info spex_cholesky_permute_A
 (
     //Output
-    SPEX_matrix** PAP_handle,  // On input: undefined
+    SPEX_matrix* PAP_handle,  // On input: undefined
                                // On output: contains the permuted matrix
     //Input
-    const SPEX_matrix* A,      // Input matrix
+    const SPEX_matrix A,      // Input matrix
     const bool numeric,        // True if user wants to permute pattern and
                                // numbers, false if only pattern
     const SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains
@@ -57,7 +57,7 @@ SPEX_info spex_cholesky_permute_A
     //int64_t* pinv = NULL;
 
     // Allocate memory for PAP which is a permuted copy of A
-    SPEX_matrix *PAP = NULL ;
+    SPEX_matrix PAP = NULL ;
     SPEX_CHECK(SPEX_matrix_allocate(&PAP, SPEX_CSC, SPEX_MPZ, n, n, A->p[n], false, true, NULL));
 
     if(numeric)

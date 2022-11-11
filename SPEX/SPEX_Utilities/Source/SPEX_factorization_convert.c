@@ -94,7 +94,7 @@ SPEX_info SPEX_factorization_convert
     // initialize workspace
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *L = F->L, *U = F->U;
+    SPEX_matrix L = F->L, U = F->U;
     int64_t i, j, p, m = L->m, n = L->n, mp, nnz = 0;
     SPEX_vector **Mv = NULL;
     mpz_t *Mx = NULL;

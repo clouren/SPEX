@@ -51,7 +51,7 @@ SPEX_info SPEX_cholesky_factorize
     // Output
     SPEX_factorization **F_handle,  // Cholesky factorization struct
     //Input
-    const SPEX_matrix* A,           // Matrix to be factored. Must be SPEX_MPZ
+    const SPEX_matrix A,           // Matrix to be factored. Must be SPEX_MPZ
                                     // and SPEX_CSC
 
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
@@ -86,7 +86,7 @@ SPEX_info SPEX_cholesky_factorize
         return (SPEX_INCORRECT_INPUT) ;
     }
 
-    SPEX_matrix *PAP = NULL ;
+    SPEX_matrix PAP = NULL ;
     SPEX_factorization *F = NULL ;
 
     //--------------------------------------------------------------------------

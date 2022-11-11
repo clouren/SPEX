@@ -28,7 +28,7 @@ SPEX_info spex_update_verify
 (
     bool *Is_correct,     // if factorization is correct
     SPEX_factorization *F,// LU factorization of A
-    const SPEX_matrix *A,     // Input matrix Dynamic_CSC MPZ
+    const SPEX_matrix A,     // Input matrix Dynamic_CSC MPZ
     const SPEX_options *option// command options
 )
 {
@@ -36,9 +36,9 @@ SPEX_info spex_update_verify
     int64_t tmp, i, n = F->L->n;
     int r;
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
-    SPEX_matrix *b = NULL; // the dense right-hand-side matrix to be generated
-    SPEX_matrix *x = NULL; // the dense solution matrix to be generated
-    SPEX_matrix *b2 = NULL; // the dense matrix to store the result of A*x
+    SPEX_matrix b = NULL; // the dense right-hand-side matrix to be generated
+    SPEX_matrix x = NULL; // the dense solution matrix to be generated
+    SPEX_matrix b2 = NULL; // the dense matrix to store the result of A*x
 
     SPEX_CHECK(SPEX_mpq_init(temp));
     SPEX_CHECK(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,

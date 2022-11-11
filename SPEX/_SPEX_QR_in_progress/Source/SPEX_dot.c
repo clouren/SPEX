@@ -16,8 +16,8 @@
 /* Compute the dot product of two integer vectors x,y and return in z */
 SPEX_info SPEX_dot
 (
-    SPEX_matrix* x, // First vector
-    SPEX_matrix* y, // Second vector
+    SPEX_matrix x, // First vector
+    SPEX_matrix y, // Second vector
     mpz_t z         // Dot product of x and y. Should be initialized on input
 )
 {

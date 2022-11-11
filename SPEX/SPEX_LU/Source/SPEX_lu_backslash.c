@@ -44,12 +44,12 @@
 SPEX_info SPEX_lu_backslash
 (
     // Output
-    SPEX_matrix **X_handle,       // Final solution vector
+    SPEX_matrix *X_handle,       // Final solution vector
     // Input
     SPEX_type type,               // Type of output desired. Must be
                                   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix *A,         // Input matrix
-    const SPEX_matrix *b,         // Right hand side vector(s)
+    const SPEX_matrix A,         // Input matrix
+    const SPEX_matrix b,         // Right hand side vector(s)
     const SPEX_options* option    // Command options
 )
 {
@@ -77,7 +77,7 @@ SPEX_info SPEX_lu_backslash
 
     SPEX_symbolic_analysis *S = NULL;
     SPEX_factorization *F = NULL ;
-    SPEX_matrix *x = NULL;
+    SPEX_matrix x = NULL;
 
     //--------------------------------------------------------------------------
     // Symbolic Analysis
@@ -108,7 +108,7 @@ SPEX_info SPEX_lu_backslash
     }
     else
     {
-        SPEX_matrix* x2 = NULL ;
+        SPEX_matrix x2 = NULL ;
         SPEX_CHECK (SPEX_matrix_copy (&x2, SPEX_DENSE, type, x, option)) ;
         (*X_handle) = x2 ;
         SPEX_matrix_free (&x, NULL) ;

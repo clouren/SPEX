@@ -23,6 +23,8 @@ Erick:
 Tim:
     cleanup cmake
     (SPEX_matrix *)
+    Make sure "const" is used correctly. Never typecast a "const SPEX_matrix A"
+    as "(SPEX_matrix) A".
 
 in parallel:
     user guide polish (see Overleaf)

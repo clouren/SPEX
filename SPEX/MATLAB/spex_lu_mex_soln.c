@@ -72,8 +72,8 @@ void mexFunction
     // get A and b
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *A = NULL ;
-    SPEX_matrix *b = NULL ;
+    SPEX_matrix A = NULL ;
+    SPEX_matrix b = NULL ;
     spex_mex_get_A_and_b (&A, &b, pargin, option) ;
 
     if (option->print_level > 0)
@@ -92,7 +92,7 @@ void mexFunction
     // x = A\b via SPEX_LU, returning result as SPEX_MPQ
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *x = NULL ;
+    SPEX_matrix x = NULL ;
     SPEX_MEX_OK (SPEX_lu_backslash (&x, SPEX_MPQ, A, b, option)) ;
 
     //--------------------------------------------------------------------------
@@ -117,7 +117,7 @@ void mexFunction
         //----------------------------------------------------------------------
 
         // convert x to double
-        SPEX_matrix* t = NULL ;
+        SPEX_matrix t = NULL ;
         SPEX_MEX_OK (SPEX_matrix_copy (&t, SPEX_DENSE, SPEX_FP64, x, option)) ;
         SPEX_matrix_free (&x, NULL) ;
         x = t ;

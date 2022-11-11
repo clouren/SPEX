@@ -20,8 +20,8 @@
 
 SPEX_info spex_permute_dense_matrix
 (
-    SPEX_matrix **A_handle,     // permuted A
-    const SPEX_matrix *A_in,    // unpermuted A (not modified)
+    SPEX_matrix *A_handle,     // permuted A
+    const SPEX_matrix A_in,    // unpermuted A (not modified)
     const int64_t *P,           // row permutation
     const SPEX_options* option
 )
@@ -45,7 +45,7 @@ SPEX_info spex_permute_dense_matrix
     int64_t n = A_in->n ;
 
     // allocate x
-    SPEX_matrix *Atmp = NULL ;
+    SPEX_matrix Atmp = NULL ;
     SPEX_CHECK (SPEX_matrix_allocate (&Atmp, SPEX_DENSE, SPEX_MPZ, m, n,
         0, false, true, option)) ;
 

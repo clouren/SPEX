@@ -63,9 +63,9 @@
 // read_test_matrix: read in a matrix from a file
 //------------------------------------------------------------------------------
 
-void read_test_matrix (SPEX_matrix **A_handle, char *filename) ;
+void read_test_matrix (SPEX_matrix *A_handle, char *filename) ;
 
-void read_test_matrix (SPEX_matrix **A_handle, char *filename)
+void read_test_matrix (SPEX_matrix *A_handle, char *filename)
 {
     SPEX_info info ;
     FILE *f = fopen (filename, "r") ;
@@ -78,14 +78,14 @@ void read_test_matrix (SPEX_matrix **A_handle, char *filename)
 // create_test_rhs: create a right-hand-side vector
 //------------------------------------------------------------------------------
 
-void create_test_rhs (SPEX_matrix **b_handle, int64_t n) ;
+void create_test_rhs (SPEX_matrix *b_handle, int64_t n) ;
 
-void create_test_rhs (SPEX_matrix **b_handle, int64_t n)
+void create_test_rhs (SPEX_matrix *b_handle, int64_t n)
 {
     SPEX_info info ;
     OK (SPEX_matrix_allocate (b_handle, SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
         true, NULL)) ;
-    SPEX_matrix *b = *(b_handle) ;
+    SPEX_matrix b = *(b_handle) ;
     // b(0)=0
     OK (SPEX_mpz_set_ui (b->x.mpz [0], 0)) ;
     for (int64_t k = 1 ; k < n ; k++)
@@ -105,15 +105,15 @@ void create_test_rhs (SPEX_matrix **b_handle, int64_t n)
     OK (SPEX_matrix_free (&x, option)) ;        \
 }
 
-bool spex_test_chol_backslash (SPEX_matrix *A, SPEX_matrix *b,
+bool spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     SPEX_options *option) ;
 
-bool spex_test_chol_backslash (SPEX_matrix *A, SPEX_matrix *b,
+bool spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     SPEX_options *option)
 {
     SPEX_info info ;
     bool pretend_to_fail = false ;
-    SPEX_matrix *x = NULL ;
+    SPEX_matrix x = NULL ;
     // solve Ax=b
     TEST_CHECK (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option)) ;
     // disable memory testing when checking the solution
@@ -137,15 +137,15 @@ bool spex_test_chol_backslash (SPEX_matrix *A, SPEX_matrix *b,
     OK (SPEX_matrix_free (&x, option)) ;                \
 }
 
-bool spex_test_chol_afs (SPEX_matrix *A, SPEX_matrix *b, SPEX_options *option) ;
+bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options *option) ;
 
-bool spex_test_chol_afs (SPEX_matrix *A, SPEX_matrix *b, SPEX_options *option)
+bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options *option)
 {
     SPEX_info info ;
     bool pretend_to_fail = false ;
     SPEX_symbolic_analysis *S = NULL ;
     SPEX_factorization *F = NULL ;
-    SPEX_matrix *x = NULL ;
+    SPEX_matrix x = NULL ;
     // solve Ax=b
     TEST_CHECK (SPEX_cholesky_analyze (&S, A, option)) ;
     TEST_CHECK (SPEX_cholesky_factorize (&F, A, S, option)) ;
@@ -181,7 +181,7 @@ int main (int argc, char *argv [])
     // start SPEX
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *A = NULL, *b = NULL, *x = NULL ;
+    SPEX_matrix A = NULL, b = NULL, x = NULL ;
     SPEX_symbolic_analysis *S = NULL ;
     SPEX_factorization *F = NULL ;
     SPEX_options *option = NULL ;
@@ -266,8 +266,8 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     printf("\n Test SPEX_transpose \n");
-    SPEX_matrix *A_mpq = NULL, *A_mpfr = NULL, *A_int = NULL, *A_fp = NULL;
-    SPEX_matrix *T_mpq = NULL, *T_mpfr = NULL, *T_int = NULL, *T_fp = NULL;
+    SPEX_matrix A_mpq = NULL, A_mpfr = NULL, A_int = NULL, A_fp = NULL;
+    SPEX_matrix T_mpq = NULL, T_mpfr = NULL, T_int = NULL, T_fp = NULL;
     // T = A'
     OK ( SPEX_matrix_copy(&A_mpq, SPEX_CSC, SPEX_MPQ, A, option));
     OK ( SPEX_transpose(&T_mpq, A_mpq, option) );

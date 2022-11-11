@@ -18,9 +18,9 @@
  */
 SPEX_info SPEX_QR_IPGE
 (
-    SPEX_matrix *A,            // Matrix to be factored
-    SPEX_matrix **R_handle,    // Null on input, contains R on output
-    SPEX_matrix **Q_handle     // Null on input, contains Q on output
+    SPEX_matrix A,            // Matrix to be factored
+    SPEX_matrix *R_handle,    // Null on input, contains R on output
+    SPEX_matrix *Q_handle     // Null on input, contains Q on output
 )
 {
     SPEX_info info;
@@ -37,7 +37,7 @@ SPEX_info SPEX_QR_IPGE
     int64_t i, j, k;
     
     // Final matrices Q and R
-    SPEX_matrix *Q, *R;
+    SPEX_matrix Q, R;
     
     // Allocate R. We are performing the Thin REF QR factorization so 
     // R is n*n

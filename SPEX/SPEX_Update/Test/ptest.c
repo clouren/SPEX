@@ -101,11 +101,11 @@ int main( int argc, char* argv[])
     double t1 = 0, t2 = 0, t3 = 0, t_solve = 0;
     double z0 = 0;
     SPEX_options* option = NULL;
-    SPEX_matrix *Prob_A = NULL, *Prob_c = NULL, *tempA = NULL, * b_dbl = NULL;
-    SPEX_matrix *A_CSC = NULL, *x1 = NULL, *A_DCSC = NULL;
-    SPEX_matrix *b = NULL, *c = NULL,  *basic_sol = NULL, *y = NULL,
-                *c_new = NULL, *y_sol = NULL;
-    SPEX_matrix *vk = NULL;
+    SPEX_matrix Prob_A = NULL, Prob_c = NULL, tempA = NULL, b_dbl = NULL;
+    SPEX_matrix A_CSC = NULL, x1 = NULL, A_DCSC = NULL;
+    SPEX_matrix b = NULL, c = NULL,  basic_sol = NULL, y = NULL,
+                c_new = NULL, y_sol = NULL;
+    SPEX_matrix vk = NULL;
     SPEX_factorization *F1 = NULL, *F2 = NULL;
     mpz_t tmpz;
     mpq_t obj, minq, maxq, tmpq1, tmpq2;

@@ -41,11 +41,11 @@
 SPEX_info spex_update_solve_internal
 (
     // Output
-    SPEX_matrix **x_handle, // a m*n dense matrix contains the solution to
+    SPEX_matrix *x_handle, // a m*n dense matrix contains the solution to
                             // the system.
     // input:
     SPEX_factorization *F,  // The SPEX LU or Cholesky factorization
-    const SPEX_matrix *b,   // a m*n dense matrix contains the right-hand-side
+    const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
     const bool transpose,   // whether computing Ax=b or ATx=b
     const SPEX_options* option // Command options
@@ -75,12 +75,12 @@ SPEX_info spex_update_solve_internal
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *L, *UT, *rhos = F->rhos;
+    SPEX_matrix L, UT, rhos = F->rhos;
     int64_t *P, *Q_inv;
     int64_t i, j, n = F->L->n;
     int64_t *h = NULL;                   // history vector
     SPEX_vector *v = NULL;               // temp mpz vector 
-    SPEX_matrix *x = NULL;               // final solution
+    SPEX_matrix x = NULL;               // final solution
 
     if (F->kind == SPEX_CHOLESKY_FACTORIZATION)
     {

@@ -42,7 +42,7 @@ SPEX_info spex_cholesky_preorder
                                         // row/column permutation and its
                                         // inverse.
     // Input
-    const SPEX_matrix* A,               // Input matrix
+    const SPEX_matrix A,               // Input matrix
     const SPEX_options* option          // Control parameters (use default if NULL)
 )
 {

@@ -30,7 +30,7 @@
 
 SPEX_info SPEX_matrix_allocate
 (
-    SPEX_matrix **A_handle, // matrix to allocate
+    SPEX_matrix *A_handle, // matrix to allocate
     SPEX_kind kind,         // CSC, triplet, dense, dynamic_CSC
     SPEX_type type,         // mpz, mpq, mpfr, int64, or double
     int64_t m,              // # of rows
@@ -75,7 +75,7 @@ SPEX_info SPEX_matrix_allocate
     // allocate the header
     //--------------------------------------------------------------------------
 
-    SPEX_matrix *A = (SPEX_matrix *) SPEX_calloc (1, sizeof (SPEX_matrix)) ;
+    SPEX_matrix A = (SPEX_matrix) SPEX_calloc (1, sizeof (SPEX_matrix_struct)) ;
     if (A == NULL)
     {
         return (SPEX_OUT_OF_MEMORY) ;

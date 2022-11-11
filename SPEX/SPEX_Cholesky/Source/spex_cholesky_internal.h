@@ -42,7 +42,7 @@ SPEX_info spex_cholesky_etree
     int64_t** tree_handle,      // On output: contains the elimination tree of A
                                 // On input: undefined.
     // Input
-    const SPEX_matrix* A        // Input matrix (must be SPD)
+    const SPEX_matrix A        // Input matrix (must be SPD)
 );
 
 /* Purpose: post order a forest */
@@ -96,7 +96,7 @@ SPEX_info spex_cholesky_counts
     int64_t** c_handle,     // On ouptut: column counts
                             // On input: undefined
     // Input
-    const SPEX_matrix *A,   // Input matrix
+    const SPEX_matrix A,   // Input matrix
     const int64_t* parent,  // Elimination tree
     const int64_t* post     // Post-order of the tree
 );
@@ -122,7 +122,7 @@ SPEX_info spex_cholesky_ereach
                             // xi[top..n-1]
                             // On input: undefined
     // Input
-    const SPEX_matrix* A,   // Matrix to be analyzed
+    const SPEX_matrix A,   // Matrix to be analyzed
     const int64_t k,        // Node to start at
     const int64_t* parent,  // Elimination tree of A
     int64_t* w              // Workspace array
@@ -140,13 +140,13 @@ SPEX_info spex_cholesky_ereach
 SPEX_info spex_cholesky_up_factor
 (
     // Output
-    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
-    SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
+    SPEX_matrix* L_handle,    // Lower triangular matrix. NULL on input.
+    SPEX_matrix* rhos_handle, // Sequence of pivots. NULL on input.
     // Input
     const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    const SPEX_matrix* A,      // Matrix to be factored
+    const SPEX_matrix A,      // Matrix to be factored
     const SPEX_options* option // command options
 );
 
@@ -154,13 +154,13 @@ SPEX_info spex_cholesky_up_factor
 SPEX_info spex_cholesky_left_factor
 (
     // Output
-    SPEX_matrix** L_handle,    // Lower triangular matrix. NULL on input.
-    SPEX_matrix** rhos_handle, // Sequence of pivots. NULL on input.
+    SPEX_matrix* L_handle,    // Lower triangular matrix. NULL on input.
+    SPEX_matrix* rhos_handle, // Sequence of pivots. NULL on input.
     // Input
     const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    const SPEX_matrix* A,      // Matrix to be factored
+    const SPEX_matrix A,      // Matrix to be factored
     const SPEX_options* option // command options
 );
 
@@ -173,11 +173,11 @@ SPEX_info spex_cholesky_left_factor
 SPEX_info spex_cholesky_pre_left_factor
 (
     // Output
-    SPEX_matrix** L_handle,       // On output: partial L matrix
+    SPEX_matrix* L_handle,       // On output: partial L matrix
                                   // On input: undefined
     // Input
     int64_t* xi,                  // Workspace nonzero pattern vector
-    const SPEX_matrix* A,         // Input Matrix
+    const SPEX_matrix A,         // Input Matrix
     const SPEX_symbolic_analysis* S // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
@@ -194,16 +194,16 @@ SPEX_info spex_cholesky_left_triangular_solve
                              // L(:,k). The nonzero pattern is contained in
                              // xi[top_output...n-1]
                              // On input: undefined
-    SPEX_matrix* x,          // On output: Solution of LD x = A(:,k) ==> kth row
+    SPEX_matrix x,          // On output: Solution of LD x = A(:,k) ==> kth row
                              // of L but really, the ONLY valid values of x are
                              // those in x[xi] since x is a working vector its
                              // other positions are jumbled.
     int64_t* xi,             // On output: Nonzero pattern vector
     // Input
-    const SPEX_matrix* L,    // Partial L matrix
-    const SPEX_matrix* A,    // Input matrix
+    const SPEX_matrix L,    // Partial L matrix
+    const SPEX_matrix A,    // Input matrix
     const int64_t k,         // Iteration of algorithm
-    const SPEX_matrix* rhos, // Partial sequence of pivots
+    const SPEX_matrix rhos, // Partial sequence of pivots
     int64_t* h,              // History vector
     const int64_t* parent,   // Elimination tree
     int64_t* c               // Column pointers of L but they don't point to the
@@ -227,14 +227,14 @@ SPEX_info spex_cholesky_up_triangular_solve
                                        // The nonzero pattern is contained in
                                        // xi[top_output...n-1]
     int64_t* xi,                       // Nonzero pattern vector
-    SPEX_matrix* x,                    // Solution of system ==> kth row of L
+    SPEX_matrix x,                    // Solution of system ==> kth row of L
     // Input
-    const SPEX_matrix* L,              // Partial L matrix
-    const SPEX_matrix* A,              // Input matrix
+    const SPEX_matrix L,              // Partial L matrix
+    const SPEX_matrix A,              // Input matrix
     const int64_t k,                   // Iteration of algorithm
     const int64_t* parent,             // Elimination tree
     int64_t* c,                        // Column pointers
-    const SPEX_matrix* rhos,           // sequence of pivots
+    const SPEX_matrix rhos,           // sequence of pivots
     int64_t* h                         // History vector
 );
 
@@ -249,12 +249,12 @@ SPEX_info spex_cholesky_up_triangular_solve
 SPEX_info spex_cholesky_forward_sub
 (
     // Input/Output
-    SPEX_matrix* x,              // Right hand side matrix.
+    SPEX_matrix x,              // Right hand side matrix.
                                  // On input: contains b
                                  // On output: contains the solution of LD x = x
     // Input
-    const SPEX_matrix* L,        // REF Cholesky factor of A (lower triangular)
-    const SPEX_matrix* rhos      // Sequence of pivots used in factorization
+    const SPEX_matrix L,        // REF Cholesky factor of A (lower triangular)
+    const SPEX_matrix rhos      // Sequence of pivots used in factorization
 );
 
 /* Purpose: This solves the system L'x = b for Cholesky factorization
@@ -265,12 +265,12 @@ SPEX_info spex_cholesky_forward_sub
 SPEX_info spex_cholesky_backward_sub
 (
     // Input/Output
-    SPEX_matrix* x,         // Solution vector
+    SPEX_matrix x,         // Solution vector
                             // On input: scaled solution of LD x = b
                             // On output: solution to the linear system
                             // Ax = (det A)b
     // Input
-    const SPEX_matrix* L    // REF Cholesky factor of A
+    const SPEX_matrix L    // REF Cholesky factor of A
 );
 
 /* Purpose: Matrix preordering for integer-preserving Cholesky factorization.
@@ -286,7 +286,7 @@ SPEX_info spex_cholesky_preorder
                                     // row/column permutation and its
                                     // inverse.
     // Input
-    const SPEX_matrix* A,           // Input matrix
+    const SPEX_matrix A,           // Input matrix
     const SPEX_options* option      // Control parameters (use default if NULL)
 );
 
@@ -297,10 +297,10 @@ SPEX_info spex_cholesky_preorder
 SPEX_info spex_cholesky_permute_A
 (
     //Output
-    SPEX_matrix** PAP_handle,  // On input: undefined
+    SPEX_matrix* PAP_handle,  // On input: undefined
                                // On output: contains the permuted matrix
     //Input
-    const SPEX_matrix* A,      // Input matrix
+    const SPEX_matrix A,      // Input matrix
     const bool numeric,        // True if user wants to permute pattern and
                                // numbers, false if only pattern
     const SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains
@@ -318,7 +318,7 @@ SPEX_info spex_cholesky_symbolic_analysis
                                // On output: contains elimination tree
 
     //Input
-    const SPEX_matrix* A,      // Matrix to be analyzed
+    const SPEX_matrix A,      // Matrix to be analyzed
     const SPEX_options* option // command options
 );
 
@@ -340,7 +340,7 @@ SPEX_info spex_cholesky_factor
                                // elimination tree of A, column pointers of L,
                                // exact number of nonzeros of L and permutation
                                // used.
-    const SPEX_matrix* A,      // Matrix to be factored
+    const SPEX_matrix A,      // Matrix to be factored
     const SPEX_options* option // Command options
                                // Notably, option->algo indicates whether up
                                // looking factorization SPEX_CHOL_UP (default)

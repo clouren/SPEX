@@ -44,7 +44,7 @@ SPEX_info SPEX_cholesky_analyze
     // Output
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure
     // Input
-    const SPEX_matrix* A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
     const SPEX_options* option    // Command options (Default if NULL)
 )
 {
@@ -66,7 +66,7 @@ SPEX_info SPEX_cholesky_analyze
     SPEX_REQUIRE_KIND(A, SPEX_CSC);
 
     // Declare permuted matrix and S
-    SPEX_matrix* PAP = NULL;
+    SPEX_matrix PAP = NULL;
     SPEX_symbolic_analysis *S = NULL;
 
     //--------------------------------------------------------------------------
@@ -83,7 +83,7 @@ SPEX_info SPEX_cholesky_analyze
     // If the symmetry check fails, the appropriate error code is returned
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( SPEX_determine_symmetry((SPEX_matrix*)A, option) );
+    SPEX_CHECK( SPEX_determine_symmetry(A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the

@@ -221,7 +221,7 @@ SPEX_info SPEX_process_command_line //processes the command line
 
 SPEX_info SPEX_tripread
 (
-    SPEX_matrix **A_handle,      // Matrix to be constructed
+    SPEX_matrix *A_handle,      // Matrix to be constructed
     FILE* file,                  // file to read from (must already be open)
     SPEX_options* option         // Command options
 )
@@ -248,7 +248,7 @@ SPEX_info SPEX_tripread
 
     // Allocate memory for A
     // A is a triplet mpz_t matrix
-    SPEX_matrix* A = NULL;
+    SPEX_matrix A = NULL;
     info = SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_MPZ, m, n, nz,
         false, true, option);
     if (info != SPEX_OK)
@@ -293,7 +293,7 @@ SPEX_info SPEX_tripread
     // A now contains our input matrix in triplet format. We now
     // do a matrix copy to get it into CSC form
     // C is a copy of A which is CSC and mpz_t
-    SPEX_matrix* C = NULL;
+    SPEX_matrix C = NULL;
     SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
 
     // Free A, set A_handle
@@ -319,7 +319,7 @@ SPEX_info SPEX_tripread
 
 SPEX_info SPEX_tripread_double
 (
-    SPEX_matrix **A_handle,     // Matrix to be populated
+    SPEX_matrix *A_handle,     // Matrix to be populated
     FILE* file,                 // file to read from (must already be open)
     SPEX_options* option
 )
@@ -345,7 +345,7 @@ SPEX_info SPEX_tripread_double
     }
 
     // First, we create our A matrix which is triplet double
-    SPEX_matrix *A = NULL;
+    SPEX_matrix A = NULL;
     info = SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_FP64, m, n, nz,
         false, true, option);
     if (info != SPEX_OK)
@@ -388,7 +388,7 @@ SPEX_info SPEX_tripread_double
 
     // At this point, A is a double triplet matrix. We make a copy of it with C
 
-    SPEX_matrix* C = NULL;
+    SPEX_matrix C = NULL;
     SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
 
     // Success. Set A_handle = C and free A
@@ -408,7 +408,7 @@ SPEX_info SPEX_tripread_double
 
 SPEX_info SPEX_read_dense
 (
-    SPEX_matrix **b_handle, // Matrix to be constructed
+    SPEX_matrix *b_handle, // Matrix to be constructed
     FILE* file,             // file to read from (must already be open)
     SPEX_options* option
 )
@@ -431,7 +431,7 @@ SPEX_info SPEX_read_dense
     }
 
     // Now, we create our dense mpz_t matrix
-    SPEX_matrix* A = NULL;
+    SPEX_matrix A = NULL;
     info = SPEX_matrix_allocate(&A, SPEX_DENSE, SPEX_MPZ, nrows, ncols,
         nrows*ncols, false, true, option);
     if (info != SPEX_OK)
