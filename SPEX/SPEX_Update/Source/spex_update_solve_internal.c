@@ -79,7 +79,7 @@ SPEX_info spex_update_solve_internal
     int64_t *P, *Q_inv;
     int64_t i, j, n = F->L->n;
     int64_t *h = NULL;                   // history vector
-    SPEX_vector *v = NULL;               // temp mpz vector 
+    SPEX_vector v = NULL;               // temp mpz vector 
     SPEX_matrix x = NULL;               // final solution
 
     if (F->kind == SPEX_CHOLESKY_FACTORIZATION)
@@ -108,7 +108,7 @@ SPEX_info spex_update_solve_internal
     }
 
     // allocate space for v and initialize
-    v = (SPEX_vector*) SPEX_malloc(sizeof(SPEX_vector));
+    v = (SPEX_vector) SPEX_malloc(sizeof(SPEX_vector_struct));
     if (!v)   { return SPEX_OUT_OF_MEMORY; }
     v->x = NULL;
     v->i = NULL; // leave this NULL since v is dense

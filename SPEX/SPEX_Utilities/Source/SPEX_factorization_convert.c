@@ -96,7 +96,7 @@ SPEX_info SPEX_factorization_convert
 
     SPEX_matrix L = F->L, U = F->U;
     int64_t i, j, p, m = L->m, n = L->n, mp, nnz = 0;
-    SPEX_vector **Mv = NULL;
+    SPEX_vector *Mv = NULL;
     mpz_t *Mx = NULL;
     int64_t *rowcount = NULL, *Mp = NULL, *Mi = NULL;
 
@@ -166,7 +166,7 @@ SPEX_info SPEX_factorization_convert
         //----------------------------------------------------------------------
         // allocate an array of n vetors to construct the DYNAMIC_CSC MPZ matrix
         //----------------------------------------------------------------------
-        Mv = (SPEX_vector**) SPEX_calloc(n, sizeof(SPEX_vector*)); 
+        Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector)); 
         if (!Mv) 
         { 
             SPEX_FREE_ALL ;
@@ -238,7 +238,7 @@ SPEX_info SPEX_factorization_convert
             // allocate an array of n vetors to construct the DYNAMIC_CSC MPZ
             // matrix
             //------------------------------------------------------------------
-            Mv = (SPEX_vector**) SPEX_calloc(n, sizeof(SPEX_vector*)); 
+            Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector)); 
             if (!Mv) 
             { 
                 SPEX_FREE_ALL ;

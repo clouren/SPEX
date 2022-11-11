@@ -22,7 +22,7 @@
 
 SPEX_info spex_update_forward_sub // perform sparse forward substitution
 (
-    SPEX_vector *x,     // Input: the right-hand-side vector
+    SPEX_vector x,     // Input: the right-hand-side vector
                         // Output: solution x
     const SPEX_matrix L,  // matrix L
     const int64_t *P,   // row permutation

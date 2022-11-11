@@ -24,7 +24,7 @@
 SPEX_info spex_update_insert_new_entry
 (
     mpz_t vi,          // the entry to be inserted as i-th entry of v
-    SPEX_vector *v,   // the vector that would add new entry
+    SPEX_vector v,   // the vector that would add new entry
     mpq_t S,          // pending scale for v
     const int64_t i,   // the index of vi when inserted to v
     const SPEX_options *option

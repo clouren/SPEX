@@ -1068,7 +1068,7 @@ int main( int argc, char* argv[])
                     if (pretend_to_fail) {continue;}
 
                     // invalid v
-                    SPEX_vector **tmp_Lv = L->v;
+                    SPEX_vector *tmp_Lv = L->v;
                     L->v = NULL;
                     TEST_CHECK_FAILURE(SPEX_matrix_check(L, option),
                         SPEX_INCORRECT_INPUT);
@@ -1085,7 +1085,7 @@ int main( int argc, char* argv[])
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                     // fail SPEX_vector_allocate
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    SPEX_vector *tmpv = NULL;
+                    SPEX_vector tmpv = NULL;
                     TEST_CHECK_FAILURE(SPEX_vector_allocate(NULL, 1, option),
                         SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}

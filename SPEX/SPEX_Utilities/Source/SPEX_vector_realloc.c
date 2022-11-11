@@ -17,7 +17,7 @@
 
 SPEX_info SPEX_vector_realloc
 (
-    SPEX_vector* v,         // the vector to be expanded
+    SPEX_vector v,         // the vector to be expanded
     const int64_t new_size, // desired new size for v
     const SPEX_options *option
 )

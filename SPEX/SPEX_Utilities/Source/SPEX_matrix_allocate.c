@@ -111,7 +111,7 @@ SPEX_info SPEX_matrix_allocate
     if (kind == SPEX_DYNAMIC_CSC)
     {
         // make sure each A->v[] is initialized as NULL
-        A->v = (SPEX_vector**) SPEX_calloc(n, sizeof(SPEX_vector*)); 
+        A->v = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector)); 
         if (!(A->v)) 
         { 
             SPEX_FREE_ALL ;

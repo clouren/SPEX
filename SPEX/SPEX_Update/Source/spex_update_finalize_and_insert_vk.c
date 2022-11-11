@@ -20,7 +20,7 @@
 
 SPEX_info spex_update_finalize_and_insert_vk
 (
-    spex_scattered_vector *vk_dense, //scattered version of the solution for
+    spex_scattered_vector vk_dense, //scattered version of the solution for
                       // LDx=v using the first k-1 columns of L
     int64_t *h,       // history vector for vk_dense
     SPEX_matrix U,      // matrix U

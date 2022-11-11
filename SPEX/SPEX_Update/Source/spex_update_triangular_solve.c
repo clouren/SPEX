@@ -21,7 +21,7 @@
 
 SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
 (
-    spex_scattered_vector *sv_x,// the scattered version of solution for LDx=v,
+    spex_scattered_vector sv_x,// the scattered version of solution for LDx=v,
                         // using the first k-1 columns of L
     int64_t *x_top,     // P_inv[sv_x->i[0...(*x_top)]] <= (*last_update), that
                         // is, sv_x->i[0...(*x_top)] give the indices of all

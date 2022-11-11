@@ -20,7 +20,7 @@
 
 SPEX_info SPEX_vector_allocate
 (
-    SPEX_vector **v_handle,         // vector to be allocated
+    SPEX_vector *v_handle,         // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
     const SPEX_options *option
 )
@@ -33,7 +33,7 @@ SPEX_info SPEX_vector_allocate
     *v_handle = NULL;
 
     SPEX_info info;
-    SPEX_vector *v = (SPEX_vector*) SPEX_calloc(1, sizeof(SPEX_vector));
+    SPEX_vector v = (SPEX_vector) SPEX_calloc(1, sizeof(SPEX_vector_struct));
     if (!v)
     {
         return SPEX_OUT_OF_MEMORY;

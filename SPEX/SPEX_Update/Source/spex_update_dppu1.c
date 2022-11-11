@@ -42,8 +42,8 @@ SPEX_info spex_update_dppu1
     SPEX_matrix L,     // matrix L
     SPEX_matrix U,     // matrix U
     SPEX_matrix rhos,// array of scaled pivots
-    spex_scattered_vector *Lk_dense_col,// scattered column k of L
-    spex_scattered_vector *Uk_dense_row,// scattered column k of U
+    spex_scattered_vector Lk_dense_col,// scattered column k of L
+    spex_scattered_vector Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
     int64_t *h,      // allocated vector that can be used for history vector.
                      // All entries are maintained to be >= -1
@@ -62,7 +62,7 @@ SPEX_info spex_update_dppu1
     int64_t pk, ck, pks, cks, j, n = U->n;
     int64_t Qk = Q[k], Pk = P[k], Qks, Pks;
     mpz_t *sd = rhos->x.mpz;
-    SPEX_vector *v;
+    SPEX_vector v;
 
     mpq_t pending_scale;
     SPEX_MPQ_SET_NULL(pending_scale);

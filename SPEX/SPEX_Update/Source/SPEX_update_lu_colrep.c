@@ -93,8 +93,8 @@ SPEX_info SPEX_update_lu_colrep
         *Uci = NULL, *Ucx = NULL, *map = NULL;
     int64_t *P = F->P_perm, *P_inv = F->Pinv_perm, *Q = F->Q_perm,
         *Q_inv = F->Qinv_perm;
-    spex_scattered_vector *Lk_dense_col = NULL, *Uk_dense_row = NULL,
-        *vk_dense = NULL;
+    spex_scattered_vector Lk_dense_col = NULL, Uk_dense_row = NULL,
+        vk_dense = NULL;
     mpz_t *sd = rhos->x.mpz;
 #ifdef SPEX_DEBUG
     int64_t input_k = k;

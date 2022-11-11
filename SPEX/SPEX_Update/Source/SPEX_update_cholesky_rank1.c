@@ -84,7 +84,7 @@ SPEX_info SPEX_update_cholesky_rank1
     int sgn;
     int64_t i, j, p, n = L->n, w_top = 0;
     int64_t *h = NULL;
-    spex_scattered_vector *w_dense = NULL;
+    spex_scattered_vector w_dense = NULL;
     mpz_t *sd = F->rhos->x.mpz;
     mpq_t sd_ratio;// = sd_new/sd_old
     mpq_t tmpq, pending_scale;

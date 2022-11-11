@@ -41,8 +41,8 @@ SPEX_info spex_update_cppu
     SPEX_matrix L,     // matrix L
     SPEX_matrix U,     // matrix U
     SPEX_matrix rhos,// array of scaled pivots
-    spex_scattered_vector *Lk_dense_col,// scattered column k of L
-    spex_scattered_vector *Uk_dense_row,// scattered column k of U
+    spex_scattered_vector Lk_dense_col,// scattered column k of L
+    spex_scattered_vector Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
     int64_t *jnext,  // the index of first off-diag entry in row k of U
     int64_t *h,      // allocated vector that can be used for history vector.

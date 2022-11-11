@@ -15,7 +15,7 @@
 
 SPEX_info SPEX_vector_free
 (
-    SPEX_vector **v_handle,  // vector to be deleted
+    SPEX_vector *v_handle,  // vector to be deleted
     const SPEX_options *option
 )
 {

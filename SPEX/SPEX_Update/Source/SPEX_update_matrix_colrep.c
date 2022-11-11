@@ -34,7 +34,7 @@ SPEX_info SPEX_update_matrix_colrep// performs column replacement
         return SPEX_INCORRECT_INPUT;
     }
 
-    SPEX_vector *Vtmp = A->v[k];
+    SPEX_vector Vtmp = A->v[k];
     A->v[k] = vk->v[0];
     vk->v[0] = Vtmp;
     return SPEX_OK;

@@ -276,7 +276,10 @@ typedef struct
     mpq_t scale;  // a scale factor that has not applied to entries in this v.
                   // The real value of the k-th nonzero entry in the list should
                   // be computed as x[k]*scale. x[k]/den(scale) must be integer.
-} SPEX_vector;      // FIXME
+} SPEX_vector_struct ;
+
+// A SPEX_vector is a pointer to a SPEX_vector_struct
+typedef SPEX_vector_struct *SPEX_vector ;
 
 //------------------------------------------------------------------------------
 // SPEX_vector_allocate: allocate a SPEX_vector with nzmax entries
@@ -287,7 +290,7 @@ typedef struct
 
 SPEX_info SPEX_vector_allocate
 (
-    SPEX_vector **v_handle,         // vector to be allocated
+    SPEX_vector *v_handle,         // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
     const SPEX_options *option
 );
@@ -305,7 +308,7 @@ SPEX_info SPEX_vector_allocate
 
 SPEX_info SPEX_vector_realloc
 (
-    SPEX_vector* v,                 // the vector to be expanded
+    SPEX_vector v,                 // the vector to be expanded
     const int64_t new_size,         // desired new size for v
     const SPEX_options *option
 );
@@ -316,7 +319,7 @@ SPEX_info SPEX_vector_realloc
 
 SPEX_info SPEX_vector_free
 (
-    SPEX_vector **v_handle,                // vector to be deleted
+    SPEX_vector *v_handle,                // vector to be deleted
     const SPEX_options *option
 );
 
@@ -451,7 +454,7 @@ typedef struct
     // CSC, triplet and dense matrix.
     //--------------------------------------------------------------------------
 
-    SPEX_vector **v;    // If SPEX_DYNAMIC_CSC: array of size n, each entry of
+    SPEX_vector *v;     // If SPEX_DYNAMIC_CSC: array of size n, each entry of
                         // this array is a dynamic column vector.
                         // Neither A->v nor any vector A->v[j] are shallow.
 } SPEX_matrix_struct ;
