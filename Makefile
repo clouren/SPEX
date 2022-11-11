@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Makefile for all SPEX and its dependent packages
+# Makefile for all of SPEX and its dependent packages
 #-------------------------------------------------------------------------------
 
 # edit this variable to pass options to cmake:
@@ -72,8 +72,6 @@ purge:
 	- ( cd SuiteSparse_config && $(MAKE) purge )
 	- ( cd AMD && $(MAKE) purge )
 	- ( cd COLAMD && $(MAKE) purge )
-	- $(RM) MATLAB_Tools/*/*.mex* MATLAB_Tools/*/*/*.mex*
-	- $(RM) MATLAB_Tools/*/*.o    MATLAB_Tools/*/*/*.o
 	- $(RM) -r include/* bin/* lib/*
 	- ( cd SPEX && $(MAKE) purge )
 
