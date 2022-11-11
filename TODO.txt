@@ -21,10 +21,7 @@ Erick:
     copyright dates (wait for Chris to ask USNA)
 
 Tim:
-    use cmake
-    FindGMP.cmake
-    FindMPFR.cmake
-    FindSPEX.cmake
+    cleanup cmake
     (SPEX_matrix *)
 
 in parallel:
