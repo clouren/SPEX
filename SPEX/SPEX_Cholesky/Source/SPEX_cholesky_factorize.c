@@ -59,7 +59,7 @@ SPEX_info SPEX_cholesky_factorize
                                     // pointers of L, and the exact number of
                                     // nonzeros of L.
 
-    const SPEX_options* option      // command options.
+    const SPEX_options option      // command options.
                                     // Notably, option->chol_type indicates
                                     // whether CHOL_UP (default) or CHOL_LEFT
                                     // is used.

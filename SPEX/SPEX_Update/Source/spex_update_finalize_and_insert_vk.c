@@ -30,7 +30,7 @@ SPEX_info spex_update_finalize_and_insert_vk
     const int64_t *P_inv,// inverse of row permutation
     const int64_t k,  // the column index in L that vk_dense will be inserted
     const int64_t diag,// the index of entry in vk_dense that will be diagonal
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     SPEX_info info;

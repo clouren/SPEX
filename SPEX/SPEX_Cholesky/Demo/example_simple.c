@@ -65,7 +65,7 @@ int main (int argc, char **argv)
     SPEX_matrix b = NULL ;                     // Right hand side vector
     SPEX_matrix x = NULL ;                     // Solution vectors
     SPEX_matrix x2 = NULL ;                     // copy of solution vectors
-    SPEX_options* option = NULL;
+    SPEX_options option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     if (option == NULL)
     {

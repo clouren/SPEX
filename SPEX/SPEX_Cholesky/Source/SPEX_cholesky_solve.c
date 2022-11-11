@@ -54,7 +54,7 @@ SPEX_info SPEX_cholesky_solve
                                 // non-updatable, it is not modified.
     // input:
     const SPEX_matrix b,       // Right hand side vector
-    const SPEX_options* option  // command options
+    const SPEX_options option  // command options
 )
 {
     SPEX_info info;

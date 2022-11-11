@@ -38,7 +38,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
     SPEX_factorization *F,  // The SPEX LU or Cholesky factorization of A
     const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {
     return spex_update_solve_internal(x_handle, F, b, true, option);

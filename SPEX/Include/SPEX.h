@@ -227,7 +227,7 @@ SPEX_factorization_algorithm ;
 
 // This struct serves as a global struct to define all user-selectable options.
 
-typedef struct SPEX_options
+typedef struct
 {
     SPEX_pivot pivot ;     // row pivoting scheme used.
     SPEX_preorder order ;  // column ordering scheme used
@@ -240,12 +240,15 @@ typedef struct SPEX_options
     mpfr_rnd_t round ;     // Type of MPFR rounding used
     SPEX_factorization_algorithm algo ; // parameter which tells the function
                            // which factorization algorithm to use
-} SPEX_options ;     // FIXME
+} SPEX_options_struct ;
+
+// A SPEX_options object is a pointer to a SPEX_options_struct
+typedef SPEX_options_struct *SPEX_options ;
 
 // Purpose: Create SPEX_options object with default parameters
 // upon successful allocation, which are defined in SPEX_util_nternal.h
 // To free it, simply use SPEX_FREE (*option).
-SPEX_info SPEX_create_default_options (SPEX_options **option_handle) ;
+SPEX_info SPEX_create_default_options (SPEX_options *option_handle) ;
 
 //------------------------------------------------------------------------------
 // SPEX_vector: a compressed sparse vector data structure used to form
@@ -292,7 +295,7 @@ SPEX_info SPEX_vector_allocate
 (
     SPEX_vector *v_handle,         // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
-    const SPEX_options *option
+    const SPEX_options option
 );
 
 //------------------------------------------------------------------------------
@@ -310,7 +313,7 @@ SPEX_info SPEX_vector_realloc
 (
     SPEX_vector v,                 // the vector to be expanded
     const int64_t new_size,         // desired new size for v
-    const SPEX_options *option
+    const SPEX_options option
 );
 
 //------------------------------------------------------------------------------
@@ -320,7 +323,7 @@ SPEX_info SPEX_vector_realloc
 SPEX_info SPEX_vector_free
 (
     SPEX_vector *v_handle,                // vector to be deleted
-    const SPEX_options *option
+    const SPEX_options option
 );
 
 //------------------------------------------------------------------------------
@@ -508,7 +511,7 @@ SPEX_info SPEX_matrix_allocate
                             // allocated but not initialized. Meaningless for
                             // data types FP64 or INT64. Ignored if kind is
                             // SPEX_DYNAMIC_CSC or shallow is true.
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -518,7 +521,7 @@ SPEX_info SPEX_matrix_allocate
 SPEX_info SPEX_matrix_free
 (
     SPEX_matrix *A_handle, // matrix to free
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -529,7 +532,7 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 (
     int64_t *nnz,              // # of entries in A, -1 if A is NULL
     const SPEX_matrix A,      // matrix to query
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -539,7 +542,7 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 SPEX_info SPEX_matrix_check     // returns a SPEX status code
 (
     const SPEX_matrix A,       // matrix to check
-    const SPEX_options* option  // defines the print level
+    const SPEX_options option  // defines the print level
 ) ;
 
 //------------------------------------------------------------------------------
@@ -561,7 +564,7 @@ SPEX_info SPEX_matrix_copy
     SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
     const SPEX_matrix A,   // matrix to make a copy of (may be shallow)
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 
@@ -638,7 +641,7 @@ typedef struct
 SPEX_info SPEX_symbolic_analysis_free        
 (
     SPEX_symbolic_analysis **S_handle, // Structure to be deleted
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 
@@ -733,7 +736,7 @@ typedef struct
 SPEX_info SPEX_factorization_free        
 (
     SPEX_factorization **F_handle, // Factorization to be deleted
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -755,7 +758,7 @@ SPEX_info SPEX_factorization_free
 SPEX_info SPEX_factorization_check
 (
     SPEX_factorization *F, // The factorization to check / print
-    const SPEX_options* option
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -806,7 +809,7 @@ SPEX_info SPEX_factorization_convert
 (
     SPEX_factorization *F, // The factorization to be converted
     bool updatable, // if true, make F updatable. false: make non-updatable
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 ) ;
 
 
@@ -915,7 +918,7 @@ SPEX_info SPEX_transpose
 (
     SPEX_matrix *C_handle,     // C = A'
     SPEX_matrix A,             // Matrix to be transposed
-    const SPEX_options *option
+    const SPEX_options option
 );
 
 // Purpose: Determine if the input A is *numerically* (thus pattern-wise)
@@ -927,7 +930,7 @@ SPEX_info SPEX_transpose
 SPEX_info SPEX_determine_symmetry
 (
     const SPEX_matrix A,            // Input matrix to be checked for symmetry
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 );
 
 //------------------------------------------------------------------------------
@@ -1214,7 +1217,7 @@ SPEX_info SPEX_lu_backslash
     const SPEX_matrix A,         // Input matrix, must be static CSC MPZ
     const SPEX_matrix b,         // Right hand side matrix that might contain
                                   // multiple columns, must be dense MPZ
-    const SPEX_options* option
+    const SPEX_options option
 ) ;
 
 SPEX_info SPEX_lu_analyze
@@ -1224,7 +1227,7 @@ SPEX_info SPEX_lu_analyze
                                   // column perm. and nnz of L and U
     // input:
     const SPEX_matrix A,         // Input matrix, must be static CSC
-    const SPEX_options *option    // Control parameters, if NULL, use default
+    const SPEX_options option    // Control parameters, if NULL, use default
 );
 
 SPEX_info SPEX_lu_factorize
@@ -1234,7 +1237,7 @@ SPEX_info SPEX_lu_factorize
     // input:
     const SPEX_matrix A,         // matrix to be factorized, must be CSC MPZ
     const SPEX_symbolic_analysis *S, // symbolic analysis
-    const SPEX_options* option    // command options
+    const SPEX_options option    // command options
 );
 
 // solves the linear system Ax = b via LU factorization
@@ -1251,7 +1254,7 @@ SPEX_info SPEX_lu_solve
     // input:
     const SPEX_matrix b,         // Right hand side matrix that might contain
                                   // multiple columns, must be dense MPZ
-    const SPEX_options* option    // Command options
+    const SPEX_options option    // Command options
 );
 
 //------------------------------------------------------------------------------
@@ -1362,7 +1365,7 @@ SPEX_info SPEX_cholesky_backslash
     const SPEX_matrix A,         // Input matrix, must be static CSC MPZ
     const SPEX_matrix b,         // Right hand side matrix that might contain
                                   // multiple columns, must be dense MPZ
-    const SPEX_options* option    // Command options
+    const SPEX_options option    // Command options
 );
 
 SPEX_info SPEX_cholesky_analyze
@@ -1371,7 +1374,7 @@ SPEX_info SPEX_cholesky_analyze
     SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure 
     // Input
     const SPEX_matrix A,         // Input matrix, must be static CSC
-    const SPEX_options* option    // Command options
+    const SPEX_options option    // Command options
 );
 
 SPEX_info SPEX_cholesky_factorize
@@ -1383,7 +1386,7 @@ SPEX_info SPEX_cholesky_factorize
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
                                   // elimination tree of A, the column pointers
                                   // of L, and the exact number of nnz of L.
-    const SPEX_options* option    // command options
+    const SPEX_options option    // command options
                                   // Notably, option->algo indicates whether
                                   // CHOL_UP (default) or CHOL_LEFT is used.
 );
@@ -1413,7 +1416,7 @@ SPEX_info SPEX_cholesky_solve
     // input:
     const SPEX_matrix b,         // Right hand side matrix that might contain
                                   // multiple columns, must be dense MPZ
-    const SPEX_options* option    // command options
+    const SPEX_options option    // command options
 );
 
 //------------------------------------------------------------------------------
@@ -1477,7 +1480,7 @@ SPEX_info SPEX_update_lu_colrep
                             // This matrix remains unchanged on output.
     int64_t k,              // The column index of A that vk will be inserted,
                             // 0 <= k < n.
-    const SPEX_options *option// Command parameters
+    const SPEX_options option// Command parameters
 );
 
 
@@ -1495,7 +1498,7 @@ SPEX_info SPEX_update_matrix_colrep// performs column replacement
     // Input:
     int64_t k,              // The column index of A that vk will be inserted,
                             // 0 <= k < m.
-    const SPEX_options *option// Command parameters
+    const SPEX_options option// Command parameters
 );
 
 //------------------------------------------------------------------------------
@@ -1532,7 +1535,7 @@ SPEX_info SPEX_update_cholesky_rank1
     const int64_t sigma,    // a nonzero scalar that determines whether
                             // this is an update (sigma > 0) or downdate
                             // (sigma < 0).
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 );
 
 //------------------------------------------------------------------------------
@@ -1554,7 +1557,7 @@ SPEX_info SPEX_update_solve
     // input:
     const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 );
 
 
@@ -1577,7 +1580,7 @@ SPEX_info SPEX_update_tsolve
     // input:
     const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 );
 
 
@@ -1616,7 +1619,7 @@ SPEX_info SPEX_backslash
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix A,         // Input matrix
     const SPEX_matrix b,         // Right hand side vector(s)
-    SPEX_options* option          // Command options
+    SPEX_options option          // Command options
 );
 
 #endif

@@ -24,7 +24,7 @@ SPEX_info SPEX_transpose
 (
     SPEX_matrix *C_handle,     // C = A'
     SPEX_matrix A,             // Matrix to be transposed
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     SPEX_info info;

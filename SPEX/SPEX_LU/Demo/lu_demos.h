@@ -28,7 +28,7 @@ SPEX_info SPEX_process_command_line //processes the command line
 (
     int argc,               // number of command line arguments
     char* argv[],           // set of command line arguments
-    SPEX_options* option,   // struct containing the command options
+    SPEX_options option,   // struct containing the command options
     char** mat_name,        // Name of the matrix to be read in
     char** rhs_name,        // Name of the RHS vector to be read in
     SPEX_type *rat          // data type of output solution:
@@ -38,7 +38,7 @@ SPEX_info SPEX_process_command_line //processes the command line
 /* Purpose: This function prints out the user specified/default options*/
 void SPEX_print_options     // display specified/default options to user
 (
-    SPEX_options* option // struct containing all of the options
+    SPEX_options option // struct containing all of the options
 );
 
 /* Purpose: This function shows the usage of the code.*/
@@ -51,7 +51,7 @@ SPEX_info SPEX_tripread
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE* file,                 // file to read from (must already be open)
-    SPEX_options* option
+    SPEX_options option
 ) ;
 
 /* Purpose: This function reads in a double matrix stored in a triplet format.
@@ -61,7 +61,7 @@ SPEX_info SPEX_tripread_double
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE* file,                 // file to read from (must already be open)
-    SPEX_options* option
+    SPEX_options option
 ) ;
 
 /* Purpose: SPEX_read_dense: read a dense matrix. */
@@ -69,5 +69,5 @@ SPEX_info SPEX_read_dense
 (
     SPEX_matrix *b_handle,      // Matrix to be constructed
     FILE* file,                  // file to read from (must already be open)
-    SPEX_options* option
+    SPEX_options option
 ) ;

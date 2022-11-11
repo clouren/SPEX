@@ -24,7 +24,7 @@ SPEX_info spex_expand_mpq_array
     mpq_t* x,            // mpq array that needs to be converted
     mpq_t scale,         // scaling factor. x_out = scale*x
     int64_t n,           // size of x
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {
 

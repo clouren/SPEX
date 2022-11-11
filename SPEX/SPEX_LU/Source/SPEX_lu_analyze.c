@@ -34,7 +34,7 @@ SPEX_info SPEX_lu_analyze
     SPEX_symbolic_analysis** S_handle, // symbolic analysis including
                                  // column perm. and nnz of L and U
     const SPEX_matrix A,        // Input matrix
-    const SPEX_options *option   // Control parameters, if NULL, use default
+    const SPEX_options option   // Control parameters, if NULL, use default
 )
 {
     //--------------------------------------------------------------------------

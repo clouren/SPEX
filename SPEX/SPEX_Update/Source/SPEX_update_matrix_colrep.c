@@ -24,7 +24,7 @@ SPEX_info SPEX_update_matrix_colrep// performs column replacement
                             // the column vector to replace the k-th column of A
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
     int64_t k,              // The column index that vk will be inserted, 0<=k<n
-    const SPEX_options *option// Command parameters
+    const SPEX_options option// Command parameters
 )
 {
     SPEX_REQUIRE(A , SPEX_DYNAMIC_CSC, SPEX_MPZ);

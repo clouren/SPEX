@@ -31,7 +31,7 @@ SPEX_info SPEX_cholesky_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char* argv[],           // set of command line arguments
-    SPEX_options* option,   // struct containing the command options
+    SPEX_options option,   // struct containing the command options
     char** mat_name,        // Name of the matrix to be read in
     char** rhs_name,        // Name of the RHS vector to be read in
     int64_t *rat            // data type of output solution.
@@ -161,7 +161,7 @@ SPEX_info SPEX_tripread_double
 (
     SPEX_matrix *A_handle,     // Matrix to be populated
     FILE* file,                 // file to read from (must already be open)
-    SPEX_options* option        // Command options
+    SPEX_options option        // Command options
 )
 {
     SPEX_info info ;
@@ -254,7 +254,7 @@ SPEX_info SPEX_read_dense
 (
     SPEX_matrix *b_handle, // Matrix to be constructed
     FILE* file,             // file to read from (must already be open)
-    SPEX_options* option
+    SPEX_options option
 )
 {
 
@@ -347,7 +347,7 @@ SPEX_info SPEX_check_solution
     const SPEX_matrix A,         // Input matrix
     const SPEX_matrix x,         // Solution vectors
     const SPEX_matrix b,         // Right hand side vectors
-    const SPEX_options* option    // Command options
+    const SPEX_options option    // Command options
 )
 {
     if (!SPEX_initialize ( )) return (SPEX_PANIC) ;

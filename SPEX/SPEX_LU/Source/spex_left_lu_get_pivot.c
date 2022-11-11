@@ -44,7 +44,7 @@ SPEX_info spex_left_lu_get_pivot
     int64_t* pinv,          // row permutation
     int64_t* row_perm,      // opposite of pinv.
                             // if pinv[i] = j then row_perm[j] = i
-    const SPEX_options* option // command options
+    const SPEX_options option // command options
 )
 {
 

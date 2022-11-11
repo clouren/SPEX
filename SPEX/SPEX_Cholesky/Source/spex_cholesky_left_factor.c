@@ -64,7 +64,7 @@ SPEX_info spex_cholesky_left_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options* option // command options
+    const SPEX_options option // command options
 )
 {
     //--------------------------------------------------------------------------

@@ -50,7 +50,7 @@ SPEX_info spex_update_dppu2
     int64_t *P_inv,  // inverse of row permutation
     const int64_t k,   // current column index 0 <= k < n
     const int64_t ks,  // index of the diagonal to be swapped with, [0,n)
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     // initialize workspace

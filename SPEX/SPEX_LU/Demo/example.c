@@ -51,7 +51,7 @@ int main (void)
     SPEX_matrix Rb = NULL;                     // Random matrix to create b
     SPEX_matrix b = NULL ;                     // Right hand side vector
     SPEX_matrix x = NULL ;                     // Solution vectors
-    SPEX_options *option = NULL;
+    SPEX_options option = NULL;
     OK(SPEX_create_default_options(&option));
 
     //--------------------------------------------------------------------------

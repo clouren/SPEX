@@ -46,7 +46,7 @@ SPEX_info SPEX_backslash
                                   // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix A,         // Input matrix
     const SPEX_matrix b,         // Right hand side vector(s)
-    SPEX_options* option          // Command options (NULL: means use defaults)
+    SPEX_options option          // Command options (NULL: means use defaults)
 )
 {
     SPEX_info info;
@@ -73,7 +73,7 @@ SPEX_info SPEX_backslash
     }
 
 
-    SPEX_options* backslash_options = NULL;
+    SPEX_options backslash_options = NULL;
     info = SPEX_create_default_options(&backslash_options);
     if (info != SPEX_OK)
     {

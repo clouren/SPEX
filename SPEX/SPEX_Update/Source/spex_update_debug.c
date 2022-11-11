@@ -39,7 +39,7 @@ SPEX_info spex_update_debug
     bool finish_update,   // if the update process has finished
     SPEX_matrix vk,      // inserted column
     SPEX_matrix A,       // Input matrix Dynamic_CSC MPZ
-    const SPEX_options *option// Command parameters
+    const SPEX_options option// Command parameters
 )
 {
     SPEX_info info = SPEX_OK;
@@ -50,7 +50,7 @@ SPEX_info spex_update_debug
     SPEX_matrix Atmp = NULL;
     SPEX_matrix UT = NULL;
     SPEX_factorization *Ftmp = NULL;
-    SPEX_options *opt1 = NULL;
+    SPEX_options opt1 = NULL;
     mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);
     mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
 

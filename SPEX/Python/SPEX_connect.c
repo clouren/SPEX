@@ -77,7 +77,7 @@ SPEX_info spex_python
     SPEX_matrix b = NULL;          //copy of input rhs in CSC MPZ 
     SPEX_matrix x = NULL;          //solution
     
-    SPEX_options *option = NULL;
+    SPEX_options option = NULL;
     SPEX_create_default_options(&option); 
     SPEX_preorder order_in = ordering;
     option->order = ordering; 

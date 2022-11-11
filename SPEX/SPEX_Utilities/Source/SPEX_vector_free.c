@@ -16,7 +16,7 @@
 SPEX_info SPEX_vector_free
 (
     SPEX_vector *v_handle,  // vector to be deleted
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;

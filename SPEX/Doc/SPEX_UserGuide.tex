@@ -579,7 +579,7 @@ component in the \verb|SPEX_options| structure described in Section
 %-------------------------------------------------------------------------------
 
 The \verb|SPEX_options| struct stores key command parameters for various
-functions used in the SPEX package. The \verb|SPEX_options* option| struct
+functions used in the SPEX package. The \verb|SPEX_options option| struct
 contains the following components:
 
 \begin{itemize}
@@ -677,7 +677,7 @@ function/macro name & description & section \\
 \begin{mdframed}[userdefinedwidth=6in]
 {\footnotesize
 \begin{verbatim}
-    SPEX_options* SPEX_create_default_options
+    SPEX_options SPEX_create_default_options
     (
         void
     ) ;
@@ -687,8 +687,8 @@ function/macro name & description & section \\
 \verb|SPEX_create_default_options| creates and returns a pointer to a
 \verb|SPEX_options| struct with default parameters upon successful allocation,
 which are discussed in Section \ref{ss:SPEX_options_struct}.  To safely free
-the \verb|SPEX_options* option| structure, simply use \newline \verb|SPEX_FREE(option)|.
-All functions that require \verb|SPEX_options *option| as an input argument can
+the \verb|SPEX_options option| structure, simply use \newline \verb|SPEX_FREE(option)|.
+All functions that require \verb|SPEX_options option| as an input argument can
 have a \verb'NULL' pointer passed instead. In this case, the default value of
 the corresponding command option is used. For example, if a \verb'NULL' pointer
 is passed to the symbolic analysis routines, COLAMD is used. As a result,
@@ -953,7 +953,7 @@ function name & description & section \\
                                 // appropriate SPEX_mp*_init function). If
                                 // false, the mpz, mpq, and mpfr arrays are
                                 // allocated but not initialized.
-        const SPEX_options *option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -987,7 +987,7 @@ Returns \verb|SPEX_PANIC| if SPEX has not been initialized.
     SPEX_info SPEX_matrix_free
     (
         SPEX_matrix *A_handle, // matrix to free
-        const SPEX_options *option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1014,7 +1014,7 @@ that could be caused by double \verb|free|.  If default settings are desired,
         SPEX_kind kind,         // CSC, triplet, or dense
         SPEX_type type,         // mpz_t, mpq_t, mpfr_t, int64_t, or fp64
         SPEX_matrix A,         // matrix to make a copy of (may be shallow)
-        const SPEX_options *option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1044,7 +1044,7 @@ Results are undefined for an invalid input matrix \verb|A|.  Returns
     (
         int64_t *nnz,
         const SPEX_matrix A,         // matrix to query
-        const SPEX_options *option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1067,7 +1067,7 @@ Returns \verb|SPEX_PANIC| if the SPEX working environment has not been initializ
     SPEX_info SPEX_matrix_check     // returns a SPEX status code
     (
         const SPEX_matrix A,       // matrix to check
-        const SPEX_options* option  // defines the print level
+        const SPEX_options option  // defines the print level
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1093,7 +1093,7 @@ SPEX_info SPEX_matrix_div // divides the x matrix by a scalar
     SPEX_matrix *x2_handle,    // x2 = x/scalar
     SPEX_matrix x,             // input vector x
     const mpz_t scalar,         // the scalar
-    const SPEX_options *option
+    const SPEX_options option
 );
 \end{verbatim}
 } \end{mdframed}
@@ -1182,7 +1182,7 @@ function/macro name & description & section \\
         SPEX_lu_analysis **S, // symbolic analysis (column permutation
                               // and nnz L,U)
         const SPEX_matrix A, // Input matrix
-        const SPEX_options *option  // Control parameters
+        const SPEX_options option  // Control parameters
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1215,7 +1215,7 @@ The analysis \verb|S| is freed by \verb|SPEX_lu_analysis_free|.
     SPEX_info SPEX_lu_analysis_free
     (
         SPEX_lu_analysis **S, // Structure to be deleted
-        const SPEX_options *option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1533,7 +1533,7 @@ SPEX_info SPEX_check_solution
     const SPEX_matrix A,         // Input matrix
     const SPEX_matrix x,         // Solution vectors
     const SPEX_matrix b,         // Right hand side vectors
-    const SPEX_options* option    // Command options
+    const SPEX_options option    // Command options
 );
 \end{verbatim}
 } \end{mdframed}
@@ -1680,7 +1680,7 @@ Macro & purpose \\
         const SPEX_matrix A,        // matrix to be factored
         const SPEX_lu_analysis *S,   // column permutation and estimates
                                      // of nnz in L and U 
-        const SPEX_options* option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1739,7 +1739,7 @@ returned as \verb|NULL|, and an error code will be returned correspondingly.
         const SPEX_matrix rhos,    // sequence of pivots
         const SPEX_lu_analysis *S,  // symbolic analysis struct
         const int64_t *pinv,        // inverse row permutation
-        const SPEX_options* option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1788,7 +1788,7 @@ been initialized.
                                       // or SPEX_FP64
         const SPEX_matrix A,         // Input matrix
         const SPEX_matrix b,         // Right hand side vector(s)
-        const SPEX_options* option
+        const SPEX_options option
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1886,7 +1886,7 @@ of the linear system $Ax=b$.
 \item \verb|SPEX_lu_analysis* S|: \verb|S| contains the column permutation used
 for $A$ as well as estimates of the number of nonzeros in $L$ and $U$.
 
-\item \verb|SPEX_options* option|: \verb|option| contains various control
+\item \verb|SPEX_options option|: \verb|option| contains various control
 options for the factorization including column ordering used, pivot selection
 scheme, and others. For a full list of the contents of the \verb|SPEX_options|
 structure, refer to Section \ref{ss:SPEX_options}.
@@ -1998,7 +1998,7 @@ Using SPEX in this form requires the intermediate variables be declared, such as
 
     // option needs no declaration if default setting is desired
     // only declare option for further modification on default setting
-    SPEX_options *option = SPEX_create_default_options();
+    SPEX_options option = SPEX_create_default_options();
      \end{verbatim} }
 
 %-------------------------------------------------------------------------------
@@ -2076,10 +2076,10 @@ with a call to \verb|SPEX_matrix_free(&A, NULL) ;|
 \item \verb|SPEX_lu_analysis*|: A \verb|SPEX_lu_analysis* S| data structure can
 be freed with a call to \verb|SPEX_lu_analysis_free(&S, NULL) ;|
 
-\item All others including \verb|SPEX_options*|: These data structures can be
+\item All others including \verb|SPEX_options|: These data structures can be
 freed with a call to the macro \verb|SPEX_FREE()|, for example,
 \verb|SPEX_FREE(option)| for \newline
-\verb|SPEX_options* option|.
+\verb|SPEX_options option|.
 
 \end{itemize}
 

@@ -50,7 +50,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
                             // it is not modified.
     // input:
     const SPEX_matrix b,   // right hand side vector
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {
 

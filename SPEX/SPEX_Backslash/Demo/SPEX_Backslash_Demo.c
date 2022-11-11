@@ -57,7 +57,7 @@ int main( int argc, char* argv[] )
     SPEX_matrix x = NULL;
     
     // Set default options
-    SPEX_options *option = NULL;
+    SPEX_options option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
     
     char* mat_name = "../../ExampleMats/10teams_mat.txt"; // Set demo matrix and RHS name

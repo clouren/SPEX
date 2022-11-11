@@ -147,7 +147,7 @@ SPEX_info spex_cholesky_up_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options* option // command options
+    const SPEX_options option // command options
 );
 
 /* Purpose: Perform the left-looking Cholesky factorization*/
@@ -161,7 +161,7 @@ SPEX_info spex_cholesky_left_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options* option // command options
+    const SPEX_options option // command options
 );
 
 /* Purpose: This function performs a symbolic left-looking factorization.
@@ -287,7 +287,7 @@ SPEX_info spex_cholesky_preorder
                                     // inverse.
     // Input
     const SPEX_matrix A,           // Input matrix
-    const SPEX_options* option      // Control parameters (use default if NULL)
+    const SPEX_options option      // Control parameters (use default if NULL)
 );
 
 /* Purpose: Permute the matrix A and return PAP = PAP'
@@ -319,7 +319,7 @@ SPEX_info spex_cholesky_symbolic_analysis
 
     //Input
     const SPEX_matrix A,      // Matrix to be analyzed
-    const SPEX_options* option // command options
+    const SPEX_options option // command options
 );
 
 /* Purpose: Compute the REF Cholesky factorization A = LDL'
@@ -341,7 +341,7 @@ SPEX_info spex_cholesky_factor
                                // exact number of nonzeros of L and permutation
                                // used.
     const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
                                // Notably, option->algo indicates whether up
                                // looking factorization SPEX_CHOL_UP (default)
                                // or left looking factorization SPEX_CHOL_LEFT

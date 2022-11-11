@@ -59,7 +59,7 @@ SPEX_info SPEX_cholesky_backslash
     const SPEX_matrix A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
     const SPEX_matrix b,         // Right hand side vector(s). Must be
                                   // SPEX_MPZ and SPEX_DENSE
-    const SPEX_options* option    // Command options (Default if NULL)
+    const SPEX_options option    // Command options (Default if NULL)
 )
 {
 

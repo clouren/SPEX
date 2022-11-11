@@ -37,7 +37,7 @@ int main()
     // Allocate memory
     //--------------------------------------------------------------------------
 
-    SPEX_options* option = NULL;
+    SPEX_options option = NULL;
     SPEX_factorization *F = NULL;
     SPEX_symbolic_analysis *S = NULL;
     SPEX_matrix A = NULL;

@@ -22,7 +22,7 @@ SPEX_info SPEX_vector_allocate
 (
     SPEX_vector *v_handle,         // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     if (!spex_initialized()) return (SPEX_PANIC);

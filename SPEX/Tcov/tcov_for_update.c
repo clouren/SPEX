@@ -177,7 +177,7 @@ int main( int argc, char* argv[])
                 // Allocate memory
                 //--------------------------------------------------------------
 
-                SPEX_options* option = NULL;
+                SPEX_options option = NULL;
                 SPEX_factorization *F = NULL;
                 SPEX_matrix A = NULL, tmpA = NULL, vk = NULL;
                 SPEX_matrix b = NULL, b_sol = NULL;

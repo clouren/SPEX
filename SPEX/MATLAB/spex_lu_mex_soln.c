@@ -62,7 +62,7 @@ void mexFunction
     // get the input options
     //--------------------------------------------------------------------------
 
-    SPEX_options *option = NULL;
+    SPEX_options option = NULL;
     SPEX_MEX_OK(SPEX_create_default_options(&option));
 
     spex_mex_options mexoptions ;

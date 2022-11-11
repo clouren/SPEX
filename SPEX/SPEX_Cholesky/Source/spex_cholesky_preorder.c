@@ -43,7 +43,7 @@ SPEX_info spex_cholesky_preorder
                                         // inverse.
     // Input
     const SPEX_matrix A,               // Input matrix
-    const SPEX_options* option          // Control parameters (use default if NULL)
+    const SPEX_options option          // Control parameters (use default if NULL)
 )
 {
 

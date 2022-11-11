@@ -116,7 +116,7 @@ int main (int argc, char* argv[])
     SPEX_info ok ;
     
     // Initialize option, command options for the factorization
-    SPEX_options *option = NULL;
+    SPEX_options option = NULL;
     OK(SPEX_create_default_options(&option));
     
     // Extra parameters used to obtain A, b, etc

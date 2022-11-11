@@ -19,8 +19,8 @@
 
 void spex_mex_get_matlab_options
 (
-    SPEX_options* option,           // Control parameters
-    spex_mex_options *mexoptions,   // MATLAB-specific options
+    SPEX_options option,           // Control parameters
+    spex_mex_options *mexoptions,   // MATLAB-specific options      FIXME
     const mxArray* input            // options struct, may be NULL
 )
 {

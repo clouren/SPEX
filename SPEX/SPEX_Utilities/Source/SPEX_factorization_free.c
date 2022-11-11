@@ -20,7 +20,7 @@
 SPEX_info SPEX_factorization_free
 (
     SPEX_factorization **F_handle, // Structure to be deleted
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     if (!spex_initialized ( )) return (SPEX_PANIC) ;

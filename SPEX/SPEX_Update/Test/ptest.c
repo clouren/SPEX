@@ -100,7 +100,7 @@ int main( int argc, char* argv[])
     int sgn;
     double t1 = 0, t2 = 0, t3 = 0, t_solve = 0;
     double z0 = 0;
-    SPEX_options* option = NULL;
+    SPEX_options option = NULL;
     SPEX_matrix Prob_A = NULL, Prob_c = NULL, tempA = NULL, b_dbl = NULL;
     SPEX_matrix A_CSC = NULL, x1 = NULL, A_DCSC = NULL;
     SPEX_matrix b = NULL, c = NULL,  basic_sol = NULL, y = NULL,

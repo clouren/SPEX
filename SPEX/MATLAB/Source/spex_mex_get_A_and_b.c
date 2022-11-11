@@ -17,7 +17,7 @@ void spex_mex_get_A_and_b
     SPEX_matrix *A_handle,     // Internal SPEX Mat stored in CSC
     SPEX_matrix *b_handle,     // mpz matrix used internally
     const mxArray* pargin[],    // The input A matrix and options
-    SPEX_options* option
+    SPEX_options option
 )
 {
 

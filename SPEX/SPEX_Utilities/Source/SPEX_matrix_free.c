@@ -15,7 +15,7 @@
 SPEX_info SPEX_matrix_free
 (
     SPEX_matrix *A_handle, // matrix to free
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
 

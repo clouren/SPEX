@@ -40,7 +40,7 @@ SPEX_info SPEX_matrix_copy
     SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic_CSC
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
     const SPEX_matrix A,         // matrix to make a copy of (may be shallow)
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
 

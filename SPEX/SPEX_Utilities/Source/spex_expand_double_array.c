@@ -32,7 +32,7 @@ SPEX_info spex_expand_double_array
     double* x,              // double array that needs to be made integral
     mpq_t scale,            // the scaling factor used (x_out = scale * x)
     int64_t n,              // size of x
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {
 

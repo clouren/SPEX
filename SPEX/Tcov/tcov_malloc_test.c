@@ -115,7 +115,7 @@ SPEX_info spex_check_solution
     const SPEX_matrix A,         // Input matrix of CSC MPZ
     const SPEX_matrix x,         // Solution vectors
     const SPEX_matrix b,         // Right hand side vectors
-    const SPEX_options* option    // Command options
+    const SPEX_options option    // Command options
 )
 {
     if (!spex_initialized ( )) return (SPEX_PANIC) ;

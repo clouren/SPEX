@@ -43,7 +43,7 @@ SPEX_info spex_update_get_scattered_v
     const int64_t *perm_inv,     // inverse of permutation applied on v.
                                  // This can be NULL if next == NULL.
     const bool keep_v,           // indicate if the mpz values should be kept
-    const SPEX_options *option   // command options
+    const SPEX_options option   // command options
 );
 
 
@@ -77,7 +77,7 @@ SPEX_info spex_update_cppu
     const int64_t k,             // current column index 0 <= k < n
     const int64_t ks,            // index of the diagonal to be swapped with,
                                  // k < ks <= n
-    const SPEX_options *option   // command options
+    const SPEX_options option   // command options
 );
 
 // perform diagonal permutation pivot update
@@ -100,7 +100,7 @@ SPEX_info spex_update_dppu1
     const int64_t k,             // current column index 0 <= k < n
     const int64_t ks,            // index of the diagonal to be swapped with,
                                  // k < ks <= n
-    const SPEX_options *option   // command options
+    const SPEX_options option   // command options
 );
 
 // perform diagonal permutation pivot update
@@ -123,7 +123,7 @@ SPEX_info spex_update_dppu2
     const int64_t k,             // current column index 0 <= k < n
     const int64_t ks,            // index of the diagonal to be swapped with,
                                  // k < ks <= n
-    const SPEX_options *option   // command options
+    const SPEX_options option   // command options
 );
 
 // perform history update for entries that would be in L and insert entries
@@ -142,7 +142,7 @@ SPEX_info spex_update_finalize_and_insert_vk
                                  // will be inserted
     const int64_t diag,          // the index of entry in vk_dense that
                                  // will be diagonal
-    const SPEX_options *option   // command options
+    const SPEX_options option   // command options
 );
 
 // insert an entry vi who has no pending scale to a scaled vector v, all
@@ -153,7 +153,7 @@ SPEX_info spex_update_insert_new_entry
     SPEX_vector v,    // the vector that would add new entry
     mpq_t S,           // pending scale for v1
     const int64_t i,   // the index of vi when inserted to v1
-    const SPEX_options *option// command options
+    const SPEX_options option// command options
 );
 
 // perform one iteration of IPGE and perform skipped any scaling process.
@@ -230,7 +230,7 @@ SPEX_info spex_update_solve_internal
     const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
     const bool transpose,   // whether computing Ax=b or ATx=b
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 );
 
 #ifdef SPEX_DEBUG
@@ -245,7 +245,7 @@ SPEX_info spex_update_debug
     bool finish_update,     // if the update process has finished
     SPEX_matrix vk,      // inserted column
     SPEX_matrix A,     // Input matrix of Dynamic_CSC MPZ
-    const SPEX_options *option// Command parameters
+    const SPEX_options option// Command parameters
 );
 
 SPEX_info spex_update_verify
@@ -253,7 +253,7 @@ SPEX_info spex_update_verify
     bool *Is_correct,     // if factorization is correct
     SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix A,     // Input matrix Dynamic_CSC MPZ
-    const SPEX_options *option// command options
+    const SPEX_options option// command options
 );
 #endif
 

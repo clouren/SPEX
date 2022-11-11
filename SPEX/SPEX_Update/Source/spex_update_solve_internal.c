@@ -48,7 +48,7 @@ SPEX_info spex_update_solve_internal
     const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
     const bool transpose,   // whether computing Ax=b or ATx=b
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {
 

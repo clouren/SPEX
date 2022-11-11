@@ -110,7 +110,7 @@ int main( int argc, char* argv[] )
     SPEX_matrix x_doub = NULL;
     
     // SPEX Options
-    SPEX_options *option = NULL;
+    SPEX_options option = NULL;
     SPEX_create_default_options(&option);
     if (!option)
     {

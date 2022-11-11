@@ -40,7 +40,7 @@ SPEX_info SPEX_lu_factorize
     // input:
     const SPEX_matrix A,      // matrix to be factored
     const SPEX_symbolic_analysis *S, // symbolic analysis
-    const SPEX_options* option // command options
+    const SPEX_options option // command options
 )
 {
 

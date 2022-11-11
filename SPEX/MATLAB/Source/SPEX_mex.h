@@ -92,7 +92,7 @@ void SPEX_gmp_mex_free
  */
 void spex_mex_get_matlab_options
 (
-    SPEX_options* option,           // Control parameters
+    SPEX_options option,           // Control parameters
     spex_mex_options *mexoptions,   // MATLAB-specific options
     const mxArray* input            // options struct, may be NULL
 ) ;
@@ -112,7 +112,7 @@ void spex_mex_get_A_and_b
     SPEX_matrix *A_handle,     // Internal SPEX Mat stored in CSC
     SPEX_matrix *b_handle,     // mpz matrix used internally
     const mxArray* pargin[],    // The input A matrix and options
-    SPEX_options* option
+    SPEX_options option
 ) ;
 
 /* Purpose: Report errors if they arise

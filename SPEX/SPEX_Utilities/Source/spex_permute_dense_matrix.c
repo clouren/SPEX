@@ -23,7 +23,7 @@ SPEX_info spex_permute_dense_matrix
     SPEX_matrix *A_handle,     // permuted A
     const SPEX_matrix A_in,    // unpermuted A (not modified)
     const int64_t *P,           // row permutation
-    const SPEX_options* option
+    const SPEX_options option
 )
 {
 

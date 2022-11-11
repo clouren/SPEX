@@ -16,7 +16,7 @@
 mpfr_t* spex_create_mpfr_array
 (
     int64_t n,           // size of the array
-    const SPEX_options *option // command options containing the prec for mpfr
+    const SPEX_options option // command options containing the prec for mpfr
 )
 {
 

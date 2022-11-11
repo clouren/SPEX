@@ -257,7 +257,7 @@ int main( int argc, char* argv[])
             SPEX_MPZ_SET_NULL(mpz3);*/
 
             int64_t n=4, numRHS=1, j, nz=11;
-            SPEX_options* option ;
+            SPEX_options option ;
 
             //------------------------------------------------------------------
             // Initialize SPEX Left LU process

@@ -27,7 +27,7 @@
 SPEX_info SPEX_determine_symmetry
 (
     const SPEX_matrix A,            // Input matrix to be checked for symmetry
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {    
     SPEX_info info;

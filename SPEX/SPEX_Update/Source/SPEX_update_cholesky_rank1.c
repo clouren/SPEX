@@ -51,7 +51,7 @@ SPEX_info SPEX_update_cholesky_rank1
     const int64_t sigma,    // a nonzero scalar that determines whether
                             // this is an update (sigma > 0) or downdate
                             // (sigma < 0).
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {
     //--------------------------------------------------------------------------

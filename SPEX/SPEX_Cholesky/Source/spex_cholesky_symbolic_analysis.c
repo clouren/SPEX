@@ -48,7 +48,7 @@ SPEX_info spex_cholesky_symbolic_analysis
     SPEX_symbolic_analysis* S, //Symbolic analysis
     //Input
     const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 )
 {
     SPEX_info info;

@@ -106,10 +106,10 @@ void create_test_rhs (SPEX_matrix *b_handle, int64_t n)
 }
 
 bool spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
-    SPEX_options *option) ;
+    SPEX_options option) ;
 
 bool spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
-    SPEX_options *option)
+    SPEX_options option)
 {
     SPEX_info info ;
     bool pretend_to_fail = false ;
@@ -137,9 +137,9 @@ bool spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     OK (SPEX_matrix_free (&x, option)) ;                \
 }
 
-bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options *option) ;
+bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option) ;
 
-bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options *option)
+bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
 {
     SPEX_info info ;
     bool pretend_to_fail = false ;
@@ -184,7 +184,7 @@ int main (int argc, char *argv [])
     SPEX_matrix A = NULL, b = NULL, x = NULL ;
     SPEX_symbolic_analysis *S = NULL ;
     SPEX_factorization *F = NULL ;
-    SPEX_options *option = NULL ;
+    SPEX_options option = NULL ;
     bool pretend_to_fail = false ;
 
     if (argc < 2)

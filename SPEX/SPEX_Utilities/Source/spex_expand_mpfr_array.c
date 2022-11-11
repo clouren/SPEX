@@ -38,7 +38,7 @@ SPEX_info spex_expand_mpfr_array
     mpfr_t* x,            // mpfr array to be expanded
     mpq_t scale,          // scaling factor used (x_out = scale*x)
     int64_t n,            // size of x
-    const SPEX_options *option  // command options containing the prec
+    const SPEX_options option  // command options containing the prec
                           // and rounding for mpfr
 )
 {

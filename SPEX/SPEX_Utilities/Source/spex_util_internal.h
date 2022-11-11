@@ -303,7 +303,7 @@ void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 mpfr_t* spex_create_mpfr_array
 (
     int64_t n,     // size of the array
-    const SPEX_options* option
+    const SPEX_options option
 );
 
 //------------------------------------------------------------------------------
@@ -366,7 +366,7 @@ SPEX_info spex_expand_double_array
     double* x,      // double array that needs to be made integral
     mpq_t scale,    // the scaling factor used (x_out = scale * x)
     int64_t n,      // size of x
-    const SPEX_options* option
+    const SPEX_options option
 );
 
 /* Purpose: This function converts a mpfr array of size n and precision prec to
@@ -380,7 +380,7 @@ SPEX_info spex_expand_mpfr_array
     mpfr_t* x,      // mpfr array to be expanded
     mpq_t scale,    // scaling factor used (x_out = scale*x)
     int64_t n,      // size of x
-    const SPEX_options *option // command options containing the prec for mpfr
+    const SPEX_options option // command options containing the prec for mpfr
 );
 
 /* Purpose: This function converts a mpq array of size n into an appropriate mpz
@@ -393,7 +393,7 @@ SPEX_info spex_expand_mpq_array
     mpq_t* x,     // mpq array that needs to be converted
     mpq_t scale,  // scaling factor. x_out = scale*x
     int64_t n,     // size of x
-    const SPEX_options* option // Command options
+    const SPEX_options option // Command options
 );
 
 /* Purpose: This function converts a mpq matrix of size m*n into an appropriate
@@ -441,7 +441,7 @@ SPEX_info spex_cast_array
     int64_t n,              // size of Y and X
     mpq_t y_scale,          // scale factor applied if y is mpz_t
     const mpq_t x_scale,          // scale factor applied if x is mpz_t
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 SPEX_info spex_cast_matrix
@@ -449,14 +449,14 @@ SPEX_info spex_cast_matrix
     SPEX_matrix *Y_handle,     // nz-by-1 dense matrix to create
     SPEX_type Y_type,           // type of Y
     const SPEX_matrix A,             // matrix with nz entries
-    const SPEX_options *option
+    const SPEX_options option
 ) ;
 
 SPEX_info spex_CSC_mpz_to_dynamic
 (
     SPEX_matrix *A_handle,       // converted SPEX_mat matrix
     const SPEX_matrix B,         // original matrix
-    const SPEX_options *option
+    const SPEX_options option
 );
 
 SPEX_info spex_dynamic_to_CSC_mpz
@@ -464,7 +464,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
     SPEX_matrix *A_handle,       // converted CSC matrix
     const SPEX_matrix B,         // original matrix
     const int64_t nnz,            // number of nonzeros in B
-    const SPEX_options *option
+    const SPEX_options option
 );
 
 
@@ -495,7 +495,7 @@ SPEX_info spex_permute_dense_matrix
     SPEX_matrix *A_handle,     // permuted A
     const SPEX_matrix A_in,    // unpermuted A (not modified)
     const int64_t *P,           // row permutation
-    const SPEX_options* option
+    const SPEX_options option
 );
 
 /* Purpose: This function multiplies matrix x a scalar
@@ -528,7 +528,7 @@ SPEX_info spex_colamd
     int64_t **perm_handle,
     int64_t *nnz,
     const SPEX_matrix A,
-    const SPEX_options* option
+    const SPEX_options option
 );
 
 SPEX_info spex_amd
@@ -536,7 +536,7 @@ SPEX_info spex_amd
     int64_t **perm_handle,
     int64_t *nnz,
     const SPEX_matrix A,
-    const SPEX_options* option
+    const SPEX_options option
 );
 
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type

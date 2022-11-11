@@ -41,7 +41,7 @@ SPEX_info spex_update_get_scattered_v
     const int64_t *perm_inv,     // inverse of permutation applied on v.
                                  // This can be NULL if next == NULL.
     const bool keep_v,           // indicate if the mpz values should be kept
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     *sv_handle = NULL;

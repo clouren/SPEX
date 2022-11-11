@@ -24,7 +24,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
     // input:
     const SPEX_matrix B,         // original matrix (not modified)
     const int64_t nnz,            // number of nonzeros in B
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     SPEX_REQUIRE (B, SPEX_DYNAMIC_CSC, SPEX_MPZ) ;

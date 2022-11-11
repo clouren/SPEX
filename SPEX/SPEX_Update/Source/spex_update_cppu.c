@@ -59,7 +59,7 @@ SPEX_info spex_update_cppu
     const int64_t Uc_ks_nz,// # of nnz in U(k+1:ks-1,Q[ks])
     const int64_t k, // current column index 0 <= k < n
     const int64_t ks,// index of the diagonal to be swapped with, [0,n)
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
 #ifdef SPEX_DEBUG

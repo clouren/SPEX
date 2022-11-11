@@ -47,7 +47,7 @@ SPEX_info SPEX_matrix_allocate
                             // the mpz, mpq, and mpfr arrays are malloced but
                             // not initialized. Utilized internally to reduce
                             // memory.  Ignored if shallow is true.
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
 

@@ -23,7 +23,7 @@ SPEX_info spex_CSC_mpz_to_dynamic
     SPEX_matrix *A_handle,      // converted SPEX_matrix of dynamic_CSC
     // input:
     const SPEX_matrix B,         // original matrix (unmodified)
-    const SPEX_options *option
+    const SPEX_options option
 )
 {
     SPEX_REQUIRE (B, SPEX_CSC, SPEX_MPZ) ;

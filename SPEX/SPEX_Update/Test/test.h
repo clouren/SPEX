@@ -112,7 +112,7 @@ SPEX_info SPEX_mmread
 (
     SPEX_matrix *A_handle,// handle of matrix to create
     FILE *f,             // file to read from, already open
-    SPEX_options *option
+    SPEX_options option
 );
 
 // read the remaining component (b, lb, ub and c) to finish constructing LP
@@ -124,7 +124,7 @@ SPEX_info SPEX_construct_LP
     SPEX_matrix *c_handle,
     double *z0_handle,
     char *file_name,
-    SPEX_options *option
+    SPEX_options option
 );
 
 
@@ -148,5 +148,5 @@ SPEX_info MY_update_verify
     bool *Is_correct,     // if the factorization is correct
     SPEX_factorization *F,// LU factorization of A
     const SPEX_matrix A,     // Input matrix
-    const SPEX_options *option// command options
+    const SPEX_options option// command options
 );

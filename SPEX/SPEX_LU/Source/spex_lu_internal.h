@@ -87,7 +87,7 @@ SPEX_info spex_left_lu_get_pivot
     SPEX_matrix rhos,   // vector of pivots
     int64_t* pinv,       // row permutation
     int64_t* row_perm,   // opposite of pinv. if pinv[i] = j then row_perm[j] = i
-    const SPEX_options *option // command option
+    const SPEX_options option // command option
 );
 
 /* Purpose: This function selects the pivot element as the largest in the

@@ -64,7 +64,7 @@ int compar (const void *x, const void *y)
 SPEX_info SPEX_matrix_check     // returns a SPEX status code
 (
     const SPEX_matrix A,     // matrix to check
-    const SPEX_options* option
+    const SPEX_options option
 )
 {
 
