@@ -46,7 +46,7 @@ SPEX_info spex_update_debug
     *Is_correct = true;
     int64_t n = F->L->n, *P = F->P_perm, *Q = F->Q_perm;
     int r;
-    SPEX_symbolic_analysis* Stmp = NULL;
+    SPEX_symbolic_analysis Stmp = NULL;
     SPEX_matrix Atmp = NULL;
     SPEX_matrix UT = NULL;
     SPEX_factorization Ftmp = NULL;
@@ -54,8 +54,8 @@ SPEX_info spex_update_debug
     mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);
     mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
 
-    Stmp = (SPEX_symbolic_analysis*) SPEX_calloc(1,
-        sizeof(SPEX_symbolic_analysis));
+    Stmp = (SPEX_symbolic_analysis) SPEX_calloc(1,
+        sizeof(SPEX_symbolic_analysis_struct));
     if (Stmp == NULL) {return SPEX_OUT_OF_MEMORY;}
     Stmp->kind = SPEX_LU_FACTORIZATION;
 

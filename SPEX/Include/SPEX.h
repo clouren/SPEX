@@ -631,8 +631,11 @@ typedef struct
     int64_t* cp;                    // column pointers of L for Cholesky
                                     // factorization.
 
-} SPEX_symbolic_analysis ;      // FIXME
+} SPEX_symbolic_analysis_struct ;
 
+// A SPEX_symbolic_analysis object is a pointer to a
+// SPEX_symbolic_analysis_struct
+typedef SPEX_symbolic_analysis_struct *SPEX_symbolic_analysis ;
 
 //------------------------------------------------------------------------------
 // SPEX_symbolic_analysis_free frees the SPEX_symbolic_analysis object.
@@ -640,7 +643,7 @@ typedef struct
 
 SPEX_info SPEX_symbolic_analysis_free        
 (
-    SPEX_symbolic_analysis **S_handle, // Structure to be deleted
+    SPEX_symbolic_analysis *S_handle, // Structure to be deleted
     const SPEX_options option
 ) ;
 
@@ -1226,7 +1229,7 @@ SPEX_info SPEX_lu_backslash
 SPEX_info SPEX_lu_analyze
 (
     // output:
-    SPEX_symbolic_analysis** S_handle, // symbolic analysis including
+    SPEX_symbolic_analysis* S_handle, // symbolic analysis including
                                   // column perm. and nnz of L and U
     // input:
     const SPEX_matrix A,         // Input matrix, must be static CSC
@@ -1239,7 +1242,7 @@ SPEX_info SPEX_lu_factorize
     SPEX_factorization *F_handle, // LU factorization
     // input:
     const SPEX_matrix A,         // matrix to be factorized, must be CSC MPZ
-    const SPEX_symbolic_analysis *S, // symbolic analysis
+    const SPEX_symbolic_analysis S, // symbolic analysis
     const SPEX_options option    // command options
 );
 
@@ -1374,7 +1377,7 @@ SPEX_info SPEX_cholesky_backslash
 SPEX_info SPEX_cholesky_analyze
 (
     // Output
-    SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure 
+    SPEX_symbolic_analysis* S_handle, // Symbolic analysis data structure 
     // Input
     const SPEX_matrix A,         // Input matrix, must be static CSC
     const SPEX_options option    // Command options
@@ -1386,7 +1389,7 @@ SPEX_info SPEX_cholesky_factorize
     SPEX_factorization *F_handle,// Cholesky factorization
     //Input
     const SPEX_matrix A,         // matrix to be factorized, must be CSC MPZ
-    const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S,// Symbolic analysis struct containing the
                                   // elimination tree of A, the column pointers
                                   // of L, and the exact number of nnz of L.
     const SPEX_options option    // command options

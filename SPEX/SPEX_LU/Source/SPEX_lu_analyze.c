@@ -31,7 +31,7 @@
 
 SPEX_info SPEX_lu_analyze
 (
-    SPEX_symbolic_analysis** S_handle, // symbolic analysis including
+    SPEX_symbolic_analysis* S_handle, // symbolic analysis including
                                  // column perm. and nnz of L and U
     const SPEX_matrix A,        // Input matrix
     const SPEX_options option   // Control parameters, if NULL, use default
@@ -57,15 +57,15 @@ SPEX_info SPEX_lu_analyze
     // allocate symbolic analysis object
     //--------------------------------------------------------------------------
 
-    SPEX_symbolic_analysis *S = NULL ;
+    SPEX_symbolic_analysis S = NULL ;
     int64_t i, n = A->n, anz;
     // SPEX enviroment is checked to be init'ed and A is checked to be not NULL
     // and a SPEX_CSC kind, so there shouldnt be any error from this function
     SPEX_matrix_nnz(&anz, A, option);
 
     // ALlocate memory for S
-    S = (SPEX_symbolic_analysis*) SPEX_calloc(1,
-        sizeof(SPEX_symbolic_analysis));
+    S = (SPEX_symbolic_analysis) SPEX_calloc(1,
+        sizeof(SPEX_symbolic_analysis_struct));
     if (S == NULL) {return SPEX_OUT_OF_MEMORY;}
     S->kind = SPEX_LU_FACTORIZATION;
 

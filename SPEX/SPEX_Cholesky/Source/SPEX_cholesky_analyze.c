@@ -42,7 +42,7 @@
 SPEX_info SPEX_cholesky_analyze
 (
     // Output
-    SPEX_symbolic_analysis** S_handle, // Symbolic analysis data structure
+    SPEX_symbolic_analysis* S_handle, // Symbolic analysis data structure
     // Input
     const SPEX_matrix A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
     const SPEX_options option    // Command options (Default if NULL)
@@ -67,7 +67,7 @@ SPEX_info SPEX_cholesky_analyze
 
     // Declare permuted matrix and S
     SPEX_matrix PAP = NULL;
-    SPEX_symbolic_analysis *S = NULL;
+    SPEX_symbolic_analysis S = NULL;
 
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of A (Default is AMD)

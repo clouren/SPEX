@@ -41,7 +41,7 @@ int main (int argc, char* argv[])
     SPEX_factorization F1 = NULL;
     mpz_t tmpz;
     mpq_t obj, minq, maxq, tmpq1, tmpq2;
-    SPEX_symbolic_analysis* analysis = NULL;
+    SPEX_symbolic_analysis analysis = NULL;
     int64_t *basis = NULL, *used_as_basis = NULL;
     double *col_val = NULL;
     int *col_ind = NULL;

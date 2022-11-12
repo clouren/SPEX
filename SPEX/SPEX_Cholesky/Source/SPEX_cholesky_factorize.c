@@ -54,7 +54,7 @@ SPEX_info SPEX_cholesky_factorize
     const SPEX_matrix A,           // Matrix to be factored. Must be SPEX_MPZ
                                     // and SPEX_CSC
 
-    const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S,// Symbolic analysis struct containing the
                                     // elimination tree of A, the column
                                     // pointers of L, and the exact number of
                                     // nonzeros of L.

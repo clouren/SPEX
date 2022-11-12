@@ -19,7 +19,7 @@
 
 SPEX_info SPEX_symbolic_analysis_free
 (
-    SPEX_symbolic_analysis **S_handle, // Structure to be deleted
+    SPEX_symbolic_analysis *S_handle, // Structure to be deleted
     const SPEX_options option
 )
 {

@@ -36,7 +36,7 @@
 SPEX_info spex_cholesky_preorder
 (
     // Output
-    SPEX_symbolic_analysis** S_handle,  // Symbolic analysis data structure
+    SPEX_symbolic_analysis* S_handle,  // Symbolic analysis data structure
                                         // On input: undefined
                                         // On output: contains the
                                         // row/column permutation and its
@@ -73,7 +73,7 @@ SPEX_info spex_cholesky_preorder
     // Allocate symbolic analysis object
     //--------------------------------------------------------------------------
 
-    SPEX_symbolic_analysis* S = NULL;
+    SPEX_symbolic_analysis S = NULL;
 
     // declare indices and dimension of matrix
     int64_t i, k, index, n = A->n;
@@ -82,8 +82,8 @@ SPEX_info spex_cholesky_preorder
     SPEX_CHECK (SPEX_matrix_nnz(&anz, A, option)) ;
 
     // Allocate memory for S
-    S = (SPEX_symbolic_analysis*)
-        SPEX_calloc(1, sizeof(SPEX_symbolic_analysis));
+    S = (SPEX_symbolic_analysis)
+        SPEX_calloc(1, sizeof(SPEX_symbolic_analysis_struct));
     if (S == NULL)
     {
         SPEX_FREE_ALL ;

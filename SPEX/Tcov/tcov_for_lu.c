@@ -249,7 +249,7 @@ int main( int argc, char* argv[])
             SPEX_matrix sol = NULL;
 
             // Column permutation
-            SPEX_symbolic_analysis *S = NULL ;
+            SPEX_symbolic_analysis S = NULL ;
 
             /*mpz_t mpz1, mpz2, mpz3;
             SPEX_MPZ_SET_NULL(mpz1);

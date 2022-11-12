@@ -111,7 +111,7 @@ int main (int argc, char* argv[])
     //          for SPEX Left LU functions (except SPEX_malloc and such)
     //--------------------------------------------------------------------------
     SPEX_matrix A = NULL;
-    SPEX_symbolic_analysis* S = NULL;
+    SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL;
     SPEX_info ok ;
     

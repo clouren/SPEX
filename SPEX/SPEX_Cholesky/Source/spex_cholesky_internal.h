@@ -143,7 +143,7 @@ SPEX_info spex_cholesky_up_factor
     SPEX_matrix* L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix* rhos_handle, // Sequence of pivots. NULL on input.
     // Input
-    const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,      // Matrix to be factored
@@ -157,7 +157,7 @@ SPEX_info spex_cholesky_left_factor
     SPEX_matrix* L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix* rhos_handle, // Sequence of pivots. NULL on input.
     // Input
-    const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,      // Matrix to be factored
@@ -178,7 +178,7 @@ SPEX_info spex_cholesky_pre_left_factor
     // Input
     int64_t* xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix A,         // Input Matrix
-    const SPEX_symbolic_analysis* S // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
@@ -280,7 +280,7 @@ SPEX_info spex_cholesky_backward_sub
 SPEX_info spex_cholesky_preorder
 (
     // Output
-    SPEX_symbolic_analysis** S_handle,// Symbolic analysis data structure
+    SPEX_symbolic_analysis* S_handle,// Symbolic analysis data structure
                                     // On input: undefined
                                     // On output: contains the
                                     // row/column permutation and its
@@ -303,7 +303,7 @@ SPEX_info spex_cholesky_permute_A
     const SPEX_matrix A,      // Input matrix
     const bool numeric,        // True if user wants to permute pattern and
                                // numbers, false if only pattern
-    const SPEX_symbolic_analysis* S  // Symbolic analysis struct that contains
+    const SPEX_symbolic_analysis S  // Symbolic analysis struct that contains
                                // column and inverse row permutations
 );
 
@@ -313,7 +313,7 @@ SPEX_info spex_cholesky_permute_A
 SPEX_info spex_cholesky_symbolic_analysis
 (
     //Output
-    SPEX_symbolic_analysis* S, // Symbolic analysis
+    SPEX_symbolic_analysis S, // Symbolic analysis
                                // On input: null
                                // On output: contains elimination tree
 
@@ -336,7 +336,7 @@ SPEX_info spex_cholesky_factor
     // Output
     SPEX_factorization *F_handle, // Cholesky factorization
     // Input
-    const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S,// Symbolic analysis struct containing the
                                // elimination tree of A, column pointers of L,
                                // exact number of nonzeros of L and permutation
                                // used.

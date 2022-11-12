@@ -53,7 +53,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
     int64_t n = 0, ok;
 
-    SPEX_symbolic_analysis *S = NULL;
+    SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL ;
     SPEX_matrix A = NULL;
     SPEX_matrix b = NULL;

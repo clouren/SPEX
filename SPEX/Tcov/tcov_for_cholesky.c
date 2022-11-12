@@ -143,7 +143,7 @@ bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
 {
     SPEX_info info ;
     bool pretend_to_fail = false ;
-    SPEX_symbolic_analysis *S = NULL ;
+    SPEX_symbolic_analysis S = NULL ;
     SPEX_factorization F = NULL ;
     SPEX_matrix x = NULL ;
     // solve Ax=b
@@ -182,7 +182,7 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     SPEX_matrix A = NULL, b = NULL, x = NULL ;
-    SPEX_symbolic_analysis *S = NULL ;
+    SPEX_symbolic_analysis S = NULL ;
     SPEX_factorization F = NULL ;
     SPEX_options option = NULL ;
     bool pretend_to_fail = false ;
