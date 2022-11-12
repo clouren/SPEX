@@ -44,8 +44,8 @@ SPEX_info SPEX_cholesky_analyze
     // Output
     SPEX_symbolic_analysis* S_handle, // Symbolic analysis data structure
     // Input
-    const SPEX_matrix A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-    const SPEX_options option    // Command options (Default if NULL)
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_options option   // Command options (Default if NULL)
 )
 {
 

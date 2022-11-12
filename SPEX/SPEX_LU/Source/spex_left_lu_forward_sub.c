@@ -26,9 +26,9 @@
 
 SPEX_info spex_left_lu_forward_sub
 (
-    const SPEX_matrix L,   // lower triangular matrix
-    SPEX_matrix x,         // right hand side matrix of size n*numRHS
-    const SPEX_matrix rhos // sequence of pivots used in factorization
+    const SPEX_matrix L,    // lower triangular matrix
+    SPEX_matrix x,          // right hand side matrix of size n*numRHS
+    const SPEX_matrix rhos  // sequence of pivots used in factorization
 )
 {
 

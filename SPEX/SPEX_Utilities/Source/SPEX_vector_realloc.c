@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/SPEX_vector_realloc: realloc the space for a SPEX_vector object
-// to given new size.
+// SPEX_Utilities/SPEX_vector_realloc: realloc the space for a SPEX_vector
+// object to given new size.
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// SPEX_Utilities: (c) 2020-2021, Jinhao Chen, Chris Lourenco,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -17,8 +17,8 @@
 
 SPEX_info SPEX_vector_realloc
 (
-    SPEX_vector v,         // the vector to be expanded
-    const int64_t new_size, // desired new size for v
+    SPEX_vector v,              // the vector to be expanded
+    const int64_t new_size,     // desired new size for v
     const SPEX_options option
 )
 {

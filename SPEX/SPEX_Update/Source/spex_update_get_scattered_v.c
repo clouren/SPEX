@@ -26,12 +26,12 @@
 SPEX_info spex_update_get_scattered_v
 (
     // output
-    spex_scattered_vector *sv_handle,// output vector in scattered form
+    spex_scattered_vector *sv_handle,   // output vector in scattered form
     int64_t *next,               // the smallest col/row index of non-pivot nz.
                                  // If next == NULL, searching is not performed.
 
     // input (if keep_v true), input/output (if keep_v false)
-    SPEX_vector v,              // the vector in compressed form, whose
+    SPEX_vector v,               // the vector in compressed form, whose
                                  // max index is n.
 
     // input

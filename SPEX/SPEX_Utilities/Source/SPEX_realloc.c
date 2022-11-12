@@ -2,7 +2,7 @@
 // SPEX_Utilities/SPEX_realloc: wrapper for realloc
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

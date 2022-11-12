@@ -57,14 +57,14 @@
 SPEX_info spex_cholesky_up_factor
 (
     // Output
-    SPEX_matrix* L_handle,    // Lower triangular matrix. NULL on input.
-    SPEX_matrix* rhos_handle, // Sequence of pivots. NULL on input.
+    SPEX_matrix* L_handle,     // Lower triangular matrix. NULL on input.
+    SPEX_matrix* rhos_handle,  // Sequence of pivots. NULL on input.
     // Input
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options option // command options
+    const SPEX_matrix A,       // Matrix to be factored
+    const SPEX_options option  // command options
 )
 {
     //--------------------------------------------------------------------------

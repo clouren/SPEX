@@ -63,7 +63,7 @@ int compar (const void *x, const void *y)
 
 SPEX_info SPEX_matrix_check     // returns a SPEX status code
 (
-    const SPEX_matrix A,     // matrix to check
+    const SPEX_matrix A,        // matrix to check
     const SPEX_options option
 )
 {
@@ -138,7 +138,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     //--------------------------------------------------------------------------
 
     int64_t i, j, p, pend ;
-    int64_t* work = NULL;   // used for checking duplicates for CSC and triplet
+    int64_t *work = NULL;   // used for checking duplicates for CSC and triplet
     uint64_t prec = SPEX_OPTION_PREC (option);
     // paranoia:  check prec here: cast to mprf_prec_t, and back, assert
     // equality, if not equal then return SPEX_PANIC
@@ -162,8 +162,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
         case SPEX_CSC:
         {
-            int64_t* Ap = A->p;
-            int64_t* Ai = A->i;
+            int64_t *Ap = A->p;
+            int64_t *Ai = A->i;
 
             //------------------------------------------------------------------
             // check the column pointers
@@ -304,8 +304,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
         case SPEX_TRIPLET:
         {
 
-            int64_t* Aj = A->j;
-            int64_t* Ai = A->i;
+            int64_t *Aj = A->j;
+            int64_t *Ai = A->i;
 
             //------------------------------------------------------------------
             // basic pointer checking

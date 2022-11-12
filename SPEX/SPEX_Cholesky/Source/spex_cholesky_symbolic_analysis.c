@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_symbolic_analysis: Symbolic analysis for SPEX Cholesky
-//                                        factorization
+// SPEX_Cholesky/spex_cholesky_symbolic_analysis: Symbolic analysis for Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -9,6 +8,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
+
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
     SPEX_FREE(post);                \
@@ -45,10 +45,10 @@
 SPEX_info spex_cholesky_symbolic_analysis
 (
     //Output
-    SPEX_symbolic_analysis S, //Symbolic analysis
+    SPEX_symbolic_analysis S,  // Symbolic analysis
     //Input
-    const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options option // Command options
+    const SPEX_matrix A,       // Matrix to be factored
+    const SPEX_options option  // Command options
 )
 {
     SPEX_info info;
@@ -57,14 +57,15 @@ SPEX_info spex_cholesky_symbolic_analysis
     // Check inputs
     //--------------------------------------------------------------------------
 
-    // Inputs are checked by the caller, asserts are here as a reminder of the format
+    // Inputs are checked by the caller, asserts are here as a reminder of the
+    // format
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
     // Declare local variables
     int64_t n = A->n;
-    int64_t* post = NULL;
-    int64_t* c = NULL;
+    int64_t *post = NULL;
+    int64_t *c = NULL;
 
     // Obtain elimination tree of A
     SPEX_CHECK( spex_cholesky_etree(&S->parent, A) );

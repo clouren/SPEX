@@ -76,19 +76,19 @@ static inline int compare (const void * a, const void * b)
     return ( *(int64_t*)a - *(int64_t*)b ) ;
 }
 
-SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangular solve
+SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
 (
     int64_t *top_output,      // Output the beginning of nonzero pattern
-    SPEX_matrix L,           // partial L matrix
-    const SPEX_matrix A,     // input matrix
+    SPEX_matrix L,            // partial L matrix
+    const SPEX_matrix A,      // input matrix
     int64_t k,                // constructing L(:,k)
-    int64_t* xi,              // nonzero pattern vector
-    const int64_t* q,         // column permutation, not modified
-    SPEX_matrix rhos,        // sequence of pivots
-    const int64_t* pinv,      // inverse row permutation
-    const int64_t* row_perm,  // row permutation
-    int64_t* h,               // history vector
-    SPEX_matrix x            // solution of system ==> kth column of L and U
+    int64_t *xi,              // nonzero pattern vector
+    const int64_t *q,         // column permutation, not modified
+    SPEX_matrix rhos,         // sequence of pivots
+    const int64_t *pinv,      // inverse row permutation
+    const int64_t *row_perm,  // row permutation
+    int64_t *h,               // history vector
+    SPEX_matrix x             // solution of system ==> kth column of L and U
 )
 {
 
@@ -315,7 +315,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangula
         }
     }
     // Output the beginning of nonzero pattern
-    *top_output = top;
+    (*top_output) = top;
     return SPEX_OK;
 }
 

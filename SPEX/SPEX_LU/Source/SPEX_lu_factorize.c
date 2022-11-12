@@ -36,11 +36,11 @@
 SPEX_info SPEX_lu_factorize
 (
     // output:
-    SPEX_factorization *F_handle, // LU factorization
+    SPEX_factorization *F_handle,   // LU factorization
     // input:
-    const SPEX_matrix A,      // matrix to be factored
+    const SPEX_matrix A,            // matrix to be factored
     const SPEX_symbolic_analysis S, // symbolic analysis
-    const SPEX_options option // command options
+    const SPEX_options option       // command options
 )
 {
 

@@ -16,12 +16,12 @@
 
 SPEX_info spex_cholesky_tdfs
 (
-    int64_t* k,     // Index (kth node)
-    const int64_t j,// Root node
-    int64_t* head,  // Head of list
-    int64_t* next,  // Next node in the list
-    int64_t* post,  // Post ordered tree
-    int64_t* stack  // Stack of nodes
+    int64_t *k,         // Index (kth node)
+    const int64_t j,    // Root node
+    int64_t *head,      // Head of list
+    int64_t *next,      // Next node in the list
+    int64_t *post,      // Post ordered tree
+    int64_t *stack      // Stack of nodes
 )
 {
     int64_t i, p, top = 0 ;

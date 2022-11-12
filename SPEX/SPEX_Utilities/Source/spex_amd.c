@@ -32,7 +32,7 @@ SPEX_info spex_amd
 
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
     int64_t n = A->n;
-    int64_t * perm= NULL ;
+    int64_t *perm = NULL ;
 
     // Allocate memory for permutation
     perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
@@ -46,9 +46,9 @@ SPEX_info spex_amd
     amd_l_defaults(Control);              // Set AMD defaults
     double Info [AMD_INFO];
     // Perform AMD
-    SuiteSparse_long amd_result = amd_l_order(n,
-                (SuiteSparse_long *)A->p, (SuiteSparse_long *)A->i,
-                (SuiteSparse_long *)perm, Control, Info);
+    int64_t amd_result = amd_l_order(n,
+                (int64_t *)A->p, (int64_t *)A->i,
+                (int64_t *)perm, Control, Info);
     if (pr > 0)   // Output AMD info if desired
     {
         SPEX_PRINTF("\n****Ordering Information****\n");

@@ -2,7 +2,7 @@
 // SPEX_Utilities/SPEX_matrix_copy: create a copy of a matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -35,11 +35,11 @@
 
 SPEX_info SPEX_matrix_copy
 (
-    SPEX_matrix *C_handle, // matrix to create (never shallow)
+    SPEX_matrix *C_handle,  // matrix to create (never shallow)
     // inputs, not modified:
     SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic_CSC
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
-    const SPEX_matrix A,         // matrix to make a copy of (may be shallow)
+    const SPEX_matrix A,    // matrix to make a copy of (may be shallow)
     const SPEX_options option
 )
 {
@@ -59,8 +59,8 @@ SPEX_info SPEX_matrix_copy
     SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;
     ASSERT( nz >= 0);
     if (C_handle == NULL || nz < 0 ||
-      //checked in SPEX_matrix_nnz
-      //A == NULL || A->kind < SPEX_CSC || A->kind > SPEX_DYNAMIC_CSC ||
+        // checked in SPEX_matrix_nnz:
+        //A == NULL || A->kind < SPEX_CSC || A->kind > SPEX_DYNAMIC_CSC ||
         A->type < SPEX_MPZ || A->type > SPEX_FP64  ||
         C_kind  < SPEX_CSC || C_kind  > SPEX_DYNAMIC_CSC ||
         C_type  < SPEX_MPZ || C_type  > SPEX_FP64 ||

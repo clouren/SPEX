@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/SPEX_lu_backslash: solve Ax=b, returning solution as desired data type
+// SPEX_LU/SPEX_lu_backslash: solve Ax=b, return solution as desired data type
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -8,9 +8,9 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This code utilizes the SPEX Left LU factorization to exactly solve the
- *          linear system Ax = b. This is essentially an exact version of
- *          MATLAB sparse backslash
+/* Purpose: This code utilizes the SPEX Left LU factorization to exactly solve
+ * the linear system Ax = b. This is essentially an exact version of MATLAB
+ * sparse backslash
  *
  * Input/Output arguments:
  *
@@ -24,15 +24,15 @@
  * A:           User's input matrix. It must be populated prior to calling this
  *              function.
  *
- * b:           Collection of right hand side vectors. Must be populated prior to
- *              factorization.
+ * b:           Collection of right hand side vectors. Must be populated prior
+ *              to factorization.
  *
- * option:      Struct containing various command parameters for the factorization. If
- *              NULL on input, default values are used.
+ * option:      Struct containing various command parameters for the
+ *              factorization. If NULL on input, default values are used.
  */
 
-# define SPEX_FREE_WORKSPACE        \
-    SPEX_factorization_free(&F, option);     \
+# define SPEX_FREE_WORKSPACE                    \
+    SPEX_factorization_free(&F, option);        \
     SPEX_symbolic_analysis_free (&S, option);
 
 # define SPEX_FREE_ALL              \
@@ -44,13 +44,13 @@
 SPEX_info SPEX_lu_backslash
 (
     // Output
-    SPEX_matrix *X_handle,       // Final solution vector
+    SPEX_matrix *X_handle,        // Final solution vector
     // Input
     SPEX_type type,               // Type of output desired. Must be
                                   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix A,         // Input matrix
-    const SPEX_matrix b,         // Right hand side vector(s)
-    const SPEX_options option    // Command options
+    const SPEX_matrix A,          // Input matrix
+    const SPEX_matrix b,          // Right hand side vector(s)
+    const SPEX_options option     // Command options
 )
 {
 

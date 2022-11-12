@@ -3,7 +3,7 @@
 // SPEX_symbolic_analysis data type.
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// SPEX_Utilities: (c) 2019-2021, Jinhao Chen, Chris Lourenco,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -19,7 +19,7 @@
 
 SPEX_info SPEX_symbolic_analysis_free
 (
-    SPEX_symbolic_analysis *S_handle, // Structure to be deleted
+    SPEX_symbolic_analysis *S_handle,   // Structure to be deleted
     const SPEX_options option
 )
 {

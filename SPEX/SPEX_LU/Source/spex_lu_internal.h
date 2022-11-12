@@ -57,9 +57,9 @@ void spex_left_lu_dfs // performs a dfs of the graph of the matrix starting at n
     int64_t *top,          // beginning of stack
     int64_t j,             // What node to start DFS at
     SPEX_matrix L,        // matrix which represents the Graph of L
-    int64_t* xi,           // the nonzero pattern
-    int64_t* pstack,       // workspace vector
-    const int64_t* pinv   // row permutation
+    int64_t *xi,           // the nonzero pattern
+    int64_t *pstack,       // workspace vector
+    const int64_t *pinv   // row permutation
 );
 
 
@@ -78,15 +78,15 @@ SPEX_info spex_left_lu_get_pivot
 (
     int64_t *pivot,      // found index of pivot entry
     SPEX_matrix x,      // kth column of L and U
-    int64_t* pivs,       // vector indicating which rows have been pivotal
+    int64_t *pivs,       // vector indicating which rows have been pivotal
     int64_t n,           // dimension of the problem
     int64_t top,         // nonzero pattern is located in xi[top..n-1]
-    int64_t* xi,         // nonzero pattern of x
+    int64_t *xi,         // nonzero pattern of x
     int64_t col,         // current column of A (real kth column i.e., q[k])
     int64_t k,           // iteration of the algorithm
     SPEX_matrix rhos,   // vector of pivots
-    int64_t* pinv,       // row permutation
-    int64_t* row_perm,   // opposite of pinv. if pinv[i] = j then row_perm[j] = i
+    int64_t *pinv,       // row permutation
+    int64_t *row_perm,   // opposite of pinv. if pinv[i] = j then row_perm[j] = i
     const SPEX_options option // command option
 );
 
@@ -99,10 +99,10 @@ SPEX_info spex_left_lu_get_largest_pivot
 (
     int64_t *pivot,         // the index of largest pivot
     SPEX_matrix x,         // kth column of L and U
-    int64_t* pivs,          // vector which indicates whether each row has been pivotal
+    int64_t *pivs,          // vector which indicates whether each row has been pivotal
     int64_t n,              // dimension of problem
     int64_t top,            // nonzero pattern is located in xi[top..n-1]
-    int64_t* xi             // nonzero pattern of x
+    int64_t *xi             // nonzero pattern of x
 );
 
 /* This function obtains the first eligible nonzero pivot.  This is enabled if
@@ -113,10 +113,10 @@ SPEX_info spex_left_lu_get_nonzero_pivot // find the first eligible nonzero pivo
 (
     int64_t *pivot,      // the index of first eligible nonzero pivot
     SPEX_matrix x,      // kth column of L and U
-    int64_t* pivs,       // vector indicating which rows are pivotal
+    int64_t *pivs,       // vector indicating which rows are pivotal
     int64_t n,           // size of x
     int64_t top,         // nonzero pattern is located in xi[top..n-1]
-    int64_t* xi          // nonzero pattern of x
+    int64_t *xi          // nonzero pattern of x
 );
 
 /* Purpose: This function selects the pivot element as the smallest in the
@@ -128,10 +128,10 @@ SPEX_info spex_left_lu_get_smallest_pivot
 (
     int64_t *pivot,         // index of smallest pivot
     SPEX_matrix x,         // kth column of L and U
-    int64_t* pivs,          // vector indicating whether each row has been pivotal
+    int64_t *pivs,          // vector indicating whether each row has been pivotal
     int64_t n,              // dimension of problem
     int64_t top,            // nonzeros are stored in xi[top..n-1]
-    int64_t* xi             // nonzero pattern of x
+    int64_t *xi             // nonzero pattern of x
 );
 
 
@@ -144,8 +144,8 @@ void spex_left_lu_reach    // compute the reach of column k of A on the graph of
     SPEX_matrix L,         // matrix representing graph of L
     const SPEX_matrix A,   // input matrix
     int64_t k,              // column of A of interest
-    int64_t* xi,            // nonzero pattern
-    const int64_t* pinv     // row permutation
+    int64_t *xi,            // nonzero pattern
+    const int64_t *pinv     // row permutation
 )  ;
 
 /* Purpose: This function performs the sparse REF triangular solve; that is,
@@ -162,12 +162,12 @@ SPEX_info spex_left_lu_ref_triangular_solve // performs the sparse REF triangula
     SPEX_matrix L,           // partial L matrix
     const SPEX_matrix A,     // input matrix
     int64_t k,                // iteration of algorithm
-    int64_t* xi,              // nonzero pattern vector
-    const int64_t* q,         // column permutation
+    int64_t *xi,              // nonzero pattern vector
+    const int64_t *q,         // column permutation
     SPEX_matrix rhos,        // sequence of pivots
-    const int64_t* pinv,      // inverse row permutation
-    const int64_t* row_perm,  // row permutation
-    int64_t* h,               // history vector
+    const int64_t *pinv,      // inverse row permutation
+    const int64_t *row_perm,  // row permutation
+    int64_t *h,               // history vector
     SPEX_matrix x            // solution of system ==> kth column of L and U
 );
 

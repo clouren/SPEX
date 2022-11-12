@@ -23,11 +23,11 @@
 SPEX_info spex_left_lu_get_smallest_pivot
 (
     int64_t *pivot,         // the index of smallest pivot
-    SPEX_matrix x,         // kth column of L and U
-    int64_t* pivs,          // vector indicating if each row has been pivotal
+    SPEX_matrix x,          // kth column of L and U
+    int64_t *pivs,          // vector indicating if each row has been pivotal
     int64_t n,              // dimension of problem
     int64_t top,            // nonzeros are stored in xi[top..n-1]
-    int64_t* xi             // nonzero pattern of x
+    int64_t *xi             // nonzero pattern of x
 )
 {
 

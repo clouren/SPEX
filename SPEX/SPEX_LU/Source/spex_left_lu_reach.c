@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/spex_left_lu_reach: compute the set of nodes reachable from
-// an input set
+// SPEX_LU/spex_left_lu_reach: compute set of nodes reachable from an input set
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -17,14 +16,14 @@
  * This function is derived from CSparse/cs_reach.c
  */
 
-void spex_left_lu_reach    // compute the reach of column k of A on the graph of L
+void spex_left_lu_reach     // compute reach of column k of A on the graph of L
 (
     int64_t *top,
-    SPEX_matrix L,         // matrix representing graph of L
-    const SPEX_matrix A,   // input matrix
+    SPEX_matrix L,          // matrix representing graph of L
+    const SPEX_matrix A,    // input matrix
     int64_t k,              // column of A of interest
-    int64_t* xi,            // nonzero pattern
-    const int64_t* pinv     // row permutation
+    int64_t *xi,            // nonzero pattern
+    const int64_t *pinv     // row permutation
 )
 {
 
@@ -34,7 +33,7 @@ void spex_left_lu_reach    // compute the reach of column k of A on the graph of
     if (top == NULL) { return ;}
     // inputs have been checked in spex_ref_triangular_solve
     int64_t p, n = L->n;
-    *top = n;
+    (*top) = n;
 
     //--------------------------------------------------------------------------
     // Iterating across number of nonzero in column k

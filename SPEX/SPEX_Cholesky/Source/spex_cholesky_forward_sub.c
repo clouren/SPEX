@@ -1,4 +1,4 @@
-///------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // SPEX_Cholesky/spex_cholesky_forward_sub: Solve the system LDx = b
 //------------------------------------------------------------------------------
 
@@ -35,12 +35,12 @@
 SPEX_info spex_cholesky_forward_sub
 (
     // Input/Output
-    SPEX_matrix x,              // Right hand side matrix.
+    SPEX_matrix x,               // Right hand side matrix.
                                  // On input: contains b
                                  // On output: contains the solution of LD x = x
     // Input
-    const SPEX_matrix L,        // REF Cholesky factor of A (lower triangular)
-    const SPEX_matrix rhos      // Sequence of pivots used in factorization
+    const SPEX_matrix L,         // REF Cholesky factor of A (lower triangular)
+    const SPEX_matrix rhos       // Sequence of pivots used in factorization
 )
 {
     SPEX_info info;

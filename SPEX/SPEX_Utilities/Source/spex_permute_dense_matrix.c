@@ -3,7 +3,7 @@
 // as A_out = P*A_in
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -20,8 +20,8 @@
 
 SPEX_info spex_permute_dense_matrix
 (
-    SPEX_matrix *A_handle,     // permuted A
-    const SPEX_matrix A_in,    // unpermuted A (not modified)
+    SPEX_matrix *A_handle,      // permuted A
+    const SPEX_matrix A_in,     // unpermuted A (not modified)
     const int64_t *P,           // row permutation
     const SPEX_options option
 )

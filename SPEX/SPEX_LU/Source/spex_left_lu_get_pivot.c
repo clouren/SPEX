@@ -14,7 +14,7 @@
  *  SPEX_SMALLEST = 0,      Smallest pivot
  *  SPEX_DIAGONAL = 1,      Diagonal pivoting
  *  SPEX_FIRST_NONZERO = 2, First nonzero per column chosen as pivot
- *  SPEX_TOL_SMALLEST = 3,  Diagonal pivoting with tolerance for pivot. (Default)
+ *  SPEX_TOL_SMALLEST = 3,  Diagonal pivoting with tolerance for pivot (default)
  *  SPEX_TOL_LARGEST = 4,   Diagonal pivoting with tolerance for largest pivot
  *  SPEX_LARGEST = 5        Largest pivot
  *
@@ -33,16 +33,16 @@
 SPEX_info spex_left_lu_get_pivot
 (
     int64_t *pivot,         // found index of pivot entry
-    SPEX_matrix x,         // kth column of L and U
-    int64_t* pivs,          // vector indicating which rows have been pivotal
+    SPEX_matrix x,          // kth column of L and U
+    int64_t *pivs,          // vector indicating which rows have been pivotal
     int64_t n,              // dimension of the problem
     int64_t top,            // nonzero pattern is located in xi[top..n-1]
-    int64_t* xi,            // nonzero pattern of x
+    int64_t *xi,            // nonzero pattern of x
     int64_t col,            // current column of A (real kth column i.e., q[k])
     int64_t k,              // iteration of the algorithm
-    SPEX_matrix rhos,      // vector of pivots
-    int64_t* pinv,          // row permutation
-    int64_t* row_perm,      // opposite of pinv.
+    SPEX_matrix rhos,       // vector of pivots
+    int64_t *pinv,          // row permutation
+    int64_t *row_perm,      // opposite of pinv.
                             // if pinv[i] = j then row_perm[j] = i
     const SPEX_options option // command options
 )
@@ -70,20 +70,23 @@ SPEX_info spex_left_lu_get_pivot
     SPEX_MPQ_SET_NULL(tol);
     SPEX_MPQ_SET_NULL(ratio);
 
-    //--------------------------------------------------------------------------
-    // Smallest pivot
-    //--------------------------------------------------------------------------
-
     if (order == SPEX_SMALLEST)
     {
-        SPEX_CHECK(spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi));
-    }
 
-    //--------------------------------------------------------------------------
-    // Diagonal
-    //--------------------------------------------------------------------------
+        //----------------------------------------------------------------------
+        // Smallest pivot
+        //----------------------------------------------------------------------
+
+        SPEX_CHECK(spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi));
+
+    }
     else if (order == SPEX_DIAGONAL)
     {
+
+        //----------------------------------------------------------------------
+        // Diagonal
+        //----------------------------------------------------------------------
+
         // Check if x[col] is eligible. take smallest pivot    if not
         SPEX_CHECK (SPEX_mpz_sgn(&sgn, x->x.mpz[col]));
         if (sgn != 0 && pivs[col] < 0)
@@ -92,23 +95,28 @@ SPEX_info spex_left_lu_get_pivot
         }
         else
         {
-            SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi));
+            SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n,
+                top, xi));
         }
-    }
 
-    //--------------------------------------------------------------------------
-    // First nonzero
-    //--------------------------------------------------------------------------
+    }
     else if (order == SPEX_FIRST_NONZERO)
     {
-        SPEX_CHECK (spex_left_lu_get_nonzero_pivot(pivot, x, pivs, n, top, xi));
-    }
 
-    //--------------------------------------------------------------------------
-    // Tolerance with largest pivot
-    //--------------------------------------------------------------------------
+        //----------------------------------------------------------------------
+        // First nonzero
+        //----------------------------------------------------------------------
+
+        SPEX_CHECK (spex_left_lu_get_nonzero_pivot(pivot, x, pivs, n, top, xi));
+
+    }
     else if (order == SPEX_TOL_LARGEST)
     {
+
+        //----------------------------------------------------------------------
+        // Tolerance with largest pivot
+        //----------------------------------------------------------------------
+
         SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, x, pivs, n, top, xi));
 
         //----------------------------------------------------------------------
@@ -134,22 +142,27 @@ SPEX_info spex_left_lu_get_pivot
                 *pivot = col;
             }
         }
-    }
 
-    //--------------------------------------------------------------------------
-    // Use the largest potential pivot
-    //--------------------------------------------------------------------------
+    }
     else if (order == SPEX_LARGEST)
     {
-        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, x, pivs, n, top, xi));
-    }
 
-    //--------------------------------------------------------------------------
-    // Tolerance with smallest pivot (default option)
-    //--------------------------------------------------------------------------
+        //----------------------------------------------------------------------
+        // Use the largest potential pivot
+        //----------------------------------------------------------------------
+
+        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, x, pivs, n, top, xi));
+
+    }
     else // if (order == SPEX_TOL_SMALLEST)
     {
-        SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi)) ;
+
+        //----------------------------------------------------------------------
+        // Tolerance with smallest pivot (default option)
+        //----------------------------------------------------------------------
+
+        SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top,
+            xi)) ;
 
         //----------------------------------------------------------------------
         // Checking x[col] vs smallest pivot
@@ -181,6 +194,7 @@ SPEX_info spex_left_lu_get_pivot
     //--------------------------------------------------------------------------
     // Reflect changes in row location & row_perm
     //--------------------------------------------------------------------------
+
     // Must move pivot into position k
     int64_t intermed = pinv[*pivot];
     int64_t intermed2 = row_perm[k];

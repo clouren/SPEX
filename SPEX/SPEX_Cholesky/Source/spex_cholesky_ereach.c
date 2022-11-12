@@ -18,16 +18,16 @@
 SPEX_info spex_cholesky_ereach
 (
     // Output
-    int64_t* top_handle,    // On output: starting point of nonzero pattern
+    int64_t *top_handle,    // On output: starting point of nonzero pattern
                             // On input: undefined
-    int64_t* xi,            // On output: contains the nonzero pattern in
+    int64_t *xi,            // On output: contains the nonzero pattern in
                             // xi[top..n-1]
                             // On input: undefined
     // Input
-    const SPEX_matrix A,   // Matrix to be analyzed
+    const SPEX_matrix A,    // Matrix to be analyzed
     const int64_t k,        // Node to start at
-    const int64_t* parent,  // Elimination tree of A
-    int64_t* w              // Workspace array
+    const int64_t *parent,  // Elimination tree of A
+    int64_t *w              // Workspace array
 )
 {
     // Check inputs

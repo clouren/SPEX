@@ -1,8 +1,9 @@
 //------------------------------------------------------------------------------
 // SPEX_Update/spex_update_ipge.c: perform one iteration of IPGE and perform
 // any skipped scaling process.
-// TODO rewrite this function, try to extract common factor
 //------------------------------------------------------------------------------
+
+// TODO rewrite this function, try to extract common factor
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
 // Moreno-Centeno, Texas A&M University.  All Rights Reserved.
@@ -59,19 +60,19 @@
 
 SPEX_info spex_update_ipge // perform IPGE on x based on v
 (
-    spex_scattered_vector sv_x,// array of size n for x in the scattered form.
+    spex_scattered_vector sv_x, // array of size n for x in the scattered form.
                     // x could be dense if sv_x->i = NULL.
     int64_t *h,     // history vector for x, x[i] was last updated in the
                     // SPEX_FLIP(h[i])-th iteration
     int64_t *prev,  // prev is the index of the found previous entry of the last
                     // one (i.e., 2nd last entry) in v(perm). update if !prev
-    SPEX_vector v, // v is the vector that contains the j-th pivot
+    SPEX_vector v,  // v is the vector that contains the j-th pivot
                     // used to compute x in the j-th IPGE iteration, which is
                     // the vector v in the equations mentioned above
-    const int64_t *perm, // permutation
-    const int64_t *perm_inv, // inverse of perm, can be NULL if prev == NULL
-    const SPEX_matrix rhos,// array of scaled pivots
-    const int64_t j // column index of v
+    const int64_t *perm,        // permutation
+    const int64_t *perm_inv,    // inverse of perm, can be NULL if prev == NULL
+    const SPEX_matrix rhos,     // array of scaled pivots
+    const int64_t j             // column index of v
 )
 {
     SPEX_info info;

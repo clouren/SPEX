@@ -1,10 +1,9 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/spex_colamd: Call AMD for matrix ordering
+// SPEX_Utilities/spex_colamd: Call COLAMD for matrix ordering
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2022, Chris Lourenco, United States Naval Academy,
-// Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved.
+// SPEX_Utilities: (c) 2022, Chris Lourenco, Lorena Mejia Domenzain, Jinhao
+// Chen, Erick Moreno-Centeno, Timothy A. Davis, All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -73,9 +72,8 @@ SPEX_info spex_colamd
 
     // find the colamd ordering
     int64_t stats[COLAMD_STATS];
-    SuiteSparse_long colamd_result = colamd_l (n, n, Alen,
-            (SuiteSparse_long *)A2, (SuiteSparse_long *) perm,
-            (double *)NULL, (SuiteSparse_long *) stats);
+    int64_t colamd_result = colamd_l (n, n, Alen, A2, perm,
+        (double *) NULL, stats);
     if (!colamd_result)
     {
         // COLAMD failed: matrix is invalid
@@ -90,7 +88,7 @@ SPEX_info spex_colamd
     if (pr > 0)
     {
         SPEX_PRINTF ("\n****Ordering Information****\n");
-        colamd_l_report ((SuiteSparse_long *) stats);
+        colamd_l_report ((int64_t *) stats);
     }
 
     // free workspace and return result

@@ -38,9 +38,9 @@
 
 SPEX_info spex_update_cppu
 (
-    SPEX_matrix L,     // matrix L
-    SPEX_matrix U,     // matrix U
-    SPEX_matrix rhos,// array of scaled pivots
+    SPEX_matrix L,      // matrix L
+    SPEX_matrix U,      // matrix U
+    SPEX_matrix rhos,   // array of scaled pivots
     spex_scattered_vector Lk_dense_col,// scattered column k of L
     spex_scattered_vector Uk_dense_row,// scattered column k of U
     int64_t *inext,  // the index of first off-diag entry in col k of L
@@ -53,12 +53,12 @@ SPEX_info spex_update_cppu
     int64_t *P_inv,  // inverse of row permutation (unchanged on output)
 
     // the col-wise nnz pattern of U can be NULL when ks == n
-    const int64_t *Uci_ks,// the row index for nnz pattern of U(k+1:ks-1,Q[ks])
-    const int64_t *Ucx_ks,// the value of i-th entry is found as
-                     // U->v[Uci[i]]->x[Ucx[i]]
-    const int64_t Uc_ks_nz,// # of nnz in U(k+1:ks-1,Q[ks])
-    const int64_t k, // current column index 0 <= k < n
-    const int64_t ks,// index of the diagonal to be swapped with, [0,n)
+    const int64_t *Uci_ks,  // row index for nnz pattern of U(k+1:ks-1,Q[ks])
+    const int64_t *Ucx_ks,  // value of i-th entry is found as
+                            // U->v[Uci[i]]->x[Ucx[i]]
+    const int64_t Uc_ks_nz, // # of nnz in U(k+1:ks-1,Q[ks])
+    const int64_t k,        // current column index 0 <= k < n
+    const int64_t ks,       // index of the diagonal to be swapped with, [0,n)
     const SPEX_options option
 )
 {

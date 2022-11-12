@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_create_mpq_array: create a dense mpq array
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -14,7 +14,7 @@
 
 #include "spex_util_internal.h"
 
-mpq_t* spex_create_mpq_array
+mpq_t *spex_create_mpq_array
 (
     int64_t n              // size of the array
 )
@@ -29,7 +29,7 @@ mpq_t* spex_create_mpq_array
     //--------------------------------------------------------------------------
 
     // calloc space
-    mpq_t* x = (mpq_t*) SPEX_calloc(n, sizeof(mpq_t));
+    mpq_t *x = (mpq_t*) SPEX_calloc(n, sizeof(mpq_t));
     if (!x) {return NULL;}
     for (int64_t i = 0; i < n; i++)
     {

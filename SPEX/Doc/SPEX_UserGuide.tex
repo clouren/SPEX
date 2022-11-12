@@ -271,9 +271,9 @@ already been initialized, or \verb|SPEX_OK| if successful.
 \begin{verbatim}
     SPEX_info SPEX_initialize_expert
     (
-        void* (*MyMalloc) (size_t),             // user-defined malloc
-        void* (*MyCalloc) (size_t, size_t),     // user-defined calloc
-        void* (*MyRealloc) (void *, size_t),    // user-defined realloc
+        void *(*MyMalloc) (size_t),             // user-defined malloc
+        void *(*MyCalloc) (size_t, size_t),     // user-defined calloc
+        void *(*MyRealloc) (void *, size_t),    // user-defined realloc
         void  (*MyFree) (void *)                // user-defined free
     ) ;
 \end{verbatim}
@@ -1993,7 +1993,7 @@ Using SPEX in this form requires the intermediate variables be declared, such as
     SPEX_matrix U = NULL;
     SPEX_matrix x = NULL;
     SPEX_matrix rhos = NULL;
-    int64_t* pinv = NULL;
+    int64_t *pinv = NULL;
     SPEX_lu_analysis* S = NULL;
 
     // option needs no declaration if default setting is desired

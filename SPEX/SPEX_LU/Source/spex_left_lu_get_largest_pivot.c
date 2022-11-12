@@ -25,12 +25,12 @@
 SPEX_info spex_left_lu_get_largest_pivot
 (
     int64_t *pivot,         // the index of largest pivot
-    SPEX_matrix x,         // kth column of L and U
-    int64_t* pivs,          // vector which indicates whether each row
+    SPEX_matrix x,          // kth column of L and U
+    int64_t *pivs,          // vector which indicates whether each row
                             // has been pivotal
     int64_t n,              // dimension of problem
     int64_t top,            // nonzero pattern is located in xi[top..n-1]
-    int64_t* xi             // nonzero pattern of x
+    int64_t *xi             // nonzero pattern of x
 )
 {
 

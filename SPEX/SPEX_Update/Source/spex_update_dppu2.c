@@ -36,20 +36,20 @@
 
 SPEX_info spex_update_dppu2
 (
-    SPEX_matrix L,     // matrix L
-    SPEX_matrix U,     // matrix U
-    SPEX_matrix rhos,// array of scaled pivots
-    spex_scattered_vector Lk_dense_col,// scattered column k of L
-    spex_scattered_vector Uk_dense_row,// scattered column k of U
-    int64_t *jnext,  // the index of first off-diag entry in row k of U
-    int64_t *h,      // allocated vector that can be used for history vector.
-                     // All entries are maintained to be >= -1
-    int64_t *Q,      // column permutation
-    int64_t *Q_inv,  // inverse of column permutation
-    int64_t *P,      // row permutation
-    int64_t *P_inv,  // inverse of row permutation
-    const int64_t k,   // current column index 0 <= k < n
-    const int64_t ks,  // index of the diagonal to be swapped with, [0,n)
+    SPEX_matrix L,      // matrix L
+    SPEX_matrix U,      // matrix U
+    SPEX_matrix rhos,   // array of scaled pivots
+    spex_scattered_vector Lk_dense_col, // scattered column k of L
+    spex_scattered_vector Uk_dense_row, // scattered column k of U
+    int64_t *jnext,     // the index of first off-diag entry in row k of U
+    int64_t *h,         // allocated vector that can be used for history vector.
+                        // All entries are maintained to be >= -1
+    int64_t *Q,         // column permutation
+    int64_t *Q_inv,     // inverse of column permutation
+    int64_t *P,         // row permutation
+    int64_t *P_inv,     // inverse of row permutation
+    const int64_t k,    // current column index 0 <= k < n
+    const int64_t ks,   // index of the diagonal to be swapped with, [0,n)
     const SPEX_options option
 )
 {

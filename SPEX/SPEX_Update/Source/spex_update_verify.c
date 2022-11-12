@@ -26,10 +26,10 @@
 
 SPEX_info spex_update_verify
 (
-    bool *Is_correct,     // if factorization is correct
-    SPEX_factorization F,// LU factorization of A
-    const SPEX_matrix A,     // Input matrix Dynamic_CSC MPZ
-    const SPEX_options option// command options
+    bool *Is_correct,           // if factorization is correct
+    SPEX_factorization F,       // LU factorization of A
+    const SPEX_matrix A,        // Input matrix Dynamic_CSC MPZ
+    const SPEX_options option   // command options
 )
 {
     SPEX_info info = SPEX_OK;

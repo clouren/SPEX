@@ -626,9 +626,9 @@ typedef struct
     //--------------------------------------------------------------------------
     // These are only used in the Cholesky analysis process
     //--------------------------------------------------------------------------
-    int64_t* parent;                // Elimination tree of target matrix
+    int64_t *parent;                // Elimination tree of target matrix
                                     // for Cholesky factorization.
-    int64_t* cp;                    // column pointers of L for Cholesky
+    int64_t *cp;                    // column pointers of L for Cholesky
                                     // factorization.
 
 } SPEX_symbolic_analysis_struct ;
@@ -902,9 +902,9 @@ SPEX_info SPEX_initialize (void) ;
 // the same signatures as the ANSI C malloc, calloc, realloc, and free.
 SPEX_info SPEX_initialize_expert
 (
-    void* (*MyMalloc) (size_t),             // user-defined malloc
-    void* (*MyCalloc) (size_t, size_t),     // user-defined calloc
-    void* (*MyRealloc) (void *, size_t),    // user-defined realloc
+    void *(*MyMalloc) (size_t),             // user-defined malloc
+    void *(*MyCalloc) (size_t, size_t),     // user-defined calloc
+    void *(*MyRealloc) (void *, size_t),    // user-defined realloc
     void  (*MyFree) (void *)                // user-defined free
 ) ;
 

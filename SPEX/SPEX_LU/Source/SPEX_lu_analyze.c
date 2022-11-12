@@ -2,14 +2,15 @@
 // SPEX_Utilities/SPEX_lu_analyze: symbolic ordering and analysis for sparse LU
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
+// SPEX_Utilities: (c) 2019-2021, Jinhao Chen, Chris Lourenco,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs the symbolic ordering for unsymmetric matrices.
- * Currently, there are three options: user-defined order, COLAMD, or AMD.
+/* Purpose: This function performs the symbolic ordering for unsymmetric
+ * matrices.  Currently, there are three options: user-defined order, COLAMD,
+ * or AMD.
  *
  * Input/output arguments:
  *
@@ -31,12 +32,13 @@
 
 SPEX_info SPEX_lu_analyze
 (
-    SPEX_symbolic_analysis* S_handle, // symbolic analysis including
+    SPEX_symbolic_analysis *S_handle,   // symbolic analysis including
                                  // column perm. and nnz of L and U
-    const SPEX_matrix A,        // Input matrix
-    const SPEX_options option   // Control parameters, if NULL, use default
+    const SPEX_matrix A,         // Input matrix
+    const SPEX_options option    // Control parameters, if NULL, use default
 )
 {
+
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------

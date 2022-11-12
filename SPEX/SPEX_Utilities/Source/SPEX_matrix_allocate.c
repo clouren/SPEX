@@ -2,7 +2,7 @@
 // SPEX_Utilities/SPEX_matrix_allocate: allocate a SPEX_matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -30,7 +30,7 @@
 
 SPEX_info SPEX_matrix_allocate
 (
-    SPEX_matrix *A_handle, // matrix to allocate
+    SPEX_matrix *A_handle,  // matrix to allocate
     SPEX_kind kind,         // CSC, triplet, dense, dynamic_CSC
     SPEX_type type,         // mpz, mpq, mpfr, int64, or double
     int64_t m,              // # of rows

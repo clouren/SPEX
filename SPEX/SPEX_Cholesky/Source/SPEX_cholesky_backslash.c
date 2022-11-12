@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/SPEX_cholesky_backslash: solve Ax=b, returning solution as desired data
-//                                type
+// SPEX_Cholesky/SPEX_cholesky_backslash: solve Ax=b
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -51,15 +50,15 @@
 SPEX_info SPEX_cholesky_backslash
 (
     // Output
-    SPEX_matrix* x_handle,       // On input: undefined.
-                                  // On output: solution vector(s)
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: solution vector(s)
     // Input
-    SPEX_type type,               // Type of output desired
-                                  // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
-    const SPEX_matrix A,         // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-    const SPEX_matrix b,         // Right hand side vector(s). Must be
-                                  // SPEX_MPZ and SPEX_DENSE
-    const SPEX_options option    // Command options (Default if NULL)
+    SPEX_type type,             // Type of output desired
+                                // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix b,        // Right hand side vector(s). Must be
+                                // SPEX_MPZ and SPEX_DENSE
+    const SPEX_options option   // Command options (Default if NULL)
 )
 {
 

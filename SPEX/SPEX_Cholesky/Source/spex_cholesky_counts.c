@@ -31,12 +31,12 @@
 SPEX_info spex_cholesky_counts
 (
     // Output
-    int64_t** c_handle,     // On ouptut: column counts
+    int64_t **c_handle,     // On ouptut: column counts
                             // On input: undefined
     // Input
-    const SPEX_matrix A,   // Input matrix
-    const int64_t* parent,  // Elimination tree
-    const int64_t* post     // Post-order of the tree
+    const SPEX_matrix A,    // Input matrix
+    const int64_t *parent,  // Elimination tree
+    const int64_t *post     // Post-order of the tree
 )
 {
     SPEX_info info;
@@ -91,7 +91,8 @@ SPEX_info spex_cholesky_counts
             for (p = A->p[J] ; p < A->p[J+1] ; p++)
             {
                 i = A->i[p] ;
-                SPEX_CHECK(spex_cholesky_leaf(&q, i, j, first, maxfirst, prevleaf, ancestor, &jleaf));
+                SPEX_CHECK(spex_cholesky_leaf(&q, i, j, first, maxfirst,
+                    prevleaf, ancestor, &jleaf));
                 if (jleaf >= 1)
                 {
                     delta[j]++ ;   /* A(i,j) is in skeleton */

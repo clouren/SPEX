@@ -28,14 +28,14 @@
 SPEX_info spex_cholesky_etree
 (
     // Output
-    int64_t** tree_handle,      // On output: contains the elimination tree of A
+    int64_t **tree_handle,      // On output: contains the elimination tree of A
                                 // On input: undefined.
     // Input
-    const SPEX_matrix A        // Input matrix (must be SPD).
+    const SPEX_matrix A         // Input matrix (must be SPD).
 )
 {
-    // All inputs are checked by the caller so asserts are used here as a reminder
-    // of the appropriate formats
+    // All inputs are checked by the caller so asserts are used here as a
+    // reminder of the appropriate formats
     ASSERT (A != NULL) ;
     ASSERT(A->kind == SPEX_CSC) ;
     ASSERT(A->type == SPEX_MPZ) ;
@@ -59,14 +59,14 @@ SPEX_info spex_cholesky_etree
     ancestor = w ;
     for (k = 0 ; k < n ; k++)
     {
-        parent [k] = -1 ;                           // node k has no parent yet
-        ancestor [k] = -1 ;                         // nor does k have an ancestor
+        parent [k] = -1 ;                       // node k has no parent yet
+        ancestor [k] = -1 ;                     // nor does k have an ancestor
         for (p = A->p [k] ; p < A->p [k+1] ; p++)
         {
             i = A->i [p] ;
             for ( ; i != -1 && i < k ; i = inext)   // traverse from i to k
             {
-                inext = ancestor [i] ;              // int64_t*ext = ancestor of i
+                inext = ancestor [i] ;              // inext = ancestor of i
                 ancestor [i] = k ;                  // path compression
                 if (inext == -1) parent [i] = k ;   // no anc., parent is k
             }

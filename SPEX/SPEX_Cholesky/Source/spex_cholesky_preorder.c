@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_preorder: Symbolic ordering and analysis for SPEX Cholesky
+// SPEX_Cholesky/spex_cholesky_preorder: symbolic ordering/analysis for Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -36,18 +36,16 @@
 SPEX_info spex_cholesky_preorder
 (
     // Output
-    SPEX_symbolic_analysis* S_handle,  // Symbolic analysis data structure
+    SPEX_symbolic_analysis *S_handle,   // Symbolic analysis data structure
                                         // On input: undefined
                                         // On output: contains the
                                         // row/column permutation and its
                                         // inverse.
     // Input
-    const SPEX_matrix A,               // Input matrix
-    const SPEX_options option          // Control parameters (use default if NULL)
+    const SPEX_matrix A,            // Input matrix
+    const SPEX_options option       // Control parameters (use default if NULL)
 )
 {
-
-    //SPEX_info info;
 
     //--------------------------------------------------------------------------
     // Check inputs
@@ -155,8 +153,8 @@ SPEX_info spex_cholesky_preorder
         int64_t nnz = ceil(0.5*n*n);
         S->lnz =  nnz;
     }
-    // If estimate < n, it is possible that the first iteration of triangular solve
-    // may fail, so we make sure that the estimate is at least n
+    // If estimate < n, it is possible that the first iteration of triangular
+    // solve may fail, so we make sure that the estimate is at least n
     if (S->lnz < n)
     {
         S->lnz += n;

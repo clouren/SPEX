@@ -52,19 +52,19 @@ SPEX_info spex_cholesky_post
     int64_t** post_handle, // On output: post-order of the forest
                            // On input: undefined
     // Input
-    const int64_t* parent, // Parent[j] is parent of node j in forest
+    const int64_t *parent, // Parent[j] is parent of node j in forest
     const int64_t n        // Number of nodes in the forest
 );
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */
 SPEX_info spex_cholesky_tdfs
 (
-    int64_t* k,     // Index (kth node)
+    int64_t *k,     // Index (kth node)
     const int64_t j,// Root node
-    int64_t* head,  // Head of list
-    int64_t* next,  // Next node in the list
-    int64_t* post,  // Post ordered tree
-    int64_t* stack  // Stack of nodes
+    int64_t *head,  // Head of list
+    int64_t *next,  // Next node in the list
+    int64_t *post,  // Post ordered tree
+    int64_t *stack  // Stack of nodes
 );
 
 //------------------------------------------------------------------------------
@@ -75,15 +75,15 @@ SPEX_info spex_cholesky_tdfs
    Used to determine Column counts of cholesky factor*/
 SPEX_info spex_cholesky_leaf
 (
-    int64_t* lca_handle,    // Least common ancestor (jprev,j)
+    int64_t *lca_handle,    // Least common ancestor (jprev,j)
     const int64_t i,        // Index (subtree i)
     const int64_t j,        // Index (node j)
-    const int64_t* first,   // first[j] is the first descendant of node j
-    int64_t* maxfirst,      // maxfirst[j] is the maximum first descendant of
+    const int64_t *first,   // first[j] is the first descendant of node j
+    int64_t *maxfirst,      // maxfirst[j] is the maximum first descendant of
                             // node j
-    int64_t* prevleaf,      // prevleaf[i] is the previous leaf of ith subtree
-    int64_t* ancestor,      // ancestor[i] is the ancestor of ith subtree
-    int64_t* jleaf          // indicates whether j is the first leaf (value of
+    int64_t *prevleaf,      // prevleaf[i] is the previous leaf of ith subtree
+    int64_t *ancestor,      // ancestor[i] is the ancestor of ith subtree
+    int64_t *jleaf          // indicates whether j is the first leaf (value of
                             // 1) or not (value of 2)
 );
 
@@ -97,8 +97,8 @@ SPEX_info spex_cholesky_counts
                             // On input: undefined
     // Input
     const SPEX_matrix A,   // Input matrix
-    const int64_t* parent,  // Elimination tree
-    const int64_t* post     // Post-order of the tree
+    const int64_t *parent,  // Elimination tree
+    const int64_t *post     // Post-order of the tree
 );
 
 
@@ -116,16 +116,16 @@ SPEX_info spex_cholesky_counts
 SPEX_info spex_cholesky_ereach
 (
     // Output
-    int64_t* top_handle,    // On output: starting point of nonzero pattern
+    int64_t *top_handle,    // On output: starting point of nonzero pattern
                             // On input: undefined
-    int64_t* xi,            // On output: contains the nonzero pattern in
+    int64_t *xi,            // On output: contains the nonzero pattern in
                             // xi[top..n-1]
                             // On input: undefined
     // Input
     const SPEX_matrix A,   // Matrix to be analyzed
     const int64_t k,        // Node to start at
-    const int64_t* parent,  // Elimination tree of A
-    int64_t* w              // Workspace array
+    const int64_t *parent,  // Elimination tree of A
+    int64_t *w              // Workspace array
 );
 
 
@@ -176,7 +176,7 @@ SPEX_info spex_cholesky_pre_left_factor
     SPEX_matrix* L_handle,       // On output: partial L matrix
                                   // On input: undefined
     // Input
-    int64_t* xi,                  // Workspace nonzero pattern vector
+    int64_t *xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix A,         // Input Matrix
     const SPEX_symbolic_analysis S // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
@@ -190,7 +190,7 @@ SPEX_info spex_cholesky_pre_left_factor
 SPEX_info spex_cholesky_left_triangular_solve
 (
     //Output
-    int64_t* top_output,     // On output: the beginning of nonzero pattern of
+    int64_t *top_output,     // On output: the beginning of nonzero pattern of
                              // L(:,k). The nonzero pattern is contained in
                              // xi[top_output...n-1]
                              // On input: undefined
@@ -198,15 +198,15 @@ SPEX_info spex_cholesky_left_triangular_solve
                              // of L but really, the ONLY valid values of x are
                              // those in x[xi] since x is a working vector its
                              // other positions are jumbled.
-    int64_t* xi,             // On output: Nonzero pattern vector
+    int64_t *xi,             // On output: Nonzero pattern vector
     // Input
     const SPEX_matrix L,    // Partial L matrix
     const SPEX_matrix A,    // Input matrix
     const int64_t k,         // Iteration of algorithm
     const SPEX_matrix rhos, // Partial sequence of pivots
-    int64_t* h,              // History vector
-    const int64_t* parent,   // Elimination tree
-    int64_t* c               // Column pointers of L but they don't point to the
+    int64_t *h,              // History vector
+    const int64_t *parent,   // Elimination tree
+    int64_t *c               // Column pointers of L but they don't point to the
                              // top position of each column of L. Instead they
                              // point to the position on each column where the
                              // next value of L will be grabbed, since at
@@ -222,20 +222,20 @@ SPEX_info spex_cholesky_left_triangular_solve
 SPEX_info spex_cholesky_up_triangular_solve
 (
     //Output
-    int64_t* top_output,               // On input NULL. On output contains the
+    int64_t *top_output,               // On input NULL. On output contains the
                                        // beginning of nonzero pattern
                                        // The nonzero pattern is contained in
                                        // xi[top_output...n-1]
-    int64_t* xi,                       // Nonzero pattern vector
+    int64_t *xi,                       // Nonzero pattern vector
     SPEX_matrix x,                    // Solution of system ==> kth row of L
     // Input
     const SPEX_matrix L,              // Partial L matrix
     const SPEX_matrix A,              // Input matrix
     const int64_t k,                   // Iteration of algorithm
-    const int64_t* parent,             // Elimination tree
-    int64_t* c,                        // Column pointers
+    const int64_t *parent,             // Elimination tree
+    int64_t *c,                        // Column pointers
     const SPEX_matrix rhos,           // sequence of pivots
-    int64_t* h                         // History vector
+    int64_t *h                         // History vector
 );
 
 

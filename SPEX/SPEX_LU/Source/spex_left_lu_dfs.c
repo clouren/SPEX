@@ -15,14 +15,14 @@
 
 #include "spex_lu_internal.h"
 
-void spex_left_lu_dfs // performs a dfs of the graph of the matrix starting at node j
+void spex_left_lu_dfs // dfs of the graph of the matrix starting at node j
 (
-    int64_t *top,          // beginning of stack
-    int64_t j,             // What node to start DFS at
-    SPEX_matrix L,        // matrix which represents the Graph of L
-    int64_t* xi,           // the nonzero pattern
-    int64_t* pstack,       // workspace vector
-    const int64_t* pinv    // row permutation
+    int64_t *top,           // beginning of stack
+    int64_t j,              // What node to start DFS at
+    SPEX_matrix L,          // matrix which represents the Graph of L
+    int64_t *xi,            // the nonzero pattern
+    int64_t *pstack,        // workspace vector
+    const int64_t *pinv     // row permutation
 )
 {
 

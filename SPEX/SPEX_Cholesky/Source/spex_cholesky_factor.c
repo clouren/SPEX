@@ -17,11 +17,11 @@
 
 #include "spex_cholesky_internal.h"
 
-/* Purpose: This function performs the integer preserving Cholesky factorization.
- * It allows either the left-looking or up-looking integer-preserving Cholesky
- * factorization. In order to compute the L matrix, it performs n iterations of
- * a sparse REF symmetric triangular solve function. The overall factorization
- * is PAP' = LDL'
+/* Purpose: This function performs the integer preserving Cholesky
+ * factorization.  It allows either the left-looking or up-looking
+ * integer-preserving Cholesky factorization. In order to compute the L matrix,
+ * it performs n iterations of a sparse REF symmetric triangular solve
+ * function. The overall factorization is PAP' = LDL'
  *
  * Importantly, this function assumes that A has already been permuted,
  *              and symbolically analyzed.
@@ -46,13 +46,13 @@
 SPEX_info spex_cholesky_factor
 (
     // Output
-    SPEX_factorization *F_handle, // Cholesky factorization
+    SPEX_factorization *F_handle,   // Cholesky factorization
     //Input
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options option // Command options
+    const SPEX_matrix A,       // Matrix to be factored
+    const SPEX_options option  // Command options
                                // Notably, option->chol_type indicates whether
                                // CHOL_UP (default) or CHOL_LEFT is used.
 )
@@ -119,7 +119,8 @@ SPEX_info spex_cholesky_factor
         case SPEX_ALGORITHM_DEFAULT:
             // fall through to up-looking Cholesky (the default)
         case SPEX_CHOL_UP:
-            SPEX_CHECK( spex_cholesky_up_factor(&(F->L), &(F->rhos), S, A, option));
+            SPEX_CHECK( spex_cholesky_up_factor(&(F->L), &(F->rhos), S, A,
+                option));
             break;
         case SPEX_CHOL_LEFT:
             SPEX_CHECK( spex_cholesky_left_factor(&(F->L), &(F->rhos), S, A,

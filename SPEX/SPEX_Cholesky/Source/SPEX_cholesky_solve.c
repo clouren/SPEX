@@ -43,18 +43,18 @@
 SPEX_info SPEX_cholesky_solve
 (
     // Output
-    SPEX_matrix* x_handle,     // On input: undefined.
+    SPEX_matrix *x_handle,      // On input: undefined.
                                 // On output: Rational solution (SPEX_MPQ)
                                 // to the system.
     // input/output:
-    SPEX_factorization F,      // The non-updatable Cholesky factorization.
+    SPEX_factorization F,       // The non-updatable Cholesky factorization.
                                 // Mathematically, F is unchanged.  However, if
                                 // F is updatable on input, it is converted to
                                 // non-updatable.  If F is already
                                 // non-updatable, it is not modified.
     // input:
-    const SPEX_matrix b,       // Right hand side vector
-    const SPEX_options option  // command options
+    const SPEX_matrix b,        // Right hand side vector
+    const SPEX_options option   // command options
 )
 {
     SPEX_info info;
@@ -66,14 +66,15 @@ SPEX_info SPEX_cholesky_solve
     }
 
     // Check the inputs
-    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE || F->kind != SPEX_CHOLESKY_FACTORIZATION)
+    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE
+        || F->kind != SPEX_CHOLESKY_FACTORIZATION)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
     // det is the determinant of the PAP matrix. It is obtained for free
     // from the SPEX Cholesky factorization det = rhos[n-1] = L[n,n]
-    mpz_t* det = NULL;
+    mpz_t *det = NULL;
 
     //--------------------------------------------------------------------------
     // Declare workspace and output

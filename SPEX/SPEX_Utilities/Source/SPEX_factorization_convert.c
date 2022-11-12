@@ -57,7 +57,7 @@
     {                                \
         for (i = 0; i < n; i++)      \
         {                            \
-            SPEX_vector_free(&(Mv[i]), option);\
+            SPEX_vector_free(&(Mv[i]), option); \
         }                            \
         SPEX_FREE(Mv);               \
     }                                \
@@ -67,9 +67,10 @@
 
 SPEX_info SPEX_factorization_convert
 (
-    SPEX_factorization F, // The factorization to be converted
-    bool updatable, // if true, make F updatable. false: make non-updatable
-    const SPEX_options option // Command options
+    SPEX_factorization F,       // The factorization to be converted
+    bool updatable,             // if true: make F updatable
+                                // if false: make non-updatable
+    const SPEX_options option   // Command options
 )  
 {
 

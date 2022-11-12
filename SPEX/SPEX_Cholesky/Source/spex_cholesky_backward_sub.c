@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_backward_sub: Solve the system L' x = b for Cholesky
+// SPEX_Cholesky/spex_cholesky_backward_sub: Solve L' x = b for Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -23,9 +23,9 @@
 SPEX_info spex_cholesky_backward_sub
 (
     // Output
-    SPEX_matrix x,         // Solution vector to A x = det(A) * b
+    SPEX_matrix x,          // Solution vector to A x = det(A) * b
     // Input
-    const SPEX_matrix L    // The lower triangular matrix
+    const SPEX_matrix L     // The lower triangular matrix
 )
 {
     SPEX_info info;

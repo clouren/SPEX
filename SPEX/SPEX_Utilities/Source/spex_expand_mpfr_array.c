@@ -2,7 +2,7 @@
 // SPEX_Utilities/spex_expand_mpfr_array: convert mpfr aray to mpz
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -24,7 +24,7 @@
         {                           \
             if ( x_mpq[i] != NULL)  \
             {                       \
-                SPEX_MPQ_CLEAR(x_mpq[i]);\
+                SPEX_MPQ_CLEAR(x_mpq[i]);   \
             }                       \
         }                           \
     }                               \
@@ -34,8 +34,8 @@
 
 SPEX_info spex_expand_mpfr_array
 (
-    mpz_t* x_out,         // full precision mpz array
-    mpfr_t* x,            // mpfr array to be expanded
+    mpz_t *x_out,         // full precision mpz array
+    mpfr_t *x,            // mpfr array to be expanded
     mpq_t scale,          // scaling factor used (x_out = scale*x)
     int64_t n,            // size of x
     const SPEX_options option  // command options containing the prec
@@ -57,7 +57,7 @@ SPEX_info spex_expand_mpfr_array
     int r1, r2 = 1 ;
     bool nz_found = false;
     mpz_t gcd, one;
-    mpq_t* x_mpq = NULL;
+    mpq_t *x_mpq = NULL;
     SPEX_MPZ_SET_NULL(gcd);
     SPEX_MPZ_SET_NULL(one);
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);

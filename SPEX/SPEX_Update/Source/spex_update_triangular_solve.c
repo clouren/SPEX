@@ -21,25 +21,26 @@
 
 SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
 (
-    spex_scattered_vector sv_x,// the scattered version of solution for LDx=v,
+    spex_scattered_vector sv_x, // the scattered version of solution for LDx=v,
                         // using the first k-1 columns of L
     int64_t *x_top,     // P_inv[sv_x->i[0...(*x_top)]] <= (*last_update), that
                         // is, sv_x->i[0...(*x_top)] give the indices of all
                         // entries that are up-to-date. However, this is updated
                         // only when i_2ndlast is requested.
     int64_t *h,         // history vector for x
-    int64_t *last_update,// the number of finished IPGE iterations, which is
-                        // also the number of columns in L used last time
-    int64_t *i_2ndlast, // i_2ndlast is the index of the found last nnz entry
-                        // of x[P] in the range of (last_update, n-2], this
-                        // could be NULL if not needed
-    const int64_t k,    // compute x up to k-th IPGE iteration, that is, using
-                        // the first k-1 columns of L
-    const SPEX_matrix L,  // matrix L
-    const SPEX_matrix U,  // matrix U
-    const SPEX_matrix rhos,// array of scaled pivots
-    const int64_t *P,   // row permutation
-    const int64_t *P_inv// inverse of row permutation
+    int64_t *last_update,   // the number of finished IPGE iterations, which is
+                            // also the number of columns in L used last time
+    int64_t *i_2ndlast,     // i_2ndlast is the index of found last nnz entry
+                            // of x[P] in the range of (last_update, n-2], this
+                            // could be NULL if not needed
+
+    const int64_t k,        // compute x up to k-th IPGE iteration, that is,
+                            // using the first k-1 columns of L
+    const SPEX_matrix L,    // matrix L
+    const SPEX_matrix U,    // matrix U
+    const SPEX_matrix rhos, // array of scaled pivots
+    const int64_t *P,       // row permutation
+    const int64_t *P_inv    // inverse of row permutation
 )
 {
     SPEX_info info;

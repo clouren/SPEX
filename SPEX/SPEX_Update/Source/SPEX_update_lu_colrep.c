@@ -44,7 +44,7 @@
 // TODO allow vk->v[0]->scale != 1?
 SPEX_info SPEX_update_lu_colrep
 (
-    SPEX_factorization F,  // The SPEX factorization of A, including L, U,
+    SPEX_factorization F,   // The SPEX factorization of A, including L, U,
                             // rhos, P, Pinv, Q and Qinv. The factorization
                             // will be modified during the update process.
                             // Therefore, if this function fails for any
@@ -52,7 +52,7 @@ SPEX_info SPEX_update_lu_colrep
                             // undefined.
 
     // TODO: decide on utilities to help create this n-by-1 matrix:
-    SPEX_matrix vk,        // Pointer to a n-by-1 dynamic_CSC matrix
+    SPEX_matrix vk,         // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
                             // The rows of vk are in the same order as A.

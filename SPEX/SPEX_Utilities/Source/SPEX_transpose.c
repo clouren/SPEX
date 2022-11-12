@@ -2,7 +2,7 @@
 // SPEX_Utilities/SPEX_transpose: Transpose a CSC matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -22,8 +22,8 @@
  */
 SPEX_info SPEX_transpose
 (
-    SPEX_matrix *C_handle,     // C = A'
-    SPEX_matrix A,             // Matrix to be transposed
+    SPEX_matrix *C_handle,      // C = A'
+    SPEX_matrix A,              // Matrix to be transposed
     const SPEX_options option
 )
 {
@@ -34,7 +34,7 @@ SPEX_info SPEX_transpose
     if (!C_handle)       { return SPEX_INCORRECT_INPUT;}
 
     // Declare workspace and C
-    int64_t* w = NULL;
+    int64_t *w = NULL;
     SPEX_matrix C = NULL;
     int64_t nz;                            // Number of nonzeros in A
     int64_t p, q, j, n, m;

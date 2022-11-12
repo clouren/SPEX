@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_matrix_mul: multiplies a MPZ matrix by a scalar
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -18,16 +18,16 @@
 
 SPEX_info spex_matrix_mul   // multiplies x by a scalar
 (
-    SPEX_matrix x,         // matrix to be multiplied
+    SPEX_matrix x,          // matrix to be multiplied
     const mpz_t scalar      // scalar to multiply by
 )
 {
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
+    if (!spex_initialized ( )) return (SPEX_PANIC) ;
     SPEX_info info ;
     SPEX_REQUIRE_TYPE (x, SPEX_MPZ) ;
     if (x->kind == SPEX_DYNAMIC_CSC) return (SPEX_INCORRECT_INPUT);

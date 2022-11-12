@@ -1,8 +1,7 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_left_triangular_solve: sparse symmetric left-looking
-//                                            triangular solve
+// SPEX_Cholesky/spex_cholesky_left_triangular_solve: sparse symmetric
+// left-looking triangular solve
 //------------------------------------------------------------------------------
-
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
@@ -63,24 +62,24 @@ static inline int compare (const void * a, const void * b)
 
 SPEX_info spex_cholesky_left_triangular_solve
 (
-    //Output
-    int64_t* top_output,     // On output: the beginning of nonzero pattern of
+    // Output
+    int64_t *top_output,     // On output: the beginning of nonzero pattern of
                              // L(:,k). The nonzero pattern is contained in
                              // xi[top_output...n-1]
                              // On input: undefined
-    SPEX_matrix x,          // On output: Solution of LD x = A(:,k) ==> kth row
+    SPEX_matrix x,           // On output: Solution of LD x = A(:,k) ==> kth row
                              // of L but really, the ONLY valid values of x are
                              // those in x[xi] since x is a working vector its
                              // other positions are jumbled.
-    int64_t* xi,             // On output: Nonzero pattern vector
+    int64_t *xi,             // On output: Nonzero pattern vector
     // Input
-    const SPEX_matrix L,    // Partial L matrix
-    const SPEX_matrix A,    // Input matrix
+    const SPEX_matrix L,     // Partial L matrix
+    const SPEX_matrix A,     // Input matrix
     const int64_t k,         // Iteration of algorithm
-    const SPEX_matrix rhos, // Partial sequence of pivots
-    int64_t* h,              // History vector
-    const int64_t* parent,   // Elimination tree
-    int64_t* c               // Column pointers of L but they don't point to the
+    const SPEX_matrix rhos,  // Partial sequence of pivots
+    int64_t *h,              // History vector
+    const int64_t *parent,   // Elimination tree
+    int64_t *c               // Column pointers of L but they don't point to the
                              // top position of each column of L. Instead they
                              // point to the position on each column where the
                              // next value of L will be grabbed, since at
@@ -136,19 +135,21 @@ SPEX_info spex_cholesky_left_triangular_solve
     //----------------------------------------------------------------
     // 1) Obtain the nonzero pattern of L[1:k-1,k]
     //----------------------------------------------------------------
-    // Obtain the nonzero pattern of the kth row of L which is entries L(1:k-1,k)
-    // Note that the left-looking Cholesky factorization performs two
-    // elimination tree analyses. The first is done prior to here in the
+
+    // Obtain the nonzero pattern of the kth row of L which is entries
+    // L(1:k-1,k) Note that the left-looking Cholesky factorization performs
+    // two elimination tree analyses. The first is done prior to here in the
     // preallocation of the L matrix. The second, performed here, gets the
     // nonzero pattern of L(k,:) (To compute L(:,k) you need the prealocation
     // first).
+
     SPEX_CHECK(spex_cholesky_ereach(&row_top, xi, A, k, parent, c));
-    // After eReach, xi[rowtop..n-1] stores the location of the nonzeros located
-    // in rows 1:k-1.
-    // Note that the values of these nonzeros have already been computed by the
-    // left-looking algorithm as they lie in row k of columns 1:k-1 of L, so we
-    // do not need to compute these values from scratch however we need to
-    // obtain their values.
+
+    // After eReach, xi[rowtop..n-1] stores the location of the nonzeros
+    // located in rows 1:k-1.  Note that the values of these nonzeros have
+    // already been computed by the left-looking algorithm as they lie in row k
+    // of columns 1:k-1 of L, so we do not need to compute these values from
+    // scratch however we need to obtain their values.
 
     //----------------------------------------------------------------
     // 2) Obtain the nonzero pattern of L[1:k-1,k]
@@ -175,22 +176,22 @@ SPEX_info spex_cholesky_left_triangular_solve
     // in rows 1:k-1 of L in order to perform the IPGE_Updates & History_Updates
     // that are needed to compute the values of the entries in rows k:n of L.
 
-
     //----------------------------------------------------------------
     // Initialize x (only the positions of its nonzeros)
     //----------------------------------------------------------------
-    // Reset only the essential positions in the x working vector.
-    // That is, so that x[i] = 0 for all row indices i located in xi (i.e., the
-    // nonzero pattern of L(:,k))
-    // (HOWEVER, you don't need to zero out the nonzeros that will be grabbed
-    // directly from L[k,1:k-1] that is why the loop ends in row_top and not in n)
+
+    // Reset only the essential positions in the x working vector.  That is, so
+    // that x[i] = 0 for all row indices i located in xi (i.e., the nonzero
+    // pattern of L(:,k)) (HOWEVER, you don't need to zero out the nonzeros
+    // that will be grabbed directly from L[k,1:k-1] that is why the loop ends
+    // in row_top and not in n)
+
     for (i = top; i < row_top; i++)
     {
         SPEX_mpz_set_ui(x->x.mpz[ xi[i] ], 0);
     }
 
     SPEX_mpz_set_ui(x->x.mpz[k], 0);
-
 
     // Now x[xi] has been zeroed. We obtain the values of any nonzero located in
     // L[k,1:k-1] which already reside in the previously computed kth row of L.
@@ -252,7 +253,7 @@ SPEX_info spex_cholesky_left_triangular_solve
 
                     //----------------------------------------------------------
                     /************* lij is nonzero, x[i] is zero****************/
-                    // x[i] = 0 then only perform IPGE update subtraction/division
+                    // x[i] = 0 then only perform IPGE update subtraction/div
                     //----------------------------------------------------------
                     SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[i]));
                     if (sgn == 0)
@@ -270,7 +271,8 @@ SPEX_info spex_cholesky_left_triangular_solve
                         {
                             SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i],L->x.mpz[m],
                                             x->x.mpz[j]));// x[i] = 0 - lij*x[j]
-                            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],
+                            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],
+                                    x->x.mpz[i],
                                     rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
                             h[i] = j;                  // Entry is up to date
                         }
@@ -289,7 +291,7 @@ SPEX_info spex_cholesky_left_triangular_solve
                                         rhos->x.mpz[0])); // x[i] = x[i]*rho[0]
                             SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m],
                                          x->x.mpz[j]));// x[i] = x[i] - lij*xj
-                            h[i] = j;                  // Entry is now up to date
+                            h[i] = j;                 // Entry is now up to date
                         }
                         // There is a previous pivot
                         else
@@ -310,7 +312,8 @@ SPEX_info spex_cholesky_left_triangular_solve
                                         rhos->x.mpz[j]));// x[i] = x[i] * rho[j]
                             SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m],
                                         x->x.mpz[j]));// x[i] = x[i] - lij*xj
-                            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],x->x.mpz[i],
+                            SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],
+                                    x->x.mpz[i],
                                     rhos->x.mpz[j-1]));// x[i] = x[i] / rho[j-1]
                             h[i] = j;                  // Entry is up to date
                         }
@@ -336,6 +339,6 @@ SPEX_info spex_cholesky_left_triangular_solve
         }
     }
     // Output the beginning of nonzero pattern
-    *top_output = top;
+    (*top_output) = top;
     return SPEX_OK;
 }

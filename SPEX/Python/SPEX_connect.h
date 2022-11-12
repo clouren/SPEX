@@ -14,12 +14,12 @@
 SPEX_info spex_python
 ( 
      //output
-     void** sol_void, //solution
+     void **sol_void, //solution
      //input
-     int64_t* Ap,     // column pointers of A, an array size is n+1 
-     int64_t* Ai,     // row indices of A, of size nzmax.
-     double* Ax,      // values of A
-     double* bx,      // values of b
+     int64_t *Ap,     // column pointers of A, an array size is n+1 
+     int64_t *Ai,     // row indices of A, of size nzmax.
+     double *Ax,      // values of A
+     double *bx,      // values of b
      int m,           // Number of rows of A
      int n,           // Number of columns of A
      int nz,          // Number of nonzeros in A

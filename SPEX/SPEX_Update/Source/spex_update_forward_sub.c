@@ -22,12 +22,12 @@
 
 SPEX_info spex_update_forward_sub // perform sparse forward substitution
 (
-    SPEX_vector x,     // Input: the right-hand-side vector
-                        // Output: solution x
-    const SPEX_matrix L,  // matrix L
-    const int64_t *P,   // row permutation
-    const SPEX_matrix rhos,// array of scaled pivots
-    int64_t *h          // history vector for x
+    SPEX_vector x,          // Input: the right-hand-side vector
+                            // Output: solution x
+    const SPEX_matrix L,    // matrix L
+    const int64_t *P,       // row permutation
+    const SPEX_matrix rhos, // array of scaled pivots
+    int64_t *h              // history vector for x
 )
 {
     SPEX_info info;

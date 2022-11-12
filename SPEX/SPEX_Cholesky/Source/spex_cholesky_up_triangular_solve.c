@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_up_triangular_solve: Sparse symmetric REF Triangular solve
+// SPEX_Cholesky/spex_cholesky_up_triangular_solve: Sparse sym REF tri. solve
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -13,10 +13,10 @@
 
 #include "spex_cholesky_internal.h"
 
-/* Purpose: This function performs the symmetric sparse REF triangular solve for
- * the up-looking Cholesky factorization. i,e, LD x = A(1:k-1, k). At the end of
- * this function, the vector x contains the values of the kth row of the integer-
- * preserving matrix L.
+/* Purpose: This function performs the symmetric sparse REF triangular solve
+ * for the up-looking Cholesky factorization. i,e, LD x = A(1:k-1, k). At the
+ * end of this function, the vector x contains the values of the kth row of the
+ * integer- preserving matrix L.
  *
  * Input arguments of the function:
  *
@@ -62,24 +62,23 @@ static inline int compare (const void * a, const void * b)
 SPEX_info spex_cholesky_up_triangular_solve
 (
     //Output
-    int64_t* top_output,               // On input NULL. On output contains the
-                                       // beginning of nonzero pattern
-                                       // The nonzero pattern is contained in
-                                       // xi[top_output...n-1]
-    int64_t* xi,                       // Nonzero pattern vector
-    SPEX_matrix x,                    // Solution of system ==> kth row of L
+    int64_t *top_output,            // On input NULL. On output contains the
+                                    // beginning of nonzero pattern
+                                    // The nonzero pattern is contained in
+                                    // xi[top_output...n-1]
+    int64_t *xi,                    // Nonzero pattern vector
+    SPEX_matrix x,                  // Solution of system ==> kth row of L
     // Input
-    const SPEX_matrix L,              // Partial L matrix
-    const SPEX_matrix A,              // Input matrix
-    const int64_t k,                   // Iteration of algorithm
-    const int64_t* parent,             // Elimination tree
-    int64_t* c,                        // Column pointers
-    const SPEX_matrix rhos,           // sequence of pivots
-    int64_t* h                         // History vector
+    const SPEX_matrix L,            // Partial L matrix
+    const SPEX_matrix A,            // Input matrix
+    const int64_t k,                // Iteration of algorithm
+    const int64_t *parent,          // Elimination tree
+    int64_t *c,                     // Column pointers
+    const SPEX_matrix rhos,         // sequence of pivots
+    int64_t *h                      // History vector
 )
 {
     SPEX_info info;
-
 
     // All inputs are checked by the caller. Here we include
     // asserts as a reminder of the expected data types of the inputs
@@ -140,8 +139,9 @@ SPEX_info spex_cholesky_up_triangular_solve
 
     //--------------------------------------------------------------------------
     // Perform the REF Triangular Solve. Note that, unlike the left-looking
-    // Cholesky triangular solve where L is lower trapezoidal, the up-looking
-    // L matrix is actually lower triangular; thus this is a true triangular solve.
+    // Cholesky triangular solve where L is lower trapezoidal, the up-looking L
+    // matrix is actually lower triangular; thus this is a true triangular
+    // solve.
     //--------------------------------------------------------------------------
     for (p = top; p < n; p++)
     {
@@ -155,7 +155,8 @@ SPEX_info spex_cholesky_up_triangular_solve
         {
             // History update x[j]: x[j] = x[j]*rhos[j-1]/rhos[h[j]]
             // x[j] = x[j]*rhos[j-1]
-            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[j], x->x.mpz[j], rhos->x.mpz[j-1]));
+            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[j], x->x.mpz[j],
+                rhos->x.mpz[j-1]));
             if (h[j] > -1)
             {
                // x[j] = x[j] / rhos [ h[j] ]
@@ -237,7 +238,8 @@ SPEX_info spex_cholesky_up_triangular_solve
                                             x->x.mpz[i],rhos->x.mpz[h[i]]));
                             }
                         }
-                        // ---- IPGE Update x[i] = (x[i]*rhos[j] - lij*xj) / rho[j-1] ------
+                        // ---- IPGE Update :
+                        // x[i] = (x[i]*rhos[j] - lij*xj) / rho[j-1]
                         // x[i] = x[i]*rhos[j]
                         SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],
                                                 rhos->x.mpz[j]));
@@ -302,6 +304,6 @@ SPEX_info spex_cholesky_up_triangular_solve
         }
     }
     // Output the top of the nonzero pattern
-    *top_output = top;
+    (*top_output) = top;
     return SPEX_OK;
 }

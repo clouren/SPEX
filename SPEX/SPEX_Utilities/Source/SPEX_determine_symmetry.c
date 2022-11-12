@@ -1,16 +1,17 @@
 //------------------------------------------------------------------------------
 // SPEX_Utilities/SPEX_determine_symmetry: Determine if given matrix is 
-//                                    *numerically* (thus pattern-wise) symmetric
+// *numerically* (thus pattern-wise) symmetric
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-/* Purpose: Determine if the input A is *numerically* (thus pattern-wise) symmetric.
- * Since SPEX is an exact framework, it doesn't make sense to check only pattern symmetry.
+/* Purpose: Determine if the input A is *numerically* (thus pattern-wise)
+ * symmetric.  Since SPEX is an exact framework, it doesn't make sense to check
+ * only pattern symmetry.
  * 
  * If the matrix is determined to be symmetric, SPEX_OK is returned; otherwise,
  * SPEX_UNSYMMETRIC is returned.
@@ -26,8 +27,8 @@
 
 SPEX_info SPEX_determine_symmetry
 (
-    const SPEX_matrix A,            // Input matrix to be checked for symmetry
-    const SPEX_options option // Command options
+    const SPEX_matrix A,        // Input matrix to be checked for symmetry
+    const SPEX_options option   // Command options
 )
 {    
     SPEX_info info;

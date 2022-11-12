@@ -39,14 +39,14 @@
 SPEX_info SPEX_backslash
 (
     // Output
-    SPEX_matrix *X_handle,       // On output: Final solution vector
-                                  // On input: undefined
+    SPEX_matrix *X_handle,      // On output: Final solution vector
+                                // On input: undefined
     // Input
-    const SPEX_type type,         // Type of output desired
-                                  // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix A,         // Input matrix
-    const SPEX_matrix b,         // Right hand side vector(s)
-    SPEX_options option          // Command options (NULL: means use defaults)
+    const SPEX_type type,       // Type of output desired
+                                // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,        // Input matrix
+    const SPEX_matrix b,        // Right hand side vector(s)
+    SPEX_options option         // Command options (NULL: means use defaults)
 )
 {
     SPEX_info info;

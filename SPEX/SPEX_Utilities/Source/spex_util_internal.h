@@ -300,7 +300,7 @@ void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 // Creates a simple 1D array, where A[i] is an entry of type mpfr_t.
 
 /* Purpose: This function creates a MPFR array of desired precision*/
-mpfr_t* spex_create_mpfr_array
+mpfr_t *spex_create_mpfr_array
 (
     int64_t n,     // size of the array
     const SPEX_options option
@@ -315,7 +315,7 @@ mpfr_t* spex_create_mpfr_array
 /* Purpose: This function creates an mpq array of size n.
  * This function must be called for all mpq arrays created.
  */
-mpq_t* spex_create_mpq_array
+mpq_t *spex_create_mpq_array
 (
     int64_t n              // size of the array
 );
@@ -332,7 +332,7 @@ SPEX_info spex_create_mpq (mpq_t x);
 /* Purpose: This function creates an mpz array of size n and allocates
  * default size.
  */
-mpz_t* spex_create_mpz_array
+mpz_t *spex_create_mpz_array
 (
     int64_t n              // Size of x
 );
@@ -363,7 +363,7 @@ void spex_delete_mpz_array
 SPEX_info spex_expand_double_array
 (
     mpz_t *x_out,   // integral final array
-    double* x,      // double array that needs to be made integral
+    double *x,      // double array that needs to be made integral
     mpq_t scale,    // the scaling factor used (x_out = scale * x)
     int64_t n,      // size of x
     const SPEX_options option
@@ -377,7 +377,7 @@ SPEX_info spex_expand_double_array
 SPEX_info spex_expand_mpfr_array
 (
     mpz_t *x_out,   // integral final array
-    mpfr_t* x,      // mpfr array to be expanded
+    mpfr_t *x,      // mpfr array to be expanded
     mpq_t scale,    // scaling factor used (x_out = scale*x)
     int64_t n,      // size of x
     const SPEX_options option // command options containing the prec for mpfr
@@ -390,7 +390,7 @@ SPEX_info spex_expand_mpfr_array
 SPEX_info spex_expand_mpq_array
 (
     mpz_t *x_out, // integral final array
-    mpq_t* x,     // mpq array that needs to be converted
+    mpq_t *x,     // mpq array that needs to be converted
     mpq_t scale,  // scaling factor. x_out = scale*x
     int64_t n,     // size of x
     const SPEX_options option // Command options

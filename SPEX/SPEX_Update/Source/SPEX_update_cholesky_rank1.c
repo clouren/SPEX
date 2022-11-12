@@ -38,12 +38,12 @@
 // TODO allow w->v[0]->scale != 1
 SPEX_info SPEX_update_cholesky_rank1
 (
-    SPEX_factorization F,  // The SPEX Cholesky factorization of A, including
+    SPEX_factorization F,   // The SPEX Cholesky factorization of A, including
                             // L, rhos, P and Pinv. This factorization will be
                             // modified during the update process. Therefore,
                             // if this function fails for any reason, the
                             // returned F should be considered as undefined.
-    SPEX_matrix w,         // a n-by-1 dynamic_CSC matrix that contains the
+    SPEX_matrix w,          // a n-by-1 dynamic_CSC matrix that contains the
                             // vector to modify the original matrix A, the
                             // resulting A is A+sigma*w*w^T. A->scale = w->scale
                             // and w->v[0]->scale = 1. In output, w is

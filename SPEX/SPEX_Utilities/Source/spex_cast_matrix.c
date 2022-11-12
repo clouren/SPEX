@@ -2,7 +2,7 @@
 // SPEX_Utilities/spex_cast_matrix: create a dense typecasted matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -19,10 +19,10 @@
 
 SPEX_info spex_cast_matrix
 (
-    SPEX_matrix *Y_handle,     // nz-by-1 dense matrix to create
+    SPEX_matrix *Y_handle,      // nz-by-1 dense matrix to create
     SPEX_type Y_type,           // type of Y
-    const SPEX_matrix A,             // matrix with nz entries
-    const SPEX_options option  // Command options, if NULL defaults are used
+    const SPEX_matrix A,        // matrix with nz entries
+    const SPEX_options option   // Command options, if NULL defaults are used
 )
 {
 

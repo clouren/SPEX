@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_left_factor: Left-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_cholesky_left_factor: Left-looking REF Chol. factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -56,15 +56,15 @@
 SPEX_info spex_cholesky_left_factor
 (
     // Output
-    SPEX_matrix* L_handle,    // Lower triangular matrix. NULL on input.
-    SPEX_matrix* rhos_handle, // Sequence of pivots. NULL on input.
+    SPEX_matrix *L_handle,    // Lower triangular matrix. NULL on input.
+    SPEX_matrix *rhos_handle, // Sequence of pivots. NULL on input.
 
     // Input
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
-    const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_options option // command options
+    const SPEX_matrix A,       // Matrix to be factored
+    const SPEX_options option  // command options
 )
 {
     //--------------------------------------------------------------------------
@@ -192,8 +192,8 @@ SPEX_info spex_cholesky_left_factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_cholesky_left_triangular_solve(&top, x, xi, L, A, k, rhos,
-            h, S->parent, c));
+        SPEX_CHECK(spex_cholesky_left_triangular_solve(&top, x, xi, L, A, k,
+            rhos, h, S->parent, c));
 
         // Set the pivot element If this element is equal to zero, no pivot
         // element exists and the matrix is either not SPD or singular

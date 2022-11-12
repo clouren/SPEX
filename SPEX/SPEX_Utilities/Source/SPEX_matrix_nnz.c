@@ -2,7 +2,7 @@
 // SPEX_Utilities/SPEX_matrix_nnz: find # of entries in a matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -12,11 +12,11 @@
 #include "spex_util_internal.h"
 
 
-SPEX_info SPEX_matrix_nnz     // find the # of entries in A
+SPEX_info SPEX_matrix_nnz       // find the # of entries in A
 (
-    int64_t *nnz,              // # of entries in A, -1 if A is NULL
-    const SPEX_matrix A,      // matrix to query
-    const SPEX_options option // command options, currently unused
+    int64_t *nnz,               // # of entries in A, -1 if A is NULL
+    const SPEX_matrix A,        // matrix to query
+    const SPEX_options option   // command options, currently unused
 )
 {
 

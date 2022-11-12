@@ -15,7 +15,7 @@
 
 bool spex_mex_check_for_inf     // true if x can be represented as int64_t
 (
-    double* x, // The array of numeric values
+    double *x, // The array of numeric values
     mwSize n   // size of array
 )
 {

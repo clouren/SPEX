@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/spex_dynamic_to_CSC_mpz.c: convert SPEX_DYNAMIC_CSC matrix to a
-// SPEX_CSC matrix with mpz_t entries.
+// SPEX_Utilities/spex_dynamic_to_CSC_mpz.c: convert SPEX_DYNAMIC_CSC matrix to
+// a SPEX_CSC matrix with mpz_t entries.
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2020-2021, Jinhao Chen, Chris Lourenco (US Naval Academy),
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_Utilities: (c) 2020-2021, Jinhao Chen, Chris Lourenco,
+// Erick Moreno-Centeno, Timothy A. Davis.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -20,10 +20,10 @@
 
 SPEX_info spex_dynamic_to_CSC_mpz
 (
-    SPEX_matrix *A_handle,       // converted CSC matrix
+    SPEX_matrix *A_handle,          // converted CSC matrix
     // input:
-    const SPEX_matrix B,         // original matrix (not modified)
-    const int64_t nnz,            // number of nonzeros in B
+    const SPEX_matrix B,            // original matrix (not modified)
+    const int64_t nnz,              // number of nonzeros in B
     const SPEX_options option
 )
 {

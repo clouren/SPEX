@@ -21,15 +21,15 @@
 SPEX_info spex_update_finalize_and_insert_vk
 (
     spex_scattered_vector vk_dense, //scattered version of the solution for
-                      // LDx=v using the first k-1 columns of L
-    int64_t *h,       // history vector for vk_dense
+                        // LDx=v using the first k-1 columns of L
+    int64_t *h,         // history vector for vk_dense
     SPEX_matrix U,      // matrix U
     SPEX_matrix L,      // matrix L
-    const SPEX_matrix rhos,// array of scaled pivots
-    const int64_t *Q, // the column permutation
-    const int64_t *P_inv,// inverse of row permutation
-    const int64_t k,  // the column index in L that vk_dense will be inserted
-    const int64_t diag,// the index of entry in vk_dense that will be diagonal
+    const SPEX_matrix rhos, // array of scaled pivots
+    const int64_t *Q,       // the column permutation
+    const int64_t *P_inv,   // inverse of row permutation
+    const int64_t k,        // column index in L that vk_dense will be inserted
+    const int64_t diag,     // index of entry in vk_dense that will be diagonal
     const SPEX_options option
 )
 {

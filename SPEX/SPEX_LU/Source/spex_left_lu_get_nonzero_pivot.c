@@ -8,27 +8,25 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function obtains the first eligible nonzero pivot
- * This is enabled if the user sets option->pivot = SPEX_FIRST_NONZERO
+/* Purpose: This function obtains the first eligible nonzero pivot. This is
+ * enabled if the user sets option->pivot = SPEX_FIRST_NONZERO
  *
- * Note: This pivoting scheme is NOT recommended for SPEX Left LU.  It is provided
- * for comparison with other pivoting options.
+ * Note: This pivoting scheme is NOT recommended for SPEX Left LU.  It is
+ * provided for comparison with other pivoting options.
  *
  * On output, the kth pivot is returned.
  */
-
-//TOASK free_alloc
 
 #include "spex_lu_internal.h"
 
 SPEX_info spex_left_lu_get_nonzero_pivot // find the first eligible nonzero pivot
 (
     int64_t *pivot,         // the index of first eligible nonzero pivot
-    SPEX_matrix x,         // kth column of L and U
-    int64_t* pivs,          // vector indicating which rows are pivotal
+    SPEX_matrix x,          // kth column of L and U
+    int64_t *pivs,          // vector indicating which rows are pivotal
     int64_t n,              // size of x
     int64_t top,            // nonzero pattern is located in xi[top..n-1]
-    int64_t* xi             // nonzero pattern of x
+    int64_t *xi             // nonzero pattern of x
 )
 {
 

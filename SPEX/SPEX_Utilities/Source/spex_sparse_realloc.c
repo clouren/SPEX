@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_sparse_realloc: double the space for a sparse mpz matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -18,7 +18,7 @@
 
 SPEX_info spex_sparse_realloc
 (
-    SPEX_matrix A // the matrix to be expanded
+    SPEX_matrix A       // the matrix to be expanded
 )
 {
 

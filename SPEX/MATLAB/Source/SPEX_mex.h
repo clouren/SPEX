@@ -72,9 +72,9 @@ spex_mex_options ;
 /* Purpose: A GMP reallocation function
  * This allows GMP to use MATLAB's default realloc function
  */
-void* SPEX_gmp_mex_realloc
+void *SPEX_gmp_mex_realloc
 (
-    void* x,    // void* to be reallocated
+    void *x,    // void * to be reallocated
     size_t a,   // Previous size
     size_t b    // New size
 );
@@ -84,7 +84,7 @@ void* SPEX_gmp_mex_realloc
  */
 void SPEX_gmp_mex_free
 (
-    void* x,    // void* to be freed
+    void *x,    // void * to be freed
     size_t a    // Size
 );
 
@@ -102,7 +102,7 @@ void spex_mex_get_matlab_options
 
 bool spex_mex_check_for_inf     // true if x can be represented as int64_t
 (
-    double* x, // The array of numeric values
+    double *x, // The array of numeric values
     mwSize n   // size of array
 ) ;
 

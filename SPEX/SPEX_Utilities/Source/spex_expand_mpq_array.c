@@ -2,7 +2,7 @@
 // SPEX_Utilities/spex_expand_mpq_array: convert mpq array to mpz
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
 // Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -20,8 +20,8 @@
 
 SPEX_info spex_expand_mpq_array
 (
-    mpz_t* x_out,        // mpz array, on output x_out = x*scale
-    mpq_t* x,            // mpq array that needs to be converted
+    mpz_t *x_out,        // mpz array, on output x_out = x*scale
+    mpq_t *x,            // mpq array that needs to be converted
     mpq_t scale,         // scaling factor. x_out = scale*x
     int64_t n,           // size of x
     const SPEX_options option // Command options

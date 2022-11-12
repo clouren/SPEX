@@ -21,9 +21,7 @@ Erick:
     copyright dates (wait for Chris to ask USNA)
 
 Tim:
-    cleanup cmake
-    Make sure "const" is used correctly. Never typecast a "const SPEX_matrix A"
-    as "(SPEX_matrix) A".
+    get Tcov to work
 
 in parallel:
     user guide polish (see Overleaf)

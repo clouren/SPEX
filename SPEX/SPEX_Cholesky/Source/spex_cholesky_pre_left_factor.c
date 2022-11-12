@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_pre_left_factor: Symbolic left-looking Chol factorization
+// SPEX_Cholesky/spex_cholesky_pre_left_factor: Symbolic left-looking Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
@@ -47,11 +47,11 @@
 SPEX_info spex_cholesky_pre_left_factor
 (
     // Output
-    SPEX_matrix* L_handle,       // On output: partial L matrix
+    SPEX_matrix* L_handle,        // On output: partial L matrix
                                   // On input: undefined
     // Input
-    int64_t* xi,                  // Workspace nonzero pattern vector
-    const SPEX_matrix A,         // Input Matrix
+    int64_t *xi,                  // Workspace nonzero pattern vector
+    const SPEX_matrix A,          // Input Matrix
     const SPEX_symbolic_analysis S  // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
@@ -65,7 +65,7 @@ SPEX_info spex_cholesky_pre_left_factor
     ASSERT(A->type == SPEX_MPZ);
 
     int64_t  top, k, j, jnew, n = A->n, p = 0;
-    int64_t* c = NULL;
+    int64_t *c = NULL;
     SPEX_matrix L = NULL;
     ASSERT(n >= 0);
 

@@ -31,15 +31,15 @@
 
 SPEX_info spex_update_debug
 (
-    bool *Is_correct,     // if factorization is correct
-    SPEX_factorization F,// LU factorization of A
-    int64_t k,            // current iteration
-    spex_scattered_vector Lk_dense_col,// scattered column k of L
-    spex_scattered_vector Uk_dense_row,// scattered column k of U
-    bool finish_update,   // if the update process has finished
-    SPEX_matrix vk,      // inserted column
-    SPEX_matrix A,       // Input matrix Dynamic_CSC MPZ
-    const SPEX_options option// Command parameters
+    bool *Is_correct,       // if factorization is correct
+    SPEX_factorization F,   // LU factorization of A
+    int64_t k,              // current iteration
+    spex_scattered_vector Lk_dense_col, // scattered column k of L
+    spex_scattered_vector Uk_dense_row, // scattered column k of U
+    bool finish_update,     // if the update process has finished
+    SPEX_matrix vk,         // inserted column
+    SPEX_matrix A,          // Input matrix Dynamic_CSC MPZ
+    const SPEX_options option   // Command parameters
 )
 {
     SPEX_info info = SPEX_OK;
