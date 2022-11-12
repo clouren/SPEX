@@ -32,7 +32,7 @@
 SPEX_info spex_update_debug
 (
     bool *Is_correct,     // if factorization is correct
-    SPEX_factorization *F,// LU factorization of A
+    SPEX_factorization F,// LU factorization of A
     int64_t k,            // current iteration
     spex_scattered_vector Lk_dense_col,// scattered column k of L
     spex_scattered_vector Uk_dense_row,// scattered column k of U
@@ -49,7 +49,7 @@ SPEX_info spex_update_debug
     SPEX_symbolic_analysis* Stmp = NULL;
     SPEX_matrix Atmp = NULL;
     SPEX_matrix UT = NULL;
-    SPEX_factorization *Ftmp = NULL;
+    SPEX_factorization Ftmp = NULL;
     SPEX_options opt1 = NULL;
     mpq_t tmpq; SPEX_MPQ_SET_NULL(tmpq);
     mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);

@@ -36,7 +36,7 @@
 SPEX_info SPEX_lu_factorize
 (
     // output:
-    SPEX_factorization **F_handle, // LU factorization
+    SPEX_factorization *F_handle, // LU factorization
     // input:
     const SPEX_matrix A,      // matrix to be factored
     const SPEX_symbolic_analysis *S, // symbolic analysis
@@ -68,7 +68,7 @@ SPEX_info SPEX_lu_factorize
     // Declare and initialize workspace
     //--------------------------------------------------------------------------
 
-    SPEX_factorization *F = NULL ;
+    SPEX_factorization F = NULL ;
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
     int64_t *pivs = NULL ;
@@ -80,7 +80,7 @@ SPEX_info SPEX_lu_factorize
     size_t size ;
 
     // allocate memory space for the factorization
-    F = (SPEX_factorization*) SPEX_calloc(1, sizeof(SPEX_factorization));
+    F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
     if (F == NULL)
     {
         return SPEX_OUT_OF_MEMORY;

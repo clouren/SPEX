@@ -22,7 +22,7 @@ Erick:
 
 Tim:
     cleanup cmake
-    (SPEX_matrix *)
+    (SPEX_symbolic_analysis *):
     Make sure "const" is used correctly. Never typecast a "const SPEX_matrix A"
     as "(SPEX_matrix) A".
 

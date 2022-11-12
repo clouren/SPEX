@@ -46,7 +46,7 @@
 SPEX_info spex_cholesky_factor
 (
     // Output
-    SPEX_factorization **F_handle, // Cholesky factorization
+    SPEX_factorization *F_handle, // Cholesky factorization
     //Input
     const SPEX_symbolic_analysis* S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
@@ -59,7 +59,7 @@ SPEX_info spex_cholesky_factor
 {
     SPEX_info info;
 
-    SPEX_factorization *F = NULL ;
+    SPEX_factorization F = NULL ;
 
     //--------------------------------------------------------------------------
     // Check inputs
@@ -84,7 +84,7 @@ SPEX_info spex_cholesky_factor
     int64_t n = A->n ;
 
     // Allocate memory for the factorization
-    F = (SPEX_factorization*) SPEX_calloc(1, sizeof(SPEX_factorization));
+    F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
     if (F == NULL) return SPEX_OUT_OF_MEMORY;
 
     // set factorization kind

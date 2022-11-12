@@ -13,7 +13,7 @@
 
 SPEX_info spex_factorization_basic_check
 (
-    SPEX_factorization *F
+    SPEX_factorization F
 )
 {
 

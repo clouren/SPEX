@@ -727,7 +727,10 @@ typedef struct
     int64_t *Q_perm;                     // column permutation
     int64_t *Qinv_perm;                  // inverse of column permutation
 
-} SPEX_factorization;   // FIXME
+} SPEX_factorization_struct ;
+
+// A SPEX_factorization is a pointer to a SPEX_factorization_struct
+typedef SPEX_factorization_struct *SPEX_factorization ;
 
 //------------------------------------------------------------------------------
 // SPEX_factorization_free frees the SPEX_factorization object.
@@ -735,7 +738,7 @@ typedef struct
 
 SPEX_info SPEX_factorization_free        
 (
-    SPEX_factorization **F_handle, // Factorization to be deleted
+    SPEX_factorization *F_handle, // Factorization to be deleted
     const SPEX_options option
 ) ;
 
@@ -757,7 +760,7 @@ SPEX_info SPEX_factorization_free
 
 SPEX_info SPEX_factorization_check
 (
-    SPEX_factorization *F, // The factorization to check / print
+    SPEX_factorization F, // The factorization to check / print
     const SPEX_options option
 ) ;
 
@@ -807,7 +810,7 @@ SPEX_info SPEX_factorization_check
 
 SPEX_info SPEX_factorization_convert
 (
-    SPEX_factorization *F, // The factorization to be converted
+    SPEX_factorization F, // The factorization to be converted
     bool updatable, // if true, make F updatable. false: make non-updatable
     const SPEX_options option // Command options
 ) ;
@@ -1233,7 +1236,7 @@ SPEX_info SPEX_lu_analyze
 SPEX_info SPEX_lu_factorize
 (
     // output:
-    SPEX_factorization **F_handle, // LU factorization
+    SPEX_factorization *F_handle, // LU factorization
     // input:
     const SPEX_matrix A,         // matrix to be factorized, must be CSC MPZ
     const SPEX_symbolic_analysis *S, // symbolic analysis
@@ -1246,7 +1249,7 @@ SPEX_info SPEX_lu_solve
     // Output
     SPEX_matrix *x_handle,       // rational solution to the system
     // input/output:
-    SPEX_factorization *F,  // The non-updatable LU factorization.
+    SPEX_factorization F,  // The non-updatable LU factorization.
                             // Mathematically, F is unchanged.  However, if F
                             // is updatable on input, it is converted to
                             // non-updatable.  If F is already non-updatable,
@@ -1380,7 +1383,7 @@ SPEX_info SPEX_cholesky_analyze
 SPEX_info SPEX_cholesky_factorize
 (
     // Output
-    SPEX_factorization** F_handle,// Cholesky factorization
+    SPEX_factorization *F_handle,// Cholesky factorization
     //Input
     const SPEX_matrix A,         // matrix to be factorized, must be CSC MPZ
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
@@ -1408,7 +1411,7 @@ SPEX_info SPEX_cholesky_solve
                                   // On output: Rational solution (SPEX_MPQ)
                                   // to the system. 
     // input/output:
-    SPEX_factorization* F,  // The non-updatable Cholesky factorization.
+    SPEX_factorization F,  // The non-updatable Cholesky factorization.
                             // Mathematically, F is unchanged.  However, if F
                             // is updatable on input, it is converted to
                             // non-updatable.  If F is already non-updatable,
@@ -1470,7 +1473,7 @@ SPEX_info SPEX_cholesky_solve
 SPEX_info SPEX_update_lu_colrep
 (
     // Input/Output:
-    SPEX_factorization* F,  // The SPEX LU factorization of a n-by-n matrix A,
+    SPEX_factorization F,  // The SPEX LU factorization of a n-by-n matrix A,
                             // including L, U, rhos, P, Pinv, Q and Qinv.
     // Input:
     SPEX_matrix vk,        // Pointer to a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix
@@ -1523,7 +1526,7 @@ SPEX_info SPEX_update_matrix_colrep// performs column replacement
 SPEX_info SPEX_update_cholesky_rank1
 (
     // Input/Output:
-    SPEX_factorization *F,  // The SPEX Cholesky factorization of a n-by-n
+    SPEX_factorization F,  // The SPEX Cholesky factorization of a n-by-n
                             // matrix A, including L, rhos, P and Pinv.
 
     SPEX_matrix w,         // a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix with
@@ -1549,7 +1552,7 @@ SPEX_info SPEX_update_solve
     SPEX_matrix *x_handle, // a m*n dense matrix contains the solution to
                             // the system. 
     // input/output:
-    SPEX_factorization *F,  // The updatable LU or Cholesky factorization of A.
+    SPEX_factorization F,  // The updatable LU or Cholesky factorization of A.
                             // Mathematically, F is unchanged.  However, if
                             // F is not updatable on input, it is converted
                             // to updatable.  If F is already updatable, it is
@@ -1572,7 +1575,7 @@ SPEX_info SPEX_update_tsolve
     SPEX_matrix *x_handle, // a m*n dense matrix contains the solution to
                             // the system. 
     // input/output:
-    SPEX_factorization *F,  // The updatable LU or Cholesky factorization of A.
+    SPEX_factorization F,  // The updatable LU or Cholesky factorization of A.
                             // Mathematically, F is unchanged.  However, if
                             // F is not updatable on input, it is converted
                             // to updatable.  If F is already updatable, it is

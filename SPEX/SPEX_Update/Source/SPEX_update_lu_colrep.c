@@ -44,7 +44,7 @@
 // TODO allow vk->v[0]->scale != 1?
 SPEX_info SPEX_update_lu_colrep
 (
-    SPEX_factorization* F,  // The SPEX factorization of A, including L, U,
+    SPEX_factorization F,  // The SPEX factorization of A, including L, U,
                             // rhos, P, Pinv, Q and Qinv. The factorization
                             // will be modified during the update process.
                             // Therefore, if this function fails for any

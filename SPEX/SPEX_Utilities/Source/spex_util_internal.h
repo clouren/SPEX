@@ -520,7 +520,7 @@ SPEX_info spex_cumsum
  */
 SPEX_info spex_factorization_basic_check
 (
-    SPEX_factorization *F // The factorization to check
+    SPEX_factorization F // The factorization to check
 );
 
 SPEX_info spex_colamd

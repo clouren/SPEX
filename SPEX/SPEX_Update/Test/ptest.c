@@ -106,7 +106,7 @@ int main( int argc, char* argv[])
     SPEX_matrix b = NULL, c = NULL,  basic_sol = NULL, y = NULL,
                 c_new = NULL, y_sol = NULL;
     SPEX_matrix vk = NULL;
-    SPEX_factorization *F1 = NULL, *F2 = NULL;
+    SPEX_factorization F1 = NULL, F2 = NULL;
     mpz_t tmpz;
     mpq_t obj, minq, maxq, tmpq1, tmpq2;
     SPEX_symbolic_analysis* analysis = NULL;

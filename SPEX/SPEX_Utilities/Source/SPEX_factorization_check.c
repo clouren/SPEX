@@ -40,7 +40,7 @@
 
 SPEX_info SPEX_factorization_check
 (
-    SPEX_factorization *F, // The factorization to check
+    SPEX_factorization F, // The factorization to check
     const SPEX_options option
 )
 {

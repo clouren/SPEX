@@ -49,7 +49,7 @@
 SPEX_info SPEX_cholesky_factorize
 (
     // Output
-    SPEX_factorization **F_handle,  // Cholesky factorization struct
+    SPEX_factorization *F_handle,  // Cholesky factorization struct
     //Input
     const SPEX_matrix A,           // Matrix to be factored. Must be SPEX_MPZ
                                     // and SPEX_CSC
@@ -87,7 +87,7 @@ SPEX_info SPEX_cholesky_factorize
     }
 
     SPEX_matrix PAP = NULL ;
-    SPEX_factorization *F = NULL ;
+    SPEX_factorization F = NULL ;
 
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the row/column ordering from

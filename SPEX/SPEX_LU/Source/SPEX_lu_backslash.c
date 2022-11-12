@@ -76,7 +76,7 @@ SPEX_info SPEX_lu_backslash
     SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;
 
     SPEX_symbolic_analysis *S = NULL;
-    SPEX_factorization *F = NULL ;
+    SPEX_factorization F = NULL ;
     SPEX_matrix x = NULL;
 
     //--------------------------------------------------------------------------

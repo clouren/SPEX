@@ -178,7 +178,7 @@ int main( int argc, char* argv[])
                 //--------------------------------------------------------------
 
                 SPEX_options option = NULL;
-                SPEX_factorization *F = NULL;
+                SPEX_factorization F = NULL;
                 SPEX_matrix A = NULL, tmpA = NULL, vk = NULL;
                 SPEX_matrix b = NULL, b_sol = NULL;
                 SPEX_matrix L = NULL, U = NULL, rhos = NULL;
@@ -195,8 +195,8 @@ int main( int argc, char* argv[])
                 option->print_level = 3;
 
                 // allocate memory space for the factorization
-                F = (SPEX_factorization*) SPEX_calloc(1,
-                    sizeof(SPEX_factorization));
+                F = (SPEX_factorization) SPEX_calloc(1,
+                    sizeof(SPEX_factorization_struct));
                 if (F == NULL) {TEST_CHECK(SPEX_OUT_OF_MEMORY); continue;}
                 // set factorization kind
                 F->kind = (test_type == 0) ?

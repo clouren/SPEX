@@ -63,7 +63,7 @@ int main( int argc, char* argv[])
     int sgn;
     SPEX_options option = NULL;
     SPEX_symbolic_analysis *analysis = NULL;
-    SPEX_factorization *F_update = NULL, *Ftmp = NULL;
+    SPEX_factorization F_update = NULL, Ftmp = NULL;
     SPEX_matrix Prob_A = NULL, Prob_b = NULL, Prob_c = NULL;
     SPEX_matrix A1 = NULL, A2 = NULL, A3 = NULL;
     SPEX_matrix A0 = NULL, w = NULL;

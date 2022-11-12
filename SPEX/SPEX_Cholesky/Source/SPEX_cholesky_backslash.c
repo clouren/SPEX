@@ -101,7 +101,7 @@ SPEX_info SPEX_cholesky_backslash
 
     // Declare memory
     SPEX_symbolic_analysis *S = NULL;
-    SPEX_factorization *F = NULL ;
+    SPEX_factorization F = NULL ;
     SPEX_matrix x = NULL;
     SPEX_matrix PAP = NULL;
 

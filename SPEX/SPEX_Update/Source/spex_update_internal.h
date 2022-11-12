@@ -226,7 +226,7 @@ SPEX_info spex_update_solve_internal
     SPEX_matrix *x_handle, // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    SPEX_factorization *F,  // The SPEX LU or Cholesky factorization
+    SPEX_factorization F,  // The SPEX LU or Cholesky factorization
     const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
     const bool transpose,   // whether computing Ax=b or ATx=b
@@ -238,7 +238,7 @@ SPEX_info spex_update_solve_internal
 SPEX_info spex_update_debug
 (
     bool *Is_correct,     // if factorization is correct
-    SPEX_factorization *F,// LU factorization of A
+    SPEX_factorization F,// LU factorization of A
     int64_t k,            // current iteration
     spex_scattered_vector Lk_dense_col,// scattered column k of L
     spex_scattered_vector Uk_dense_row,// scattered column k of U
@@ -251,7 +251,7 @@ SPEX_info spex_update_debug
 SPEX_info spex_update_verify
 (
     bool *Is_correct,     // if factorization is correct
-    SPEX_factorization *F,// LU factorization of A
+    SPEX_factorization F,// LU factorization of A
     const SPEX_matrix A,     // Input matrix Dynamic_CSC MPZ
     const SPEX_options option// command options
 );

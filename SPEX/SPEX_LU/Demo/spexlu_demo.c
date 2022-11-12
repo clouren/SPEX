@@ -115,7 +115,7 @@ int main (int argc, char* argv[])
     //--------------------------------------------------------------------------
     SPEX_matrix A = NULL;
     SPEX_symbolic_analysis* S = NULL;
-    SPEX_factorization *F = NULL;
+    SPEX_factorization F = NULL;
     SPEX_matrix x = NULL;
     SPEX_matrix b = NULL;
     SPEX_info ok ;

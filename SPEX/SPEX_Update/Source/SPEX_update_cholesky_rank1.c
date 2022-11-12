@@ -38,7 +38,7 @@
 // TODO allow w->v[0]->scale != 1
 SPEX_info SPEX_update_cholesky_rank1
 (
-    SPEX_factorization *F,  // The SPEX Cholesky factorization of A, including
+    SPEX_factorization F,  // The SPEX Cholesky factorization of A, including
                             // L, rhos, P and Pinv. This factorization will be
                             // modified during the update process. Therefore,
                             // if this function fails for any reason, the

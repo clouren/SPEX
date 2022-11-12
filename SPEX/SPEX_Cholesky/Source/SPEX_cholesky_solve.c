@@ -47,7 +47,7 @@ SPEX_info SPEX_cholesky_solve
                                 // On output: Rational solution (SPEX_MPQ)
                                 // to the system.
     // input/output:
-    SPEX_factorization *F,      // The non-updatable Cholesky factorization.
+    SPEX_factorization F,      // The non-updatable Cholesky factorization.
                                 // Mathematically, F is unchanged.  However, if
                                 // F is updatable on input, it is converted to
                                 // non-updatable.  If F is already

@@ -146,7 +146,7 @@ SPEX_info SPEX_matrix_equal
 SPEX_info MY_update_verify
 (
     bool *Is_correct,     // if the factorization is correct
-    SPEX_factorization *F,// LU factorization of A
+    SPEX_factorization F,// LU factorization of A
     const SPEX_matrix A,     // Input matrix
     const SPEX_options option// command options
 );

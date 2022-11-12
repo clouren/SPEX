@@ -38,7 +38,7 @@ int main (int argc, char* argv[])
     SPEX_matrix Prob_A = NULL, Prob_c = NULL, b_dbl = NULL;
     SPEX_matrix A_CSC = NULL, x1 = NULL, A_DCSC = NULL;
     SPEX_matrix b = NULL;
-    SPEX_factorization *F1 = NULL;
+    SPEX_factorization F1 = NULL;
     mpz_t tmpz;
     mpq_t obj, minq, maxq, tmpq1, tmpq2;
     SPEX_symbolic_analysis* analysis = NULL;

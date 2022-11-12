@@ -35,7 +35,7 @@ SPEX_info SPEX_update_solve // solves Ax = b via LU or Cholesky factorization
     SPEX_matrix *x_handle, // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    SPEX_factorization *F,  // The SPEX LU or Cholesky factorization
+    SPEX_factorization F,  // The SPEX LU or Cholesky factorization
     const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options option // Command options

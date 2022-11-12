@@ -334,7 +334,7 @@ SPEX_info spex_cholesky_symbolic_analysis
 SPEX_info spex_cholesky_factor
 (
     // Output
-    SPEX_factorization **F_handle, // Cholesky factorization
+    SPEX_factorization *F_handle, // Cholesky factorization
     // Input
     const SPEX_symbolic_analysis* S,// Symbolic analysis struct containing the
                                // elimination tree of A, column pointers of L,
