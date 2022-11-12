@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------
-// SPEX/MATLAB/SPEX_mex_get_matlab_optons.c: Get command options from user 
+// SPEX/MATLAB/SPEX_mex_get_matlab_optons.c: Get command options from user
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
-// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Jinhao
+// Chen, Erick Moreno-Centeno, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
 //------------------------------------------------------------------------------
 
 #include "SPEX_mex.h"
@@ -19,7 +19,7 @@
 
 void spex_mex_get_matlab_options
 (
-    SPEX_options option,           // Control parameters
+    SPEX_options option,            // Control parameters
     spex_mex_options *mexoptions,   // MATLAB-specific options
     const mxArray* input            // options struct, may be NULL
 )
@@ -33,7 +33,7 @@ void spex_mex_get_matlab_options
     #define LEN 256
     char string [LEN+1] ;
 
-    // true if input options struct is present 
+    // true if input options struct is present
     bool present = (input != NULL) && !mxIsEmpty (input) && mxIsStruct (input) ;
 
     //--------------------------------------------------------------------------
@@ -44,7 +44,10 @@ void spex_mex_get_matlab_options
     field = present ? mxGetField (input, 0, "order") : NULL ;
     if (field != NULL)
     {
-        if (!mxIsChar (field)) spex_mex_error (1, "option.order must be a string") ;
+        if (!mxIsChar (field))
+        {
+            spex_mex_error (1, "option.order must be a string") ;
+        }
         mxGetString (field, string, LEN) ;
         if (MATCH (string, "none"))
         {
@@ -72,7 +75,10 @@ void spex_mex_get_matlab_options
     field = present ? mxGetField (input, 0, "pivot") : NULL ;
     if (field != NULL)
     {
-        if (!mxIsChar (field)) spex_mex_error (1, "option.pivot must be a string") ;
+        if (!mxIsChar (field))
+        {
+            spex_mex_error (1, "option.pivot must be a string") ;
+        }
         mxGetString (field, string, LEN) ;
         if (MATCH (string, "smallest"))
         {

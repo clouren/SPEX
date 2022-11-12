@@ -8,14 +8,13 @@
 
 //------------------------------------------------------------------------------
 
-/*
- * A simple example to show how to perform rank-1 Cholesky factorization
+/* A simple example to show how to perform rank-1 Cholesky factorization
  * update/downdate.
  */
 
 #define FREE_WORKSPACE                           \
     SPEX_matrix_free(&A, option);                \
-    SPEX_matrix_free(&w, option);               \
+    SPEX_matrix_free(&w, option);                \
     SPEX_symbolic_analysis_free(&S, option);     \
     SPEX_factorization_free(&F, option);         \
     SPEX_FREE(option);                           \
@@ -77,7 +76,7 @@ int main()
     //--------------------------------------------------------------------------
     // convert factorization to be updatable
     //--------------------------------------------------------------------------
-    
+
     start = clock();
 
     OK(SPEX_factorization_convert(F, true, option));

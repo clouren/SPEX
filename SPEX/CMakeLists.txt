@@ -63,10 +63,10 @@ configure_file ( "Config/SPEX_version.tex.in" "${PROJECT_SOURCE_DIR}/Doc/SPEX_ve
 # include directories
 #-------------------------------------------------------------------------------
 
-include_directories ( Include 
+include_directories ( Include
     SPEX_Backslash/Source SPEX_Cholesky/Source SPEX_LU/Source
     SPEX_Update/Source SPEX_Utilities/Source
-    ${SUITESPARSE_CONFIG_INCLUDE_DIR} 
+    ${SUITESPARSE_CONFIG_INCLUDE_DIR}
     ${GMP_INCLUDE_DIR} ${MPFR_INCLUDE_DIR}
     ${AMD_INCLUDE_DIR} ${COLAMD_INCLUDE_DIR} )
 
@@ -165,7 +165,7 @@ if ( GLOBAL_INSTALL )
         LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
     install ( FILES ${CMAKE_SOURCE_DIR}/cmake_modules/FindSPEX.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SuiteSparse 
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SuiteSparse
         COMPONENT Development )
     if ( NOT NSTATIC )
     install ( TARGETS spex_static
@@ -182,7 +182,7 @@ if ( INSIDE_SUITESPARSE )
         LIBRARY       DESTINATION ${SUITESPARSE_LIBDIR}
         PUBLIC_HEADER DESTINATION ${SUITESPARSE_INCLUDEDIR} )
     install ( FILES ${CMAKE_SOURCE_DIR}/cmake_modules/FindSPEX.cmake
-        DESTINATION ${SUITESPARSE_LIBDIR}/cmake/SuiteSparse 
+        DESTINATION ${SUITESPARSE_LIBDIR}/cmake/SuiteSparse
         COMPONENT Development )
     if ( NOT NSTATIC )
     install ( TARGETS spex_static
@@ -228,7 +228,7 @@ if ( DEMO )
         "SPEX_Cholesky/Demo/chol_demos.c" )
 
     # SPEX_Backslash
-    add_executable ( SPEX_Backslash_Demo 
+    add_executable ( SPEX_Backslash_Demo
         "SPEX_Backslash/Demo/SPEX_Backslash_Demo.c"
         "SPEX_Backslash/Demo/back_demos.c" )
 

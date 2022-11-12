@@ -5,9 +5,8 @@ function SPEX_mex_test
 %
 % See also SPEX_mex_install, SPEX_mex_demo.
 
-% SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-% Jinhao Chen, Lorena Mejia Domenzain, Erick Moreno-Centeno and Timothy A. Davis, 
-% Texas A&M University.  All Rights Reserved.  
+% SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
+% Moreno-Centeno and Timothy A. Davis.  All Rights Reserved.
 % SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 maxerr = 0 ;
@@ -188,7 +187,7 @@ for n = [1 10 100]
                     x2 = A2\b;
                     err = norm(x-x2)/norm(x);
                     maxerr = max (maxerr, err) ;
-                    
+
                     fprintf ('.')
                     x = spex_lu_backslash(A, b, option);
                     x2 = A\b;
@@ -202,7 +201,7 @@ for n = [1 10 100]
                     x2 = A2\b;
                     err = norm(x-x2)/norm(x);
                     maxerr = max (maxerr, err) ;
-                    
+
                     % now convert to an integer problem (x will not be integer)
                     A = floor (2^20 * A) ;
                     x = spex_lu_backslash(A,b, option);

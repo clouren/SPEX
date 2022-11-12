@@ -32,21 +32,21 @@ SPEX_info SPEX_QR_IPGE
     // Only dense for now
     ASSERT( A->type == SPEX_MPZ);
     ASSERT( A->kind == SPEX_DENSE);
-    
+
     // Indices
     int64_t i, j, k;
-    
+
     // Final matrices Q and R
     SPEX_matrix Q, R;
-    
-    // Allocate R. We are performing the Thin REF QR factorization so 
+
+    // Allocate R. We are performing the Thin REF QR factorization so
     // R is n*n
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_DENSE, SPEX_MPZ, n, n, n*n,
         false, true, NULL));
-    
+
     // Set Q = A
      SPEX_CHECK(SPEX_matrix_copy(&Q, SPEX_DENSE, SPEX_MPZ, A, NULL));
-     
+
      // Perform Factorization
     for (k = 0; k < n; k++)
     {
@@ -57,7 +57,7 @@ SPEX_info SPEX_QR_IPGE
             // This is very easily parallelized
             SPEX_CHECK(SPEX_dense_mat_dot(Q, k, A, j, SPEX_2D(R,k,j,mpz)));
         }
-        
+
         // IPGE update Q
         for (i = k+1; i < n; i++)
         {
@@ -81,7 +81,7 @@ SPEX_info SPEX_QR_IPGE
             }
         }
     }
-    
+
     (*Q_handle) = Q;
     (*R_handle) = R;
     return SPEX_OK;

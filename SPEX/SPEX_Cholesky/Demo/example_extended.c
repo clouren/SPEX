@@ -11,39 +11,37 @@
 
 /* Include the Integer-preserving Cholesky routines */
 
-#define FREE_WORKSPACE                  \
-{                                       \
-    SPEX_matrix_free(&A,NULL);          \
-    SPEX_matrix_free(&b,NULL);          \
-    SPEX_matrix_free(&x,NULL);          \
-    SPEX_symbolic_analysis_free (&S, option); \
-    SPEX_matrix_free(&((F)->L), option); \
-    SPEX_factorization_free(&F, option);     \
-    SPEX_FREE(option);                  \
-    SPEX_finalize();                    \
+#define FREE_WORKSPACE                          \
+{                                               \
+    SPEX_matrix_free(&A,NULL);                  \
+    SPEX_matrix_free(&b,NULL);                  \
+    SPEX_matrix_free(&x,NULL);                  \
+    SPEX_symbolic_analysis_free (&S, option);   \
+    SPEX_matrix_free(&((F)->L), option);        \
+    SPEX_factorization_free(&F, option);        \
+    SPEX_FREE(option);                          \
+    SPEX_finalize();                            \
 }
 
-#define DEMO_OK(method)                 \
-{                                       \
-    ok = method ;                       \
-    if (ok != SPEX_OK)                  \
-    {                                   \
-        SPEX_cholesky_determine_error(ok);  \
-        FREE_WORKSPACE ;                \
-        return 0 ;                      \
-    }                                   \
+#define DEMO_OK(method)                         \
+{                                               \
+    ok = method ;                               \
+    if (ok != SPEX_OK)                          \
+    {                                           \
+        SPEX_cholesky_determine_error(ok);      \
+        FREE_WORKSPACE ;                        \
+        return 0 ;                              \
+    }                                           \
 }
-
 
 #include "chol_demos.h"
 
-
-int main( int argc, char* argv[] )
+int main( int argc, char *argv[] )
 {
 
     //--------------------------------------------------------------------------
-    // Prior to using SPEX-Chol, its environment must be initialized. This is done
-    // by calling the SPEX_initialize() function.
+    // Prior to using SPEX-Chol, its environment must be initialized. This is
+    // done by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
 
     SPEX_initialize();
@@ -62,7 +60,9 @@ int main( int argc, char* argv[] )
     // Default options.
     SPEX_options option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
-    char* mat_name = "../../ExampleMats/2.mat.txt";// Set demo matrix and RHS name
+
+    // FIXME: Set demo matrix and RHS name
+    char* mat_name = "../../ExampleMats/2.mat.txt";
     char* rhs_name = "../../ExampleMats/2.mat.soln.txt";
     int64_t rat = 1;
 
@@ -75,7 +75,7 @@ int main( int argc, char* argv[] )
     //--------------------------------------------------------------------------
 
     // Read in A
-    FILE* mat_file = fopen(mat_name,"r");
+    FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
     {
         perror("Error while opening the file");
@@ -87,7 +87,8 @@ int main( int argc, char* argv[] )
     fclose(mat_file);
     n = A->n;
     // For this code, we utilize a vector of all ones as the RHS vector
-    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
+    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
+        option);
     // Create RHS
     for (int64_t k = 0; k < n; k++)
         DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));

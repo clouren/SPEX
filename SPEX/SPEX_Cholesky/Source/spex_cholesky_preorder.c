@@ -119,7 +119,7 @@ SPEX_info spex_cholesky_preorder
                 SPEX_FREE_ALL ;
                 return (SPEX_OUT_OF_MEMORY) ;
             }
-            
+
             for (i = 0; i < n+1; i++)
             {
                 S->P_perm[i] = i;

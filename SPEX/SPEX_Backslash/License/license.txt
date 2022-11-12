@@ -1,4 +1,4 @@
-SPEX Backslash: 
+SPEX Backslash:
 
 Copyright (c) 2021, Christopher Lourenco, Lorena Mejia Domenzain, Erick Moreno-
 Centeno, and Timothy A. Davis.

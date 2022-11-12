@@ -30,9 +30,9 @@ SPEX_info SPEX_dot
     ASSERT( y->type == SPEX_MPZ);
     ASSERT( x->kind == SPEX_DENSE);
     ASSERT( y->kind == SPEX_DENSE);
-    
+
     int64_t k;
-    
+
     // Set z = 0
     SPEX_CHECK(SPEX_mpz_set_ui(z, 0));
     for (k = 0; k < x->m; k++)

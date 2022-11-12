@@ -289,7 +289,6 @@ int main (int argc, char *argv [])
     SPEX_matrix_free(&T_mpfr,option);
     SPEX_matrix_free(&T_int,option);
     SPEX_matrix_free(&T_fp,option);
-    
 
     //--------------------------------------------------------------------------
     // error handling
@@ -393,7 +392,7 @@ int main (int argc, char *argv [])
     printf ("Cholesky backslash, up-looking with malloc testing, amd:\n") ;
     option->order = SPEX_AMD ;
     BRUTAL (spex_test_chol_backslash (A, b, option)) ;
-    
+
     printf ("Cholesky backslash, up-looking with malloc testing, no ordering:\n") ;
     option->order = SPEX_NO_ORDERING ;
     BRUTAL (spex_test_chol_backslash (A, b, option)) ;

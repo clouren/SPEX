@@ -338,7 +338,7 @@ SPEX_info SPEX_update_lu_colrep
         //----------------------------------------------------------------------
         // check for singularity
         //----------------------------------------------------------------------
-        // report singular if 
+        // report singular if
         // - remaining entries in current row of U are 0s and the current row
         //   of vk is also 0.
         // - OR all entries below (k-1)-th row in vk are zeros
@@ -365,7 +365,7 @@ SPEX_info SPEX_update_lu_colrep
             SPEX_FREE_ALL;
             return SPEX_SINGULAR;
         }
-        // case 3, check only when whole U is scaned 
+        // case 3, check only when whole U is scaned
         if (vk_2ndlastnz == -1 && LU_scaned == n-1 && Uc_offdiag[n-1] <= k)
         {
             SPEX_CHECK(SPEX_mpz_sgn(&r, Uk_dense_row->x[Q[n-1]]));
@@ -453,7 +453,7 @@ SPEX_info SPEX_update_lu_colrep
             // all the swaps (i.e., pivot updates) except the last one
             // using this map will not change the nnz patter of current
             // frame, since only scaling will be involved.
-            // x 0 0 0 0 0 0 0 0 x 
+            // x 0 0 0 0 0 0 0 0 x
             // 0 x . 0 . . . . . .
             // 0 . x 0 . . . . . .
             // 0 0 0 x 0 . . . . .
@@ -704,7 +704,7 @@ SPEX_info SPEX_update_lu_colrep
                 // all the swaps (i.e., pivot updates) except the last one
                 // using this map will not change the nnz patter of current
                 // frame, since only scaling will be involved.
-                // x 0 0 0 0 0 0 0 0 x 
+                // x 0 0 0 0 0 0 0 0 x
                 // 0 x . 0 . . . . . .
                 // 0 . x 0 . . . . . .
                 // 0 0 0 x 0 . . . . .
@@ -764,7 +764,7 @@ SPEX_info SPEX_update_lu_colrep
     // k will be the column index where vk is inserted
     if (k == n-1)
     {
-        SPEX_CHECK(spex_update_triangular_solve(vk_dense, &vk_top, h_for_vk, 
+        SPEX_CHECK(spex_update_triangular_solve(vk_dense, &vk_top, h_for_vk,
             &last_update, NULL /*&vk_2ndlastnz*/, k, L, UT,
             (const SPEX_matrix)rhos, P, P_inv));
         // check again in case k is initially n-1

@@ -1,8 +1,8 @@
 ## demo.py a demo of SPEX_Chol
 
-# SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
+# SPEX: (c) 2022, Chris Lourenco, United States Naval Academy,
 # Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-# Texas A&M University. All Rights Reserved. 
+# Texas A&M University. All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 # SPEX is a package for solving sparse linear systems of equations

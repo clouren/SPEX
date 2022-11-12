@@ -65,9 +65,10 @@ function x = spex_cholesky_backslash (A,b,option)
 %   x = A\b ;
 %   err = norm (x-xtrue)
 %
-%   % In this example, x = spex_cholesky_backslash (A,b) is returned exactly in the
-%   % MATLAB vector x, because x contains only integers representable exactly
-%   % in double precision.  x = A\b results in floating-point roundoff error.
+%   % In this example, x = spex_cholesky_backslash (A,b) is returned exactly
+%   % in the MATLAB vector x, because x contains only integers representable
+%   % exactly in double precision.  x = A\b results in floating-point
+%   % roundoff error.
 %
 %   amax = max (abs (A), [ ], 'all') ;
 %   A = floor (2^20 * (A / amax)) + n * speye (n) ;
@@ -82,12 +83,12 @@ function x = spex_cholesky_backslash (A,b,option)
 %   err = norm (x-xtrue)
 %   resid = norm (A*x-b)
 %
-% See also vpa, spex_mex_install, spex_mex_test, spex_mex_demo, spex_lu_backslash
+% See also vpa, spex_mex_install, spex_mex_test, spex_mex_demo,
+%   spex_lu_backslash
 
-% SPEX_Cholesky: (c) 2020, Chris Lourenco, United States Naval Academy, 
-% Erick Moreno-Centeno, Timothy A. Davis, Texas A&M University.  All Rights Reserved.  
-% See SPEX_Cholesky/License for the license.
-
+% SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
+% Moreno-Centeno and Timothy A. Davis.  All Rights Reserved.
+% SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 if (nargin < 3)
     option = [ ] ;   % use default options

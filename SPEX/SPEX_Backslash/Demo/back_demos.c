@@ -2,9 +2,8 @@
 // SPEX_Backslash/Demo/demos.c: support functions for the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy, 
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// SPEX_Backslash: (c) 2021, Chris Lourenco, Lorena Mejia Domenzain, Erick
+// Moreno-Centeno, Timothy A. Davis, All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -12,6 +11,9 @@
 // SPEX_backslash_process_command_line: process command line for demo programs.
 // SPEX_tripread_double: read a double matrix from a file in triplet format.
 // SPEX_read_dense: read a dense matrix from a file.
+
+// FIXME: duplicate functions.  See lu_demos.h
+// FIXME: one function per file
 
 #include "back_demos.h"
 
@@ -26,10 +28,10 @@
 SPEX_info SPEX_backslash_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
-    char* argv[],           // set of command line arguments
-    SPEX_options option,   // struct containing the command options
-    char** mat_name,        // Name of the matrix to be read in
-    char** rhs_name,        // Name of the RHS vector to be read in
+    char *argv[],           // set of command line arguments
+    SPEX_options option,    // struct containing the command options
+    char **mat_name,        // Name of the matrix to be read in
+    char **rhs_name,        // Name of the RHS vector to be read in
     int64_t *rat            // data type of output solution.
                             // 1: mpz, 2: double, 3: mpfr
 )
@@ -37,7 +39,7 @@ SPEX_info SPEX_backslash_process_command_line //processes the command line
     //SPEX_info ok;
     for (int64_t  i = 1; i < argc; i++)
     {
-        char* arg = (char*) argv[i];
+        char *arg = (char*) argv[i];
         if ( strcmp(arg,"help") == 0)
         {
             //SPEX_show_usage();
@@ -201,7 +203,7 @@ SPEX_info SPEX_backslash_process_command_line //processes the command line
 SPEX_info SPEX_tripread
 (
     SPEX_matrix *A_handle,      // Matrix to be constructed
-    FILE* file,                  // file to read from (must already be open)
+    FILE *file,                 // file to read from (must already be open)
     SPEX_options option         // Command options
 )
 {
@@ -244,12 +246,12 @@ SPEX_info SPEX_tripread
         SPEX_matrix_free(&A, option);
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // Matrices in this format are 1 based, so we decrement by 1 to get
     // 0 based for internal functions
     A->i[0] -= 1;
     A->j[0] -= 1;
-    
+
     // Read in the values from file
     for (int64_t p = 1; p < nz; p++)
     {
@@ -288,15 +290,15 @@ SPEX_info SPEX_tripread
 /* Purpose: This function reads in a matrix stored in a triplet format
  * with double entries. The format used can be seen in any of the
  * example mat files.
- * 
+ *
  * This is only used for Demo purposes
  */
 
 SPEX_info SPEX_tripread_double
 (
-    SPEX_matrix *A_handle,     // Matrix to be populated
-    FILE* file,                 // file to read from (must already be open)
-    SPEX_options option        // Command options
+    SPEX_matrix *A_handle,      // Matrix to be populated
+    FILE *file,                 // file to read from (must already be open)
+    SPEX_options option         // Command options
 )
 {
     SPEX_info info ;
@@ -326,10 +328,10 @@ SPEX_info SPEX_tripread_double
     {
         return (info) ;
     }
-    
+
     s = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
         &(A->i[0]), &(A->j[0]), &(A->x.fp64[0])) ;
-            
+
     if (feof(file) || s <= 0)
     {
         printf ("premature end-of-file\n") ;
@@ -337,8 +339,8 @@ SPEX_info SPEX_tripread_double
         return SPEX_INCORRECT_INPUT;
     }
 
-    // Matrices in this format are either 1 or 0 based. 
-    // We check the decrement for the indices 
+    // Matrices in this format are either 1 or 0 based.
+    // We check the decrement for the indices
     int64_t decrement;
     if (SPEX_MIN(A->i[0], A->j[0]) == 0)
         decrement = 0;
@@ -364,11 +366,11 @@ SPEX_info SPEX_tripread_double
     }
 
     // the triplet matrix now has nz entries
-    A->nz = nz;    
+    A->nz = nz;
 
     // At this point, A is a double triplet matrix. We make a copy of it with C
     // C is a CSC matrix with mpz entries
-    
+
     SPEX_matrix C = NULL;
     SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
 
@@ -383,14 +385,14 @@ SPEX_info SPEX_tripread_double
 // SPEX_read_dense
 //------------------------------------------------------------------------------
 
-/* Purpose: Read a dense matrix for RHS vectors. 
+/* Purpose: Read a dense matrix for RHS vectors.
  * the values in the file must be integers
  */
 
 SPEX_info SPEX_read_dense
 (
-    SPEX_matrix *b_handle, // Matrix to be constructed
-    FILE* file,             // file to read from (must already be open)
+    SPEX_matrix *b_handle,  // Matrix to be constructed
+    FILE *file,             // file to read from (must already be open)
     SPEX_options option
 )
 {

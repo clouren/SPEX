@@ -8,9 +8,9 @@
 //------------------------------------------------------------------------------
 
 
-/* This code performs the dense R \ Q^T b. The input assumes Q^T b has already been
- * computed. Thus, it first scales the right hand side vector then does back solve. 
- * Returns x as integer.
+/* This code performs the dense R \ Q^T b. The input assumes Q^T b has already
+ * been computed. Thus, it first scales the right hand side vector then does
+ * back solve.  Returns x as integer.
  */
 
 # include "spex_qr_internal.h"
@@ -32,10 +32,10 @@ SPEX_info SPEX_QR_backsolve
     ASSERT( b->type == SPEX_MPZ);
     ASSERT( R->kind == SPEX_DENSE);
     ASSERT( b->kind == SPEX_DENSE);
-    
+
     // Solution vector
     SPEX_matrix x = NULL;
-    
+
     // Set x = b
     SPEX_matrix_copy(&x, SPEX_DENSE, SPEX_MPZ, b, NULL);
     // Scale x by determinant of A'*A (R(n,n))
@@ -43,7 +43,7 @@ SPEX_info SPEX_QR_backsolve
     {
         SPEX_mpz_mul( x->x.mpz[i], x->x.mpz[i], SPEX_2D(R, R->n-1, R->n-1, mpz));
     }
-    
+
     // Solve R x = x for each RHS vector
 
     // Iterate across each RHS vector
@@ -59,8 +59,8 @@ SPEX_info SPEX_QR_backsolve
             SPEX_mpz_divexact( SPEX_2D(x, i, k, mpz), SPEX_2D(x, i, k, mpz), SPEX_2D(R, i, i, mpz));
         }
     }
-    
-    // Return solution as integer    
+
+    // Return solution as integer
     (*x_handle) = x;
     return SPEX_OK;
 }

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX_Update/Test/Makefile: compile and run SPEX_update performance test 
+# SPEX_Update/Test/Makefile: compile and run SPEX_update performance test
 #-------------------------------------------------------------------------------
 
 # SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,

@@ -71,7 +71,7 @@ SPEX_info SPEX_factorization_convert
     bool updatable,             // if true: make F updatable
                                 // if false: make non-updatable
     const SPEX_options option   // Command options
-)  
+)
 {
 
     //--------------------------------------------------------------------------
@@ -167,17 +167,17 @@ SPEX_info SPEX_factorization_convert
         //----------------------------------------------------------------------
         // allocate an array of n vetors to construct the DYNAMIC_CSC MPZ matrix
         //----------------------------------------------------------------------
-        Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector)); 
-        if (!Mv) 
-        { 
-            SPEX_FREE_ALL ;
-            return SPEX_OUT_OF_MEMORY; 
-        } 
-         
-        for (i = 0; i < n; i++) 
+        Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector));
+        if (!Mv)
         {
-            SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option)); 
-        } 
+            SPEX_FREE_ALL ;
+            return SPEX_OUT_OF_MEMORY;
+        }
+
+        for (i = 0; i < n; i++)
+        {
+            SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option));
+        }
 
         //------------------------------------------------------------------
         // convert L from CSC MPZ to DYNAMIC_CSC MPZ
@@ -239,16 +239,16 @@ SPEX_info SPEX_factorization_convert
             // allocate an array of n vetors to construct the DYNAMIC_CSC MPZ
             // matrix
             //------------------------------------------------------------------
-            Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector)); 
-            if (!Mv) 
-            { 
-                SPEX_FREE_ALL ;
-                return SPEX_OUT_OF_MEMORY; 
-            } 
-             
-            for (i = 0; i < n; i++) 
+            Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector));
+            if (!Mv)
             {
-                SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option)); 
+                SPEX_FREE_ALL ;
+                return SPEX_OUT_OF_MEMORY;
+            }
+
+            for (i = 0; i < n; i++)
+            {
+                SPEX_CHECK(SPEX_vector_allocate(&(Mv[i]), 0, option));
             }
 
             //------------------------------------------------------------------

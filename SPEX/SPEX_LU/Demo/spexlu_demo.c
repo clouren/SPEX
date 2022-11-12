@@ -11,24 +11,24 @@
 #include "lu_demos.h"
 
 /* This program will exactly solve the sparse linear system Ax = b by
- * performing the SPEX Left LU factorization. This is intended to be a demonstration
- * of the "advanced interface" of SPEX Left LU. Refer to README.txt for
- * information on how to properly use this code
+ * performing the SPEX Left LU factorization. This is intended to be a
+ * demonstration of the "advanced interface" of SPEX Left LU. Refer to
+ * README.txt for information on how to properly use this code
  */
 
 // usage:
 // spexlu_demo Followed by the listed args:
 //
-// f (or file) Filename. e.g., spex_lu_demo f MATRIX_NAME RHS_NAME, which indicates
-// spex_lu_demo will read matrix from MATRIX_NAME and right hand side from RHS_NAME.
-// The matrix must be stored in Matrix Market format. Refer to
-// http://math.nist.gov/MatrixMarket/formats.html for information on
-// Matrix Market format.
-// The right hand side vector must be stored as a dense vector.
+// f (or file) Filename. e.g., spex_lu_demo f MATRIX_NAME RHS_NAME, which
+// indicates spex_lu_demo will read matrix from MATRIX_NAME and right hand side
+// from RHS_NAME.  The matrix must be stored in Matrix Market format. Refer to
+// http://math.nist.gov/MatrixMarket/formats.html for information on Matrix
+// Market format.  The right hand side vector must be stored as a dense vector.
 //
-// p (or piv) Pivot_param. e.g., spex_lu_demo p 0, which indicates SPEX_LU will use
-// smallest pivot for pivot scheme. Other available options are listed
-// as follows:
+// p (or piv) Pivot_param. e.g., spex_lu_demo p 0, which indicates SPEX_LU will
+// use smallest pivot for pivot scheme. Other available options are listed as
+// follows:
+//
 //        0: Smallest pivot: Default and recommended
 //        1: Diagonal pivoting
 //        2: First nonzero per column chosen as pivot
@@ -36,19 +36,21 @@
 //        4: Diagonal pivoting with tolerance for largest pivot
 //        5: Largest pivot
 //
-// q (or col) Column_order_param. e.g., spex_lu_demo q 1, which indicates SPEX_LU
-// will use COLAMD for column ordering. Other available options are:
+// q (or col) Column_order_param. e.g., spex_lu_demo q 1, which indicates
+// SPEX_LU will use COLAMD for column ordering. Other available options are:
+//
 //        0: Default: COLAMD
 //        1: None: Not recommended for sparse matrices
 //        2: COLAMD
 //        3: AMD
 //
-// t (or tol) tolerance_param. e.g., spex_lu_demo t 1e-10, which indicates SPEX_LU
-// will use 1e-10 as the tolerance for pivot scheme 3 and 4 mentioned above.
-// Therefore, it is only necessary if pivot scheme 3 or 4 is used.
+// t (or tol) tolerance_param. e.g., spex_lu_demo t 1e-10, which indicates
+// SPEX_LU will use 1e-10 as the tolerance for pivot scheme 3 and 4 mentioned
+// above.  Therefore, it is only necessary if pivot scheme 3 or 4 is used.
 //
 // o (or out). e.g., spex_lu_demo o 1, which indicates SPEX_LU will output the
 // errors and warnings during the process. Other available options are:
+//
 //        0: print nothing
 //        1: just errors and warnings: Default
 //        2: terse, with basic stats from COLAMD/AMD and SPEX and solution
@@ -72,12 +74,12 @@
     SPEX_FREE(option);                           \
     SPEX_finalize( ) ;
 
-int main (int argc, char* argv[])
+int main (int argc, char *argv[])
 {
 
     //--------------------------------------------------------------------------
-    // Prior to using SPEX Left LU, its environment must be initialized. This is done
-    // by calling the SPEX_initialize() function.
+    // Prior to using SPEX Left LU, its environment must be initialized. This
+    // is done by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
 
     SPEX_initialize();
@@ -92,26 +94,29 @@ int main (int argc, char* argv[])
     // respective functions. These matrices are:
     //
     //  A:  User input matrix. Must be SPEX_CSC and SPEX_MPZ for routines
-    //  
+    //
     //  L:  Lower triangular matrix. Will be output as SPEX_CSC and SPEX_MPZ
     //
-    //  U:  Upper triangular matrix. Will be output as SPEX_CSC and SPEX_MPZ 
+    //  U:  Upper triangular matrix. Will be output as SPEX_CSC and SPEX_MPZ
     //
-    //  x:  Solution to the linear system. Will be output as SPEX_DENSE and SPEX_MPQ
+    //  x:  Solution to the linear system. Will be output as SPEX_DENSE and
+    //      SPEX_MPQ
     //
     //  b:  Set of right hand side vectors. Must be SPEX_DENSE and SPEX_MPZ
     //
     // Additionally, two other data structures are declared here:
     //
-    //  pinv:   Inverse row permutation used for LDU factorization and permutation
+    //  pinv:   Inverse row permutation used for LDU factorization and
+    //          permutation
     //
     //  S:      Symbolic analysis struct.
     //
     // Lastly, the following parameter is created:
     //
-    //  option: Command options for the factorization. In general, this can be 
-    //          set to default values and is almost always the last input argument
-    //          for SPEX Left LU functions (except SPEX_malloc and such)
+    //  option: Command options for the factorization. In general, this can be
+    //          set to default values and is almost always the last input
+    //          argument for SPEX Left LU functions (except SPEX_malloc and
+    //          such)
     //--------------------------------------------------------------------------
     SPEX_matrix A = NULL;
     SPEX_symbolic_analysis S = NULL;
@@ -119,18 +124,20 @@ int main (int argc, char* argv[])
     SPEX_matrix x = NULL;
     SPEX_matrix b = NULL;
     SPEX_info ok ;
-    
+
     // Initialize option, command options for the factorization
     SPEX_options option = NULL;
     OK(SPEX_create_default_options(&option));
     option->order=SPEX_NO_ORDERING;
-    
+
     // Extra parameters used to obtain A, b, etc
     char *mat_name, *rhs_name;
     SPEX_type rat;
-    mat_name = "../../ExampleMats/10teams_mat.txt";// Set demo matrix and RHS name
+
+    // FIXME Set demo matrix and RHS name
+    mat_name = "../../ExampleMats/10teams_mat.txt";
     rhs_name = "../../ExampleMats/10teams_v.txt";
-    
+
     //--------------------------------------------------------------------------
     // After initializing memory, we process the command line for this function.
     // Such a step is optional, a user can also manually set these parameters.
@@ -144,13 +151,13 @@ int main (int argc, char* argv[])
     //--------------------------------------------------------------------------
     // In this demo file, we now read in the A and b matrices from external
     // files.  Refer to the example.c file or the user guide for other
-    // methods of creating the input matrix. In general, the user can create 
+    // methods of creating the input matrix. In general, the user can create
     // his/her matrix (say in double form) and then create a copy of it with
     // SPEX_matrix_copy
     //--------------------------------------------------------------------------
 
     // Read in A
-    FILE* mat_file = fopen(mat_name,"r");
+    FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
     {
         perror("Error while opening the file");
@@ -161,7 +168,7 @@ int main (int argc, char* argv[])
     fclose(mat_file);
 
     // Read in right hand side
-    FILE* rhs_file = fopen(rhs_name,"r");
+    FILE *rhs_file = fopen(rhs_name,"r");
     if( rhs_file == NULL )
     {
         perror("Error while opening the file");
@@ -202,9 +209,9 @@ int main (int argc, char* argv[])
     clock_t end_col = clock();
 
     //--------------------------------------------------------------------------
-    // Now we perform the SPEX Left LU factorization to obtain matrices L and U and a
-    // row permutation P such that PAQ = LDU. Note that the D matrix is never
-    // explicitly constructed or used.
+    // Now we perform the SPEX Left LU factorization to obtain matrices L and U
+    // and a row permutation P such that PAQ = LDU. Note that the D matrix is
+    // never explicitly constructed or used.
     //--------------------------------------------------------------------------
 
     clock_t start_factor = clock();
@@ -219,26 +226,27 @@ int main (int argc, char* argv[])
 
     clock_t start_solve = clock();
 
-    // SPEX Left LU has an optional check step which can verify that the solution
-    // vector x satisfies Ax=b in perfect precision intended for debugging.
+    // SPEX Left LU has an optional check step which can verify that the
+    // solution vector x satisfies Ax=b in perfect precision intended for
+    // debugging.
     //
     // Note that this is entirely optional and not necessary. The solution
     // returned is guaranteed to be exact.   It appears here just as a
-    // verification that SPEX Left LU is computing its expected result.  This test
-    // can fail only if it runs out of memory, or if there is a bug in the
+    // verification that SPEX Left LU is computing its expected result.  This
+    // test can fail only if it runs out of memory, or if there is a bug in the
     // code.  Also, note that this function can be quite time consuming; thus
     // it is not recommended to be used in general.
-    // 
-    // To enable said check, the following bool is set to true
     //
-    //option->check = true; 
-    
+    // To enable said check, the following bool is set to true
+
+    //option->check = true;
+
     // Solve LDU x = b
     OK(SPEX_lu_solve(&x, F, b, option));
 
     clock_t end_solve = clock();
 
-    // Done, x now contains the exact solution of the linear system Ax=b in 
+    // Done, x now contains the exact solution of the linear system Ax=b in
     // dense rational form. There is an optional final step here where the user
     // can cast their solution to a different data type or matrix format.
     // Below, we have a block of code which illustrates how one would do this.

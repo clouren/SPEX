@@ -2,19 +2,19 @@
 // SPEX_Backslash/SPEX_backslash.c: Solve a system Ax=b
 //------------------------------------------------------------------------------
 
-// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy, 
+// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved. 
+// Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
 /* Purpose: Exactly solve sparse linear systems using SPEX Software package,
  * automatically determining the most appropriate factorization method.
- * 
+ *
  * Input/Output arguments:
  *
- * X_handle:    A pointer to the solution of the linear system. 
+ * X_handle:    A pointer to the solution of the linear system.
  *              Null on input. The output can be in double precision, mpfr_t, or
  *              rational mpq_t
  *
@@ -34,8 +34,6 @@
 #include "spex_util_internal.h"
 #include "SPEX.h"
 
-
-
 SPEX_info SPEX_backslash
 (
     // Output
@@ -52,20 +50,20 @@ SPEX_info SPEX_backslash
     SPEX_info info;
     // Check inputs
     if (!spex_initialized()) return SPEX_PANIC;
-    
+
     // Check for NULL pointers
     if (!X_handle || !A || !b )
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // Check for data types and dimension of A and b
     if (A->m != A->n || A->type != SPEX_MPZ || A->kind != SPEX_CSC
         || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // Check that output type is correct
     if (type != SPEX_MPQ && type != SPEX_FP64 && type != SPEX_MPFR)
     {
@@ -79,20 +77,19 @@ SPEX_info SPEX_backslash
     {
         return SPEX_OUT_OF_MEMORY;
     }
-    
+
     if (option != NULL)
     {
-        // IF the options are not NULL, copy the important parts. 
+        // IF the options are not NULL, copy the important parts.
         // Otherwise do nothing
         backslash_options->print_level = option->print_level; // print level
         backslash_options->prec = option->prec;               // MPFR precision
         backslash_options->round = option->round;             // MPFR rounding
     }
-        
-    
+
     // Declare output
     SPEX_matrix x = NULL;
-    
+
     // Determine if A is symmetric by checking both the pattern
     // and values. The output of this function is either:
     // SPEX_OK:          Matrix is symmetric, try Cholesky
@@ -104,12 +101,12 @@ SPEX_info SPEX_backslash
     {
         // A was classified to be symmetric. Attempt a Cholesky
         // factorization of A
-        
+
         // Since Cholesky is occuring, we update the option
         // struct to do AMD and diagonal pivoting
         backslash_options->order = SPEX_AMD;
         backslash_options->pivot = SPEX_DIAGONAL;
-        
+
         // Try SPEX Cholesky. The output for this function
         // is either:
         // SPEX_OK:       Cholesky success, x is the exact solution
@@ -127,16 +124,16 @@ SPEX_info SPEX_backslash
             SPEX_FREE(backslash_options);
             return SPEX_OK;
         }
-        else if (info == SPEX_NOTSPD) 
+        else if (info == SPEX_NOTSPD)
         {
             // Cholesky factorization failed. Must try
             // LU factorization now
-            
+
             // Since LU is occuring, we update the option
             // struct to do COLAMD and small pivoting
             backslash_options->order = SPEX_COLAMD;
             backslash_options->pivot = SPEX_SMALLEST;
-            
+
             // The LU factorization can return either:
             // SPEX_OK: LU success, x is the exact solution
             // Other error code: Some error. Return the error
@@ -164,8 +161,8 @@ SPEX_info SPEX_backslash
         }
         else
         {
-            // Cholesky failed, but not due to a SPEX_NOTSPD 
-            // error code. Most likely invalid input or out of 
+            // Cholesky failed, but not due to a SPEX_NOTSPD
+            // error code. Most likely invalid input or out of
             // memory condition.
             // Note that since Cholesky failed, x_handle is still NULL
             // so there is no potential for a memory leak here
@@ -177,12 +174,12 @@ SPEX_info SPEX_backslash
     {
         // A is classifed as unsymmetric, so an LU factorization
         // will be used.
-        
+
         // Since LU is occuring, we update the option
         // struct to do COLAMD and small pivoting
         backslash_options->order = SPEX_COLAMD;
         backslash_options->pivot = SPEX_SMALLEST;
-        
+
         // The LU factorization can return either:
         // SPEX_OK: LU success, x is the exact solution
         // Other error code: Some error. Return the error
@@ -192,7 +189,7 @@ SPEX_info SPEX_backslash
         {
             // LU factorization was successful. Set X_handle = x
             (*X_handle) = x;
-            
+
             // x_handle contains the exact solution of Ax = b and is
             // stored in the user desired type. Now, we exit and return ok
             SPEX_FREE(backslash_options);

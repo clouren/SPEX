@@ -28,18 +28,18 @@ SPEX_info SPEX_Qtb
     ASSERT( b->type == SPEX_MPZ);
     ASSERT( Q->kind == SPEX_DENSE);
     ASSERT( b->kind == SPEX_DENSE);
-    
+
     SPEX_matrix b_new = NULL;
-    
+
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, Q->n, b->n, Q->n*b->n,
         false, true, NULL));
-    
+
     // Indices
     int64_t i, j, k;
     // Need to compute b_new[i] = Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = Q[:,i] dot b[i]
-    
+
     // Iterate across every RHS vector
     for (k = 0; k < b->n; k++)
     {
@@ -54,7 +54,7 @@ SPEX_info SPEX_Qtb
             }
         }
     }
-    
+
     (*b_handle) = b_new;
     return SPEX_OK;
 }

@@ -8,9 +8,9 @@ for i = 32
     fRead = fopen(strcat('LPnetlib/',list(i).name), 'r');
     A = fscanf(fRead, '%f %f %f %d %d %d %d %f %d %d %d %d %f %d %d %d %d',[17, Inf]);
     fclose(fRead);
-    
+
     x_axis = 1:size(A,2);
-    
+
     figure(i);
 %     title('number of nonzero');
     hold on
@@ -23,7 +23,7 @@ for i = 32
     box on;
     figure_handle = gca;
     figure_handle.YAxis.Exponent = 3;
-    
+
     figure(i+1);
 %     title('number of digit');
     hold on
@@ -34,7 +34,7 @@ for i = 32
     ylabel("number of digit");
     legend('L_{DLU}','L_{lb}','L_{LUU}','Orientation','horizontal');
     box on;
-    
+
     figure(i+10);
 %     title('number of nonzero');
     hold on
@@ -47,7 +47,7 @@ for i = 32
     box on;
     figure_handle = gca;
     figure_handle.YAxis.Exponent = 4;
-    
+
     figure(i+11);
 %     title('number of digit');
     hold on
@@ -58,7 +58,7 @@ for i = 32
     ylabel("number of digit");
     legend('U_{DLU}','U_{lb}','U_{LUU}','Orientation','horizontal');
     box on;
-    
+
 %     figure(i+2);
 %     title('factorization/updating time over updating time');
 %     hold on
@@ -66,7 +66,7 @@ for i = 32
 %     semilogy(x_axis,A(8,:)./A(13,:),'b');
 %     semilogy(x_axis,A(13,:)./A(13,:),'g');
 %     legend('t_{DLU}','t_{lb}','t_{LUU}');
-    
+
     figure(i+12);
 %     title('factorization time');
     hold on
@@ -79,7 +79,7 @@ for i = 32
     ylim([0,20]);
     legend('t_{DLU}','t_{lb}','t_{LUU}','Orientation','horizontal');
     box on;
-    
+
     figure(i+3);
 %     title('solving/searching time');
     hold on

@@ -330,7 +330,7 @@ SPEX_info SPEX_update_cholesky_rank1
                     w_top++;
                     continue;
                 }
-                if (hi < -1) // updated L(i,j) becomes 0 
+                if (hi < -1) // updated L(i,j) becomes 0
                 {
                     // restore value of h[i]
                     h[i] = -hi-3;

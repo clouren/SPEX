@@ -39,7 +39,7 @@
 #include "test.h"
 #include <assert.h>
 
-int main( int argc, char* argv[])
+int main( int argc, char *argv[])
 {
     //char *prob_name = "lp_80bau3b";
     //char *prob_name = "lp_25fv47";
@@ -160,7 +160,7 @@ int main( int argc, char* argv[])
     }
 
     //--------------------------------------------------------------------------
-    // compute A1 as B*B^T 
+    // compute A1 as B*B^T
     //--------------------------------------------------------------------------
     printf("set of basic variables found, now computing A=B*B^T....\n");
     start = clock();

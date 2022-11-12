@@ -66,7 +66,7 @@ SPEX_info spex_update_solve_internal
         return SPEX_INCORRECT_INPUT;
     }
     *x_handle = NULL;
-    
+
     // convert F to updatable format
     info = SPEX_factorization_convert(F, true, option);
     if (info != SPEX_OK) return info;
@@ -78,8 +78,8 @@ SPEX_info spex_update_solve_internal
     SPEX_matrix L, UT, rhos = F->rhos;
     int64_t *P, *Q_inv;
     int64_t i, j, n = F->L->n;
-    int64_t *h = NULL;                   // history vector
-    SPEX_vector v = NULL;               // temp mpz vector 
+    int64_t *h = NULL;                  // history vector
+    SPEX_vector v = NULL;               // temp mpz vector
     SPEX_matrix x = NULL;               // final solution
 
     if (F->kind == SPEX_CHOLESKY_FACTORIZATION)

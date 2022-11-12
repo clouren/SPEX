@@ -35,7 +35,7 @@ SPEX_info SPEX_initialize_expert
     if (spex_initialized ( )) return (SPEX_PANIC) ;
 
     //--------------------------------------------------------------------------
-    // define the malloc/calloc/realloc/free functions 
+    // define the malloc/calloc/realloc/free functions
     //--------------------------------------------------------------------------
 
     SuiteSparse_config.malloc_func  = MyMalloc ;

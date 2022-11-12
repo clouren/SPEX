@@ -209,14 +209,14 @@ SPEX_info spex_left_lu_get_pivot
     pinv[intermed2] = intermed;
     // Row pivot is now pivotal
     pivs[*pivot] = 1;
-    
+
     // Set the kth pivot.
     size_t size;
     // Get the size of x[pivot]
     SPEX_CHECK(SPEX_mpz_sizeinbase(&size, x->x.mpz[*pivot], 2));
     // GMP manual: Allocated size should be size+2
     SPEX_CHECK(SPEX_mpz_init2(rhos->x.mpz[k], size+2));
-    // The kth pivot is x[pivot]    
+    // The kth pivot is x[pivot]
     SPEX_CHECK (SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[*pivot]));
 
     // Free memory

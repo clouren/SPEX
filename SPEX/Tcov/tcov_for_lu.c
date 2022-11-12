@@ -74,7 +74,7 @@ int64_t bxden3[4] = {15,  3,   6,  7};                      // Denominator of b
 #include <float.h>
 #include <assert.h>
 
-int main( int argc, char* argv[])
+int main( int argc, char *argv[])
 {
     bool IS_SIMPLE_TEST = true;
     int Ab_type = 0;
@@ -314,7 +314,7 @@ int main( int argc, char* argv[])
                     TEST_CHECK(SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, B,
                         option));
                     if (pretend_to_fail) continue ;
-                    // to trigger SPEX_SINGULAR 
+                    // to trigger SPEX_SINGULAR
                     TEST_CHECK_FAILURE(SPEX_lu_backslash(&sol, SPEX_MPQ, A,
                         b, option), SPEX_SINGULAR);
                     if (pretend_to_fail) continue ;
@@ -490,7 +490,7 @@ int main( int argc, char* argv[])
 
                 double x_doub2[11] = {1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4};
                 int64_t x_int64[11] = {1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4};
-                
+
                 // find the type and kind of the source matrix to copy from
                 Ab_type = Ab_type > 19 ? 19:Ab_type;
                 int tk = Ab_type-5;
@@ -686,15 +686,15 @@ int main( int argc, char* argv[])
                     {
                         // test SPEX_matrix_check
                         A->i[0] = -1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option), 
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         SPEX_FREE(A->x.int64);
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option), 
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                         A->n = -1;
-                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option), 
+                        TEST_CHECK_FAILURE(SPEX_matrix_check(A, option),
                             SPEX_INCORRECT_INPUT);
                         if (pretend_to_fail) break ;
                     }

@@ -27,9 +27,9 @@
  * this is primarily intended for debugging
  */
 
-void SPEX_print_options // display specified/default options to user
+void SPEX_print_options     // display specified/default options to user
 (
-    SPEX_options option    // options (cannot be NULL)
+    SPEX_options option     // options (cannot be NULL) FIXME, why??
 )
 {
 
@@ -94,10 +94,10 @@ void SPEX_print_options // display specified/default options to user
 SPEX_info SPEX_process_command_line //processes the command line
 (
     int argc,               // number of command line arguments
-    char* argv[],           // set of command line arguments
-    SPEX_options option,   // options (cannot be NULL)
-    char** mat_name,        // Name of the matrix to be read in
-    char** rhs_name,        // Name of the RHS vector to be read in
+    char *argv[],           // set of command line arguments
+    SPEX_options option,    // options (cannot be NULL)
+    char **mat_name,        // Name of the matrix to be read in
+    char **rhs_name,        // Name of the RHS vector to be read in
     SPEX_type *rat          // data type of output solution:
                             // 1:SPEX_MPZ (default), 2:SPEX_FP64, 3:SPEX_MPFR
 )
@@ -106,7 +106,7 @@ SPEX_info SPEX_process_command_line //processes the command line
 
     for (int i = 1; i < argc; i++)
     {
-        char* arg = (char*) argv[i];
+        char *arg = (char*) argv[i];
         if ( strcmp(arg,"p") == 0 || strcmp(arg,"piv") == 0)
         {
             if (!argv[++i])
@@ -222,7 +222,7 @@ SPEX_info SPEX_process_command_line //processes the command line
 SPEX_info SPEX_tripread
 (
     SPEX_matrix *A_handle,      // Matrix to be constructed
-    FILE* file,                  // file to read from (must already be open)
+    FILE *file,                 // file to read from (must already be open)
     SPEX_options option         // Command options
 )
 {
@@ -265,12 +265,12 @@ SPEX_info SPEX_tripread
         SPEX_matrix_free(&A, option);
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // Matrices in this format are 1 based, so we decrement by 1 to get
     // 0 based for internal functions
     A->i[0] -= 1;
     A->j[0] -= 1;
-    
+
     // Read in the values from file
     for (int64_t p = 1; p < nz; p++)
     {
@@ -319,8 +319,8 @@ SPEX_info SPEX_tripread
 
 SPEX_info SPEX_tripread_double
 (
-    SPEX_matrix *A_handle,     // Matrix to be populated
-    FILE* file,                 // file to read from (must already be open)
+    SPEX_matrix *A_handle,      // Matrix to be populated
+    FILE *file,                 // file to read from (must already be open)
     SPEX_options option
 )
 {
@@ -402,14 +402,14 @@ SPEX_info SPEX_tripread_double
 // SPEX_read_dense
 //------------------------------------------------------------------------------
 
-/* Purpose: Read a dense matrix for RHS vectors. 
+/* Purpose: Read a dense matrix for RHS vectors.
  * the values in the file must be integers
  */
 
 SPEX_info SPEX_read_dense
 (
-    SPEX_matrix *b_handle, // Matrix to be constructed
-    FILE* file,             // file to read from (must already be open)
+    SPEX_matrix *b_handle,  // Matrix to be constructed
+    FILE *file,             // file to read from (must already be open)
     SPEX_options option
 )
 {

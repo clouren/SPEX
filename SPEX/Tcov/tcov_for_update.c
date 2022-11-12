@@ -103,7 +103,7 @@ int64_t Uold[10] = {3, 11, 8, 7, -49, -31, -20, -17, 57,884};//CSR
 int64_t Ak_new[4]= {1,4,7,11}; // new column
 #include <assert.h>
 
-int main( int argc, char* argv[])
+int main( int argc, char *argv[])
 {
     SPEX_info info;
     int sgn;
@@ -548,7 +548,7 @@ int main( int argc, char* argv[])
                 }
                 if (pretend_to_fail) {continue;}
 
-                // create rhos as ones(An,1), and P, Q, P_inv, Q_inv as 0:An-1 
+                // create rhos as ones(An,1), and P, Q, P_inv, Q_inv as 0:An-1
                 P     = (int64_t*) SPEX_malloc(An*sizeof(int64_t));
                 if (P     == NULL) {TEST_CHECK(SPEX_OUT_OF_MEMORY); continue;}
                 Q     = (int64_t*) SPEX_malloc(An*sizeof(int64_t));
@@ -661,7 +661,7 @@ int main( int argc, char* argv[])
 
                         info = SPEX_update_cholesky_rank1(F, vk, sigma, option);
                     }
-                        
+
                     if (info == SPEX_SINGULAR)
                     {
                         printf("This update would cause singularity!!!\n");

@@ -2,9 +2,9 @@
 // SPEX/MATLAB/spex_backslash_mex_soln: Use SPEX Backslash within MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
-// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
+// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy,
+// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno,
+// Timothy A. Davis, Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 //------------------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ void mexFunction
     SPEX_MEX_OK(SPEX_initialize_expert(mxMalloc, mxCalloc, mxRealloc, mxFree));
 
     SuiteSparse_config.printf_func = mexPrintf ;
-    
+
     //--------------------------------------------------------------------------
     // Check that there is the correct number of input arguments
     //--------------------------------------------------------------------------
@@ -72,7 +72,7 @@ void mexFunction
     }
 
     spex_mex_options mexoptions;
-    if (nargin > 2) 
+    if (nargin > 2)
     {
         spex_mex_get_matlab_options (option, &mexoptions, pargin [2]);
     }

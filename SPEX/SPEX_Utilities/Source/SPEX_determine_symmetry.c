@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/SPEX_determine_symmetry: Determine if given matrix is 
+// SPEX_Utilities/SPEX_determine_symmetry: Determine if given matrix is
 // *numerically* (thus pattern-wise) symmetric
 //------------------------------------------------------------------------------
 
@@ -12,7 +12,7 @@
 /* Purpose: Determine if the input A is *numerically* (thus pattern-wise)
  * symmetric.  Since SPEX is an exact framework, it doesn't make sense to check
  * only pattern symmetry.
- * 
+ *
  * If the matrix is determined to be symmetric, SPEX_OK is returned; otherwise,
  * SPEX_UNSYMMETRIC is returned.
  */
@@ -30,22 +30,21 @@ SPEX_info SPEX_determine_symmetry
     const SPEX_matrix A,        // Input matrix to be checked for symmetry
     const SPEX_options option   // Command options
 )
-{    
+{
     SPEX_info info;
-    
+
     // Check for null pointers
     if (!A || !option)
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // A must be CSC and mpz_t
     if (A->kind != SPEX_CSC || A->type != SPEX_MPZ)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
-  
     // Only used index
     int64_t j;
 
@@ -55,10 +54,10 @@ SPEX_info SPEX_determine_symmetry
     SPEX_CHECK( SPEX_transpose(&T, A, option) );
 
     // Check if the number of nonzeros in the columns
-    // of A are equal to the number of nonzeros in 
-    // the rows of A. This is a quick check to 
+    // of A are equal to the number of nonzeros in
+    // the rows of A. This is a quick check to
     // ensure the matrix is candidate to be symmetric.
-    // Moreover, this check is important becuase 
+    // Moreover, this check is important becuase
     // otherwise the ensuing block could seg-fault
     for (j = 0; j <= A->n; j++)
     {
@@ -71,12 +70,11 @@ SPEX_info SPEX_determine_symmetry
             SPEX_FREE_ALL ;
             return SPEX_UNSYMMETRIC;
         }
-      
     }
 
     // Set R = T'
     SPEX_CHECK( SPEX_transpose(&R, T, option) );
-    
+
     // Check whether A[i][j] = A[j][i] in both pattern and numerics
     for (j = 0; j < R->p[R->n]; j++)
     {
@@ -97,7 +95,7 @@ SPEX_info SPEX_determine_symmetry
             return SPEX_UNSYMMETRIC;
         }
     }
-    
+
     // Free memory and return OK meaning the matrix is symmetric
     SPEX_FREE_ALL ;
     return SPEX_OK;

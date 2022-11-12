@@ -55,7 +55,7 @@ Contact Information: Contact Chris Lourenco, \href{mailto:chrisjlourenco@gmail.c
 \tableofcontents
 
 \newpage
-    
+
 \chapter{SPEX Overview}
 
 SPEX is a software package comprising several state-of-the-art SParse EXact
@@ -70,7 +70,7 @@ linear algebra routines. It currently is comprised of the following:
 \url{www.suitesparse.com}\\
 
 \noindent \textbf{Required Packages:} SPEX depends on the following packages:
-    \begin{itemize} 
+    \begin{itemize}
     \item AMD \cite{amestoy1996approximate,amestoy2004algorithmamd}, available under a BSD
 3-clause license and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
     \item COLAMD \cite{davis2004column,davis2004algorithmcolamd}, available under a BSD
@@ -96,14 +96,14 @@ Within a Debian/Ubuntu based Linux system, a compatible version of GMP and MPFR 
 \section{Overview} \label{s:util:overview}
 %-------------------------------------------------------------------------------
 
-SPEX Util is a software package containing utility and auxiliary functions for the SPEX 
+SPEX Util is a software package containing utility and auxiliary functions for the SPEX
 factorizations. Additionally, SPEX Util provides a wrapper class for
 the GNU Multiple Precision Arithmetic (GMP) \cite{granlund2015gnu} and GNU
 Multiple Precision Floating Point Reliable (MPFR) \cite{fousse2007mpfr}
 libraries that prevent memory leaks and improve the overall stability of
 these external libraries. SPEX Util is written in ANSI C.
 
-SPEX operates on matrices stored in any of the following 15 combinations of matrix formats and entry data-types: 
+SPEX operates on matrices stored in any of the following 15 combinations of matrix formats and entry data-types:
 $\{$Compressed Sparse Column (CSC), triplet, dense$\} \times \{$ \verb|mpz_t|,
 \verb|mpq_t|, \verb|mpfr_t|, \verb|int64_t|, or \verb|double|$\}$. Using the SPEX matrix copy function, a matrix of any given form and data-type can be copied and converted into a matrix of any one of the 15 matrix-form and data-type combinations.
 
@@ -343,10 +343,10 @@ changed by initializing the SPEX environment with
 \begin{mdframed}[userdefinedwidth=6in]
 {\footnotesize
 \begin{verbatim}
-    void *SPEX_calloc 
-    ( 
-        size_t nitems,      // number of items to allocate 
-        size_t size         // size of each item 
+    void *SPEX_calloc
+    (
+        size_t nitems,      // number of items to allocate
+        size_t size         // size of each item
     ) ;
 \end{verbatim}
 } \end{mdframed}
@@ -1393,7 +1393,7 @@ SPEX_info SPEX_gmpfunc
     & \verb|SPEX_mpz_init2(x, size)|
     & Initialize x to size bits \\ \hline
 \verb|mpz_set(x, y)|
-    & \verb|SPEX_mpz_set(x, y)| 
+    & \verb|SPEX_mpz_set(x, y)|
     & $x = y$ (\verb|mpz_t|) \\ \hline
 \verb|mpz_set_ui(x, y)|
     & \verb|SPEX_mpz_set_ui(x, y)|
@@ -1553,8 +1553,8 @@ linear systems, $ A x = b$, where $A \in \mathbb{Q}^{n \times
 n}$, $b \in \mathbb{Q}^{n \times r}$, and $x \in \mathbb{Q}^{n \times
 r}$. This package performs a left-looking, roundoff-error-free (REF) LU
 factorization $P A Q = L D U$, where $L$ and $U$ are integer, $D$ is diagonal,
-and $P$ and $Q$ are row and column permutations, respectively. 
-Note that, in order to solve a linear system, the matrix $D$ is never explicitly computed nor needed; thus this 
+and $P$ and $Q$ are row and column permutations, respectively.
+Note that, in order to solve a linear system, the matrix $D$ is never explicitly computed nor needed; thus this
 package uses only the matrices $L$ and $U$. The theory associated with this code is the Sparse Left-looking Integer-Preserving (SLIP) LU factorization
  \cite{lourenco2019exact}. Aside from
 solving sparse linear systems exactly, one of the key goals of this package is
@@ -1566,7 +1566,7 @@ For all primary computational routines in Section \ref{s:LeftLU:SPEX_lu_factoriz
 argument $A$ must be stored in a compressed sparse column (CSC) matrix with
 entries in \verb|mpz_t| type (referred to as CSC \verb|mpz_t| matrix henceforth), while $b$ must be stored as a dense \verb|mpz_t| matrix (i.e., a
 dense matrix with entries in \verb|mpz_t| type).  However, the original data type of entries in the input matrix $A$ and right hand side (RHS) vectors $b$ can be any one of: \verb|double|, \verb|int64_t|, \verb|mpq_t|,
-\verb|mpz_t|, or \verb|mpfr_t|, and their format(s) are allowed to be 
+\verb|mpz_t|, or \verb|mpfr_t|, and their format(s) are allowed to be
 CSC, sparse triplet, or dense. Section \ref{ss:populate_Ab} discusses the \verb|SPEX_matrix| structure, the allowed matrix formats and types, and how to perform conversions across different formats/types.
 
 The matrices $L$ and $U$ are computed using integer-preserving
@@ -1587,9 +1587,9 @@ algorithm \cite{davis2004algorithmcolamd,davis2004column}. Other approaches
 include using the Approximate Minimum Degree (AMD) ordering
 \cite{amestoy1996approximate,amestoy2004algorithmamd}, or no ordering ($Q=I$). Section \ref{s:SPEX_lu_analyze} discusses how to select the desired column ordering prior to factorization.
 
-Once the factorization $L D U = P A Q$ is computed, the solution vector 
-$x$ is computed via the sparse REF forward and backward substitution algorithms \cite{lourenco2019exact}. 
-Forward substitution is a variant of the sparse REF triangular solve discussed above. Backward substitution is a typical column-oriented sparse backward substitution. Both of these routines require $b$ to be given as a dense \verb|mpz_t| matrix. At the conclusion of the forward and 
+Once the factorization $L D U = P A Q$ is computed, the solution vector
+$x$ is computed via the sparse REF forward and backward substitution algorithms \cite{lourenco2019exact}.
+Forward substitution is a variant of the sparse REF triangular solve discussed above. Backward substitution is a typical column-oriented sparse backward substitution. Both of these routines require $b$ to be given as a dense \verb|mpz_t| matrix. At the conclusion of the forward and
 backward substitution routines, the final solution vector(s) $x$ are guaranteed to be exact.  The solution $x$ is returned as a dense \verb|mpq_t| matrix.
 
 A key advantage of utilizing SPEX Left LU with floating-point output is that the solution is guaranteed to be exact until the final (and only) rational-to-floating point conversion. Note that this final conversion is done in higher precision. Thus, the solution $x$ output in \verb|double| precision are accurate to machine roundoff (approximately $10^{-16}$). In addition, the returned solution can also be accurate to any user-specified precision by using MPFR output.
@@ -1627,7 +1627,7 @@ type \verb|make|.  The last line of output should read:
     statements not yet tested: 0
 \end{verbatim}
 
-If you want to use SPEX Left LU within MATLAB, 
+If you want to use SPEX Left LU within MATLAB,
 \verb|cd| in MATLAB to the folder \verb|SPEX/SPEX/MATLAB| then type
 \newline \verb|SPEX_mex_install|. This compiles the necessary code so that you can use
 % FIXME: update this
@@ -1679,7 +1679,7 @@ Macro & purpose \\
         // input:
         const SPEX_matrix A,        // matrix to be factored
         const SPEX_lu_analysis *S,   // column permutation and estimates
-                                     // of nnz in L and U 
+                                     // of nnz in L and U
         const SPEX_options option
     ) ;
 \end{verbatim}
@@ -1713,7 +1713,7 @@ After factorizing the matrix, the determinant of $A$ can be obtained from
 
 The output array \verb|pinv| contains the inverse row permutation (that is, the
 row index in the permuted matrix $PA$. For the $i$th row in $A$, \verb|pinv[i]|
-gives the row index in $PA$). 
+gives the row index in $PA$).
 
 Returns \verb|SPEX_PANIC| if SPEX has not been initialized.  Otherwise, if
 another error occurs, \verb|L|, \verb|U|, \verb|rhos|, and \verb|pinv| are all
@@ -1747,7 +1747,7 @@ returned as \verb|NULL|, and an error code will be returned correspondingly.
 \verb|SPEX_lu_solve| obtains the solution of \verb|mpq_t| type to the
 linear system $Ax=b$ upon a successful factorization.  This function may be
 called after a successful return from \verb|SPEX_lu_factorize|, which
-computes \verb|L|, \verb|U|, \verb|rhos|, and \verb|pinv|. 
+computes \verb|L|, \verb|U|, \verb|rhos|, and \verb|pinv|.
 
 On input, \verb|SPEX_matrix x| is undefined. \verb|A|, \verb|L| and \verb|U|
 must be CSC \verb|mpz_t| matrices while \verb|b| and \verb|rhos| must be dense
@@ -1795,7 +1795,7 @@ been initialized.
 
 \verb|SPEX_lu_backslash| solves the linear system $Ax=b$ and returns the solution
 as a dense matrix of \verb|mpq_t|, \verb|mpfr_t| or \verb|double| numbers. This
-function performs symbolic analysis, factorization, and solving all in one line. 
+function performs symbolic analysis, factorization, and solving all in one line.
 It can be thought of as an exact version of MATLAB sparse backslash.
 
 On input, \verb|SPEX_matrix x| is undefined. \verb|type| must be one of:
@@ -1936,7 +1936,7 @@ shows how to get \verb|A| and \verb|b| in a required format.
     SPEX_matrix A, b;
     // A is a copy of the A1. A is a CSC matrix with mpz_t entries
     SPEX_matrix_copy(&A, SPEX_CSC,   SPEX_MPZ, A1, option);
-    // b is a copy of the b1. b is a dense matrix with mpz_t entries. 
+    // b is a copy of the b1. b is a dense matrix with mpz_t entries.
     SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b1, option);
     \end{verbatim} }
 
@@ -1946,7 +1946,7 @@ shows how to get \verb|A| and \verb|b| in a required format.
 %-------------------------------------------------------------------------------
 
 After initializing the necessary data structures, SPEX obtains the solution
-to $Ax=b$ using the simple interface of SPEX Left LU, \verb|SPEX_lu_backslash|.  The 
+to $Ax=b$ using the simple interface of SPEX Left LU, \verb|SPEX_lu_backslash|.  The
 \newline \verb|SPEX_lu_backslash| function can return \verb|x| as \verb|double|,
 \verb|mpq_t|, or \verb|mpfr_t| with an associated precision.  See Section
 \ref{ss:SPEX_lu_backslash} for more details.  The following code snippet shows how
@@ -1973,7 +1973,7 @@ a sequence of calls to SPEX functions:
 \begin{enumerate}
 \item declare \verb|L|, \verb|U|, the solution matrix \verb|x|, and others,
 \item perform symbolic analysis,
-\item compute the factorization $PAQ = L D U$, 
+\item compute the factorization $PAQ = L D U$,
 \item solve the linear system $Ax =b$, and
 \item convert the final solution into the final desired form.
 \end{enumerate}
@@ -2028,7 +2028,7 @@ function returns \verb|SPEX_OK|.
 After factorization, the next step is to solve the linear system and store the
 solution as a dense matrix \verb|x| with entries of rational number
 \verb|mpq_t|. This solution is done via the \verb|SPEX_lu_solve|
-function (Section \ref{ss:SPEX_lu_solve}). 
+function (Section \ref{ss:SPEX_lu_solve}).
 Upon successful completion, this function returns \verb|SPEX_OK|.
 
 In this step, \verb|option->check| can be set to \verb|true| to enable the
@@ -2155,7 +2155,7 @@ factorization method uses one of the following pivoting strategies:
         for the largest pivot,
     \item \verb|'largest'|: largest pivot.
     \end{itemize}
-    
+
 \item \verb|option.order|: This parameter is a string controls the
 fill-reducing column preordering used.
 

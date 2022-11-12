@@ -2,10 +2,10 @@
 // SPEX/MATLAB/SPEX_mex_get_A_and_b.c: convert A&b to SPEX matrices
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
-// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Jinhao
+// Chen, Erick Moreno-Centeno, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
 //------------------------------------------------------------------------------
 
 /* Purpose: This function reads in the A matrix and right hand side vectors. */
@@ -14,8 +14,8 @@
 
 void spex_mex_get_A_and_b
 (
-    SPEX_matrix *A_handle,     // Internal SPEX Mat stored in CSC
-    SPEX_matrix *b_handle,     // mpz matrix used internally
+    SPEX_matrix *A_handle,      // Internal SPEX Mat stored in CSC
+    SPEX_matrix *b_handle,      // mpz matrix used internally
     const mxArray* pargin[],    // The input A matrix and options
     SPEX_options option
 )
@@ -48,7 +48,7 @@ void spex_mex_get_A_and_b
     Ap = (int64_t *) mxGetJc (pargin[0]) ;
     Ai = (int64_t *) mxGetIr (pargin[0]) ;
     Ax = mxGetDoubles (pargin[0]) ;
-    
+
     if (!Ai || !Ap || !Ax)
     {
         spex_mex_error (SPEX_INCORRECT_INPUT, "") ;

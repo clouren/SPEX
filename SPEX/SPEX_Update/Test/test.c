@@ -1280,7 +1280,7 @@ SPEX_info SPEX_construct_LP
     glp_add_rows(LP, neqs);
     glp_add_cols(LP, remain_vars);
     glp_load_matrix(LP, (int) remain_nz, I, J, X);
- 
+
     for (int64_t j = 0; j < remain_vars; j++)
     {
         lb = (double) (MY_MAT_X(Mlb, j));
@@ -1330,7 +1330,7 @@ SPEX_info SPEX_construct_LP
     }
 
     // convert to mpz matrices
-    OK1(SPEX_matrix_copy(A_handle, SPEX_CSC,   SPEX_MPZ, MA_CSC, option)); 
+    OK1(SPEX_matrix_copy(A_handle, SPEX_CSC,   SPEX_MPZ, MA_CSC, option));
     OK1(SPEX_matrix_copy(c_handle, SPEX_DENSE, SPEX_MPZ, Mc, option));
     // convert to double matrix if needed
     if (Mb->type != SPEX_FP64)

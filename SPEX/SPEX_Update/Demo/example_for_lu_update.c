@@ -8,8 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/*
- * A simple example to show how to perform LU factorization update for column
+/* A simple example to show how to perform LU factorization update for column
  * replacement.
  */
 
@@ -78,7 +77,7 @@ int main()
     //--------------------------------------------------------------------------
     // convert factorization to be updatable
     //--------------------------------------------------------------------------
-    
+
     start = clock();
 
     OK(SPEX_factorization_convert(F, true, option));

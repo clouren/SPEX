@@ -9,7 +9,7 @@
 
 
 /* This code performs REF QR via the Pursell Algorithm on A'*A. This version
- * explicitly constructs [A'A A']. 
+ * explicitly constructs [A'A A'].
  */
 
 
@@ -21,7 +21,6 @@
 
 # include "spex_qr_internal.h"
 
-    
 /* Perform the IPGE version of SPEX QR using Pursell method
  */
 SPEX_info SPEX_QR_PURSELL2
@@ -32,20 +31,20 @@ SPEX_info SPEX_QR_PURSELL2
 )
 {
     SPEX_info info;
-    
+
     int64_t m = A->m, n = A->n;
     ASSERT( m >= n); // A should be transposed if not true
     ASSERT( A != NULL);
     // Only dense for now
     ASSERT( A->type == SPEX_MPZ);
     ASSERT( A->kind == SPEX_DENSE);
-    
+
     // Indices
     int64_t i, j, k;
-    
+
     // Final matrices Q and R
     SPEX_matrix Q, R;
-    
+
     // A_transpose
     SPEX_matrix A_T;
     // A2 = A_T A
@@ -54,21 +53,21 @@ SPEX_info SPEX_QR_PURSELL2
     // Allocate R
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_DENSE, SPEX_MPZ, n, n, n*n,
         false, true, NULL));
-    
+
     // Allocate Q
     SPEX_CHECK(SPEX_matrix_allocate(&Q, SPEX_DENSE, SPEX_MPZ, m, n, m*n,
         false, true, NULL));
-     
+
     // Allocate A_T
     SPEX_CHECK(SPEX_matrix_allocate(&A_T, SPEX_DENSE, SPEX_MPZ, n, m, n*m,
         false, true, NULL));
-    
+
     // Allocate A2
     SPEX_CHECK(SPEX_matrix_allocate(&A2, SPEX_DENSE, SPEX_MPZ, n, n, n*n,
         false, true, NULL));
-    
+
     // Compute A_T
-    
+
     for (i = 0; i < n; i++)
     {
         for (j = 0; j < m; j++)
@@ -77,7 +76,7 @@ SPEX_info SPEX_QR_PURSELL2
                           SPEX_2D(A, j, i, mpz)));
         }
     }
-    
+
     // Compute A2 = A_T*A
     for (i = 0; i < n; i++)
     {
@@ -92,10 +91,10 @@ SPEX_info SPEX_QR_PURSELL2
             }
         }
     }
-    
+
     // Now, the factorization is computed by performing IPGE on [A2 AT]
     // We can either construct this matrix directly or do it more efficiently
-    
+
     // Allocate A3
     SPEX_CHECK(SPEX_matrix_allocate(&A3, SPEX_DENSE, SPEX_MPZ, n, n+m, n*(n+m),
         false, true, NULL));
@@ -108,7 +107,7 @@ SPEX_info SPEX_QR_PURSELL2
                           SPEX_2D(A2, i, j, mpz)));
         }
     }
-    
+
     // Populate last n*m portion
     for(i = 0; i < n; i++)
     {
@@ -118,7 +117,7 @@ SPEX_info SPEX_QR_PURSELL2
                           SPEX_2D(A_T, i, j, mpz)));
         }
     }
-    
+
     // Now, perform IPGE on A3
     for (k = 0; k < n; k++)
     {
@@ -139,7 +138,7 @@ SPEX_info SPEX_QR_PURSELL2
             }
         }
     }
-    
+
     // Now get Q and R
     // Populate first n*n portion
     for (i = 0; i < n; i++)
@@ -155,7 +154,7 @@ SPEX_info SPEX_QR_PURSELL2
                 SPEX_CHECK(SPEX_mpz_set_ui( SPEX_2D(R,i,j,mpz), 0));
         }
     }
-    
+
     // Populate last n*m portion
     for(i = 0; i < n; i++)
     {
@@ -165,7 +164,7 @@ SPEX_info SPEX_QR_PURSELL2
                           SPEX_2D(A3, i, j+n, mpz)));
         }
     }
-    
+
     (*Q_handle) = Q;
     (*R_handle) = R;
     SPEX_FREE_ALL;

@@ -146,7 +146,6 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     SPEX_MPZ_SET_NULL(q);
     SPEX_MPZ_SET_NULL(r);
 
-    
     int64_t lines = 0 ;     // # of lines printed so far
 
     //--------------------------------------------------------------------------
@@ -266,7 +265,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                             {
                                 status = SPEX_mpfr_asprintf(&buff, "%.*Rf \n",
                                     prec, A->x.mpfr [p]);
-                                if (status >= 0) 
+                                if (status >= 0)
                                 {
                                     SPEX_PR2("%s", buff);
                                     SPEX_mpfr_free_str (buff);
@@ -346,7 +345,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                             // which employs either printf or mexprintf
                             status = SPEX_mpfr_asprintf(&buff, "%Zd \n",
                                 A->x.mpz [p]);
-                            if (status >= 0) 
+                            if (status >= 0)
                             {
                                 SPEX_PR2("%s", buff);
                                 SPEX_mpfr_free_str (buff);
@@ -357,10 +356,10 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         {
                             status = SPEX_mpfr_asprintf (&buff,"%Qd \n",
                                 A->x.mpq [p]);
-                            if (status >= 0)  
-                            {   
-                                SPEX_PR2("%s", buff); 
-                                SPEX_mpfr_free_str (buff); 
+                            if (status >= 0)
+                            {
+                                SPEX_PR2("%s", buff);
+                                SPEX_mpfr_free_str (buff);
                             }
                             break;
                         }
@@ -368,10 +367,10 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         {
                             status = SPEX_mpfr_asprintf(&buff, "%.*Rf \n",
                                 prec, A->x.mpfr [p]);
-                            if (status >= 0)  
-                            {   
-                                SPEX_PR2("%s", buff); 
-                                SPEX_mpfr_free_str (buff); 
+                            if (status >= 0)
+                            {
+                                SPEX_PR2("%s", buff);
+                                SPEX_mpfr_free_str (buff);
                             }
                             break;
                         }
@@ -478,10 +477,10 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                                 // mexprintf
                                 status = SPEX_mpfr_asprintf (&buff, "%Zd \n" ,
                                     SPEX_2D(A, i, j, mpz)) ;
-                                if (status >= 0)  
-                                {   
-                                    SPEX_PR2("%s", buff); 
-                                    SPEX_mpfr_free_str (buff); 
+                                if (status >= 0)
+                                {
+                                    SPEX_PR2("%s", buff);
+                                    SPEX_mpfr_free_str (buff);
                                 }
                                 break;
                             }
@@ -489,10 +488,10 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                             {
                                 status = SPEX_mpfr_asprintf (&buff, "%Qd \n",
                                     SPEX_2D(A, i, j, mpq));
-                                if (status >= 0)   
-                                {    
-                                    SPEX_PR2("%s", buff);  
-                                    SPEX_mpfr_free_str (buff);  
+                                if (status >= 0)
+                                {
+                                    SPEX_PR2("%s", buff);
+                                    SPEX_mpfr_free_str (buff);
                                 }
                                 break;
                             }
@@ -500,10 +499,10 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                             {
                                 status = SPEX_mpfr_asprintf (&buff, "%.*Rf \n",
                                     prec, SPEX_2D(A, i, j, mpfr));
-                                if (status >= 0)   
-                                {    
-                                    SPEX_PR2("%s", buff);  
-                                    SPEX_mpfr_free_str (buff);  
+                                if (status >= 0)
+                                {
+                                    SPEX_PR2("%s", buff);
+                                    SPEX_mpfr_free_str (buff);
                                 }
                                 break;
                             }

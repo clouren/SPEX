@@ -24,9 +24,9 @@ SPEX_info SPEX_generate_random_matrix
     ASSERT(n >= 0);
     ASSERT(m >= 0);
     ASSERT(lower < upper);
-    
+
     SPEX_info info;
-    SPEX_matrix A = NULL; 
+    SPEX_matrix A = NULL;
     // A is a m*n triplet matrix whose entries are FP64 Note that the first
     // boolean parameter says that the matrix is not shallow, so that A->i,
     // A->j, and A->x are calloc'd. The second boolean parameter is meaningless
@@ -34,7 +34,7 @@ SPEX_info SPEX_generate_random_matrix
     // for the mpz_t, mpq_t, and mpfr_t entries
     SPEX_CHECK(SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_FP64, m, n, m*n,
         false, true, NULL));
-    
+
     int64_t counter = 0;
     // Start the random number generator with seed
     srand(seed);

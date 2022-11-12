@@ -8,12 +8,10 @@
 
 //------------------------------------------------------------------------------
 
-
 #include "lu_demos.h"
 
-
-/* This example shows how to use SPEX Left LU with a given input matrix and a double
-   output. The input is a randomly generate dense matrix */
+/* This example shows how to use SPEX Left LU with a given input matrix and a
+ * double output. The input is a randomly generate dense matrix */
 
 // usage:
 // example > out
@@ -28,14 +26,12 @@
     SPEX_FREE(option);                       \
     SPEX_finalize() ;                        \
 
-   
-    
 int main (void)
 {
-    
+
     //--------------------------------------------------------------------------
-    // Prior to using SPEX Left LU, its environment must be initialized. This is done
-    // by calling the SPEX_initialize() function.
+    // Prior to using SPEX Left LU, its environment must be initialized. This
+    // is done by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
 
     SPEX_initialize();
@@ -65,7 +61,7 @@ int main (void)
     // A->x for the mpz_t, mpq_t, and mpfr_t entries
     SPEX_matrix_allocate(&R, SPEX_TRIPLET, SPEX_FP64, n, n, nz,
         false, true, option);
-    
+
     // Rb is a n*1 dense matrix whose entries are FP64
     SPEX_matrix_allocate(&Rb, SPEX_DENSE, SPEX_FP64, n, 1, n,
         false, true, option);
@@ -93,7 +89,7 @@ int main (void)
 
     // A is a copy of the R matrix. A is a CSC matrix with mpz_t entries
     OK ( SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, R, option));
-    // b is a copy of the Rb matrix. b is dense with mpz_t entries. 
+    // b is a copy of the Rb matrix. b is dense with mpz_t entries.
     OK ( SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, Rb, option));
 
     //--------------------------------------------------------------------------
@@ -101,10 +97,10 @@ int main (void)
     //--------------------------------------------------------------------------
 
     clock_t start_s = clock();
-   
+
     // Solve the system and give double solution
     OK(SPEX_lu_backslash( &x, SPEX_FP64, A, b, option));
-         
+
     clock_t end_s = clock();
 
     double t_s = (double) (end_s - start_s) / CLOCKS_PER_SEC;

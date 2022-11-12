@@ -1,6 +1,6 @@
 SPEX_Chol: Integer-Preserving Cholesky Factorization
 
-Copyright (c) 2020, Christopher Lourenco, Erick Moreno-Centeno, 
+Copyright (c) 2020, Christopher Lourenco, Erick Moreno-Centeno,
 Tim Davis, Jinhao Chen
 https://github.com/clouren/SPEX/SPEX_Cholesky
 http://suitesparse.com

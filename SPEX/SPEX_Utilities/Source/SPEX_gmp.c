@@ -413,7 +413,7 @@ SPEX_info SPEX_gmp_printf
     // call gmp_vprintf
     va_list args;
     va_start (args, format) ;
-    int n = gmp_vprintf (format, args) ; 
+    int n = gmp_vprintf (format, args) ;
     va_end (args) ;
 
     // Finish the wrapper
@@ -595,7 +595,7 @@ SPEX_info SPEX_mpfr_printf
     // call mpfr_vprintf
     va_list args;
     va_start (args, format) ;
-    int n = mpfr_vprintf (format, args) ; 
+    int n = mpfr_vprintf (format, args) ;
     va_end (args) ;
     // Free cache from mpfr_vprintf. Even though mpfr_free_cache is
     // called in SPEX_finalize ( ), it has to be called here to

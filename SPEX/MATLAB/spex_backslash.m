@@ -31,17 +31,18 @@ function x = spex_backslash(A, b, option)
 %           solution.  This is the default.
 %       'vpa':  x is returned as a vpa array with option.digits digits (default
 %           is given by the MATLAB digits function).  The result may be
-%           inexact, if an entry in x cannot be exactly represented in the specified
-%           number of digits. Note: the conversion from the SPEX exact solution 
-%           (stored as a rational vector) to an arbitrary precision vpa number
-%           is very slow (it can be much slower than exactly solving the system Ax = b).
+%           inexact, if an entry in x cannot be exactly represented in the
+%           specified number of digits. Note: the conversion from the SPEX
+%           exact solution (stored as a rational vector) to an arbitrary
+%           precision vpa number is very slow (it can be much slower than
+%           exactly solving the system Ax = b).
 %       'char':  x is returned as a cell array of strings, where
 %           x {i} = 'numerator/denominator' and both numerator and denominator
 %           are arbitrary-length strings of decimal digits.  The result is
 %           always exact, although x cannot be directly used in MATLAB for
 %           numerical calculations.  It can be inspected or analyzed using
-%           MATLAB string manipulation. Within MATLAB, x may be conversted to vpa, 
-%           (x=vpa(x)), and then to double (x=double(vpa(x))).
+%           MATLAB string manipulation. Within MATLAB, x may be conversted to
+%           vpa, (x=vpa(x)), and then to double (x=double(vpa(x))).
 %
 %   option.digits: the number of decimal digits to use for x, if
 %       option.solution is 'vpa'.  Must be in range 2 to 2^29.
@@ -49,8 +50,8 @@ function x = spex_backslash(A, b, option)
 % Example:
 %
 %   % In this first example, x = spex_backslash(A, b) returns an approximate
-%   % solution. Note that, since SPEX computes the solution exactly, 
-%   % the only source of round-of-errors is the final rationa-to-double conversion.
+%   % solution. Note that, since SPEX computes the solution exactly, the
+%   % only source of round-of-errors is the final rationa-to-double conversion.
 %
 %   load west0479
 %   A = west0479 ;
@@ -64,7 +65,7 @@ function x = spex_backslash(A, b, option)
 %
 %   % In this example, x = spex_backslash(A,b) is returned exactly in the
 %   % MATLAB vector x, because x contains only integers representable exactly
-%   % in double precision. 
+%   % in double precision.
 %   % In contrast using x = A\b results in floating-point roundoff error.
 %
 %   amax = max (abs (A), [ ], 'all') ;
@@ -104,16 +105,15 @@ end
 % Preprocessing complete. Now use SPEX Backslash to solve Ax = b.
 x = spex_backslash_mex_soln(A, b, option);
 
-% At this point, depending on the user options, x is either 
+% At this point, depending on the user options, x is either
 % (a) a 64-bit floating-point (i.e., double) approximate solution
 % (in this case the only source of roundoff errors was the final
 % conversion from a rational number to a double), or
-% (b) a cell array of strings, where x {i} = 'numerator/denominator' 
-% and both numerator and denominator are arbitrary-length strings of decimal digits. 
-  
-  
+% (b) a cell array of strings, where x {i} = 'numerator/denominator'
+% and both numerator and denominator are arbitrary-length strings of decimal digits.
+
 % if requested, convert to vpa.
-% if provided, use the requested number of digits (otherwise use 
+% if provided, use the requested number of digits (otherwise use
 % the default in MATLAB).
 if (isfield(option, 'solution') && isequal(option.solution, 'vpa'))
     if (isfield(option, 'digits'))

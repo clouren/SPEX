@@ -92,7 +92,7 @@ SPEX_info SPEX_factorization_check
     //    range of [0,n), and if P_perm and Pinv_perm are mutually inverse
     //    vectors, same applied to (Q_perm, Qinv_perm) if exists.
     //--------------------------------------------------------------------------
-    
+
     int64_t i, j, p;
     int r;
     int64_t lines = 0;     // # of lines printed so far

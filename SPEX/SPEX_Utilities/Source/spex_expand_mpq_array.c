@@ -29,7 +29,7 @@ SPEX_info spex_expand_mpq_array
 {
 
     // inputs have checked in the only caller spex_cast_array
-    ASSERT(n >= 0);    
+    ASSERT(n >= 0);
     SPEX_info info ;
     mpz_t temp;
     SPEX_MPZ_SET_NULL(temp);

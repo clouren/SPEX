@@ -2,10 +2,10 @@
 // SPEX/MATLAB/SPEX_mex.h: include file for MATLAB functions
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
-// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Jinhao
+// Chen, Erick Moreno-Centeno, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
 //------------------------------------------------------------------------------
 
 // This file contains the routines for SPEX's MATLAB interface.
@@ -13,26 +13,29 @@
 // using either the left LU factorization, Cholesky factorization,
 // or allowing SPEX to choose for the user the correct algorithm.
 
-// Note that the MATLAB interface of SPEX is intended to provide 
+// Note that the MATLAB interface of SPEX is intended to provide
 // accurate solutions to linear systems within MATLAB. Note that there
 // are two major limitations to the MATLAB interface:
+
 //   1) The MATLAB interface does not give access to the factors L and/or U.
-//      thus, one can not reuse the factors after a solution is computed (nor can 
-//      they be updated). If a user desires this functionality, they should utilize 
-//      the C interface.
+//      thus, one can not reuse the factors after a solution is computed (nor
+//      can they be updated). If a user desires this functionality, they should
+//      utilize the C interface.
+
 //
-//   2) The MATLAB interface preserves 16 decimal digits of precision from MATLAB.
-//      That is, since the input is floating point, all numbers are assumed to be
-//      correct to 16 digits. This is due to the fact that epsilon is about 2e-16
-//      thus, floating point numbers, such as fl(0.9) can not be expressed exactly.
-//      With an exact (floating-point) conversion, fl(0.9) is sent to SPEX as 
-//      45000000000000001 / 50000000000000000. Using 16 decimal digits of 
-//      precision, this number is sent to spex as 9/10.
-//      If one wishes to preserve full floating point precision, they may either
-//      scale the matrix themselves within MATLAB, or if this is not possible,
-//      utilize the C interface, and copy the matrix twice. First it should be copied
-//      from SPEX_FP64 (double) to SPEX_MPFR and then from SPEX_MPFR to SPEX_MPQ. Either
-//      of these options will preserve as much floating-point precision as the user desires.
+//   2) The MATLAB interface preserves 16 decimal digits of precision from
+//      MATLAB.  That is, since the input is floating point, all numbers are
+//      assumed to be correct to 16 digits. This is due to the fact that
+//      epsilon is about 2e-16 thus, floating point numbers, such as fl(0.9)
+//      can not be expressed exactly.  With an exact (floating-point)
+//      conversion, fl(0.9) is sent to SPEX as 45000000000000001 /
+//      50000000000000000. Using 16 decimal digits of precision, this number is
+//      sent to spex as 9/10.  If one wishes to preserve full floating point
+//      precision, they may either scale the matrix themselves within MATLAB,
+//      or if this is not possible, utilize the C interface, and copy the
+//      matrix twice. First it should be copied from SPEX_FP64 (double) to
+//      SPEX_MPFR and then from SPEX_MPFR to SPEX_MPQ. Either of these options
+//      will preserve as much floating-point precision as the user desires.
 
 #ifndef SPEX_BACKSLASH_MEX_H
 #define SPEX_BACKSLASH_MEX_H

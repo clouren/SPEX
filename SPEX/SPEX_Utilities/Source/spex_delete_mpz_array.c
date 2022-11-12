@@ -8,11 +8,11 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function clears the memory used for an mpz vector of size n. 
+/* Purpose: This function clears the memory used for an mpz vector of size n.
  * Call this function for all mpz vectors when done.
- * 
+ *
  * Input is a mpz_t** array which is destroyed upon function completion
- * 
+ *
  */
 
 #include "spex_util_internal.h"

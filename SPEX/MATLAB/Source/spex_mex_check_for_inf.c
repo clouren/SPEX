@@ -2,9 +2,9 @@
 // SPEX/MATLAB/SPEX_mex_check_for_inf.c: Check A&B for inf/NAN
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, 
-// Timothy A. Davis, Texas A&M University. All Rights Reserved. 
+// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy,
+// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno,
+// Timothy A. Davis, Texas A&M University. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 //------------------------------------------------------------------------------
 

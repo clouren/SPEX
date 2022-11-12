@@ -138,7 +138,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
         SPEX_CHECK(SPEX_mpz_set(v->x[0], sd[j]));
     }
     // perform IPGE for x if the corresponding entry in v != 0, skip x(perm[j])
-    // NOTE: this could cause fillin in x 
+    // NOTE: this could cause fillin in x
     for (p = 1; p < v->nz; p++)
     {
         SPEX_CHECK(SPEX_mpz_sgn(&sgn, v->x[p]));

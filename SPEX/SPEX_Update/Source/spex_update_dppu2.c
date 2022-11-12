@@ -186,10 +186,10 @@ SPEX_info spex_update_dppu2
         //----------------------------------------------------------------------
         if (tmp_ks > k+1)
         {
-            // get the scale for entries between frames k and ks % O(1) time 
-            // pending_scale = sd(k)/sd (ks); 
-            SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[k])); 
-            SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[tmp_ks])); 
+            // get the scale for entries between frames k and ks % O(1) time
+            // pending_scale = sd(k)/sd (ks);
+            SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[k]));
+            SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[tmp_ks]));
             SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
             // scale entries in frames k+1:ks-1
             for (j = k+1; j < tmp_ks; j++)
@@ -394,8 +394,8 @@ SPEX_info spex_update_dppu2
     if (last_nz_b4_ks != tmp_ks-1)
     {
         // update S(2,ks) = sd(ks-1)/sd(last_nz_b4_ks)
-        SPEX_CHECK(SPEX_mpq_set_z(SU(tmp_ks), sd[tmp_ks-1])); 
-        SPEX_CHECK(SPEX_mpq_set_den(SU(tmp_ks), sd[last_nz_b4_ks])); 
+        SPEX_CHECK(SPEX_mpq_set_z(SU(tmp_ks), sd[tmp_ks-1]));
+        SPEX_CHECK(SPEX_mpq_set_den(SU(tmp_ks), sd[last_nz_b4_ks]));
         SPEX_CHECK(SPEX_mpq_canonicalize(SU(tmp_ks)));
         // sd(ks) = U(ks,Q(ks))*S(3,ks)
         SPEX_CHECK(SPEX_mpz_divexact(sd[tmp_ks],Uk_dense_row->x[Qks],
@@ -406,7 +406,7 @@ SPEX_info spex_update_dppu2
     else
     {
         // update S(2,ks) = 1
-        SPEX_CHECK(SPEX_mpq_set_ui(SU(tmp_ks), 1, 1)); 
+        SPEX_CHECK(SPEX_mpq_set_ui(SU(tmp_ks), 1, 1));
         // sd(ks) = U(ks,Q[ks])
         SPEX_CHECK(SPEX_mpz_set(sd[tmp_ks], Uk_dense_row->x[Qks]));
     }

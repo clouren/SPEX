@@ -12,5 +12,5 @@ Purpose: Exactly solve an SPD sparse system of linear equations using a given
 *********example_simple*********
  Purpose: Demonstrate the simple interface of SPEX_Cholesky for a matrix to be read in
 
-*********example_extended********* 
+*********example_extended*********
 Purpose: Demonstrate the extended interface of SPEX_Cholesky for a matrix to be read in

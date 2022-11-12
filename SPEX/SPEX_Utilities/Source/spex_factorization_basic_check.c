@@ -23,7 +23,7 @@ SPEX_info spex_factorization_basic_check
         /* F can only be LU or Cholesky*/
         !(F->kind == SPEX_LU_FACTORIZATION ||
           F->kind == SPEX_CHOLESKY_FACTORIZATION) ||
-        /* P_perm and Pinv_perm should exist for any kind*/ 
+        /* P_perm and Pinv_perm should exist for any kind*/
         !(F->P_perm) || !(F->Pinv_perm) ||
         /* L should exist and have MPZ entries*/
         !(F->L) || F->L->type != SPEX_MPZ ||

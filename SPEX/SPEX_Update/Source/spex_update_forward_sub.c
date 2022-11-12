@@ -2,13 +2,13 @@
 // SPEX_Update/spex_update_forward_sub.c: sparse forward substitution,
 // i.e., compute x = (LD)\v
 //------------------------------------------------------------------------------
-    
+
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
 // Moreno-Centeno, Texas A&M University.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
-    
+
 // Purpose: This function is to perform sparse forward substitution, which is
 // essentially the same as sparse REF triangular solve for LDx=v, but with v
 // as a dense vector. This function assumes v is in the same row permutation as
@@ -37,7 +37,7 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
     // reset history vector
     for (i = 0; i < n; i++)
     {
-        h[i] = -1; 
+        h[i] = -1;
     }
 
     for (i = 0; i < n; i++)
@@ -50,5 +50,5 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
         SPEX_CHECK(spex_update_ipge(x, h, NULL, L->v[i], P, NULL, rhos, i));
     }
 
-    return SPEX_OK; 
+    return SPEX_OK;
 }

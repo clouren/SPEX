@@ -16,7 +16,7 @@ for i = 1:length(list)
     fRead = fopen(strcat('LPnetlib_CholUpdate/',list(i).name), 'r');
     A = fscanf(fRead, '%f %d %d %f %d %d %f %d %d %f %d %d %f %d %d %f %d %d %f %d %d',[21, 1]);
     fclose(fRead);
-    
+
     t_fact(i) = 0;
     t_update(i) = 0;
     if (length(A) ~= 0)
@@ -49,14 +49,14 @@ for i = 1:length(list)
         too_simple = too_simple+1;
     end
     i-too_simple
-    
+
     if t_update(i)~=0 && t_fact(i)/t_update(i) > max_ratio
         max_ratio =t_fact(i)/t_update(i)
     end
     if t_fact(i)~=0 && t_fact(i)/t_update(i) < min_ratio
         min_ratio =t_fact(i)/t_update(i)
     end
-    
+
 end
 figure(1);
 %title('factorization/updating time over updating time');

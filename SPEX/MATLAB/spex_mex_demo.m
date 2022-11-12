@@ -5,9 +5,8 @@
 %
 % See also vpa, SPEX_mex_install, SPEX_mex_test.
 %
-% SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-% Jinhao Chen, Lorena Mejia Domenzain, Erick Moreno-Centeno and Timothy A. Davis, 
-% Texas A&M University.  All Rights Reserved.  
+% SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
+% Moreno-Centeno and Timothy A. Davis, All Rights Reserved.
 % SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 format compact
@@ -64,7 +63,7 @@ err_matlab = norm (x-xtrue)
 %     0     0     0     0    -1    -1    -1    -1     4
 %
 % Since this is an integer matrix, SPEX can obtain it exactly.
-% This matrix is ill-conditioned and singular, SPEX correctly determines 
+% This matrix is ill-conditioned and singular, SPEX correctly determines
 % that it is. However, MATLAB Cholesky factorization both
 % succeeds and returns a useless answer.
 % Note that to continue the demo, the backslash line is wrapped in a try catch
@@ -145,7 +144,7 @@ xspex = spex_lu_backslash (U, b, option)
 %% Converting an exact rational result to vpa or double
 % If spex_lu_backslash returns x as a cell array of strings, it cannot
 % be immediately used in computations in MATLAB.  It can be converted
-% into a vpa or double matrix, as illustrated below.  
+% into a vpa or double matrix, as illustrated below.
 
 xspex_as_vpa = vpa (xspex)
 xspex_as_double = double (vpa (xspex))

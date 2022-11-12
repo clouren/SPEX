@@ -2,7 +2,7 @@ SPEX/Tcov: comprehensive test coverage for SPEX.
 
 Requires Linux. Type "make" to compile, and run the
 tests, or "make vtests" to run the tests with valgrind for memory leakage
-checking. 
+checking.
 
 The test coverage is in cover.out.  The test output is
 printed on stdout, except for cov_test (which prints its output in various

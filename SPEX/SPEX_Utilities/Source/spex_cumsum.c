@@ -24,7 +24,7 @@ SPEX_info spex_cumsum
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     if (!p || !c) return SPEX_INCORRECT_INPUT;
-    ASSERT(n >= 0);    
+    ASSERT(n >= 0);
     int64_t i, nz = 0 ;
     for (i = 0 ; i < n ; i++)
     {

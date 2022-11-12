@@ -1,3 +1,4 @@
+Demo: too many duplicated functions.  Use a single demo folder?
 
 Lorena:
     spex.h: should we have a master Include folder? Yes.
@@ -22,6 +23,7 @@ Erick:
 
 Tim:
     get Tcov to work
+    MATLAB interface: find gmp and mpfr (cmake config)
 
 in parallel:
     user guide polish (see Overleaf)

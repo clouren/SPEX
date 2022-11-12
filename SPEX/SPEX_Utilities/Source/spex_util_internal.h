@@ -229,7 +229,8 @@
 #define SPEX_DEFAULT_PRECISION 128
 
 // Defines the algorithm used
-// SPEX_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Gram for QR looking LU factorization 
+// SPEX_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Gram for QR looking
+//                      LU factorization
 // SPEX_LU_LEFT = 1,              Left looking LU factorization
 // SPEX_CHOL_LEFT = 2,            Left looking Cholesky factorization
 // SPEX_CHOL_UP = 3,              Up looking Cholesky factorization

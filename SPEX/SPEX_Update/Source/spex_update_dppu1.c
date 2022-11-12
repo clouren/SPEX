@@ -263,7 +263,7 @@ SPEX_info spex_update_dppu1
                                      SPEX_MPQ_DEN(SL(k))));
         SPEX_CHECK(SPEX_mpz_mul(Lksk, Lksk, SPEX_MPQ_NUM(SL(k))));
 
-        // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+        // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
         // backtracking jumbled sparse row ks of U using scattered row k of U.
         // Assuming explicit zeros in U(ks, :) resulted from exact cancellation
         // in IPGE update were not removed (SLIP LU keeps those zeros in output
@@ -383,7 +383,7 @@ SPEX_info spex_update_dppu1
         // be used beyond this point, and column Q[k] of U will be deleted when
         // finished, we will skipped adding U(ks, Q[k]) here.
     }
-    
+
     // ------------------------------------------------------------------------
     // swap rows and columns of k and ks
     // ------------------------------------------------------------------------
@@ -550,7 +550,7 @@ SPEX_info spex_update_dppu1
                 Lks_nz++;
             }
 
-            // L(ck, ks) -= L(P(k),ks)*L(ck,k) 
+            // L(ck, ks) -= L(P(k),ks)*L(ck,k)
             SPEX_CHECK(SPEX_mpz_submul(Lk_dense_col->x[ck],
                                        Lk_dense_col->x[Pk], L->v[k]->x[pk]));
 
@@ -575,7 +575,7 @@ SPEX_info spex_update_dppu1
                     *inext = real_ck;
                 }
             }
-            
+
             // update h[ck] to mark Lk_dense_col[ck] need no further update
             h[ck] = -1;
         }
@@ -624,7 +624,7 @@ SPEX_info spex_update_dppu1
         }
         // update the number of nnz
         Lk_dense_col->nz = Lks_nz;
-        
+
         // skip the rest of IPGE iterations
         // pending_scale = sd(ks-1)/sd(k);
         SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sd[ks-1]));

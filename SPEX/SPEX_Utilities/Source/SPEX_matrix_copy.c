@@ -135,7 +135,7 @@ SPEX_info SPEX_matrix_copy
                     // Scaling factor of C is currently in Y, set it
                     // here
                     SPEX_mpq_set(C->scale, Y->scale);
-                    
+
                     // count the # of entries in each column
                     for (int64_t k = 0 ; k < nz ; k++)
                     {
@@ -267,7 +267,7 @@ SPEX_info SPEX_matrix_copy
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_CSC, C_type,
                         m, n, actual, false, true, option)) ;
-                        
+
                     // C's scaling factor is currently in Y. Set it here
                     SPEX_mpq_set(C->scale, Y->scale);
 
@@ -331,7 +331,7 @@ SPEX_info SPEX_matrix_copy
                                             SPEX_1D (C, nz, mpfr),
                                             Y->x.mpfr[i + j*A->m],
                                             round)) ;
-                                        
+
                                         nz++ ;
                                     }
                                 }
@@ -520,7 +520,7 @@ SPEX_info SPEX_matrix_copy
 
                     // Y = typecast the values of A into the type of C
                     SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option)) ;
-                    
+
                     // Set C's scaling factor
                     SPEX_mpq_set(C->scale, Y->scale);
 

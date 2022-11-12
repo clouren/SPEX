@@ -9,32 +9,32 @@
 
 //------------------------------------------------------------------------------
 
-/* This example shows how to use SPEX Chol with a given input matrix and a double
-   output. The input is read from a file */
+/* This example shows how to use SPEX Chol with a given input matrix and a
+ * double output. The input is read from a file */
 
 // usage:
 // example > out
 // out is file for output calculated result
 
-#define FREE_WORKSPACE              \
-    SPEX_matrix_free(&A, option);              \
-    SPEX_matrix_free(&b, option);   \
-    SPEX_matrix_free(&x, option);   \
-    SPEX_matrix_free(&x2, option);   \
-    SPEX_FREE(option);   \
+#define FREE_WORKSPACE                      \
+    SPEX_matrix_free(&A, option);           \
+    SPEX_matrix_free(&b, option);           \
+    SPEX_matrix_free(&x, option);           \
+    SPEX_matrix_free(&x2, option);          \
+    SPEX_FREE(option);                      \
     SPEX_finalize();
 
 #include "chol_demos.h"
 
-#define DEMO_OK(method)                 \
-{                                       \
-    ok = method ;                       \
-    if (ok != SPEX_OK)                  \
-    {                                   \
+#define DEMO_OK(method)                     \
+{                                           \
+    ok = method ;                           \
+    if (ok != SPEX_OK)                      \
+    {                                       \
         SPEX_cholesky_determine_error(ok);  \
-        FREE_WORKSPACE ;                \
-        return 0 ;                      \
-    }                                   \
+        FREE_WORKSPACE ;                    \
+        return 0 ;                          \
+    }                                       \
 }
 
 
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 
     // Read in A. The output of this demo function is A in CSC format with
     // double entries.
-    FILE* mat_file = fopen(mat_name,"r");
+    FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
     {
         perror("Error while opening the file");
@@ -92,7 +92,8 @@ int main (int argc, char **argv)
     fclose(mat_file);
 
     int64_t n = A->n;
-    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
+    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
+        option);
 
     // Create RHS
     for (int64_t k = 0; k < n; k++)
@@ -133,7 +134,7 @@ int main (int argc, char **argv)
     FREE_WORKSPACE;
 
     printf ("\n%s: all tests passed\n\n", __FILE__) ;
-    
+
     return 0;
 }
 

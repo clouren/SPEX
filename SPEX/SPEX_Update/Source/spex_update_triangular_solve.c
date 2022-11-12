@@ -51,7 +51,7 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
     // there is no nnz in vk(P[last_update,n-2])
     if (i_2ndlast != NULL && *i_2ndlast == -1)
     {
-        return SPEX_OK;    
+        return SPEX_OK;
     }
 
     if (*last_update < k-1)

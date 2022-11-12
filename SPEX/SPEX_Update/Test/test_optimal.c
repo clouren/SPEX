@@ -10,7 +10,7 @@
 
 #include "test.h"
 
-int main (int argc, char* argv[])
+int main (int argc, char *argv[])
 {
     //char *prob_name = "lp_80bau3b";
     //char *prob_name = "lp_25fv47";//5.5018458883E+03

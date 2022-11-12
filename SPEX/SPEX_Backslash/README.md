@@ -7,7 +7,7 @@ exactly using Integer-Preserving factorizations.
 Purpose: Exactly solve a sparse system of linear equations using a given input
          matrix and right hand side vector file. This code can output the final
          solution to a user specified output file in either double precision or
-         full precision rational numbers. If you intend to use SPEX_Backslash 
+         full precision rational numbers. If you intend to use SPEX_Backslash
          within another program, refer to examples for help with this.
 
 *********SPEX_Backslash_Demo*********

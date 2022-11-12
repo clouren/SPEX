@@ -7,9 +7,9 @@ for i = 32
     fRead = fopen(strcat('LPnetlib/',list(i).name), 'r');
     A = fscanf(fRead, '%f %f %f %d %d %d %d %f %d %d %d %d %f %d %d %d %d',[17, Inf]);
     fclose(fRead);
-    
+
     x_axis = 1:size(A,2);
-    
+
     figure(i);
     title('number of nonzero');
     hold on
@@ -17,7 +17,7 @@ for i = 32
     plot(x_axis,A(9,:),'b',x_axis,A(11,:),'b--o');
     plot(x_axis,A(14,:),'g',x_axis,A(16,:),'g--o');
     legend('L_{LLU}','U_{LLU}','L_{lb}','U_{lb}','L_{LUU}','U_{LUU}');
-    
+
     figure(i+1);
     title('number of digit');
     hold on
@@ -25,7 +25,7 @@ for i = 32
     plot(x_axis,A(10,:),'b',x_axis,A(12,:),'b--o');
     plot(x_axis,A(15,:),'g',x_axis,A(17,:),'g--o');
     legend('L_{LLU}','U_{LLU}','L_{lb}','U_{lb}','L_{LUU}','U_{LUU}');
-    
+
     figure(i+2);
     title('factorization/updating time over updating time');
     hold on
@@ -33,7 +33,7 @@ for i = 32
     semilogy(x_axis,A(8,:)./A(13,:),'b');
     semilogy(x_axis,A(13,:)./A(13,:),'g');
     legend('t_{LLU}','t_{lb}','t_{LUU}');
-    
+
     figure(i+3);
     title('solving/searching time');
     hold on

@@ -20,7 +20,7 @@
 //       ^       ^
 //       |       |
 //     col k   col ks
-//       
+//
 // This function will swap columns k and ks in L and U. Noted that the columns
 // of U are permuted implicitly via the permutation matrix based on Q.
 
@@ -183,7 +183,7 @@ SPEX_info spex_update_cppu
             for (pk = 1; pk < L->v[k]->nz; pk++)
             {
                 ck = L->v[k]->i[pk];
-                
+
 #ifdef SPEX_DEBUG
                 // all explicit zeros are removed when put into L->v[k]
                 SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->v[k]->x[pk]));
@@ -303,7 +303,7 @@ SPEX_info spex_update_cppu
                                   U->v[i]->x[p], Lk_dense_col->x[Pk]));
                 }
                 SPEX_CHECK(SPEX_mpq_set_ui(SU(i), 1, 1));
-                
+
                 if (i == n-1)
                 {
                     // make sure U(n-1,Q(n-1)) != 0
@@ -351,7 +351,7 @@ SPEX_info spex_update_cppu
 
     if (Uc_ks_nz == 0)   // If U(k+1:ks-1,Q(ks)) are all zero(s).
     {
-        // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+        // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
         // backtracking jumbled sparse column ks of L using 'dense' column k of
         // L and store the result in Lk_dense_col. This will introduce new
         // entry to Lk_dense_col.
@@ -359,7 +359,7 @@ SPEX_info spex_update_cppu
         // When explicit zeros in L(:, ks) resulted from exact
         // cancellation in IPGE update were not removed (SLIP LU keeps those
         // zeros in output L and U), nonzero pattern of L(P(ks:n+1),k) should
-        // be a subset of L(:,ks). Therefore, the backtracking will need to 
+        // be a subset of L(:,ks). Therefore, the backtracking will need to
         // simply iterate all nonzero in the L(:,ks), and the final Lk_dense_col
         // will have mostly the same nnz pattern as L(:,ks), except L(P(k),k).
         //
@@ -447,7 +447,7 @@ SPEX_info spex_update_cppu
                         Lk_dense_col->x[cks], tmpz));
                     Lk_untouched--;
                 }
-                else  // fillin 
+                else  // fillin
                 {
                     // L(cks,k) = L(cks,ks)*pending_scale
                     SPEX_CHECK(SPEX_mpz_divexact(Lk_dense_col->x[cks],
@@ -581,7 +581,7 @@ SPEX_info spex_update_cppu
         Lk_dense_col->i[0] = Pks;
         h[Pks] = SPEX_FLIP(ks-1);
         // continue copy the remaining entries
-        for (pks = 1; pks < L->v[ks]->nz; pks++) 
+        for (pks = 1; pks < L->v[ks]->nz; pks++)
         {
             cks = L->v[ks]->i[pks];
             // apply scale to each entry. This must be done to keep these
@@ -616,7 +616,7 @@ SPEX_info spex_update_cppu
             // However, when explicit zero(s) are always eleminated, the
             // following initialization should be used instead:
             //
-            // h[cks] = SPEX_FLIP(ks-1); 
+            // h[cks] = SPEX_FLIP(ks-1);
             //
             // With such initialization, entry with h > -1 is clearly not in
             // nnz pattern and any entry in the nnz pattern with h = -1 must be
@@ -785,7 +785,7 @@ SPEX_info spex_update_cppu
                                         Lk_dense_col->nz+1)), option));
         }
         Lk_nz = 1; // the pivot has been inserted to L->v[k]
-        for (pks = 0; pks < Lk_dense_col->nz; pks++) 
+        for (pks = 0; pks < Lk_dense_col->nz; pks++)
         {
             cks = Lk_dense_col->i[pks];
             h[cks] = SPEX_FLIP(h[cks]);
@@ -932,7 +932,7 @@ SPEX_info spex_update_cppu
         // Uk_dense_row->nz-2 is because that U(k,Q[k]) and U(k,Q[ks]) won't be
         // used. This number decreases for every other nonzero entries in
         // U(k,:) used to perform RwSOP update for the corresponding entry in
-        // U(i,:). 
+        // U(i,:).
         int64_t num_of_fillin = Uk_dense_row->nz-2;
 
         // the updates for all entries in row i of U (except U(i,Q[ks])) share
@@ -952,7 +952,7 @@ SPEX_info spex_update_cppu
         // update row i of U
         // for U(ci,i) with Q_inv(ci) < ks, multiply U(k,Q(ks))
         // for U(ci,i) with Q_inv(ci) > ks but U(k,ci) == 0, multiply U(k,Q(ks))
-        // for U(ci,i) with Q_inv(ci) > ks but U(k,ci) != 0, perform 
+        // for U(ci,i) with Q_inv(ci) > ks but U(k,ci) != 0, perform
         //     U(i,ci) = U(i,ci)*U(k,Q(ks)) - U(i,Q(ks))*U(k,ci)
         // then divide all U(ci,i) by the denominator of S(2,i)
         // update U(i,Q[ks]) after iteration, which only needs flipping sign

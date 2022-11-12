@@ -29,25 +29,25 @@ SPEX_info SPEX_QR_PURSELL
     // Only dense for now
     ASSERT( A->type == SPEX_MPZ);
     ASSERT( A->kind == SPEX_DENSE);
-    
+
     // Indices
     int64_t i, j, k;
-    
+
     // A_transpose, will be overwritten with Q
     SPEX_matrix A_T;
     // A2 = A_T A // Will be overwritten with R
     SPEX_matrix A2;
-    
+
     // Allocate A_T
     SPEX_CHECK(SPEX_matrix_allocate(&A_T, SPEX_DENSE, SPEX_MPZ, n, m, n*m,
         false, true, NULL));
-    
+
     // Allocate A2
     SPEX_CHECK(SPEX_matrix_allocate(&A2, SPEX_DENSE, SPEX_MPZ, n, n, n*n,
         false, true, NULL));
-    
+
     // Compute A_T
-    
+
     for (i = 0; i < n; i++)
     {
         for (j = 0; j < m; j++)
@@ -57,7 +57,7 @@ SPEX_info SPEX_QR_PURSELL
                           SPEX_2D(A,   j, i, mpz)));
         }
     }
-    
+
     // Compute A2 = A'*A
     for (i = 0; i < n; i++)
     {
@@ -72,14 +72,14 @@ SPEX_info SPEX_QR_PURSELL
             }
         }
     }
-    
+
     // Now, the factorization is computed by performing IPGE on [A2 AT]
     // We can either construct this matrix directly or do it more efficiently
-    
+
     // Compute R and Q directly
     // A2 = A'*A will be overwriten with R (dimension n*n)
     // A' will be overwritten with Q (dimension n*m)
-    
+
     // Perform IPGE on A2
     for (k = 0; k < n; k++)
     {
@@ -131,11 +131,11 @@ SPEX_info SPEX_QR_PURSELL
             }
         }
     }
-    
+
     for (k = 1; k < n; k++)
         SPEX_CHECK(SPEX_mpz_set_ui( SPEX_2D(A2, k, 0, mpz), 0));
-                                    
+
     (*Q_handle) = A_T;
     (*R_handle) = A2;
-    return SPEX_OK;    
+    return SPEX_OK;
 }

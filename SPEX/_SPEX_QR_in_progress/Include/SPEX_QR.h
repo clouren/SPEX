@@ -77,9 +77,9 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// Given a rectangular matrix A, SPEX QR factorizes A into the product of A = QDR
-// where Q is orthogonal and R is upper trapezoidal. R is also the REF Cholesky 
-// factor of A'*A. 
+// Given a rectangular matrix A, SPEX QR factorizes A into the product of A =
+// QDR where Q is orthogonal and R is upper trapezoidal. R is also the REF
+// Cholesky factor of A'*A.
 
 // SPEX QR can be used to solve rectangular linear systems Ax = b or accurately
 // determine the singularity of a matrix.
@@ -141,7 +141,7 @@ SPEX_info SPEX_dense_mat_dot
     int64_t j,
     mpz_t prod
 );
-    
+
 /* Perform the IPGE version of SPEX QR (aka Algorithm 1 from workpage)
  */
 SPEX_info SPEX_QR_IPGE
@@ -149,10 +149,8 @@ SPEX_info SPEX_QR_IPGE
     SPEX_matrix A,            // Matrix to be factored
     SPEX_matrix *R_handle,    // upper triangular matrix
     SPEX_matrix *Q_handle     // orthogonal triangular matrix
-);                                 
-    
-    
-    
+);
+
 /* Perform the IPGE version of SPEX QR using Pursell method
  */
 SPEX_info SPEX_QR_PURSELL
@@ -161,7 +159,7 @@ SPEX_info SPEX_QR_PURSELL
     SPEX_matrix *R_handle,    // upper triangular matrix
     SPEX_matrix *Q_handle     // orthogonal triangular matrix
 );
-  
+
 /* Perform the IPGE version of SPEX QR using Pursell method
  */
 SPEX_info SPEX_QR_PURSELL2
@@ -187,7 +185,6 @@ SPEX_info SPEX_Qtb
     SPEX_matrix b,        // Original RHS Vector
     SPEX_matrix* b_handle // Q'*b
 );
-    
 
 SPEX_info SPEX_QR_backsolve
 (
@@ -195,6 +192,5 @@ SPEX_info SPEX_QR_backsolve
     SPEX_matrix b,        // Q^T * b
     SPEX_matrix* x_handle // Solution
 );
-    
 
 #endif

@@ -7,7 +7,7 @@ for i = 1:length(list)
     fRead = fopen(strcat('LPnetlib/',list(i).name), 'r');
     A = fscanf(fRead, '%f %f %f %d %d %d %d %f %d %d %d %d %f %d %d %d %d',[17, Inf]);
     fclose(fRead);
-    
+
     if sum(A(13,2:end))~=0
         k=k+1;
         t1(k) = sum(A(3,2:end));

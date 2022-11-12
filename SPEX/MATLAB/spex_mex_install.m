@@ -7,11 +7,9 @@ function SPEX_mex_install(run_demo)
 % available, install them with 'make install' first, in the top-level
 % SuiteSparse folder.
 
-% SPEX: (c) 2022, Chris Lourenco, United States Naval Academy, 
-% Jinhao Chen, Lorena Mejia Domenzain, Erick Moreno-Centeno and Timothy A. Davis, 
-% Texas A&M University.  All Rights Reserved.  
+% SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
+% Moreno-Centeno and Timothy A. Davis.  All Rights Reserved.
 % SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
-
 
 if (nargin < 1)
     run_demo = true ;
