@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/spex_forward_sub: sparse forward substitution (x = (LD)\x)
+// SPEX_LU/spex_left_lu_forward_sub: sparse forward substitution (x = (LD)\x)
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
