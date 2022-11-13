@@ -1,9 +1,9 @@
-%% SPEX_mex_demo a demo of SPEX MATLAB interface
+%% spex_mex_demo a demo of SPEX MATLAB interface
 % SPEX is a package for solving sparse linear systems of equations
 % with a roundoff-free integer-preserving method.  The result is
 % always exact, unless the matrix A is perfectly singular.
 %
-% See also vpa, SPEX_mex_install, SPEX_mex_test.
+% See also vpa, spex_mex_install, spex_mex_test.
 %
 % SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
 % Moreno-Centeno and Timothy A. Davis, All Rights Reserved.

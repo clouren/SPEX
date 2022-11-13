@@ -1,9 +1,9 @@
-function SPEX_mex_test
-% SPEX_mex_test: run a set of tests for SPEX matlab interface
+function spex_mex_test
+% spex_mex_test: run a set of tests for SPEX matlab interface
 %
-% Usage:  SPEX_mex_test
+% Usage:  spex_mex_test
 %
-% See also SPEX_mex_install, SPEX_mex_demo.
+% See also spex_mex_install, spex_mex_demo.
 
 % SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
 % Moreno-Centeno and Timothy A. Davis.  All Rights Reserved.

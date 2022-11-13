@@ -1,7 +1,7 @@
-function SPEX_mex_install(run_demo)
-% SPEX_mex_INSTALL: install and test the MATLAB interface to SPEX MATLAB functions.
+function spex_mex_install(run_demo)
+% spex_mex_INSTALL: install and test the MATLAB interface to SPEX MATLAB functions.
 %
-% Usage: SPEX_mex_install
+% Usage: spex_mex_install
 %
 % Required Libraries: GMP, MPFR, AMD, COLAMD, SPEX.  If -lamd and -lcolamd are
 % not available, install them with 'make install' first, in the top-level
@@ -9,7 +9,7 @@ function SPEX_mex_install(run_demo)
 %
 % You may need to add the top-level lib folder (SPEX/lib, or SuiteSparse/lib
 % if SPEX is inside SuiteSparse) to your LD_LIBRARY_PATH (DYLD_LIBRARY_PATH
-% on the Mac).
+% on the Mac).  See instructions in the spex_deps.m file.
 
 % SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
 % Moreno-Centeno and Timothy A. Davis.  All Rights Reserved.
