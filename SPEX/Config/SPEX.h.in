@@ -1611,22 +1611,23 @@ SPEX_info SPEX_update_tsolve
 // A must be square. If A is SPD, an exact up-looking Cholesky factorization is
 // applied.  Otherwise, an exact left-looking LU functionality is applied.
 
-
 //------------------------------------------------------------------------------
 // Purpose: Solve Ax = b by analyzing the input matrix and applying the
 // appropiate factorization approach
 //------------------------------------------------------------------------------
+
 SPEX_info SPEX_backslash
 (
     // Output
-    SPEX_matrix *X_handle,       // Final solution vector
+    SPEX_matrix *X_handle,      // On output: Final solution vector
+                                // On input: undefined
     // Input
-    const SPEX_type type,         // Type of output desired
-                                  // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix A,         // Input matrix
-    const SPEX_matrix b,         // Right hand side vector(s)
-    SPEX_options option          // Command options
-);
+    const SPEX_type type,       // Type of output desired
+                                // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,        // Input matrix
+    const SPEX_matrix b,        // Right hand side vector(s)
+    SPEX_options option         // Command options (NULL: means use defaults)
+) ;
 
 #endif
 

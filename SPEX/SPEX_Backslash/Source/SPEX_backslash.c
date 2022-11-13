@@ -47,6 +47,7 @@ SPEX_info SPEX_backslash
     SPEX_options option         // Command options (NULL: means use defaults)
 )
 {
+
     SPEX_info info;
     // Check inputs
     if (!spex_initialized()) return SPEX_PANIC;
