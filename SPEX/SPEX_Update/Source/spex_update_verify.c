@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_verify.c: verify if A=LD^(-1)U
+// SPEX_Update/spex_update_verify: verify if A=LD^(-1)U
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -32,6 +32,7 @@ SPEX_info spex_update_verify
     const SPEX_options option   // command options
 )
 {
+
     SPEX_info info = SPEX_OK;
     int64_t tmp, i, n = F->L->n;
     int r;

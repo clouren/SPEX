@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_get_scattered_v.c: build scattered vector for given
+// SPEX_Update/spex_update_get_scattered_v: build scattered vector for given
 // sparse vector
 //------------------------------------------------------------------------------
 
@@ -29,11 +29,9 @@ SPEX_info spex_update_get_scattered_v
     spex_scattered_vector *sv_handle,   // output vector in scattered form
     int64_t *next,               // the smallest col/row index of non-pivot nz.
                                  // If next == NULL, searching is not performed.
-
     // input (if keep_v true), input/output (if keep_v false)
     SPEX_vector v,               // the vector in compressed form, whose
                                  // max index is n.
-
     // input
     const int64_t n,             // length of the vector v
     const int64_t k,             // column index of v in L, or row index in U.
@@ -44,7 +42,8 @@ SPEX_info spex_update_get_scattered_v
     const SPEX_options option
 )
 {
-    *sv_handle = NULL;
+
+    (*sv_handle) = NULL;
     SPEX_info info;
     int64_t p, i;
     spex_scattered_vector sv = NULL;

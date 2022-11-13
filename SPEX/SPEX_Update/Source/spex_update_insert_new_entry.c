@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_insert_new_entry.c: insert an entry vi who has no
+// SPEX_Update/spex_update_insert_new_entry: insert an entry vi who has no
 // pending scale to a scaled vector v, all v->x[i] will be scaled and S will be
 // 1 after vi is inserted.
 //------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ SPEX_info spex_update_insert_new_entry
     const SPEX_options option
 )
 {
+
     SPEX_info info;
     int r;
     int64_t p;

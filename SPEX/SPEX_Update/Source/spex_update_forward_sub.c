@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_forward_sub.c: sparse forward substitution,
+// SPEX_Update/spex_update_forward_sub: sparse forward substitution,
 // i.e., compute x = (LD)\v
 //------------------------------------------------------------------------------
 
@@ -30,6 +30,7 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
     int64_t *h              // history vector for x
 )
 {
+
     SPEX_info info;
     int sgn;
     int64_t i, n = L->n;

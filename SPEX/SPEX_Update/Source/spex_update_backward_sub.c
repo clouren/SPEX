@@ -26,7 +26,7 @@
 
 #include "spex_update_internal.h"
 
-SPEX_info spex_update_backward_sub// performs sparse REF backward substitution
+SPEX_info spex_update_backward_sub // performs sparse REF backward substitution
 (
     SPEX_vector x,          // right hand side vector
     const SPEX_matrix U,    // input upper triangular matrix
@@ -35,6 +35,7 @@ SPEX_info spex_update_backward_sub// performs sparse REF backward substitution
     const int64_t *Q_inv    // inverse of column permutation
 )
 {
+
     SPEX_info info ;
     int sgn;
     int64_t i, j, real_i, real_j, p, n = U->n;

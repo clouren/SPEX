@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_cppu.c: perform column permutation pivot update
+// SPEX_Update/spex_update_cppu: perform column permutation pivot update
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -51,7 +51,6 @@ SPEX_info spex_update_cppu
     int64_t *Q_inv,  // inverse of column permutation
     int64_t *P,      // row permutation (unchanged on output)
     int64_t *P_inv,  // inverse of row permutation (unchanged on output)
-
     // the col-wise nnz pattern of U can be NULL when ks == n
     const int64_t *Uci_ks,  // row index for nnz pattern of U(k+1:ks-1,Q[ks])
     const int64_t *Ucx_ks,  // value of i-th entry is found as
@@ -62,6 +61,7 @@ SPEX_info spex_update_cppu
     const SPEX_options option
 )
 {
+
 #ifdef SPEX_DEBUG
     printf("using cppu swapping k(%ld) and ks(%ld), Uc_nz=%ld\n",k,ks,Uc_ks_nz);
 #endif

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_ipge.c: perform one iteration of IPGE and perform
+// SPEX_Update/spex_update_ipge: perform one iteration of IPGE and perform
 // any skipped scaling process.
 //------------------------------------------------------------------------------
 
@@ -75,6 +75,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
     const int64_t j             // column index of v
 )
 {
+
     SPEX_info info;
     int sgn;
     // the first entry of v must be the pivot, which must be nonzero

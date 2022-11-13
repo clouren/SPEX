@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_dppu2.c: perform diagonal permutation pivot update
+// SPEX_Update/spex_update_dppu2: perform diagonal permutation pivot update
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -53,6 +53,7 @@ SPEX_info spex_update_dppu2
     const SPEX_options option
 )
 {
+
     // initialize workspace
     SPEX_info info;
     int sgn;

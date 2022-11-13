@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_finalize_and_insert_vk.c: perform history update for
+// SPEX_Update/spex_update_finalize_and_insert_vk: perform history update for
 // entries that would be in L and insert entries that would in U to
 // corresponding row of U.
 //------------------------------------------------------------------------------
@@ -33,6 +33,7 @@ SPEX_info spex_update_finalize_and_insert_vk
     const SPEX_options option
 )
 {
+
     SPEX_info info;
     int64_t i, p = 0, real_i, vk_nz = vk_dense->nz, Lk_nz;
     int sgn;

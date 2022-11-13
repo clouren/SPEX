@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_triangular_solve.c: perform REF triangular solve up
+// SPEX_Update/spex_update_triangular_solve: perform REF triangular solve up
 // to specified iteration, additional history update for certain entries should
 // be done after calling this function.
 //------------------------------------------------------------------------------
@@ -33,7 +33,6 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
     int64_t *i_2ndlast,     // i_2ndlast is the index of found last nnz entry
                             // of x[P] in the range of (last_update, n-2], this
                             // could be NULL if not needed
-
     const int64_t k,        // compute x up to k-th IPGE iteration, that is,
                             // using the first k-1 columns of L
     const SPEX_matrix L,    // matrix L
@@ -43,6 +42,7 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
     const int64_t *P_inv    // inverse of row permutation
 )
 {
+
     SPEX_info info;
     int sgn;
     int64_t j;

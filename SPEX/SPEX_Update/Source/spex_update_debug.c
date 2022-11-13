@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_debug.c: for debugging purpose
+// SPEX_Update/spex_update_debug: for debugging purpose
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -42,6 +42,7 @@ SPEX_info spex_update_debug
     const SPEX_options option   // Command parameters
 )
 {
+
     SPEX_info info = SPEX_OK;
     *Is_correct = true;
     int64_t n = F->L->n, *P = F->P_perm, *Q = F->Q_perm;
