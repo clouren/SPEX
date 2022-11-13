@@ -1360,42 +1360,46 @@ SPEX_info SPEX_lu_solve
  * On input, A is expected to be SPD and x is NULL
  * On output, x contains the solution of the linear system
  */
+
 SPEX_info SPEX_cholesky_backslash
 (
     // Output
-    SPEX_matrix* x_handle,       // On input: undefined.
-                                  // On output: final solution vector
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: solution vector(s)
     // Input
-    SPEX_type type,               // Type of output desired
-                                  // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix A,         // Input matrix, must be static CSC MPZ
-    const SPEX_matrix b,         // Right hand side matrix that might contain
-                                  // multiple columns, must be dense MPZ
-    const SPEX_options option    // Command options
-);
+    SPEX_type type,             // Type of output desired
+                                // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix b,        // Right hand side vector(s). Must be
+                                // SPEX_MPZ and SPEX_DENSE
+    const SPEX_options option   // Command options (Default if NULL)
+) ;
 
 SPEX_info SPEX_cholesky_analyze
 (
     // Output
-    SPEX_symbolic_analysis* S_handle, // Symbolic analysis data structure
+    SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
     // Input
-    const SPEX_matrix A,         // Input matrix, must be static CSC
-    const SPEX_options option    // Command options
-);
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_options option   // Command options (Default if NULL)
+) ;
 
 SPEX_info SPEX_cholesky_factorize
 (
     // Output
-    SPEX_factorization *F_handle,// Cholesky factorization
+    SPEX_factorization *F_handle,   // Cholesky factorization struct
     //Input
-    const SPEX_matrix A,         // matrix to be factorized, must be CSC MPZ
-    const SPEX_symbolic_analysis S,// Symbolic analysis struct containing the
-                                  // elimination tree of A, the column pointers
-                                  // of L, and the exact number of nnz of L.
-    const SPEX_options option    // command options
-                                  // Notably, option->algo indicates whether
-                                  // CHOL_UP (default) or CHOL_LEFT is used.
-);
+    const SPEX_matrix A,            // Matrix to be factored. Must be SPEX_MPZ
+                                    // and SPEX_CSC
+    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
+                                    // elimination tree of A, the column
+                                    // pointers of L, and the exact number of
+                                    // nonzeros of L.
+    const SPEX_options option       // command options.
+                                    // Notably, option->chol_type indicates
+                                    // whether CHOL_UP (default) or CHOL_LEFT
+                                    // is used.
+) ;
 
 /* Purpose: After computing the REF Cholesky factorization A = LDL',
  * this function solves the associated linear system LDL' x = b.
@@ -1410,20 +1414,19 @@ SPEX_info SPEX_cholesky_factorize
 SPEX_info SPEX_cholesky_solve
 (
     // Output
-    SPEX_matrix* x_handle,       // On input: undefined.
-                                  // On output: Rational solution (SPEX_MPQ)
-                                  // to the system.
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: Rational solution (SPEX_MPQ)
+                                // to the system.
     // input/output:
-    SPEX_factorization F,  // The non-updatable Cholesky factorization.
-                            // Mathematically, F is unchanged.  However, if F
-                            // is updatable on input, it is converted to
-                            // non-updatable.  If F is already non-updatable,
-                            // it is not modified.
+    SPEX_factorization F,       // The non-updatable Cholesky factorization.
+                                // Mathematically, F is unchanged.  However, if
+                                // F is updatable on input, it is converted to
+                                // non-updatable.  If F is already
+                                // non-updatable, it is not modified.
     // input:
-    const SPEX_matrix b,         // Right hand side matrix that might contain
-                                  // multiple columns, must be dense MPZ
-    const SPEX_options option    // command options
-);
+    const SPEX_matrix b,        // Right hand side vector
+    const SPEX_options option   // command options
+) ;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

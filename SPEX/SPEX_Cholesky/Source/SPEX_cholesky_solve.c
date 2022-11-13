@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/SPEX_cholesky_Solve: Solve the SPD linear system after
+// SPEX_Cholesky/SPEX_cholesky_solve: Solve the SPD linear system after
 // factorization
 //------------------------------------------------------------------------------
 
@@ -57,6 +57,7 @@ SPEX_info SPEX_cholesky_solve
     const SPEX_options option   // command options
 )
 {
+
     SPEX_info info;
 
     // Ensure SPEX is initialized
