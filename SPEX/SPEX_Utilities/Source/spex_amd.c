@@ -27,6 +27,7 @@ SPEX_info spex_amd
     const SPEX_options option
 )
 {
+
     (*nnz) = 0 ;
     (*perm_handle) = NULL ;
 

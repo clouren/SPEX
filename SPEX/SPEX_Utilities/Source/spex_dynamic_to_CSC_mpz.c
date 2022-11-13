@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/spex_dynamic_to_CSC_mpz.c: convert SPEX_DYNAMIC_CSC matrix to
+// SPEX_Utilities/spex_dynamic_to_CSC_mpz: convert SPEX_DYNAMIC_CSC matrix to
 // a SPEX_CSC matrix with mpz_t entries.
 //------------------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
     const SPEX_options option
 )
 {
+
     SPEX_REQUIRE (B, SPEX_DYNAMIC_CSC, SPEX_MPZ) ;
     if (A_handle == NULL)   {return SPEX_INCORRECT_INPUT;}
     // B has been checked by the caller so no need to check here

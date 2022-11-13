@@ -18,6 +18,7 @@ SPEX_info spex_create_mpq
     mpq_t x                  // mpq_t entry to be initialized
 )
 {
+
     SPEX_info info = SPEX_mpq_init(x);
     if (info != SPEX_OK)
     {

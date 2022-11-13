@@ -21,6 +21,7 @@ SPEX_info spex_cumsum
     int64_t n            // size of c
 )
 {
+
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     if (!p || !c) return SPEX_INCORRECT_INPUT;

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/spex_delete_mpz_array.c: clear the memory used for a mpz array
+// SPEX_Utilities/spex_delete_mpz_array: clear the memory used for a mpz array
 //------------------------------------------------------------------------------
 
 // SPEX_Utilities: (c) 2020-2021, Jinhao Chen, Chris Lourenco,
@@ -23,6 +23,7 @@ void spex_delete_mpz_array
     int64_t n       // Size of x
 )
 {
+
     if (x == NULL || (*x) == NULL) {return;}
     for (int64_t i = 0; i < n; i++)
     {

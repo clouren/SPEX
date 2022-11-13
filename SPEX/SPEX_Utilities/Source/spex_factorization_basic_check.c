@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/spex_factorization_basic_check.c: perform basic check for a
+// SPEX_Utilities/spex_factorization_basic_check: perform basic check for a
 // given factorization.
 //------------------------------------------------------------------------------
 

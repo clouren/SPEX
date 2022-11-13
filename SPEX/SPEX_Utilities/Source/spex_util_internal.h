@@ -301,11 +301,12 @@ void spex_set_initialized (bool s) ;    // set global initialzed flag to s
 // Creates a simple 1D array, where A[i] is an entry of type mpfr_t.
 
 /* Purpose: This function creates a MPFR array of desired precision*/
+
 mpfr_t *spex_create_mpfr_array
 (
-    int64_t n,     // size of the array
-    const SPEX_options option
-);
+    int64_t n,                  // size of the array
+    const SPEX_options option   // command options containing the prec for mpfr
+) ;
 
 //------------------------------------------------------------------------------
 // spex_create_mpq_array: Creates a 1D array, whose entries are all mpq_t type.
@@ -316,13 +317,18 @@ mpfr_t *spex_create_mpfr_array
 /* Purpose: This function creates an mpq array of size n.
  * This function must be called for all mpq arrays created.
  */
+
 mpq_t *spex_create_mpq_array
 (
     int64_t n              // size of the array
-);
+) ;
 
 // Create and initialize a single mpq_t variable
-SPEX_info spex_create_mpq (mpq_t x);
+
+SPEX_info spex_create_mpq
+(
+    mpq_t x                  // mpq_t entry to be initialized
+) ;
 
 //------------------------------------------------------------------------------
 // spex_create_mpz_array: create a 1D mpz_t array
@@ -333,12 +339,11 @@ SPEX_info spex_create_mpq (mpq_t x);
 /* Purpose: This function creates an mpz array of size n and allocates
  * default size.
  */
+
 mpz_t *spex_create_mpz_array
 (
-    int64_t n              // Size of x
-);
-
-
+    int64_t n            // size of the array
+) ;
 
 //------------------------------------------------------------------------------
 // spex_delete_mpz_array: delete a 1D mpz_t array
@@ -348,54 +353,57 @@ mpz_t *spex_create_mpz_array
 
 /* Purpose: This function deletes a mpz array of size n
  */
+
 void spex_delete_mpz_array
 (
     mpz_t **x,      // mpz array to be deleted
     int64_t n       // Size of x
-);
-
-
+) ;
 
 /* Purpose: This function converts a double array of size n to an appropriate
  * mpz array of size n. To do this, the number is multiplied by 10^17 then, the
  * GCD is found. This function allows the use of matrices in double precision
  * to work with SPEX.
  */
+
 SPEX_info spex_expand_double_array
 (
-    mpz_t *x_out,   // integral final array
-    double *x,      // double array that needs to be made integral
-    mpq_t scale,    // the scaling factor used (x_out = scale * x)
-    int64_t n,      // size of x
-    const SPEX_options option
-);
+    mpz_t *x_out,           // integral final array
+    double *x,              // double array that needs to be made integral
+    mpq_t scale,            // the scaling factor used (x_out = scale * x)
+    int64_t n,              // size of x
+    const SPEX_options option // Command options
+) ;
 
 /* Purpose: This function converts a mpfr array of size n and precision prec to
  * an appropriate mpz array of size n. To do this, the number is multiplied by
  * the appropriate power of 10 then the gcd is found. This function allows mpfr
  * arrays to be used within SPEX.
  */
+
 SPEX_info spex_expand_mpfr_array
 (
-    mpz_t *x_out,   // integral final array
-    mpfr_t *x,      // mpfr array to be expanded
-    mpq_t scale,    // scaling factor used (x_out = scale*x)
-    int64_t n,      // size of x
-    const SPEX_options option // command options containing the prec for mpfr
-);
+    mpz_t *x_out,         // full precision mpz array
+    mpfr_t *x,            // mpfr array to be expanded
+    mpq_t scale,          // scaling factor used (x_out = scale*x)
+    int64_t n,            // size of x
+    const SPEX_options option  // command options containing the prec
+                          // and rounding for mpfr
+) ;
 
 /* Purpose: This function converts a mpq array of size n into an appropriate mpz
  * array of size n. To do this, the lcm of the denominators is found as a
  * scaling factor. This function allows mpq arrays to be used in SPEX
  */
+
 SPEX_info spex_expand_mpq_array
 (
-    mpz_t *x_out, // integral final array
-    mpq_t *x,     // mpq array that needs to be converted
-    mpq_t scale,  // scaling factor. x_out = scale*x
-    int64_t n,     // size of x
+    mpz_t *x_out,        // mpz array, on output x_out = x*scale
+    mpq_t *x,            // mpq array that needs to be converted
+    mpq_t scale,         // scaling factor. x_out = scale*x
+    int64_t n,           // size of x
     const SPEX_options option // Command options
-);
+) ;
 
 /* Purpose: This function converts a mpq matrix of size m*n into an appropriate
  * mpz matrix of size m*n. To do this, the lcm of the denominators is found as a
@@ -440,52 +448,55 @@ SPEX_info spex_cast_array
     void *X,                // input array, of size n
     SPEX_type xtype,        // type of X
     int64_t n,              // size of Y and X
-    mpq_t y_scale,          // scale factor applied if y is mpz_t
-    const mpq_t x_scale,          // scale factor applied if x is mpz_t
-    const SPEX_options option
+    mpq_t y_scale,          // scale factor applied if Y is mpz_t
+    const mpq_t x_scale,        // scale factor applied if x is mpz_t
+    const SPEX_options option   // Command options. If NULL, use defaults
 ) ;
 
 SPEX_info spex_cast_matrix
 (
-    SPEX_matrix *Y_handle,     // nz-by-1 dense matrix to create
+    SPEX_matrix *Y_handle,      // nz-by-1 dense matrix to create
     SPEX_type Y_type,           // type of Y
-    const SPEX_matrix A,             // matrix with nz entries
-    const SPEX_options option
+    const SPEX_matrix A,        // matrix with nz entries
+    const SPEX_options option   // Command options, if NULL defaults are used
 ) ;
 
 SPEX_info spex_CSC_mpz_to_dynamic
 (
-    SPEX_matrix *A_handle,       // converted SPEX_mat matrix
-    const SPEX_matrix B,         // original matrix
+    SPEX_matrix *A_handle,          // converted SPEX_matrix of dynamic_CSC
+    // input:
+    const SPEX_matrix B,            // original matrix (unmodified)
     const SPEX_options option
-);
+) ;
 
 SPEX_info spex_dynamic_to_CSC_mpz
 (
-    SPEX_matrix *A_handle,       // converted CSC matrix
-    const SPEX_matrix B,         // original matrix
-    const int64_t nnz,            // number of nonzeros in B
+    SPEX_matrix *A_handle,          // converted CSC matrix
+    // input:
+    const SPEX_matrix B,            // original matrix (not modified)
+    const int64_t nnz,              // number of nonzeros in B
     const SPEX_options option
-);
-
+) ;
 
 /* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
  * size of x and i. so that they only take up the number of elements in the
  * matrix. For example if A->nzmax = 1000 but nnz(A) = 500, i and x are of size
  * 1000, so this function shrinks them to size 500.
  */
+
 SPEX_info spex_sparse_collapse
 (
-    SPEX_matrix A // matrix to be shrunk
-);
+    SPEX_matrix A       // matrix to be shrunk
+) ;
 
 /* Purpose: This function expands a SPEX matrix by doubling its size. It
  * merely expands x and i and does not initialize/allocate the values.
  */
+
 SPEX_info spex_sparse_realloc
 (
-    SPEX_matrix A // the matrix to be expanded
-);
+    SPEX_matrix A       // the matrix to be expanded
+) ;
 
 /* Purpose: This function gets a copy of a row-wise permuted dense matrix as
  * A_out = P*A_in.
@@ -493,36 +504,39 @@ SPEX_info spex_sparse_realloc
 
 SPEX_info spex_permute_dense_matrix
 (
-    SPEX_matrix *A_handle,     // permuted A
-    const SPEX_matrix A_in,    // unpermuted A (not modified)
+    SPEX_matrix *A_handle,      // permuted A
+    const SPEX_matrix A_in,     // unpermuted A (not modified)
     const int64_t *P,           // row permutation
     const SPEX_options option
-);
+) ;
 
 /* Purpose: This function multiplies matrix x a scalar
  */
+
 SPEX_info spex_matrix_mul   // multiplies x by a scalar
 (
-    SPEX_matrix x,         // matrix to be multiplied
+    SPEX_matrix x,          // matrix to be multiplied
     const mpz_t scalar      // scalar to multiply by
 ) ;
 
 /* Purpose: p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1]
  * into c.  This function is lightly modified from CSparse.
  */
+
 SPEX_info spex_cumsum
 (
     int64_t *p,          // vector to store the sum of c
     int64_t *c,          // vector which is summed
     int64_t n            // size of c
-);
+) ;
 
 /* Purpose: perform basic check for a given factorization
  */
+
 SPEX_info spex_factorization_basic_check
 (
-    SPEX_factorization F // The factorization to check
-);
+    SPEX_factorization F
+) ;
 
 SPEX_info spex_colamd
 (
@@ -530,7 +544,7 @@ SPEX_info spex_colamd
     int64_t *nnz,
     const SPEX_matrix A,
     const SPEX_options option
-);
+) ;
 
 SPEX_info spex_amd
 (
@@ -538,7 +552,7 @@ SPEX_info spex_amd
     int64_t *nnz,
     const SPEX_matrix A,
     const SPEX_options option
-);
+) ;
 
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type
 #define SPEX_X(A)                                                           \
