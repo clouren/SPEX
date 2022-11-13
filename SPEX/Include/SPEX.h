@@ -1212,56 +1212,53 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 // function encompasses both factorization and solve and returns the solution
 // vector in the user desired type.  It can be thought of as an exact version
 // of MATLAB sparse backslash.
+
 SPEX_info SPEX_lu_backslash
 (
     // Output
-    SPEX_matrix *X_handle,       // Final solution matrix
+    SPEX_matrix *X_handle,        // Final solution vector
     // Input
-    SPEX_type type,               // Type of output desired:
-                                  // Must be SPEX_MPQ, SPEX_MPFR,
-                                  // or SPEX_FP64
-    const SPEX_matrix A,         // Input matrix, must be static CSC MPZ
-    const SPEX_matrix b,         // Right hand side matrix that might contain
-                                  // multiple columns, must be dense MPZ
-    const SPEX_options option
+    SPEX_type type,               // Type of output desired. Must be
+                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,          // Input matrix
+    const SPEX_matrix b,          // Right hand side vector(s)
+    const SPEX_options option     // Command options
 ) ;
 
 SPEX_info SPEX_lu_analyze
 (
-    // output:
-    SPEX_symbolic_analysis* S_handle, // symbolic analysis including
-                                  // column perm. and nnz of L and U
-    // input:
-    const SPEX_matrix A,         // Input matrix, must be static CSC
+    SPEX_symbolic_analysis *S_handle,   // symbolic analysis including
+                                 // column perm. and nnz of L and U
+    const SPEX_matrix A,         // Input matrix
     const SPEX_options option    // Control parameters, if NULL, use default
-);
+) ;
 
 SPEX_info SPEX_lu_factorize
 (
     // output:
-    SPEX_factorization *F_handle, // LU factorization
+    SPEX_factorization *F_handle,   // LU factorization
     // input:
-    const SPEX_matrix A,         // matrix to be factorized, must be CSC MPZ
+    const SPEX_matrix A,            // matrix to be factored
     const SPEX_symbolic_analysis S, // symbolic analysis
-    const SPEX_options option    // command options
-);
+    const SPEX_options option       // command options
+) ;
 
 // solves the linear system Ax = b via LU factorization
-SPEX_info SPEX_lu_solve
+
+SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 (
     // Output
-    SPEX_matrix *x_handle,       // rational solution to the system
+    SPEX_matrix *x_handle,  // rational solution to the system
     // input/output:
-    SPEX_factorization F,  // The non-updatable LU factorization.
+    SPEX_factorization F,   // The non-updatable LU factorization.
                             // Mathematically, F is unchanged.  However, if F
                             // is updatable on input, it is converted to
                             // non-updatable.  If F is already non-updatable,
                             // it is not modified.
     // input:
-    const SPEX_matrix b,         // Right hand side matrix that might contain
-                                  // multiple columns, must be dense MPZ
-    const SPEX_options option    // Command options
-);
+    const SPEX_matrix b,    // right hand side vector
+    const SPEX_options option // Command options
+) ;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
