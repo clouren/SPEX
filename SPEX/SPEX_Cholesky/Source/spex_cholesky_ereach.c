@@ -30,6 +30,7 @@ SPEX_info spex_cholesky_ereach
     int64_t *w              // Workspace array
 )
 {
+
     // Check inputs
     ASSERT(A->n >= 0) ;
     ASSERT(A->kind == SPEX_CSC) ;

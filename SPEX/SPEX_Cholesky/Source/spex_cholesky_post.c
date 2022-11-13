@@ -23,6 +23,7 @@
 #include "spex_cholesky_internal.h"
 
 /* Purpose: post order a forest. */
+
 SPEX_info spex_cholesky_post
 (
     // Output
@@ -33,6 +34,7 @@ SPEX_info spex_cholesky_post
     const int64_t n        // Number of nodes in the forest
 )
 {
+
     SPEX_info info ;
 
     // All inputs have been checked by the caller

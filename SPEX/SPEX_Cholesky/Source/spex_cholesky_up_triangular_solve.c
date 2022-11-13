@@ -58,7 +58,6 @@ static inline int compare (const void * a, const void * b)
     return ( *(int64_t*)a - *(int64_t*)b ) ;
 }
 
-
 SPEX_info spex_cholesky_up_triangular_solve
 (
     //Output
@@ -78,6 +77,7 @@ SPEX_info spex_cholesky_up_triangular_solve
     int64_t *h                      // History vector
 )
 {
+
     SPEX_info info;
 
     // All inputs are checked by the caller. Here we include

@@ -44,10 +44,11 @@
  *               function such as the row/column permutation
  *               On output it contains the number of nonzeros in L.
  */
+
 SPEX_info spex_cholesky_pre_left_factor
 (
     // Output
-    SPEX_matrix* L_handle,        // On output: partial L matrix
+    SPEX_matrix *L_handle,        // On output: partial L matrix
                                   // On input: undefined
     // Input
     int64_t *xi,                  // Workspace nonzero pattern vector
@@ -58,6 +59,7 @@ SPEX_info spex_cholesky_pre_left_factor
                                   // inverse
 )
 {
+
     // All inputs have been checked by the caller, thus asserts are used here
     // as a reminder of the expected data types
     SPEX_info info;

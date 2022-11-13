@@ -87,6 +87,7 @@ SPEX_info spex_cholesky_left_triangular_solve
                              // order to not recompute those values.
 )
 {
+
     SPEX_info info;
 
     // Input checks. All pointers are checked by the callersm these are here to

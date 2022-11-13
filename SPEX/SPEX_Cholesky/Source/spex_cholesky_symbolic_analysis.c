@@ -51,6 +51,7 @@ SPEX_info spex_cholesky_symbolic_analysis
     const SPEX_options option  // Command options
 )
 {
+
     SPEX_info info;
 
     //--------------------------------------------------------------------------

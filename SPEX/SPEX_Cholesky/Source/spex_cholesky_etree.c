@@ -34,6 +34,7 @@ SPEX_info spex_cholesky_etree
     const SPEX_matrix A         // Input matrix (must be SPD).
 )
 {
+
     // All inputs are checked by the caller so asserts are used here as a
     // reminder of the appropriate formats
     ASSERT (A != NULL) ;

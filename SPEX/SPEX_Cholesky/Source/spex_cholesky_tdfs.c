@@ -24,6 +24,7 @@ SPEX_info spex_cholesky_tdfs
     int64_t *stack      // Stack of nodes
 )
 {
+
     int64_t i, p, top = 0 ;
     stack [0] = j ;                 // place j on the stack
     while (top >= 0)                // while (stack is not empty)

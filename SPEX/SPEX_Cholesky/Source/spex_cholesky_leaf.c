@@ -15,6 +15,7 @@
  * the Least Common Ancestor (lca(jprev,j))
  * Used to determine Column counts of Cholesky factor
  */
+
 SPEX_info spex_cholesky_leaf
 (
     int64_t *lca_handle,    // Least common ancestor (jprev,j)

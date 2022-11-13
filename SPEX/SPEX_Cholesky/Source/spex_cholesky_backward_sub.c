@@ -28,6 +28,7 @@ SPEX_info spex_cholesky_backward_sub
     const SPEX_matrix L     // The lower triangular matrix
 )
 {
+
     SPEX_info info;
     // All inputs have been checked by the caller, asserts are
     // here as a reminder

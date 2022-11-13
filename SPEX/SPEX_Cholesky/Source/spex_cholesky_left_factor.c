@@ -58,7 +58,6 @@ SPEX_info spex_cholesky_left_factor
     // Output
     SPEX_matrix *L_handle,    // Lower triangular matrix. NULL on input.
     SPEX_matrix *rhos_handle, // Sequence of pivots. NULL on input.
-
     // Input
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
@@ -67,6 +66,7 @@ SPEX_info spex_cholesky_left_factor
     const SPEX_options option  // command options
 )
 {
+
     //--------------------------------------------------------------------------
     // Check inputs
     //--------------------------------------------------------------------------

@@ -53,7 +53,6 @@
  *
  */
 
-
 SPEX_info spex_cholesky_up_factor
 (
     // Output
@@ -67,8 +66,9 @@ SPEX_info spex_cholesky_up_factor
     const SPEX_options option  // command options
 )
 {
+
     //--------------------------------------------------------------------------
-    // Check inputs
+    // check inputs
     //--------------------------------------------------------------------------
 
     SPEX_info info;

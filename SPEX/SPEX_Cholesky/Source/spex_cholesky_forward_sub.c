@@ -43,6 +43,7 @@ SPEX_info spex_cholesky_forward_sub
     const SPEX_matrix rhos       // Sequence of pivots used in factorization
 )
 {
+
     SPEX_info info;
     int64_t  i, p, k, n = L->n, m, mnew;
 

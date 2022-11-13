@@ -39,6 +39,7 @@ SPEX_info spex_cholesky_permute_A
                                 // row/column permutations
 )
 {
+
     SPEX_info info;
 
     //--------------------------------------------------------------------------

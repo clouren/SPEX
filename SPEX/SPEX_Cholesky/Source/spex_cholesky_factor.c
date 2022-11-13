@@ -57,6 +57,7 @@ SPEX_info spex_cholesky_factor
                                // CHOL_UP (default) or CHOL_LEFT is used.
 )
 {
+
     SPEX_info info;
 
     SPEX_factorization F = NULL ;

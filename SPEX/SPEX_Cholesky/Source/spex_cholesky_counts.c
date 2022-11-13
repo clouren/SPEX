@@ -25,9 +25,11 @@
 #define HEAD(k,j) ( j)
 #define NEXT(J)   (-1)
 
-/* Purpose: Obtain the column counts of an SPD matrix for Cholesky factorization*
- * This is a modified version of Csparse's cs_chol_counts function
+/* Purpose: Obtain the column counts of an SPD matrix for Cholesky
+ * factorization. This is a modified version of Csparse's cs_chol_counts
+ * function
  */
+
 SPEX_info spex_cholesky_counts
 (
     // Output
@@ -39,6 +41,7 @@ SPEX_info spex_cholesky_counts
     const int64_t *post     // Post-order of the tree
 )
 {
+
     SPEX_info info;
     int64_t i, j, k, n, J, s, p, q, jleaf, *colcount = NULL, *w = NULL;
     // Auxiliary variables
