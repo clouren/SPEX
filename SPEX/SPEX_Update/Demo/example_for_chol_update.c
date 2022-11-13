@@ -47,6 +47,7 @@ int main()
     // read matrix and store as a SPEX_CSC SPEX_MPZ matrix A
     //--------------------------------------------------------------------------
 
+    // FIXME: do not use hard-wired filenames
     char *mat_name = "../../ExampleMats/872_mat.txt";
     FILE *mat_file = fopen(mat_name, "r");
     if (mat_file == NULL)

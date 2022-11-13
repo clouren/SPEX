@@ -61,7 +61,8 @@ int main( int argc, char *argv[] )
     SPEX_options option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
 
-    // FIXME: Set demo matrix and RHS name
+    // Set demo matrix and RHS name
+    // FIXME: do not use hard-wired filenames
     char* mat_name = "../../ExampleMats/2.mat.txt";
     char* rhs_name = "../../ExampleMats/2.mat.soln.txt";
     int64_t rat = 1;

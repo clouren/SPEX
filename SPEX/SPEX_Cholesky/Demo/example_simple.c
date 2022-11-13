@@ -49,8 +49,9 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
     // Get matrix file name
     //--------------------------------------------------------------------------
-    char *mat_name;
-    mat_name = "../../ExampleMats/872.mat.txt";
+
+    // FIXME: do not use hard-wired filenames
+    char *mat_name = "../../ExampleMats/872.mat.txt";
     printf("%s\n", mat_name);
     if (argc > 2)
     {

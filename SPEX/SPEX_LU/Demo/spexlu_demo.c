@@ -58,6 +58,7 @@
 //
 // If none of the above args is given, they are set to the following default:
 //
+    // FIXME: do not use hard-wired filenames
 //  mat_name = "../ExampleMats/10teams_mat.txt"
 //  rhs_name = "../ExampleMats/10teams_v.txt"
 //  p = 0, i.e., using smallest pivot
@@ -134,7 +135,8 @@ int main (int argc, char *argv[])
     char *mat_name, *rhs_name;
     SPEX_type rat;
 
-    // FIXME Set demo matrix and RHS name
+    // Set demo matrix and RHS name
+    // FIXME: do not use hard-wired filenames
     mat_name = "../../ExampleMats/10teams_mat.txt";
     rhs_name = "../../ExampleMats/10teams_v.txt";
 

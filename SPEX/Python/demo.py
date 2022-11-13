@@ -27,6 +27,7 @@ from scipy import stats
 ##--------------------------------------------------------------------------
 
 # Read in A from file and populate b
+# FIXME: do not use hard-wired filenames
 fname='../SPEX_Cholesky/ExampleMats/1438.mat.txt'
 A=utils.spex_matrix_from_file(fname)
 b=np.ones(A.shape[0],dtype=np.float64)

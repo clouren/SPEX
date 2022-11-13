@@ -43,6 +43,8 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
     // Get matrix and right hand side file names
     //--------------------------------------------------------------------------
+
+    // FIXME: do not use hard-wired filenames
     char *mat_name, *rhs_name;
     mat_name = "../../ExampleMats/10teams_mat.txt";
     rhs_name = "../../ExampleMats/10teams_v.txt";

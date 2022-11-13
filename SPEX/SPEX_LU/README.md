@@ -47,6 +47,7 @@ errors and warnings during the process. Other available options are:
 
 If none of the above args is given, they are set to the following default:
 
+  FIXME: do not use hard-wired filenames
   mat_name = "../ExampleMats/10teams_mat.txt"
   rhs_name = "../ExampleMats/10teams_v.txt"
   p = 3,
