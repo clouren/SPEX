@@ -36,6 +36,7 @@
 #include "spex_update_internal.h"
 
 // TODO allow w->v[0]->scale != 1
+
 SPEX_info SPEX_update_cholesky_rank1
 (
     SPEX_factorization F,   // The SPEX Cholesky factorization of A, including
@@ -54,6 +55,7 @@ SPEX_info SPEX_update_cholesky_rank1
     const SPEX_options option // Command options
 )
 {
+
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------

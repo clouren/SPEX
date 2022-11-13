@@ -25,6 +25,7 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
     const SPEX_options option// Command parameters
 )
 {
+
     SPEX_REQUIRE(A , SPEX_DYNAMIC_CSC, SPEX_MPZ);
     SPEX_REQUIRE(vk, SPEX_DYNAMIC_CSC, SPEX_MPZ);
     if (A->m != vk->m || k < 0 || k >= A->n || vk->n != 1)

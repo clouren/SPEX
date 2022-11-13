@@ -1475,37 +1475,34 @@ SPEX_info SPEX_cholesky_solve
 
 SPEX_info SPEX_update_lu_colrep
 (
-    // Input/Output:
-    SPEX_factorization F,  // The SPEX LU factorization of a n-by-n matrix A,
-                            // including L, U, rhos, P, Pinv, Q and Qinv.
-    // Input:
-    SPEX_matrix vk,        // Pointer to a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix
+    SPEX_factorization F,   // The SPEX factorization of A, including L, U,
+                            // rhos, P, Pinv, Q and Qinv. The factorization
+                            // will be modified during the update process.
+                            // Therefore, if this function fails for any
+                            // reason, the returned F should be considered as
+                            // undefined.
+    // TODO: decide on utilities to help create this n-by-1 matrix:
+    SPEX_matrix vk,         // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
-                            // The rows of vk are in the same order as A.
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
-                            // This matrix remains unchanged on output.
-    int64_t k,              // The column index of A that vk will be inserted,
-                            // 0 <= k < n.
+                            // The rows of vk are in the same order as A.
+    int64_t k,              // The column index that vk will be inserted, 0<=k<n
     const SPEX_options option// Command parameters
-);
-
+) ;
 
 // This function swaps the k-th column of a given m-by-n matrix A with the
 // column from a m-by-1 matrix vk. Both matrices must be of SPEX_DYNAMIC_CSC
 // SPEX_MPZ and have the same row order. On output, both matrices are modified.
 
-SPEX_info SPEX_update_matrix_colrep// performs column replacement
+SPEX_info SPEX_update_matrix_colrep // performs column replacement
 (
-    // Input/Output:
-    SPEX_matrix A,         // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
-    SPEX_matrix vk,        // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
+    SPEX_matrix A,          // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
+    SPEX_matrix vk,         // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
                             // the column vector to replace the k-th column of A
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
-    // Input:
-    int64_t k,              // The column index of A that vk will be inserted,
-                            // 0 <= k < m.
+    int64_t k,              // The column index that vk will be inserted, 0<=k<n
     const SPEX_options option// Command parameters
-);
+) ;
 
 //------------------------------------------------------------------------------
 // Rank-1 Cholesky update/downdate
@@ -1528,67 +1525,55 @@ SPEX_info SPEX_update_matrix_colrep// performs column replacement
 
 SPEX_info SPEX_update_cholesky_rank1
 (
-    // Input/Output:
-    SPEX_factorization F,  // The SPEX Cholesky factorization of a n-by-n
-                            // matrix A, including L, rhos, P and Pinv.
-
-    SPEX_matrix w,         // a n-by-1 SPEX_DYNAMIC_CSC MPZ matrix with
-                            // the vector to modify the original matrix A, the
-                            // resulting A is A+sigma*w*w'. w->scale = A->scale
+    SPEX_factorization F,   // The SPEX Cholesky factorization of A, including
+                            // L, rhos, P and Pinv. This factorization will be
+                            // modified during the update process. Therefore,
+                            // if this function fails for any reason, the
+                            // returned F should be considered as undefined.
+    SPEX_matrix w,          // a n-by-1 dynamic_CSC matrix that contains the
+                            // vector to modify the original matrix A, the
+                            // resulting A is A+sigma*w*w^T. A->scale = w->scale
                             // and w->v[0]->scale = 1. In output, w is
-                            // updated as the solution to L*D*w_out = w
-    // Input:
+                            // updated as the solution to L*D^(-1)*w_out = w
     const int64_t sigma,    // a nonzero scalar that determines whether
                             // this is an update (sigma > 0) or downdate
                             // (sigma < 0).
     const SPEX_options option // Command options
-);
+) ;
 
 //------------------------------------------------------------------------------
 // Function for solving A*x = b with updatable LU or Cholesky factorization
 // of matrix A
 //------------------------------------------------------------------------------
 
-SPEX_info SPEX_update_solve
+SPEX_info SPEX_update_solve // solves Ax = b via LU or Cholesky factorization
 (
     // Output
-    SPEX_matrix *x_handle, // a m*n dense matrix contains the solution to
+    SPEX_matrix *x_handle,  // a m*n dense matrix contains the solution to
                             // the system.
-    // input/output:
-    SPEX_factorization F,  // The updatable LU or Cholesky factorization of A.
-                            // Mathematically, F is unchanged.  However, if
-                            // F is not updatable on input, it is converted
-                            // to updatable.  If F is already updatable, it is
-                            // not modified.
     // input:
-    const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
+    SPEX_factorization F,   // The SPEX LU or Cholesky factorization
+    const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options option // Command options
-);
-
+) ;
 
 //------------------------------------------------------------------------------
 // Function for solving A^T*x = b with updatable LU or Cholesky factorization
 // of matrix A
 //------------------------------------------------------------------------------
 
-SPEX_info SPEX_update_tsolve
+SPEX_info SPEX_update_tsolve // solves A^T*x = b
 (
     // Output
-    SPEX_matrix *x_handle, // a m*n dense matrix contains the solution to
+    SPEX_matrix *x_handle,  // a m*n dense matrix contains the solution to
                             // the system.
-    // input/output:
-    SPEX_factorization F,  // The updatable LU or Cholesky factorization of A.
-                            // Mathematically, F is unchanged.  However, if
-                            // F is not updatable on input, it is converted
-                            // to updatable.  If F is already updatable, it is
-                            // not modified.
     // input:
-    const SPEX_matrix b,   // a m*n dense matrix contains the right-hand-side
+    SPEX_factorization F,   // The SPEX LU or Cholesky factorization of A
+    const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options option // Command options
-);
-
+) ;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

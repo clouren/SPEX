@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_update_lu_colrep.c: perform LU update for column replacement
+// SPEX_Update/SPEX_update_lu_colrep: perform LU update for column replacement
 //------------------------------------------------------------------------------
 
 // SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Erick
@@ -42,6 +42,7 @@
 #define SU(k) (UT->v[(k)]->scale)
 
 // TODO allow vk->v[0]->scale != 1?
+
 SPEX_info SPEX_update_lu_colrep
 (
     SPEX_factorization F,   // The SPEX factorization of A, including L, U,
@@ -50,7 +51,6 @@ SPEX_info SPEX_update_lu_colrep
                             // Therefore, if this function fails for any
                             // reason, the returned F should be considered as
                             // undefined.
-
     // TODO: decide on utilities to help create this n-by-1 matrix:
     SPEX_matrix vk,         // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
@@ -60,6 +60,7 @@ SPEX_info SPEX_update_lu_colrep
     const SPEX_options option// Command parameters
 )
 {
+
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
