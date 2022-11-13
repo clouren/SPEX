@@ -1,0 +1,17 @@
+function [suitesparse_libdir, suitesparse_incdir, gmp_lib, gmp_include, mpfr_lib, mpfr_include] = spex_deps
+%SPEX_DEPS: return location of GMP and MPFR libraries and include files
+% The SPEX/MATLAB/spex_deps.m function is configured by cmake, from the
+% source file SPEX/Config/spex_deps.m.in.
+
+% SPEX: (c) 2022, Chris Lourenco, United States Naval Academy,
+% Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno,
+% Timothy A. Davis, Texas A&M University. All Rights Reserved.
+% SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+suitesparse_libdir = '@SUITESPARSE_LIBDIR@' ;
+suitesparse_incdir = '@SUITESPARSE_INCLUDEDIR@' ;
+gmp_lib = '@GMP_LIBRARY@' ;
+gmp_include = '@GMP_INCLUDE_DIR@' ;
+mpfr_lib = '@MPFR_LIBRARY@' ;
+mpfr_include = '@MPFR_INCLUDE_DIR@' ;
+

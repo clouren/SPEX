@@ -88,6 +88,8 @@ function x = spex_backslash(A, b, option)
 % interfaces of all SPEX packages.  Typing spex_mex_install in this directory
 % should do this correctly.
 
+% FIXME: add copyright
+
 if (nargin < 3)
     option = [ ];   % use default options
 end

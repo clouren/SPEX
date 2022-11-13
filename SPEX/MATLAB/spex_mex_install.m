@@ -3,9 +3,13 @@ function SPEX_mex_install(run_demo)
 %
 % Usage: SPEX_mex_install
 %
-% Required Libraries: GMP, MPFR, AMD, COLAMD, SPEX.  If -lamd and -lcolamd are not
-% available, install them with 'make install' first, in the top-level
+% Required Libraries: GMP, MPFR, AMD, COLAMD, SPEX.  If -lamd and -lcolamd are
+% not available, install them with 'make install' first, in the top-level
 % SuiteSparse folder.
+%
+% You may need to add the top-level lib folder (SPEX/lib, or SuiteSparse/lib
+% if SPEX is inside SuiteSparse) to your LD_LIBRARY_PATH (DYLD_LIBRARY_PATH
+% on the Mac).
 
 % SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
 % Moreno-Centeno and Timothy A. Davis.  All Rights Reserved.
@@ -57,22 +61,23 @@ for k = 1:m
     src = [src, tmp];
 end
 
-
 % Compiler flags
 flags = 'CFLAGS=''-std=c99 -fPIC''';
 
 % External libraries: GMP, MPRF, AMD, and COLAMD
-libs = '-L/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib -lamd -lcolamd -lsuitesparseconfig -L/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/lib -lgmp -lm -L/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/lib -lmpfr -lm' ;
+[suitesparse_libdir, suitesparse_incdir, gmp_lib, gmp_include, mpfr_lib, mpfr_include] = spex_deps ;
+
+libs = ['-L' suitesparse_libdir ' -lamd -lcolamd -lsuitesparseconfig ' gmp_lib ' ' mpfr_lib ' -lm'] ;
 
 % Path to headers
-includes = '-ISource/ -I../SPEX_Backslash/Include/ -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Utilities/Source -I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/include -I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/include';
+includes = [ '-I' suitesparse_incdir ' -ISource/ -I../Include/ -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Utilities/Source -I' gmp_include ' -I' mpfr_include ] ;
 
 % verbose = ' -v '
 verbose = '' ;
 
 % Generate the mex commands here
 % having -R2018a here for function mxGetDoubles
-m1 = ['mex ', verbose, ' -R2018a ', includes, ' spex_lu_mex_soln.c ' , src, ' ', flags, ' ', libs];
+m1 = ['mex ', verbose, ' -R2018a ', includes, ' spex_lu_mex_soln.c ' , src, ' ', flags, ' ', libs] ;
 m2 = ['mex ', verbose, ' -R2018a ', includes, ' spex_cholesky_mex_soln.c ' , src, ' ', flags, ' ', libs];
 m3 = ['mex ', verbose, ' -R2018a ', includes, ' spex_backslash_mex_soln.c ' , src, ' ', flags, ' ', libs];
 
@@ -87,7 +92,7 @@ eval (m3) ;
 
 if (run_demo)
     % Test SPEX
-    SPEX_mex_test ;
+    spex_mex_test ;
 end
 
 fprintf ('To use SPEX MATLAB Interface in future MATLAB sessions, add the following\n') ;
