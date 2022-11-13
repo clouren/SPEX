@@ -11,7 +11,26 @@
 default: cov
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
-include ../../SuiteSparse_config/SuiteSparse_config.mk
+
+################################################################################
+
+    INSTALL_LIB ?= $(SUITESPARSE)/lib
+
+    # use 8 jobs by default
+    JOBS ?= 8
+
+    LDFLAGS = --coverage
+    LDFLAGS += -L$(INSTALL_LIB)
+    LDFLAGS += -Wl,-rpath=$(INSTALL_LIB)
+
+    # remove object files, but keep compiled libraries via 'make clean'
+    CLEAN = *.o *.obj *.ln *.bb *.bbg *.da *.tcov *.gcov gmon.out *.bak *.d \
+        *.gcda *.gcno *.aux *.bbl *.blg *.log *.toc *.dvi *.lof *.lot
+
+    # also remove compiled libraries, via 'make distclean'
+    PURGE = *.so* *.a *.dll *.dylib *.dSYM
+
+################################################################################
 
 # Linux test coverage (gcc is required for test coverage)
 CC = gcc
