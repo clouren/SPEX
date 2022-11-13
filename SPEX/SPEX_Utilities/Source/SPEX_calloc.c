@@ -18,8 +18,8 @@ void *SPEX_calloc
     size_t size         // size of each item
 )
 {
-    if (!spex_initialized ( )) return (NULL) ;
 
+    if (!spex_initialized ( )) return (NULL) ;
     return (SuiteSparse_calloc (nitems, size)) ;
 }
 

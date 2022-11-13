@@ -11,7 +11,6 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include "spex_util_internal.h"
 
-
 SPEX_info SPEX_matrix_nnz       // find the # of entries in A
 (
     int64_t *nnz,               // # of entries in A, -1 if A is NULL

@@ -20,6 +20,7 @@
 /* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
  */
+
 SPEX_info SPEX_transpose
 (
     SPEX_matrix *C_handle,      // C = A'
@@ -27,6 +28,7 @@ SPEX_info SPEX_transpose
     const SPEX_options option
 )
 {
+
     SPEX_info info;
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
     // Check input

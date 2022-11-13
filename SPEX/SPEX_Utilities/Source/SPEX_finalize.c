@@ -17,6 +17,7 @@ SPEX_info SPEX_finalize
     void
 )
 {
+
     if (!spex_initialized ( )) { return (SPEX_PANIC) ; }
 
     SPEX_mpfr_free_cache ( ) ;    // Free mpfr internal cache

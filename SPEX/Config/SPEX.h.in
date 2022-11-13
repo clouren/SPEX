@@ -247,7 +247,8 @@ typedef SPEX_options_struct *SPEX_options ;
 
 // Purpose: Create SPEX_options object with default parameters
 // upon successful allocation, which are defined in SPEX_util_nternal.h
-// To free it, simply use SPEX_FREE (*option).
+// To free it, simply use SPEX_FREE (option).
+
 SPEX_info SPEX_create_default_options (SPEX_options *option_handle) ;
 
 //------------------------------------------------------------------------------
@@ -293,10 +294,10 @@ typedef SPEX_vector_struct *SPEX_vector ;
 
 SPEX_info SPEX_vector_allocate
 (
-    SPEX_vector *v_handle,         // vector to be allocated
+    SPEX_vector *v_handle,          // vector to be allocated
     const int64_t nzmax,            // number of nnz entries in v
     const SPEX_options option
-);
+) ;
 
 //------------------------------------------------------------------------------
 // SPEX_vector_realloc: reallocate SPEX_vector with new_size entries
@@ -308,13 +309,12 @@ SPEX_info SPEX_vector_allocate
 // free (v->nzmax) - new_size of mpz entries from v->x and then shrink the size
 // of both v->i and v->x.
 
-
 SPEX_info SPEX_vector_realloc
 (
-    SPEX_vector v,                 // the vector to be expanded
-    const int64_t new_size,         // desired new size for v
+    SPEX_vector v,              // the vector to be expanded
+    const int64_t new_size,     // desired new size for v
     const SPEX_options option
-);
+) ;
 
 //------------------------------------------------------------------------------
 // SPEX_vector_free: free the given SPEX_vector object and set *v = NULL
@@ -322,9 +322,9 @@ SPEX_info SPEX_vector_realloc
 
 SPEX_info SPEX_vector_free
 (
-    SPEX_vector *v_handle,                // vector to be deleted
+    SPEX_vector *v_handle,      // vector to be deleted
     const SPEX_options option
-);
+) ;
 
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix
@@ -494,23 +494,23 @@ typedef SPEX_matrix_struct *SPEX_matrix ;
 
 SPEX_info SPEX_matrix_allocate
 (
-    SPEX_matrix *A_handle, // matrix to allocate
-    SPEX_kind kind,         // CSC, triplet, dense or SPEX_DYNAMIC_CSC
+    SPEX_matrix *A_handle,  // matrix to allocate
+    SPEX_kind kind,         // CSC, triplet, dense, dynamic_CSC
     SPEX_type type,         // mpz, mpq, mpfr, int64, or double
     int64_t m,              // # of rows
     int64_t n,              // # of columns
-    int64_t nzmax,          // max # of entries
+    int64_t nzmax,          // max # of entries for CSC or triplet
+                            // (ignored if A is dense)
     bool shallow,           // if true, matrix is shallow.  A->p, A->i, A->j,
                             // A->x are all returned as NULL and must be set
-                            // by the caller.  All A->*_shallow are returned as
-                            // true. Ignored for SPEX_DYNAMIC_CSC kind matrix.
+                            // by the caller.  All A->*_shallow are returned
+                            // as true. Ignored if kind is dynamic_CSC.
     bool init,              // If true, and the data types are mpz, mpq, or
-                            // mpfr, the entries of A->x are initialized (using
-                            // the appropriate SPEX_mp*_init function). If
-                            // false, the mpz, mpq, and mpfr arrays are
-                            // allocated but not initialized. Meaningless for
-                            // data types FP64 or INT64. Ignored if kind is
-                            // SPEX_DYNAMIC_CSC or shallow is true.
+                            // mpfr, the entries are initialized (using the
+                            // appropriate SPEX_mp*_init function). If false,
+                            // the mpz, mpq, and mpfr arrays are malloced but
+                            // not initialized. Utilized internally to reduce
+                            // memory.  Ignored if shallow is true.
     const SPEX_options option
 ) ;
 
@@ -528,11 +528,11 @@ SPEX_info SPEX_matrix_free
 // SPEX_matrix_nnz: # of entries in a matrix
 //------------------------------------------------------------------------------
 
-SPEX_info SPEX_matrix_nnz     // find the # of entries in A
+SPEX_info SPEX_matrix_nnz       // find the # of entries in A
 (
-    int64_t *nnz,              // # of entries in A, -1 if A is NULL
-    const SPEX_matrix A,      // matrix to query
-    const SPEX_options option
+    int64_t *nnz,               // # of entries in A, -1 if A is NULL
+    const SPEX_matrix A,        // matrix to query
+    const SPEX_options option   // command options, currently unused
 ) ;
 
 //------------------------------------------------------------------------------
@@ -541,8 +541,8 @@ SPEX_info SPEX_matrix_nnz     // find the # of entries in A
 
 SPEX_info SPEX_matrix_check     // returns a SPEX status code
 (
-    const SPEX_matrix A,       // matrix to check
-    const SPEX_options option  // defines the print level
+    const SPEX_matrix A,        // matrix to check
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -559,24 +559,25 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
 SPEX_info SPEX_matrix_copy
 (
-    SPEX_matrix *C_handle, // matrix to create (never shallow)
+    SPEX_matrix *C_handle,  // matrix to create (never shallow)
     // inputs, not modified:
-    SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic
+    SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic_CSC
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
-    const SPEX_matrix A,   // matrix to make a copy of (may be shallow)
+    const SPEX_matrix A,    // matrix to make a copy of (may be shallow)
     const SPEX_options option
 ) ;
-
 
 //------------------------------------------------------------------------------
 // SPEX symbolic analysis and factorization
 //------------------------------------------------------------------------------
+
 typedef enum
 {
     SPEX_LU_FACTORIZATION = 0,            // LU factorization
     SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
     SPEX_QR_FACTORIZATION = 2             // QR factorization
-}SPEX_factorization_kind ;
+}
+SPEX_factorization_kind ;
 
 //------------------------------------------------------------------------------
 // SPEX_symbolic_analysis: symbolic pre-analysis
@@ -643,11 +644,9 @@ typedef SPEX_symbolic_analysis_struct *SPEX_symbolic_analysis ;
 
 SPEX_info SPEX_symbolic_analysis_free
 (
-    SPEX_symbolic_analysis *S_handle, // Structure to be deleted
+    SPEX_symbolic_analysis *S_handle,   // Structure to be deleted
     const SPEX_options option
 ) ;
-
-
 
 //------------------------------------------------------------------------------
 // SPEX_factorization: data structure for factorization
@@ -741,7 +740,7 @@ typedef SPEX_factorization_struct *SPEX_factorization ;
 
 SPEX_info SPEX_factorization_free
 (
-    SPEX_factorization *F_handle, // Factorization to be deleted
+    SPEX_factorization *F_handle,   // Structure to be deleted
     const SPEX_options option
 ) ;
 
@@ -763,7 +762,7 @@ SPEX_info SPEX_factorization_free
 
 SPEX_info SPEX_factorization_check
 (
-    SPEX_factorization F, // The factorization to check / print
+    SPEX_factorization F,       // The factorization to check
     const SPEX_options option
 ) ;
 
@@ -810,15 +809,13 @@ SPEX_info SPEX_factorization_check
 // In case of any error, the returned factorization should be considered as
 // undefined.
 
-
 SPEX_info SPEX_factorization_convert
 (
-    SPEX_factorization F, // The factorization to be converted
-    bool updatable, // if true, make F updatable. false: make non-updatable
-    const SPEX_options option // Command options
+    SPEX_factorization F,       // The factorization to be converted
+    bool updatable,             // if true: make F updatable
+                                // if false: make non-updatable
+    const SPEX_options option   // Command options
 ) ;
-
-
 
 //------------------------------------------------------------------------------
 // Memory management
@@ -829,6 +826,7 @@ SPEX_info SPEX_factorization_convert
 // SuiteSparse_free.
 
 // Allocate and initialize memory space for SPEX
+
 void *SPEX_calloc
 (
     size_t nitems,      // number of items to allocate
@@ -836,12 +834,14 @@ void *SPEX_calloc
 ) ;
 
 // Allocate memory space for SPEX
+
 void *SPEX_malloc
 (
     size_t size        // size of memory space to allocate
 ) ;
 
 // Free the memory allocated by SPEX_calloc, SPEX_malloc, or SPEX_realloc.
+
 void SPEX_free
 (
     void *p         // pointer to memory space to free
@@ -894,12 +894,14 @@ void *SPEX_realloc      // pointer to reallocated block, or original block
 
 // SPEX_initialize: initializes the working evironment for SPEX library.
 // It must be called prior to calling any other SPEX_* function.
-SPEX_info SPEX_initialize (void) ;
+
+SPEX_info SPEX_initialize ( void ) ;
 
 // SPEX_initialize_expert is the same as SPEX_initialize, except that it allows
 // for a redefinition of custom memory functions that are used for SPEX and
 // GMP.  The four inputs to this function are pointers to four functions with
 // the same signatures as the ANSI C malloc, calloc, realloc, and free.
+
 SPEX_info SPEX_initialize_expert
 (
     void *(*MyMalloc) (size_t),             // user-defined malloc
@@ -911,7 +913,11 @@ SPEX_info SPEX_initialize_expert
 // SPEX_finalize: This function finalizes the working evironment for SPEX
 // library, and frees any internal workspace created by SPEX.  It must be
 // called as the last SPEX_* function called.
-SPEX_info SPEX_finalize (void) ;
+
+SPEX_info SPEX_finalize
+(
+    void
+) ;
 
 //------------------------------------------------------------------------------
 // SPEX matrix utilities
@@ -920,12 +926,13 @@ SPEX_info SPEX_finalize (void) ;
 /* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
  * C_handle is NULL on input. On output, C_handle contains a pointer to A'
  */
+
 SPEX_info SPEX_transpose
 (
-    SPEX_matrix *C_handle,     // C = A'
-    SPEX_matrix A,             // Matrix to be transposed
+    SPEX_matrix *C_handle,      // C = A'
+    SPEX_matrix A,              // Matrix to be transposed
     const SPEX_options option
-);
+) ;
 
 // Purpose: Determine if the input A is *numerically* (thus pattern-wise)
 // symmetric.  Since SPEX is an exact framework, it doesn't make sense to check
@@ -933,11 +940,12 @@ SPEX_info SPEX_transpose
 //
 // If the matrix is determined to be symmetric, SPEX_OK is returned; otherwise,
 // SPEX_UNSYMMETRIC is returned.
+
 SPEX_info SPEX_determine_symmetry
 (
-    const SPEX_matrix A,            // Input matrix to be checked for symmetry
-    const SPEX_options option // Command options
-);
+    const SPEX_matrix A,        // Input matrix to be checked for symmetry
+    const SPEX_options option   // Command options
+) ;
 
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------

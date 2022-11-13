@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/SPEX_factorization_convert.c: convert between updatable
+// SPEX_Utilities/SPEX_factorization_convert: convert between updatable
 // and non-updatable factorization.
 //------------------------------------------------------------------------------
 

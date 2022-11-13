@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/SPEX_factorization_check.c: check the correctness of a given
+// SPEX_Utilities/SPEX_factorization_check: check the correctness of a given
 // factorization.
 //------------------------------------------------------------------------------
 

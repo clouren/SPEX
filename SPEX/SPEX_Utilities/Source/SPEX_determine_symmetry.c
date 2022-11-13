@@ -31,6 +31,7 @@ SPEX_info SPEX_determine_symmetry
     const SPEX_options option   // Command options
 )
 {
+
     SPEX_info info;
 
     // Check for null pointers

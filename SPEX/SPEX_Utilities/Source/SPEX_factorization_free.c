@@ -23,6 +23,7 @@ SPEX_info SPEX_factorization_free
     const SPEX_options option
 )
 {
+
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     if ((F_handle != NULL) && (*F_handle != NULL))

@@ -14,8 +14,7 @@
 
 #include "spex_util_internal.h"
 
-
-SPEX_info SPEX_create_default_options (SPEX_options *option_handle )
+SPEX_info SPEX_create_default_options (SPEX_options *option_handle)
 {
 
     if (!spex_initialized ( )) return (SPEX_PANIC) ;

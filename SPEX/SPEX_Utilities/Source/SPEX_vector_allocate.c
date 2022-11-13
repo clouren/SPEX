@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/SPEX_vector_allocate.c: create and initialize a vector with
+// SPEX_Utilities/SPEX_vector_allocate: create and initialize a vector with
 // given size nzmax.
 //------------------------------------------------------------------------------
 
@@ -25,6 +25,7 @@ SPEX_info SPEX_vector_allocate
     const SPEX_options option
 )
 {
+
     if (!spex_initialized()) return (SPEX_PANIC);
     if (v_handle == NULL || nzmax < 0)
     {

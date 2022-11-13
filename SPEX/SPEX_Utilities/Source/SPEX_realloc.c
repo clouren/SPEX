@@ -44,6 +44,7 @@ void *SPEX_realloc      // pointer to reallocated block, or original block
     bool *ok                // true if success, false on failure
 )
 {
+
     if (!spex_initialized ( ))
     {
         (*ok) = false ;

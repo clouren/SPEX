@@ -17,6 +17,7 @@ void *SPEX_malloc
     size_t size        // size of memory space to allocate
 )
 {
+
     if (!spex_initialized ( )) return (NULL) ;
     return (SuiteSparse_malloc (1, size)) ;
 }

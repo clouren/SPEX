@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/SPEX_vector_free.c: free a vector.
+// SPEX_Utilities/SPEX_vector_free: free a vector.
 //------------------------------------------------------------------------------
 
 // SPEX_Utilities: (c) 2020-2021, Jinhao Chen, Chris Lourenco,
@@ -18,6 +18,7 @@ SPEX_info SPEX_vector_free
     const SPEX_options option
 )
 {
+
     if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
     if(v_handle == NULL || (*v_handle) == NULL) {return SPEX_OK;}
     spex_delete_mpz_array(&((*v_handle)->x), (*v_handle)->nzmax);

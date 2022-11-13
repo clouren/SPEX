@@ -22,6 +22,7 @@ SPEX_info SPEX_vector_realloc
     const SPEX_options option
 )
 {
+
     SPEX_info info;
     if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
 

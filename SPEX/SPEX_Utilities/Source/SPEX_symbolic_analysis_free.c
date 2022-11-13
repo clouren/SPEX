@@ -23,6 +23,7 @@ SPEX_info SPEX_symbolic_analysis_free
     const SPEX_options option
 )
 {
+
     if (!spex_initialized ( )) return (SPEX_PANIC) ;
 
     if ((S_handle != NULL) && (*S_handle != NULL))
