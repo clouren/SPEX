@@ -102,7 +102,7 @@ mpfr_t *spex_gmpfr_archive = NULL ;    // current mpfr object
 #pragma omp threadprivate ( spex_gmp_nlist       )
 #pragma omp threadprivate ( spex_gmp_list        )
 #pragma omp threadprivate ( spex_gmp_ntrials     )
-#pragma omp threadprivate ( spex_gmpz_archive    ,
+#pragma omp threadprivate ( spex_gmpz_archive    )
 #pragma omp threadprivate ( spex_gmpz_archive2   )
 #pragma omp threadprivate ( spex_gmpq_archive    )
 #pragma omp threadprivate ( spex_gmpfr_archive   )
