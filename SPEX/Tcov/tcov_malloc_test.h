@@ -16,6 +16,9 @@
 
 extern int64_t malloc_count ;
 
+extern int64_t spex_gmp_ntrials ; // number of malloc's allowed (for
+                                  // testing only): -1 means unlimited.
+
 #define SPEX_PRINT_INFO(info)                                               \
 {                                                                           \
     printf ("file %s line %d: ", __FILE__, __LINE__) ;                      \

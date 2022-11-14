@@ -46,6 +46,14 @@ project ( spex
 # find library dependencies
 #-------------------------------------------------------------------------------
 
+option ( NOPENMP "ON: do not use OpenMP.  OFF (default): use OpenMP" off )
+if ( NOPENMP )
+    # OpenMP has been disabled: SPEX will not be thread-safe
+    set ( OPENMP_FOUND false )
+else ( )
+    find_package ( OpenMP )
+endif ( )
+
 find_package ( SuiteSparse_config 6.0.0 REQUIRED )
 find_package ( COLAMD 3.0.0 REQUIRED )
 find_package ( AMD 3.0.0 REQUIRED )
@@ -123,6 +131,21 @@ endif ( )
 target_link_libraries ( spex PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
 if ( NOT NSTATIC )
 target_link_libraries ( spex_static PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
+endif ( )
+
+# OpenMP:
+if ( OPENMP_FOUND )
+    message ( STATUS "OpenMP C libraries:      ${OpenMP_C_LIBRARIES} ")
+    message ( STATUS "OpenMP C include:        ${OpenMP_C_INCLUDE_DIRS} ")
+    message ( STATUS "OpenMP C flags:          ${OpenMP_C_FLAGS} ")
+    target_link_libraries ( spex PUBLIC ${OpenMP_C_LIBRARIES} )
+    if ( NOT NSTATIC )
+    target_link_libraries ( spex_static PUBLIC ${OpenMP_C_LIBRARIES} )
+    endif ( )
+    set ( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS} " )
+    include_directories ( ${OpenMP_C_INCLUDE_DIRS} )
+else ( )
+    message ( WARNING "OpenMP not enabled.  SPEX will not be thread-safe. " )
 endif ( )
 
 # AMD:

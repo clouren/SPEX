@@ -967,6 +967,10 @@ SPEX_info SPEX_determine_symmetry
 // returned to GMP.  Instead, all allocated blocks in the list are freed,
 // and spex_gmp_allocate returns directly to the wrapper.
 
+SPEX_info SPEX_gmp_initialize (void) ;
+
+SPEX_info SPEX_gmp_finalize (void) ;
+
 SPEX_info SPEX_mpfr_asprintf (char **str, const char *format, ... ) ;
 
 SPEX_info SPEX_gmp_fscanf (FILE *fp, const char *format, ... ) ;

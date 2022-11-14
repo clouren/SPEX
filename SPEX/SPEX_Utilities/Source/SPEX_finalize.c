@@ -21,7 +21,7 @@ SPEX_info SPEX_finalize
     if (!spex_initialized ( )) { return (SPEX_PANIC) ; }
 
     SPEX_mpfr_free_cache ( ) ;    // Free mpfr internal cache
-    spex_gmp_finalize ( ) ;       // Reset GMP memory variables
+    SPEX_gmp_finalize ( ) ;       // Reset GMP memory variables
 
     spex_set_initialized (false) ;
     return (SPEX_OK) ;

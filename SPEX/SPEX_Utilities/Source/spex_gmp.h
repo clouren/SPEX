@@ -4,8 +4,8 @@
 
 // FIXME: make all copyright statements consistent.
 
-// SPEX_Utilities: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_Utilities: (c) 2019-2021, Chris Lourenco, Jinhao Chen,
+// Erick Moreno-Centeno, Timothy A. Davis.  All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -32,21 +32,12 @@
 void spex_gmp_dump ( void ) ;
 #endif
 
-// FIXME: change 'extern' to SPEX_PUBLIC
-extern int64_t spex_gmp_ntrials ; // number of malloc's allowed (for
-                                  // testing only): -1 means unlimited.
-
 #ifndef SPEX_GMP_LIST_INIT
 // A size of 32 ensures that the list never needs to be increased in size.
 // The test coverage suite in SPEX/Tcov reduces this initial size to
 // exercise the code, in SPEX/Tcov/Makefile.
 #define SPEX_GMP_LIST_INIT 32
 #endif
-
-
-bool spex_gmp_init (void) ;
-
-void spex_gmp_finalize (void) ;
 
 void *spex_gmp_allocate (size_t size) ;
 

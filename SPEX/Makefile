@@ -69,7 +69,7 @@ demos: library
 	( cd SPEX_Update/Demo && ../../build/example_for_chol_update )
 
 cov:
-	( cd SPEX/Tcov && $(MAKE) )
+	( cd Tcov && $(MAKE) )
 
 # just compile after running cmake; do not run cmake again
 remake:

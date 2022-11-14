@@ -47,7 +47,7 @@
 // is passed as the first argument to the SPEX_gmpfunc:
 
 /*
-    SPEX_info SPEX_gmfunc (result, args)
+    SPEX_info SPEX_gmpfunc (result, args)
     {
         SPEX_GMP_WRAPPER_START ;
         (*result) = gmpfunc (args) ;
@@ -70,11 +70,23 @@
 // global variables
 //------------------------------------------------------------------------------
 
-// FIXME: this is not thread-safe.  Consider using OpenMP thread-local storage.
+// SPEX is thread-safe as long as all of the following conditions hold:
+// (1) GMP and MPFR are both thread-safe.  Note that GMP and MPFR can be
+//      compiled with thread-safety disabled.  See
+//      https://gmplib.org/manual/Reentrancy
+//      https://www.mpfr.org/mpfr-3.1.0/
+// (2) SPEX is compiled with OpenMP (so it can use threadprivate storage).
+// (3) only one user thread calls SPEX_initialize and SPEX_finalize.
+// (4) OpenMP dynamic parallelism is disabled (omp_set_dynamic (false)).
+//      This setting is the responsibility of the user application.
+// (5) Multiple user threads do not attempt to write to the same SPEX objects.
+//      If declared as an input-only variable, multiple user threads may
+//      access them in parallel.
+// (6) Each user thread should call SPEX_gmp_finalize when it finishes.
 
 jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
-int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in SPEX_gmp_list
-int64_t spex_gmp_nlist = 0 ;    // size of the SPEX_gmp_list
+int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in spex_gmp_list
+int64_t spex_gmp_nlist = 0 ;    // size of the spex_gmp_list
 void **spex_gmp_list = NULL ;   // list of malloc'd objects
 
 int64_t spex_gmp_ntrials = -1 ; // number of malloc's allowed (for
@@ -85,29 +97,55 @@ mpz_t  *spex_gmpz_archive2 = NULL ;    // current second mpz object
 mpq_t  *spex_gmpq_archive  = NULL ;    // current mpq object
 mpfr_t *spex_gmpfr_archive = NULL ;    // current mpfr object
 
+#pragma omp threadprivate ( spex_gmp_environment )
+#pragma omp threadprivate ( spex_gmp_nmalloc     )
+#pragma omp threadprivate ( spex_gmp_nlist       )
+#pragma omp threadprivate ( spex_gmp_list        )
+#pragma omp threadprivate ( spex_gmp_ntrials     )
+#pragma omp threadprivate ( spex_gmpz_archive    ,
+#pragma omp threadprivate ( spex_gmpz_archive2   )
+#pragma omp threadprivate ( spex_gmpq_archive    )
+#pragma omp threadprivate ( spex_gmpfr_archive   )
+
 //------------------------------------------------------------------------------
-// spex_gmp_init: initialize gmp
+// SPEX_gmp_initialize: initialize gmp
 //------------------------------------------------------------------------------
 
 /* Purpose: Create the list of malloc'd objects. This should be called before
- * calling any GMP function. It is also called by SPEX_gmp_allocate when
- * SPEX_gmp_list is NULL
+ * calling any GMP function. It is also called by spex_gmp_allocate when
+ * spex_gmp_list is NULL.  This function can be safely called many times,
+ * in any order.  It use is optional, since any use of a SPEX GMP/MPFR wrapper
+ * function will also ensure that it is called.
  */
 
-bool spex_gmp_init ( )
+SPEX_info SPEX_gmp_initialize (void)
 {
-    spex_gmp_nmalloc = 0 ;
-    spex_gmp_nlist = SPEX_GMP_LIST_INIT ;
-    spex_gmp_list = (void **) SPEX_malloc (spex_gmp_nlist * sizeof (void *)) ;
-    return (spex_gmp_list != NULL) ;
+    if (spex_gmp_list == NULL)
+    {
+        // allocate an empty spex_gmp_list
+        spex_gmp_nlist = 0 ;
+        spex_gmp_nmalloc = 0 ;
+        spex_gmp_list = (void **) SPEX_malloc (SPEX_GMP_LIST_INIT *
+            sizeof (void *)) ;
+        if (spex_gmp_list != NULL) spex_gmp_nlist = SPEX_GMP_LIST_INIT ;
+    }
+    return ((spex_gmp_list != NULL) ? SPEX_OK : SPEX_OUT_OF_MEMORY)  ;
 }
 
 //------------------------------------------------------------------------------
 // SPEX_gmp_finalize: finalize gmp
 //------------------------------------------------------------------------------
 
-/* Purpose: Free the list. Must be called when all use of GMP is done */
-void spex_gmp_finalize ( )
+/* Purpose: Free the spex_gmp_list. Must be called when all use of GMP is done.
+ * This function can be safely called multiple times.  SPEX_gmp_initialize can
+ * also be called after calling this function, to re-initialize GMP.  If the
+ * user application is not multi-threaded, then its use is optional, as long
+ * as the single user thread calls SPEX_finalized.  If the user application
+ * is multi-threaded, then each user thread should call SPEX_gmp_finalize
+ * when it finishes, or else a memory leak will occur.
+ */
+
+SPEX_info SPEX_gmp_finalize (void)
 {
     spex_gmpz_archive = NULL ;
     spex_gmpz_archive2 = NULL ;
@@ -116,16 +154,17 @@ void spex_gmp_finalize ( )
     spex_gmp_nmalloc = 0 ;
     spex_gmp_nlist = 0 ;
     SPEX_FREE (spex_gmp_list) ;
+    return (SPEX_OK) ;
 }
 
 //------------------------------------------------------------------------------
-// SPEX_gmp_allocate: malloc space for gmp
+// spex_gmp_allocate: malloc space for gmp
 //------------------------------------------------------------------------------
 
 /* Purpose: malloc space for gmp. A NULL pointer is never returned to the GMP
- * library. If the allocation fails, all memory allocated since the start of
- * the SPEX_gmp_wrapper is freed and an error is thrown to the GMP wrapper via
- * longjmp
+ * library. If the allocation fails, all memory allocated since the
+ * SPEX_GMP*_WRAPPER_START is freed and an error is thrown to the GMP wrapper
+ * via longjmp
  */
 
 void *spex_gmp_allocate
@@ -157,21 +196,21 @@ void *spex_gmp_allocate
     }
 
     //--------------------------------------------------------------------------
-    // ensure the SPEX_gmp_list is large enough
+    // ensure the spex_gmp_list is large enough
     //--------------------------------------------------------------------------
 
     if (spex_gmp_list == NULL)
     {
-        // create the initial SPEX_gmp_list
-        if (!spex_gmp_init ( ))
+        // create the initial spex_gmp_list
+        if (SPEX_gmp_initialize ( ) != SPEX_OK)
         {
-            // failure to create the SPEX_gmp_list
+            // failure to create the spex_gmp_list
             longjmp (spex_gmp_environment, 2) ;
         }
     }
     else if (spex_gmp_nmalloc == spex_gmp_nlist)
     {
-        // double the size of the SPEX_gmp_list
+        // double the size of the spex_gmp_list
         bool ok ;
         int64_t newsize = 2 * spex_gmp_nlist ;
         spex_gmp_list = (void **)
@@ -179,13 +218,13 @@ void *spex_gmp_allocate
             spex_gmp_list, &ok) ;
         if (!ok)
         {
-            // failure to double the size of the SPEX_gmp_list.
-            // The existing SPEX_gmp_list is still valid, with the old size,
-            // (SPEX_gmp_nlist).  This is required so that the error handler
-            // can traverse the SPEX_gmp_list to free all objects there.
+            // failure to double the size of the spex_gmp_list.
+            // The existing spex_gmp_list is still valid, with the old size,
+            // (spex_gmp_nlist).  This is required so that the error handler
+            // can traverse the spex_gmp_list to free all objects there.
             longjmp (spex_gmp_environment, 3) ;
         }
-        // success; the old SPEX_gmp_list has been freed, and replaced with
+        // success; the old spex_gmp_list has been freed, and replaced with
         // the larger newlist.
         spex_gmp_nlist = newsize ;
     }
@@ -203,7 +242,7 @@ void *spex_gmp_allocate
     }
 
     //--------------------------------------------------------------------------
-    // save p in the SPEX_gmp_list and return result to GMP
+    // save p in the spex_gmp_list and return result to GMP
     //--------------------------------------------------------------------------
 
     spex_gmp_list [spex_gmp_nmalloc++] = p ;
@@ -236,7 +275,7 @@ void spex_gmp_free
 
     if (p != NULL && spex_gmp_list != NULL)
     {
-        // remove p from the SPEX_gmp_list
+        // remove p from the spex_gmp_list
         for (int64_t i = 0 ; i < spex_gmp_nmalloc ; i++)
         {
             if (spex_gmp_list [i] == p)
@@ -254,8 +293,8 @@ void spex_gmp_free
     spex_gmp_dump ( ) ;
     #endif
 
-    // free p, even if it is not found in the SPEX_gmp_list.  p is only in the
-    // SPEX_gmp_list if it was allocated inside the current GMP function.
+    // free p, even if it is not found in the spex_gmp_list.  p is only in the
+    // spex_gmp_list if it was allocated inside the current GMP function.
     // If the block was allocated by one GMP function and freed by another,
     // it is not in the list.
     SPEX_GMP_SAFE_FREE (p) ;
@@ -293,7 +332,7 @@ void *spex_gmp_reallocate
     {
         // change the size of the block
         void *p_new = spex_gmp_allocate (new_size) ;
-        // Note that p_new will never be NULL here, since SPEX_gmp_allocate
+        // Note that p_new will never be NULL here, since spex_gmp_allocate
         // does not return if it fails.
         memcpy (p_new, p_old, SPEX_MIN (old_size, new_size)) ;
         spex_gmp_free (p_old, old_size) ;
@@ -309,8 +348,8 @@ void *spex_gmp_reallocate
 #ifdef SPEX_GMP_MEMORY_DEBUG
 void spex_gmp_dump ( )
 {
-    // dump the SPEX_gmp_list
-    SPEX_PRINTF ("nmalloc = %g, SPEX_gmp_nlist = %g\n",
+    // dump the spex_gmp_list
+    SPEX_PRINTF ("nmalloc = %g, spex_gmp_nlist = %g\n",
         (double) spex_gmp_nmalloc, (double) spex_gmp_nlist) ;
     if (spex_gmp_list != NULL)
     {
@@ -348,7 +387,7 @@ void spex_gmp_failure
             SPEX_GMP_SAFE_FREE (spex_gmp_list [i]) ;
         }
     }
-    spex_gmp_finalize ( ) ;
+    SPEX_gmp_finalize ( ) ;
 }
 
 //------------------------------------------------------------------------------
