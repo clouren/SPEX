@@ -67,10 +67,32 @@ flags = 'CFLAGS=''-std=c99 -fPIC''';
 % External libraries: GMP, MPRF, AMD, and COLAMD
 [suitesparse_libdir, suitesparse_incdir, gmp_lib, gmp_include, mpfr_lib, mpfr_include] = spex_deps ;
 
-libs = ['-L' suitesparse_libdir ' -lamd -lcolamd -lsuitesparseconfig ' gmp_lib ' ' mpfr_lib ' -lm'] ;
+% libraries:
+if (isempty (suitesparse_libdir))
+    suitesparse_libdir = ' ' ;
+else
+    suitesparse_libdir = [' -L' suitesparse_libdir ' '] ;
+end
+libs = [suitesparse_libdir ' -lamd -lcolamd -lsuitesparseconfig ' gmp_lib ' ' mpfr_lib ' -lm'] ;
 
 % Path to headers
-includes = [ '-I' suitesparse_incdir ' -ISource/ -I../Include/ -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Utilities/Source -I' gmp_include ' -I' mpfr_include ] ;
+if (isempty (suitesparse_incdir))
+    suitesparse_incdir = ' ' ;
+else
+    suitesparse_incdir = ['-I' suitesparse_incdir ' '] ;
+end
+if (isempty (gmp_include))
+    gmp_include = ' ' ;
+else
+    gmp_include = [' -I' gmp_include ' '] ;
+end
+if (isempty (mpfr_include))
+    mpfr_include = ' ' ;
+else
+    mpfr_include = [' -I' mpfr_include ' '] ;
+end
+
+includes = [ suitesparse_incdir ' -ISource/ -I../Include/ -I../../SuiteSparse_config -I../../COLAMD/Include -I../../AMD/Include -I../SPEX_Utilities/Source ' gmp_include  mpfr_include ] ;
 
 % verbose = ' -v '
 verbose = '' ;
