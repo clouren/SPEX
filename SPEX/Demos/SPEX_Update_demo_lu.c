@@ -2,8 +2,8 @@
 // Demos/SPEX_Update_demo_lu.c: demo for SPEX_Update library
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
+// SPEX_Update: (c) 2020-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -12,16 +12,18 @@
  * replacement.
  */
 
+#include "demos.h"
+
 #define FREE_WORKSPACE                           \
+{                                                \
     SPEX_matrix_free(&A, option);                \
     SPEX_matrix_free(&A_DCSC, option);           \
     SPEX_matrix_free(&vk, option);               \
     SPEX_symbolic_analysis_free(&S, option);     \
     SPEX_factorization_free(&F, option);         \
     SPEX_FREE(option);                           \
-    SPEX_finalize( ) ;
-
-#include "demos.h"
+    SPEX_finalize();                             \
+}
 
 int main(int argc, char *argv[] )
 {

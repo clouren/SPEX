@@ -1,12 +1,14 @@
-//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // SPEX/Tcov/tcov_for_cholesky.c: test coverage for SPEX_Cholesky
-//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
 
 /* This program will exactly solve the sparse linear system Ax = b by performing
  * the SPEX Cholesky factorization.

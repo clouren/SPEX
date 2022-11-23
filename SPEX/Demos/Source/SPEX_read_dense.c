@@ -1,11 +1,18 @@
 //------------------------------------------------------------------------------
 // SPEX_read_dense
 //------------------------------------------------------------------------------
-#include "demos.h"
+
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
 
 /* Purpose: Read a dense matrix for RHS vectors.
  * the values in the file must be integers
  */
+
+#include "demos.h"
 
 
 SPEX_info SPEX_read_dense

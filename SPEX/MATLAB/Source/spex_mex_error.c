@@ -2,13 +2,14 @@
 // SPEX/MATLAB/SPEX_mex_error.c: Check error codes for MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy,
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno,
-// Timothy A. Davis, Texas A&M University. All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
 //------------------------------------------------------------------------------
 
-/* Purpose: This function prints error messages for MATLAB for debugging*/
+/* Purpose: This function prints error messages for MATLAB for debugging */
 
 #include "SPEX_mex.h"
 

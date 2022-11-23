@@ -1,5 +1,5 @@
 function x = spex_cholesky_backslash (A,b,option)
-%spex_cholesky_BACKSLASH: solve Ax=b via sparse integer-preserving Cholesky
+% spex_cholesky_BACKSLASH: solve Ax=b via sparse integer-preserving Cholesky
 % spex_cholesky_backslash: computes the exact solution to the sparse linear system Ax =
 % b where A and b are stored as doubles. A must be stored as a sparse matrix and be SPD. b
 % must be stored as a dense set of right hand side vectors. b can be either 1
@@ -86,12 +86,18 @@ function x = spex_cholesky_backslash (A,b,option)
 % See also vpa, spex_mex_install, spex_mex_test, spex_mex_demo,
 %   spex_lu_backslash
 
-% SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
-% Moreno-Centeno and Timothy A. Davis.  All Rights Reserved.
+% spex_cholesky_backslash is a wrapper for the exact routines contained within the SPEX
+% software package.  In order to use spex_cholesky_backslash you must install the MATLAB
+% interfaces of all SPEX packages.  Typing spex_mex_install in this directory
+% should do this correctly.
+
+% SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+% Lorena Mejia Domenzain, Timothy A. Davis and Erick Moreno-Centeno.
+% All Rights Reserved.
 % SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 if (nargin < 3)
-    option = [ ] ;   % use default options
+    option = [ ];   % use default options
 end
 
 if (~isnumeric (A) || ~isnumeric (b))

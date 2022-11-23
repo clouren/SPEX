@@ -2,8 +2,9 @@
 // SPEX/MATLAB/SPEX_mex_get_A_and_b.c: convert A&b to SPEX matrices
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Jinhao
-// Chen, Erick Moreno-Centeno, Timothy A. Davis. All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------

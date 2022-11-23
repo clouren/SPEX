@@ -1,14 +1,12 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_LU_demo_doub.c: example main program for SPEX
+// Demos/SPEX_LU_demo_doub.c: example of simple SPEX_LU call for double matrix
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_LU: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
-
-#include "demos.h"
 
 /* This program will exactly solve the sparse linear system Ax = b by
  * performing the SPEX Left LU factorization. This is intended to be a
@@ -54,17 +52,16 @@
 // If none of the above args is given, they are set to the following default:
 //
 
-
+#include "demos.h"
 
 #define FREE_WORKSPACE                           \
+{                                                \
     SPEX_matrix_free(&A, option);                \
     SPEX_factorization_free(&F, option);         \
     SPEX_symbolic_analysis_free(&S, option);     \
     SPEX_FREE(option);                           \
-    SPEX_finalize( ) ;
-    
-    
-#include "demos.h"
+    SPEX_finalize();                             \
+}
 
 int main (int argc, char *argv[])
 {

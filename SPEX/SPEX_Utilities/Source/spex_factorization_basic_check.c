@@ -3,8 +3,8 @@
 // given factorization.
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2020-2021, Jinhao Chen, Timothy A. Davis, Chris Lourenco,
-// Erick Moreno-Centeno.  All Rights Reserved.
+// SPEX_Utilities: (c) 2020-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------

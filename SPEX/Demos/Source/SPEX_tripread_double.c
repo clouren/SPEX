@@ -1,8 +1,14 @@
 //------------------------------------------------------------------------------
-// SPEX_tripread_double
+// SPEX_tripread_double: reads a double matrix stored in triplet format
 //------------------------------------------------------------------------------
 
-/* Purpose: This function reads in a double matrix stored in a triplet format
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
+/* Purpose: This function reads a double matrix stored in triplet format
  * This format used can be seen in any of the example mat files.
  *
  * The first line of the file contains three integers: m, n, nnz,

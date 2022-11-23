@@ -2,7 +2,7 @@
 # SuiteSparse/SuiteSparse_config/cmake_modules/FindMPFR.cmake
 #-------------------------------------------------------------------------------
 
-# Copyright (c) 2022, Timothy A. Davis.  All Rights Reserved.
+# Copyright (c) 2022, Timothy A. Davis. All Rights Reserved.
 # SPDX-License-Identifier: BSD-3-clause
 
 # Finds the mpfr include file and compiled library and sets:

@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_Chol_demo_simple.c: example main program for SPEX_Cholesky
+// Demos/SPEX_Chol_demo_simple.c: example of simple call of SPEX_Cholesky
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
-// Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved.
+// SPEX_Cholesky: (c) 2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -16,35 +16,18 @@
 // example > out
 // out is file for output calculated result
 
+#include "demos.h"
+
 #define FREE_WORKSPACE                      \
+{                                           \
     SPEX_matrix_free(&A, option);           \
     SPEX_matrix_free(&b, option);           \
     SPEX_matrix_free(&x, option);           \
     SPEX_matrix_free(&x2, option);          \
     SPEX_FREE(option);                      \
-    SPEX_finalize();
-
-#include "demos.h"
-
-#define DEMO_OK(method)                     \
-{                                           \
-    ok = method ;                           \
-    if (ok != SPEX_OK)                      \
-    {                                       \
-        SPEX_determine_error(ok);  \
-        FREE_WORKSPACE ;                    \
-        return 0 ;                          \
-    }                                       \
+    SPEX_finalize();                        \
 }
 
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Include/SPEX.h"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_check_solution.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_print_options.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_process_command_line.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_read_dense.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_tripread.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_tripread_double.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_determine_error.c"
 
 int main (int argc, char **argv)
 {

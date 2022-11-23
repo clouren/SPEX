@@ -1,12 +1,13 @@
-//------------------------------------------------------------------------------
-// SPEX/SPEX/Tcov/tcov_malloc_test.h
-//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// SPEX/Tcov/tcov_malloc_test.h: malloc test coverage
+// ----------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 #ifndef TCOV_SPEX_MALLOC_TEST_H
 #define TCOV_SPEX_MALLOC_TEST_H

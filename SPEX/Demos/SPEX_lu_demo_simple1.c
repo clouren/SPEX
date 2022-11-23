@@ -1,32 +1,12 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/example.c: example main program for SPEX_LU
+// SPEX_LU/Demo/example.c: example of simple SPEX_LU call for random matrix
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_LU: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
-
-//#include "demos.h"
-#define DEMO_OK(method)                         \
-{                                               \
-    ok = method ;                               \
-    if (ok != SPEX_OK)                          \
-    {                                           \
-        SPEX_determine_error(ok);      \
-        FREE_WORKSPACE ;                        \
-        return 0 ;                              \
-    }                                           \
-}
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Include/SPEX.h"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_check_solution.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_print_options.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_process_command_line.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_read_dense.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_tripread.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_tripread_double.c"
-#include "/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Demos/Source/SPEX_determine_error.c"
 
 /* This example shows how to use SPEX Left LU with a given input matrix and a
  * double output. The input is a randomly generate dense matrix */
@@ -35,14 +15,18 @@
 // example > out
 // out is file for output calculated result
 
+#include "demos.h"
+
 #define FREE_WORKSPACE                       \
+{                                            \
     SPEX_matrix_free(&A,option);             \
     SPEX_matrix_free(&x,option);             \
     SPEX_matrix_free(&b,option);             \
     SPEX_matrix_free(&Rb,option);            \
     SPEX_matrix_free(&R,option);             \
     SPEX_FREE(option);                       \
-    SPEX_finalize() ;                        \
+    SPEX_finalize();                         \
+}
 
 int main (void)
 {

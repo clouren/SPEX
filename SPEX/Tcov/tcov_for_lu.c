@@ -1,12 +1,13 @@
-//------------------------------------------------------------------------------
-// SPEX/Tcov/tcov_test.c: test coverage for SPEX_LU
-//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// SPEX/Tcov/tcov_for_lu.c: test coverage for SPEX_LU
+// ----------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 /*
  * When the test is run without input argument, brutal test is used and simple

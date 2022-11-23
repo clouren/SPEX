@@ -1,14 +1,12 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_LU_demo2.c: example main program for SPEX_LU
+// Demos/SPEX_LU_demo2.c: example of simple SPEX_LU call for triplet format
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All Rights Reserved.
+// SPEX_LU: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
-
-#include "demos.h"
 
 // This example shows how to use SPEX Left LU within your code.  Unlike
 // example1, the input matrix here is directly read in from the triplet
@@ -23,13 +21,17 @@
 // ../ExampleMats/10teams.mat and ../ExampleMats/10teams.v, respectively.
 // out is file for output calculated result
 
+#include "demos.h"
+
 #define FREE_WORKSPACE                          \
+{                                               \
     SPEX_symbolic_analysis_free(&S, option);    \
     SPEX_matrix_free(&A, option);               \
     SPEX_FREE(option);                          \
     SPEX_matrix_free(&b, option);               \
     SPEX_matrix_free(&x, option);               \
-    SPEX_finalize();
+    SPEX_finalize();                            \
+}
 
 int main (int argc, char **argv)
 {

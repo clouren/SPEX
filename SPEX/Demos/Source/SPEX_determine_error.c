@@ -1,8 +1,19 @@
+//------------------------------------------------------------------------------
+// SPEX_determine_error: auxiliary file for test coverage (tcov)
+//------------------------------------------------------------------------------
+
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
+/* Purpose: Determine why a SPEX function failed
+ */
 
 #include "SPEX.h"
 
-/* Purpose: Determine why a SPEX_Chol function failed
- */
+
 void SPEX_determine_error
 (
     SPEX_info ok

@@ -2,8 +2,9 @@
 // SPEX_Backslash/Demo/demos.c: support functions for the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_Backslash: (c) 2021, Chris Lourenco, Lorena Mejia Domenzain, Erick
-// Moreno-Centeno, Timothy A. Davis, All Rights Reserved.
+// SPEX_Backslash: (c) 2020-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------

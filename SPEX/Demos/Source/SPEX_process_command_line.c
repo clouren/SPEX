@@ -1,10 +1,17 @@
 //------------------------------------------------------------------------------
-// SPEX_process_command_line
+// SPEX_process_command_line: processes command line for user specified options
 //------------------------------------------------------------------------------
+
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
+/* Purpose: This processes the command line for user specified options */
 
 #include "SPEX.h"
 
-/* Purpose: This processes the command line for user specified options */
 
 SPEX_info SPEX_process_command_line //processes the command line
 (
