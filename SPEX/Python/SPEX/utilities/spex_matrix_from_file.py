@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/utils.py: FIXME PUT SOMETHING
+# SPEX/Python/utilities/spex_from_matrix_file.py: read matrix from file
 #-------------------------------------------------------------------------------
 
 # SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,

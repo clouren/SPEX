@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/_connect.py: FIXME PUT SOMETHING
+# SPEX/Python/_connect/spex_connect.py: link SPEX to use in Python
 #-------------------------------------------------------------------------------
 
 # SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
@@ -23,7 +23,7 @@ def spex_connect( A, b, order, charOut, algorithm ):
     ##--------------------------------------------------------------------------
     ## Load the library with the "C bridge code"
     ##--------------------------------------------------------------------------
-    lib = ctypes.CDLL('./SPEX_connect.so')
+    lib = ctypes.CDLL('../build/SPEX_connect.so')
     c_backslash = lib.spex_python
 
     ##--------------------------------------------------------------------------
