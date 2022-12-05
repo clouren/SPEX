@@ -2,6 +2,12 @@
 // SPEX_tripread
 //------------------------------------------------------------------------------
 
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
 /* Purpose: This function reads in a matrix stored in a triplet format
  * This format used can be seen in any of the example mat files.
  *
@@ -14,6 +20,7 @@
  */
 
 #include "SPEX.h"
+
 
 SPEX_info SPEX_tripread
 (

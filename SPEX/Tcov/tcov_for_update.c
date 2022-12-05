@@ -1,12 +1,13 @@
-//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // SPEX/Tcov/tcov_for_update.c: test coverage for SPEX_Update
-//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-// SPEX: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
-// Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.  See
-// SPEX/License for the license.
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 /*
  * test coverage: For each iteration in this test, a n-by-n sparse matrices L

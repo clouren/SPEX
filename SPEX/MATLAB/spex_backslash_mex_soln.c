@@ -2,10 +2,11 @@
 // SPEX/MATLAB/spex_backslash_mex_soln: Use SPEX Backslash within MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy,
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno,
-// Timothy A. Davis, Texas A&M University. All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
 //------------------------------------------------------------------------------
 
 /* Purpose: The .c file defining the SPEX Backslash MATLAB interface

@@ -1,13 +1,13 @@
 #-------------------------------------------------------------------------------
-# SPEX_Chol/Python/Makefile: compile and run the demos
+# SPEX/Python/Makefile: compile SPEX_connect
 #-------------------------------------------------------------------------------
 
-# SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
-# Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-# Texas A&M University. All Rights Reserved.
+# SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+# Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+# All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
 default: all
 

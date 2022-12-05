@@ -2,14 +2,17 @@
 // SPEX/MATLAB/SPEX_mex_check_for_inf.c: Check A&B for inf/NAN
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, United States Naval Academy,
-// Jinhao Chen, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno,
-// Timothy A. Davis, Texas A&M University. All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
 //------------------------------------------------------------------------------
 
-// Purpose: This function checks if the array x contains Inf's, NaN's, or
-// if its values can be represented as int64_t values, useful for input arguments.
+/* Purpose: This function checks if the array x contains Inf's, NaN's, or
+ * if its values can be represented as int64_t values, useful for input 
+ * arguments.
+ */
 
 #include "SPEX_mex.h"
 

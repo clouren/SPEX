@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
-// Erick Moreno-Centeno, Timothy A. Davis.  All Rights Reserved.
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------

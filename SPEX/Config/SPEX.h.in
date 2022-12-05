@@ -2,9 +2,9 @@
 // SPEX/Include/SPEX.h: Include file for SPEX Library
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2022, Chris Lourenco (US Naval Academy), Jinhao Chen, Lorena
-// Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All
-// Rights Reserved.
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -27,8 +27,8 @@
 //------------------------------------------------------------------------------
 // Unless otherwise noted all functions are authored by:
 //
-//    Christopher Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Erick
-//    Moreno-Centeno, and Timothy Davis
+//    Christopher Lourenco, Jinhao Chen, 
+//    Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis
 //
 
 //------------------------------------------------------------------------------
@@ -66,8 +66,9 @@
 //
 //    See license.txt for license info.
 //
-// This software is copyright by Christopher Lourenco, Jinhao Chen, Erick
-// Moreno-Centeno and Timothy A. Davis. All Rights Reserved.
+// This software is copyright by Christopher Lourenco, Jinhao Chen, 
+// Lorena Mejia Domenzain, Erick Moreno-Centeno and Timothy A. Davis.
+// All Rights Reserved.
 //
 
 //------------------------------------------------------------------------------
@@ -1138,10 +1139,10 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 // using the SPEX Left LU factorization. This code accompanies the paper
 // (submitted to ACM Transactions on Mathematical Software):
 
-//    "Algorithm 1xxx: SPEX Left LU: Exactly Solving Sparse Linear Systems via
-//    A Sparse Left-Looking Integer-Preserving LU Factorization",
-//    C. Lourenco, J. Chen, E. Moreno-Centeno, T. Davis, under submission,
-//    ACM Trans. Mathematical Software.
+//    "Algorithm 1021: SPEX Left LU, Exactly Solving Sparse Linear Systems via
+//    a Sparse Left-looking Integer-preserving LU Factorization",
+//    C. Lourenco, J. Chen, E. Moreno-Centeno, T. Davis, 
+//    ACM Trans. Mathematical Software. pp 1-23, vol 48, no 2, 2022.
 
 //    The theory associated with this software can be found in the paper
 //    (published in SIAM journal on matrix analysis and applications):
@@ -1149,7 +1150,7 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 //    "Exact Solution of Sparse Linear Systems via Left-Looking
 //     Roundoff-Error-Free LU Factorization in Time Proportional to
 //     Arithmetic Work", C. Lourenco, A. R. Escobedo, E. Moreno-Centeno,
-//     T. Davis, SIAM J. Matrix Analysis and Applications.  pp 609-638,
+//     T. Davis, SIAM J. Matrix Analysis and Applications. pp 609-638,
 //     vol 40, no 2, 2019.
 
 //    If you use this code, you must first download and install the GMP and
@@ -1166,7 +1167,7 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    Christopher Lourenco, Jinhao Chen, Erick Moreno-Centeno, and Timothy Davis
+// Christopher Lourenco, Jinhao Chen, Timothy A. Davis, and Erick Moreno-Centeno
 
 
 //------------------------------------------------------------------------------
@@ -1290,8 +1291,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //     The theory associated with this paper is found at:
 
 //    "Exactly Solving Sparse Rational Linear Systems via Roundoff-Error-Free
-//     Cholesky Factorizations", C. Lourenco, E. Moreno-Centeno,
-//     under submission, SIMAX.
+//    Cholesky Factorizations", C. Lourenco, E. Moreno-Centeno,
+//    SIAM J. Matrix Analysis and Applications.
+//     pp 609-638, vol 43, no 1, 2022.
 
 //    To use this code you must first download and install the GMP,
 //    MPFR, AMD, and COLAMD libraries. GMP and MPFR can be found at:
@@ -1316,8 +1318,8 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    Christopher Lourenco, Lorena Mejia Domenzain, Erick Moreno-Centeno,
-//    Timothy Davis
+//    Christopher Lourenco, Jinhao Chen,
+//    Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 
 
 //------------------------------------------------------------------------------
@@ -1452,7 +1454,7 @@ SPEX_info SPEX_cholesky_solve
 //    The theory associated with this software can be found in the paper
 //    "Sparse Exact Rank-1 Cholesky Update/Downdate", J. Chen, T. A. Davis, C.
 //    Lourenco, and E. Moreno-Centeno, ACM Transactions on Mathematical
-//    Software.  To be submitted.
+//    Software. To be submitted.
 
 //    "Sparse Exact LU Rank-1 Modification", J. Chen, T. A. Davis, C. Lourenco,
 //    and E. Moreno-Centeno, ACM Transactions on Mathematical Software.

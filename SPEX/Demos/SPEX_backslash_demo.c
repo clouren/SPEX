@@ -1,15 +1,19 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_Backslash_demo: Test SPEX Left with WAMF
+// Demos/SPEX_Backslash_demo: example of SPEX_Blackslash
 //------------------------------------------------------------------------------
 
-// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy,
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved.
+// SPEX_Backslash: (c) 2021-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-/* Include the Integer-preserving Cholesky routines */
+
+/* A demo of SPEX_Backslash in C
+ */
+ 
+# include "demos.h"
 
 #define FREE_WORKSPACE                  \
 {                                       \
@@ -20,22 +24,6 @@
     SPEX_finalize();                    \
 }                                       \
 
-#define DEMO_OK(method)                 \
-{                                       \
-    ok = method ;                       \
-    if (ok != SPEX_OK)                  \
-    {                                   \
-        printf("\nError code: %ld",ok); \
-        FREE_WORKSPACE ;                \
-        return 0 ;                      \
-    }                                   \
-}
-
-
-# include "demos.h"
-
-/* A demo of SPEX_Backslash in C
- */
 
 int main( int argc, char *argv[] )
 {

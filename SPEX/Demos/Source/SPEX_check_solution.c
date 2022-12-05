@@ -1,3 +1,13 @@
+//------------------------------------------------------------------------------
+// SPEX_check_solution: checks whether a given vector exactly solves Ax=b
+//------------------------------------------------------------------------------
+
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
+
 
 #include "demos.h"
 

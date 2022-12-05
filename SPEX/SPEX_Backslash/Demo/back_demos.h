@@ -2,9 +2,8 @@
 // SPEX_Backslash/Demo/demos.h: #include file the demo programs
 //------------------------------------------------------------------------------
 
-// SPEX_Backslash: (c) 2021, Chris Lourenco, United States Naval Academy,
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved.
+// SPEX_Backslash: (c) 2021-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------

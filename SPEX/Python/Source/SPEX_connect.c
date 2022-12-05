@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/Python/spex_cholesky_connect.c: use SPEX_Chol in Python
+// SPEX/Python/spex_connect.c: use SPEX in Python
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, United States Naval Academy,
-// Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, Timothy A. Davis,
-// Texas A&M University. All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -13,13 +13,15 @@
 #include "spex_cholesky_internal.h"
 
 #define FREE_WORKSPACE                  \
+{                                       \
     SPEX_matrix_free(&A, option);       \
     SPEX_matrix_free(&b, option);       \
     SPEX_matrix_free(&x, option);       \
     SPEX_matrix_free(&A_in, option);    \
     SPEX_matrix_free(&b_in, option);    \
     SPEX_FREE(option);                  \
-    SPEX_finalize();
+    SPEX_finalize();                    \
+}
 
 
 SPEX_info spex_python

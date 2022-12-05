@@ -2,16 +2,19 @@
 // SPEX/MATLAB/SPEX_mex_get_matlab_optons.c: Get command options from user
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen, Lorena Mejia Domenzain, Jinhao
-// Chen, Erick Moreno-Centeno, Timothy A. Davis. All Rights Reserved.
+// SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_mex.h"
+/* Purpose: This function reads in the necessary information from the options
+ * struct for MATLAB.
+ */
 
-// Purpose: This function reads in the necessary information from the options
-// struct for MATLAB.
+
+#include "SPEX_mex.h"
 
 #define MATCH(s,t) (strcmp (s,t) == 0)
 #define SPEX_MIN(a,b) ( a < b ? a : b)

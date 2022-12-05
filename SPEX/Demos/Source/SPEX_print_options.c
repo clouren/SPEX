@@ -1,12 +1,19 @@
 //------------------------------------------------------------------------------
-// SPEX_print_options
+// SPEX_print_options: prints out the user specified/default options
 //------------------------------------------------------------------------------
 
-#include "demos.h"
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
+
+//------------------------------------------------------------------------------
 
 /* Purpose: This function prints out the user specified/default options.
  * this is primarily intended for debugging
  */
+
+#include "demos.h"
+
 
 void SPEX_print_options     // display specified/default options to user
 (

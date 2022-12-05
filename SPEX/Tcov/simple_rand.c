@@ -1,13 +1,13 @@
-// --------------------------------------------------------------------------
-// Tcov/simple_rand.c: a very simple random number generator
-// --------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// SPEX/Tcov/simple_rand.c: a very simple random number generator
+// ----------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2021, Chris Lourenco (US Naval Academy), Jinhao Chen, Lorena
-// Mejia Domenzain, Erick Moreno-Centeno, Timothy A. Davis, Texas A&M.  All
-// Rights Reserved.
+// SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-// --------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //  The POSIX.1-2001 example of rand, duplicated here so that the same sequence
 //  will be generated on different machines.  The purpose is not to generate
