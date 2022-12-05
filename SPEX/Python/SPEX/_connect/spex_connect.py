@@ -62,8 +62,10 @@ def spex_connect( A, b, order, charOut, algorithm ):
     ## Cast solution into correct type (string or double)
     ##--------------------------------------------------------------------------
     if charOut:
-        x = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_char_p))
-        x = castSol(x,n)
+        val = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_char_p))
+        x=[]
+    	for i in range(n):
+            x.append(val[i])
     else:
         #x = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_double))
         x=[]
@@ -72,25 +74,3 @@ def spex_connect( A, b, order, charOut, algorithm ):
             x.append(val[0]) ##this can also be changed to be a numpy array instead of a list
 
     return np.array(x)
-
-def castSol(val,n):
-    x=[]
-    for i in range(n):
-        x.append(val[i])
-    return x
-
-class SPEXerror(LookupError):
-    '''raise this when there's a lookup error for spex'''
-
-
-def determine_error(ok):
-    errorMessages={
-        1:"out of memory",
-        2:"the input matrix A is singular",
-        3:"one or more input arguments are incorrect",
-        4:"the input matrix is unsymmetric",
-        5:"the input matrix is not SPD",
-        6:"the algorithm is not compatible with the factorization",
-        7:"SPEX used without proper initialization",
-    }
-    return errorMessages.get(ok*(-1))
