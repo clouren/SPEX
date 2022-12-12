@@ -1,5 +1,6 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/demo.py: FIXME PUT SOMETHING
+# SPEX/Python/spex_demo.py: demo of 3 backslash functions with different input 
+#                           matrices
 #-------------------------------------------------------------------------------
 
 # SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
@@ -31,8 +32,7 @@ from scipy import stats
 ##--------------------------------------------------------------------------
 
 # Read in A from file and populate b
-# FIXME: do not use hard-wired filenames
-fname='../SPEX_Cholesky/ExampleMats/1438.mat.txt'
+fname=sys.argv[1]
 A=utils.spex_matrix_from_file(fname)
 b=np.ones(A.shape[0],dtype=np.float64)
 # Solve

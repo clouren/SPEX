@@ -1,6 +1,5 @@
 SPEX_LU: a Sparse Left-looking Integer-Preserving LU Factorization
 
-FIXME: fix all copyright dates
 Copyright (c) 2019-2021, Christopher Lourenco, JinHao Chen, Erick Moreno-
 Centeno, and Timothy A. Davis.
 
