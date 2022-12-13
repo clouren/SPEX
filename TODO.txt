@@ -1,24 +1,16 @@
 
-Demo: 
-    FIXME too many duplicated deom functions.  Use a single demo folder?
-        Or at least let Demos share code with other demos.
-    FIXME: demos should be renamed to be consistent.  There is no "example1".
-        Name them "spex_lu_demo1,2,3...", spex_update_demo1,2, perhaps.
-    FIXME: demos should not refer to default filenames.  Defaults should be
-        stdin if a single matrix, or no defaults if 2 files required.
-        Default file names assume the demo is run in a particular folder,
-        which is awkward with the new cmake structure.
-    FIXME: demo files have more than one function per file;
-        makes it hard to find, share with other demos, etc.  Split them.
+Context !!
 
-Lorena:
-    rename demos.c files to give them unique names
-    remove test files from SPEX_Update; just keep a few
-    ExampleMats: consolidate
+Demo: 
+
+    FIXME: rename SPEX_print_options, etc to spex_demo_print_options ...
+        spex_demo_*.c main programs
 
 later:
+    dig up LPnetlib test files (to add for SPEX 3.1.0, then clean up)
     remove Update folder for SPEX 3.0.0, add back for SPEX 3.1.0
-    remove SPEX_QR for SPEX 3.0.0.
+    remove SPEX_QR for SPEX 3.0.0., add back for SPEX 3.1.0
+    remove Update from v3.0.0 user guide, add back for SPEX 3.1.0
     SPEX_Update for v3.1.0: how to create vk or w
 
     user guide: state that SPEX_initialize cannot be called by multiple
@@ -27,13 +19,14 @@ later:
 
     see other FIXMEs in the code
 
-Erick:
-    licence folder
-    copyright dates (wait for Chris to ask USNA)
-        (Note from Tim: Chris says USNA is OK and copyright belongs to him)
+    SPEX_gmp_initialize SPEX_gmp_finalize -> not user callable
 
 in parallel:
     user guide polish (see Overleaf)
     add SPEX_gmp_initialize and SPEX_gmp_finalize to the user guide;
         see them in SPEX_gmp.[ch]
+
+Tim:
+    cmake for Python interface
+    cmake for Demos
 
