@@ -8,6 +8,7 @@
 
 //------------------------------------------------------------------------------
 
+// FIXME: rename SPEX_demos.h
 
 #include "SPEX.h"
 #include "spex_util_internal.h"

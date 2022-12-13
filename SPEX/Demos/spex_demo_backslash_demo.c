@@ -45,13 +45,13 @@ int main( int argc, char *argv[] )
 
     // Set default options
     SPEX_options option = NULL;
-    DEMO_OK(SPEX_create_default_options(&option));
+    OK (SPEX_create_default_options(&option));
 
     char *mat_name, *rhs_name;
     int64_t rat = 1;
 
     // Process the command line
-    DEMO_OK(SPEX_backslash_process_command_line(argc, argv, option,
+    OK (SPEX_backslash_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ int main( int argc, char *argv[] )
 
     // Note, there are a few matrices in BasisLIB that dont fit in double
     // Need to use the other tripread for those.
-    DEMO_OK(SPEX_tripread_double(&A, mat_file, option));
+    OK (SPEX_tripread_double(&A, mat_file, option));
     fclose(mat_file);
     n = A->n;
 
@@ -81,12 +81,12 @@ int main( int argc, char *argv[] )
         SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n,
                              false, true, option);
         for (int64_t k = 0; k < A->n; k++)
-            DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
+            OK (SPEX_mpz_set_ui(b->x.mpz[k],1));
 
     }
     else
     {
-        DEMO_OK(SPEX_read_dense(&b, rhs_file, option));
+        OK (SPEX_read_dense(&b, rhs_file, option));
         fclose(rhs_file);
     }
 
@@ -100,6 +100,14 @@ int main( int argc, char *argv[] )
     option->print_level = 0;
 
     DEMO_OK( SPEX_backslash(&x, SPEX_FP64, A, b, option));
+
+    // Chris:
+    TRY ( SPEX_backslash(&x, SPEX_FP64, A, b, context));
+    TRY ( SPEX_mpfr_fprintf(context, fp, "huh? %g\n", x))  ;
+
+    // consistent:
+    TRY ( SPEX_backslash(context, &x, SPEX_FP64, A, b));
+    TRY ( SPEX_mpfr_fprintf(context, fp, ":'-| %g\n", x))  ;
 
     clock_t end = clock();
 
