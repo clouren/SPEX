@@ -90,8 +90,7 @@ uninstall:
 # remove all files not in the distribution
 clean:
 	- $(RM) -rf build/* Config/*.tmp MATLAB/*.o MATLAB/*.mex*
-	- $(RM) -rf Python/*.so Python/*.o
-	( cd Tcov && $(MAKE) clean )
+	( cd SPEX/Tcov && $(MAKE) clean )
 
 purge: clean
 

@@ -36,8 +36,6 @@ mpfr_t *spex_create_mpfr_array
     for (int64_t i = 0; i < n; i++)
     {
         if (SPEX_mpfr_init2(x[i], prec) != SPEX_OK)
-
-        if (SPEX_MPFR_INIT2(context, x[i]) != SPEX_OK)
         {
             SPEX_MPFR_SET_NULL(x[i]);
             for (int64_t j = 0; j < i; j++)

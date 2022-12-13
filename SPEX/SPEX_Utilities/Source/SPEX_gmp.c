@@ -75,14 +75,14 @@
 //      compiled with thread-safety disabled.  See
 //      https://gmplib.org/manual/Reentrancy
 //      https://www.mpfr.org/mpfr-3.1.0/
-//*(2) SPEX is compiled with OpenMP (so it can use threadprivate storage).
+// (2) SPEX is compiled with OpenMP (so it can use threadprivate storage).
 // (3) only one user thread calls SPEX_initialize and SPEX_finalize.
-//*(4) OpenMP dynamic parallelism is disabled (omp_set_dynamic (false)).
+// (4) OpenMP dynamic parallelism is disabled (omp_set_dynamic (false)).
 //      This setting is the responsibility of the user application.
 // (5) Multiple user threads do not attempt to write to the same SPEX objects.
 //      If declared as an input-only variable, multiple user threads may
 //      access them in parallel.
-//*(6) Each user thread should call SPEX_gmp_finalize when it finishes.
+// (6) Each user thread should call SPEX_gmp_finalize when it finishes.
 
 jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
 int64_t spex_gmp_nmalloc = 0 ;  // number of malloc'd objects in spex_gmp_list
@@ -847,22 +847,6 @@ SPEX_info SPEX_mpz_set_q
 //------------------------------------------------------------------------------
 
 /* Purpose: Safely compute a = b*c */
-
-#define SPEX_MPZ_MUL(a,b,c) SPEX_CHECK (SPEX_mpz_mul (context, a, b, c))
-
-
-
-// future (our code):
-SPEX_MPZ_MUL(a, b, c)           (1)
-SPEX_MPZ_MUL (a, b, c)          (2)
-// now:
-SPEX_CHECK(SPEX_mpz_mul(a, b, c))
-
-// better (user code):
-DEMO_OK(SPEX_mpz_mul(a, b, c))
-DEMO_OK(SPEX_mpz_mul(context, a, b, c))
-// future (demo code):
-TRY(SPEX_mpz_mul(context, a, b, c))
 
 SPEX_info SPEX_mpz_mul
 (
@@ -1733,18 +1717,16 @@ SPEX_info SPEX_mpq_sgn
 
 SPEX_info SPEX_mpfr_init2
 (
-    SPEX_context context
-    mpfr_t x        // Floating point number to initialize
+    mpfr_t x,       // Floating point number to initialize
+    const uint64_t size    // # of bits in x
 )
 {
-    mpfr_prec_t size = context->prec ;
-
     // ensure the mpfr number is not too big
     if (size > MPFR_PREC_MAX/2) return (SPEX_PANIC) ;
 
     // initialize the mpfr number
     SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_init2 (x, size) ;
+    mpfr_init2 (x, (mpfr_prec_t) size) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
@@ -1757,13 +1739,13 @@ SPEX_info SPEX_mpfr_init2
 
 SPEX_info SPEX_mpfr_set
 (
-    SPEX_context context,
     mpfr_t x,
     const mpfr_t y,
+    const mpfr_rnd_t rnd
 )
 {
     SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_set (x, y, context->rnd) ;
+    mpfr_set (x, y, rnd) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;
 }
@@ -1776,7 +1758,6 @@ SPEX_info SPEX_mpfr_set
 
 SPEX_info SPEX_mpfr_set_d
 (
-    SPEX_context context,   // no no no, don't use context->rnd
     mpfr_t x,
     const double y,
     const mpfr_rnd_t rnd  // MPFR rounding scheme used
@@ -1875,7 +1856,7 @@ SPEX_info SPEX_mpfr_get_q
 (
     mpq_t x,
     const mpfr_t y,
-    const mpfr_rnd_t rnd  // MPFR rounding scheme used  FIXME : remove this
+    const mpfr_rnd_t rnd  // MPFR rounding scheme used
 )
 {
     SPEX_GMPQ_WRAPPER_START (x) ;

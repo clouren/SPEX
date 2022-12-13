@@ -1293,7 +1293,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //    "Exactly Solving Sparse Rational Linear Systems via Roundoff-Error-Free
 //    Cholesky Factorizations", C. Lourenco, E. Moreno-Centeno,
 //    SIAM J. Matrix Analysis and Applications.
-//     pp 609-638, vol 43, no 1, 2022.
+//    pp 609-638, vol 43, no 1, 2022.
 
 //    To use this code you must first download and install the GMP,
 //    MPFR, AMD, and COLAMD libraries. GMP and MPFR can be found at:
@@ -1318,7 +1318,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    Christopher Lourenco, Jinhao Chen,
+//    Christopher Lourenco, Jinhao Chen, 
 //    Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 
 
