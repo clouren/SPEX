@@ -29,12 +29,11 @@
 // SuiteSparse headers
 #include "SuiteSparse_config.h"
 
-// macros for MPZ/MPQ/MPFR struct
-#include "spex_gmp.h"
-
 // user-callable functions
 #include "SPEX.h"
 
+// SPEX interface to GMP and MPFR
+#include "spex_gmp.h"
 
 //------------------------------------------------------------------------------
 // debugging

@@ -1,5 +1,5 @@
 
-Pthread: thread local storage (in progress)
+Thread-safety:  Test with multiple user threads
 
 Tim: port from SuiteSparse SPEX 2.0.2
 
@@ -7,6 +7,14 @@ Demo:
 
     FIXME: rename SPEX_print_options, etc to spex_demo_print_options ...
         spex_demo_*.c main programs
+
+in parallel:
+    user guide polish (see Overleaf)
+
+Tim:
+    cmake for Python interface
+    cmake for top-level Demo folder
+
 
 later:
     dig up LPnetlib test files (to add for SPEX 3.1.0, then clean up)
@@ -20,11 +28,3 @@ later:
         later: copy in user guide from Overleaf
 
     see other FIXMEs in the code
-
-in parallel:
-    user guide polish (see Overleaf)
-
-Tim:
-    cmake for Python interface
-    cmake for Demos
-

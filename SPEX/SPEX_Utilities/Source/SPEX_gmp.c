@@ -82,17 +82,33 @@
 // (3) Multiple user threads may not write to the same SPEX objects.  If
 //      declared as an input-only variable, multiple user threads may access
 //      them in parallel.
+//
+// (4) SPEX is compiled with either POSIX pthreads or OpenMP.
+//      Note that Windows threads are not yet supported, so thread-safety on
+//      Windows requires the use of OpenMP.
 
-#ifdef SPEX_USE_PTHREADS
-// use pthreads thread local storage to hold the spex_gmp object
-#include <pthread.h>
-SUITESPARSE_PUBLIC
-pthread_key_t spex_gmp_pthread_key ;
-pthread_key_t spex_gmp_pthread_key ;
+#if defined ( SPEX_USE_PTHREADS )
+    // use POSIX pthreads thread local storage to hold the spex_gmp object
+    #include <pthread.h>
+    SUITESPARSE_PUBLIC
+    pthread_key_t spex_gmp_pthread_key ;
+    pthread_key_t spex_gmp_pthread_key ;
+#elif defined ( SPEX_USE_WIN32_THREADS )
+    //  Windows threads: not yet supported
+    #error "Windows threads not yet supported"
+#elif defined ( _OPENMP )
+    // Use OpenMP threadprivate storage to hold the spex_gmp object (if
+    // available).
+    #include <omp.h>
+    SUITESPARSE_PUBLIC
+    spex_gmp_t *spex_gmp_threadprivate ;
+    #pragma omp threadprivate (spex_gmp_threadprivate)
+    spex_gmp_t *spex_gmp_threadprivate = NULL ;
 #else
-SUITESPARSE_PUBLIC
-spex_gmp_t *spex_gmp_global ;
-spex_gmp_t *spex_gmp_global = NULL ;
+    // No POSIX pthreads and no OpenMP: SPEX is not thread-safe
+    SUITESPARSE_PUBLIC
+    spex_gmp_t *spex_gmp_global ;
+    spex_gmp_t *spex_gmp_global = NULL ;
 #endif
 
 //------------------------------------------------------------------------------
@@ -103,10 +119,17 @@ spex_gmp_t *spex_gmp_global = NULL ;
 
 int spex_gmp_initialize (void)
 {
-    #ifdef SPEX_USE_PTHREADS
+    #if defined ( SPEX_USE_PTHREADS )
         return (pthread_key_create (&spex_gmp_pthread_key,
             spex_gmp_destructor)) ;
+    #elif defined ( SPEX_USE_WIN32_THREADS )
+        // Windows threads: not yet supported
+    #elif defined ( _OPENMP )
+        // OpenMP: use a threadprivate spex_gmp object
+        spex_gmp_threadprivate = NULL ;
+        return (0) ;
     #else
+        // no thread-safety: use a single global spex_gmp object
         spex_gmp_global = NULL ;
         return (0) ;
     #endif
@@ -123,9 +146,15 @@ void spex_gmp_finalize (void)
     // get the spex_gmp object for this thread and free it
     spex_gmp_destructor (spex_gmp_getspecific ( )) ;
 
-    #ifdef SPEX_USE_PTHREADS
-        // delete the pthread key for all threads
+    #if defined ( SPEX_USE_PTHREADS )
+        // delete the POSIX pthread key for all threads
         pthread_key_delete (spex_gmp_pthread_key) ;
+    #elif defined ( SPEX_USE_WIN32_THREADS )
+        // Windows threads: not yet supported
+    #elif defined ( _OPENMP )
+        // OpenMP: nothing to do
+    #else
+        // no thread-safety: nothing to do
     #endif
 }
 
@@ -137,9 +166,17 @@ void spex_gmp_finalize (void)
 
 int spex_gmp_setspecific (spex_gmp_t *spex_gmp)
 {
-    #ifdef SPEX_USE_PTHREADS
+    #if defined ( SPEX_USE_PTHREADS )
+        // set POSIX pthread key for a thread-specific spex_gmp object
         return (pthread_setspecific (spex_gmp_pthread_key, spex_gmp)) ;
+    #elif defined ( SPEX_USE_WIN32_THREADS )
+        // Windows threads: not yet supported
+    #elif defined ( _OPENMP )
+        // OpenMP: save the spex_gmp object in a threadprivate variable
+        spex_gmp_threadprivate = spex_gmp ;
+        return (0) ;
     #else
+        // no thread-safety: save the spex_gmp object in a global variable 
         spex_gmp_global = spex_gmp ;
         return (0) ;
     #endif
@@ -154,9 +191,15 @@ int spex_gmp_setspecific (spex_gmp_t *spex_gmp)
 
 spex_gmp_t *spex_gmp_getspecific (void)
 {
-    #ifdef SPEX_USE_PTHREADS
+    #if defined ( SPEX_USE_PTHREADS )
         return ((spex_gmp_t *) pthread_getspecific (spex_gmp_pthread_key)) ;
+    #elif defined ( SPEX_USE_WIN32_THREADS )
+        // Windows threads: not yet supported
+    #elif defined ( _OPENMP )
+        // OpenMP: get the spex_gmp object from a threadprivate variable
+        return (spex_gmp_threadprivate) ;
     #else
+        // no thread-safety: get the spex_gmp object from a global variable
         return (spex_gmp_global) ;
     #endif
 }

@@ -12,7 +12,7 @@
 
 cmake_minimum_required ( VERSION 3.19 )
 
-set ( SPEX_DATE "Nov 12, 2022" )
+set ( SPEX_DATE "Dec 19, 2022" )
 set ( SPEX_VERSION_MAJOR 3 )
 set ( SPEX_VERSION_MINOR 0 )
 set ( SPEX_VERSION_SUB   0 )
@@ -46,20 +46,14 @@ project ( spex
 # find library dependencies
 #-------------------------------------------------------------------------------
 
-option ( NOPENMP "ON: do not use OpenMP.  OFF (default): use OpenMP" off )
-if ( NOPENMP )
-    # OpenMP has been disabled: SPEX will not be thread-safe
-    set ( OPENMP_FOUND false )
-else ( )
-    find_package ( OpenMP )
-endif ( )
-
-find_package ( SuiteSparse_config 6.0.0 REQUIRED )
-find_package ( COLAMD 3.0.0 REQUIRED )
-find_package ( AMD 3.0.0 REQUIRED )
+find_package ( SuiteSparse_config 6.0.2 REQUIRED )
+find_package ( COLAMD 3.0.2 REQUIRED )
+find_package ( AMD 3.0.2 REQUIRED )
 find_package ( GMP 6.1.2 REQUIRED )     # from SPEX/cmake_modules
 find_package ( MPFR 4.0.2 REQUIRED )    # from SPEX/cmake_modules
 
+# SPEX can use either Threads or OpenMP for thread-safety.  If neither is
+# found, SPEX can still be compiled but it will not be thread-safe.
 set ( THREADS_PREFER_PTHREAD_FLAG true )
 find_package ( Threads )
 if ( Threads_FOUND )
@@ -68,9 +62,27 @@ if ( Threads_FOUND )
     message ( STATUS "threads posix: ${CMAKE_USE_PTHREADS_INIT}" )
     if ( CMAKE_USE_PTHREADS_INIT )
         add_compile_definitions ( SPEX_USE_PTHREADS )
-    elseif ( CMAKE_USE_WIN32_THREADS_INIT )
-        add_compile_definitions ( SPEX_USE_WIN32_THREADS )
+#   elseif ( CMAKE_USE_WIN32_THREADS_INIT )
+#       # Windows threads are not yet supported
+#       add_compile_definitions ( SPEX_USE_WIN32_THREADS )
     endif ( )
+endif ( )
+
+option ( NOPENMP "ON: do not use OpenMP.  OFF (default): use OpenMP" off )
+if ( NOPENMP )
+    set ( OPENMP_FOUND false )
+else ( )
+    find_package ( OpenMP )
+endif ( )
+
+if ( CMAKE_USE_PTHREADS_INIT )
+    message ( STATUS "SPEX thread-safety: via POSIX pthreads" ) 
+# elseif ( CMAKE_USE_WIN32_THREADS_INIT )
+#   message ( STATUS "SPEX thread-safety: via Windows threads" ) 
+elseif ( OPENMP_FOUND )
+    message ( STATUS "SPEX thread-safety: via OpenMP" ) 
+else ( )
+    message ( WARNING "No threads or OpenMP found: SPEX will not be thread-safe" ) 
 endif ( )
 
 #-------------------------------------------------------------------------------
@@ -165,8 +177,6 @@ if ( OPENMP_FOUND )
     endif ( )
     set ( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS} " )
     include_directories ( ${OpenMP_C_INCLUDE_DIRS} )
-else ( )
-    message ( WARNING "OpenMP not enabled.  SPEX will not be thread-safe. " )
 endif ( )
 
 # AMD:
@@ -254,6 +264,8 @@ if ( DEMO )
     #---------------------------------------------------------------------------
     # Demo programs
     #---------------------------------------------------------------------------
+
+    # FIXME: use the single Demo folder, not SPEX_*/Demo
 
     include_directories ( SPEX_Backslash/Demo SPEX_Cholesky/Demo SPEX_LU/Demo
         SPEX_Update/Demo )

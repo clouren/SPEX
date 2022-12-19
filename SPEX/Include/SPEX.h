@@ -105,39 +105,6 @@
 #include "colamd.h"
 
 //------------------------------------------------------------------------------
-// SPEX Version
-//------------------------------------------------------------------------------
-
-// Current version of the code
-#define SPEX_DATE "Nov 12, 2022"
-#define SPEX_VERSION_STRING "3.0.0"
-#define SPEX_VERSION_MAJOR 3
-#define SPEX_VERSION_MINOR 
-#define SPEX_VERSION_SUB   0
-
-#define SPEX_VERSION_NUMBER(major,minor,sub) \
-    (((major)*1000ULL + (minor))*1000ULL + (sub))
-#define SPEX_VERSION \
-    SPEX_VERSION_NUMBER (SPEX_VERSION_MAJOR, \
-                         SPEX_VERSION_MINOR, \
-                         SPEX_VERSION_SUB)
-
-// Requirements: SPEX requires GMP 6.1.2 or later, and MPFR 4.0.2 or later.
-// NOTE that these version numbers are from the original source distributions.
-// It is NOT the "number 10" assigned to libgmp.so.10 in the Ubuntu linux
-// distro.
-
-// GMP v6.1.2 or later is required:
-#if __GNU_MP_RELEASE < 60102
-#error "GMP v6.1.2 or later is required."
-#endif
-
-// MPFR v4.0.2 or later is required:
-#if MPFR_VERSION < MPFR_VERSION_NUM(4,0,2)
-#error "MPFR v4.0.2 or later is required."
-#endif
-
-//------------------------------------------------------------------------------
 // Error codes
 //------------------------------------------------------------------------------
 
@@ -162,6 +129,48 @@ typedef enum
                                   // or other unrecoverable error
 }
 SPEX_info ;
+
+//------------------------------------------------------------------------------
+// SPEX Version
+//------------------------------------------------------------------------------
+
+// Current version of the code
+#define SPEX_DATE "Dec 19, 2022"
+#define SPEX_VERSION_STRING "3.0.0"
+#define SPEX_VERSION_MAJOR 3
+#define SPEX_VERSION_MINOR 0
+#define SPEX_VERSION_SUB   0
+
+#define SPEX_VERSION_NUMBER(major,minor,sub) \
+    (((major)*1000ULL + (minor))*1000ULL + (sub))
+#define SPEX_VERSION \
+    SPEX_VERSION_NUMBER (SPEX_VERSION_MAJOR, \
+                         SPEX_VERSION_MINOR, \
+                         SPEX_VERSION_SUB)
+
+SPEX_info SPEX_version
+(
+    // output
+    int version [3],            // SPEX major, minor, and sub version
+    char date [128],            // date of this version
+    char thread_safety [128]    // a string describing the mechanism used to
+                                // make SPEX thread-safe
+) ;
+
+// Requirements: SPEX requires GMP 6.1.2 or later, and MPFR 4.0.2 or later.
+// NOTE that these version numbers are from the original source distributions.
+// It is NOT the "number 10" assigned to libgmp.so.10 in the Ubuntu linux
+// distro.
+
+// GMP v6.1.2 or later is required:
+#if __GNU_MP_RELEASE < 60102
+#error "GMP v6.1.2 or later is required."
+#endif
+
+// MPFR v4.0.2 or later is required:
+#if MPFR_VERSION < MPFR_VERSION_NUM(4,0,2)
+#error "MPFR v4.0.2 or later is required."
+#endif
 
 //------------------------------------------------------------------------------
 // Pivot scheme codes

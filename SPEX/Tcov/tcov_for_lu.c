@@ -206,6 +206,17 @@ int main ( int argc, char *argv[])
     spex_gmp_free (NULL, 0) ;
 
     //--------------------------------------------------------------------------
+    // SPEX_version
+    //--------------------------------------------------------------------------
+
+    int version [3] ;
+    char date [128] ;
+    char thread_safety [128] ;
+    OK (SPEX_version (version, date, thread_safety)) ;
+    printf ("SPEX version %d.%d.%d (%s); thread-safety: %s\n",
+        version [0], version [1], version [2], date, thread_safety) ;
+
+    //--------------------------------------------------------------------------
     // run all trials
     //--------------------------------------------------------------------------
 

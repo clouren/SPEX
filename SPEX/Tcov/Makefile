@@ -9,6 +9,8 @@
 
 #-------------------------------------------------------------------------------
 
+# FIXME: use the right demos
+
 default: cov
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
@@ -33,6 +35,11 @@ SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 
 ################################################################################
 
+# select the thread-safety mechanism to test: none, openmp, or pthreads.
+# THREADS =
+# THREADS = -fopenmp
+  THREADS = -DSPEX_USE_PTHREADS -pthread
+
 # Linux test coverage (gcc is required for test coverage)
 CC = gcc
 CFLAGS = -g -fprofile-arcs -ftest-coverage \
@@ -46,9 +53,9 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 	-I../SPEX_Update/Source \
         -I../../SuiteSparse_config -I../../COLAMD/Include \
 	-I../../AMD/Include \
-        -DSPEX_GMP_LIST_INIT=2 -DSPEX_GMP_TEST_COVERAGE -DSPEX_USE_PTHREADS
+        -DSPEX_GMP_LIST_INIT=2 -DSPEX_GMP_TEST_COVERAGE $(THREADS)
 
-LDLIBS += -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig -lm -lpthread
+LDLIBS += -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig -lm
 
 # run all statement coverage tests, and then check for 100% coverage
 cov: runtests
@@ -67,6 +74,7 @@ $(OBJ_Tcov): tcov_utilities.h
 # link and compile each .c file in SPEX_Utilities/Source
 
 OBJ_Util = \
+    SPEX_version.o \
     SPEX_calloc.o \
     spex_cast_array.o \
     spex_cast_matrix.o \
