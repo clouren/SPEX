@@ -966,11 +966,7 @@ SPEX_info SPEX_determine_symmetry
 // allocated by that function.  The list is started fresh each time a GMP
 // function is called.  If any allocation fails, the NULL pointer is not
 // returned to GMP.  Instead, all allocated blocks in the list are freed,
-// and spex_gmp_allocate returns directly to the wrapper.
-
-SPEX_info SPEX_gmp_initialize (void) ;
-
-SPEX_info SPEX_gmp_finalize (void) ;
+// and the allocation routine passed to GMP returns directly to the wrapper.
 
 SPEX_info SPEX_mpfr_asprintf (char **str, const char *format, ... ) ;
 

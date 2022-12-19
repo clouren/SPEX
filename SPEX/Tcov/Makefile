@@ -46,22 +46,22 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 	-I../SPEX_Update/Source \
         -I../../SuiteSparse_config -I../../COLAMD/Include \
 	-I../../AMD/Include \
-        -DSPEX_GMP_LIST_INIT=2
+        -DSPEX_GMP_LIST_INIT=2 -DSPEX_GMP_TEST_COVERAGE -DSPEX_USE_PTHREADS
 
-LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig
+LDLIBS += -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig -lm -lpthread
 
 # run all statement coverage tests, and then check for 100% coverage
 cov: runtests
 	./covall
 
-all: test4llu SPEXLLU test4luu test4chol
+all: tcov_for_lu spexlu_demo tcov_for_update tcov_for_cholesky
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
 
-OBJ_Tcov = tcov_malloc_test.o
+OBJ_Tcov = tcov_utilities.o
 
-$(OBJ_Tcov): tcov_malloc_test.h
+$(OBJ_Tcov): tcov_utilities.h
 
 #-------------------------------------------------------------------------------
 # link and compile each .c file in SPEX_Utilities/Source
@@ -230,16 +230,16 @@ chol_demos.c:
 
 #-------------------------------------------------------------------------------
 
-test4llu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
+tcov_for_lu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
 	$(CC) $(LDFLAGS) tcov_for_lu.c $(CFLAGS) -o tcov_for_lu $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
-SPEXLLU: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spexlu_demo.c lu_demos.c ../SPEX_LU/Demo/lu_demos.h
+spexlu_demo: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spexlu_demo.c lu_demos.c ../SPEX_LU/Demo/lu_demos.h
 	$(CC) $(LDFLAGS) spexlu_demo.c lu_demos.c $(CFLAGS) -o spexlu_demo $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
-test4luu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_update.c simple_rand.c simple_rand.h
+tcov_for_update: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_update.c simple_rand.c simple_rand.h
 	$(CC) $(LDFLAGS) tcov_for_update.c simple_rand.c $(CFLAGS) -o tcov_for_update $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
-test4chol: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_cholesky.c simple_rand.c simple_rand.h chol_demos.c
+tcov_for_cholesky: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_cholesky.c simple_rand.c simple_rand.h chol_demos.c
 	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_cholesky.c simple_rand.c chol_demos.c -o tcov_for_cholesky $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) $(LDLIBS)
 
 #-------------------------------------------------------------------------------
@@ -263,13 +263,14 @@ runtests4luu: all
 	- ./tcov_for_update 1 6 > test_for_update3.out
 
 # only run test for SPEX_Cholesky
-runtests4chol: test4chol
+runtests4chol: all
 	- ./tcov_for_cholesky ../ExampleMats/872.mat.txt > test_for_cholesky.out
 
 #-------------------------------------------------------------------------------
 
 # To run with valgrind:
-V = valgrind #--leak-check=full
+# V = valgrind
+V = valgrind --leak-check=full --show-leak-kinds=all
 
 # run all statement coverage tests but with valgrind
 vtests: vtests4llu vtests4luu vtests4chol
@@ -290,15 +291,15 @@ vtests4luu: all
 	- $(V) ./tcov_for_update 1 6 > test_for_update3.out
 
 # run test for SPEX_Cholesky with valgrind
-vtests4chol: test4chol
-	- $(V) --leak-check=full ./tcov_for_cholesky ../ExampleMats/872.mat.txt > test_for_cholesky.out
+vtests4chol: all
+	- $(V) ./tcov_for_cholesky ../ExampleMats/872.mat.txt > test_for_cholesky.out
 
 #-------------------------------------------------------------------------------
 
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_for_lu tcov_for_update spexlu_demo *.out *.a cov.sort out Mats4Tcov/SPEX_Update/mat.txt
+	- $(RM) tcov_for_lu tcov_for_update spexlu_demo *.out *.a out Mats4Tcov/SPEX_Update/mat.txt
 	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c lu_demos.c
 	- $(RM) -r tcov_for_cholesky chol_demos.c
 

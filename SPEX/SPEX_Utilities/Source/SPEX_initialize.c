@@ -17,8 +17,8 @@
 //------------------------------------------------------------------------------
 
 // a global variable, but only accessible within this file.
-extern bool spex_initialize_has_been_called ;
-
+SUITESPARSE_PUBLIC
+bool spex_initialize_has_been_called ;
 bool spex_initialize_has_been_called = false ;
 
 bool spex_initialized ( void )
@@ -42,8 +42,16 @@ SPEX_info SPEX_initialize ( void )
     // SPEX requires GMP to support bit counts that are 64-bit integers
     if (sizeof (mp_bitcnt_t) < sizeof (uint64_t)) return (SPEX_PANIC) ;
 
-    mp_set_memory_functions (spex_gmp_allocate, spex_gmp_reallocate,
-        spex_gmp_free) ;
+    // initialize the SPEX GMP interface
+    if (spex_gmp_initialize ( ) != 0) return (SPEX_OUT_OF_MEMORY) ;
+
+    // tell GMP and MPFR which memory allocation functions to use
+    mp_set_memory_functions
+    (
+        spex_gmp_allocate,      // malloc function
+        spex_gmp_reallocate,    // realloc function
+        spex_gmp_free           // free function
+    ) ;
 
     spex_set_initialized (true) ;
     return (SPEX_OK) ;

@@ -128,7 +128,7 @@ int main (int argc, char *argv[])
     {
         double lb = glp_get_col_lb(LP, j+1);
         double ub = glp_get_col_ub(LP, j+1);
-        assert (lb == 0);
+        ASSERT (lb == 0);
         int col_stat = glp_get_col_stat(LP, j+1);
         double xj   = glp_get_col_prim(LP, j+1);
         if (glp_get_col_bind(LP, j+1) == 0 && xj != 0)
@@ -136,7 +136,7 @@ int main (int argc, char *argv[])
             printf("%d: x[%ld]=%lf is nonbasic, bnd=[%lf %lf]"
                 " state=%d\n",
                 illegal_count++, j,xj,lb,ub, col_stat);
-            assert(col_stat == GLP_NU);
+            ASSERT (col_stat == GLP_NU);
 
             // update LP in glpk
             int colj_nz = glp_get_mat_col(LP, j+1, col_ind, col_val);
@@ -189,7 +189,7 @@ int main (int argc, char *argv[])
             mpq_get_den(tmpz, Prob_A->scale);
             int r;
             OK(SPEX_mpz_cmp_ui(&r, tmpz, 1));
-            assert(r == 0);// denominator must be 1
+            ASSERT (r == 0);// denominator must be 1
             if (A_DCSC->v[i]->nzmax < 1)
             {
                 OK(SPEX_vector_realloc(A_DCSC->v[i], 1, option));

@@ -20,7 +20,38 @@
 #include "SPEX.h"
 
 //------------------------------------------------------------------------------
-//-------------------------functions for GMP wrapper----------------------------
+// spex_gmp environment
+//------------------------------------------------------------------------------
+
+#include <setjmp.h>
+
+typedef struct
+{
+    jmp_buf environment ;   // for setjmp and longjmp
+    int64_t nmalloc ;       // # of malloc'd objects in spex_gmp->list
+    int64_t nlist ;         // size of the spex_gmp->list
+    void **list ;           // list of malloc'd objects
+    mpz_t  *mpz_archive  ;  // current mpz object
+    mpz_t  *mpz_archive2 ;  // current second mpz object
+    mpq_t  *mpq_archive  ;  // current mpq object
+    mpfr_t *mpfr_archive ;  // current mpfr object
+}
+spex_gmp_t ;
+
+#ifndef SPEX_GMP_LIST_INIT
+// Initial size of the spex_gmp->list.  A size of 32 ensures that the list
+// never needs to be increased in size (at least in practice; it is possible
+// that GMP or MPFR could exceed this size).  The test coverage suite in
+// SPEX/Tcov reduces this initial size to exercise the code, in
+// SPEX/Tcov/Makefile.
+#define SPEX_GMP_LIST_INIT 32
+#endif
+
+// for debugging only:
+SUITESPARSE_PUBLIC int64_t spex_gmp_ntrials ;
+
+//------------------------------------------------------------------------------
+// SPEX GMP functions
 //------------------------------------------------------------------------------
 
 // uncomment this to print memory debugging info
@@ -30,12 +61,9 @@
 void spex_gmp_dump ( void ) ;
 #endif
 
-#ifndef SPEX_GMP_LIST_INIT
-// A size of 32 ensures that the list never needs to be increased in size.
-// The test coverage suite in SPEX/Tcov reduces this initial size to
-// exercise the code, in SPEX/Tcov/Makefile.
-#define SPEX_GMP_LIST_INIT 32
-#endif
+int spex_gmp_initialize (void) ;
+
+void spex_gmp_finalize (void) ;
 
 void *spex_gmp_allocate (size_t size) ;
 
@@ -43,7 +71,17 @@ void spex_gmp_free (void *p, size_t size) ;
 
 void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
 
-void spex_gmp_failure (int status) ;
+SPEX_info spex_gmp_failure (int status) ;
+
+spex_gmp_t *spex_gmp_constructor (void) ;
+
+void spex_gmp_destructor (void *p) ;
+
+spex_gmp_t *spex_gmp_get (void) ;
+
+spex_gmp_t *spex_gmp_getspecific (void) ;
+
+int spex_gmp_setspecific (spex_gmp_t *spex_gmp) ;
 
 //------------------------------------------------------------------------------
 // Field access macros for MPZ/MPQ/MPFR struct
@@ -137,103 +175,79 @@ void spex_gmp_failure (int status) ;
 // GMP/MPFR wrapper macros
 //------------------------------------------------------------------------------
 
-#define SPEX_GMP_WRAPPER_START                                          \
-{                                                                       \
-    spex_gmp_nmalloc = 0 ;                                              \
+#define SPEX_GMP_WRAPPER_START_HELPER(z1,z2,q,fr)                       \
+    spex_gmp_t *spex_gmp = spex_gmp_get ( ) ;                           \
+    if (spex_gmp == NULL) return (SPEX_OUT_OF_MEMORY) ;                 \
+    spex_gmp->mpz_archive  = (mpz_t  *) z1 ;                            \
+    spex_gmp->mpz_archive2 = (mpz_t  *) z2 ;                            \
+    spex_gmp->mpq_archive  = (mpq_t  *) q  ;                            \
+    spex_gmp->mpfr_archive = (mpfr_t *) fr ;                            \
     /* setjmp returns 0 if called from here, or > 0 if from longjmp */  \
-    int spex_gmp_status = setjmp (spex_gmp_environment) ;               \
-    if (spex_gmp_status != 0)                                           \
+    int status = setjmp (spex_gmp->environment) ;                       \
+    if (status != 0)                                                    \
     {                                                                   \
         /* failure from longjmp */                                      \
-        spex_gmp_failure (spex_gmp_status) ;                            \
-        return (SPEX_OUT_OF_MEMORY) ;                                   \
-    }                                                                   \
-}
+        return (spex_gmp_failure (status)) ;                            \
+    }
 
-#define SPEX_GMPZ_WRAPPER_START(x)                                      \
-{                                                                       \
-    spex_gmpz_archive = (mpz_t *) x;                                    \
-    spex_gmpz_archive2 = NULL;                                          \
-    spex_gmpq_archive = NULL;                                           \
-    spex_gmpfr_archive = NULL;                                          \
-    SPEX_GMP_WRAPPER_START;                                             \
-}
+#define SPEX_GMP_WRAPPER_START                                          \
+    SPEX_GMP_WRAPPER_START_HELPER (NULL, NULL, NULL, NULL) ;
 
-#define SPEX_GMPZ_WRAPPER_START2(x,y)                                   \
-{                                                                       \
-    spex_gmpz_archive  = (mpz_t *) x;                                   \
-    spex_gmpz_archive2 = (mpz_t *) y;                                   \
-    spex_gmpq_archive = NULL;                                           \
-    spex_gmpfr_archive = NULL;                                          \
-    SPEX_GMP_WRAPPER_START;                                             \
-}
+#define SPEX_GMPZ_WRAPPER_START(z1)                                     \
+    SPEX_GMP_WRAPPER_START_HELPER (z1, NULL, NULL, NULL) ;
 
-#define SPEX_GMPQ_WRAPPER_START(x)                                      \
-{                                                                       \
-    spex_gmpz_archive = NULL;                                           \
-    spex_gmpz_archive2 = NULL;                                          \
-    spex_gmpq_archive =(mpq_t *) x;                                     \
-    spex_gmpfr_archive = NULL;                                          \
-    SPEX_GMP_WRAPPER_START;                                             \
-}
+#define SPEX_GMPZ_WRAPPER_START2(z1,z2)                                 \
+    SPEX_GMP_WRAPPER_START_HELPER (z1, z2, NULL, NULL) ;
 
-#define SPEX_GMPFR_WRAPPER_START(x)                                     \
-{                                                                       \
-    spex_gmpz_archive = NULL;                                           \
-    spex_gmpz_archive2 = NULL;                                          \
-    spex_gmpq_archive = NULL;                                           \
-    spex_gmpfr_archive = (mpfr_t *) x;                                  \
-    SPEX_GMP_WRAPPER_START;                                             \
-}
+#define SPEX_GMPQ_WRAPPER_START(q)                                      \
+    SPEX_GMP_WRAPPER_START_HELPER (NULL, NULL, q, NULL) ;
+
+#define SPEX_GMPFR_WRAPPER_START(fr)                                    \
+    SPEX_GMP_WRAPPER_START_HELPER (NULL, NULL, NULL, fr) ;
 
 #define SPEX_GMP_WRAPPER_FINISH                                         \
-{                                                                       \
-    /* clear (but do not free) the list.  The caller must ensure */     \
-    /* the result is eventually freed. */                               \
-    spex_gmpz_archive = NULL ;                                          \
-    spex_gmpz_archive2 = NULL;                                          \
-    spex_gmpq_archive = NULL ;                                          \
-    spex_gmpfr_archive = NULL ;                                         \
-    spex_gmp_nmalloc = 0 ;                                              \
-}
+    spex_gmp->nmalloc = 0 ;                                             \
+    spex_gmp->mpz_archive  = NULL ;                                     \
+    spex_gmp->mpz_archive2 = NULL ;                                     \
+    spex_gmp->mpq_archive  = NULL ;                                     \
+    spex_gmp->mpfr_archive = NULL ;
 
 // free a block of memory, and also remove it from the archive if it's there
 #define SPEX_GMP_SAFE_FREE(p)                                           \
 {                                                                       \
-    if (spex_gmpz_archive != NULL)                                      \
+    if (spex_gmp->mpz_archive != NULL)                                  \
     {                                                                   \
-        if (p == SPEX_MPZ_PTR(*spex_gmpz_archive))                      \
+        if (p == SPEX_MPZ_PTR(*(spex_gmp->mpz_archive)))                \
         {                                                               \
-            SPEX_MPZ_PTR(*spex_gmpz_archive) = NULL ;                   \
+            SPEX_MPZ_PTR(*(spex_gmp->mpz_archive)) = NULL ;             \
         }                                                               \
     }                                                                   \
-    else if (spex_gmpz_archive2 != NULL)                                \
+    else if (spex_gmp->mpz_archive2 != NULL)                            \
     {                                                                   \
-        if (p == SPEX_MPZ_PTR(*spex_gmpz_archive2))                     \
+        if (p == SPEX_MPZ_PTR(*spex_gmp->mpz_archive2))                 \
         {                                                               \
-            SPEX_MPZ_PTR(*spex_gmpz_archive2) = NULL ;                  \
+            SPEX_MPZ_PTR(*spex_gmp->mpz_archive2) = NULL ;              \
         }                                                               \
     }                                                                   \
-    else if (spex_gmpq_archive != NULL)                                 \
+    else if (spex_gmp->mpq_archive != NULL)                             \
     {                                                                   \
-        if (p == SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmpq_archive)))        \
+        if (p == SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmp->mpq_archive)))    \
         {                                                               \
-            SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmpq_archive)) = NULL ;     \
+            SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmp->mpq_archive)) = NULL ; \
         }                                                               \
-        if (p == SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmpq_archive)))        \
+        if (p == SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmp->mpq_archive)))    \
         {                                                               \
-            SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmpq_archive)) = NULL ;     \
+            SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmp->mpq_archive)) = NULL ; \
         }                                                               \
     }                                                                   \
-    else if (spex_gmpfr_archive != NULL)                                \
+    else if (spex_gmp->mpfr_archive != NULL)                            \
     {                                                                   \
-        if (p == SPEX_MPFR_REAL_PTR(*spex_gmpfr_archive))               \
+        if (p == SPEX_MPFR_REAL_PTR(*spex_gmp->mpfr_archive))           \
         {                                                               \
-            SPEX_MPFR_MANT(*spex_gmpfr_archive) = NULL ;                \
+            SPEX_MPFR_MANT(*spex_gmp->mpfr_archive) = NULL ;            \
         }                                                               \
     }                                                                   \
     SPEX_FREE (p) ;                                                     \
 }
-
 
 #endif

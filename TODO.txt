@@ -1,5 +1,6 @@
 
-Pthread: thread local storage
+Pthread: thread local storage (in progress)
+
 Tim: port from SuiteSparse SPEX 2.0.2
 
 Demo: 
@@ -20,12 +21,8 @@ later:
 
     see other FIXMEs in the code
 
-    SPEX_gmp_initialize SPEX_gmp_finalize -> not user callable
-
 in parallel:
     user guide polish (see Overleaf)
-    add SPEX_gmp_initialize and SPEX_gmp_finalize to the user guide;
-        see them in SPEX_gmp.[ch]
 
 Tim:
     cmake for Python interface

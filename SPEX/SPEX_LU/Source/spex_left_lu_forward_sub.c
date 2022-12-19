@@ -47,7 +47,7 @@ SPEX_info spex_left_lu_forward_sub
     int sgn ;
 
     // Build the history matrix
-    SPEX_matrix h;
+    SPEX_matrix h = NULL ;
     SPEX_CHECK (SPEX_matrix_allocate(&h, SPEX_DENSE, SPEX_INT64, x->m, x->n,
         x->nzmax, false, true, NULL));
 

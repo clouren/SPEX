@@ -93,7 +93,7 @@
 
 #define MY_PR(...) { if (pr >= 1) printf(__VA_ARGS__); }
 
-#include "tcov_malloc_test.h"
+#include "tcov_utilities.h"
 #include "simple_rand.h"
 
 #define MAX_MALLOC_COUNT 1000000
@@ -102,9 +102,8 @@ int64_t Aold[16] = {3, 5, 6, 7, 11, 2, -7, 10, 8, 3, -2, -2, 7, 5, 1, -6};//CSC
 int64_t Lold[10] = {3, 5, 6, 7, -49, -87, -47, -17, 527, 884};// CSC
 int64_t Uold[10] = {3, 11, 8, 7, -49, -31, -20, -17, 57,884};//CSR
 int64_t Ak_new[4]= {1,4,7,11}; // new column
-#include <assert.h>
 
-int main( int argc, char *argv[])
+int main ( int argc, char *argv[])
 {
     SPEX_info info;
     int sgn;
@@ -1149,7 +1148,7 @@ int main( int argc, char *argv[])
         }
     }
 
-    printf("test finished\n");
+    printf ("%s: all tests passed\n\n", __FILE__) ;
     fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
     return 0;
 }

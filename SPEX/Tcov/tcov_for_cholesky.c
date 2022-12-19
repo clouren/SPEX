@@ -9,35 +9,12 @@
 
 //-----------------------------------------------------------------------------
 
-
 /* This program will exactly solve the sparse linear system Ax = b by performing
  * the SPEX Cholesky factorization.
  */
 
-#include "tcov_malloc_test.h"
+#include "tcov_utilities.h"
 #include "chol_demos.h"
-
-#include <float.h>
-#include <assert.h>
-
-//------------------------------------------------------------------------------
-// OK: call a method and assert that it succeeds
-//------------------------------------------------------------------------------
-
-// The method must return a SPEX_info value.
-
-#define OK(method)                              \
-{                                               \
-    info = (method) ;                           \
-    if (info != SPEX_OK)                        \
-    {                                           \
-        printf ("SPEX Cholesky test failure, line %d, info %d\n", \
-            __LINE__, info) ;                   \
-        fprintf (stderr, "SPEX Cholesky test failure, line %d, info %d\n", \
-            __LINE__, info) ;                   \
-        abort ( ) ;                             \
-    }                                           \
-}
 
 //------------------------------------------------------------------------------
 // BRUTAL: test a method with debug malloc, until it succeeds
@@ -58,7 +35,7 @@
         done = (method) ;                                                   \
     }                                                                       \
     OK (done ? SPEX_OK : SPEX_PANIC) ;                                      \
-    if (done) printf ("\nCholesky trials %ld: all tests passed\n", trial) ; \
+    if (done) printf ("\nCholesky trials %ld: tests passed\n", trial) ;     \
 }
 
 //------------------------------------------------------------------------------
@@ -185,14 +162,14 @@ int main (int argc, char *argv [])
 
     SPEX_matrix A = NULL, b = NULL, x = NULL ;
     SPEX_symbolic_analysis S = NULL ;
-    SPEX_factorization F = NULL ;
+    SPEX_factorization F = NULL, F2 = NULL ;
     SPEX_options option = NULL ;
     bool pretend_to_fail = false ;
 
     if (argc < 2)
     {
         printf ("usage: tcov_for_cholesky matrixfilename\n") ;
-        abort ( ) ;
+        TEST_ABORT (SPEX_INCORRECT_INPUT) ;
     }
 
     SPEX_info info ;
@@ -421,23 +398,21 @@ int main (int argc, char *argv [])
     BRUTAL (spex_test_chol_afs (A, b, option)) ;
 
     //--------------------------------------------------------------------------
-    // free the test problem and finalize SPEX
-    //--------------------------------------------------------------------------
-
-    SPEX_FREE_ALL ;
-    OK (SPEX_finalize ( )) ;
-
-    //--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------
 
     // SPEX not initialized
+    spex_set_initialized (false) ;
+    TEST_CHECK_FAILURE (SPEX_cholesky_factorize (&F2, A, S, option), SPEX_PANIC) ;
     TEST_CHECK_FAILURE (SPEX_cholesky_analyze (NULL, NULL, NULL), SPEX_PANIC) ;
     TEST_CHECK_FAILURE (SPEX_cholesky_solve (NULL, NULL, NULL, NULL), SPEX_PANIC) ;
     TEST_CHECK_FAILURE (SPEX_cholesky_backslash (NULL, SPEX_MPQ, NULL, NULL, NULL),
         SPEX_PANIC) ;
+    spex_set_initialized (true) ;
+    SPEX_FREE_ALL ;
 
-    printf ("\nSPEX_cholesky: all tests passed\n") ;
+    printf ("%s: all tests passed\n\n", __FILE__) ;
     fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
+    return 0;
 }
 

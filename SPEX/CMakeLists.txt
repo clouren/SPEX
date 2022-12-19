@@ -60,6 +60,19 @@ find_package ( AMD 3.0.0 REQUIRED )
 find_package ( GMP 6.1.2 REQUIRED )     # from SPEX/cmake_modules
 find_package ( MPFR 4.0.2 REQUIRED )    # from SPEX/cmake_modules
 
+set ( THREADS_PREFER_PTHREAD_FLAG true )
+find_package ( Threads )
+if ( Threads_FOUND )
+    message ( STATUS "threads lib:   ${CMAKE_THREAD_LIBS_INIT}" )
+    message ( STATUS "threads win32: ${CMAKE_USE_WIN32_THREADS_INIT}" )
+    message ( STATUS "threads posix: ${CMAKE_USE_PTHREADS_INIT}" )
+    if ( CMAKE_USE_PTHREADS_INIT )
+        add_compile_definitions ( SPEX_USE_PTHREADS )
+    elseif ( CMAKE_USE_WIN32_THREADS_INIT )
+        add_compile_definitions ( SPEX_USE_WIN32_THREADS )
+    endif ( )
+endif ( )
+
 #-------------------------------------------------------------------------------
 # configure files
 #-------------------------------------------------------------------------------
@@ -131,6 +144,14 @@ endif ( )
 target_link_libraries ( spex PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
 if ( NOT NSTATIC )
 target_link_libraries ( spex_static PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
+endif ( )
+
+# Threads
+if ( Threads_FOUND )
+    target_link_libraries ( spex PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
+    if ( NOT NSTATIC )
+    target_link_libraries ( spex_static PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
+    endif ( )
 endif ( )
 
 # OpenMP:

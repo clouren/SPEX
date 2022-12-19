@@ -18,7 +18,7 @@
     ok = method ;                               \
     if (ok != SPEX_OK)                          \
     {                                           \
-        SPEX_determine_error(ok);      \
+        SPEX_determine_error (ok) ;             \
         FREE_WORKSPACE ;                        \
         return 0 ;                              \
     }                                           \

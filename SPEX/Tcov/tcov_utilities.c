@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// SPEX/Tcov/tcov_malloc_test.c: malloc test coverage
+// SPEX/Tcov/tcov_utilities.c: utility functions for tcov tests
 // ----------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
@@ -9,8 +9,11 @@
 
 //-----------------------------------------------------------------------------
 
+#include "tcov_utilities.h"
 
-#include "tcov_malloc_test.h"
+//-----------------------------------------------------------------------------
+// tcov malloc/calloc/realloc/free wrappers
+//-----------------------------------------------------------------------------
 
 int64_t malloc_count = INT64_MAX ;
 
@@ -26,7 +29,6 @@ void *tcov_malloc
     if (--malloc_count < 0)
     {
         /* pretend to fail */
-//      printf("malloc pretend to fail\n");
         return (NULL) ;
     }
     return (malloc (size)) ;
@@ -42,7 +44,6 @@ void *tcov_calloc
     if (--malloc_count < 0)
     {
         /* pretend to fail */
-//      printf ("calloc pretend to fail\n");
         return (NULL) ;
     }
     // ensure at least one byte is calloc'd
@@ -59,7 +60,6 @@ void *tcov_realloc
     if (--malloc_count < 0)
     {
         /* pretend to fail */
-//      printf("realloc pretend to fail\n");
         return (NULL);
     }
     return (realloc (p, new_size)) ;
@@ -76,7 +76,9 @@ void tcov_free
     free (p) ;
 }
 
-extern jmp_buf spex_gmp_environment ;  // for setjmp and longjmp
+//-----------------------------------------------------------------------------
+// test for spex_gmp_realloc
+//-----------------------------------------------------------------------------
 
 int spex_gmp_realloc_test
 (
@@ -86,8 +88,13 @@ int spex_gmp_realloc_test
     size_t new_size
 )
 {
-    int spex_gmp_status = setjmp (spex_gmp_environment);
-    if (spex_gmp_status != 0)
+    TEST_ASSERT (spex_initialized ( )) ;
+
+    // get the spex_gmp object for this thread
+    spex_gmp_t *spex_gmp = spex_gmp_getspecific ( ) ;
+    TEST_ASSERT (spex_gmp != NULL) ;
+    int status = setjmp (spex_gmp->environment);
+    if (status != 0)
     {
         return SPEX_OUT_OF_MEMORY;
     }
@@ -105,7 +112,7 @@ int spex_gmp_realloc_test
  * within SPEX are gauranteed to be exact.
  */
 
-#undef SPEX_FREE_ALL
+#undef  SPEX_FREE_ALL
 #define SPEX_FREE_ALL                       \
     SPEX_MPQ_CLEAR(temp);                   \
     SPEX_MPQ_CLEAR(scale);                  \
@@ -113,7 +120,9 @@ int spex_gmp_realloc_test
 
 SPEX_info spex_check_solution
 (
-    bool *Is_correct,             // if the solution is correct
+    // output
+    bool *Is_correct,            // true, if the solution is correct
+    // input
     const SPEX_matrix A,         // Input matrix of CSC MPZ
     const SPEX_matrix x,         // Solution vectors
     const SPEX_matrix b,         // Right hand side vectors
@@ -144,7 +153,6 @@ SPEX_info spex_check_solution
     SPEX_CHECK(SPEX_mpq_init(scale));
     SPEX_CHECK (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
         b->nzmax, false, true, option));
-
 
     //--------------------------------------------------------------------------
     // perform SPEX_mpq_addmul in loops to compute b2 = A'*x, where A' is the

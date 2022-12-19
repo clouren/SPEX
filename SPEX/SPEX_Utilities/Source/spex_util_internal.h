@@ -24,7 +24,6 @@
 //------------------------------------------------------------------------------
 
 // Standard C libraries
-#include <setjmp.h>
 #include <stdarg.h>
 
 // SuiteSparse headers
