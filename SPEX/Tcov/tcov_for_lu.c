@@ -307,40 +307,6 @@ int main ( int argc, char *argv[])
                 TEST_CHECK(SPEX_matrix_allocate(&Ax, SPEX_CSC,
                     (SPEX_type) Ab_type, n, n, nz, false, true, option));
 
-#if 0
-if (!pretend_to_fail)
-{
-    printf ("B is at %p\n", B) ;
-    info = (SPEX_matrix_allocate(&Ax, SPEX_CSC, // FIXME: valgrind error here
-        (SPEX_type) Ab_type, n, n, nz, false, true, option));
-    printf ("B is here %p\n", B) ;
-    if (info == SPEX_OUT_OF_MEMORY)
-    {
-        printf ("pretend out of mem at %s %d\n", __FILE__, __LINE__) ;
-        {
-            printf (
-                "free all: A %p b %p B %p Ax %p "
-                "sol %p sol_doub %p S %p option %p\n",
-                A, b, B, Ax, sol, sol_doub, S, option) ;
-            OK (SPEX_matrix_free(&A, option)) ;
-            OK (SPEX_matrix_free(&b, option)); 
-            OK (SPEX_matrix_free(&B, option));  // Free B! valgrind error
-            OK (SPEX_matrix_free(&Ax, option));
-            OK (SPEX_matrix_free(&sol, option));
-            OK (SPEX_matrix_free(&sol_doub, option)); 
-            OK (SPEX_symbolic_analysis_free(&S, option)); 
-            SPEX_FREE(option);
-            OK (SPEX_finalize()) ;
-        }
-        pretend_to_fail = true ;
-    }
-    else if (info != SPEX_OK)
-    {
-        TEST_ABORT (info) ;
-    }
-}
-#endif
-
                 if (pretend_to_fail) continue ;
 
                 // fill Ax->i and Ax->p
