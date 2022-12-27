@@ -1,0 +1,20 @@
+FIXME, 2023: version 3.0.0
+
+    * major change to the API:
+    * FIXME: describe all changes since SPEX 2.0.2
+
+Dec 9, 2022: version 2.0.2
+
+    * minor change to build system
+
+Nov 12, 2022: version 2.0.0
+
+    * using CMake build system
+    * SuiteSparse_long: replaced with int64_t
+    * SPEX.h: single include file
+    * SPEX_VERSION: single set of version and date macros
+
+July 7, 2022: version 1.1.5
+
+    * version published in ACM TOMS
+

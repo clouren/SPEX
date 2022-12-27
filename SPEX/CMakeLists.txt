@@ -12,7 +12,7 @@
 
 cmake_minimum_required ( VERSION 3.19 )
 
-set ( SPEX_DATE "Dec 19, 2022" )
+set ( SPEX_DATE "Dec 27, 2022" )
 set ( SPEX_VERSION_MAJOR 3 )
 set ( SPEX_VERSION_MINOR 0 )
 set ( SPEX_VERSION_SUB   0 )
@@ -155,14 +155,14 @@ endif ( )
 # suitesparseconfig:
 target_link_libraries ( spex PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
 if ( NOT NSTATIC )
-target_link_libraries ( spex_static PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
+    target_link_libraries ( spex_static PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
 endif ( )
 
 # Threads
 if ( Threads_FOUND )
     target_link_libraries ( spex PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
     if ( NOT NSTATIC )
-    target_link_libraries ( spex_static PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
+        target_link_libraries ( spex_static PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
     endif ( )
 endif ( )
 
@@ -173,7 +173,7 @@ if ( OPENMP_FOUND )
     message ( STATUS "OpenMP C flags:          ${OpenMP_C_FLAGS} ")
     target_link_libraries ( spex PUBLIC ${OpenMP_C_LIBRARIES} )
     if ( NOT NSTATIC )
-    target_link_libraries ( spex_static PUBLIC ${OpenMP_C_LIBRARIES} )
+        target_link_libraries ( spex_static PUBLIC ${OpenMP_C_LIBRARIES} )
     endif ( )
     set ( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS} " )
     include_directories ( ${OpenMP_C_INCLUDE_DIRS} )
@@ -182,32 +182,33 @@ endif ( )
 # AMD:
 target_link_libraries ( spex PUBLIC ${AMD_LIBRARIES} )
 if ( NOT NSTATIC )
-target_link_libraries ( spex_static PUBLIC ${AMD_LIBRARIES} )
+    target_link_libraries ( spex_static PUBLIC ${AMD_STATIC} )
 endif ( )
 
 # COLAMD:
 target_link_libraries ( spex PUBLIC ${COLAMD_LIBRARIES} )
 if ( NOT NSTATIC )
-target_link_libraries ( spex_static PUBLIC ${COLAMD_LIBRARIES} )
-endif ( )
-
-# GMP:
-target_link_libraries ( spex PUBLIC ${GMP_LIBRARIES} )
-if ( NOT NSTATIC )
-target_link_libraries ( spex_static PUBLIC ${GMP_LIBRARIES} )
+    target_link_libraries ( spex_static PUBLIC ${COLAMD_STATIC} )
 endif ( )
 
 # MPFR:
 target_link_libraries ( spex PUBLIC ${MPFR_LIBRARIES} )
 if ( NOT NSTATIC )
-target_link_libraries ( spex_static PUBLIC ${MPFR_LIBRARIES} )
+    target_link_libraries ( spex_static PUBLIC ${MPFR_STATIC} )
+endif ( )
+
+# GMP:
+# must occur after MPFR
+target_link_libraries ( spex PUBLIC ${GMP_LIBRARIES} )
+if ( NOT NSTATIC )
+    target_link_libraries ( spex_static PUBLIC ${GMP_STATIC} )
 endif ( )
 
 # libm:
-if ( NOT "${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC" )
+if ( NOT WIN32 )
     target_link_libraries ( spex PUBLIC m )
     if ( NOT NSTATIC )
-    target_link_libraries ( spex_static PUBLIC m )
+        target_link_libraries ( spex_static PUBLIC m )
     endif ( )
 endif ( )
 

@@ -1,8 +1,6 @@
 
 Thread-safety:  Test with multiple user threads
 
-Tim: port from SuiteSparse SPEX 2.0.2
-
 Demo: 
 
     FIXME: rename SPEX_print_options, etc to spex_demo_print_options ...
