@@ -1,31 +1,27 @@
 #-------------------------------------------------------------------------------
-# SuiteSparse/SuiteSparse_config/cmake_modules/FindGMP.cmake
+# SuiteSparse/SPEX/cmake_modules/FindGMP.cmake
 #-------------------------------------------------------------------------------
 
-# Copyright (c) 2022, Timothy A. Davis. All Rights Reserved.
+# The following copyright and license applies to just this file only, not to
+# the library itself:
+# FindGMP.cmake, Copyright (c) 2022, Timothy A. Davis.  All Rights Reserved.
 # SPDX-License-Identifier: BSD-3-clause
+
+#-------------------------------------------------------------------------------
 
 # Finds the gmp include file and compiled library and sets:
 
 # GMP_INCLUDE_DIR - where to find gmp.h
-# GMP_LIBRARY     - compiled gmp library
+# GMP_LIBRARY     - dynamic gmp library
+# GMP_STATIC      - static gmp library
 # GMP_LIBRARIES   - libraries when using gmp
 # GMP_FOUND       - true if gmp found
 
 # set ``GMP_ROOT`` to a gmp installation root to
 # tell this module where to look.
 
-# To use this file in your application, copy this file into MyApp/cmake_modules
-# where MyApp is your application and add the following to your
-# MyApp/CMakeLists.txt file:
-#
-#   set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
-#
-# or, assuming MyApp and SuiteSparse sit side-by-side in a common folder, you
-# can leave this file in place and use this command (revise as needed):
-#
-#   set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-#       "${CMAKE_SOURCE_DIR}/../SuiteSparse/SuiteSparse_config/cmake_modules")
+# Since this file searches for a non-SuiteSparse library, it is not installed
+# with 'make install' when installing SPEX.
 
 #-------------------------------------------------------------------------------
 
@@ -37,18 +33,31 @@ endif ( )
 # include files for gmp
 find_path ( GMP_INCLUDE_DIR
     NAMES gmp.h
-    PATHS GMP_ROOT ENV GMP_ROOT
     PATH_SUFFIXES include Include
 )
 
-# compiled libraries gmp
+# dynamic gmp library
 find_library ( GMP_LIBRARY
     NAMES gmp
-    PATHS GMP_ROOT ENV GMP_ROOT
-    PATH_SUFFIXES lib build alternative
+    PATH_SUFFIXES lib build
 )
 
-# get version of the library
+if ( MSVC )
+    set ( STATIC_SUFFIX .lib )
+else ( )
+    set ( STATIC_SUFFIX .a )
+endif ( )
+
+# static gmp library
+set ( save ${CMAKE_FIND_LIBRARY_SUFFIXES} )
+set ( CMAKE_FIND_LIBRARY_SUFFIXES ${STATIC_SUFFIX} ${CMAKE_FIND_LIBRARY_SUFFIXES} )
+find_library ( GMP_STATIC
+    NAMES gmp
+    PATH_SUFFIXES lib build
+)
+set ( CMAKE_FIND_LIBRARY_SUFFIXES ${save} )
+
+# get version of the library from the filename
 get_filename_component ( GMP_LIBRARY ${GMP_LIBRARY} REALPATH )
 
 # look in the middle for 6.2.1 (/spackstuff/gmp-6.2.1-morestuff/libgmp.10.4.1)
@@ -98,13 +107,15 @@ find_package_handle_standard_args ( GMP
 mark_as_advanced (
     GMP_INCLUDE_DIR
     GMP_LIBRARY
+    GMP_STATIC
     GMP_LIBRARIES
 )
 
 if ( GMP_FOUND )
-    message ( STATUS "gmp include dir: ${GMP_INCLUDE_DIR}" )
-    message ( STATUS "gmp library:     ${GMP_LIBRARY}" )
-    message ( STATUS "gmp version:     ${GMP_VERSION}" )
+    message ( STATUS "gmp version: ${GMP_VERSION}" )
+    message ( STATUS "gmp include: ${GMP_INCLUDE_DIR}" )
+    message ( STATUS "gmp library: ${GMP_LIBRARY}" )
+    message ( STATUS "gmp static:  ${GMP_STATIC}" )
 else ( )
     message ( STATUS "gmp not found" )
 endif ( )

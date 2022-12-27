@@ -75,12 +75,7 @@ purge:
 	- $(RM) -r include/* bin/* lib/*
 	- ( cd SPEX && $(MAKE) purge )
 
-# Remove all files not in the original distribution, but keep the libraries
-clean:
-	- ( cd SuiteSparse_config && $(MAKE) clean )
-	- ( cd AMD && $(MAKE) clean )
-	- ( cd COLAMD && $(MAKE) clean )
-	- ( cd SPEX && $(MAKE) clean )
+clean: purge
 
 # Run all demos
 demos:
