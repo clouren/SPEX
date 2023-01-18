@@ -8,6 +8,8 @@
 
 #-------------------------------------------------------------------------------
 
+# FIXME: this no longer works
+
 default: all
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../../..)

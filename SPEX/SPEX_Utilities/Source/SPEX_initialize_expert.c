@@ -38,10 +38,10 @@ SPEX_info SPEX_initialize_expert
     // define the malloc/calloc/realloc/free functions
     //--------------------------------------------------------------------------
 
-    SuiteSparse_config.malloc_func  = MyMalloc ;
-    SuiteSparse_config.calloc_func  = MyCalloc ;
-    SuiteSparse_config.realloc_func = MyRealloc ;
-    SuiteSparse_config.free_func    = MyFree ;
+    SuiteSparse_config_malloc_func_set  (MyMalloc) ;
+    SuiteSparse_config_calloc_func_set  (MyCalloc) ;
+    SuiteSparse_config_realloc_func_set (MyRealloc) ;
+    SuiteSparse_config_free_func_set    (MyFree) ;
 
     //--------------------------------------------------------------------------
     // Set GMP memory functions

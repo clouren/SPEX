@@ -52,38 +52,14 @@ find_package ( AMD 3.0.2 REQUIRED )
 find_package ( GMP 6.1.2 REQUIRED )     # from SPEX/cmake_modules
 find_package ( MPFR 4.0.2 REQUIRED )    # from SPEX/cmake_modules
 
-# SPEX can use either Threads or OpenMP for thread-safety.  If neither is
-# found, SPEX can still be compiled but it will not be thread-safe.
-set ( THREADS_PREFER_PTHREAD_FLAG true )
-find_package ( Threads )
-if ( Threads_FOUND )
-    message ( STATUS "threads lib:   ${CMAKE_THREAD_LIBS_INIT}" )
-    message ( STATUS "threads win32: ${CMAKE_USE_WIN32_THREADS_INIT}" )
-    message ( STATUS "threads posix: ${CMAKE_USE_PTHREADS_INIT}" )
-    if ( CMAKE_USE_PTHREADS_INIT )
-        add_compile_definitions ( SPEX_USE_PTHREADS )
-#   elseif ( CMAKE_USE_WIN32_THREADS_INIT )
-#       # Windows threads are not yet supported
-#       add_compile_definitions ( SPEX_USE_WIN32_THREADS )
-    endif ( )
-endif ( )
-
-option ( NOPENMP "ON: do not use OpenMP.  OFF (default): use OpenMP" off )
+option ( NOPENMP "ON (default): do not use OpenMP.  OFF: use OpenMP" on )
 if ( NOPENMP )
     set ( OPENMP_FOUND false )
 else ( )
     find_package ( OpenMP )
 endif ( )
 
-if ( CMAKE_USE_PTHREADS_INIT )
-    message ( STATUS "SPEX thread-safety: via POSIX pthreads" ) 
-# elseif ( CMAKE_USE_WIN32_THREADS_INIT )
-#   message ( STATUS "SPEX thread-safety: via Windows threads" ) 
-elseif ( OPENMP_FOUND )
-    message ( STATUS "SPEX thread-safety: via OpenMP" ) 
-else ( )
-    message ( WARNING "No threads or OpenMP found: SPEX will not be thread-safe" ) 
-endif ( )
+include ( SuiteSparse__thread )
 
 #-------------------------------------------------------------------------------
 # configure files
@@ -158,14 +134,6 @@ if ( NOT NSTATIC )
     target_link_libraries ( spex_static PUBLIC ${SUITESPARSE_CONFIG_LIBRARIES} )
 endif ( )
 
-# Threads
-if ( Threads_FOUND )
-    target_link_libraries ( spex PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
-    if ( NOT NSTATIC )
-        target_link_libraries ( spex_static PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
-    endif ( )
-endif ( )
-
 # OpenMP:
 if ( OPENMP_FOUND )
     message ( STATUS "OpenMP C libraries:      ${OpenMP_C_LIBRARIES} ")
@@ -216,37 +184,17 @@ endif ( )
 # SPEX installation location
 #-------------------------------------------------------------------------------
 
-if ( GLOBAL_INSTALL )
-    # install in /usr/local/lib and /usr/local/include.
-    # requires "sudo make install"
-    message ( STATUS "Installation will be system-wide (requires 'sudo make install')" )
-    install ( TARGETS spex
-        LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
-    install ( FILES ${CMAKE_SOURCE_DIR}/cmake_modules/FindSPEX.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SuiteSparse
-        COMPONENT Development )
-    if ( NOT NSTATIC )
+install ( TARGETS spex
+    LIBRARY DESTINATION ${SUITESPARSE_LIBDIR}
+    ARCHIVE DESTINATION ${SUITESPARSE_LIBDIR}
+    RUNTIME DESTINATION ${SUITESPARSE_BINDIR}
+    PUBLIC_HEADER DESTINATION ${SUITESPARSE_INCLUDEDIR} )
+install ( FILES ${CMAKE_SOURCE_DIR}/cmake_modules/FindSPEX.cmake
+    DESTINATION ${SUITESPARSE_LIBDIR}/cmake/SuiteSparse 
+    COMPONENT Development )
+if ( NOT NSTATIC )
     install ( TARGETS spex_static
-        ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR} )
-    endif ( )
-endif ( )
-
-if ( INSIDE_SUITESPARSE )
-    # also install in SuiteSparse/lib and SuiteSparse/include;
-    # does not require "sudo make install", just "make install"
-    message ( STATUS "Installation in ../lib and ../include," )
-    message ( STATUS "  with 'make local ; make install'. No 'sudo' required." )
-    install ( TARGETS spex
-        LIBRARY       DESTINATION ${SUITESPARSE_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${SUITESPARSE_INCLUDEDIR} )
-    install ( FILES ${CMAKE_SOURCE_DIR}/cmake_modules/FindSPEX.cmake
-        DESTINATION ${SUITESPARSE_LIBDIR}/cmake/SuiteSparse
-        COMPONENT Development )
-    if ( NOT NSTATIC )
-    install ( TARGETS spex_static
-        ARCHIVE       DESTINATION ${SUITESPARSE_LIBDIR} )
-    endif ( )
+        ARCHIVE DESTINATION ${SUITESPARSE_LIBDIR} )
 endif ( )
 
 #-------------------------------------------------------------------------------

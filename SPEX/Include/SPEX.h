@@ -929,6 +929,17 @@ SPEX_info SPEX_finalize
     void
 ) ;
 
+// SPEX is thread-safe but it requires each user thread other than the user's
+// master thread to call SPEX_thread_initialize when it starts, and
+// SPEX_thread_finalize when it finishes.  These two functions must be called
+// after the user's master thread calls SPEX_initialize (or
+// SPEX_initialize_experm) and before the user's master thread calls
+// SPEX_finalize.
+
+SPEX_info SPEX_thread_initialize ( void ) ;
+
+SPEX_info SPEX_thread_finalize ( void ) ;
+
 //------------------------------------------------------------------------------
 // SPEX matrix utilities
 //------------------------------------------------------------------------------

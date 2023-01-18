@@ -57,13 +57,11 @@ SUITESPARSE_PUBLIC int64_t spex_gmp_ntrials ;
 // uncomment this to print memory debugging info
 // #define SPEX_GMP_MEMORY_DEBUG
 
-#ifdef SPEX_GMP_MEMORY_DEBUG
-void spex_gmp_dump ( void ) ;
-#endif
-
 int spex_gmp_initialize (void) ;
 
 void spex_gmp_finalize (void) ;
+
+spex_gmp_t *spex_gmp_get (void) ;
 
 void *spex_gmp_allocate (size_t size) ;
 
@@ -71,17 +69,11 @@ void spex_gmp_free (void *p, size_t size) ;
 
 void *spex_gmp_reallocate (void *p_old, size_t old_size, size_t new_size );
 
+#ifdef SPEX_GMP_MEMORY_DEBUG
+void spex_gmp_dump ( void ) ;
+#endif
+
 SPEX_info spex_gmp_failure (int status) ;
-
-spex_gmp_t *spex_gmp_constructor (void) ;
-
-void spex_gmp_destructor (void *p) ;
-
-spex_gmp_t *spex_gmp_get (void) ;
-
-spex_gmp_t *spex_gmp_getspecific (void) ;
-
-int spex_gmp_setspecific (spex_gmp_t *spex_gmp) ;
 
 //------------------------------------------------------------------------------
 // Field access macros for MPZ/MPQ/MPFR struct
@@ -177,7 +169,6 @@ int spex_gmp_setspecific (spex_gmp_t *spex_gmp) ;
 
 #define SPEX_GMP_WRAPPER_START_HELPER(z1,z2,q,fr)                       \
     spex_gmp_t *spex_gmp = spex_gmp_get ( ) ;                           \
-    if (spex_gmp == NULL) return (SPEX_OUT_OF_MEMORY) ;                 \
     spex_gmp->mpz_archive  = (mpz_t  *) z1 ;                            \
     spex_gmp->mpz_archive2 = (mpz_t  *) z2 ;                            \
     spex_gmp->mpq_archive  = (mpq_t  *) q  ;                            \

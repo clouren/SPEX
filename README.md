@@ -80,13 +80,13 @@ is provided.  All it does is use cmake to build each of the packages.
                 make uninstall  undoes 'make install'
 
                 make distclean  removes all files not in distribution, including
-                                ./bin, ./share, ./lib, and ./include.
+                                ./bin, ./lib, and ./include.
 
                 make purge      same as 'make distclean'
 
                 make clean      removes all files not in distribution, but
-                                keeps compiled libraries and demoes, ./lib,
-                                ./share, and ./include.
+                                keeps compiled libraries and demoes, ./lib
+                                and ./include.
 
 You can set specific options for CMake with the command (for example):
 

@@ -179,9 +179,11 @@
 
 #define SPEX_PRINTF(...)                                    \
 {                                                           \
-    if (SuiteSparse_config.printf_func != NULL)             \
+    int (*prfunc) (const char *, ...) ;                     \
+    prfunc = SuiteSparse_config_printf_func_get ( ) ;       \
+    if (prfunc != NULL)                                     \
     {                                                       \
-        SuiteSparse_config.printf_func (__VA_ARGS__) ;      \
+        prfunc (__VA_ARGS__) ;                              \
     }                                                       \
 }
 

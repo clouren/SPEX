@@ -33,7 +33,7 @@
         SPEX_GMP_WRAPPER_START ;
         gmpfunc (args) ;
         SPEX_GMP_WRAPPER_FINISH ;
-        return SPEX_OK ;
+        return (SPEX_OK) ;
     }
 */
 
@@ -47,12 +47,12 @@
 // is passed as the first argument to the SPEX_gmpfunc:
 
 /*
-    SPEX_info SPEX_gmpfunc (result, args)
+    SPEX_info SPEX_gmpfunc (int *result, args)
     {
         SPEX_GMP_WRAPPER_START ;
         (*result) = gmpfunc (args) ;
         SPEX_GMP_WRAPPER_FINISH ;
-        return SPEX_OK ;
+        return (SPEX_OK) ;
     }
 */
 
@@ -60,6 +60,7 @@
 // for the current mpz, mpq, or mpfr object being operated on.  A pointer
 // parameter to this parameter is kept so that it can be safely freed in case
 // a memory error occurs (avoiding a double-free), in SPEX_GMP_SAFE_FREE.
+// See the examples below.
 
 #include "spex_util_internal.h"
 
@@ -77,181 +78,100 @@
 //      https://gmplib.org/manual/Reentrancy
 //      https://www.mpfr.org/mpfr-3.1.0/
 //
-// (2) only one user thread may call SPEX_initialize and SPEX_finalize.
+// (2) only one user thread calls SPEX_initialize and SPEX_finalize.
 //
-// (3) Multiple user threads may not write to the same SPEX objects.  If
+// (3) each subsequent user thread must call SPEX_thread_initialize when it
+//      starts, and SPEX_thread_finalize when it finishes.
+//
+// (4) Multiple user threads may not write to the same SPEX objects.  If
 //      declared as an input-only variable, multiple user threads may access
 //      them in parallel.
 //
-// (4) SPEX is compiled with either POSIX pthreads or OpenMP.
-//      Note that Windows threads are not yet supported, so thread-safety on
-//      Windows requires the use of OpenMP.
+// (5) SPEX is compiled with either OpenMP, or a compiler that supports
+//      thread-local-storage (most of them do).
 
-#if defined ( SPEX_USE_PTHREADS )
-    // use POSIX pthreads thread local storage to hold the spex_gmp object
-    #include <pthread.h>
-    SUITESPARSE_PUBLIC
-    pthread_key_t spex_gmp_pthread_key ;
-    pthread_key_t spex_gmp_pthread_key ;
-#elif defined ( SPEX_USE_WIN32_THREADS )
-    //  Windows threads: not yet supported
-    #error "Windows threads not yet supported"
-#elif defined ( _OPENMP )
-    // Use OpenMP threadprivate storage to hold the spex_gmp object (if
-    // available).
+#if defined ( _OPENMP )
+
+    // OpenMP threadprivate is preferred
     #include <omp.h>
-    SUITESPARSE_PUBLIC
-    spex_gmp_t *spex_gmp_threadprivate ;
-    #pragma omp threadprivate (spex_gmp_threadprivate)
-    spex_gmp_t *spex_gmp_threadprivate = NULL ;
+    spex_gmp_t *spex_gmp = NULL ;
+    #pragma omp threadprivate (spex_gmp)
+
+#elif defined ( HAVE_KEYWORD__THREAD )
+
+    // gcc and many other compilers support the __thread keyword
+    __thread spex_gmp_t *spex_gmp = NULL ;
+
+#elif defined ( HAVE_KEYWORD__DECLSPEC_THREAD )
+
+    // Windows: __declspec (thread)
+    __declspec ( thread ) spex_gmp_t *spex_gmp = NULL ;
+
+#elif defined ( HAVE_KEYWORD__THREAD_LOCAL )
+
+    // ANSI C11 threads
+    #include <threads.h>
+    _Thread_local spex_gmp_t *spex_gmp = NULL ;
+
 #else
-    // No POSIX pthreads and no OpenMP: SPEX is not thread-safe
-    SUITESPARSE_PUBLIC
-    spex_gmp_t *spex_gmp_global ;
-    spex_gmp_t *spex_gmp_global = NULL ;
+
+    // SPEX will not be thread-safe.
+    spex_gmp_t *spex_gmp = NULL ;
+
 #endif
+
 
 //------------------------------------------------------------------------------
 // spex_gmp_initialize: initialize the SPEX GMP interface
 //------------------------------------------------------------------------------
 
-// This function should only be called once (see SPEX_initialize)
+// This should be called by SPEX_initialize*, and by SPEX_gmp_initialize.
 
-int spex_gmp_initialize (void)
+SPEX_info spex_gmp_initialize (void)
 {
-    #if defined ( SPEX_USE_PTHREADS )
-        return (pthread_key_create (&spex_gmp_pthread_key,
-            spex_gmp_destructor)) ;
-    #elif defined ( SPEX_USE_WIN32_THREADS )
-        // Windows threads: not yet supported
-    #elif defined ( _OPENMP )
-        // OpenMP: use a threadprivate spex_gmp object
-        spex_gmp_threadprivate = NULL ;
-        return (0) ;
-    #else
-        // no thread-safety: use a single global spex_gmp object
-        spex_gmp_global = NULL ;
-        return (0) ;
-    #endif
+    if (spex_gmp == NULL)
+    {
+        // allocate the spex_gmp object
+        spex_gmp = SPEX_calloc (1, sizeof (spex_gmp_t)) ;
+        if (spex_gmp == NULL)
+        {
+            // out of memory
+            return (SPEX_OUT_OF_MEMORY) ;
+        }
+
+        // allocate an empty spex_gmp->list
+        spex_gmp->list = (void **) SPEX_calloc (SPEX_GMP_LIST_INIT,
+            sizeof (void *)) ;
+
+        if (spex_gmp->list == NULL)
+        {
+            // out of memory
+            SPEX_free (spex_gmp) ;
+            return (SPEX_OUT_OF_MEMORY) ;
+        }
+
+        // initialize the spex_gmp
+        spex_gmp->nlist = SPEX_GMP_LIST_INIT ;
+        spex_gmp->nmalloc = 0 ;
+        spex_gmp->mpz_archive  = NULL ;
+        spex_gmp->mpz_archive2 = NULL ;
+        spex_gmp->mpq_archive  = NULL ;
+        spex_gmp->mpfr_archive = NULL ;
+    }
+    return (SPEX_OK) ;
 }
 
 //------------------------------------------------------------------------------
 // spex_gmp_finalize: finalize the SPEX GMP interface
 //------------------------------------------------------------------------------
 
-// This function should only be called once (see SPEX_finalize)
+// This should be called by SPEX_finalize*, and by SPEX_gmp_finalize.
 
 void spex_gmp_finalize (void)
 {
-    // get the spex_gmp object for this thread and free it
-    spex_gmp_destructor (spex_gmp_getspecific ( )) ;
-
-    #if defined ( SPEX_USE_PTHREADS )
-        // delete the POSIX pthread key for all threads
-        pthread_key_delete (spex_gmp_pthread_key) ;
-    #elif defined ( SPEX_USE_WIN32_THREADS )
-        // Windows threads: not yet supported
-    #elif defined ( _OPENMP )
-        // OpenMP: nothing to do
-    #else
-        // no thread-safety: nothing to do
-    #endif
-}
-
-//------------------------------------------------------------------------------
-// spex_gmp_setspecific: set the spex_gmp thread-local object
-//------------------------------------------------------------------------------
-
-// Returns 0 if successful, nonzero otherwise
-
-int spex_gmp_setspecific (spex_gmp_t *spex_gmp)
-{
-    #if defined ( SPEX_USE_PTHREADS )
-        // set POSIX pthread key for a thread-specific spex_gmp object
-        return (pthread_setspecific (spex_gmp_pthread_key, spex_gmp)) ;
-    #elif defined ( SPEX_USE_WIN32_THREADS )
-        // Windows threads: not yet supported
-    #elif defined ( _OPENMP )
-        // OpenMP: save the spex_gmp object in a threadprivate variable
-        spex_gmp_threadprivate = spex_gmp ;
-        return (0) ;
-    #else
-        // no thread-safety: save the spex_gmp object in a global variable 
-        spex_gmp_global = spex_gmp ;
-        return (0) ;
-    #endif
-}
-
-//------------------------------------------------------------------------------
-// spex_gmp_getspecific: get the spex_gmp thread-local object
-//------------------------------------------------------------------------------
-
-// This function returns the thread-local spex_gmp object, or NULL if it has
-// not been created.
-
-spex_gmp_t *spex_gmp_getspecific (void)
-{
-    #if defined ( SPEX_USE_PTHREADS )
-        return ((spex_gmp_t *) pthread_getspecific (spex_gmp_pthread_key)) ;
-    #elif defined ( SPEX_USE_WIN32_THREADS )
-        // Windows threads: not yet supported
-    #elif defined ( _OPENMP )
-        // OpenMP: get the spex_gmp object from a threadprivate variable
-        return (spex_gmp_threadprivate) ;
-    #else
-        // no thread-safety: get the spex_gmp object from a global variable
-        return (spex_gmp_global) ;
-    #endif
-}
-
-//------------------------------------------------------------------------------
-// spex_gmp_constructor: construct the spex_gmp object for a single thread
-//------------------------------------------------------------------------------
-
-spex_gmp_t *spex_gmp_constructor (void)
-{
-
-    // allocate the spex_gmp object
-    spex_gmp_t *spex_gmp = SPEX_calloc (1, sizeof (spex_gmp_t)) ;
-    if (spex_gmp == NULL)
+    // free the spex_gmp object for this thread, if it exists
+    if (spex_gmp != NULL)
     {
-        // out of memory
-        return (NULL) ;
-    }
-
-    // allocate an empty spex_gmp->list
-    spex_gmp->list = (void **) SPEX_calloc (SPEX_GMP_LIST_INIT,
-        sizeof (void *)) ;
-
-    if (spex_gmp->list == NULL)
-    {
-        // out of memory
-        SPEX_free (spex_gmp) ;
-        return (NULL) ;
-    }
-
-    // initialize the spex_gmp_object
-    spex_gmp->nlist = SPEX_GMP_LIST_INIT ;
-    spex_gmp->nmalloc = 0 ;
-    spex_gmp->mpz_archive  = NULL ;
-    spex_gmp->mpz_archive2 = NULL ;
-    spex_gmp->mpq_archive  = NULL ;
-    spex_gmp->mpfr_archive = NULL ;
-
-    // return the newly-created spex_gmp object
-    return (spex_gmp)  ;
-}
-
-//------------------------------------------------------------------------------
-// spex_gmp_destructor: destroy the spex_gmp object for a single thread
-//------------------------------------------------------------------------------
-
-void spex_gmp_destructor (void *p)
-{
-    if (p != NULL)
-    {
-        spex_gmp_t *spex_gmp = (spex_gmp_t *) p ;
-
         // free the spex_gmp->list, if it exists
         if (spex_gmp->list != NULL)
         {
@@ -261,30 +181,17 @@ void spex_gmp_destructor (void *p)
 
         // free the spex_gmp object itself
         SPEX_free (spex_gmp) ;
+        spex_gmp = NULL ;
     }
 }
 
 //------------------------------------------------------------------------------
-// spex_gmp_initialize: get the thread-local spex_gmp object and initialize it
+// spex_gmp_get: get the thread-local spex_gmp object and initialize it
 //------------------------------------------------------------------------------
 
 spex_gmp_t *spex_gmp_get (void)
 {
-
-    // get the spex_gmp object for this thread
-    spex_gmp_t *spex_gmp = spex_gmp_getspecific ( ) ;
-
-    if (spex_gmp == NULL)
-    {
-        // first time for this thread; create its spex_gmp object
-        spex_gmp = spex_gmp_constructor ( ) ;
-        if ((spex_gmp == NULL) || spex_gmp_setspecific (spex_gmp) != 0)
-        {
-            // out of memory, or failed to set the thread-specific spex_gmp
-            spex_gmp_destructor (spex_gmp) ;
-            return (NULL) ;
-        }
-    }
+    ASSERT (spex_gmp != NULL) ;
 
     // clear the list of allocated objects in the spex_gmp->list
     spex_gmp->nmalloc = 0 ;
@@ -313,12 +220,7 @@ void *spex_gmp_allocate
 )
 {
 
-    //--------------------------------------------------------------------------
-    // get the spex_gmp object for this thread
-    //--------------------------------------------------------------------------
-
-    spex_gmp_t *spex_gmp = spex_gmp_getspecific ( ) ;
-    if (spex_gmp == NULL) return (NULL) ;
+    ASSERT (spex_gmp != NULL) ;
 
     //--------------------------------------------------------------------------
     // for testing only:
@@ -362,7 +264,7 @@ void *spex_gmp_allocate
             // can traverse the spex_gmp->list to free all objects there.
             longjmp (spex_gmp->environment, 3) ;
         }
-        // success; the old spex_gmp->list has been freed, and replaced with
+        // success:  the old spex_gmp->list has been freed, and replaced with
         // the larger newlist.
         spex_gmp->nlist = newsize ;
     }
@@ -420,12 +322,7 @@ void spex_gmp_free
         return ;
     }
 
-    //--------------------------------------------------------------------------
-    // get the spex_gmp object for this thread
-    //--------------------------------------------------------------------------
-
-    spex_gmp_t *spex_gmp = spex_gmp_getspecific ( ) ;
-    if (spex_gmp == NULL) return ;
+    ASSERT (spex_gmp != NULL) ;
 
     //--------------------------------------------------------------------------
     // remove the block from the spex_gmp->list
@@ -518,12 +415,7 @@ void *spex_gmp_reallocate
 void spex_gmp_dump ( )
 {
 
-    //--------------------------------------------------------------------------
-    // get the spex_gmp object for this thread
-    //--------------------------------------------------------------------------
-
-    spex_gmp_t *spex_gmp = spex_gmp_getspecific ( ) ;
-    if (spex_gmp == NULL) return ;
+    ASSERT (spex_gmp != NULL) ;
 
     //--------------------------------------------------------------------------
     // dump the spex_gmp->list
@@ -568,8 +460,7 @@ SPEX_info spex_gmp_failure
     SPEX_PRINTF ("failure from longjmp: status: %d\n", status) ;
     #endif
 
-    spex_gmp_t *spex_gmp = spex_gmp_getspecific ( ) ;
-    if (spex_gmp == NULL) return (SPEX_PANIC) ;
+    ASSERT (spex_gmp != NULL) ;
 
     //--------------------------------------------------------------------------
     // free all MPFR caches
@@ -626,7 +517,7 @@ SPEX_info SPEX_gmp_fprintf
     SPEX_GMP_WRAPPER_START ;
 
     // call gmp_vfprintf
-    va_list args;
+    va_list args ;
     va_start (args, format) ;
     int n = gmp_vfprintf (fp, format, args) ;
     va_end (args) ;
@@ -658,7 +549,7 @@ SPEX_info SPEX_gmp_printf
     SPEX_GMP_WRAPPER_START ;
 
     // call gmp_vprintf
-    va_list args;
+    va_list args ;
     va_start (args, format) ;
     int n = gmp_vprintf (format, args) ;
     va_end (args) ;
@@ -690,7 +581,7 @@ SPEX_info SPEX_gmp_asprintf (char **str, const char *format, ... )
     SPEX_GMP_WRAPPER_START ;
 
     // call gmp_vasprintf
-    va_list args;
+    va_list args ;
     va_start (args, format) ;
     int n = gmp_vasprintf (str, format, args) ;
     va_end (args) ;
@@ -721,7 +612,7 @@ SPEX_info SPEX_gmp_fscanf
     SPEX_GMP_WRAPPER_START ;
 
     // call gmp_vfscanf
-    va_list args;
+    va_list args ;
     va_start (args, format) ;
     int n = gmp_vfscanf (fp, format, args) ;
     va_end (args) ;
@@ -750,7 +641,7 @@ SPEX_info SPEX_mpfr_asprintf (char **str, const char *format, ... )
     SPEX_GMP_WRAPPER_START ;
 
     // call mpfr_vasprintf
-    va_list args;
+    va_list args ;
     va_start (args, format) ;
     int n = mpfr_vasprintf (str, format, args) ;
     va_end (args) ;
@@ -804,7 +695,7 @@ SPEX_info SPEX_mpfr_fprintf
     SPEX_GMP_WRAPPER_START ;
 
     // call mpfr_vfprintf
-    va_list args;
+    va_list args ;
     va_start (args, format) ;
     int n = mpfr_vfprintf (fp, format, args) ;
     va_end (args) ;
@@ -840,7 +731,7 @@ SPEX_info SPEX_mpfr_printf
     SPEX_GMP_WRAPPER_START ;
 
     // call mpfr_vprintf
-    va_list args;
+    va_list args ;
     va_start (args, format) ;
     int n = mpfr_vprintf (format, args) ;
     va_end (args) ;
@@ -1187,10 +1078,10 @@ SPEX_info SPEX_mpz_fdiv_q
 )
 {
     SPEX_GMPZ_WRAPPER_START (q) ;
-    if (mpz_sgn(d)==0)
+    if (mpz_sgn (d) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return SPEX_PANIC;
+        return (SPEX_PANIC) ;
     }
     mpz_fdiv_q (q, n, d) ;
     SPEX_GMP_WRAPPER_FINISH ;
@@ -1215,10 +1106,10 @@ SPEX_info SPEX_mpz_cdiv_q
 )
 {
     SPEX_GMPZ_WRAPPER_START (q) ;
-    if (mpz_sgn(d)==0)
+    if (mpz_sgn (d) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return SPEX_PANIC;
+        return (SPEX_PANIC) ;
     }
     mpz_cdiv_q (q, n, d) ;
     SPEX_GMP_WRAPPER_FINISH ;
@@ -1244,10 +1135,10 @@ SPEX_info SPEX_mpz_cdiv_qr
 )
 {
     SPEX_GMPZ_WRAPPER_START2 (q, r) ;
-    if (mpz_sgn(d)==0)
+    if (mpz_sgn (d) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return SPEX_PANIC;
+        return (SPEX_PANIC) ;
     }
     mpz_cdiv_qr (q, r, n, d) ;
     SPEX_GMP_WRAPPER_FINISH ;
@@ -1268,26 +1159,28 @@ SPEX_info SPEX_mpz_divexact
 )
 {
     SPEX_GMPZ_WRAPPER_START (x) ;
-    if (mpz_sgn(z)==0)
+    if (mpz_sgn (z) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return SPEX_PANIC;
+        return (SPEX_PANIC) ;
     }
-#ifdef SPEX_DEBUG
-    mpq_t r;
-    mpq_init(r); // r = 0/1
-    mpz_fdiv_r(SPEX_MPQ_NUM(r),y,z);
-    if (mpz_sgn(SPEX_MPQ_NUM(r)) != 0)
-    {
-        mpq_set_den(r,z);
-        mpq_canonicalize(r);
-        gmp_printf("not exact division! remainder=%Qd\n",r);
-        mpq_clear(r);
-        SPEX_GMP_WRAPPER_FINISH;
-        return SPEX_PANIC;
-    }
-    mpq_clear(r);
-#endif
+
+    #ifdef SPEX_DEBUG
+        mpq_t r ;
+        mpq_init (r) ; // r = 0/1
+        mpz_fdiv_r (SPEX_MPQ_NUM (r), y, z) ;
+        if (mpz_sgn (SPEX_MPQ_NUM (r)) != 0)
+        {
+            mpq_set_den (r, z) ;
+            mpq_canonicalize (r) ;
+            gmp_printf ("not exact division! remainder=%Qd\n", r) ;
+            mpq_clear (r) ;
+            SPEX_GMP_WRAPPER_FINISH ;
+            return (SPEX_PANIC) ;
+        }
+        mpq_clear (r) ;
+    #endif
+
     mpz_divexact (x, y, z) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK) ;

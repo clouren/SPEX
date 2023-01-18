@@ -42,9 +42,6 @@ SPEX_info SPEX_initialize ( void )
     // SPEX requires GMP to support bit counts that are 64-bit integers
     if (sizeof (mp_bitcnt_t) < sizeof (uint64_t)) return (SPEX_PANIC) ;
 
-    // initialize the SPEX GMP interface
-    if (spex_gmp_initialize ( ) != 0) return (SPEX_OUT_OF_MEMORY) ;
-
     // tell GMP and MPFR which memory allocation functions to use
     mp_set_memory_functions
     (
@@ -54,6 +51,8 @@ SPEX_info SPEX_initialize ( void )
     ) ;
 
     spex_set_initialized (true) ;
-    return (SPEX_OK) ;
+
+    // initialize the SPEX GMP interface for the master thread
+    return (spex_gmp_initialize ( )) ;
 }
 
