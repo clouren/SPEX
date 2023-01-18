@@ -91,15 +91,15 @@ int spex_gmp_realloc_test
     TEST_ASSERT (spex_initialized ( )) ;
 
     // get the spex_gmp object for this thread
-    spex_gmp_t *spex_gmp = spex_gmp_getspecific ( ) ;
+    spex_gmp_t *spex_gmp = spex_gmp_get ( ) ;
     TEST_ASSERT (spex_gmp != NULL) ;
-    int status = setjmp (spex_gmp->environment);
+    int status = setjmp (spex_gmp->environment) ;
     if (status != 0)
     {
-        return SPEX_OUT_OF_MEMORY;
+        return (SPEX_OUT_OF_MEMORY) ;
     }
-    *p_new = spex_gmp_reallocate(p_old, old_size, new_size);
-    return SPEX_OK;
+    *p_new = spex_gmp_reallocate (p_old, old_size, new_size) ;
+    return (SPEX_OK) ;
 }
 
 //------------------------------------------------------------------------------
