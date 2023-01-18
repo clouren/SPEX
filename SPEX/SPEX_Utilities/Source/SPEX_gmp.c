@@ -73,7 +73,7 @@
 
 // SPEX is thread-safe as long as all of the following conditions hold:
 //
-// (1) GMP and MPFR are both thread-safe.  This is the typical cals, but it is
+// (1) GMP and MPFR are both thread-safe.  This is the typical case, but it is
 //      possible to compile GMP and MPFR with thread-safety disabled.  See:
 //      https://gmplib.org/manual/Reentrancy
 //      https://www.mpfr.org/mpfr-3.1.0/
