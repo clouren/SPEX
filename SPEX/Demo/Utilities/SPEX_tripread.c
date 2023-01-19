@@ -19,7 +19,9 @@
  * the entry A(i,j).  The value aij is an integer.
  */
 
-#include "SPEX.h"
+ // FIXME: why have 2 functions, SPEX_tripread and SPEX_tripread_double?
+
+#include "demos.h"
 
 
 SPEX_info SPEX_tripread
@@ -59,23 +61,23 @@ SPEX_info SPEX_tripread
         return (info) ;
     }
 
-    // Read in first values of A
-    info = SPEX_gmp_fscanf(file, "%"PRId64" %"PRId64" %Zd\n",
-        &A->i[0], &A->j[0], &A->x.mpz[0]);
-    if (feof (file) || info != SPEX_OK)
-    {
-        printf ("premature end-of-file\n") ;
-        SPEX_matrix_free(&A, option);
-        return SPEX_INCORRECT_INPUT;
-    }
+//  // Read in first values of A
+//  info = SPEX_gmp_fscanf(file, "%"PRId64" %"PRId64" %Zd\n",
+//      &A->i[0], &A->j[0], &A->x.mpz[0]);
+//  if (feof (file) || info != SPEX_OK)
+//  {
+//      printf ("premature end-of-file\n") ;
+//      SPEX_matrix_free(&A, option);
+//      return SPEX_INCORRECT_INPUT;
+//  }
 
-    // Matrices in this format are 1 based, so we decrement by 1 to get
-    // 0 based for internal functions
-    A->i[0] -= 1;
-    A->j[0] -= 1;
+//  // Matrices in this format are 1 based, so we decrement by 1 to get
+//  // 0 based for internal functions
+//  A->i[0] -= 1;
+//  A->j[0] -= 1;
 
     // Read in the values from file
-    for (int64_t p = 1; p < nz; p++)
+    for (int64_t p = 0; p < nz; p++)
     {
         info = SPEX_gmp_fscanf(file, "%"PRId64" %"PRId64" %Zd\n",
             &A->i[p], &A->j[p], &A->x.mpz[p]);
@@ -85,9 +87,30 @@ SPEX_info SPEX_tripread
             SPEX_matrix_free(&A, option);
             return SPEX_INCORRECT_INPUT;
         }
-        // Conversion from 1 based to 0 based if necessary
-        A->i[p] -= 1;
-        A->j[p] -= 1;
+//      // Conversion from 1 based to 0 based if necessary
+//      A->i[p] -= 1;
+//      A->j[p] -= 1;
+    }
+
+    // FIXME: why are some files in ExampleMats zero-based?
+    // fix the files and remove this.  Make them all 1-based.
+    int64_t imin = INT64_MAX, imax = 0 ;
+    int64_t jmin = INT64_MAX, jmax = 0 ;
+    for (int64_t p = 0; p < nz; p++)
+    {
+        imin = SPEX_MIN (imin, A->i [p]) ;
+        jmin = SPEX_MIN (jmin, A->j [p]) ;
+        imax = SPEX_MAX (imax, A->i [p]) ;
+        jmax = SPEX_MAX (jmax, A->j [p]) ;
+    }
+    // convert from 1-based to 0-based
+    if (imin >= 1 && jmin >= 1)
+    {
+        for (int64_t p = 0; p < nz; p++)
+        {
+            A->i[p]-- ;
+            A->j[p]-- ;
+        }
     }
 
     // the triplet matrix now has nz entries

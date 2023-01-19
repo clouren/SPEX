@@ -10,8 +10,9 @@
 
 /* Purpose: This processes the command line for user specified options */
 
-#include "SPEX.h"
+#include "demos.h"
 
+// FIXME: what is "s" ?
 
 SPEX_info SPEX_process_command_line //processes the command line
 (

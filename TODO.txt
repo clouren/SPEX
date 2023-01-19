@@ -1,17 +1,27 @@
 
 Thread-safety:  Test with multiple user threads
 
-Demo: 
+Demo:
 
     FIXME: rename SPEX_print_options, etc to spex_demo_print_options ...
-        spex_demo_*.c main programs
+        Do not call demo functions "SPEX_whatever", because they are not
+        user-callable..  They look like part of the library and the user will
+        try to use them but not find them.  Call them "demo_whatever" or
+        "spex_demo_whatever".
 
 in parallel:
     user guide polish (see Overleaf)
 
 Tim:
     cmake for Python interface
-    cmake for top-level Demo folder
+    cmake for top-level Demo folder: done but needs cleanup
+
+user guide: state that SPEX_initialize cannot be called by multiple
+    user threads.  Just one.  Discuss SPEX_thread_initialize and
+    SPEX_thread_finalize
+        later: copy in user guide from Overleaf
+
+lots of FIXMEs in the code
 
 
 later:
@@ -20,9 +30,3 @@ later:
     remove SPEX_QR for SPEX 3.0.0., add back for SPEX 3.1.0
     remove Update from v3.0.0 user guide, add back for SPEX 3.1.0
     SPEX_Update for v3.1.0: how to create vk or w
-
-    user guide: state that SPEX_initialize cannot be called by multiple
-        user threads.  Just one.
-        later: copy in user guide from Overleaf
-
-    see other FIXMEs in the code

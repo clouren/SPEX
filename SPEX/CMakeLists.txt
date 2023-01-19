@@ -92,9 +92,9 @@ include_directories ( Include
 
 # gcc -O3 complains about SPEX_mpq_init
 
-if ( "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" )
-    set ( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2" )
-endif ( )
+# if ( "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" )
+#     set ( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2" )
+# endif ( )
 
 #-------------------------------------------------------------------------------
 # dynamic spex library properties
@@ -208,61 +208,73 @@ if ( DEMO )
     # demo library
     #---------------------------------------------------------------------------
 
-    message ( STATUS "Also compiling the demos in SPEX*/Demo" )
+    message ( STATUS "Also compiling the demos in SPEX/Demo" )
 
     #---------------------------------------------------------------------------
     # Demo programs
     #---------------------------------------------------------------------------
 
-    # FIXME: use the single Demo folder, not SPEX_*/Demo
+    include_directories ( Demo )
+    file ( GLOB SPEX_DEMO_SOURCES "Demo/Utilities/*.c" )
 
-    include_directories ( SPEX_Backslash/Demo SPEX_Cholesky/Demo SPEX_LU/Demo
-        SPEX_Update/Demo )
+    add_executable ( spex_demo_backslash_demo    "Demo/spex_demo_backslash_demo.c"    ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_cholesky_extended "Demo/spex_demo_cholesky_extended.c" ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_cholesky_simple   "Demo/spex_demo_cholesky_simple.c"   ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_lu_doub           "Demo/spex_demo_lu_doub.c"           ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_lu_extended       "Demo/spex_demo_lu_extended.c"       ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_lu_simple1        "Demo/spex_demo_lu_simple1.c"        ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_lu_simple2        "Demo/spex_demo_lu_simple2.c"        ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_Update_chol       "Demo/spex_demo_Update_chol.c"       ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_Update_lu         "Demo/spex_demo_Update_lu.c"         ${SPEX_DEMO_SOURCES} )
+
+# FIXME: delete all SPEX*/Demo folders and their contents
+#   include_directories ( SPEX_Backslash/Demo SPEX_Cholesky/Demo SPEX_LU/Demo
+#       SPEX_Update/Demo )
 
     # SPEX_LU
-    add_executable ( spexlu_demo "SPEX_LU/Demo/spexlu_demo.c"
-                                 "SPEX_LU/Demo/lu_demos.c" )
-    add_executable ( spexlu_doub_demo "SPEX_LU/Demo/spexlu_doub_demo.c"
-                                 "SPEX_LU/Demo/lu_demos.c" )
-    add_executable ( example     "SPEX_LU/Demo/example.c" )
-    add_executable ( example2    "SPEX_LU/Demo/example2.c"
-                                 "SPEX_LU/Demo/lu_demos.c" )
+#   add_executable ( spexlu_demo "SPEX_LU/Demo/spexlu_demo.c"               --> spex_demo_lu_extended
+#                                "SPEX_LU/Demo/lu_demos.c" )
+#   add_executable ( spexlu_doub_demo "SPEX_LU/Demo/spexlu_doub_demo.c"     --> spex_demo_lu_doub
+#                                "SPEX_LU/Demo/lu_demos.c" )
+#   add_executable ( example     "SPEX_LU/Demo/example.c" )                 --> spex_demo_lu_simple1
+#   add_executable ( example2    "SPEX_LU/Demo/example2.c"                  --> spex_demo_lu_simple2
+#                                "SPEX_LU/Demo/lu_demos.c" )
 
-    # SPEX_Cholesky
-    add_executable ( example_extended
-        "SPEX_Cholesky/Demo/example_extended.c"
-        "SPEX_Cholesky/Demo/chol_demos.c" )
-    add_executable ( example_simple
-        "SPEX_Cholesky/Demo/example_simple.c"
-        "SPEX_Cholesky/Demo/chol_demos.c" )
+#   # SPEX_Cholesky
+#   add_executable ( example_extended                   --> spex_demo_cholesky_extended
+#       "SPEX_Cholesky/Demo/example_extended.c"
+#       "SPEX_Cholesky/Demo/chol_demos.c" )
+#   add_executable ( example_simple                     --> spex_demo_cholesky_simple
+#       "SPEX_Cholesky/Demo/example_simple.c"
+#       "SPEX_Cholesky/Demo/chol_demos.c" )
 
-    # SPEX_Backslash
-    add_executable ( SPEX_Backslash_Demo
-        "SPEX_Backslash/Demo/SPEX_Backslash_Demo.c"
-        "SPEX_Backslash/Demo/back_demos.c" )
+#   # SPEX_Backslash
+#   add_executable ( SPEX_Backslash_Demo                --> spex_demo_backslash_demo
+#       "SPEX_Backslash/Demo/SPEX_Backslash_Demo.c"
+#       "SPEX_Backslash/Demo/back_demos.c" )
 
-    # SPEX_Update
-    add_executable (example_for_lu_update
-        "SPEX_Update/Demo/example_for_lu_update.c"
-        "SPEX_LU/Demo/lu_demos.c" )
-    add_executable (example_for_chol_update
-        "SPEX_Update/Demo/example_for_chol_update.c"
-        "SPEX_LU/Demo/lu_demos.c" )
+#   # SPEX_Update
+#   add_executable (example_for_lu_update               --> spex_demo_Update_lu
+#       "SPEX_Update/Demo/example_for_lu_update.c"
+#       "SPEX_LU/Demo/lu_demos.c" )
+#   add_executable (example_for_chol_update             --> spex_demo_Update_chole
+#       "SPEX_Update/Demo/example_for_chol_update.c"
+#       "SPEX_LU/Demo/lu_demos.c" )
 
     # Libraries required for Demo programs
-    target_link_libraries ( spexlu_demo PUBLIC spex )
-    target_link_libraries ( spexlu_doub_demo PUBLIC spex )
-    target_link_libraries ( example  PUBLIC spex )
-    target_link_libraries ( example2 PUBLIC spex )
-    target_link_libraries ( example_extended PUBLIC spex )
-    target_link_libraries ( example_simple PUBLIC spex )
-    target_link_libraries ( SPEX_Backslash_Demo PUBLIC spex )
-    target_link_libraries ( example_for_lu_update PUBLIC spex )
-    target_link_libraries ( example_for_chol_update PUBLIC spex )
+    target_link_libraries ( spex_demo_backslash_demo    PUBLIC spex )
+    target_link_libraries ( spex_demo_cholesky_extended PUBLIC spex )
+    target_link_libraries ( spex_demo_cholesky_simple   PUBLIC spex )
+    target_link_libraries ( spex_demo_lu_doub           PUBLIC spex )
+    target_link_libraries ( spex_demo_lu_extended       PUBLIC spex )
+    target_link_libraries ( spex_demo_lu_simple1        PUBLIC spex )
+    target_link_libraries ( spex_demo_lu_simple2        PUBLIC spex )
+    target_link_libraries ( spex_demo_Update_chol       PUBLIC spex )
+    target_link_libraries ( spex_demo_Update_lu         PUBLIC spex )
 
 else ( )
 
-    message ( STATUS "Skipping the demos in SPEX*/Demo" )
+    message ( STATUS "Skipping the demos in SPEX/Demo" )
 
 endif ( )
 

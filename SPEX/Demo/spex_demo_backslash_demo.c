@@ -47,11 +47,11 @@ int main( int argc, char *argv[] )
     SPEX_options option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
 
-    char *mat_name, *rhs_name;
+    char *mat_name = NULL, *rhs_name = NULL;
     int64_t rat = 1;
 
     // Process the command line
-    DEMO_OK(SPEX_backslash_process_command_line(argc, argv, option,
+    DEMO_OK(SPEX_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -73,16 +73,22 @@ int main( int argc, char *argv[] )
     fclose(mat_file);
     n = A->n;
 
+    // FIXME: checking for rhs_file == NULL is a bad idea.  What if
+    // a desired filename has a typo?  Instead, use a special name,
+    // like "ones" and do strcmp (rhs_name, "ones") to generate a RHS of
+    // all ones.
+    // FIXME: this is in the wrong place.  All demos should have this
+    // option.
     FILE *rhs_file = fopen(rhs_name,"r");
     if( rhs_file == NULL )
     {
-        printf("\nNo RHS file provided");
-        printf("\nWill generate a RHS of all 1s");
+        printf("\nNo RHS file provided: generating a RHS of all 1s\n");
         SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n,
                              false, true, option);
         for (int64_t k = 0; k < A->n; k++)
+        {
             DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
-
+        }
     }
     else
     {
@@ -90,11 +96,13 @@ int main( int argc, char *argv[] )
         fclose(rhs_file);
     }
 
-
     //--------------------------------------------------------------------------
     // Solve Ax = b
     //--------------------------------------------------------------------------
 
+    printf("solving Ax=b ...\n");
+    fflush (stdout) ;
+    fflush (stderr) ;
     clock_t start = clock();
 
     option->print_level = 0;
@@ -106,6 +114,8 @@ int main( int argc, char *argv[] )
     double t_tot = (double) (end - start) / CLOCKS_PER_SEC;
 
     printf("\nSPEX Backslash Factor & Solve time: %lf\n", t_tot);
+
+    // FIXME: so ... did it work or not???  Must check solution
 
     //--------------------------------------------------------------------------
     // Free Memory

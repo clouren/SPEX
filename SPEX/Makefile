@@ -56,8 +56,23 @@ debug:
 
 all: library
 
-demos: library
+# FIXME: "s" is a bad idea to generate an all 1's RHS.
+# FIXME: what is 2.mat.soln.txt?  It's being used as a RHS input, not a solution
+demos:
 	( cd build && cmake $(CMAKE_OPTIONS) -DDEMO=1 .. && cmake --build . -j${JOBS} )
+	./build/spex_demo_lu_simple1
+	./build/spex_demo_lu_simple2          ExampleMats/10teams_mat.txt  ExampleMats/10teams_v.txt
+	./build/spex_demo_lu_extended       f ExampleMats/10teams_mat.txt  ExampleMats/10teams_v.txt
+	./build/spex_demo_lu_doub           f ExampleMats/10teams_mat.txt  ExampleMats/10teams_v.txt
+	./build/spex_demo_backslash_demo    f ExampleMats/10teams_mat.txt  ExampleMats/10teams_v.txt
+	./build/spex_demo_backslash_demo    f ExampleMats/2209.mat.txt     s
+	./build/spex_demo_cholesky_simple   f ExampleMats/2.mat.txt        ExampleMats/2.mat.soln.txt
+	./build/spex_demo_cholesky_extended f ExampleMats/2.mat.txt        ExampleMats/2.mat.soln.txt
+	./build/spex_demo_Update_lu         f ExampleMats/10teams_mat.txt  ExampleMats/10teams_v.txt
+	./build/spex_demo_Update_chol       f ExampleMats/872_mat.txt      s
+
+# FIXME remove olddemos target
+olddemos:
 	( cd SPEX_LU/Demo && ../../build/example  )
 	( cd SPEX_LU/Demo && ../../build/example2 )
 	( cd SPEX_LU/Demo && ../../build/spexlu_demo )

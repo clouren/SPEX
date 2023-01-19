@@ -325,13 +325,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             {
                 i = Ai[p];
                 j = Aj[p];
-                if (i < 0 || i >= m || j < 0 || j >= n)
-                {
-                    // row indices out of range
-                    SPEX_PR1 ("invalid index\n") ;
-                    SPEX_FREE_ALL ;
-                    return (SPEX_INCORRECT_INPUT) ;
-                }
+
                 if (pr >= 2)
                 {
                     SPEX_PR_LIMIT ;
@@ -391,6 +385,14 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         SPEX_PRINTF (" error: %d\n", status) ;
                         return (status) ;
                     }
+                }
+
+                if (i < 0 || i >= m || j < 0 || j >= n)
+                {
+                    // row indices out of range
+                    SPEX_PR1 ("invalid index\n") ;
+                    SPEX_FREE_ALL ;
+                    return (SPEX_INCORRECT_INPUT) ;
                 }
             }
 

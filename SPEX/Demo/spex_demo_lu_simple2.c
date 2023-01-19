@@ -45,12 +45,16 @@ int main (int argc, char **argv)
     // Get matrix and right hand side file names
     //--------------------------------------------------------------------------
 
-    char *mat_name, *rhs_name;
-    if (argc > 2)
-    {
-        mat_name = argv[1];
-        rhs_name = argv[2];
+    char *mat_name = NULL, *rhs_name = NULL;
+    if (argc < 3)
+    { 
+        perror ("usage: spex_demo_lu_simple2 matfile rhsfile") ;
+        return 0 ;
     }
+
+    mat_name = argv[1];
+    rhs_name = argv[2];
+
 
     //--------------------------------------------------------------------------
     // Declare our data structures

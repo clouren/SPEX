@@ -11,7 +11,7 @@
 /* Purpose: Determine why a SPEX function failed
  */
 
-#include "SPEX.h"
+#include "demos.h"
 
 
 void SPEX_determine_error

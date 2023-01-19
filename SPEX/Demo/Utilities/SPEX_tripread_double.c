@@ -19,7 +19,7 @@
  * the entry A(i,j).  The value aij is a floating-point number.
  */
 
-#include "SPEX.h"
+#include "demos.h"
 
 SPEX_info SPEX_tripread_double
 (
@@ -54,25 +54,26 @@ SPEX_info SPEX_tripread_double
         false, true, option);
     if (info != SPEX_OK)
     {
+        printf ("unable to allocate matrix\n") ;
         return (info) ;
     }
 
-    s = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
-        &(A->i[0]), &(A->j[0]), &(A->x.fp64[0])) ;
-    if (feof(file) || s < 2)
-    {
-        printf ("premature end-of-file\n") ;
-        SPEX_matrix_free(&A, option);
-        return SPEX_INCORRECT_INPUT;
-    }
+//  s = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
+//      &(A->i[0]), &(A->j[0]), &(A->x.fp64[0])) ;
+//  if (feof(file) || s < 2)
+//  {
+//      printf ("premature end-of-file\n") ;
+//      SPEX_matrix_free(&A, option);
+//      return SPEX_INCORRECT_INPUT;
+//  }
 
-    // Matrices in this format are 1 based. We decrement
-    // the indices by 1 to use internally
-    A->i[0] -= 1;
-    A->j[0] -= 1;
+//  // Matrices in this format are 1 based. We decrement
+//  // the indices by 1 to use internally
+//  A->i[0] -= 1;
+//  A->j[0] -= 1;
 
     // Read in the values from file
-    for (int64_t k = 1; k < nz; k++)
+    for (int64_t k = 0; k < nz; k++)
     {
         s = fscanf(file, "%"PRId64" %"PRId64" %lf\n",
             &(A->i[k]), &(A->j[k]), &(A->x.fp64[k]));
@@ -82,18 +83,58 @@ SPEX_info SPEX_tripread_double
             SPEX_matrix_free(&A, option);
             return SPEX_INCORRECT_INPUT;
         }
-        // Conversion from 1 based to 0 based
-        A->i[k] -= 1;
-        A->j[k] -= 1;
+//      // Conversion from 1 based to 0 based
+//      A->i[k] -= 1;
+//      A->j[k] -= 1;
+    }
+
+    // FIXME: why are some files in ExampleMats zero-based?
+    // fix the files and remove this.  Make them all 1-based.
+    int64_t imin = INT64_MAX, imax = 0 ;
+    int64_t jmin = INT64_MAX, jmax = 0 ;
+    for (int64_t p = 0; p < nz; p++)
+    {
+        imin = SPEX_MIN (imin, A->i [p]) ;
+        jmin = SPEX_MIN (jmin, A->j [p]) ;
+        imax = SPEX_MAX (imax, A->i [p]) ;
+        jmax = SPEX_MAX (jmax, A->j [p]) ;
+    }
+    // convert from 1-based to 0-based
+    if (imin >= 1 && jmin >= 1)
+    {
+        for (int64_t p = 0; p < nz; p++)
+        {
+            A->i[p]-- ;
+            A->j[p]-- ;
+        }
     }
 
     // the triplet matrix now has nz entries
     A->nz = nz;
 
+// print_level from option struct:
+//      0: nothing
+//      1: just errors
+//      2: errors and terse output
+//      3: verbose
+
+//  option->print_level = 3 ;
+    info = SPEX_matrix_check (A, option) ;
+    if (info != SPEX_OK)
+    {
+        printf ("invalid matrix\n") ;
+        return (info) ;
+    }
+
     // At this point, A is a double triplet matrix. We make a copy of it with C
 
     SPEX_matrix C = NULL;
-    SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
+    info = SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
+    if (info != SPEX_OK)
+    {
+        printf ("unable to copy matrix\n") ;
+        return (info) ;
+    }
 
     // Success. Set A_handle = C and free A
 

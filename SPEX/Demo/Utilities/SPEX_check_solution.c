@@ -11,7 +11,8 @@
 
 #include "demos.h"
 
-#define SPEX_FREE_WORKSPACE                 \
+#undef  FREE_WORKSPACE
+#define FREE_WORKSPACE                      \
 {                                           \
     SPEX_MPQ_CLEAR(temp);                   \
     SPEX_MPQ_CLEAR(scale);                  \
@@ -140,6 +141,6 @@ SPEX_info SPEX_check_solution
     // Free memory
     //--------------------------------------------------------------------------
 
-    SPEX_FREE_WORKSPACE ;
+    FREE_WORKSPACE ;
     return info;
 }
