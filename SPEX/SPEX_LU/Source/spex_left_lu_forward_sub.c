@@ -83,9 +83,9 @@ SPEX_info spex_left_lu_forward_sub
             if (hx < i-1)
             {
                 // x[i] = x[i] * rhos[i-1]
-                SPEX_CHECK(SPEX_mpz_mul( SPEX_2D(x, i, k, mpz),
-                                         SPEX_2D(x, i, k, mpz),
-                                         SPEX_1D(rhos, i-1, mpz)));
+                SPEX_MPZ_MUL(SPEX_2D(x, i, k, mpz),
+                             SPEX_2D(x, i, k, mpz),
+                             SPEX_1D(rhos, i-1, mpz));
                 // x[i] = x[i] / rhos[hx]
                 if (hx > -1)
                 {
