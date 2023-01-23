@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_tripread
+// SPEX_tripread: reads a matrix stored in triplet format
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2022, Chris Lourenco, Jinhao Chen,
@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function reads in a matrix stored in a triplet format
+/* Purpose: This function reads a double or mpz matrix stored in triplet format
  * This format used can be seen in any of the example mat files.
  *
  * The first line of the file contains three integers: m, n, nnz,
@@ -16,114 +16,35 @@
  *
  * This is followed by nnz lines, each containing a single triplet: i, j, aij,
  * which defines the row index (i), column index (j), and value (aij) of
- * the entry A(i,j).  The value aij is an integer.
+ * the entry A(i,j).  
  */
-
- // FIXME: why have 2 functions, SPEX_tripread and SPEX_tripread_double?
 
 #include "demos.h"
 
-
 SPEX_info SPEX_tripread
 (
-    SPEX_matrix *A_handle,      // Matrix to be constructed
+    SPEX_matrix *A_handle,      // Matrix to be populated
     FILE *file,                 // file to read from (must already be open)
-    SPEX_options option         // Command options
+    SPEX_type C_type,          // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
+    SPEX_options option
 )
 {
-
     SPEX_info info ;
     if (A_handle == NULL || file == NULL)
     {
         printf ("invalid input\n") ;
         return SPEX_INCORRECT_INPUT;
     }
-
-    (*A_handle) = NULL ;
-
-    int64_t m, n, nz;
-
-    // Read in size of matrix & number of nonzeros
-    int s = fscanf(file, "%"PRId64" %"PRId64" %"PRId64"\n", &m, &n, &nz);
-    if (feof(file) || s < 3)
+    
+    switch (C_type)
     {
-        printf ("premature end-of-file\n") ;
-        return SPEX_INCORRECT_INPUT;
+        case SPEX_MPZ:
+            SPEX_CHECK(SPEX_tripread_mpz(&A_handle, file, option));
+            break;
+        case SPEX_FP64:
+            SPEX_CHECK(SPEX_tripread_double(&A_handle, file, option));
+            break;
     }
 
-    // Allocate memory for A
-    // A is a triplet mpz_t matrix
-    SPEX_matrix A = NULL;
-    info = SPEX_matrix_allocate(&A, SPEX_TRIPLET, SPEX_MPZ, m, n, nz,
-        false, true, option);
-    if (info != SPEX_OK)
-    {
-        return (info) ;
-    }
-
-//  // Read in first values of A
-//  info = SPEX_gmp_fscanf(file, "%"PRId64" %"PRId64" %Zd\n",
-//      &A->i[0], &A->j[0], &A->x.mpz[0]);
-//  if (feof (file) || info != SPEX_OK)
-//  {
-//      printf ("premature end-of-file\n") ;
-//      SPEX_matrix_free(&A, option);
-//      return SPEX_INCORRECT_INPUT;
-//  }
-
-//  // Matrices in this format are 1 based, so we decrement by 1 to get
-//  // 0 based for internal functions
-//  A->i[0] -= 1;
-//  A->j[0] -= 1;
-
-    // Read in the values from file
-    for (int64_t p = 0; p < nz; p++)
-    {
-        info = SPEX_gmp_fscanf(file, "%"PRId64" %"PRId64" %Zd\n",
-            &A->i[p], &A->j[p], &A->x.mpz[p]);
-        if ((feof(file) && p != nz-1) || info != SPEX_OK)
-        {
-            printf ("premature end-of-file\n") ;
-            SPEX_matrix_free(&A, option);
-            return SPEX_INCORRECT_INPUT;
-        }
-//      // Conversion from 1 based to 0 based if necessary
-//      A->i[p] -= 1;
-//      A->j[p] -= 1;
-    }
-
-    // FIXME: why are some files in ExampleMats zero-based?
-    // fix the files and remove this.  Make them all 1-based.
-    int64_t imin = INT64_MAX, imax = 0 ;
-    int64_t jmin = INT64_MAX, jmax = 0 ;
-    for (int64_t p = 0; p < nz; p++)
-    {
-        imin = SPEX_MIN (imin, A->i [p]) ;
-        jmin = SPEX_MIN (jmin, A->j [p]) ;
-        imax = SPEX_MAX (imax, A->i [p]) ;
-        jmax = SPEX_MAX (jmax, A->j [p]) ;
-    }
-    // convert from 1-based to 0-based
-    if (imin >= 1 && jmin >= 1)
-    {
-        for (int64_t p = 0; p < nz; p++)
-        {
-            A->i[p]-- ;
-            A->j[p]-- ;
-        }
-    }
-
-    // the triplet matrix now has nz entries
-    A->nz = nz;
-
-    // A now contains our input matrix in triplet format. We now
-    // do a matrix copy to get it into CSC form
-    // C is a copy of A which is CSC and mpz_t
-    SPEX_matrix C = NULL;
-    SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
-
-    // Free A, set A_handle
-    SPEX_matrix_free(&A, option);
-    (*A_handle) = C;
-    return (info) ;
+    return SPEX_OK;
 }

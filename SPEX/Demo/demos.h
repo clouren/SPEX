@@ -38,12 +38,6 @@ SPEX_info SPEX_process_command_line //processes the command line
                             // 1: mpz, 2: double, 3: mpfr
 );
 
-/* Purpose: This function prints out the user specified/default options*/
-void SPEX_print_options     // display specified/default options to user
-(
-    SPEX_options option // struct containing all of the options
-);
-
 /* Purpose: This function shows the usage of the code.*/
 void SPEX_show_usage(void);
 
@@ -54,13 +48,24 @@ SPEX_info SPEX_tripread
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE *file,                 // file to read from (must already be open)
+    SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
     SPEX_options option
 ) ;
 
 /* Purpose: This function reads in a double matrix stored in a triplet format.
  * This format used can be seen in any of the example mat files.
  */
-SPEX_info SPEX_tripread_double
+SPEX_info spex_tripread_double
+(
+    SPEX_matrix *A_handle,     // Matrix to be constructed
+    FILE *file,                 // file to read from (must already be open)
+    SPEX_options option
+) ;
+
+/* Purpose: This function reads in a matrix stored in a triplet format.
+ * This format used can be seen in any of the example mat files.
+ */
+SPEX_info SPEX_tripread_mpz
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE *file,                 // file to read from (must already be open)

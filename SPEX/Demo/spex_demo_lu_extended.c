@@ -197,10 +197,6 @@ int main (int argc, char *argv[])
 
     // Column ordering using either AMD, COLAMD or nothing
     DEMO_OK(SPEX_lu_analyze(&S, A, option));
-    if (option->print_level > 0)
-    {
-        SPEX_print_options(option);
-    }
 
     clock_t end_col = clock();
 

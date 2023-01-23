@@ -30,11 +30,9 @@ SPEX_info spex_tripread_double
 {
 
     SPEX_info info ;
-    if (A_handle == NULL || file == NULL)
-    {
-        printf ("invalid input\n") ;
-        return SPEX_INCORRECT_INPUT;
-    }
+    ASSERT(A_handle!=NULL);
+    ASSERT(file!=NULL);
+    
     (*A_handle) = NULL ;
 
     // Read in triplet form first

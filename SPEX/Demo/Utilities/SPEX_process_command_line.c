@@ -39,14 +39,14 @@ SPEX_info SPEX_process_command_line //processes the command line
             if (!argv[++i])
             {
                 printf("\n****ERROR! There must be an argument between 0-2"
-                    "followint64_t*g q\n");
+                    "following q\n");
                 return SPEX_INCORRECT_INPUT;
             }
             option->order = atoi(argv[i]);
             if (option->order < 0 || option->order > 2)
             {
-                printf("\n****ERROR! Invalid column orderint64_t*g"
-                    "\nDefaultint64_t*g to COLAMD\n\n");
+                printf("\n****ERROR! Invalid column ordering"
+                    "\nDefaulting to COLAMD\n\n");
                 option->order = SPEX_COLAMD;
             }
         }
@@ -55,13 +55,13 @@ SPEX_info SPEX_process_command_line //processes the command line
             if (!argv[++i])
             {
                 printf("\n****ERROR! o2 or out2 must be followed by"
-                    " 0 (print64_t*64_tnothint64_t*g) 1 (print64_t*64_terr) or 2 (terse) \n");
+                    " 0 (print nothing) 1 (print err) or 2 (terse) \n");
                 return SPEX_INCORRECT_INPUT;
             }
             else if (!atoi(argv[i]))
             {
                 printf("\n****ERROR! o2 or out2 must be followed by"
-                    " 0 (print64_t*64_tnothint64_t*g) 1 (print64_t*64_terr) or 2 (terse) \n");
+                    " 0 (print nothing) 1 (print err) or 2 (terse) \n");
                 return SPEX_INCORRECT_INPUT;
             }
             option->print_level = atoi(argv[i]);
@@ -84,7 +84,7 @@ SPEX_info SPEX_process_command_line //processes the command line
             if (*rat < 1 || *rat > 3)
             {
                 printf("\n\n****ERROR! Invalid output type!\n"
-                   "Defaultint64_t*g to rational");
+                   "Defaulting to rational");
                 *rat = 1;
             }
             if (*rat == 3)
@@ -125,8 +125,8 @@ SPEX_info SPEX_process_command_line //processes the command line
         }
         else
         {
-            printf("\n\n**ERROR! Unknown command lint64_t*e parameter: %s"
-                    "\nIgnorint64_t*g this parameter\n",arg);
+            printf("\n\n**ERROR! Unknown command line parameter: %s"
+                    "\nIgnoring this parameter\n",arg);
             return SPEX_INCORRECT_INPUT;
         }
     }
