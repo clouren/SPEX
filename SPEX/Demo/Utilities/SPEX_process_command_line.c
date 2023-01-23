@@ -12,8 +12,6 @@
 
 #include "demos.h"
 
-// FIXME: what is "s" ?
-
 SPEX_info SPEX_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments

@@ -148,7 +148,7 @@ int main (int argc, char *argv[])
     }
 
     //DEMO_OK(SPEX_tripread(&A, mat_file, option));
-    DEMO_OK(SPEX_tripread_double(&A, mat_file, option));
+    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
 
 #if 0

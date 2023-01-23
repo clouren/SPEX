@@ -227,39 +227,6 @@ if ( DEMO )
     add_executable ( spex_demo_Update_chol       "Demo/spex_demo_Update_chol.c"       ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_Update_lu         "Demo/spex_demo_Update_lu.c"         ${SPEX_DEMO_SOURCES} )
 
-# FIXME: delete all SPEX*/Demo folders and their contents
-#   include_directories ( SPEX_Backslash/Demo SPEX_Cholesky/Demo SPEX_LU/Demo
-#       SPEX_Update/Demo )
-
-    # SPEX_LU
-#   add_executable ( spexlu_demo "SPEX_LU/Demo/spexlu_demo.c"               --> spex_demo_lu_extended
-#                                "SPEX_LU/Demo/lu_demos.c" )
-#   add_executable ( spexlu_doub_demo "SPEX_LU/Demo/spexlu_doub_demo.c"     --> spex_demo_lu_doub
-#                                "SPEX_LU/Demo/lu_demos.c" )
-#   add_executable ( example     "SPEX_LU/Demo/example.c" )                 --> spex_demo_lu_simple1
-#   add_executable ( example2    "SPEX_LU/Demo/example2.c"                  --> spex_demo_lu_simple2
-#                                "SPEX_LU/Demo/lu_demos.c" )
-
-#   # SPEX_Cholesky
-#   add_executable ( example_extended                   --> spex_demo_cholesky_extended
-#       "SPEX_Cholesky/Demo/example_extended.c"
-#       "SPEX_Cholesky/Demo/chol_demos.c" )
-#   add_executable ( example_simple                     --> spex_demo_cholesky_simple
-#       "SPEX_Cholesky/Demo/example_simple.c"
-#       "SPEX_Cholesky/Demo/chol_demos.c" )
-
-#   # SPEX_Backslash
-#   add_executable ( SPEX_Backslash_Demo                --> spex_demo_backslash_demo
-#       "SPEX_Backslash/Demo/SPEX_Backslash_Demo.c"
-#       "SPEX_Backslash/Demo/back_demos.c" )
-
-#   # SPEX_Update
-#   add_executable (example_for_lu_update               --> spex_demo_Update_lu
-#       "SPEX_Update/Demo/example_for_lu_update.c"
-#       "SPEX_LU/Demo/lu_demos.c" )
-#   add_executable (example_for_chol_update             --> spex_demo_Update_chole
-#       "SPEX_Update/Demo/example_for_chol_update.c"
-#       "SPEX_LU/Demo/lu_demos.c" )
 
     # Libraries required for Demo programs
     target_link_libraries ( spex_demo_backslash_demo    PUBLIC spex )

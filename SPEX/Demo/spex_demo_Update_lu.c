@@ -61,7 +61,7 @@ int main(int argc, char *argv[] )
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(SPEX_tripread(&A, mat_file, option));
+    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_MPZ ,option));
     fclose(mat_file);
 
     //--------------------------------------------------------------------------

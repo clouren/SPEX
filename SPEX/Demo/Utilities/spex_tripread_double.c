@@ -82,30 +82,9 @@ SPEX_info spex_tripread_double
             return SPEX_INCORRECT_INPUT;
         }
 //      // Conversion from 1 based to 0 based
-//      A->i[k] -= 1;
-//      A->j[k] -= 1;
+        A->i[k] -= 1;
+        A->j[k] -= 1;
     }
-
-    // FIXME: why are some files in ExampleMats zero-based?
-    // fix the files and remove this.  Make them all 1-based.
-    int64_t imin = INT64_MAX, imax = 0 ;
-    int64_t jmin = INT64_MAX, jmax = 0 ;
-    for (int64_t p = 0; p < nz; p++)
-    {
-        imin = SPEX_MIN (imin, A->i [p]) ;
-        jmin = SPEX_MIN (jmin, A->j [p]) ;
-        imax = SPEX_MAX (imax, A->i [p]) ;
-        jmax = SPEX_MAX (jmax, A->j [p]) ;
-    }
-    // convert from 1-based to 0-based
-    //if (imin >= 1 && jmin >= 1)
-    //{
-        for (int64_t p = 0; p < nz; p++)
-        {
-            A->i[p]-- ;
-            A->j[p]-- ;
-        }
-    //}
 
     // the triplet matrix now has nz entries
     A->nz = nz;

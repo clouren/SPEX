@@ -85,16 +85,24 @@ int main (int argc, char **argv)
         return 0;
     }
 
-    DEMO_OK(SPEX_tripread_double(&A, mat_file, option));
+    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
 
     int64_t n = A->n;
     SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
         option);
 
-    // Create RHS
-    for (int64_t k = 0; k < n; k++)
-        DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
+    // Read in b. The output of this demo function is b in dense format with
+    // mpz_t entries
+    FILE *rhs_file = fopen(rhs_name,"r");
+    if( rhs_file == NULL )
+    {
+        perror("Error while opening the file");
+        FREE_WORKSPACE;
+        return 0;
+    }
+    DEMO_OK(SPEX_read_dense(&b, rhs_file, option));
+    fclose(rhs_file);
 
     // Check if the size of A matches b
     if (A->n != b->m)

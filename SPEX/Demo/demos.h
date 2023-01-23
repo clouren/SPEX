@@ -65,7 +65,7 @@ SPEX_info spex_tripread_double
 /* Purpose: This function reads in a matrix stored in a triplet format.
  * This format used can be seen in any of the example mat files.
  */
-SPEX_info SPEX_tripread_mpz
+SPEX_info spex_tripread_mpz
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE *file,                 // file to read from (must already be open)
