@@ -1,6 +1,0 @@
-# Ignore these files:
-SPEX_Backslash_Demo
-
-# Do not ignore this file
-!.gitignore
-
