@@ -23,7 +23,7 @@
 
 #define SPEX_FREE_ALL               \
 {                                   \
-    spex_scattered_vector_free(&w_dense, option; \
+    spex_scattered_vector_free(&w_dense, option); \
     SPEX_FREE(h);                   \
     SPEX_MPQ_CLEAR(sd_ratio);       \
     SPEX_MPQ_CLEAR(pending_scale);  \

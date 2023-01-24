@@ -188,7 +188,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
             if (h[j] < jnew - 1)           // HU must be performed
             {
                 // x[j] = x[j] * rho[j-1]
-                SPEX_MPZ_MUL(x_mpz[j],x_mpz[j],rhos_mpz[jnew-1]));
+                SPEX_MPZ_MUL(x_mpz[j],x_mpz[j],rhos_mpz[jnew-1]);
 
                 if (h[j] > -1)
                 {

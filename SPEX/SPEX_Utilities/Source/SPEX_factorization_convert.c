@@ -346,9 +346,9 @@ SPEX_info SPEX_factorization_convert
                 {
                     // apply scale to L->v[j]->x[p]
                     SPEX_CHECK(SPEX_mpz_divexact(L->v[j]->x[p],
-                        L->v[j]->x[p], SPEX_MPQ_DEN(L->v[j]->scale))) ;
+                        L->v[j]->x[p], SPEX_MPQ_DEN(L->v[j]->scale)));
                     SPEX_MPZ_MUL(L->v[j]->x[p],
-                        L->v[j]->x[p], SPEX_MPQ_NUM(L->v[j]->scale)));
+                        L->v[j]->x[p], SPEX_MPQ_NUM(L->v[j]->scale));
                 }
                 SPEX_CHECK(SPEX_mpz_swap(Mx[mp], L->v[j]->x[p])) ;
                 mp++;
@@ -422,9 +422,9 @@ SPEX_info SPEX_factorization_convert
                     {
                         // apply scale to U->v[i]->x[p]
                         SPEX_CHECK(SPEX_mpz_divexact(U->v[i]->x[p],
-                            U->v[i]->x[p], SPEX_MPQ_DEN(U->v[i]->scale))) ;
+                            U->v[i]->x[p], SPEX_MPQ_DEN(U->v[i]->scale)));
                         SPEX_MPZ_MUL(U->v[i]->x[p],
-                            U->v[i]->x[p], SPEX_MPQ_NUM(U->v[i]->scale)));
+                            U->v[i]->x[p], SPEX_MPQ_NUM(U->v[i]->scale));
                     }
                     SPEX_CHECK(SPEX_mpz_swap(Mx[mp], U->v[i]->x[p])) ;
                 }

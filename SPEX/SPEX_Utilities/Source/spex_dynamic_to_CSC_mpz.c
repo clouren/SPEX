@@ -62,7 +62,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
                 SPEX_CHECK(SPEX_mpz_divexact(SPEX_1D(A, Ap, mpz),
                     B->v[j]->x[Bp], SPEX_MPQ_DEN(B->v[j]->scale))) ;
                 SPEX_MPZ_MUL(SPEX_1D(A, Ap, mpz),
-                    SPEX_1D(A, Ap, mpz), SPEX_MPQ_NUM(B->v[j]->scale)));
+                    SPEX_1D(A, Ap, mpz), SPEX_MPQ_NUM(B->v[j]->scale));
             }
             Ap++;
         }
