@@ -62,12 +62,12 @@ demos:
 	./build/spex_demo_lu_simple2          ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
 	./build/spex_demo_lu_extended       f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
 	./build/spex_demo_lu_doub           f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
-	./build/spex_demo_backslash_demo    f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
-	./build/spex_demo_backslash_demo    f ExampleMats/2209.mat.txt     ExampleMats/2209.rhs.txt
-	./build/spex_demo_cholesky_simple   f ExampleMats/2.mat.txt        ExampleMats/2.rhs.txt
-	./build/spex_demo_cholesky_extended f ExampleMats/2.mat.txt        ExampleMats/2.rhs.txt
+	./build/spex_demo_backslash         f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
+	./build/spex_demo_backslash         f ExampleMats/2209.mat.txt     ExampleMats/2209.rhs.txt
+	./build/spex_demo_cholesky_simple   f ExampleMats/494_bus.mat.txt        ExampleMats/494_bus.rhs.txt
+	./build/spex_demo_cholesky_extended f ExampleMats/494_bus.mat.txt        ExampleMats/494_bus.rhs.txt
 	./build/spex_demo_Update_lu         f ExampleMats/10teams.mat.txt  ExampleMats/10teams.rhs.txt
-	./build/spex_demo_Update_chol       f ExampleMats/872.mat.txt      ExampleMats/872.rhs.txt
+	./build/spex_demo_Update_chol       f ExampleMats/mesh1e1.mat.txt      ExampleMats/mesh1e1.rhs.txt
 
 
 cov:
