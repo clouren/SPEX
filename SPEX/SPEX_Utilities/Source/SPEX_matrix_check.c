@@ -604,8 +604,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         SPEX_CHECK(SPEX_mpz_sgn(&sgn, A->v[j]->x[p]));
                         if (sgn != 0)
                         {
-                            SPEX_CHECK(SPEX_mpz_mul(q, A->v[j]->x[p],
-                                SPEX_MPQ_NUM(A->v[j]->scale)));
+                            SPEX_MPZ_MUL(q, A->v[j]->x[p],
+                                SPEX_MPQ_NUM(A->v[j]->scale));
                             SPEX_CHECK(SPEX_mpz_cdiv_qr(q, r, q,
                                 SPEX_MPQ_DEN(A->v[j]->scale)));
                             SPEX_CHECK(SPEX_mpz_sgn(&sgn, r));

@@ -146,8 +146,8 @@ SPEX_info spex_update_debug
             SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->L->v[jcol]->x[0],
                                          SPEX_MPQ_DEN(SL(jcol))));
         }
-        SPEX_CHECK(SPEX_mpz_mul     (tmpz, tmpz,
-                                     SPEX_MPQ_NUM(SL(jcol))));
+        SPEX_MPZ_MUL     (tmpz, tmpz,
+                                     SPEX_MPQ_NUM(SL(jcol)));
         SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->rhos->x.mpz[jcol], tmpz));
         if (r != 0)
         {
@@ -169,8 +169,8 @@ SPEX_info spex_update_debug
             SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->U->v[jcol]->x[0],
                                          SPEX_MPQ_DEN(SU(jcol))));
         }
-        SPEX_CHECK(SPEX_mpz_mul     (tmpz, tmpz,
-                                     SPEX_MPQ_NUM(SU(jcol))));
+        SPEX_MPZ_MUL     (tmpz, tmpz,
+                                     SPEX_MPQ_NUM(SU(jcol)));
         SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->rhos->x.mpz[jcol], tmpz));
         if (r != 0)
         {
@@ -233,8 +233,8 @@ SPEX_info spex_update_debug
                                                  F->L->v[jcol]->x[found_p],
                                                  SPEX_MPQ_DEN(SL(jcol))));
                 }
-                SPEX_CHECK(SPEX_mpz_mul     (tmpz, tmpz,
-                                             SPEX_MPQ_NUM(SL(jcol))));
+                SPEX_MPZ_MUL     (tmpz, tmpz,
+                                             SPEX_MPQ_NUM(SL(jcol)));
                 SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->L->x.mpz[p], tmpz));
                 if (r != 0)
                 {
@@ -344,8 +344,8 @@ SPEX_info spex_update_debug
                     SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->U->v[i]->x[found_p],
                                                  SPEX_MPQ_DEN(SU(i))));
                 }
-                SPEX_CHECK(SPEX_mpz_mul     (tmpz, tmpz,
-                                             SPEX_MPQ_NUM(SU(i))));
+                SPEX_MPZ_MUL     (tmpz, tmpz,
+                                             SPEX_MPQ_NUM(SU(i)));
                 SPEX_CHECK(SPEX_mpz_cmp(&r, UT->x.mpz[p], tmpz));
                 if (r != 0)
                 {

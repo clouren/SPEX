@@ -65,9 +65,9 @@ SPEX_info SPEX_QR_IPGE
             for ( j = 0; j < m; j++)
             {
                 // Q(j,i) = Q(j,i)*R(k,k)
-                SPEX_CHECK(SPEX_mpz_mul( SPEX_2D(Q, j, i, mpz),
+                SPEX_MPZ_MUL( SPEX_2D(Q, j, i, mpz),
                               SPEX_2D(Q, j, i, mpz),
-                              SPEX_2D(R, k, k, mpz)));
+                              SPEX_2D(R, k, k, mpz));
                 // Q(j,i) = Q(j,i) - R(k,i)*Q(j,k)
                 SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(Q, j, i, mpz),
                                  SPEX_2D(R, k, i, mpz),

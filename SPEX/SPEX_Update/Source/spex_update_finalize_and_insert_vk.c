@@ -82,7 +82,7 @@ SPEX_info spex_update_finalize_and_insert_vk
         if (h[i] < k-1)
         {
             // perform history update if needed
-            SPEX_CHECK(SPEX_mpz_mul(vk_dense->x[i], vk_dense->x[i], sd[k-1]));
+            SPEX_MPZ_MUL(vk_dense->x[i], vk_dense->x[i], sd[k-1]);
             if (h[i] > -1)
             {
                 SPEX_CHECK(SPEX_mpz_divexact(vk_dense->x[i],

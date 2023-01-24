@@ -288,8 +288,8 @@ SPEX_info spex_cholesky_left_triangular_solve
                         // No previous pivot in this case
                         if (j < 1)
                         {
-                            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],
-                                        rhos->x.mpz[0])); // x[i] = x[i]*rho[0]
+                            SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
+                                        rhos->x.mpz[0]); // x[i] = x[i]*rho[0]
                             SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m],
                                          x->x.mpz[j]));// x[i] = x[i] - lij*xj
                             h[i] = j;                 // Entry is now up to date
@@ -300,8 +300,8 @@ SPEX_info spex_cholesky_left_triangular_solve
                             // History update if necessary
                             if (h[i] < j - 1)
                             {
-                                SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],
-                                    rhos->x.mpz[j-1]));// x[i] = x[i] * rho[j-1]
+                                SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
+                                    rhos->x.mpz[j-1]);// x[i] = x[i] * rho[j-1]
                                 if (h[i] > -1)
                                 {
                                     SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],
@@ -309,8 +309,8 @@ SPEX_info spex_cholesky_left_triangular_solve
                                                     // x[i] = x[i] / rho[h[i]]
                                 }
                             }
-                            SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[i],x->x.mpz[i],
-                                        rhos->x.mpz[j]));// x[i] = x[i] * rho[j]
+                            SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
+                                        rhos->x.mpz[j]);// x[i] = x[i] * rho[j]
                             SPEX_CHECK(SPEX_mpz_submul(x->x.mpz[i], L->x.mpz[m],
                                         x->x.mpz[j]));// x[i] = x[i] - lij*xj
                             SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[i],
@@ -329,8 +329,8 @@ SPEX_info spex_cholesky_left_triangular_solve
             //------------------------------------------------------------------
             if (h[j] < k-1)
             {
-                SPEX_CHECK(SPEX_mpz_mul(x->x.mpz[j],x->x.mpz[j],
-                                rhos->x.mpz[k-1])); // x[j] = x[j] * rho[k-1]
+                SPEX_MPZ_MUL(x->x.mpz[j],x->x.mpz[j],
+                                rhos->x.mpz[k-1]); // x[j] = x[j] * rho[k-1]
                 if (h[j] > -1)
                 {
                     SPEX_CHECK(SPEX_mpz_divexact(x->x.mpz[j],x->x.mpz[j],

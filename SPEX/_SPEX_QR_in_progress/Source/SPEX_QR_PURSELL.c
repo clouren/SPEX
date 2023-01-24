@@ -96,9 +96,9 @@ SPEX_info SPEX_QR_PURSELL
                 else
                 {
                     // A2(i,j) = A2(i,j)*A2(k,k)
-                    SPEX_CHECK(SPEX_mpz_mul ( SPEX_2D(A2, i, j, mpz),
+                    SPEX_MPZ_MUL ( SPEX_2D(A2, i, j, mpz),
                                    SPEX_2D(A2, i, j, mpz),
-                                   SPEX_2D(A2, k, k, mpz)));
+                                   SPEX_2D(A2, k, k, mpz));
                     // A2(i,j) = A2(i,j) - A2(i,k)*A2(i,k)
                     SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(A2, i, j, mpz),
                                      SPEX_2D(A2, k, i, mpz),
@@ -117,9 +117,9 @@ SPEX_info SPEX_QR_PURSELL
         {
             for (j = 0; j < m; j++)
             {
-                SPEX_CHECK(SPEX_mpz_mul( SPEX_2D(A_T, i, j, mpz),
+                SPEX_MPZ_MUL( SPEX_2D(A_T, i, j, mpz),
                               SPEX_2D(A2,  k, k, mpz),
-                              SPEX_2D(A_T, i, j, mpz)));
+                              SPEX_2D(A_T, i, j, mpz));
                 SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(A_T, i, j, mpz),
                                  SPEX_2D(A2,  k, i, mpz),
                                  SPEX_2D(A_T, k, j, mpz)));

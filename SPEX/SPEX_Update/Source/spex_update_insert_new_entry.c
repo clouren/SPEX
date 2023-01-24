@@ -44,7 +44,7 @@ SPEX_info spex_update_insert_new_entry
             // perform division first to make it small, and this
             // division will preserve integer propety
             SPEX_CHECK(SPEX_mpz_divexact(v->x[p], v->x[p], SPEX_MPQ_DEN(S)));
-            SPEX_CHECK(SPEX_mpz_mul(v->x[p], v->x[p], SPEX_MPQ_NUM(S)));
+            SPEX_MPZ_MUL(v->x[p], v->x[p], SPEX_MPQ_NUM(S));
         }
         SPEX_CHECK(SPEX_mpq_set_ui(S, 1, 1));
     }

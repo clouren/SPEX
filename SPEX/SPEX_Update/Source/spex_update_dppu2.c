@@ -77,7 +77,7 @@ SPEX_info spex_update_dppu2
         //----------------------------------------------------------------------
         if (k > 0)
         {
-            SPEX_CHECK(SPEX_mpz_mul(U->v[n-1]->x[0], sd[n-1], sd[k-1]));
+            SPEX_MPZ_MUL(U->v[n-1]->x[0], sd[n-1], sd[k-1]);
             SPEX_CHECK(SPEX_mpz_divexact(U->v[n-1]->x[0],
                                          U->v[n-1]->x[0], sd[n-2]));
         }
@@ -115,8 +115,8 @@ SPEX_info spex_update_dppu2
                 // sd(j) = sd(j)*pending_scale;
                 SPEX_CHECK(SPEX_mpz_divexact(sd[j],
                                         sd[j], SPEX_MPQ_DEN(pending_scale)));
-                SPEX_CHECK(SPEX_mpz_mul(sd[j],
-                                        sd[j], SPEX_MPQ_NUM(pending_scale)));
+                SPEX_MPZ_MUL(sd[j],
+                                        sd[j], SPEX_MPQ_NUM(pending_scale));
             }
         }
 
@@ -162,8 +162,8 @@ SPEX_info spex_update_dppu2
         // sd(ks) = sd(ks)*pending_scale
         SPEX_CHECK(SPEX_mpz_divexact(sd[tmp_ks],
                                 sd[tmp_ks], SPEX_MPQ_DEN(pending_scale)));
-        SPEX_CHECK(SPEX_mpz_mul(sd[tmp_ks],
-                                sd[tmp_ks], SPEX_MPQ_NUM(pending_scale)));
+        SPEX_MPZ_MUL(sd[tmp_ks],
+                                sd[tmp_ks], SPEX_MPQ_NUM(pending_scale));
 
         //----------------------------------------------------------------------
         // swap rows and columns k and ks of L and U
@@ -201,8 +201,8 @@ SPEX_info spex_update_dppu2
                 // sd(j) = sd(j)*pending_scale;
                 SPEX_CHECK(SPEX_mpz_divexact(sd[j],
                                         sd[j], SPEX_MPQ_DEN(pending_scale)));
-                SPEX_CHECK(SPEX_mpz_mul(sd[j],
-                                        sd[j], SPEX_MPQ_NUM(pending_scale)));
+                SPEX_MPZ_MUL(sd[j],
+                                        sd[j], SPEX_MPQ_NUM(pending_scale));
             }
         }
     }
@@ -238,9 +238,9 @@ SPEX_info spex_update_dppu2
         SPEX_CHECK(SPEX_mpz_divexact(Uk_dense_row->x[cks],
                                      Uk_dense_row->x[cks],
                                      SPEX_MPQ_DEN(SU(tmp_ks))));
-        SPEX_CHECK(SPEX_mpz_mul     (Uk_dense_row->x[cks],
+        SPEX_MPZ_MUL     (Uk_dense_row->x[cks],
                                      Uk_dense_row->x[cks],
-                                     SPEX_MPQ_NUM(SU(tmp_ks))));
+                                     SPEX_MPQ_NUM(SU(tmp_ks)));
     }
     // the value of S(2,ks) will be updated at the end of this function
 
@@ -271,8 +271,8 @@ SPEX_info spex_update_dppu2
             // U(n-1,Q(n-1)) = (U(n-1, Q(n-1))*L(P[k], k)-
             //                  L(P[n-1], k)*U(k, Q(n-1)))/sd[k-1]
             // NOTE: S(1,k) = 1, so the above result is unscaled
-            SPEX_CHECK(SPEX_mpz_mul(Uk_dense_row->x[Qks],
-                                    Uk_dense_row->x[Qks], L->v[k]->x[0]));
+            SPEX_MPZ_MUL(Uk_dense_row->x[Qks],
+                                    Uk_dense_row->x[Qks], L->v[k]->x[0]);
             SPEX_CHECK(SPEX_mpz_submul(Uk_dense_row->x[Qks],
                                     U->v[k]->x[0], L->v[k]->x[1]));
             if (k > 0)
@@ -380,8 +380,8 @@ SPEX_info spex_update_dppu2
             if (h[cks] < last_nz_b4_ks) // require history update
             {
                 // U(ks,cks) = (U(ks,cks)*sd(last_nz_b4_ks))/sd(h[cks]);
-                SPEX_CHECK(SPEX_mpz_mul(Uk_dense_row->x[cks],
-                                      Uk_dense_row->x[cks], sd[last_nz_b4_ks]));
+                SPEX_MPZ_MUL(Uk_dense_row->x[cks],
+                                      Uk_dense_row->x[cks], sd[last_nz_b4_ks]);
                 if (h[cks] > -1)
                 {
                     SPEX_CHECK(SPEX_mpz_divexact(Uk_dense_row->x[cks],
@@ -401,8 +401,8 @@ SPEX_info spex_update_dppu2
         // sd(ks) = U(ks,Q(ks))*S(3,ks)
         SPEX_CHECK(SPEX_mpz_divexact(sd[tmp_ks],Uk_dense_row->x[Qks],
                                      SPEX_MPQ_DEN(SU(tmp_ks))));
-        SPEX_CHECK(SPEX_mpz_mul(sd[tmp_ks], sd[tmp_ks],
-                                     SPEX_MPQ_NUM(SU(tmp_ks))));
+        SPEX_MPZ_MUL(sd[tmp_ks], sd[tmp_ks],
+                                     SPEX_MPQ_NUM(SU(tmp_ks)));
     }
     else
     {

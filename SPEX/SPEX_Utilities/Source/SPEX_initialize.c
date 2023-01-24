@@ -18,7 +18,7 @@
 
 // a global variable, but only accessible within this file.
 SUITESPARSE_PUBLIC
-bool spex_initialize_has_been_called ;
+bool spex_initialize_has_been_call;
 bool spex_initialize_has_been_called = false ;
 
 bool spex_initialized ( void )

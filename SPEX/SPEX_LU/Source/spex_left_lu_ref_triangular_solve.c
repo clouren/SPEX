@@ -188,7 +188,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
             if (h[j] < jnew - 1)           // HU must be performed
             {
                 // x[j] = x[j] * rho[j-1]
-                SPEX_CHECK(SPEX_mpz_mul(x_mpz[j],x_mpz[j],rhos_mpz[jnew-1]));
+                SPEX_MPZ_MUL(x_mpz[j],x_mpz[j],rhos_mpz[jnew-1]));
 
                 if (h[j] > -1)
                 {
@@ -257,8 +257,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                         if (jnew < 1)
                         {
                             // x[i] = x[i]*rho[0]
-                            SPEX_CHECK(SPEX_mpz_mul(x_mpz[i],x_mpz[i],
-                                rhos_mpz[0]));
+                            SPEX_MPZ_MUL(x_mpz[i], x_mpz[i], rhos_mpz[0]);
 
                             // x[i] = x[i] - lij*xj
                             SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
@@ -272,8 +271,8 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                             if (h[i] < jnew - 1)
                             {
                                 // x[i] = x[i] * rho[j-1]
-                                SPEX_CHECK(SPEX_mpz_mul(x_mpz[i], x_mpz[i],
-                                    rhos_mpz[jnew-1]));
+                                SPEX_MPZ_MUL(x_mpz[i], x_mpz[i], 
+                                    rhos_mpz[jnew-1]);
                                 if (h[i] > -1)
                                 {
                                     // x[i] = x[i] / rho[h[i]]
@@ -282,8 +281,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                                 }
                             }
                             // x[i] = x[i] * rho[j]
-                            SPEX_CHECK(SPEX_mpz_mul(x_mpz[i],x_mpz[i],
-                                rhos_mpz[jnew]));
+                            SPEX_MPZ_MUL(x_mpz[i], x_mpz[i], rhos_mpz[jnew]);
                             // x[i] = x[i] - lij*xj
                             SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
                                 x_mpz[j]));
@@ -304,7 +302,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
             if (h[j] < k-1)
             {
                 // x[j] = x[j] * rho[k-1]
-                SPEX_CHECK(SPEX_mpz_mul(x_mpz[j], x_mpz[j], rhos_mpz[k-1]));
+                SPEX_MPZ_MUL(x_mpz[j], x_mpz[j], rhos_mpz[k-1]);
                 if (h[j] > -1)
                 {
                     // x[j] = x[j] / rho[h[j]]

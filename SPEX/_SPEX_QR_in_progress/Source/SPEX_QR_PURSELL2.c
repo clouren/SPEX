@@ -126,9 +126,9 @@ SPEX_info SPEX_QR_PURSELL2
         {
             for (j = i; j < A3->n; j++)
             {
-                SPEX_CHECK(SPEX_mpz_mul ( SPEX_2D(A3, i, j, mpz),
+                SPEX_MPZ_MUL ( SPEX_2D(A3, i, j, mpz),
                                SPEX_2D(A3, i, j, mpz),
-                               SPEX_2D(A3, k, k, mpz)));
+                               SPEX_2D(A3, k, k, mpz));
                 SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(A3, i, j, mpz),
                                  SPEX_2D(A3, k, i, mpz),
                                  SPEX_2D(A3, k, j, mpz)));

@@ -253,6 +253,9 @@ SPEX_info spex_gmp_failure (int status) ;
 // a gmp call.
 //------------------------------------------------------------------------------
 
-#define SPEX_MPZ_MUL(a,b,c) SPEX_CHECK (SPEX_mpz_mul (a, b, c))
+
+#define SPEX_MPZ_MUL(a,b,c) SPEX_CHECK( SPEX_mpz_mul(a, b, c) )
+#define SPEX_MPZ_MUL_SI(a,b,c) SPEX_CHECK( SPEX_mpz_mul_si(a, b, c) )
+
 
 #endif

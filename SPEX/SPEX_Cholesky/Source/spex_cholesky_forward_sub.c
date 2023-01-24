@@ -92,8 +92,8 @@ SPEX_info spex_cholesky_forward_sub
             if (p < i-1)
             {
                 // x[i,l] = x[i,k] * rhos[i-1]
-                SPEX_CHECK(SPEX_mpz_mul(SPEX_2D(x, i, k, mpz),
-                                    SPEX_2D(x, i, k, mpz),rhos->x.mpz[i-1]));
+                SPEX_MPZ_MUL(SPEX_2D(x, i, k, mpz),
+                                    SPEX_2D(x, i, k, mpz),rhos->x.mpz[i-1]);
 
                 // Only divide by the previous pivot if it is not =1
                 // (the default for the first iteration)
@@ -145,8 +145,8 @@ SPEX_info spex_cholesky_forward_sub
                         if (p < i-1)
                         {
                             // x[m,k] = x[m,k] * rhos[i-1]
-                            SPEX_CHECK(SPEX_mpz_mul( SPEX_2D(x, mnew, k, mpz),
-                                    SPEX_2D(x, mnew, k, mpz),rhos->x.mpz[i-1]));
+                            SPEX_MPZ_MUL( SPEX_2D(x, mnew, k, mpz),
+                                    SPEX_2D(x, mnew, k, mpz),rhos->x.mpz[i-1]);
                             // Divide by the history pivot if we are not in the
                             // first interation (in which case rhos[p] = 1)
                             // x[m,k] = x[m,k] / rhos[p]
@@ -158,8 +158,8 @@ SPEX_info spex_cholesky_forward_sub
                             }
                         }
                         // x[m,k] = x[m,k] * rhos[i]
-                        SPEX_CHECK(SPEX_mpz_mul( SPEX_2D(x, mnew, k, mpz),
-                                    SPEX_2D(x, mnew, k, mpz),rhos->x.mpz[i]));
+                        SPEX_MPZ_MUL( SPEX_2D(x, mnew, k, mpz),
+                                    SPEX_2D(x, mnew, k, mpz),rhos->x.mpz[i]);
                         // x[m,k] = x[m,k] - l[m,i] *x[i,k]
                         SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(x, mnew, k, mpz),
                                         L->x.mpz[m], SPEX_2D(x, i, k, mpz)));

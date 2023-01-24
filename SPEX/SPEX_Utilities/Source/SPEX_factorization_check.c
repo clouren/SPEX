@@ -192,8 +192,8 @@ SPEX_info SPEX_factorization_check
                 // i-th pivot of L should be the same as rhos[i]
                 SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->L->v[i]->x[0],
                     SPEX_MPQ_DEN(F->L->v[i]->scale)));
-                SPEX_CHECK(SPEX_mpz_mul(tmpz, tmpz,
-                    SPEX_MPQ_NUM(F->L->v[i]->scale)));
+                SPEX_MPZ_MUL(tmpz, tmpz,
+                    SPEX_MPQ_NUM(F->L->v[i]->scale));
                 SPEX_CHECK(SPEX_mpz_cmp(&r, tmpz, F->rhos->x.mpz[i]));
                 if (r != 0)
                 {
@@ -219,8 +219,8 @@ SPEX_info SPEX_factorization_check
                     // i-th pivot of U should be the same as rhos[i]
                     SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->U->v[i]->x[0],
                         SPEX_MPQ_DEN(F->U->v[i]->scale)));
-                    SPEX_CHECK(SPEX_mpz_mul(tmpz, tmpz,
-                        SPEX_MPQ_NUM(F->U->v[i]->scale)));
+                    SPEX_MPZ_MUL(tmpz, tmpz,
+                        SPEX_MPQ_NUM(F->U->v[i]->scale));
                     SPEX_CHECK(SPEX_mpz_cmp(&r, tmpz, F->rhos->x.mpz[i]));
                     if (r != 0)
                     {

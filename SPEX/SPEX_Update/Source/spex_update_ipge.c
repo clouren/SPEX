@@ -98,8 +98,8 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
     {
         if (j-1 > real_hj) // require history update
         {
-            SPEX_CHECK(SPEX_mpz_mul(sv_x->x[perm_j],
-                                    sv_x->x[perm_j], sd[j-1]));
+            SPEX_MPZ_MUL(sv_x->x[perm_j],
+                                    sv_x->x[perm_j], sd[j-1]);
             if (real_hj > -1)
             {
                 SPEX_CHECK(SPEX_mpz_divexact(sv_x->x[perm_j],
@@ -157,8 +157,8 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
         {
             SPEX_CHECK(SPEX_mpz_divexact(v->x[p],
                                          v->x[p], SPEX_MPQ_DEN(v->scale)));
-            SPEX_CHECK(SPEX_mpz_mul     (v->x[p],
-                                         v->x[p], SPEX_MPQ_NUM(v->scale)));
+            SPEX_MPZ_MUL     (v->x[p],
+                                         v->x[p], SPEX_MPQ_NUM(v->scale));
         }
         else if (vscale == -1)
         {
@@ -170,7 +170,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
         if (sgn != 0)    // x[i] != 0
         {
             // x[i] = x[i]*sd[j]
-            SPEX_CHECK(SPEX_mpz_mul(sv_x->x[i], sv_x->x[i], sd[j]));
+            SPEX_MPZ_MUL(sv_x->x[i], sv_x->x[i], sd[j]);
         }
         else if (sv_x->i != NULL && h[i] >= -1)
         {
@@ -193,8 +193,8 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
             // x[i] = x[i]/sd[h[i]]- v(i)*x[perm[j]]/sd[h[perm[j]]].
             // -----------------------------------------------------------------
             // tmpz = floor(v(i)*pending_scale)
-            SPEX_CHECK(SPEX_mpz_mul(tmpz, v->x[p],
-                                    SPEX_MPQ_NUM(pending_scale)));
+            SPEX_MPZ_MUL(tmpz, v->x[p],
+                                    SPEX_MPQ_NUM(pending_scale));
             SPEX_CHECK(SPEX_mpz_fdiv_q(tmpz, tmpz,
                                     SPEX_MPQ_DEN(pending_scale)));
 
@@ -229,8 +229,8 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
 
     if (j-1 > real_hj) // require history update
     {
-        SPEX_CHECK(SPEX_mpz_mul(sv_x->x[perm_j],
-                                sv_x->x[perm_j], sd[j-1]));
+        SPEX_MPZ_MUL(sv_x->x[perm_j],
+                                sv_x->x[perm_j], sd[j-1]);
         if (real_hj > -1)
         {
             SPEX_CHECK(SPEX_mpz_divexact(sv_x->x[perm_j],

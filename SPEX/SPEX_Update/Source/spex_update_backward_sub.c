@@ -65,10 +65,10 @@ SPEX_info spex_update_backward_sub // performs sparse REF backward substitution
         }
         // tmpz = tmpz*S(2,i)
         SPEX_CHECK(SPEX_mpz_divexact(tmpz, tmpz, SPEX_MPQ_DEN(U->v[i]->scale)));
-        SPEX_CHECK(SPEX_mpz_mul(tmpz, tmpz, SPEX_MPQ_NUM(U->v[i]->scale)));
+        SPEX_MPZ_MUL(tmpz, tmpz, SPEX_MPQ_NUM(U->v[i]->scale));
 
         // x[i] = x[i]*sd[n-1]+tmpz
-        SPEX_CHECK(SPEX_mpz_mul(x->x[real_i], x->x[real_i], sd[n-1]));
+        SPEX_MPZ_MUL(x->x[real_i], x->x[real_i], sd[n-1]);
         SPEX_CHECK(SPEX_mpz_add(x->x[real_i], x->x[real_i], tmpz));
 
         // x[i] = x[i]/sd[i]

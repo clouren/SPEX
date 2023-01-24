@@ -47,7 +47,7 @@ SPEX_info spex_expand_mpq_array
     {
         // x_out[i] = x[i]*temp
         SPEX_CHECK(SPEX_mpz_divexact(x_out[i], temp, SPEX_MPQ_DEN(x[i])));
-        SPEX_CHECK(SPEX_mpz_mul(x_out[i], x_out[i], SPEX_MPQ_NUM(x[i])));
+        SPEX_MPZ_MUL(x_out[i], x_out[i], SPEX_MPQ_NUM(x[i]));
     }
     SPEX_FREE_ALL;
     return SPEX_OK;
