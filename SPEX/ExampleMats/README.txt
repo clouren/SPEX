@@ -2,28 +2,24 @@ Example matrices for SPEX demos and testing.
 
 All these matrices 1-based.
 
-FIXME: describe each pair of files.  Unclear where they come from.
-    Is 1328 the ssget matrix with id == 1328?  If so, it has the
-    wrong name.  Use the right name.
-
 Files:
 
     README.txt
 
     matrix                  right-hand-side         description
     ------                  ---------------         -----------
-    10teams.mat.txt         10teams.rhs.txt           FIXME
-    1328.mat                1328.mat.rhs           FIXME
-    1438.mat.txt            1438.rhs.txt       FIXME
-    1440.mat.txt            1440.rhs.txt        FIXME
-    2209.mat.txt            2209.rhs.txt       FIXME
-    2.mat.txt               2.rhs.txt          FIXME
-    872.mat.txt             872.rhs.txt        FIXME
-    example.mat.txt         example.rhs.txt    FIXME
-    NSR8K.mat.txt           NSR8K.rhs.txt             FIXME
-    test1.mat.txt           test1.rhs.txt                       FIXME
-    test2.mat.txt           test2.rhs.txt                       FIXME
-    test3.mat.txt           test3.rhs.txt                       FIXME
-    test4.mat.txt           test4.rhs.txt                       FIXME
-    test.mat.txt            test_rhs.txt            FIXME
+    10teams.mat.txt         10teams.rhs.txt         Basislib matrix
+    tomography.mat          tomography.mat.rhs      Earth science matrix from MathWorks 
+    LF10.mat.txt            LF10.rhs.txt            SPD linear 1D beam matrix from Oberwolfach model reduction benchmark collection (collected from the SuiteSparse Matrix Collection)
+    LFAT5.mat.txt           LFAT5.rhs.txt           SPD linear 1D beam matrix from Oberwolfach model reduction benchmark collection (collected from the SuiteSparse Matrix Collection)
+    Trefethen_300.mat.txt   Trefethen_300.rhs.txt   Diagonal matrix with primes (collected from the SuiteSparse Matrix Collection)
+    494_bus.mat.txt         494_bus.rhs.txt         SPD matrix from the Harwell-Boeing collection (collected from the SuiteSparse Matrix Collection)
+    mesh1e1.mat.txt         mesh1e1.rhs.txt         SPD matrix from NASA (collected from the SuiteSparse Matrix Collection)
+    example.mat.txt         example.rhs.txt         Integer matrix
+    NSR8K.mat.txt           NSR8K.rhs.txt           FIXME
+    test1.mat.txt           test1.rhs.txt           Unsymmetric double matrix created to test SPEX Cholesky
+    test2.mat.txt           test2.rhs.txt           Unsymmetric integer matrix created to test SPEX Cholesky
+    test3.mat.txt           test3.rhs.txt           Unsymmetric matrix created to test SPEX Cholesky
+    test4.mat.txt           test4.rhs.txt           Symmetric indefinite matrix created to test SPEX Cholesky
+    test.mat.txt            test.rhs.txt            Integer matrix to test SPEX LU
 
