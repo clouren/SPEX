@@ -55,7 +55,7 @@ SPEX_info spex_left_lu_get_nonzero_pivot // find first eligible nonzero pivot
         int64_t inew = xi[i];
         // check if x[inew] is an eligible pivot
         int sgn ;
-        SPEX_CHECK (SPEX_mpz_sgn (&sgn, x->x.mpz[inew])) ;
+        SPEX_CHECK (SPEX_mpz_sgn (&sgn, x->x.mpz[inew]));
         if (sgn != 0 && pivs [inew] < 0)
         {
             (*pivot) = inew;

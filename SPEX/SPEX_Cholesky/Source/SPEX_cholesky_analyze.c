@@ -34,7 +34,7 @@
 #define SPEX_FREE_ALL                               \
 {                                                   \
     SPEX_FREE_WORKSPACE ;                           \
-    SPEX_symbolic_analysis_free (&S, option) ;      \
+    SPEX_symbolic_analysis_free (&S, option);      \
 }
 
 #include "spex_cholesky_internal.h"
@@ -104,6 +104,6 @@ SPEX_info SPEX_cholesky_analyze
 
     (*S_handle) = S ;
     SPEX_FREE_WORKSPACE ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

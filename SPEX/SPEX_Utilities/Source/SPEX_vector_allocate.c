@@ -14,7 +14,7 @@
 // allocated with length nzmax.
 
 #define SPEX_FREE_ALL \
-    SPEX_vector_free (&v, option) ;
+    SPEX_vector_free (&v, option);
 
 #include "spex_util_internal.h"
 

@@ -57,7 +57,7 @@
 // c's default qsort
 static inline int compare (const void * a, const void * b)
 {
-    return ( *(int64_t*)a - *(int64_t*)b ) ;
+    return ( *(int64_t*)a - *(int64_t*)b );
 }
 
 SPEX_info spex_cholesky_left_triangular_solve
@@ -92,15 +92,15 @@ SPEX_info spex_cholesky_left_triangular_solve
 
     // Input checks. All pointers are checked by the callersm these are here to
     // remind us of the correct formats of each matrix
-    ASSERT(top_output != NULL) ;
-    ASSERT (x != NULL) ;
-    ASSERT (xi != NULL) ;
-    ASSERT (L != NULL) ;
-    ASSERT (A != NULL) ;
-    ASSERT (rhos != NULL) ;
-    ASSERT (h != NULL) ;
-    ASSERT (parent != NULL) ;
-    ASSERT (c != NULL) ;
+    ASSERT(top_output != NULL);
+    ASSERT (x != NULL);
+    ASSERT (xi != NULL);
+    ASSERT (L != NULL);
+    ASSERT (A != NULL);
+    ASSERT (rhos != NULL);
+    ASSERT (h != NULL);
+    ASSERT (parent != NULL);
+    ASSERT (c != NULL);
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(L->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);

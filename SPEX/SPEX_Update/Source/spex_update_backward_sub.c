@@ -76,5 +76,5 @@ SPEX_info spex_update_backward_sub // performs sparse REF backward substitution
     }
 
     SPEX_FREE_ALL;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }

@@ -31,7 +31,7 @@ void mexFunction
     SPEX_info status;
     SPEX_MEX_OK(SPEX_initialize_expert(mxMalloc, mxCalloc, mxRealloc, mxFree));
 
-    SuiteSparse_config_printf_func_set (mexPrintf) ;
+    SuiteSparse_config_printf_func_set (mexPrintf);
 
     //--------------------------------------------------------------------------
     // Check that there is the correct number of input arguments
@@ -90,13 +90,13 @@ void mexFunction
     if (option->print_level > 0)
     {
         printf ("\nScaled integer input matrix A:\n");
-        SPEX_matrix_check (A, option) ;
+        SPEX_matrix_check (A, option);
     }
 
     if (option->print_level > 0)
     {
         printf ("\nScaled integer right-hand-side b:\n");
-        SPEX_matrix_check (b, option) ;
+        SPEX_matrix_check (b, option);
     }
 
     //--------------------------------------------------------------------------
@@ -176,6 +176,6 @@ void mexFunction
     SPEX_matrix_free(&x, option);
     SPEX_matrix_free(&b, option);
     SPEX_matrix_free(&A, option);
-    SPEX_FREE(option) ;
+    SPEX_FREE(option);
     SPEX_finalize( );
 }

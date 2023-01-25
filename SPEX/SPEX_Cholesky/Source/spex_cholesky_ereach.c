@@ -32,16 +32,16 @@ SPEX_info spex_cholesky_ereach
 {
 
     // Check inputs
-    ASSERT(A->n >= 0) ;
-    ASSERT(A->kind == SPEX_CSC) ;
-    ASSERT(A->type == SPEX_MPZ) ;
+    ASSERT(A->n >= 0);
+    ASSERT(A->kind == SPEX_CSC);
+    ASSERT(A->type == SPEX_MPZ);
 
     // Declare variables
     int64_t i, p, n, len, top ;
     top = n = A->n ;
 
     // Mark node k as visited
-    SPEX_MARK(w, k) ;
+    SPEX_MARK(w, k);
 
     // Iterate across nonzeros in A(:,k)
     for (p = A->p[k] ; p < A->p[k+1] ; p++)
@@ -52,16 +52,16 @@ SPEX_info spex_cholesky_ereach
         {
             continue ;  // only use upper triangular part of A
         }
-        for (len = 0 ; !SPEX_MARKED(w,i) ; i = parent[i]) // traverse up etree
+        for (len = 0 ; !SPEX_MARKED(w,i); i = parent[i]) // traverse up etree
         {
-            ASSERT (i >= 0 && i < n) ;
+            ASSERT (i >= 0 && i < n);
             xi[len++] = i ;           // L(k,i) is nonzero
-            SPEX_MARK(w, i) ;        // mark i as visited
+            SPEX_MARK(w, i);        // mark i as visited
         }
         while (len > 0) xi[--top] = xi[--len] ; // push path onto stack
     }
-    for (p = top ; p < n ; p++) SPEX_MARK(w, xi[p]) ;    // unmark all nodes
-    SPEX_MARK(w, k) ;                // unmark node k
+    for (p = top ; p < n ; p++) SPEX_MARK(w, xi[p]);    // unmark all nodes
+    SPEX_MARK(w, k);                // unmark node k
     (*top_handle) = top ;
     return SPEX_OK ;                 // xi [top..n-1] contains pattern of L(k,:)
 }

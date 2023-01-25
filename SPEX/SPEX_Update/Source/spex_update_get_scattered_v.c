@@ -61,7 +61,7 @@ SPEX_info spex_update_get_scattered_v
         if (sgn != 0)
         {
             i = v->i[p];
-            ASSERT (i >= 0 && i < n) ;
+            ASSERT (i >= 0 && i < n);
 
             if (next != NULL)
             {

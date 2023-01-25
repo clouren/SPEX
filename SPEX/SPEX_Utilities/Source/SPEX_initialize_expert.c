@@ -16,10 +16,10 @@
 // That is:
 
 //     #include <stdlib.h>
-//     void *malloc (size_t size) ;
-//     void *calloc (size_t nmemb, size_t size) ;
-//     void *realloc (void *ptr, size_t size) ;
-//     void free (void *ptr) ;
+//     void *malloc (size_t size);
+//     void *calloc (size_t nmemb, size_t size);
+//     void *realloc (void *ptr, size_t size);
+//     void free (void *ptr);
 
 #include "spex_util_internal.h"
 
@@ -32,21 +32,21 @@ SPEX_info SPEX_initialize_expert
 )
 {
 
-    if (spex_initialized ( )) return (SPEX_PANIC) ;
+    if (spex_initialized ( )) return (SPEX_PANIC);
 
     //--------------------------------------------------------------------------
     // define the malloc/calloc/realloc/free functions
     //--------------------------------------------------------------------------
 
-    SuiteSparse_config_malloc_func_set  (MyMalloc) ;
-    SuiteSparse_config_calloc_func_set  (MyCalloc) ;
-    SuiteSparse_config_realloc_func_set (MyRealloc) ;
-    SuiteSparse_config_free_func_set    (MyFree) ;
+    SuiteSparse_config_malloc_func_set  (MyMalloc);
+    SuiteSparse_config_calloc_func_set  (MyCalloc);
+    SuiteSparse_config_realloc_func_set (MyRealloc);
+    SuiteSparse_config_free_func_set    (MyFree);
 
     //--------------------------------------------------------------------------
     // Set GMP memory functions
     //--------------------------------------------------------------------------
 
-    return (SPEX_initialize ( )) ;
+    return (SPEX_initialize ( ));
 }
 

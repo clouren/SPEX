@@ -60,13 +60,13 @@ SPEX_info spex_cast_array
 
     if (Y == NULL || X == NULL)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
     SPEX_info info ;
     int r;
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
 
-    mpfr_rnd_t round = SPEX_OPTION_ROUND (option) ;
+    mpfr_rnd_t round = SPEX_OPTION_ROUND (option);
 
     //--------------------------------------------------------------------------
     // Y [0:n-1] = (ytype) X [0:n-1]
@@ -92,7 +92,7 @@ SPEX_info spex_cast_array
                     mpz_t *x = (mpz_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpz_set (y [k], x[k])) ;
+                        SPEX_CHECK (SPEX_mpz_set (y [k], x[k]));
                     }
                     // y is a direct copy of x. Set y_scale = x_scale
                     SPEX_CHECK(SPEX_mpq_set(y_scale, x_scale));
@@ -110,7 +110,7 @@ SPEX_info spex_cast_array
                 {
                     mpfr_t *x = (mpfr_t *) X ;
                     SPEX_CHECK (spex_expand_mpfr_array (Y, X, y_scale, n,
-                        option)) ;
+                        option));
                 }
                 break ;
 
@@ -119,9 +119,9 @@ SPEX_info spex_cast_array
                     int64_t *x = (int64_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpz_set_si (y [k], x [k])) ;
+                        SPEX_CHECK (SPEX_mpz_set_si (y [k], x [k]));
                     }
-                    SPEX_CHECK (SPEX_mpq_set_ui (y_scale, 1, 1)) ;
+                    SPEX_CHECK (SPEX_mpq_set_ui (y_scale, 1, 1));
                 }
                 break ;
 
@@ -129,7 +129,7 @@ SPEX_info spex_cast_array
                 {
                     double *x = (double *) X ;
                     SPEX_CHECK (spex_expand_double_array (y, x, y_scale, n,
-                        option)) ;
+                        option));
                 }
                 break ;
 
@@ -162,7 +162,7 @@ SPEX_info spex_cast_array
                         // x_scale = 1. Simply do a direct copy.
                         for (int64_t k = 0 ; k < n ; k++)
                         {
-                            SPEX_CHECK (SPEX_mpq_set_z (y [k], x [k])) ;
+                            SPEX_CHECK (SPEX_mpq_set_z (y [k], x [k]));
                         }
                     }
                     else
@@ -171,7 +171,7 @@ SPEX_info spex_cast_array
                         // of Y by x_scale
                         for (int64_t k = 0 ; k < n ; k++)
                         {
-                            SPEX_CHECK (SPEX_mpq_set_z (y [k], x [k])) ;
+                            SPEX_CHECK (SPEX_mpq_set_z (y [k], x [k]));
                             SPEX_CHECK (SPEX_mpq_div(y[k], y[k], x_scale));
                         }
                     }
@@ -183,7 +183,7 @@ SPEX_info spex_cast_array
                     mpq_t *x = (mpq_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpq_set (y [k], x [k])) ;
+                        SPEX_CHECK (SPEX_mpq_set (y [k], x [k]));
                     }
                 }
                 break ;
@@ -203,7 +203,7 @@ SPEX_info spex_cast_array
                     int64_t *x = (int64_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpq_set_si (y [k], x [k], 1)) ;
+                        SPEX_CHECK (SPEX_mpq_set_si (y [k], x [k], 1));
                     }
                 }
                 break ;
@@ -213,7 +213,7 @@ SPEX_info spex_cast_array
                     double *x = (double *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpq_set_d (y [k], x [k])) ;
+                        SPEX_CHECK (SPEX_mpq_set_d (y [k], x [k]));
                     }
                 }
                 break ;
@@ -245,7 +245,7 @@ SPEX_info spex_cast_array
                         // x_scale = 1. Simply do a direct copy.
                         for (int64_t k = 0 ; k < n ; k++)
                         {
-                            SPEX_CHECK (SPEX_mpfr_set_z (y [k], x [k], round)) ;
+                            SPEX_CHECK (SPEX_mpfr_set_z (y [k], x [k], round));
                         }
                     }
                     else
@@ -270,7 +270,7 @@ SPEX_info spex_cast_array
                     mpq_t *x = (mpq_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpfr_set_q (y [k], x [k], round)) ;
+                        SPEX_CHECK (SPEX_mpfr_set_q (y [k], x [k], round));
                     }
                 }
                 break ;
@@ -280,7 +280,7 @@ SPEX_info spex_cast_array
                     mpfr_t *x = (mpfr_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpfr_set (y [k], x [k], round)) ;
+                        SPEX_CHECK (SPEX_mpfr_set (y [k], x [k], round));
                     }
                 }
                 break ;
@@ -300,7 +300,7 @@ SPEX_info spex_cast_array
                     double *x = (double *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpfr_set_d (y [k], x [k], round)) ;
+                        SPEX_CHECK (SPEX_mpfr_set_d (y [k], x [k], round));
                     }
                 }
                 break ;
@@ -359,8 +359,8 @@ SPEX_info spex_cast_array
                     for (int64_t k = 0 ; k < n ; k++)
                     {
                         double t ;
-                        SPEX_CHECK (SPEX_mpq_get_d (&t, x [k])) ;
-                        y [k] = spex_cast_double_to_int64 (t) ;
+                        SPEX_CHECK (SPEX_mpq_get_d (&t, x [k]));
+                        y [k] = spex_cast_double_to_int64 (t);
                     }
                 }
                 break ;
@@ -377,7 +377,7 @@ SPEX_info spex_cast_array
 
                 case SPEX_INT64: // int64_t to int64_t
                 {
-                    memcpy (Y, X, n * sizeof (int64_t)) ;
+                    memcpy (Y, X, n * sizeof (int64_t));
                 }
                 break ;
 
@@ -386,7 +386,7 @@ SPEX_info spex_cast_array
                     double *x = (double *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        y [k] = spex_cast_double_to_int64 (x [k]) ;
+                        y [k] = spex_cast_double_to_int64 (x [k]);
                     }
                 }
                 break ;
@@ -442,7 +442,7 @@ SPEX_info spex_cast_array
                     mpq_t *x = (mpq_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        SPEX_CHECK (SPEX_mpq_get_d (&(y [k]), x [k])) ;
+                        SPEX_CHECK (SPEX_mpq_get_d (&(y [k]), x [k]));
                     }
                 }
                 break ;
@@ -463,14 +463,14 @@ SPEX_info spex_cast_array
                     int64_t *x = (int64_t *) X ;
                     for (int64_t k = 0 ; k < n ; k++)
                     {
-                        y [k] = (double) (x [k]) ;
+                        y [k] = (double) (x [k]);
                     }
                 }
                 break ;
 
                 case SPEX_FP64: // double to double
                 {
-                    memcpy (Y, X, n * sizeof (double)) ;
+                    memcpy (Y, X, n * sizeof (double));
                 }
                 break ;
 
@@ -480,5 +480,5 @@ SPEX_info spex_cast_array
 
     }
     SPEX_FREE_ALL
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }

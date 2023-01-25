@@ -22,7 +22,7 @@ SPEX_info spex_cumsum
 )
 {
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     if (!p || !c) return SPEX_INCORRECT_INPUT;
     ASSERT(n >= 0);

@@ -25,7 +25,7 @@
 
 #define SPEX_FREE_ALL                           \
 {                                               \
-    SPEX_symbolic_analysis_free (&S, option) ;  \
+    SPEX_symbolic_analysis_free (&S, option);  \
 }
 
 #include "spex_lu_internal.h"
@@ -47,7 +47,7 @@ SPEX_info SPEX_lu_analyze
     SPEX_info info ;
 
     // A can have any data type, but must be in sparse CSC format
-    SPEX_REQUIRE_KIND (A, SPEX_CSC) ;
+    SPEX_REQUIRE_KIND (A, SPEX_CSC);
 
     if (!S_handle || A->n != A->m)
     {
@@ -77,7 +77,7 @@ SPEX_info SPEX_lu_analyze
     // in A. This is a very crude estimate on the nnz(L) and nnz(U)
     //--------------------------------------------------------------------------
 
-    SPEX_preorder order = SPEX_OPTION_ORDER (option) ;
+    SPEX_preorder order = SPEX_OPTION_ORDER (option);
     switch(order)
     {
         default:
@@ -105,7 +105,7 @@ SPEX_info SPEX_lu_analyze
             {
                 // out of memory
                 SPEX_FREE_ALL ;
-                return (SPEX_OUT_OF_MEMORY) ;
+                return (SPEX_OUT_OF_MEMORY);
             }
             for (i = 0; i < n+1; i++)
             {

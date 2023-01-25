@@ -10,7 +10,7 @@
 
 #define SPEX_FREE_ALL       \
 {                           \
-    SPEX_free (perm) ;      \
+    SPEX_free (perm);      \
 }
 
 #include "spex_util_internal.h"
@@ -39,7 +39,7 @@ SPEX_info spex_amd
     if (perm == NULL)
     {
         SPEX_FREE_ALL ;
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     double Control[AMD_CONTROL];           // Declare AMD control
@@ -62,10 +62,10 @@ SPEX_info spex_amd
         if (amd_result == AMD_OUT_OF_MEMORY)
         {
             // AMD ran out of memory
-            return (SPEX_OUT_OF_MEMORY) ;
+            return (SPEX_OUT_OF_MEMORY);
         }
         // input matrix is invalid
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
 
     (*nnz) = Info[AMD_LNZ];  // Exact number of nonzeros for Cholesky

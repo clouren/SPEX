@@ -48,11 +48,11 @@ SPEX_info SPEX_initialize ( void )
         spex_gmp_allocate,      // malloc function
         spex_gmp_reallocate,    // realloc function
         spex_gmp_free           // free function
-    ) ;
+    );
 
-    spex_set_initialized (true) ;
+    spex_set_initialized (true);
 
     // initialize the SPEX GMP interface for the master thread
-    return (spex_gmp_initialize ( )) ;
+    return (spex_gmp_initialize ( ));
 }
 

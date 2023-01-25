@@ -83,12 +83,12 @@
     SPEX_FREE(Q);                                \
     SPEX_FREE(Q_inv);                            \
     if (F) SPEX_MPQ_CLEAR(F->scale_for_A);       \
-    SPEX_FREE (F) ;                              \
+    SPEX_FREE (F);                              \
     SPEX_MPZ_CLEAR(tmpz1);                       \
     SPEX_MPZ_CLEAR(tmpz2);                       \
     SPEX_MPZ_CLEAR(tmpz3);                       \
     SPEX_FREE(option);                           \
-    TEST_OK(SPEX_finalize()) ;                   \
+    TEST_OK(SPEX_finalize());                   \
 }
 
 #define MY_PR(...) { if (pr >= 1) printf(__VA_ARGS__); }
@@ -170,7 +170,7 @@ int main ( int argc, char *argv[])
                 //--------------------------------------------------------------
 
                 TEST_OK(SPEX_initialize_expert (tcov_malloc, tcov_calloc,
-                    tcov_realloc, tcov_free)) ;
+                    tcov_realloc, tcov_free));
                 if (pretend_to_fail) {continue;}
 
                 //--------------------------------------------------------------
@@ -236,7 +236,7 @@ int main ( int argc, char *argv[])
                         "%"PRId64"\n", &An, &Anz, &k, &vk_nz);
                     if (feof(mat_file) || s < 4)
                     {
-                        printf ("premature end-of-file\n") ;
+                        printf ("premature end-of-file\n");
                         SPEX_FREE_ALL;
                         return 0;
                     }
@@ -273,7 +273,7 @@ int main ( int argc, char *argv[])
                         if ((feof(mat_file) && (ai != Anz-1 || vk_nz != 0)) ||
                             s < 3)
                         {
-                            printf ("premature end-of-file\n") ;
+                            printf ("premature end-of-file\n");
                             SPEX_FREE_ALL;
                             return 0;
                         }
@@ -301,7 +301,7 @@ int main ( int argc, char *argv[])
                         s = fscanf(mat_file, "%"PRId64" %"PRId64"\n", &i, &tmp);
                         if ((feof(mat_file) && j != vk_nz-1) || s < 2)
                         {
-                            printf ("premature end-of-file\n") ;
+                            printf ("premature end-of-file\n");
                             SPEX_FREE_ALL;
                             return 0;
                         }
@@ -1148,7 +1148,7 @@ int main ( int argc, char *argv[])
         }
     }
 
-    printf ("%s: all tests passed\n\n", __FILE__) ;
-    fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
+    printf ("%s: all tests passed\n\n", __FILE__);
+    fprintf (stderr, "%s: all tests passed\n\n", __FILE__);
     return 0;
 }

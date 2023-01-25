@@ -23,18 +23,18 @@ SPEX_info SPEX_matrix_nnz       // find the # of entries in A
     // check inputs
     //--------------------------------------------------------------------------
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     if (nnz == NULL)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
 
     (*nnz) = -1 ;
 
     if (A == NULL)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
 
     //--------------------------------------------------------------------------
@@ -63,7 +63,7 @@ SPEX_info SPEX_matrix_nnz       // find the # of entries in A
         case SPEX_DENSE:
         {
             // dense matrices: nnz(A) is always m*n.  A->nz is ignored.
-            *nnz = (A->m < 0 || A->n < 0)? (-1) : (A->m * A->n) ;
+            *nnz = (A->m < 0 || A->n < 0)? (-1) : (A->m * A->n);
         }
         break;
 
@@ -88,9 +88,9 @@ SPEX_info SPEX_matrix_nnz       // find the # of entries in A
         break;
 
         default:
-            return (SPEX_INCORRECT_INPUT) ;
+            return (SPEX_INCORRECT_INPUT);
     }
 
-    return ((*nnz < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((*nnz < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 

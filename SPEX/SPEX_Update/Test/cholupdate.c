@@ -32,7 +32,7 @@
     mpz_clear(tmpz);                             \
     SPEX_FREE(basis);                            \
     SPEX_FREE(used);                             \
-    SPEX_finalize() ;                            \
+    SPEX_finalize();                            \
 }
 #define PRINT_TO_FILE
 
@@ -54,7 +54,7 @@ int main( int argc, char *argv[])
     // Initialize for SPEX library
     //------------------------------------------------------------------
 
-    SPEX_initialize () ;
+    SPEX_initialize ();
 
     //------------------------------------------------------------------
     // Initialize and allocate workspace

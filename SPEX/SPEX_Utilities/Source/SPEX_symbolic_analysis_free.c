@@ -24,7 +24,7 @@ SPEX_info SPEX_symbolic_analysis_free
 )
 {
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     if ((S_handle != NULL) && (*S_handle != NULL))
     {
@@ -39,6 +39,6 @@ SPEX_info SPEX_symbolic_analysis_free
         SPEX_FREE (*S_handle);
     }
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

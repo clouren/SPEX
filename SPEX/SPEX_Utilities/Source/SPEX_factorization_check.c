@@ -34,7 +34,7 @@
     lines++ ;                               \
     if (pr == 2 && lines > 30)              \
     {                                       \
-        SPEX_PRINTF ("    ...\n") ;         \
+        SPEX_PRINTF ("    ...\n");         \
         pr = 1 ;                            \
     }
 
@@ -49,8 +49,8 @@ SPEX_info SPEX_factorization_check
     // 1. basic check of the factorization object
     //--------------------------------------------------------------------------
 
-    SPEX_info info = spex_factorization_basic_check (F) ;
-    if (info != SPEX_OK) return (info) ;
+    SPEX_info info = spex_factorization_basic_check (F);
+    if (info != SPEX_OK) return (info);
 
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
 
@@ -76,16 +76,16 @@ SPEX_info SPEX_factorization_check
     SPEX_MPZ_SET_NULL(tmpz);
 
     SPEX_PR2("L:\n");
-    SPEX_CHECK(SPEX_matrix_check (F->L, option)) ;
+    SPEX_CHECK(SPEX_matrix_check (F->L, option));
 
     if (F->kind == SPEX_LU_FACTORIZATION)
     {
         SPEX_PR2("U:\n");
-        SPEX_CHECK(SPEX_matrix_check (F->U, option)) ;
+        SPEX_CHECK(SPEX_matrix_check (F->U, option));
     }
 
     SPEX_PR2("rhos:\n");
-    SPEX_CHECK(SPEX_matrix_check (F->rhos, option)) ;
+    SPEX_CHECK(SPEX_matrix_check (F->rhos, option));
 
     //--------------------------------------------------------------------------
     // 4. check if each permutation is reasonable, i.e., no duplicate, and in
@@ -98,12 +98,12 @@ SPEX_info SPEX_factorization_check
     int64_t lines = 0;     // # of lines printed so far
 
     // allocate workspace to check for duplicates
-    work = (int *) SPEX_calloc (n, sizeof (int)) ;
+    work = (int *) SPEX_calloc (n, sizeof (int));
     if (work == NULL)
     {
         // out of memory
-        SPEX_PR1 ("out of memory\n") ;
-        return (SPEX_OUT_OF_MEMORY) ;
+        SPEX_PR1 ("out of memory\n");
+        return (SPEX_OUT_OF_MEMORY);
     }
     for (j = 0; j < n; j++)
     {
@@ -111,24 +111,24 @@ SPEX_info SPEX_factorization_check
         if (i < 0 || i >= n)
         {
             // row indices out of range
-            SPEX_PR1 ("index out of range: P(%ld) = %ld\n", j, i) ;
+            SPEX_PR1 ("index out of range: P(%ld) = %ld\n", j, i);
             SPEX_FREE_ALL ;
-            return (SPEX_INCORRECT_INPUT) ;
+            return (SPEX_INCORRECT_INPUT);
         }
         else if (work [i] == 1)
         {
             // duplicate
-            SPEX_PR1 ("duplicate index: P(%ld) = %ld\n", j, i) ;
+            SPEX_PR1 ("duplicate index: P(%ld) = %ld\n", j, i);
             SPEX_FREE_ALL ;
-            return (SPEX_INCORRECT_INPUT) ;
+            return (SPEX_INCORRECT_INPUT);
         }
         else if (F->Pinv_perm[i] != j)
         {
             // P_perm and Pinv_perm not mutually inverse
             SPEX_PR1 ("unmatched P and Pinv: Pinv(P(%ld)) = %ld\n", j,
-                F->Pinv_perm[i]) ;
+                F->Pinv_perm[i]);
             SPEX_FREE_ALL ;
-            return (SPEX_INCORRECT_INPUT) ;
+            return (SPEX_INCORRECT_INPUT);
         }
         work[i] = 1;
         SPEX_PR_LIMIT;
@@ -143,24 +143,24 @@ SPEX_info SPEX_factorization_check
             if (i < 0 || i >= n)
             {
                 // row indices out of range
-                SPEX_PR1 ("index out of range: Q(%ld) = %ld\n", j, i) ;
+                SPEX_PR1 ("index out of range: Q(%ld) = %ld\n", j, i);
                 SPEX_FREE_ALL ;
-                return (SPEX_INCORRECT_INPUT) ;
+                return (SPEX_INCORRECT_INPUT);
             }
             else if (work [i] == 2)
             {
                 // duplicate
-                SPEX_PR1 ("duplicate index: Q(%ld) = %ld\n", j, i) ;
+                SPEX_PR1 ("duplicate index: Q(%ld) = %ld\n", j, i);
                 SPEX_FREE_ALL ;
-                return (SPEX_INCORRECT_INPUT) ;
+                return (SPEX_INCORRECT_INPUT);
             }
             else if (F->updatable && F->Qinv_perm[i] != j)
             {
                 // Q_perm and Qinv_perm not mutually inverse
                 SPEX_PR1 ("unmatched Q and Qinv: Qinv(Q(%ld)) = %ld\n", j,
-                    F->Qinv_perm[i]) ;
+                    F->Qinv_perm[i]);
                 SPEX_FREE_ALL ;
-                return (SPEX_INCORRECT_INPUT) ;
+                return (SPEX_INCORRECT_INPUT);
             }
             work[i] = 2;
             SPEX_PR_LIMIT;
@@ -291,6 +291,6 @@ SPEX_info SPEX_factorization_check
     // All tests passed, free space and return SPEX_OK
     //--------------------------------------------------------------------------
     SPEX_FREE_ALL;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

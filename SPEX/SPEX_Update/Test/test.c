@@ -148,8 +148,8 @@ static inline bool get_line
 {
 
     // check inputs
-    ASSERT (f != NULL) ;
-    ASSERT (buf != NULL) ;
+    ASSERT (f != NULL);
+    ASSERT (buf != NULL);
 
     // read the line from the file
     buf [0] = '\0' ;
@@ -157,16 +157,16 @@ static inline bool get_line
     if (fgets (buf, MAXLINE, f) == NULL)
     {
         // EOF or other I/O error
-        return (false) ;
+        return (false);
     }
     buf [MAXLINE] = '\0' ;
 
     // convert the string to lower case
     for (int k = 0 ; k < MAXLINE && buf [k] != '\0' ; k++)
     {
-        buf [k] = tolower (buf [k]) ;
+        buf [k] = tolower (buf [k]);
     }
-    return (true) ;
+    return (true);
 }
 
 //------------------------------------------------------------------------------
@@ -182,13 +182,13 @@ static inline bool is_blank_line
 {
 
     // check inputs
-    ASSERT (buf != NULL) ;
+    ASSERT (buf != NULL);
 
     // check if comment line
     if (buf [0] == '%')
     {
         // line is a comment
-        return (true) ;
+        return (true);
     }
 
     // check if blank line
@@ -203,12 +203,12 @@ static inline bool is_blank_line
         if (!isspace (c))
         {
             // non-space character; this is not an error
-            return (false) ;
+            return (false);
         }
     }
 
     // line is blank
-    return (true) ;
+    return (true);
 }
 
 //------------------------------------------------------------------------------
@@ -245,10 +245,10 @@ static inline bool read_double      // true if successful, false if failure
         if (sscanf (p, "%lg", rval) != 1)
         {
             // bad file format, EOF, or other I/O error
-            return (false) ;
+            return (false);
         }
     }
-    return (true) ;
+    return (true);
 }
 
 //------------------------------------------------------------------------------
@@ -269,30 +269,30 @@ static inline bool read_entry   // true if successful, false if failure
 
     while (*p && isspace (*p)) p++ ;   // skip any spaces
 
-    // printf ("read entry [%s]: ", p) ;
+    // printf ("read entry [%s]: ", p);
 
     if (type == SPEX_INT64)
     {
-        if (!pattern && sscanf (p, "%" SCNd64, &ival) != 1) return (false) ;
-        // printf ("%" PRId64 "\n", ival) ;
+        if (!pattern && sscanf (p, "%" SCNd64, &ival) != 1) return (false);
+        // printf ("%" PRId64 "\n", ival);
         int64_t *result = (int64_t *) x ;
         result [0] = (int64_t) ival ;
     }
     else if (type == SPEX_FP64)
     {
-        if (!pattern && !read_double (p, &rval)) return (false) ;
-        // printf ("%g\n", rval) ;
+        if (!pattern && !read_double (p, &rval)) return (false);
+        // printf ("%g\n", rval);
         double *result = (double *) x ;
         result [0] = rval ;
     }
     else
     {
         // type not supported
-        printf ("SPEX_mmread: read_entry: type not supported\n") ;
-        return (false) ;
+        printf ("SPEX_mmread: read_entry: type not supported\n");
+        return (false);
     }
 
-    return (true) ;
+    return (true);
 }
 
 //------------------------------------------------------------------------------
@@ -310,12 +310,12 @@ static inline void negate_scalar
     if (type == SPEX_INT64)
     {
         int64_t *value = (int64_t *) x ;
-        (*value) = - (*value) ;
+        (*value) = - (*value);
     }
     else if (type == SPEX_FP64)
     {
         double *value = (double *) x ;
-        (*value) = - (*value) ;
+        (*value) = - (*value);
     }
 }
 
@@ -353,7 +353,7 @@ static inline SPEX_info set_value
     else
     {
         // type not supported
-        return (SPEX_PANIC) ;
+        return (SPEX_PANIC);
     }
 }
 
@@ -376,8 +376,8 @@ SPEX_info SPEX_mmread
     if (A_handle == NULL || f == NULL)
     {
         // input arguments invalid
-        printf ("SPEX_mmread: bad args\n") ;
-        return (SPEX_INCORRECT_INPUT) ;
+        printf ("SPEX_mmread: bad args\n");
+        return (SPEX_INCORRECT_INPUT);
     }
     *A_handle = NULL;
     SPEX_matrix A = NULL;
@@ -420,7 +420,7 @@ SPEX_info SPEX_mmread
 
     bool got_mm_header = false ;
 
-    for (int64_t line = 1 ; get_line (f, buf) ; line++)
+    for (int64_t line = 1 ; get_line (f, buf); line++)
     {
 
         //----------------------------------------------------------------------
@@ -446,14 +446,14 @@ SPEX_info SPEX_mmread
 
             while (*p && isspace (*p)) p++ ;        // skip any leading spaces
 
-            // printf ("header now [%s]\n", p) ;
-            // printf ("compare %d\n", (strncmp (p, "matrix", 6))) ;
+            // printf ("header now [%s]\n", p);
+            // printf ("compare %d\n", (strncmp (p, "matrix", 6)));
 
             if (strncmp (p, "matrix", 6) != 0)
             {
                 // invalid Matrix Market object
-                printf ("SPEX_mmread: bad object\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                printf ("SPEX_mmread: bad object\n");
+                return (SPEX_INCORRECT_INPUT);
             }
             p += 6 ;                                // skip past token "matrix"
 
@@ -476,8 +476,8 @@ SPEX_info SPEX_mmread
             else
             {
                 // invalid Matrix Market format
-                printf ("SPEX_mmread: bad format\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                printf ("SPEX_mmread: bad format\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             //------------------------------------------------------------------
@@ -507,8 +507,8 @@ SPEX_info SPEX_mmread
             else
             {
                 // invalid Matrix Market type
-                printf ("SPEX_mmread: bad type\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                printf ("SPEX_mmread: bad type\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             //------------------------------------------------------------------
@@ -532,8 +532,8 @@ SPEX_info SPEX_mmread
             else
             {
                 // invalid Matrix Market storage
-                printf ("SPEX_mmread: bad type\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                printf ("SPEX_mmread: bad type\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             //------------------------------------------------------------------
@@ -548,8 +548,8 @@ SPEX_info SPEX_mmread
                          MM_storage == MM_symmetric)))
                 {
                     // invalid combination
-                    printf ("SPEX_mmread: bad pattern combo\n") ;
-                    return (SPEX_INCORRECT_INPUT) ;
+                    printf ("SPEX_mmread: bad pattern combo\n");
+                    return (SPEX_INCORRECT_INPUT);
                 }
             }
 
@@ -574,7 +574,7 @@ SPEX_info SPEX_mmread
             // format: [nrows ncols nvals] or just [nrows ncols]
 
             int nitems = sscanf (buf, "%" SCNu64 " %" SCNu64 " %" SCNu64,
-                &nrows, &ncols, &nvals) ;
+                &nrows, &ncols, &nvals);
 
             if (nitems == 2)
             {
@@ -606,8 +606,8 @@ SPEX_info SPEX_mmread
             else
             {
                 // wrong number of items in first data line
-                printf ("SPEX_mmread: bad 1st line\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                printf ("SPEX_mmread: bad 1st line\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             if (nrows != ncols)
@@ -615,8 +615,8 @@ SPEX_info SPEX_mmread
                 if (! (MM_storage == MM_general))
                 {
                     // a rectangular matrix must be in the general storage
-                    printf ("SPEX_mmread: bad rectangular\n") ;
-                    return (SPEX_INCORRECT_INPUT) ;
+                    printf ("SPEX_mmread: bad rectangular\n");
+                    return (SPEX_INCORRECT_INPUT);
                 }
             }
 
@@ -637,12 +637,12 @@ SPEX_info SPEX_mmread
     //--------------------------------------------------------------------------
 
     SPEX_info info = SPEX_matrix_allocate (&A, SPEX_TRIPLET, type, nrows,
-        ncols, nvals, false, true, option) ;
+        ncols, nvals, false, true, option);
     if (info != SPEX_OK)
     {
         // failed to construct matrix
-        // printf ("mmread: failed to construct A\n") ;
-        return (info) ;
+        // printf ("mmread: failed to construct A\n");
+        return (info);
     }
 
     //--------------------------------------------------------------------------
@@ -652,7 +652,7 @@ SPEX_info SPEX_mmread
     if (nrows == 0 || ncols == 0 || nvals == 0)
     {
         // success: return an empty matrix.  This is not an error.
-        return (SPEX_OK) ;
+        return (SPEX_OK);
     }
 
     //--------------------------------------------------------------------------
@@ -679,9 +679,9 @@ SPEX_info SPEX_mmread
             if (!get_line (f, buf))
             {
                 // premature end of file - not enough triplets read in
-                SPEX_matrix_free (&A, option) ;
-                printf ("SPEX:mmread: premature EOF\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                SPEX_matrix_free (&A, option);
+                printf ("SPEX:mmread: premature EOF\n");
+                return (SPEX_INCORRECT_INPUT);
             }
             if (is_blank_line (buf))
             {
@@ -700,7 +700,7 @@ SPEX_info SPEX_mmread
                 i = k % nrows ;
                 j = k / nrows ;
                 p = buf ;
-                // printf ("array now [%s]\n", p) ;
+                // printf ("array now [%s]\n", p);
             }
             else
             {
@@ -709,20 +709,20 @@ SPEX_info SPEX_mmread
                 if (sscanf (p, "%" SCNu64 " %" SCNu64, &i, &j) != 2)
                 {
                     // EOF or other I/O error
-                    SPEX_matrix_free (&A, option) ;
-                    printf ("SPEX_mmread: I/O error on indices\n") ;
-                    return (SPEX_INCORRECT_INPUT) ;
+                    SPEX_matrix_free (&A, option);
+                    printf ("SPEX_mmread: I/O error on indices\n");
+                    return (SPEX_INCORRECT_INPUT);
                 }
                 // convert from 1-based to 0-based.
                 i-- ;
                 j-- ;
-                // printf ("got (%g,%g)\n", (double) i, (double) j) ;
+                // printf ("got (%g,%g)\n", (double) i, (double) j);
                 // advance p to the 3rd token to get the value of the entry
                 while (*p &&  isspace (*p)) p++ ;   // skip any leading spaces
                 while (*p && !isspace (*p)) p++ ;   // skip nrows
                 while (*p &&  isspace (*p)) p++ ;   // skip any spaces
                 while (*p && !isspace (*p)) p++ ;   // skip nrows
-                // printf ("now [%s]\n", p) ;
+                // printf ("now [%s]\n", p);
             }
 
             //------------------------------------------------------------------
@@ -734,25 +734,25 @@ SPEX_info SPEX_mmread
             if (!read_entry (p, type, MM_type == MM_pattern, x))
             {
                 // EOF or other I/O error, or value of entry out of range
-                SPEX_matrix_free (&A, option) ;
-                printf ("SPEX_mmread: I/O error on value\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                SPEX_matrix_free (&A, option);
+                printf ("SPEX_mmread: I/O error on value\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             //------------------------------------------------------------------
             // set the value in the matrix
             //------------------------------------------------------------------
 
-            info = set_value (A, type, i, j, x) ;
+            info = set_value (A, type, i, j, x);
             if (info != SPEX_OK)
             {
                 // unable to set element: invalid indices, or out of memory
-                printf ("mmread: unable to set element\n") ;
-                SPEX_matrix_free (&A, option) ;
-                return (info) ;
+                printf ("mmread: unable to set element\n");
+                SPEX_matrix_free (&A, option);
+                return (info);
             }
 
-            // GxB_fprint (*A, GxB_COMPLETE, stdout) ;
+            // GxB_fprint (*A, GxB_COMPLETE, stdout);
 
             //------------------------------------------------------------------
             // also set the A(j,i) entry, if symmetric
@@ -762,19 +762,19 @@ SPEX_info SPEX_mmread
             {
                 if (MM_storage == MM_symmetric)
                 {
-                    info = set_value (A, type, j, i, x) ;
+                    info = set_value (A, type, j, i, x);
                 }
                 else if (MM_storage == MM_skew_symmetric)
                 {
-                    negate_scalar (type, x) ;
-                    info = set_value (A, type, j, i, x) ;
+                    negate_scalar (type, x);
+                    info = set_value (A, type, j, i, x);
                 }
                 if (info != SPEX_OK)
                 {
                     // unable to set element: invalid indices, or out of memory
-                    SPEX_matrix_free (&A, option) ;
-                    // printf ("mmread: unable to set symmetric element\n") ;
-                    return (info) ;
+                    SPEX_matrix_free (&A, option);
+                    // printf ("mmread: unable to set symmetric element\n");
+                    return (info);
                 }
             }
 
@@ -784,7 +784,7 @@ SPEX_info SPEX_mmread
     }
 
     *A_handle = A;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 
@@ -1628,11 +1628,11 @@ SPEX_info MY_update_verify
     if (!(*Is_correct))
     {
         // This can never happen.
-        printf ("ERROR! Factorization is wrong.\n") ;
+        printf ("ERROR! Factorization is wrong.\n");
     }
     else
     {
-        printf ("Factorization is verified to be correct and exact.\n") ;
+        printf ("Factorization is verified to be correct and exact.\n");
     }
 
     MY_FREE_ALL;

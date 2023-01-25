@@ -35,7 +35,7 @@ SPEX_info spex_cholesky_leaf
     if (i <= j || first [j] <= maxfirst [i])
     {
         (*lca_handle) = -1;
-        return (SPEX_OK) ;  // j not a leaf
+        return (SPEX_OK);  // j not a leaf
     }
 
     // Declare variables
@@ -51,7 +51,7 @@ SPEX_info spex_cholesky_leaf
         (*lca_handle) = i;
         return SPEX_OK ;   // if 1st leaf, q = root of ith subtree
     }
-    for (q = jprev ; q != ancestor [q] ; q = ancestor [q]) ;
+    for (q = jprev ; q != ancestor [q] ; q = ancestor [q]);
     for (s = jprev ; s != q ; s = sparent)
     {
         sparent = ancestor [s] ;    // path compression

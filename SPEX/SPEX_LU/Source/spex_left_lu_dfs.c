@@ -30,7 +30,7 @@ void spex_left_lu_dfs // dfs of the graph of the matrix starting at node j
     // check inputs
     //--------------------------------------------------------------------------
 
-    ASSERT_KIND (L, SPEX_CSC) ;
+    ASSERT_KIND (L, SPEX_CSC);
 
     // top xi etc already checked in the caller function
 

@@ -24,7 +24,7 @@ SPEX_info SPEX_vector_realloc
 {
 
     SPEX_info info;
-    if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
+    if (!spex_initialized ( )) { return (SPEX_PANIC); } ;
 
     int64_t p, old_size = v->nzmax ;
     if (old_size == new_size) {return SPEX_OK;}
@@ -50,12 +50,12 @@ SPEX_info SPEX_vector_realloc
 
     bool okx, oki ;
     v->x = (mpz_t *)
-        SPEX_realloc (new_size, old_size, sizeof (mpz_t), v->x, &okx) ;
+        SPEX_realloc (new_size, old_size, sizeof (mpz_t), v->x, &okx);
     v->i = (int64_t *)
-        SPEX_realloc (new_size, old_size, sizeof (int64_t), v->i, &oki) ;
+        SPEX_realloc (new_size, old_size, sizeof (int64_t), v->i, &oki);
     if (!oki || !okx)
     {
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     v->nzmax = new_size ;
@@ -70,14 +70,14 @@ SPEX_info SPEX_vector_realloc
         // be set to NULL first in case of failure
         for (p = old_size ; p < new_size ; p++)
         {
-            SPEX_MPZ_SET_NULL (v->x[p]) ;
+            SPEX_MPZ_SET_NULL (v->x[p]);
         }
 
         for (p = old_size ; p < new_size ; p++)
         {
-            SPEX_CHECK(SPEX_mpz_init (v->x[p])) ;
+            SPEX_CHECK(SPEX_mpz_init (v->x[p]));
         }
     }
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }

@@ -268,8 +268,8 @@ int main (int argc, char *argv[])
     //--------------------------------------------------------------------------
 
     FREE_WORKSPACE;
-    printf ("\n%s: all tests passed\n\n", __FILE__) ;
-    //fprintf (stderr, "%s: all tests passed\n\n", __FILE__) ;
+    printf ("\n%s: all tests passed\n\n", __FILE__);
+    //fprintf (stderr, "%s: all tests passed\n\n", __FILE__);
     return 0;
 }
 

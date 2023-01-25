@@ -73,7 +73,7 @@
 // Sorting function
 static inline int compare (const void * a, const void * b)
 {
-    return ( *(int64_t*)a - *(int64_t*)b ) ;
+    return ( *(int64_t*)a - *(int64_t*)b );
 }
 
 SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
@@ -143,7 +143,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     // Reset x[i] = 0 for all i in nonzero pattern xi [top..n-1]
     for (i = top; i < n; i++)
     {
-        SPEX_CHECK (SPEX_mpz_set_ui (x_mpz[xi [i]], 0)) ;
+        SPEX_CHECK (SPEX_mpz_set_ui (x_mpz[xi [i]], 0));
     }
     // Set x[col] = 0.  A(col,col) is the diagonal entry in the original
     // matrix.  The pivot search prefers to select the diagonal, if it is

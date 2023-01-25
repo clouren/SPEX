@@ -17,17 +17,17 @@
 SPEX_info SPEX_create_default_options (SPEX_options *option_handle)
 {
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     //--------------------------------------------------------------------------
     // allocate the option struct
     //--------------------------------------------------------------------------
 
-    (*option_handle) = SPEX_malloc(sizeof(SPEX_options_struct)) ;
+    (*option_handle) = SPEX_malloc(sizeof(SPEX_options_struct));
     if (!(*option_handle))
     {
         // out of memory
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     //--------------------------------------------------------------------------

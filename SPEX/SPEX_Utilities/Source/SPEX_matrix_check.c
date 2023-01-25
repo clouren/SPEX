@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 #define SPEX_FREE_ALL    \
-    SPEX_FREE (work) ;   \
+    SPEX_FREE (work);   \
     SPEX_MPZ_CLEAR(q);   \
     SPEX_MPZ_CLEAR(r);
 
@@ -20,11 +20,11 @@
     lines++ ;                               \
     if (pr == 2 && lines > 30)              \
     {                                       \
-        SPEX_PRINTF ("    ...\n") ;         \
+        SPEX_PRINTF ("    ...\n");         \
         pr = 1 ;                            \
     }
 
-int compar (const void *x, const void *y) ;
+int compar (const void *x, const void *y);
 
 int compar (const void *x, const void *y)
 {
@@ -33,23 +33,23 @@ int compar (const void *x, const void *y)
     int64_t *b = (int64_t *) y ;
     if (a [0] < b [0])
     {
-        return (-1) ;
+        return (-1);
     }
     else if (a [0] > b [0])
     {
-        return (1) ;
+        return (1);
     }
     else if (a [1] < b [1])
     {
-        return (-1) ;
+        return (-1);
     }
     else if (a [1] > b [1])
     {
-        return (1) ;
+        return (1);
     }
     else
     {
-        return (0) ;
+        return (0);
     }
 }
 
@@ -68,7 +68,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 )
 {
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     //--------------------------------------------------------------------------
     // check the dimensions
@@ -76,7 +76,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
     SPEX_info status = 0 ;
     char * buff = NULL ;
-    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
+    int pr = SPEX_OPTION_PRINT_LEVEL (option);
     int64_t nz;                            // Number of nonzeros in A
     status = SPEX_matrix_nnz(&nz, A, option);
     if (status != SPEX_OK) {return status;}
@@ -87,18 +87,18 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
     if (m < 0)
     {
-        SPEX_PR1 ("m invalid\n") ;
-        return (SPEX_INCORRECT_INPUT) ;
+        SPEX_PR1 ("m invalid\n");
+        return (SPEX_INCORRECT_INPUT);
     }
     if (n < 0)
     {
-        SPEX_PR1 ("n invalid\n") ;
-        return (SPEX_INCORRECT_INPUT) ;
+        SPEX_PR1 ("n invalid\n");
+        return (SPEX_INCORRECT_INPUT);
     }
     if (nzmax < 0)
     {
-        SPEX_PR1 ("nzmax invalid\n") ;
-        return (SPEX_INCORRECT_INPUT) ;
+        SPEX_PR1 ("nzmax invalid\n");
+        return (SPEX_INCORRECT_INPUT);
     }
 
     //--------------------------------------------------------------------------
@@ -109,8 +109,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
         (A->kind == SPEX_DYNAMIC_CSC && A->type != SPEX_MPZ))
     //  A->kind < SPEX_CSC || A->kind > SPEX_DENSE // checked in SPEX_matrix_nnz
     {
-        SPEX_PR1 ("A has invalid type.\n") ;
-        return (SPEX_INCORRECT_INPUT) ;
+        SPEX_PR1 ("A has invalid type.\n");
+        return (SPEX_INCORRECT_INPUT);
     }
 
     SPEX_PR2 ("SPEX_matrix: nrows: %"PRId64", ncols: %"PRId64", nz:"
@@ -118,18 +118,18 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
         A->kind < 1 ? "CSC" : A->kind < 2 ? "Triplet" : A->kind < 3 ?
         "Dense" : "Dynamic CSC",
         A->type < 1 ? "MPZ" : A->type < 2 ? "MPQ" : A->type < 3 ?
-        "MPFR" : A->type < 4 ? "int64" : "double") ;
+        "MPFR" : A->type < 4 ? "int64" : "double");
 
     if (pr >= 2)
     {
-        SPEX_PR2 ("scale factor: ") ;
+        SPEX_PR2 ("scale factor: ");
         // use mpfr_asprintf so that we can use SPEX_PR*, which
         // employs either printf or mexprintf
-        status = SPEX_mpfr_asprintf (&buff,"%Qd\n", A->scale) ;
+        status = SPEX_mpfr_asprintf (&buff,"%Qd\n", A->scale);
         if (status >= 0)
         {
-            SPEX_PR2 ("%s", buff) ;
-            SPEX_mpfr_free_str (buff) ;
+            SPEX_PR2 ("%s", buff);
+            SPEX_mpfr_free_str (buff);
         }
     }
 
@@ -171,8 +171,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             if (nzmax > 0 && (Ap == NULL || Ap [0] != 0))
             {
                 // column pointers invalid
-                SPEX_PR1 ("p invalid\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                SPEX_PR1 ("p invalid\n");
+                return (SPEX_INCORRECT_INPUT);
             }
             for (j = 0 ; j < n ; j++)
             {
@@ -181,8 +181,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                 if (pend < p || pend > nz)
                 {
                     // column pointers not monotonically non-decreasing
-                    SPEX_PR1 ("p invalid\n") ;
-                    return (SPEX_INCORRECT_INPUT) ;
+                    SPEX_PR1 ("p invalid\n");
+                    return (SPEX_INCORRECT_INPUT);
                 }
             }
 
@@ -193,24 +193,24 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             if (nzmax > 0 && (Ai == NULL || SPEX_X(A) == NULL))
             {
                 // row indices or values not present
-                SPEX_PR1 ("i or x invalid\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                SPEX_PR1 ("i or x invalid\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             // allocate workspace to check for duplicates
-            work = (int64_t *) SPEX_calloc (m, sizeof (int64_t)) ;
+            work = (int64_t *) SPEX_calloc (m, sizeof (int64_t));
             if (work == NULL)
             {
                 // out of memory
-                SPEX_PR1 ("out of memory\n") ;
+                SPEX_PR1 ("out of memory\n");
                 SPEX_FREE_ALL;
-                return (SPEX_OUT_OF_MEMORY) ;
+                return (SPEX_OUT_OF_MEMORY);
             }
 
             for (j = 0 ; j < n ; j++)  // iterate across columns
             {
                 SPEX_PR_LIMIT ;
-                SPEX_PR2 ("column %"PRId64" :\n", j) ;
+                SPEX_PR2 ("column %"PRId64" :\n", j);
                 int64_t marked = j+1 ;
                 for (p = Ap [j] ; p < Ap [j+1] ; p++)
                 {
@@ -218,21 +218,21 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                     if (i < 0 || i >= m)
                     {
                         // row indices out of range
-                        SPEX_PR1 ("index out of range: (%ld,%ld)\n", i, j) ;
+                        SPEX_PR1 ("index out of range: (%ld,%ld)\n", i, j);
                         SPEX_FREE_ALL ;
-                        return (SPEX_INCORRECT_INPUT) ;
+                        return (SPEX_INCORRECT_INPUT);
                     }
                     else if (work [i] == marked)
                     {
                         // duplicate
-                        SPEX_PR1 ("duplicate index: (%ld,%ld)\n", i, j) ;
+                        SPEX_PR1 ("duplicate index: (%ld,%ld)\n", i, j);
                         SPEX_FREE_ALL ;
-                        return (SPEX_INCORRECT_INPUT) ;
+                        return (SPEX_INCORRECT_INPUT);
                     }
                     if (pr >= 2)
                     {
                         SPEX_PR_LIMIT ;
-                        SPEX_PR2 ("  row %"PRId64" : ", i) ;
+                        SPEX_PR2 ("  row %"PRId64" : ", i);
 
                         switch ( A->type)
                         {
@@ -286,8 +286,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         if (status < 0)
                         {
                             SPEX_FREE_ALL ;
-                            SPEX_PRINTF (" error: %d\n", status) ;
-                            return (status) ;
+                            SPEX_PRINTF (" error: %d\n", status);
+                            return (status);
                         }
                     }
                     work [i] = marked ;
@@ -313,8 +313,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             if (nzmax > 0 && (Ai == NULL || Aj == NULL || SPEX_X(A) == NULL))
             {
                 // row indices or values not present
-                SPEX_PR1 ("i or j or x invalid\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                SPEX_PR1 ("i or j or x invalid\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             //------------------------------------------------------------------
@@ -329,7 +329,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                 if (pr >= 2)
                 {
                     SPEX_PR_LIMIT ;
-                    SPEX_PR2 ("  %"PRId64" %"PRId64" : ", i, j) ;
+                    SPEX_PR2 ("  %"PRId64" %"PRId64" : ", i, j);
 
                     switch ( A->type)
                     {
@@ -382,17 +382,17 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                     if (status < 0)
                     {
                         SPEX_FREE_ALL ;
-                        SPEX_PRINTF (" error: %d\n", status) ;
-                        return (status) ;
+                        SPEX_PRINTF (" error: %d\n", status);
+                        return (status);
                     }
                 }
 
                 if (i < 0 || i >= m || j < 0 || j >= n)
                 {
                     // row indices out of range
-                    SPEX_PR1 ("invalid index\n") ;
+                    SPEX_PR1 ("invalid index\n");
                     SPEX_FREE_ALL ;
-                    return (SPEX_INCORRECT_INPUT) ;
+                    return (SPEX_INCORRECT_INPUT);
                 }
             }
 
@@ -401,13 +401,13 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             //------------------------------------------------------------------
 
             // allocate workspace to check for duplicates
-            work = (int64_t *) SPEX_malloc (nz * 2 * sizeof (int64_t)) ;
+            work = (int64_t *) SPEX_malloc (nz * 2 * sizeof (int64_t));
             if (work == NULL)
             {
                 // out of memory
-                SPEX_PR1 ("out of memory\n") ;
+                SPEX_PR1 ("out of memory\n");
                 SPEX_FREE_ALL;
-                return (SPEX_OUT_OF_MEMORY) ;
+                return (SPEX_OUT_OF_MEMORY);
             }
 
             // load the (i,j) indices of the triplets into the workspace
@@ -418,7 +418,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             }
 
             // sort the (i,j) indices
-            qsort (work, nz, 2 * sizeof (int64_t), compar) ;
+            qsort (work, nz, 2 * sizeof (int64_t), compar);
 
             // check for duplicates
             for (p = 1 ; p < nz ; p++)
@@ -429,9 +429,9 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                 int64_t last_i = work [2*(p-1)+1] ;
                 if (this_j == last_j && this_i == last_i)
                 {
-                    SPEX_PR1 ("duplicate index: (%ld, %ld)\n", this_i, this_j) ;
+                    SPEX_PR1 ("duplicate index: (%ld, %ld)\n", this_i, this_j);
                     SPEX_FREE_ALL ;
-                    return (SPEX_INCORRECT_INPUT) ;
+                    return (SPEX_INCORRECT_INPUT);
                 }
             }
 
@@ -451,8 +451,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             if (nzmax > 0 && SPEX_X(A) == NULL)
             {
                 // row indices or values not present
-                SPEX_PR1 ("x invalid\n") ;
-                return (SPEX_INCORRECT_INPUT) ;
+                SPEX_PR1 ("x invalid\n");
+                return (SPEX_INCORRECT_INPUT);
             }
 
             //------------------------------------------------------------------
@@ -462,13 +462,13 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             for (j = 0 ; j < n ; j++)
             {
                 SPEX_PR_LIMIT ;
-                SPEX_PR2 ("column %"PRId64" :\n", j) ;
+                SPEX_PR2 ("column %"PRId64" :\n", j);
                 for (i = 0; i < m; i++)
                 {
                     if (pr >= 2)
                     {
                         SPEX_PR_LIMIT ;
-                        SPEX_PR2 ("  row %"PRId64" : ", i) ;
+                        SPEX_PR2 ("  row %"PRId64" : ", i);
 
                         switch ( A->type)
                         {
@@ -478,7 +478,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                                 // SPEX_PR*, which employs either printf or
                                 // mexprintf
                                 status = SPEX_mpfr_asprintf (&buff, "%Zd \n" ,
-                                    SPEX_2D(A, i, j, mpz)) ;
+                                    SPEX_2D(A, i, j, mpz));
                                 if (status >= 0)
                                 {
                                     SPEX_PR2("%s", buff);
@@ -521,8 +521,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                         }
                         if (status < 0)
                         {
-                            SPEX_PR2 (" error: %d\n", status) ;
-                            return (status) ;
+                            SPEX_PR2 (" error: %d\n", status);
+                            return (status);
                         }
                     }
                 }
@@ -540,13 +540,13 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             ASSERT (A->v != NULL);
 
             // allocate workspace to check for duplicates
-            work = (int64_t *) SPEX_calloc (m, sizeof (int64_t)) ;
+            work = (int64_t *) SPEX_calloc (m, sizeof (int64_t));
             if (work == NULL)
             {
                 // out of memory
-                SPEX_PR1 ("out of memory\n") ;
+                SPEX_PR1 ("out of memory\n");
                 SPEX_FREE_ALL;
-                return (SPEX_OUT_OF_MEMORY) ;
+                return (SPEX_OUT_OF_MEMORY);
             }
 
             // initialize q and r
@@ -564,16 +564,16 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                 ASSERT (A->v[j] != NULL);
 
                 SPEX_PR_LIMIT ;
-                SPEX_PR2 ("column %"PRId64" :\n", j) ;
+                SPEX_PR2 ("column %"PRId64" :\n", j);
                 int64_t marked = j+1 ;
 
                 if (A->v[j]->nzmax > 0 &&
                     (A->v[j]->i == NULL || A->v[j]->x == NULL))
                 {
                     // row indices or values not present
-                    SPEX_PR1 ("i or x invalid\n") ;
+                    SPEX_PR1 ("i or x invalid\n");
                     SPEX_FREE_ALL;
-                    return (SPEX_INCORRECT_INPUT) ;
+                    return (SPEX_INCORRECT_INPUT);
                 }
 
                 for (p = 0 ; p < A->v[j]->nz ; p++)
@@ -582,21 +582,21 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                     if (i < 0 || i >= m)
                     {
                         // row indices out of range
-                        SPEX_PR1 ("index out of range: (%ld,%ld)\n", i, j) ;
+                        SPEX_PR1 ("index out of range: (%ld,%ld)\n", i, j);
                         SPEX_FREE_ALL ;
-                        return (SPEX_INCORRECT_INPUT) ;
+                        return (SPEX_INCORRECT_INPUT);
                     }
                     else if (work [i] == marked)
                     {
                         // duplicate
-                        SPEX_PR1 ("duplicate index: (%ld,%ld)\n", i, j) ;
+                        SPEX_PR1 ("duplicate index: (%ld,%ld)\n", i, j);
                         SPEX_FREE_ALL ;
-                        return (SPEX_INCORRECT_INPUT) ;
+                        return (SPEX_INCORRECT_INPUT);
                     }
                     if (pr >= 2)
                     {
                         SPEX_PR_LIMIT ;
-                        SPEX_PR2 ("  row %"PRId64" : ", i) ;
+                        SPEX_PR2 ("  row %"PRId64" : ", i);
 
                         // check if each entry will be integer after scale
                         // applied, report error if not.
@@ -613,9 +613,9 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                             {
                                 // entry is not integer after scale applied
                                 SPEX_PR1 ("entry not integer: (%ld,%ld)\n",
-                                    i, j) ;
+                                    i, j);
                                 SPEX_FREE_ALL ;
-                                return (SPEX_INCORRECT_INPUT) ;
+                                return (SPEX_INCORRECT_INPUT);
                             }
                             // use mpfr_asprintf so that we can use SPEX_PR*,
                             // which employs either printf or mexprintf
@@ -628,8 +628,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
                             else
                             {
                                 SPEX_FREE_ALL ;
-                                SPEX_PRINTF (" error: %d\n", status) ;
-                                return (status) ;
+                                SPEX_PRINTF (" error: %d\n", status);
+                                return (status);
                             }
                         }
                         else
@@ -652,6 +652,6 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     //--------------------------------------------------------------------------
 
     SPEX_FREE_ALL ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

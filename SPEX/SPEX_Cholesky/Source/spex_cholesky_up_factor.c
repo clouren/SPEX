@@ -72,11 +72,11 @@ SPEX_info spex_cholesky_up_factor
     //--------------------------------------------------------------------------
 
     SPEX_info info;
-    ASSERT (A != NULL) ;
+    ASSERT (A != NULL);
     ASSERT (A->type == SPEX_MPZ);
     ASSERT (A->kind == SPEX_CSC);
-    ASSERT (L_handle != NULL) ;
-    ASSERT (rhos_handle != NULL) ;
+    ASSERT (L_handle != NULL);
+    ASSERT (rhos_handle != NULL);
     (*L_handle) = NULL ;
     (*rhos_handle) = NULL ;
 
@@ -140,7 +140,7 @@ SPEX_info spex_cholesky_up_factor
     // Note that the estimate presented here is not an upper bound nor a lower
     // bound.  It is still possible that more bits will be required which is
     // correctly handled internally.
-    int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n))) ;
+    int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
 
     // Create x, a "global" dense mpz_t matrix of dimension n*1 (i.e., it is
     // used as workspace re-used at each iteration). The second boolean

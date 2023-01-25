@@ -28,16 +28,16 @@ SPEX_info SPEX_check_solution
     const SPEX_options option    // Command options
 )
 {
-    if (!SPEX_initialize ( )) return (SPEX_PANIC) ;
+    if (!SPEX_initialize ( )) return (SPEX_PANIC);
 
     //--------------------------------------------------------------------------
     // check inputs. Input are also checked by the two callers
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    /*SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ) ;
-    SPEX_REQUIRE (x, SPEX_DENSE, SPEX_MPQ) ;
-    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;*/
+    /*SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ);
+    SPEX_REQUIRE (x, SPEX_DENSE, SPEX_MPQ);
+    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ);*/
 
     //--------------------------------------------------------------------------
     // Declare vars
@@ -125,16 +125,16 @@ SPEX_info SPEX_check_solution
     // Print info
     //--------------------------------------------------------------------------
 
-    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
+    int pr = SPEX_OPTION_PRINT_LEVEL (option);
     if (info == SPEX_OK)
     {
-        SPEX_PR1 ("Solution is verified to be exact.\n") ;
+        SPEX_PR1 ("Solution is verified to be exact.\n");
     }
     else if (info == SPEX_PANIC)
     {
         // This can never happen.
         SPEX_PR1 ("ERROR! Solution is wrong. This is a bug; please "
-                  "contact the authors of SPEX.\n") ;
+                  "contact the authors of SPEX.\n");
     }
 
     //--------------------------------------------------------------------------

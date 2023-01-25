@@ -36,7 +36,7 @@
 
 #define SPEX_FREE_WORKSPACE             \
 {                                       \
-    SPEX_matrix_free (&PAP, option) ;   \
+    SPEX_matrix_free (&PAP, option);   \
 }
 
 #define SPEX_FREE_ALL                   \
@@ -74,14 +74,14 @@ SPEX_info SPEX_cholesky_factorize
     // Check inputs for NULL
     if (!F_handle || !A || !S)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
 
     // Ensure inputs are in the correct format
     if (A->kind != SPEX_CSC || A->type != SPEX_MPZ
         || S->kind != SPEX_CHOLESKY_FACTORIZATION)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
 
     SPEX_matrix PAP = NULL ;

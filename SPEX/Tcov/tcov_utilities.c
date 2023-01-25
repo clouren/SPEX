@@ -29,9 +29,9 @@ void *tcov_malloc
     if (--malloc_count < 0)
     {
         /* pretend to fail */
-        return (NULL) ;
+        return (NULL);
     }
-    return (malloc (size)) ;
+    return (malloc (size));
 }
 
 // wrapper for calloc
@@ -44,10 +44,10 @@ void *tcov_calloc
     if (--malloc_count < 0)
     {
         /* pretend to fail */
-        return (NULL) ;
+        return (NULL);
     }
     // ensure at least one byte is calloc'd
-    return (calloc (n, size)) ;
+    return (calloc (n, size));
 }
 
 // wrapper for realloc
@@ -62,7 +62,7 @@ void *tcov_realloc
         /* pretend to fail */
         return (NULL);
     }
-    return (realloc (p, new_size)) ;
+    return (realloc (p, new_size));
 }
 
 // wrapper for free
@@ -73,7 +73,7 @@ void tcov_free
 {
     // This not really needed, but placed here anyway in case the Tcov tests
     // want to do something different that free(p) in the future.
-    free (p) ;
+    free (p);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,18 +88,18 @@ int spex_gmp_realloc_test
     size_t new_size
 )
 {
-    TEST_ASSERT (spex_initialized ( )) ;
+    TEST_ASSERT (spex_initialized ( ));
 
     // get the spex_gmp object for this thread
-    spex_gmp_t *spex_gmp = spex_gmp_get ( ) ;
-    TEST_ASSERT (spex_gmp != NULL) ;
-    int status = setjmp (spex_gmp->environment) ;
+    spex_gmp_t *spex_gmp = spex_gmp_get ( );
+    TEST_ASSERT (spex_gmp != NULL);
+    int status = setjmp (spex_gmp->environment);
     if (status != 0)
     {
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
-    *p_new = spex_gmp_reallocate (p_old, old_size, new_size) ;
-    return (SPEX_OK) ;
+    *p_new = spex_gmp_reallocate (p_old, old_size, new_size);
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -129,16 +129,16 @@ SPEX_info spex_check_solution
     const SPEX_options option    // Command options
 )
 {
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     //--------------------------------------------------------------------------
     // check inputs. Input are also checked by the two callers
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ) ;
-    SPEX_REQUIRE (x, SPEX_DENSE, SPEX_MPQ) ;
-    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;
+    SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ);
+    SPEX_REQUIRE (x, SPEX_DENSE, SPEX_MPQ);
+    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ);
 
     //--------------------------------------------------------------------------
     // Declare vars
@@ -223,16 +223,16 @@ SPEX_info spex_check_solution
     // Print info
     //--------------------------------------------------------------------------
 
-    int pr = SPEX_OPTION_PRINT_LEVEL (option) ;
+    int pr = SPEX_OPTION_PRINT_LEVEL (option);
     if (*Is_correct)
     {
-        SPEX_PR1 ("Solution is verified to be exact.\n") ;
+        SPEX_PR1 ("Solution is verified to be exact.\n");
     }
     else
     {
         // This can never happen.
         SPEX_PR1 ("ERROR! Solution is wrong. This is a bug; please "
-                  "contact the authors of SPEX.\n") ;
+                  "contact the authors of SPEX.\n");
     }
 
     //--------------------------------------------------------------------------

@@ -33,22 +33,22 @@ SPEX_info SPEX_version
 
     if (date != NULL)
     {
-        strncpy (date, SPEX_DATE, 127) ;
+        strncpy (date, SPEX_DATE, 127);
     }
 
     if (thread_safety != NULL)
     {
         #if defined ( SPEX_USE_PTHREADS )
-            strncpy (thread_safety, "POSIX pthreads", 127) ;
+            strncpy (thread_safety, "POSIX pthreads", 127);
         #elif defined ( SPEX_USE_WIN32_THREADS )
-            strncpy (thread_safety, "Windows threads", 127) ;
+            strncpy (thread_safety, "Windows threads", 127);
         #elif defined ( _OPENMP )
-            strncpy (thread_safety, "OpenMP", 127) ;
+            strncpy (thread_safety, "OpenMP", 127);
         #else
-            strncpy (thread_safety, "unsafe", 127) ;
+            strncpy (thread_safety, "unsafe", 127);
         #endif
     }
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

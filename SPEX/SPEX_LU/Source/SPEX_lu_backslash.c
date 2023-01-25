@@ -59,7 +59,7 @@ SPEX_info SPEX_lu_backslash
     //-------------------------------------------------------------------------
 
     SPEX_info info ;
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     if (X_handle == NULL)
     {
@@ -72,8 +72,8 @@ SPEX_info SPEX_lu_backslash
         return SPEX_INCORRECT_INPUT;
     }
 
-    SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ) ;
-    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;
+    SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ);
+    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ);
 
     SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL ;
@@ -95,7 +95,7 @@ SPEX_info SPEX_lu_backslash
     // Solve
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK (SPEX_lu_solve (&x, F, b, option)) ;
+    SPEX_CHECK (SPEX_lu_solve (&x, F, b, option));
 
     //--------------------------------------------------------------------------
     // Now, x contains the exact solution of the linear system in mpq_t
@@ -109,9 +109,9 @@ SPEX_info SPEX_lu_backslash
     else
     {
         SPEX_matrix x2 = NULL ;
-        SPEX_CHECK (SPEX_matrix_copy (&x2, SPEX_DENSE, type, x, option)) ;
+        SPEX_CHECK (SPEX_matrix_copy (&x2, SPEX_DENSE, type, x, option));
         (*X_handle) = x2 ;
-        SPEX_matrix_free (&x, NULL) ;
+        SPEX_matrix_free (&x, NULL);
     }
 
     //--------------------------------------------------------------------------
@@ -119,6 +119,6 @@ SPEX_info SPEX_lu_backslash
     //--------------------------------------------------------------------------
 
     SPEX_FREE_WORKSPACE ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

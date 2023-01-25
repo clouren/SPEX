@@ -121,12 +121,12 @@ SPEX_info spex_update_verify
 
     if (*Is_correct)
     {
-        printf ("Factorization is verified to be correct and exact.\n") ;
+        printf ("Factorization is verified to be correct and exact.\n");
     }
     else
     {
         printf ("ERROR! Factorization is wrong. This is a bug; please "
-                  "contact the authors of SPEX.\n") ;
+                  "contact the authors of SPEX.\n");
     }
 
     SPEX_FREE_ALL;

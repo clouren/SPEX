@@ -11,12 +11,12 @@
 
 #define SPEX_FREE_WORKSPACE     \
 {                               \
-    SPEX_FREE (w) ;             \
+    SPEX_FREE (w);             \
 }
 
 #define SPEX_FREE_ALL           \
 {                               \
-    SPEX_FREE (post) ;          \
+    SPEX_FREE (post);          \
     SPEX_FREE_WORKSPACE ;       \
 }
 
@@ -47,11 +47,11 @@ SPEX_info spex_cholesky_post
     post = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
 
     // Create a workspace
-    w = (int64_t*) SPEX_malloc (3*n* sizeof (int64_t)) ;
+    w = (int64_t*) SPEX_malloc (3*n* sizeof (int64_t));
     if ((w == NULL) || (post == NULL))
     {
         SPEX_FREE_ALL ;
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
     head = w ; next = w + n ; stack = w + 2*n ;
 
@@ -69,9 +69,9 @@ SPEX_info spex_cholesky_post
     for (j = 0 ; j < n ; j++)
     {
         if (parent [j] != -1) continue ;    // skip j if it is not a root
-        SPEX_CHECK(spex_cholesky_tdfs (&k, j, head, next, post, stack)) ;
+        SPEX_CHECK(spex_cholesky_tdfs (&k, j, head, next, post, stack));
     }
     SPEX_FREE_WORKSPACE ;
     (*post_handle) = post;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }

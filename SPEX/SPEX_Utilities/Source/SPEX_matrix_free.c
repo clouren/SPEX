@@ -23,14 +23,14 @@ SPEX_info SPEX_matrix_free
     // check inputs
     //--------------------------------------------------------------------------
 
-    if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
+    if (!spex_initialized ( )) { return (SPEX_PANIC); } ;
 
     if (A_handle == NULL || (*A_handle) == NULL)
     {
         // nothing to free (not an error)
-        return (SPEX_OK) ;
+        return (SPEX_OK);
     }
-    SPEX_matrix A = (*A_handle) ;
+    SPEX_matrix A = (*A_handle);
 
     //--------------------------------------------------------------------------
     // free any non-shallow components
@@ -50,9 +50,9 @@ SPEX_info SPEX_matrix_free
     else
     {
         // free the integer pattern
-        if (!(A->p_shallow)) SPEX_FREE (A->p) ;
-        if (!(A->i_shallow)) SPEX_FREE (A->i) ;
-        if (!(A->j_shallow)) SPEX_FREE (A->j) ;
+        if (!(A->p_shallow)) SPEX_FREE (A->p);
+        if (!(A->i_shallow)) SPEX_FREE (A->i);
+        if (!(A->j_shallow)) SPEX_FREE (A->j);
 
         // free the values
         if (!(A->x_shallow))
@@ -102,11 +102,11 @@ SPEX_info SPEX_matrix_free
                     break ;
 
                 case SPEX_INT64:
-                    SPEX_FREE (A->x.int64) ;
+                    SPEX_FREE (A->x.int64);
                     break ;
 
                 case SPEX_FP64:
-                    SPEX_FREE (A->x.fp64) ;
+                    SPEX_FREE (A->x.fp64);
                     break ;
 
                 default:
@@ -117,15 +117,15 @@ SPEX_info SPEX_matrix_free
     }
 
     // A->scale is never shallow
-    SPEX_MPQ_CLEAR (A->scale) ;
+    SPEX_MPQ_CLEAR (A->scale);
 
     //--------------------------------------------------------------------------
     // free the header
     //--------------------------------------------------------------------------
 
     // the header is never shallow
-    SPEX_FREE (A) ;
+    SPEX_FREE (A);
     (*A_handle) = NULL ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

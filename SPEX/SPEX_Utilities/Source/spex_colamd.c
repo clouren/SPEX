@@ -11,8 +11,8 @@
 
 #define SPEX_FREE_ALL       \
 {                           \
-    SPEX_FREE (perm) ;      \
-    SPEX_FREE (A2) ;        \
+    SPEX_FREE (perm);      \
+    SPEX_FREE (A2);        \
 }
 
 #include "spex_util_internal.h"
@@ -35,7 +35,7 @@ SPEX_info spex_colamd
     int64_t *A2 = NULL, *perm = NULL ;
 
     int64_t anz; // Number of nonzeros in A
-    SPEX_CHECK (SPEX_matrix_nnz(&anz, A, option)) ;
+    SPEX_CHECK (SPEX_matrix_nnz(&anz, A, option));
     int64_t i, n = A->n;
 
     int pr = SPEX_OPTION_PRINT_LEVEL(option);
@@ -45,17 +45,17 @@ SPEX_info spex_colamd
     if (perm == NULL)
     {
         SPEX_FREE_ALL ;
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     // determine workspace required for COLAMD
     int64_t Alen = colamd_l_recommended (anz, n, n) + 2*n ;
-    A2 = (int64_t*) SPEX_malloc (Alen*sizeof(int64_t)) ;
+    A2 = (int64_t*) SPEX_malloc (Alen*sizeof(int64_t));
     if (!A2)
     {
         // out of memory
         SPEX_FREE_ALL ;
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     // Initialize S->p as per COLAMD documentation
@@ -78,7 +78,7 @@ SPEX_info spex_colamd
     {
         // COLAMD failed: matrix is invalid
         SPEX_FREE_ALL ;
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
 
     // very rough estimate for lnz and unz
@@ -92,7 +92,7 @@ SPEX_info spex_colamd
     }
 
     // free workspace and return result
-    SPEX_FREE (A2) ;
+    SPEX_FREE (A2);
     (*perm_handle) = perm ;
     return SPEX_OK;
 }

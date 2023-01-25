@@ -92,7 +92,7 @@ SPEX_info SPEX_cholesky_solve
     // Ensure that F is in a non-updatable form
     SPEX_CHECK( SPEX_factorization_convert(F, false, option));
 
-    SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option)) ;
+    SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option));
 
     //--------------------------------------------------------------------------
     // Forward substitution, b2 = L \ b2. Note that b2 is overwritten

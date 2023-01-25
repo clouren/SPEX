@@ -12,7 +12,7 @@
 #include "spex_cholesky_internal.h"
 
 #undef  SPEX_FREE_ALL
-#define SPEX_FREE_ALL { SPEX_matrix_free (&PAP, NULL) ; }
+#define SPEX_FREE_ALL { SPEX_matrix_free (&PAP, NULL); }
 
 /* Purpose: Given the row/column permutation P stored in S, permute the matrix
  * A and return PAP'
@@ -102,8 +102,8 @@ SPEX_info spex_cholesky_permute_A
         //----------------------------------------------------------------------
 
         // FUTURE: tell SPEX_matrix_allocate not to allocate PAP->x at all.
-        SPEX_FREE (PAP->x.mpz) ;
-        ASSERT (PAP->x.mpz == NULL) ;
+        SPEX_FREE (PAP->x.mpz);
+        ASSERT (PAP->x.mpz == NULL);
         PAP->x_shallow = true ;
 
         // Populate the entries in PAP

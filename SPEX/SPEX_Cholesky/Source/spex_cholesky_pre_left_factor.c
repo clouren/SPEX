@@ -80,7 +80,7 @@ SPEX_info spex_cholesky_pre_left_factor
         false, false, NULL));
 
     // Allocate c
-    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
+    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
     if (!c)
     {
         SPEX_FREE_ALL;

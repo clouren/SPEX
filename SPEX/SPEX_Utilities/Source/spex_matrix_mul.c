@@ -27,9 +27,9 @@ SPEX_info spex_matrix_mul   // multiplies x by a scalar
     // check inputs
     //--------------------------------------------------------------------------
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
     SPEX_info info ;
-    SPEX_REQUIRE_TYPE (x, SPEX_MPZ) ;
+    SPEX_REQUIRE_TYPE (x, SPEX_MPZ);
     if (x->kind == SPEX_DYNAMIC_CSC) return (SPEX_INCORRECT_INPUT);
 
     //--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ SPEX_info spex_matrix_mul   // multiplies x by a scalar
     //--------------------------------------------------------------------------
 
     int64_t nz;
-    info = SPEX_matrix_nnz (&nz, x, NULL) ;
+    info = SPEX_matrix_nnz (&nz, x, NULL);
     if (info != SPEX_OK) {return info;}
 
     for (int64_t i = 0; i < nz; i++)
@@ -46,6 +46,6 @@ SPEX_info spex_matrix_mul   // multiplies x by a scalar
         SPEX_CHECK( SPEX_mpz_mul( x->x.mpz[i], x->x.mpz[i], scalar));
     }
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

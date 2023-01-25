@@ -27,7 +27,7 @@ SPEX_info spex_CSC_mpz_to_dynamic
 )
 {
 
-    SPEX_REQUIRE (B, SPEX_CSC, SPEX_MPZ) ;
+    SPEX_REQUIRE (B, SPEX_CSC, SPEX_MPZ);
     if (A_handle == NULL)   {return SPEX_INCORRECT_INPUT;}
 
     SPEX_info info;

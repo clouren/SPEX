@@ -30,11 +30,11 @@
  */
 
 #define SPEX_FREE_WORKSPACE             \
-    SPEX_matrix_free (&b2, NULL) ;
+    SPEX_matrix_free (&b2, NULL);
 
 #define SPEX_FREE_ALL                   \
     SPEX_FREE_WORKSPACE                 \
-    SPEX_matrix_free (&x, NULL) ;
+    SPEX_matrix_free (&x, NULL);
 
 #include "spex_lu_internal.h"
 
@@ -59,9 +59,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
-    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ) ;
+    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ);
 
     if (!x_handle || !F || F->kind != SPEX_LU_FACTORIZATION)
     {
@@ -73,9 +73,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     if (info != SPEX_OK) return info;
 
     // check components of F in debug mode
-    ASSERT_MATRIX (F->L,    SPEX_CSC,   SPEX_MPZ) ;
-    ASSERT_MATRIX (F->U,    SPEX_CSC,   SPEX_MPZ) ;
-    ASSERT_MATRIX (F->rhos, SPEX_DENSE, SPEX_MPZ) ;
+    ASSERT_MATRIX (F->L,    SPEX_CSC,   SPEX_MPZ);
+    ASSERT_MATRIX (F->U,    SPEX_CSC,   SPEX_MPZ);
+    ASSERT_MATRIX (F->rhos, SPEX_DENSE, SPEX_MPZ);
 
     //--------------------------------------------------------------------------
     // Declare and initialize workspace
@@ -91,7 +91,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     // b2 (Pinv_perm) = b
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option)) ;
+    SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option));
 
     //--------------------------------------------------------------------------
     // b2 = L\b2, via forward substitution
@@ -141,6 +141,6 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 
     SPEX_FREE_WORKSPACE ;
     (*x_handle) = x ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

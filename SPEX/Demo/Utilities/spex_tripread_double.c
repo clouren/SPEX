@@ -42,7 +42,7 @@ SPEX_info spex_tripread_double
     int s = fscanf(file, "%"PRId64" %"PRId64" %"PRId64"\n", &m, &n, &nz);
     if (feof(file) || s < 3)
     {
-        printf ("premature end-of-file\n") ;
+        printf ("premature end-of-file\n");
         return SPEX_INCORRECT_INPUT;
     }
 
@@ -52,15 +52,15 @@ SPEX_info spex_tripread_double
         false, true, option);
     if (info != SPEX_OK)
     {
-        printf ("unable to allocate matrix\n") ;
-        return (info) ;
+        printf ("unable to allocate matrix\n");
+        return (info);
     }
 
 //  s = fscanf (file, "%"PRId64" %"PRId64" %lf\n",
-//      &(A->i[0]), &(A->j[0]), &(A->x.fp64[0])) ;
+//      &(A->i[0]), &(A->j[0]), &(A->x.fp64[0]));
 //  if (feof(file) || s < 2)
 //  {
-//      printf ("premature end-of-file\n") ;
+//      printf ("premature end-of-file\n");
 //      SPEX_matrix_free(&A, option);
 //      return SPEX_INCORRECT_INPUT;
 //  }
@@ -77,7 +77,7 @@ SPEX_info spex_tripread_double
             &(A->i[k]), &(A->j[k]), &(A->x.fp64[k]));
         if ((feof(file) && k != nz-1) || s < 3)
         {
-            printf ("premature end-of-file\n") ;
+            printf ("premature end-of-file\n");
             SPEX_matrix_free(&A, option);
             return SPEX_INCORRECT_INPUT;
         }
@@ -96,11 +96,11 @@ SPEX_info spex_tripread_double
 //      3: verbose
 
 //  option->print_level = 3 ;
-    info = SPEX_matrix_check (A, option) ;
+    info = SPEX_matrix_check (A, option);
     if (info != SPEX_OK)
     {
-        printf ("invalid matrix\n") ;
-        return (info) ;
+        printf ("invalid matrix\n");
+        return (info);
     }
 
     // At this point, A is a double triplet matrix. We make a copy of it with C
@@ -109,13 +109,13 @@ SPEX_info spex_tripread_double
     info = SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
     if (info != SPEX_OK)
     {
-        printf ("unable to copy matrix\n") ;
-        return (info) ;
+        printf ("unable to copy matrix\n");
+        return (info);
     }
 
     // Success. Set A_handle = C and free A
 
     SPEX_matrix_free(&A, option);
     (*A_handle) = C;
-    return (info) ;
+    return (info);
 }

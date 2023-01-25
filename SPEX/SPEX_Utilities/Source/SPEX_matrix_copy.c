@@ -23,13 +23,13 @@
 // 16 supported formats.
 
 #define SPEX_FREE_WORK                  \
-    SPEX_matrix_free (&T, option) ;     \
-    SPEX_matrix_free (&Y, option) ;     \
-    SPEX_FREE (W) ;
+    SPEX_matrix_free (&T, option);     \
+    SPEX_matrix_free (&Y, option);     \
+    SPEX_FREE (W);
 
 #define SPEX_FREE_ALL                   \
     SPEX_FREE_WORK ;                    \
-    SPEX_matrix_free (&C, option) ;
+    SPEX_matrix_free (&C, option);
 
 #include "spex_util_internal.h"
 
@@ -48,7 +48,7 @@ SPEX_info SPEX_matrix_copy
     // check inputs
     //--------------------------------------------------------------------------
     SPEX_info info ;
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     int64_t nz;
     SPEX_matrix C = NULL ;
@@ -56,7 +56,7 @@ SPEX_info SPEX_matrix_copy
     SPEX_matrix T = NULL ;
     int64_t *W = NULL ;
 
-    SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;
+    SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option));
     ASSERT( nz >= 0);
     if (C_handle == NULL || nz < 0 ||
         // checked in SPEX_matrix_nnz:
@@ -67,12 +67,12 @@ SPEX_info SPEX_matrix_copy
         (A->kind == SPEX_DYNAMIC_CSC && A->type != SPEX_MPZ) ||
         (C_kind  == SPEX_DYNAMIC_CSC && C_type  != SPEX_MPZ))
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
     (*C_handle) = NULL ;
     int64_t m = A->m ;
     int64_t n = A->n ;
-    mpfr_rnd_t round = SPEX_OPTION_ROUND (option) ;
+    mpfr_rnd_t round = SPEX_OPTION_ROUND (option);
 
     //--------------------------------------------------------------------------
     // copy and convert A into C
@@ -99,13 +99,13 @@ SPEX_info SPEX_matrix_copy
                 {
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_CSC, C_type,
-                        m, n, nz, false, true, option)) ;
+                        m, n, nz, false, true, option));
                     // copy the pattern of A into C
-                    memcpy (C->p, A->p, (n+1) * sizeof (int64_t)) ;
-                    memcpy (C->i, A->i, nz * sizeof (int64_t)) ;
+                    memcpy (C->p, A->p, (n+1) * sizeof (int64_t));
+                    memcpy (C->i, A->i, nz * sizeof (int64_t));
                     // copy and typecast A->x into C->x
                     SPEX_CHECK (spex_cast_array (SPEX_X (C), C->type,
-                        SPEX_X (A), A->type, nz, C->scale, A->scale, option)) ;
+                        SPEX_X (A), A->type, nz, C->scale, A->scale, option));
                 }
                 break ;
 
@@ -118,19 +118,19 @@ SPEX_info SPEX_matrix_copy
 
                     // Y = typecast the values of A into the type of C
                     // (not the pattern; Y is SPEX_DENSE)
-                    SPEX_CHECK (spex_cast_matrix (&Y, C_type, A, option)) ;
+                    SPEX_CHECK (spex_cast_matrix (&Y, C_type, A, option));
 
                     // allocate workspace
-                    W = (int64_t *) SPEX_calloc (n, sizeof (int64_t)) ;
+                    W = (int64_t *) SPEX_calloc (n, sizeof (int64_t));
                     if (W == NULL)
                     {
                         SPEX_FREE_ALL ;
-                        return (SPEX_OUT_OF_MEMORY) ;
+                        return (SPEX_OUT_OF_MEMORY);
                     }
 
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_CSC,
-                        C_type, m, n, nz, false, true, option)) ;
+                        C_type, m, n, nz, false, true, option));
 
                     // Scaling factor of C is currently in Y, set it
                     // here
@@ -143,7 +143,7 @@ SPEX_info SPEX_matrix_copy
                     }
 
                     // C->p = cumulative sum of W
-                    spex_cumsum (C->p, W, n) ;
+                    spex_cumsum (C->p, W, n);
 
                     // build the matrix
                     switch (C->type)
@@ -155,7 +155,7 @@ SPEX_info SPEX_matrix_copy
                                 C->i [p] = A->i [k] ;
                                 SPEX_CHECK (SPEX_mpz_set (
                                     SPEX_1D (C, p, mpz),
-                                    SPEX_1D (Y, k, mpz))) ;
+                                    SPEX_1D (Y, k, mpz)));
                             }
                             break ;
 
@@ -166,7 +166,7 @@ SPEX_info SPEX_matrix_copy
                                 C->i [p] = A->i [k] ;
                                 SPEX_CHECK (SPEX_mpq_set (
                                     SPEX_1D (C, p, mpq),
-                                    SPEX_1D (Y, k, mpq))) ;
+                                    SPEX_1D (Y, k, mpq)));
                             }
                             break ;
 
@@ -178,7 +178,7 @@ SPEX_info SPEX_matrix_copy
                                 SPEX_CHECK (SPEX_mpfr_set (
                                     SPEX_1D (C, p, mpfr),
                                     SPEX_1D (Y, k, mpfr),
-                                    round)) ;
+                                    round));
                             }
                             break ;
 
@@ -188,7 +188,7 @@ SPEX_info SPEX_matrix_copy
                                 int64_t p = W [A->j [k]]++ ;
                                 C->i [p] = A->i [k] ;
                                 SPEX_1D (C, p, int64) =
-                                    SPEX_1D (Y, k, int64) ;
+                                    SPEX_1D (Y, k, int64);
                             }
                             break ;
 
@@ -198,7 +198,7 @@ SPEX_info SPEX_matrix_copy
                                 int64_t p = W [A->j [k]]++ ;
                                 C->i [p] = A->i [k] ;
                                 SPEX_1D (C, p, fp64) =
-                                    SPEX_1D (Y, k, fp64) ;
+                                    SPEX_1D (Y, k, fp64);
                             }
                             break ;
 
@@ -214,7 +214,7 @@ SPEX_info SPEX_matrix_copy
                 case SPEX_DENSE:
                 {
                     // Y = typecast the values of A into the type of C
-                    SPEX_CHECK (spex_cast_matrix (&Y, C_type, A, option)) ;
+                    SPEX_CHECK (spex_cast_matrix (&Y, C_type, A, option));
                     int s ;
 
                     // count the actual nonzeros in Y
@@ -226,7 +226,7 @@ SPEX_info SPEX_matrix_copy
                             for (int64_t k = 0 ; k < nz ; k++)
                             {
                                 SPEX_CHECK (SPEX_mpz_sgn (&s,
-                                    SPEX_1D (Y, k, mpz))) ;
+                                    SPEX_1D (Y, k, mpz)));
                                 if (s != 0) actual++ ;
                             }
                             break ;
@@ -235,7 +235,7 @@ SPEX_info SPEX_matrix_copy
                             for (int64_t k = 0 ; k < nz ; k++)
                             {
                                 SPEX_CHECK (SPEX_mpq_sgn (&s,
-                                    SPEX_1D (Y, k, mpq))) ;
+                                    SPEX_1D (Y, k, mpq)));
                                 if (s != 0) actual++ ;
                             }
                             break ;
@@ -244,7 +244,7 @@ SPEX_info SPEX_matrix_copy
                             for (int64_t k = 0 ; k < nz ; k++)
                             {
                                 SPEX_CHECK (SPEX_mpfr_sgn (&s,
-                                    SPEX_1D (Y, k, mpfr))) ;
+                                    SPEX_1D (Y, k, mpfr)));
                                 if (s != 0) actual++ ;
                             }
                             break ;
@@ -266,7 +266,7 @@ SPEX_info SPEX_matrix_copy
                     }
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_CSC, C_type,
-                        m, n, actual, false, true, option)) ;
+                        m, n, actual, false, true, option));
 
                     // C's scaling factor is currently in Y. Set it here
                     SPEX_mpq_set(C->scale, Y->scale);
@@ -303,7 +303,7 @@ SPEX_info SPEX_matrix_copy
                                 for (int64_t i = 0 ; i < m ; i++)
                                 {
                                     SPEX_CHECK (SPEX_mpq_sgn (&s,
-                                        Y->x.mpq[ i + j*A->m])) ;
+                                        Y->x.mpq[ i + j*A->m]));
                                     if (s != 0)
                                     {
                                         C->i [nz] = i ;
@@ -323,14 +323,14 @@ SPEX_info SPEX_matrix_copy
                                 for (int64_t i = 0 ; i < m ; i++)
                                 {
                                     SPEX_CHECK (SPEX_mpfr_sgn (&s,
-                                        Y->x.mpfr[i + j*A->m])) ;
+                                        Y->x.mpfr[i + j*A->m]));
                                     if (s != 0)
                                     {
                                         C->i [nz] = i ;
                                         SPEX_CHECK (SPEX_mpfr_set (
                                             SPEX_1D (C, nz, mpfr),
                                             Y->x.mpfr[i + j*A->m],
-                                            round)) ;
+                                            round));
 
                                         nz++ ;
                                     }
@@ -393,9 +393,9 @@ SPEX_info SPEX_matrix_copy
                     else
                     {
                         SPEX_CHECK (SPEX_matrix_copy (&C, SPEX_CSC, C_type,
-                            T, option)) ;
+                            T, option));
                     }
-                    SPEX_matrix_free (&T, option) ;
+                    SPEX_matrix_free (&T, option);
                 }
                 break;
             }
@@ -421,12 +421,12 @@ SPEX_info SPEX_matrix_copy
                 {
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_TRIPLET, C_type,
-                        m, n, nz, false, true, option)) ;
+                        m, n, nz, false, true, option));
                     // copy and typecast A->x into C->x
                     SPEX_CHECK (spex_cast_array (SPEX_X (C), C->type,
-                        SPEX_X (A), A->type, nz, C->scale, A->scale, option)) ;
+                        SPEX_X (A), A->type, nz, C->scale, A->scale, option));
                     // copy the row indices A->i into C->i
-                    memcpy (C->i, A->i, nz * sizeof (int64_t)) ;
+                    memcpy (C->i, A->i, nz * sizeof (int64_t));
                     // construct C->j
                     for (int64_t j = 0 ; j < n ; j++)
                     {
@@ -448,13 +448,13 @@ SPEX_info SPEX_matrix_copy
                 {
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_TRIPLET, C_type,
-                        m, n, nz, false, true, option)) ;
+                        m, n, nz, false, true, option));
                     // copy the pattern of A into C
-                    memcpy (C->j, A->j, nz * sizeof (int64_t)) ;
-                    memcpy (C->i, A->i, nz * sizeof (int64_t)) ;
+                    memcpy (C->j, A->j, nz * sizeof (int64_t));
+                    memcpy (C->i, A->i, nz * sizeof (int64_t));
                     // copy and typecast A->x into C->x
                     SPEX_CHECK (spex_cast_array (SPEX_X (C), C->type,
-                        SPEX_X (A), A->type, nz, C->scale, A->scale, option)) ;
+                        SPEX_X (A), A->type, nz, C->scale, A->scale, option));
                     // set C->nz
                     C->nz = nz;
                 }
@@ -468,11 +468,11 @@ SPEX_info SPEX_matrix_copy
                 {
                     // convert A to a temporary CSC matrix
                     SPEX_CHECK (SPEX_matrix_copy (&T, SPEX_CSC, C_type,
-                        A, option)) ;
+                        A, option));
                     // convert T from CSC to triplet
                     SPEX_CHECK (SPEX_matrix_copy (&C, SPEX_TRIPLET, C_type,
-                        T, option)) ;
-                    SPEX_matrix_free (&T, option) ;
+                        T, option));
+                    SPEX_matrix_free (&T, option);
                     // set C->nz
                     C->nz = nz;
                 }
@@ -488,8 +488,8 @@ SPEX_info SPEX_matrix_copy
                     SPEX_CHECK(spex_dynamic_to_CSC_mpz(&T, A, nz, option));
 
                     SPEX_CHECK (SPEX_matrix_copy (&C, SPEX_TRIPLET, C_type,
-                        T, option)) ;
-                    SPEX_matrix_free (&T, option) ;
+                        T, option));
+                    SPEX_matrix_free (&T, option);
                 }
                 break;
 
@@ -516,10 +516,10 @@ SPEX_info SPEX_matrix_copy
                 {
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
-                        m, n, nz, false, true, option)) ;
+                        m, n, nz, false, true, option));
 
                     // Y = typecast the values of A into the type of C
-                    SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option)) ;
+                    SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option));
 
                     // Set C's scaling factor
                     SPEX_mpq_set(C->scale, Y->scale);
@@ -535,7 +535,7 @@ SPEX_info SPEX_matrix_copy
                                     int64_t i = A->i [p] ;
                                     SPEX_CHECK (SPEX_mpz_set (
                                         SPEX_2D (C, i, j, mpz),
-                                        SPEX_1D (Y, p, mpz))) ;
+                                        SPEX_1D (Y, p, mpz)));
                                 }
                             }
                             break ;
@@ -548,7 +548,7 @@ SPEX_info SPEX_matrix_copy
                                     int64_t i = A->i [p] ;
                                     SPEX_CHECK (SPEX_mpq_set (
                                         SPEX_2D (C, i, j, mpq),
-                                        SPEX_1D (Y, p, mpq))) ;
+                                        SPEX_1D (Y, p, mpq)));
                                 }
                             }
                             break ;
@@ -562,7 +562,7 @@ SPEX_info SPEX_matrix_copy
                                     SPEX_CHECK (SPEX_mpfr_set (
                                         SPEX_2D (C, i, j, mpfr),
                                         SPEX_1D (Y, p, mpfr),
-                                        round)) ;
+                                        round));
                                 }
                             }
                             break ;
@@ -574,7 +574,7 @@ SPEX_info SPEX_matrix_copy
                                 {
                                     int64_t i = A->i [p] ;
                                     SPEX_2D (C, i, j, int64) =
-                                        SPEX_1D (Y, p, int64) ;
+                                        SPEX_1D (Y, p, int64);
                                 }
                             }
                             break ;
@@ -586,7 +586,7 @@ SPEX_info SPEX_matrix_copy
                                 {
                                     int64_t i = A->i [p] ;
                                     SPEX_2D (C, i, j, fp64) =
-                                        SPEX_1D (Y, p, fp64) ;
+                                        SPEX_1D (Y, p, fp64);
                                 }
                             }
                             break ;
@@ -604,10 +604,10 @@ SPEX_info SPEX_matrix_copy
                 {
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
-                        m, n, nz, false, true, option)) ;
+                        m, n, nz, false, true, option));
 
                     // Y = typecast the values of A into the type of C
-                    SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option)) ;
+                    SPEX_CHECK (spex_cast_matrix (&Y, C->type, A, option));
 
                     // Set C's scaling factor
                     SPEX_mpq_set(C->scale, Y->scale);
@@ -621,7 +621,7 @@ SPEX_info SPEX_matrix_copy
                                 int64_t j = A->j [k] ;
                                 SPEX_CHECK (SPEX_mpz_set (
                                     SPEX_2D (C, i, j, mpz),
-                                    SPEX_1D (Y, k, mpz))) ;
+                                    SPEX_1D (Y, k, mpz)));
                             }
                             break ;
 
@@ -632,7 +632,7 @@ SPEX_info SPEX_matrix_copy
                                 int64_t j = A->j [k] ;
                                 SPEX_CHECK (SPEX_mpq_set (
                                     SPEX_2D (C, i, j, mpq),
-                                    SPEX_1D (Y, k, mpq))) ;
+                                    SPEX_1D (Y, k, mpq)));
                             }
                             break ;
 
@@ -644,7 +644,7 @@ SPEX_info SPEX_matrix_copy
                                 SPEX_CHECK (SPEX_mpfr_set (
                                     SPEX_2D (C, i, j, mpfr),
                                     SPEX_1D (Y, k, mpfr),
-                                    round)) ;
+                                    round));
                             }
                             break ;
 
@@ -654,7 +654,7 @@ SPEX_info SPEX_matrix_copy
                                 int64_t i = A->i [k] ;
                                 int64_t j = A->j [k] ;
                                 SPEX_2D (C, i, j, int64) =
-                                    SPEX_1D (Y, k, int64) ;
+                                    SPEX_1D (Y, k, int64);
                             }
                             break ;
 
@@ -664,7 +664,7 @@ SPEX_info SPEX_matrix_copy
                                 int64_t i = A->i [k] ;
                                 int64_t j = A->j [k] ;
                                 SPEX_2D (C, i, j, fp64) =
-                                    SPEX_1D (Y, k, fp64) ;
+                                    SPEX_1D (Y, k, fp64);
                             }
                             break ;
 
@@ -680,11 +680,11 @@ SPEX_info SPEX_matrix_copy
                 {
                     // allocate C
                     SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DENSE, C_type,
-                        m, n, nz, false, true, option)) ;
+                        m, n, nz, false, true, option));
 
                     // copy and typecast A->x into C->x
                     SPEX_CHECK (spex_cast_array (SPEX_X (C), C->type,
-                        SPEX_X (A), A->type, nz, C->scale, A->scale, option)) ;
+                        SPEX_X (A), A->type, nz, C->scale, A->scale, option));
                 }
                 break ;
 
@@ -698,8 +698,8 @@ SPEX_info SPEX_matrix_copy
                     SPEX_CHECK(spex_dynamic_to_CSC_mpz(&T, A, nz, option));
 
                     SPEX_CHECK (SPEX_matrix_copy (&C, SPEX_DENSE, C_type,
-                        T, option)) ;
-                    SPEX_matrix_free (&T, option) ;
+                        T, option));
+                    SPEX_matrix_free (&T, option);
                 }
                 break;
 
@@ -725,16 +725,16 @@ SPEX_info SPEX_matrix_copy
                 {
                     // convert A to a SPEX_CSC x SPEX_MPZ matrix T
                     SPEX_CHECK (SPEX_matrix_copy (&T, SPEX_CSC, SPEX_MPZ,
-                        A, option)) ;
+                        A, option));
                     SPEX_CHECK(spex_CSC_mpz_to_dynamic(&C, T, option));
-                    SPEX_matrix_free (&T, option) ;
+                    SPEX_matrix_free (&T, option);
                 }
             }
             else // make a exact same copy
             {
                 // allocate space for C
                 SPEX_CHECK (SPEX_matrix_allocate (&C, SPEX_DYNAMIC_CSC,
-                    C_type, m, n, 0, false, true, option)) ;
+                    C_type, m, n, 0, false, true, option));
                 // copy A->x into C->x
                 for (int64_t j = 0; j < n; j++)
                 {
@@ -764,6 +764,6 @@ SPEX_info SPEX_matrix_copy
     SPEX_FREE_WORK ;
     (*C_handle) = C ;
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

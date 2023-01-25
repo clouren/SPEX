@@ -36,7 +36,7 @@
 {                                               \
     SPEX_factorization_free(&F, option);        \
     SPEX_symbolic_analysis_free (&S, option);   \
-    SPEX_matrix_free (&PAP, option) ;           \
+    SPEX_matrix_free (&PAP, option);           \
 }
 
 #define SPEX_FREE_ALL             \

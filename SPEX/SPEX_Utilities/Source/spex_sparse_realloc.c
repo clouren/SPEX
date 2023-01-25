@@ -26,7 +26,7 @@ SPEX_info spex_sparse_realloc
     // check inputs
     //--------------------------------------------------------------------------
 
-    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
+    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ);
 
     //--------------------------------------------------------------------------
     // double the size of A->x and A->i
@@ -36,12 +36,12 @@ SPEX_info spex_sparse_realloc
 
     bool okx, oki ;
     A->x.mpz = (mpz_t *)
-        SPEX_realloc (2*nzmax, nzmax, sizeof (mpz_t), A->x.mpz, &okx) ;
+        SPEX_realloc (2*nzmax, nzmax, sizeof (mpz_t), A->x.mpz, &okx);
     A->i = (int64_t *)
-        SPEX_realloc (2*nzmax, nzmax, sizeof (int64_t), A->i, &oki) ;
+        SPEX_realloc (2*nzmax, nzmax, sizeof (int64_t), A->i, &oki);
     if (!oki || !okx)
     {
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     A->nzmax = 2*nzmax ;
@@ -52,9 +52,9 @@ SPEX_info spex_sparse_realloc
 
     for (int64_t p = nzmax ; p < 2*nzmax ; p++)
     {
-        SPEX_MPZ_SET_NULL (A->x.mpz [p]) ;
+        SPEX_MPZ_SET_NULL (A->x.mpz [p]);
     }
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

@@ -67,7 +67,7 @@ SPEX_info spex_expand_double_array
     mpz_t gcd, one; SPEX_MPZ_SET_NULL(gcd); SPEX_MPZ_SET_NULL(one);
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
 
-    mpfr_rnd_t round = SPEX_OPTION_ROUND (option) ;
+    mpfr_rnd_t round = SPEX_OPTION_ROUND (option);
 
     SPEX_CHECK(SPEX_mpq_init(temp));
     SPEX_CHECK(SPEX_mpz_init(gcd));
@@ -135,7 +135,7 @@ SPEX_info spex_expand_double_array
     {
         for (i = k; i < n; i++)
         {
-            SPEX_CHECK(SPEX_mpz_divexact(x_out[i], x_out[i], gcd));
+            SPEX_MPZ_DIVEXACT(x_out[i], x_out[i], gcd);
         }
         SPEX_CHECK(SPEX_mpq_set_z(temp, gcd));
         SPEX_CHECK(SPEX_mpq_div(scale, scale, temp));

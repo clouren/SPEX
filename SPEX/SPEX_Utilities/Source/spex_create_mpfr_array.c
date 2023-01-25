@@ -25,7 +25,7 @@ mpfr_t *spex_create_mpfr_array
     //--------------------------------------------------------------------------
 
     if (n <= 0) {return NULL;}
-    uint64_t prec = SPEX_OPTION_PREC (option) ;
+    uint64_t prec = SPEX_OPTION_PREC (option);
     // paranoia:  check prec here: cast to mprf_prec_t, and back, assert
     // equality, if not equal then return SPEX_PANIC
 

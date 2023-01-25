@@ -33,7 +33,7 @@ SPEX_info spex_expand_mpq_array
     SPEX_info info ;
     mpz_t temp;
     SPEX_MPZ_SET_NULL(temp);
-    SPEX_CHECK (SPEX_mpz_init(temp)) ;
+    SPEX_CHECK (SPEX_mpz_init(temp));
 
     // Find LCM of denominators of x
     SPEX_CHECK(SPEX_mpz_set(temp,SPEX_MPQ_DEN(x[0])));

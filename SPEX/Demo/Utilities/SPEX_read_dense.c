@@ -25,17 +25,17 @@ SPEX_info SPEX_read_dense
 
     if (file == NULL)
     {
-        printf ("invalid inputs\n") ;
+        printf ("invalid inputs\n");
         return SPEX_INCORRECT_INPUT;
     }
     int64_t nrows, ncols;
     SPEX_info info ;
 
     // First, we obtain the dimension of the matrix
-    int s = fscanf(file, "%"PRId64" %"PRId64, &nrows, &ncols) ;
+    int s = fscanf(file, "%"PRId64" %"PRId64, &nrows, &ncols);
     if (feof(file) || s < 2)
     {
-        printf ("premature end-of-file\n") ;
+        printf ("premature end-of-file\n");
         return SPEX_INCORRECT_INPUT;
     }
 
@@ -45,7 +45,7 @@ SPEX_info SPEX_read_dense
         nrows*ncols, false, true, option);
     if (info != SPEX_OK)
     {
-        return (info) ;
+        return (info);
     }
 
     // We now populate the matrix b.
@@ -67,5 +67,5 @@ SPEX_info SPEX_read_dense
     //--------------------------------------------------------------------------
 
     (*b_handle) = A;
-    return (info) ;
+    return (info);
 }

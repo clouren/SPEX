@@ -37,7 +37,7 @@ void spex_mex_get_matlab_options
     char string [LEN+1] ;
 
     // true if input options struct is present
-    bool present = (input != NULL) && !mxIsEmpty (input) && mxIsStruct (input) ;
+    bool present = (input != NULL) && !mxIsEmpty (input) && mxIsStruct (input);
 
     //--------------------------------------------------------------------------
     // Get the column ordering
@@ -49,9 +49,9 @@ void spex_mex_get_matlab_options
     {
         if (!mxIsChar (field))
         {
-            spex_mex_error (1, "option.order must be a string") ;
+            spex_mex_error (1, "option.order must be a string");
         }
-        mxGetString (field, string, LEN) ;
+        mxGetString (field, string, LEN);
         if (MATCH (string, "none"))
         {
             option->order = SPEX_NO_ORDERING ;  // None: A is factorized as-is
@@ -66,7 +66,7 @@ void spex_mex_get_matlab_options
         }
         else
         {
-            spex_mex_error (1, "unknown option.order") ;
+            spex_mex_error (1, "unknown option.order");
         }
     }
 
@@ -80,9 +80,9 @@ void spex_mex_get_matlab_options
     {
         if (!mxIsChar (field))
         {
-            spex_mex_error (1, "option.pivot must be a string") ;
+            spex_mex_error (1, "option.pivot must be a string");
         }
-        mxGetString (field, string, LEN) ;
+        mxGetString (field, string, LEN);
         if (MATCH (string, "smallest"))
         {
             option->pivot = SPEX_SMALLEST ;         // Smallest pivot
@@ -111,7 +111,7 @@ void spex_mex_get_matlab_options
         }
         else
         {
-            spex_mex_error (1, "unknown option.pivot") ;
+            spex_mex_error (1, "unknown option.pivot");
         }
     }
 
@@ -125,11 +125,11 @@ void spex_mex_get_matlab_options
         field = present ? mxGetField (input, 0, "tol") : NULL ;
         if (field != NULL)
         {
-            option->tol = mxGetScalar (field) ;
+            option->tol = mxGetScalar (field);
             if (option->tol > 1 || option->tol <= 0)
             {
                 spex_mex_error (1, "invalid option.tol, "
-                    "must be > 0 and <= 1") ;
+                    "must be > 0 and <= 1");
             }
         }
     }
@@ -142,7 +142,7 @@ void spex_mex_get_matlab_options
     field = present ? mxGetField (input, 0, "solution") : NULL ;
     if (field != NULL)
     {
-        mxGetString (field, string, LEN) ;
+        mxGetString (field, string, LEN);
         if (MATCH (string, "vpa"))
         {
             mexoptions->solution = SPEX_SOLUTION_VPA ;  // return x as vpa
@@ -157,7 +157,7 @@ void spex_mex_get_matlab_options
         }
         else
         {
-            spex_mex_error (1, "unknown option.solution") ;
+            spex_mex_error (1, "unknown option.solution");
         }
     }
 
@@ -169,12 +169,12 @@ void spex_mex_get_matlab_options
     field = present ? mxGetField (input, 0, "digits") : NULL ;
     if (field != NULL)
     {
-        double d = mxGetScalar (field) ;
+        double d = mxGetScalar (field);
         if (d != trunc (d) || d < 2 || d > (1 << 29))
         {
             // the MATLAB vpa requires digits between 2 and 2^29
             spex_mex_error (1, "options.digits must be an integer "
-                "between 2 and 2^29") ;
+                "between 2 and 2^29");
         }
         mexoptions->digits = (int32_t) d ;
     }
@@ -188,9 +188,9 @@ void spex_mex_get_matlab_options
     if (field != NULL)
     {
         // silently convert to an integer 0, 1, 2, or 3
-        option->print_level = (int) mxGetScalar (field) ;
-        option->print_level = SPEX_MIN (option->print_level, 3) ;
-        option->print_level = SPEX_MAX (option->print_level, 0) ;
+        option->print_level = (int) mxGetScalar (field);
+        option->print_level = SPEX_MIN (option->print_level, 3);
+        option->print_level = SPEX_MAX (option->print_level, 0);
     }
 }
 

@@ -78,8 +78,8 @@ SPEX_info SPEX_factorization_convert
     // check inputs
     //--------------------------------------------------------------------------
 
-    SPEX_info info = spex_factorization_basic_check (F) ;
-    if (info != SPEX_OK) return (info) ;
+    SPEX_info info = spex_factorization_basic_check (F);
+    if (info != SPEX_OK) return (info);
 
     //--------------------------------------------------------------------------
     // quick return
@@ -323,9 +323,9 @@ SPEX_info SPEX_factorization_convert
         }
 
         // allocate space for Mi, Mp and Mx
-        Mp = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t)) ;
-        Mi = (int64_t *) SPEX_calloc (nnz, sizeof (int64_t)) ;
-        Mx = spex_create_mpz_array (nnz) ;
+        Mp = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t));
+        Mi = (int64_t *) SPEX_calloc (nnz, sizeof (int64_t));
+        Mx = spex_create_mpz_array (nnz);
         if (!Mp || !Mi || !Mx)
         {
             SPEX_FREE_ALL;
@@ -350,7 +350,7 @@ SPEX_info SPEX_factorization_convert
                     SPEX_MPZ_MUL(L->v[j]->x[p],
                         L->v[j]->x[p], SPEX_MPQ_NUM(L->v[j]->scale));
                 }
-                SPEX_CHECK(SPEX_mpz_swap(Mx[mp], L->v[j]->x[p])) ;
+                SPEX_CHECK(SPEX_mpz_swap(Mx[mp], L->v[j]->x[p]));
                 mp++;
             }
             Mp[j+1] = mp;
@@ -397,9 +397,9 @@ SPEX_info SPEX_factorization_convert
             }
 
             // allocate space for Mi, Mp and Mx
-            Mp = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t)) ;
-            Mi = (int64_t *) SPEX_calloc (nnz, sizeof (int64_t)) ;
-            Mx = spex_create_mpz_array (nnz) ;
+            Mp = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t));
+            Mi = (int64_t *) SPEX_calloc (nnz, sizeof (int64_t));
+            Mx = spex_create_mpz_array (nnz);
             if (!Mp || !Mi || !Mx)
             {
                 SPEX_FREE_ALL;
@@ -426,7 +426,7 @@ SPEX_info SPEX_factorization_convert
                         SPEX_MPZ_MUL(U->v[i]->x[p],
                             U->v[i]->x[p], SPEX_MPQ_NUM(U->v[i]->scale));
                     }
-                    SPEX_CHECK(SPEX_mpz_swap(Mx[mp], U->v[i]->x[p])) ;
+                    SPEX_CHECK(SPEX_mpz_swap(Mx[mp], U->v[i]->x[p]));
                 }
             }
 

@@ -31,9 +31,9 @@
     SPEX_info SPEX_gmpfunc (args)
     {
         SPEX_GMP_WRAPPER_START ;
-        gmpfunc (args) ;
+        gmpfunc (args);
         SPEX_GMP_WRAPPER_FINISH ;
-        return (SPEX_OK) ;
+        return (SPEX_OK);
     }
 */
 
@@ -50,9 +50,9 @@
     SPEX_info SPEX_gmpfunc (int *result, args)
     {
         SPEX_GMP_WRAPPER_START ;
-        (*result) = gmpfunc (args) ;
+        (*result) = gmpfunc (args);
         SPEX_GMP_WRAPPER_FINISH ;
-        return (SPEX_OK) ;
+        return (SPEX_OK);
     }
 */
 
@@ -132,22 +132,22 @@ SPEX_info spex_gmp_initialize (void)
     if (spex_gmp == NULL)
     {
         // allocate the spex_gmp object
-        spex_gmp = SPEX_calloc (1, sizeof (spex_gmp_t)) ;
+        spex_gmp = SPEX_calloc (1, sizeof (spex_gmp_t));
         if (spex_gmp == NULL)
         {
             // out of memory
-            return (SPEX_OUT_OF_MEMORY) ;
+            return (SPEX_OUT_OF_MEMORY);
         }
 
         // allocate an empty spex_gmp->list
         spex_gmp->list = (void **) SPEX_calloc (SPEX_GMP_LIST_INIT,
-            sizeof (void *)) ;
+            sizeof (void *));
 
         if (spex_gmp->list == NULL)
         {
             // out of memory
-            SPEX_free (spex_gmp) ;
-            return (SPEX_OUT_OF_MEMORY) ;
+            SPEX_free (spex_gmp);
+            return (SPEX_OUT_OF_MEMORY);
         }
 
         // initialize the spex_gmp
@@ -158,7 +158,7 @@ SPEX_info spex_gmp_initialize (void)
         spex_gmp->mpq_archive  = NULL ;
         spex_gmp->mpfr_archive = NULL ;
     }
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -175,12 +175,12 @@ void spex_gmp_finalize (void)
         // free the spex_gmp->list, if it exists
         if (spex_gmp->list != NULL)
         {
-            SPEX_free (spex_gmp->list) ;
+            SPEX_free (spex_gmp->list);
             spex_gmp->list = NULL ;
         }
 
         // free the spex_gmp object itself
-        SPEX_free (spex_gmp) ;
+        SPEX_free (spex_gmp);
         spex_gmp = NULL ;
     }
 }
@@ -191,13 +191,13 @@ void spex_gmp_finalize (void)
 
 spex_gmp_t *spex_gmp_get (void)
 {
-    ASSERT (spex_gmp != NULL) ;
+    ASSERT (spex_gmp != NULL);
 
     // clear the list of allocated objects in the spex_gmp->list
     spex_gmp->nmalloc = 0 ;
 
     // return the spex_gmp object for this thread
-    return (spex_gmp) ;
+    return (spex_gmp);
 }
 
 //------------------------------------------------------------------------------
@@ -220,7 +220,7 @@ void *spex_gmp_allocate
 )
 {
 
-    ASSERT (spex_gmp != NULL) ;
+    ASSERT (spex_gmp != NULL);
 
     //--------------------------------------------------------------------------
     // for testing only:
@@ -232,9 +232,9 @@ void *spex_gmp_allocate
         {
             // pretend to fail
             #ifdef SPEX_GMP_MEMORY_DEBUG
-            SPEX_PRINTF ("spex_gmp_allocate pretends to fail\n") ;
+            SPEX_PRINTF ("spex_gmp_allocate pretends to fail\n");
             #endif
-            longjmp (spex_gmp->environment, 1) ;
+            longjmp (spex_gmp->environment, 1);
         }
         else if (spex_gmp_ntrials > 0)
         {
@@ -255,14 +255,14 @@ void *spex_gmp_allocate
         int64_t newsize = 2 * spex_gmp->nlist ;
         spex_gmp->list = (void **)
             SPEX_realloc (newsize, spex_gmp->nlist, sizeof (void *),
-            spex_gmp->list, &ok) ;
+            spex_gmp->list, &ok);
         if (!ok)
         {
             // failure to double the size of the spex_gmp->list.
             // The existing spex_gmp->list is still valid, with the old size,
             // (spex_gmp->nlist).  This is required so that the error handler
             // can traverse the spex_gmp->list to free all objects there.
-            longjmp (spex_gmp->environment, 3) ;
+            longjmp (spex_gmp->environment, 3);
         }
         // success:  the old spex_gmp->list has been freed, and replaced with
         // the larger newlist.
@@ -274,15 +274,15 @@ void *spex_gmp_allocate
     //--------------------------------------------------------------------------
 
     #ifdef SPEX_GMP_MEMORY_DEBUG
-    SPEX_PRINTF ("spex_gmp_malloc (%g): ", (double) size) ;
+    SPEX_PRINTF ("spex_gmp_malloc (%g): ", (double) size);
     #endif
 
-    void *p = SPEX_malloc (size) ;
+    void *p = SPEX_malloc (size);
 
     if (p == NULL)
     {
         // failure to allocate the new block
-        longjmp (spex_gmp->environment, 4) ;
+        longjmp (spex_gmp->environment, 4);
     }
 
     //--------------------------------------------------------------------------
@@ -292,13 +292,13 @@ void *spex_gmp_allocate
     spex_gmp->list [spex_gmp->nmalloc++] = p ;
 
     #ifdef SPEX_GMP_MEMORY_DEBUG
-    SPEX_PRINTF (" %p\n", p) ;
-    spex_gmp_dump ( ) ;
+    SPEX_PRINTF (" %p\n", p);
+    spex_gmp_dump ( );
     #endif
 
     // return p to SPEX_gmp_function (NEVER return a NULL pointer to GMP!)
-    ASSERT (p != NULL) ;
-    return (p) ;
+    ASSERT (p != NULL);
+    return (p);
 }
 
 //------------------------------------------------------------------------------
@@ -322,15 +322,15 @@ void spex_gmp_free
         return ;
     }
 
-    ASSERT (spex_gmp != NULL) ;
+    ASSERT (spex_gmp != NULL);
 
     //--------------------------------------------------------------------------
     // remove the block from the spex_gmp->list
     //--------------------------------------------------------------------------
 
     #ifdef SPEX_GMP_MEMORY_DEBUG
-    SPEX_PRINTF ("\n=================== free %p\n", p) ;
-    spex_gmp_dump ( ) ;
+    SPEX_PRINTF ("\n=================== free %p\n", p);
+    spex_gmp_dump ( );
     #endif
 
     if (spex_gmp->list != NULL)
@@ -341,7 +341,7 @@ void spex_gmp_free
             if (spex_gmp->list [i] == p)
             {
                 #ifdef SPEX_GMP_MEMORY_DEBUG
-                SPEX_PRINTF ("    found at i = %d\n", i) ;
+                SPEX_PRINTF ("    found at i = %d\n", i);
                 #endif
                 spex_gmp->list [i] = spex_gmp->list [--spex_gmp->nmalloc] ;
                 break ;
@@ -350,7 +350,7 @@ void spex_gmp_free
     }
 
     #ifdef SPEX_GMP_MEMORY_DEBUG
-    spex_gmp_dump ( ) ;
+    spex_gmp_dump ( );
     #endif
 
     //--------------------------------------------------------------------------
@@ -361,7 +361,7 @@ void spex_gmp_free
     // spex_gmp->list if it was allocated inside the current GMP function.
     // If the block was allocated by one GMP function and freed by another,
     // it is not in the list.
-    SPEX_GMP_SAFE_FREE (p) ;
+    SPEX_GMP_SAFE_FREE (p);
 }
 
 //------------------------------------------------------------------------------
@@ -379,29 +379,29 @@ void *spex_gmp_reallocate
 
     #ifdef SPEX_GMP_MEMORY_DEBUG
     SPEX_PRINTF ("spex_gmp_realloc (%p, %g, %g)\n", p_old,
-        (double) old_size, (double) new_size) ;
+        (double) old_size, (double) new_size);
     #endif
 
     if (p_old == NULL)
     {
         // realloc (NULL, size) is the same as malloc (size)
-        return (spex_gmp_allocate (new_size)) ;
+        return (spex_gmp_allocate (new_size));
     }
     else if (new_size == 0)
     {
         // realloc (p, 0) is the same as free (p), and returns NULL
-        spex_gmp_free (p_old, old_size) ;
-        return (NULL) ;
+        spex_gmp_free (p_old, old_size);
+        return (NULL);
     }
     else
     {
         // change the size of the block
-        void *p_new = spex_gmp_allocate (new_size) ;
+        void *p_new = spex_gmp_allocate (new_size);
         // Note that p_new will never be NULL here, since spex_gmp_allocate
         // does not return if it fails.
-        memcpy (p_new, p_old, SPEX_MIN (old_size, new_size)) ;
-        spex_gmp_free (p_old, old_size) ;
-        return (p_new) ;
+        memcpy (p_new, p_old, SPEX_MIN (old_size, new_size));
+        spex_gmp_free (p_old, old_size);
+        return (p_new);
     }
 }
 
@@ -415,27 +415,27 @@ void *spex_gmp_reallocate
 void spex_gmp_dump ( )
 {
 
-    ASSERT (spex_gmp != NULL) ;
+    ASSERT (spex_gmp != NULL);
 
     //--------------------------------------------------------------------------
     // dump the spex_gmp->list
     //--------------------------------------------------------------------------
 
     SPEX_PRINTF ("nmalloc = %g, spex_gmp->nlist = %g\n",
-        (double) spex_gmp->nmalloc, (double) spex_gmp->nlist) ;
+        (double) spex_gmp->nmalloc, (double) spex_gmp->nlist);
     if (spex_gmp->list != NULL)
     {
         for (int64_t i = 0 ; i < spex_gmp->nmalloc ; i++)
         {
             SPEX_PRINTF ("    spex_gmp->list [%d] = %p\n", i,
-                spex_gmp->list [i]) ;
+                spex_gmp->list [i]);
         }
     }
 
-    SPEX_PRINTF ("   spex_gmp->mpz_archive  : %p\n", spex_gmp->mpz_archive) ;
-    SPEX_PRINTF ("   spex_gmp->mpz_archive2 : %p\n", spex_gmp->mpz_archive2) ;
-    SPEX_PRINTF ("   spex_gmp->mpq_archive  : %p\n", spex_gmp->mpq_archive) ;
-    SPEX_PRINTF ("   spex_gmp->mpfr_archive : %p\n", spex_gmp->mpfr_archive) ;
+    SPEX_PRINTF ("   spex_gmp->mpz_archive  : %p\n", spex_gmp->mpz_archive);
+    SPEX_PRINTF ("   spex_gmp->mpz_archive2 : %p\n", spex_gmp->mpz_archive2);
+    SPEX_PRINTF ("   spex_gmp->mpq_archive  : %p\n", spex_gmp->mpq_archive);
+    SPEX_PRINTF ("   spex_gmp->mpfr_archive : %p\n", spex_gmp->mpfr_archive);
 }
 #endif
 
@@ -457,16 +457,16 @@ SPEX_info spex_gmp_failure
     //--------------------------------------------------------------------------
 
     #ifdef SPEX_GMP_MEMORY_DEBUG
-    SPEX_PRINTF ("failure from longjmp: status: %d\n", status) ;
+    SPEX_PRINTF ("failure from longjmp: status: %d\n", status);
     #endif
 
-    ASSERT (spex_gmp != NULL) ;
+    ASSERT (spex_gmp != NULL);
 
     //--------------------------------------------------------------------------
     // free all MPFR caches
     //--------------------------------------------------------------------------
 
-    mpfr_free_cache ( ) ;
+    mpfr_free_cache ( );
 
     //--------------------------------------------------------------------------
     // free the contents of the spex_gmp_t list
@@ -476,7 +476,7 @@ SPEX_info spex_gmp_failure
     {
         for (int64_t i = 0 ; i < spex_gmp->nmalloc ; i++)
         {
-            SPEX_GMP_SAFE_FREE (spex_gmp->list [i]) ;
+            SPEX_GMP_SAFE_FREE (spex_gmp->list [i]);
         }
     }
 
@@ -486,7 +486,7 @@ SPEX_info spex_gmp_failure
     // tell the caller that the GMP/MPFR function ran out of memory
     //--------------------------------------------------------------------------
 
-    return (SPEX_OUT_OF_MEMORY) ;
+    return (SPEX_OUT_OF_MEMORY);
 }
 
 //------------------------------------------------------------------------------
@@ -518,14 +518,14 @@ SPEX_info SPEX_gmp_fprintf
 
     // call gmp_vfprintf
     va_list args ;
-    va_start (args, format) ;
-    int n = gmp_vfprintf (fp, format, args) ;
-    va_end (args) ;
+    va_start (args, format);
+    int n = gmp_vfprintf (fp, format, args);
+    va_end (args);
 
     // Finish the wrapper
     SPEX_GMP_WRAPPER_FINISH ;
     // gmp_vfprintf returns -1 if an error occurred.
-    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 #endif
 
@@ -550,14 +550,14 @@ SPEX_info SPEX_gmp_printf
 
     // call gmp_vprintf
     va_list args ;
-    va_start (args, format) ;
-    int n = gmp_vprintf (format, args) ;
-    va_end (args) ;
+    va_start (args, format);
+    int n = gmp_vprintf (format, args);
+    va_end (args);
 
     // Finish the wrapper
     SPEX_GMP_WRAPPER_FINISH ;
     // gmp_vprintf returns -1 if an error occurred.
-    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 #endif
 
@@ -582,14 +582,14 @@ SPEX_info SPEX_gmp_asprintf (char **str, const char *format, ... )
 
     // call gmp_vasprintf
     va_list args ;
-    va_start (args, format) ;
-    int n = gmp_vasprintf (str, format, args) ;
-    va_end (args) ;
+    va_start (args, format);
+    int n = gmp_vasprintf (str, format, args);
+    va_end (args);
 
     // Finish the wrapper
     SPEX_GMP_WRAPPER_FINISH ;
     // gmp_vasprintf returns a negative value if an error occurred
-    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 #endif
 
@@ -613,16 +613,16 @@ SPEX_info SPEX_gmp_fscanf
 
     // call gmp_vfscanf
     va_list args ;
-    va_start (args, format) ;
-    int n = gmp_vfscanf (fp, format, args) ;
-    va_end (args) ;
+    va_start (args, format);
+    int n = gmp_vfscanf (fp, format, args);
+    va_end (args);
 
     // Finish the wrapper
     SPEX_GMP_WRAPPER_FINISH ;
     // If end of input (or a file error) is reached before a character
     // for a field or a literal, and if no previous non-suppressed fields have
     // matched, then the return value is EOF instead of 0
-    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -642,14 +642,14 @@ SPEX_info SPEX_mpfr_asprintf (char **str, const char *format, ... )
 
     // call mpfr_vasprintf
     va_list args ;
-    va_start (args, format) ;
-    int n = mpfr_vasprintf (str, format, args) ;
-    va_end (args) ;
+    va_start (args, format);
+    int n = mpfr_vasprintf (str, format, args);
+    va_end (args);
 
     // Finish the wrapper
     SPEX_GMP_WRAPPER_FINISH ;
     // mpfr_vasprintf returns a negative value if an error occurred
-    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -660,17 +660,17 @@ SPEX_info SPEX_mpfr_asprintf (char **str, const char *format, ... )
 
 SPEX_info SPEX_mpfr_free_str (char *str)
 {
-    if (str == NULL) return (SPEX_OK) ;     // nothing to do
+    if (str == NULL) return (SPEX_OK);     // nothing to do
 
     // Start the GMP wrapper
     SPEX_GMP_WRAPPER_START ;
 
     // call mpfr_free_str
-    mpfr_free_str (str) ;
+    mpfr_free_str (str);
 
     // Finish the wrapper and return 0 if successful
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -696,18 +696,18 @@ SPEX_info SPEX_mpfr_fprintf
 
     // call mpfr_vfprintf
     va_list args ;
-    va_start (args, format) ;
-    int n = mpfr_vfprintf (fp, format, args) ;
-    va_end (args) ;
+    va_start (args, format);
+    int n = mpfr_vfprintf (fp, format, args);
+    va_end (args);
     // Free cache from mpfr_vfprintf. Even though mpfr_free_cache is
     // called in SPEX_finalize ( ), it has to be called here to
     // prevent memory leak in some rare situations.
-    mpfr_free_cache ( ) ;
+    mpfr_free_cache ( );
 
     // Finish the wrapper
     SPEX_GMP_WRAPPER_FINISH ;
     // mpfr_vfprintf returns -1 if an error occurred.
-    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 #endif
 
@@ -732,18 +732,18 @@ SPEX_info SPEX_mpfr_printf
 
     // call mpfr_vprintf
     va_list args ;
-    va_start (args, format) ;
-    int n = mpfr_vprintf (format, args) ;
-    va_end (args) ;
+    va_start (args, format);
+    int n = mpfr_vprintf (format, args);
+    va_end (args);
     // Free cache from mpfr_vprintf. Even though mpfr_free_cache is
     // called in SPEX_finalize ( ), it has to be called here to
     // prevent memory leak in some rare situations.
-    mpfr_free_cache ( ) ;
+    mpfr_free_cache ( );
 
     // Finish the wrapper
     SPEX_GMP_WRAPPER_FINISH ;
     // mpfr_vprintf returns -1 if an error occurred.
-    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK) ;
+    return ((n < 0) ? SPEX_INCORRECT_INPUT : SPEX_OK);
 }
 #endif
 //------------------------------------------------------------------------------
@@ -766,10 +766,10 @@ SPEX_info SPEX_mpz_init
     mpz_t x
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_init (x) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_init (x);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -784,10 +784,10 @@ SPEX_info SPEX_mpz_init2
     const uint64_t size     // size of the number
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_init2 (x, (mp_bitcnt_t) size) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_init2 (x, (mp_bitcnt_t) size);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -802,10 +802,10 @@ SPEX_info SPEX_mpz_set
     const mpz_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_set (x, y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_set (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -820,10 +820,10 @@ SPEX_info SPEX_mpz_set_ui
     const uint64_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_set_ui (x, (unsigned long int) y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_set_ui (x, (unsigned long int) y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -838,10 +838,10 @@ SPEX_info SPEX_mpz_set_si
     const int64_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_set_si (x, (signed long int) y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_set_si (x, (signed long int) y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 //------------------------------------------------------------------------------
 // SPEX_mpz_set_d
@@ -857,10 +857,10 @@ SPEX_info SPEX_mpz_set_d
     const double y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_set_d (x, y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_set_d (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 #endif
 
@@ -877,9 +877,9 @@ SPEX_info SPEX_mpz_get_d
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *x = mpz_get_d (y) ;
+    *x = mpz_get_d (y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -895,9 +895,9 @@ SPEX_info SPEX_mpz_get_si
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *x = (int64_t) mpz_get_si (y) ;
+    *x = (int64_t) mpz_get_si (y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -913,9 +913,9 @@ SPEX_info SPEX_mpz_swap
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    mpz_swap (x, y) ;
+    mpz_swap (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -933,10 +933,10 @@ SPEX_info SPEX_mpz_set_q
     const mpq_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_set_q (x, y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_set_q (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 #endif
@@ -954,10 +954,10 @@ SPEX_info SPEX_mpz_mul
     const mpz_t c
 )
 {
-    SPEX_GMPZ_WRAPPER_START (a) ;
-    mpz_mul (a, b, c) ;
+    SPEX_GMPZ_WRAPPER_START (a);
+    mpz_mul (a, b, c);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -973,10 +973,10 @@ SPEX_info SPEX_mpz_mul_si
     const int64_t c
 )
 {
-    SPEX_GMPZ_WRAPPER_START (a) ;
-    mpz_mul_si (a, b, (long int) c) ;
+    SPEX_GMPZ_WRAPPER_START (a);
+    mpz_mul_si (a, b, (long int) c);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -992,10 +992,10 @@ SPEX_info SPEX_mpz_sub
     const mpz_t c
 )
 {
-    SPEX_GMPZ_WRAPPER_START (a) ;
-    mpz_sub (a,b,c) ;
+    SPEX_GMPZ_WRAPPER_START (a);
+    mpz_sub (a,b,c);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1011,10 +1011,10 @@ SPEX_info SPEX_mpz_add
     const mpz_t c
 )
 {
-    SPEX_GMPZ_WRAPPER_START (a) ;
-    mpz_add (a,b,c) ;
+    SPEX_GMPZ_WRAPPER_START (a);
+    mpz_add (a,b,c);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1031,10 +1031,10 @@ SPEX_info SPEX_mpz_addmul
     const mpz_t z
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_addmul (x, y, z) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_addmul (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 
@@ -1054,10 +1054,10 @@ SPEX_info SPEX_mpz_submul
     const mpz_t z
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_submul (x, y, z) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_submul (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1077,15 +1077,15 @@ SPEX_info SPEX_mpz_fdiv_q
     const mpz_t d
 )
 {
-    SPEX_GMPZ_WRAPPER_START (q) ;
+    SPEX_GMPZ_WRAPPER_START (q);
     if (mpz_sgn (d) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return (SPEX_PANIC) ;
+        return (SPEX_PANIC);
     }
-    mpz_fdiv_q (q, n, d) ;
+    mpz_fdiv_q (q, n, d);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1105,15 +1105,15 @@ SPEX_info SPEX_mpz_cdiv_q
     const mpz_t d
 )
 {
-    SPEX_GMPZ_WRAPPER_START (q) ;
+    SPEX_GMPZ_WRAPPER_START (q);
     if (mpz_sgn (d) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return (SPEX_PANIC) ;
+        return (SPEX_PANIC);
     }
-    mpz_cdiv_q (q, n, d) ;
+    mpz_cdiv_q (q, n, d);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1134,15 +1134,15 @@ SPEX_info SPEX_mpz_cdiv_qr
     const mpz_t d
 )
 {
-    SPEX_GMPZ_WRAPPER_START2 (q, r) ;
+    SPEX_GMPZ_WRAPPER_START2 (q, r);
     if (mpz_sgn (d) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return (SPEX_PANIC) ;
+        return (SPEX_PANIC);
     }
-    mpz_cdiv_qr (q, r, n, d) ;
+    mpz_cdiv_qr (q, r, n, d);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1158,32 +1158,32 @@ SPEX_info SPEX_mpz_divexact
     const mpz_t z
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
+    SPEX_GMPZ_WRAPPER_START (x);
     if (mpz_sgn (z) == 0)
     {
         SPEX_GMP_WRAPPER_FINISH ;
-        return (SPEX_PANIC) ;
+        return (SPEX_PANIC);
     }
 
     #ifdef SPEX_DEBUG
         mpq_t r ;
-        mpq_init (r) ; // r = 0/1
-        mpz_fdiv_r (SPEX_MPQ_NUM (r), y, z) ;
+        mpq_init (r); // r = 0/1
+        mpz_fdiv_r (SPEX_MPQ_NUM (r), y, z);
         if (mpz_sgn (SPEX_MPQ_NUM (r)) != 0)
         {
-            mpq_set_den (r, z) ;
-            mpq_canonicalize (r) ;
-            gmp_printf ("not exact division! remainder=%Qd\n", r) ;
-            mpq_clear (r) ;
+            mpq_set_den (r, z);
+            mpq_canonicalize (r);
+            gmp_printf ("not exact division! remainder=%Qd\n", r);
+            mpq_clear (r);
             SPEX_GMP_WRAPPER_FINISH ;
-            return (SPEX_PANIC) ;
+            return (SPEX_PANIC);
         }
-        mpq_clear (r) ;
+        mpq_clear (r);
     #endif
 
-    mpz_divexact (x, y, z) ;
+    mpz_divexact (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1199,10 +1199,10 @@ SPEX_info SPEX_mpz_gcd
     const mpz_t z
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_gcd (x, y, z) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_gcd (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1218,10 +1218,10 @@ SPEX_info SPEX_mpz_lcm
     const mpz_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (lcm) ;
-    mpz_lcm (lcm, x, y) ;
+    SPEX_GMPZ_WRAPPER_START (lcm);
+    mpz_lcm (lcm, x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1236,10 +1236,10 @@ SPEX_info SPEX_mpz_neg
     const mpz_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_neg (x, y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_neg (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1254,10 +1254,10 @@ SPEX_info SPEX_mpz_abs
     const mpz_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpz_abs (x, y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_abs (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1275,9 +1275,9 @@ SPEX_info SPEX_mpz_cmp
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpz_cmp (x, y) ;
+    *r = mpz_cmp (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1295,9 +1295,9 @@ SPEX_info SPEX_mpz_cmpabs
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpz_cmpabs (x, y) ;
+    *r = mpz_cmpabs (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1314,9 +1314,9 @@ SPEX_info SPEX_mpz_cmp_ui
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpz_cmp_ui (x, (unsigned long int) y) ;
+    *r = mpz_cmp_ui (x, (unsigned long int) y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1333,9 +1333,9 @@ SPEX_info SPEX_mpz_cmpabs_ui
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpz_cmpabs_ui (x, (unsigned long int) y) ;
+    *r = mpz_cmpabs_ui (x, (unsigned long int) y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1351,9 +1351,9 @@ SPEX_info SPEX_mpz_sgn
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *sgn = mpz_sgn (x) ;
+    *sgn = mpz_sgn (x);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1370,9 +1370,9 @@ SPEX_info SPEX_mpz_sizeinbase
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *size = mpz_sizeinbase (x, (int) base) ;
+    *size = mpz_sizeinbase (x, (int) base);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1392,10 +1392,10 @@ SPEX_info SPEX_mpq_init
     mpq_t x
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_init (x) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_init (x);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1410,10 +1410,10 @@ SPEX_info SPEX_mpq_set
     const mpq_t y
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_set (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_set (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1428,10 +1428,10 @@ SPEX_info SPEX_mpq_set_z
     const mpz_t y
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_set_z (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_set_z (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1445,10 +1445,10 @@ SPEX_info SPEX_mpq_canonicalize
     mpq_t x
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_canonicalize (x) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_canonicalize (x);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1463,10 +1463,10 @@ SPEX_info SPEX_mpq_set_d
     const double y
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_set_d (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_set_d (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1484,10 +1484,10 @@ SPEX_info SPEX_mpq_set_ui
     const uint64_t z
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_set_ui (x, (unsigned long int) y, (unsigned long int) z) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_set_ui (x, (unsigned long int) y, (unsigned long int) z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1503,10 +1503,10 @@ SPEX_info SPEX_mpq_set_si
     const uint64_t z
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_set_si (x, (signed long int) y, (unsigned long int) x) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_set_si (x, (signed long int) y, (unsigned long int) x);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1521,10 +1521,10 @@ SPEX_info SPEX_mpq_set_num
     const mpz_t y
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_set_num (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_set_num (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1539,10 +1539,10 @@ SPEX_info SPEX_mpq_set_den
     const mpz_t y
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_set_den (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_set_den (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1560,10 +1560,10 @@ SPEX_info SPEX_mpq_get_den
     const mpq_t y
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpq_get_den (x, y) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpq_get_den (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 #endif
 
@@ -1580,9 +1580,9 @@ SPEX_info SPEX_mpq_get_d
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *x = mpq_get_d (y) ;
+    *x = mpq_get_d (y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1601,9 +1601,9 @@ SPEX_info SPEX_mpq_swap
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    mpq_swap (x, y) ;
+    mpq_swap (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 #endif
@@ -1620,10 +1620,10 @@ SPEX_info SPEX_mpq_neg
     const mpq_t y
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_neg (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_neg (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1638,10 +1638,10 @@ SPEX_info SPEX_mpq_abs
     const mpq_t y
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_abs (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_abs (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1657,10 +1657,10 @@ SPEX_info SPEX_mpq_add
     const mpq_t z
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_add (x, y, z) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_add (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1675,10 +1675,10 @@ SPEX_info SPEX_mpq_mul
     const mpq_t z
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_mul (x, y, z) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_mul (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1694,10 +1694,10 @@ SPEX_info SPEX_mpq_div
     const mpq_t z
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpq_div (x, y, z) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_div (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1715,9 +1715,9 @@ SPEX_info SPEX_mpq_cmp
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpq_cmp (x, y) ;
+    *r = mpq_cmp (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1736,9 +1736,9 @@ SPEX_info SPEX_mpq_cmp_ui
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpq_cmp_ui (x, (unsigned long int) num, (unsigned long int) den) ;
+    *r = mpq_cmp_ui (x, (unsigned long int) num, (unsigned long int) den);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1759,9 +1759,9 @@ SPEX_info SPEX_mpq_cmp_z
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpq_cmp_z (x, y) ;
+    *r = mpq_cmp_z (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 #endif
@@ -1781,9 +1781,9 @@ SPEX_info SPEX_mpq_equal
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *r = mpq_equal (x, y) ;
+    *r = mpq_equal (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1799,9 +1799,9 @@ SPEX_info SPEX_mpq_sgn
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *sgn = mpq_sgn (x) ;
+    *sgn = mpq_sgn (x);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1823,13 +1823,13 @@ SPEX_info SPEX_mpfr_init2
 )
 {
     // ensure the mpfr number is not too big
-    if (size > MPFR_PREC_MAX/2) return (SPEX_PANIC) ;
+    if (size > MPFR_PREC_MAX/2) return (SPEX_PANIC);
 
     // initialize the mpfr number
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_init2 (x, (mpfr_prec_t) size) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_init2 (x, (mpfr_prec_t) size);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1845,10 +1845,10 @@ SPEX_info SPEX_mpfr_set
     const mpfr_rnd_t rnd
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_set (x, y, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_set (x, y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1864,10 +1864,10 @@ SPEX_info SPEX_mpfr_set_d
     const mpfr_rnd_t rnd  // MPFR rounding scheme used
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_set_d (x, y, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_set_d (x, y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 
@@ -1884,10 +1884,10 @@ SPEX_info SPEX_mpfr_set_si
     const mpfr_rnd_t rnd  // MPFR rounding scheme used
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_set_si (x, (long int) y, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_set_si (x, (long int) y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1903,10 +1903,10 @@ SPEX_info SPEX_mpfr_set_q
     const mpfr_rnd_t rnd
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_set_q (x, y, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_set_q (x, y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1922,10 +1922,10 @@ SPEX_info SPEX_mpfr_set_z
     const mpfr_rnd_t rnd
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_set_z (x, y, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_set_z (x, y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1941,10 +1941,10 @@ SPEX_info SPEX_mpfr_get_z
     const mpfr_rnd_t rnd  // MPFR rounding scheme used
 )
 {
-    SPEX_GMPZ_WRAPPER_START (x) ;
-    mpfr_get_z (x, y, rnd) ;
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpfr_get_z (x, y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1960,10 +1960,10 @@ SPEX_info SPEX_mpfr_get_q
     const mpfr_rnd_t rnd  // MPFR rounding scheme used
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x) ;
-    mpfr_get_q (x, y) ;
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpfr_get_q (x, y);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1980,9 +1980,9 @@ SPEX_info SPEX_mpfr_get_d
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *x = mpfr_get_d (y, rnd) ;
+    *x = mpfr_get_d (y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -1999,9 +1999,9 @@ SPEX_info SPEX_mpfr_get_si
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *x = (int64_t) mpfr_get_si (y, rnd) ;
+    *x = (int64_t) mpfr_get_si (y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -2019,10 +2019,10 @@ SPEX_info SPEX_mpfr_mul
 )
 {
     // FIXME: no test coverage for this function
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_mul (x, y, z, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_mul (x, y, z, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -2041,10 +2041,10 @@ SPEX_info SPEX_mpfr_mul_d
     const mpfr_rnd_t rnd  // MPFR rounding scheme used
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_mul_d (x, y, z, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_mul_d (x, y, z, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -2063,10 +2063,10 @@ SPEX_info SPEX_mpfr_div_d
     const mpfr_rnd_t rnd  // MPFR rounding scheme used
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_div_d (x, y, z, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_div_d (x, y, z, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -2086,10 +2086,10 @@ SPEX_info SPEX_mpfr_ui_pow_ui
 )
 {
     // FIXME: no test coverage for this function
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_ui_pow_ui (x, (unsigned long int) y, (unsigned long int) z, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_ui_pow_ui (x, (unsigned long int) y, (unsigned long int) z, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -2108,10 +2108,10 @@ SPEX_info SPEX_mpfr_log2
     const mpfr_rnd_t rnd
 )
 {
-    SPEX_GMPFR_WRAPPER_START (x) ;
-    mpfr_log2 (x, y, rnd) ;
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_log2 (x, y, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 #endif
@@ -2129,9 +2129,9 @@ SPEX_info SPEX_mpfr_sgn
 )
 {
     SPEX_GMP_WRAPPER_START ;
-    *sgn = mpfr_sgn (x) ;
+    *sgn = mpfr_sgn (x);
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 
 //------------------------------------------------------------------------------
@@ -2143,8 +2143,8 @@ SPEX_info SPEX_mpfr_sgn
 SPEX_info SPEX_mpfr_free_cache ( void )
 {
     SPEX_GMP_WRAPPER_START ;
-    mpfr_free_cache ( ) ;
+    mpfr_free_cache ( );
     SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

@@ -48,13 +48,13 @@ SPEX_info spex_cholesky_counts
     int64_t  *maxfirst, *prevleaf, *ancestor, *first, *delta ;
     n = A->n ;
     // Can not have negative n
-    ASSERT(n >= 0) ;
+    ASSERT(n >= 0);
     // Size of workspace
     s = 4*n ;
     // Allocate result in delta
-    colcount = (int64_t*) SPEX_malloc(n* sizeof (int64_t)) ;
+    colcount = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
     // Create a workspace of size s
-    w = (int64_t*) SPEX_malloc (s* sizeof (int64_t)) ;
+    w = (int64_t*) SPEX_malloc (s* sizeof (int64_t));
     if (colcount == NULL || w == NULL)
     {
         SPEX_FREE_ALL;
@@ -89,7 +89,7 @@ SPEX_info spex_cholesky_counts
         {
             delta[parent[j]]-- ;    /* j is not a root */
         }
-        for (J = HEAD(k,j) ; J != -1 ; J = NEXT(J))   /* J=j for LL'=A case */
+        for (J = HEAD(k,j); J != -1 ; J = NEXT(J))   /* J=j for LL'=A case */
         {
             for (p = A->p[J] ; p < A->p[J+1] ; p++)
             {

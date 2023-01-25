@@ -55,7 +55,7 @@
 // c's default qsort
 static inline int compare (const void * a, const void * b)
 {
-    return ( *(int64_t*)a - *(int64_t*)b ) ;
+    return ( *(int64_t*)a - *(int64_t*)b );
 }
 
 SPEX_info spex_cholesky_up_triangular_solve

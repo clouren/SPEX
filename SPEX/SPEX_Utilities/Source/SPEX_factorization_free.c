@@ -24,7 +24,7 @@ SPEX_info SPEX_factorization_free
 )
 {
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     if ((F_handle != NULL) && (*F_handle != NULL))
     {
@@ -39,9 +39,9 @@ SPEX_info SPEX_factorization_free
         SPEX_FREE((*F_handle)->Q_perm);
         SPEX_FREE((*F_handle)->Qinv_perm);
 
-        SPEX_FREE (*F_handle) ;
+        SPEX_FREE (*F_handle);
     }
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

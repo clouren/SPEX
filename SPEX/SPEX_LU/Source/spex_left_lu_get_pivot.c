@@ -25,8 +25,8 @@
  */
 
 #define SPEX_FREE_ALL           \
-    SPEX_MPQ_CLEAR (tol) ;      \
-    SPEX_MPQ_CLEAR (ratio) ;
+    SPEX_MPQ_CLEAR (tol);      \
+    SPEX_MPQ_CLEAR (ratio);
 
 #include "spex_lu_internal.h"
 
@@ -162,7 +162,7 @@ SPEX_info spex_left_lu_get_pivot
         //----------------------------------------------------------------------
 
         SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top,
-            xi)) ;
+            xi));
 
         //----------------------------------------------------------------------
         // Checking x[col] vs smallest pivot

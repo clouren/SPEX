@@ -34,8 +34,8 @@ SPEX_info spex_left_lu_back_sub  // performs sparse REF backward substitution
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    SPEX_REQUIRE (U,  SPEX_CSC,   SPEX_MPZ) ;
-    SPEX_REQUIRE (bx, SPEX_DENSE, SPEX_MPZ) ;
+    SPEX_REQUIRE (U,  SPEX_CSC,   SPEX_MPZ);
+    SPEX_REQUIRE (bx, SPEX_DENSE, SPEX_MPZ);
 
     //--------------------------------------------------------------------------
 
@@ -68,6 +68,6 @@ SPEX_info spex_left_lu_back_sub  // performs sparse REF backward substitution
         }
     }
 
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

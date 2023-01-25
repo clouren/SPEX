@@ -46,26 +46,26 @@ void spex_mex_get_A_and_b
     //--------------------------------------------------------------------------
 
     // Read in Ap, Ai, Ax
-    Ap = (int64_t *) mxGetJc (pargin[0]) ;
-    Ai = (int64_t *) mxGetIr (pargin[0]) ;
-    Ax = mxGetDoubles (pargin[0]) ;
+    Ap = (int64_t *) mxGetJc (pargin[0]);
+    Ai = (int64_t *) mxGetIr (pargin[0]);
+    Ax = mxGetDoubles (pargin[0]);
 
     if (!Ai || !Ap || !Ax)
     {
-        spex_mex_error (SPEX_INCORRECT_INPUT, "") ;
+        spex_mex_error (SPEX_INCORRECT_INPUT, "");
     }
 
     // Get info about A
-    nA = (int64_t) mxGetN (pargin[0]) ;
-    mA = (int64_t) mxGetM (pargin[0]) ;
+    nA = (int64_t) mxGetN (pargin[0]);
+    mA = (int64_t) mxGetM (pargin[0]);
     Anz = Ap[nA];
     if (nA != mA)
     {
-        spex_mex_error (1, "A must be square") ;
+        spex_mex_error (1, "A must be square");
     }
 
     // check the values of A
-    bool A_has_int64_values = spex_mex_check_for_inf (Ax, Anz) ;
+    bool A_has_int64_values = spex_mex_check_for_inf (Ax, Anz);
 
     SPEX_matrix A = NULL;
     SPEX_matrix A_matlab = NULL;
@@ -73,10 +73,10 @@ void spex_mex_get_A_and_b
     if (A_has_int64_values)
     {
         // All entries in A can be typecast to int64_t without change in value.
-        int64_t *Ax_int64 = (int64_t*) SPEX_malloc (Anz* sizeof (int64_t)) ;
+        int64_t *Ax_int64 = (int64_t*) SPEX_malloc (Anz* sizeof (int64_t));
         if (!Ax_int64)
         {
-            spex_mex_error (SPEX_OUT_OF_MEMORY, "") ;
+            spex_mex_error (SPEX_OUT_OF_MEMORY, "");
         }
         for (k = 0; k < Anz; k++)
         {
@@ -107,10 +107,10 @@ void spex_mex_get_A_and_b
     A_matlab->i = Ai ;
 
     // scale A and convert to MPZ
-    SPEX_MEX_OK (SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, A_matlab, option)) ;
+    SPEX_MEX_OK (SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, A_matlab, option));
 
     // free the shallow copy of A
-    SPEX_MEX_OK (SPEX_matrix_free (&A_matlab, option)) ;
+    SPEX_MEX_OK (SPEX_matrix_free (&A_matlab, option));
 
     //--------------------------------------------------------------------------
     // Read in b
@@ -119,24 +119,24 @@ void spex_mex_get_A_and_b
     SPEX_matrix b = NULL;
     SPEX_matrix b_matlab = NULL;
 
-    bx = mxGetDoubles (pargin[1]) ;
+    bx = mxGetDoubles (pargin[1]);
     if (!bx)
     {
-        spex_mex_error (SPEX_INCORRECT_INPUT, "") ;
+        spex_mex_error (SPEX_INCORRECT_INPUT, "");
     }
 
     // Get info about RHS vector (s)
-    nb = mxGetN (pargin[1]) ;
-    mb = mxGetM (pargin[1]) ;
+    nb = mxGetN (pargin[1]);
+    mb = mxGetM (pargin[1]);
     if (mb != mA)
     {
-        spex_mex_error (1, "dimension mismatch") ;
+        spex_mex_error (1, "dimension mismatch");
     }
 
     int64_t count = 0;
 
     // check the values of b
-    bool b_has_int64_values = spex_mex_check_for_inf (bx, nb*mb) ;
+    bool b_has_int64_values = spex_mex_check_for_inf (bx, nb*mb);
 
     if (b_has_int64_values)
     {
@@ -164,10 +164,10 @@ void spex_mex_get_A_and_b
     }
 
     // scale b and convert to MPZ
-    SPEX_MEX_OK (SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b_matlab, option)) ;
+    SPEX_MEX_OK (SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b_matlab, option));
 
     // free the shallow copy of b
-    SPEX_MEX_OK (SPEX_matrix_free (&b_matlab, option)) ;
+    SPEX_MEX_OK (SPEX_matrix_free (&b_matlab, option));
 
     (*A_handle) = A;
     (*b_handle) = b;

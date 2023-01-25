@@ -30,7 +30,7 @@ uint64_t simple_rand_next = 1 ;
 uint64_t simple_rand (void)
 {
    simple_rand_next = simple_rand_next * 1103515245 + 12345 ;
-   return ((simple_rand_next/65536) % (SIMPLE_RAND_MAX + 1)) ;
+   return ((simple_rand_next/65536) % (SIMPLE_RAND_MAX + 1));
 }
 
 /* set the seed */
@@ -42,13 +42,13 @@ void simple_rand_seed (uint64_t seed)
 /* get the seed */
 uint64_t simple_rand_getseed (void)
 {
-   return (simple_rand_next) ;
+   return (simple_rand_next);
 }
 
 /* return a random double between 0 and 1, inclusive */
 double simple_rand_x (void )
 {
-    return (((double) simple_rand ( )) / ((double) SIMPLE_RAND_MAX)) ;
+    return (((double) simple_rand ( )) / ((double) SIMPLE_RAND_MAX));
 }
 
 /* return a random uint64_t */
@@ -57,8 +57,8 @@ uint64_t simple_rand_i (void )
     uint64_t i = 0 ;
     for (int k = 0 ; k < 5 ; k++)
     {
-        i = SIMPLE_RAND_MAX * i + simple_rand ( ) ;
+        i = SIMPLE_RAND_MAX * i + simple_rand ( );
     }
-    return (i) ;
+    return (i);
 }
 

@@ -32,7 +32,7 @@ SPEX_info SPEX_tripread
     SPEX_info info ;
     if (A_handle == NULL || file == NULL)
     {
-        printf ("invalid input\n") ;
+        printf ("invalid input\n");
         return SPEX_INCORRECT_INPUT;
     }
     

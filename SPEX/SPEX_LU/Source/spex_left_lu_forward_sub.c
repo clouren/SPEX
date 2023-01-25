@@ -20,7 +20,7 @@
  */
 
 #define SPEX_FREE_ALL           \
-    SPEX_matrix_free(&h, NULL)  ;
+    SPEX_matrix_free(&h, NULL);
 
 #include "spex_lu_internal.h"
 

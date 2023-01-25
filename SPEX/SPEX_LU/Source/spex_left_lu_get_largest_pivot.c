@@ -51,8 +51,8 @@ SPEX_info spex_left_lu_get_largest_pivot
     int r ;
     (*pivot) = -1 ;
     mpz_t big ;
-    SPEX_MPZ_SET_NULL (big) ;
-    SPEX_CHECK (SPEX_mpz_init (big)) ;
+    SPEX_MPZ_SET_NULL (big);
+    SPEX_CHECK (SPEX_mpz_init (big));
 
     //--------------------------------------------------------------------------
     // Iterate accross the nonzeros in x

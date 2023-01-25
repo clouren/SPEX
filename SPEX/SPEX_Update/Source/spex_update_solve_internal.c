@@ -57,7 +57,7 @@ SPEX_info spex_update_solve_internal
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     SPEX_REQUIRE(b,    SPEX_DENSE, SPEX_MPZ);
     if (!x_handle || !F || (F->kind != SPEX_LU_FACTORIZATION &&
@@ -179,5 +179,5 @@ SPEX_info spex_update_solve_internal
 
     SPEX_FREE_WORK ;
     (*x_handle) = x ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }

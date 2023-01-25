@@ -48,13 +48,13 @@ SPEX_info SPEX_lu_factorize
     // check inputs
     //--------------------------------------------------------------------------
 
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
-    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
+    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ);
     int64_t anz;
     // SPEX enviroment is checked to be init'ed and A is a SPEX_CSC matrix that
     // is not NULL, so SPEX_matrix_nnz must return SPEX_OK
-    SPEX_info info = SPEX_matrix_nnz (&anz, A, option) ;
+    SPEX_info info = SPEX_matrix_nnz (&anz, A, option);
     ASSERT(info == SPEX_OK);
 
     if (!F_handle || !S || anz < 0)
@@ -170,7 +170,7 @@ SPEX_info SPEX_lu_factorize
     // Note that the estimate presented here is not an upper bound nor a lower
     // bound.  It is still possible that more bits will be required which is
     // correctly handled internally.
-    int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n))) ;
+    int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
 
     // Create x, a global dense mpz_t matrix of dimension n*1. Unlike rhos, the
     // second boolean parameter is set to false to avoid initializing
@@ -220,7 +220,7 @@ SPEX_info SPEX_lu_factorize
             F->rhos,
             (const int64_t *) (F->Pinv_perm),
             (const int64_t *) (F->P_perm),
-            h, x)) ;
+            h, x));
 
         //----------------------------------------------------------------------
         // Obtain pivot
@@ -310,8 +310,8 @@ SPEX_info SPEX_lu_factorize
     //--------------------------------------------------------------------------
 
     #if 0
-    SPEX_CHECK (SPEX_matrix_check (F->L, option)) ;
-    SPEX_CHECK (SPEX_matrix_check (F->U, option)) ;
+    SPEX_CHECK (SPEX_matrix_check (F->L, option));
+    SPEX_CHECK (SPEX_matrix_check (F->U, option));
     #endif
 
     //--------------------------------------------------------------------------
@@ -319,6 +319,6 @@ SPEX_info SPEX_lu_factorize
     //--------------------------------------------------------------------------
 
     (*F_handle) = F ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

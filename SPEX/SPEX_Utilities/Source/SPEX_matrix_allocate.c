@@ -23,7 +23,7 @@
 
 #define SPEX_FREE_ALL                       \
 {                                           \
-    SPEX_matrix_free (&A, option) ;         \
+    SPEX_matrix_free (&A, option);         \
 }
 
 #include "spex_util_internal.h"
@@ -56,11 +56,11 @@ SPEX_info SPEX_matrix_allocate
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
 
     if (A_handle == NULL)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
     (*A_handle) = NULL ;
     if (m < 0 || n < 0 ||
@@ -68,24 +68,24 @@ SPEX_info SPEX_matrix_allocate
         type  < SPEX_MPZ || type  > SPEX_FP64 ||
         (kind == SPEX_DYNAMIC_CSC && type != SPEX_MPZ)) //dynamic must be mpz
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
 
     //--------------------------------------------------------------------------
     // allocate the header
     //--------------------------------------------------------------------------
 
-    SPEX_matrix A = (SPEX_matrix) SPEX_calloc (1, sizeof (SPEX_matrix_struct)) ;
+    SPEX_matrix A = (SPEX_matrix) SPEX_calloc (1, sizeof (SPEX_matrix_struct));
     if (A == NULL)
     {
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     if (kind == SPEX_DENSE)
     {
         nzmax = m*n ;
     }
-    nzmax = SPEX_MAX (nzmax, 1) ;
+    nzmax = SPEX_MAX (nzmax, 1);
 
     A->m = m ;
     A->n = n ;
@@ -101,8 +101,8 @@ SPEX_info SPEX_matrix_allocate
     A->x_shallow = false ;
 
     // A->scale = 1
-    SPEX_CHECK (spex_create_mpq (A->scale)) ;
-    SPEX_CHECK (SPEX_mpq_set_ui (A->scale, 1, 1)) ;
+    SPEX_CHECK (spex_create_mpq (A->scale));
+    SPEX_CHECK (SPEX_mpq_set_ui (A->scale, 1, 1));
 
     //--------------------------------------------------------------------------
     // allocate the p, i, j, and x components
@@ -143,15 +143,15 @@ SPEX_info SPEX_matrix_allocate
         switch (kind)
         {
             case SPEX_CSC:
-                A->p = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t)) ;
-                A->i = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t)) ;
-                ok = (A->p != NULL && A->i != NULL) ;
+                A->p = (int64_t *) SPEX_calloc (n+1, sizeof (int64_t));
+                A->i = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t));
+                ok = (A->p != NULL && A->i != NULL);
                 break ;
 
             case SPEX_TRIPLET:
-                A->i = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t)) ;
-                A->j = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t)) ;
-                ok = (A->i != NULL && A->j != NULL) ;
+                A->i = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t));
+                A->j = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t));
+                ok = (A->i != NULL && A->j != NULL);
                 break ;
 
             default: //SPEX_DENSE or SPEX_DYNAMIC_CSC
@@ -169,47 +169,47 @@ SPEX_info SPEX_matrix_allocate
                 // mpz, mpq, or mpfr
                 if (init)
                 {
-                    A->x.mpz = spex_create_mpz_array (nzmax) ;
+                    A->x.mpz = spex_create_mpz_array (nzmax);
                 }
                 else
                 {
                     A->x.mpz = SPEX_calloc(nzmax, sizeof(mpz_t));
                 }
-                ok = ok && (A->x.mpz != NULL) ;
+                ok = ok && (A->x.mpz != NULL);
                 break ;
 
             case SPEX_MPQ:
                 if (init)
                 {
-                    A->x.mpq = spex_create_mpq_array (nzmax) ;
+                    A->x.mpq = spex_create_mpq_array (nzmax);
                 }
                 else
                 {
                     A->x.mpq = SPEX_calloc(nzmax, sizeof(mpq_t));
                 }
-                ok = ok && (A->x.mpq != NULL) ;
+                ok = ok && (A->x.mpq != NULL);
                 break ;
 
             case SPEX_MPFR:
                 if (init)
                 {
-                    A->x.mpfr = spex_create_mpfr_array (nzmax, option) ;
+                    A->x.mpfr = spex_create_mpfr_array (nzmax, option);
                 }
                 else
                 {
                     A->x.mpfr = SPEX_calloc(nzmax, sizeof(mpfr_t));
                 }
-                ok = ok && (A->x.mpfr != NULL) ;
+                ok = ok && (A->x.mpfr != NULL);
                 break ;
 
             case SPEX_INT64:
-                A->x.int64 = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t)) ;
-                ok = ok && (A->x.int64 != NULL) ;
+                A->x.int64 = (int64_t *) SPEX_calloc (nzmax, sizeof (int64_t));
+                ok = ok && (A->x.int64 != NULL);
                 break ;
 
             case SPEX_FP64:
-                A->x.fp64 = (double *) SPEX_calloc (nzmax, sizeof (double)) ;
-                ok = ok && (A->x.fp64 != NULL) ;
+                A->x.fp64 = (double *) SPEX_calloc (nzmax, sizeof (double));
+                ok = ok && (A->x.fp64 != NULL);
                 break ;
 
         }
@@ -217,7 +217,7 @@ SPEX_info SPEX_matrix_allocate
         if (!ok)
         {
             SPEX_FREE_ALL ;
-            return (SPEX_OUT_OF_MEMORY) ;
+            return (SPEX_OUT_OF_MEMORY);
         }
     }
 
@@ -226,6 +226,6 @@ SPEX_info SPEX_matrix_allocate
     //--------------------------------------------------------------------------
 
     (*A_handle) = A ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

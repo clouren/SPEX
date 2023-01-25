@@ -17,8 +17,8 @@
 
 SPEX_info SPEX_thread_finalize ( void )
 {
-    if (!spex_initialized ( )) return (SPEX_PANIC) ;
-    spex_gmp_finalize ( ) ;
-    return (SPEX_OK) ;
+    if (!spex_initialized ( )) return (SPEX_PANIC);
+    spex_gmp_finalize ( );
+    return (SPEX_OK);
 }
 

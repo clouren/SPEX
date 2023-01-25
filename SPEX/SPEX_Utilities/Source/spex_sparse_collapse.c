@@ -27,7 +27,7 @@ SPEX_info spex_sparse_collapse
     // check inputs
     //--------------------------------------------------------------------------
 
-    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ) ;
+    SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ);
 
     //--------------------------------------------------------------------------
 
@@ -40,14 +40,14 @@ SPEX_info spex_sparse_collapse
 
     bool ok ;
     A->i = (int64_t *)
-        SPEX_realloc (anz, A->nzmax, sizeof (int64_t), A->i, &ok) ;
+        SPEX_realloc (anz, A->nzmax, sizeof (int64_t), A->i, &ok);
     if (!ok)    {return SPEX_OUT_OF_MEMORY;}
 
     A->x.mpz = (mpz_t *)
-        SPEX_realloc (anz, A->nzmax, sizeof (mpz_t), A->x.mpz, &ok) ;
+        SPEX_realloc (anz, A->nzmax, sizeof (mpz_t), A->x.mpz, &ok);
     if (!ok)    {return SPEX_OUT_OF_MEMORY;}
 
     A->nzmax = anz ;
-    return (SPEX_OK) ;
+    return (SPEX_OK);
 }
 

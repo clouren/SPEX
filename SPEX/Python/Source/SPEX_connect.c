@@ -134,10 +134,10 @@ SPEX_info spex_python
         for (int i = 0; i < n; ++i)
         {
             char *s ;
-            int status = SPEX_mpfr_asprintf (&s, "%Qd", x->x.mpq [i]) ;
+            int status = SPEX_mpfr_asprintf (&s, "%Qd", x->x.mpq [i]);
             if (status < 0)
             {
-                printf("error converting x to string") ;
+                printf("error converting x to string");
             }
             //check string size
             int sizeStr;

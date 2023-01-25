@@ -64,7 +64,7 @@
     SPEX_FREE(used_as_basis);                    \
     SPEX_FREE(col_val);                          \
     SPEX_FREE(col_ind);                          \
-    SPEX_finalize() ;                            \
+    SPEX_finalize();                            \
 }
 
 #include "test.h"
@@ -90,7 +90,7 @@ int main( int argc, char *argv[])
     // Initialize for SPEX libray
     //------------------------------------------------------------------
 
-    SPEX_initialize () ;
+    SPEX_initialize ();
 
     //------------------------------------------------------------------
     // Allocate memory

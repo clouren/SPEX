@@ -25,14 +25,14 @@
 // of size 10.
 //
 //      int *p ;
-//      p = SPEX_malloc (10 * sizeof (int)) ;
+//      p = SPEX_malloc (10 * sizeof (int));
 //      if (p == NULL) { error here ... }
-//      printf ("p points to an array of size 10 * sizeof (int)\n") ;
+//      printf ("p points to an array of size 10 * sizeof (int)\n");
 //      bool ok ;
-//      p = SPEX_realloc (20, 10, sizeof (int), p, &ok) ;
-//      if (ok) printf ("p has size 20 * sizeof (int)\n") ;
-//      else printf ("realloc failed; p still has size 10 * sizeof (int)\n") ;
-//      SPEX_FREE (p) ;
+//      p = SPEX_realloc (20, 10, sizeof (int), p, &ok);
+//      if (ok) printf ("p has size 20 * sizeof (int)\n");
+//      else printf ("realloc failed; p still has size 10 * sizeof (int)\n");
+//      SPEX_FREE (p);
 
 void *SPEX_realloc      // pointer to reallocated block, or original block
                         // if the realloc failed
@@ -48,13 +48,13 @@ void *SPEX_realloc      // pointer to reallocated block, or original block
     if (!spex_initialized ( ))
     {
         (*ok) = false ;
-        return (p) ;
+        return (p);
     }
 
     int result ;
     void *pnew = SuiteSparse_realloc ((size_t) nitems_new, (size_t) nitems_old,
-        size_of_item, p, &result) ;
-    (*ok) = (result != 0) ;
-    return (pnew) ;
+        size_of_item, p, &result);
+    (*ok) = (result != 0);
+    return (pnew);
 }
 

@@ -26,7 +26,7 @@ int main (int argc, char *argv[])
     // Initialize for SPEX libray
     //------------------------------------------------------------------
 
-    SPEX_initialize () ;
+    SPEX_initialize ();
 
     //------------------------------------------------------------------
     // Allocate memory

@@ -13,7 +13,7 @@
 // kind (CSC, triplet, or dense) and any type.
 
 #define SPEX_FREE_ALL                   \
-    SPEX_matrix_free (&Y, option) ;
+    SPEX_matrix_free (&Y, option);
 
 #include "spex_util_internal.h"
 
@@ -34,11 +34,11 @@ SPEX_info spex_cast_matrix
 #if 0
     if (Y_handle == NULL || A == NULL)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
     if (nz < 0)
     {
-        return (SPEX_INCORRECT_INPUT) ;
+        return (SPEX_INCORRECT_INPUT);
     }
     (*Y_handle) = NULL ;
 #endif
@@ -46,7 +46,7 @@ SPEX_info spex_cast_matrix
     int64_t nz;
     SPEX_info info = SPEX_OK ;
     SPEX_matrix Y = NULL ;
-    SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option)) ;
+    SPEX_CHECK (SPEX_matrix_nnz (&nz, A, option));
 
 
     //--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ SPEX_info spex_cast_matrix
     //--------------------------------------------------------------------------
 
     SPEX_CHECK (SPEX_matrix_allocate (&Y, SPEX_DENSE, Y_type,
-        nz, 1, nz, Y_type == A->type, true, option)) ;
+        nz, 1, nz, Y_type == A->type, true, option));
 
     //--------------------------------------------------------------------------
     // typecast the values from A into Y
@@ -90,7 +90,7 @@ SPEX_info spex_cast_matrix
         //----------------------------------------------------------------------
 
         SPEX_CHECK (spex_cast_array (SPEX_X (Y), Y->type,
-            SPEX_X (A), A->type, nz, Y->scale, A->scale, option)) ;
+            SPEX_X (A), A->type, nz, Y->scale, A->scale, option));
 
     }
 
@@ -99,7 +99,7 @@ SPEX_info spex_cast_matrix
     //--------------------------------------------------------------------------
 
     (*Y_handle) = Y;
-    SPEX_CHECK (info) ;
-    return (SPEX_OK) ;
+    SPEX_CHECK (info);
+    return (SPEX_OK);
 }
 

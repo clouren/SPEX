@@ -42,7 +42,7 @@ SPEX_info spex_tripread_mpz
     int s = fscanf(file, "%"PRId64" %"PRId64" %"PRId64"\n", &m, &n, &nz);
     if (feof(file) || s < 3)
     {
-        printf ("premature end-of-file\n") ;
+        printf ("premature end-of-file\n");
         return SPEX_INCORRECT_INPUT;
     }
 
@@ -53,7 +53,7 @@ SPEX_info spex_tripread_mpz
         false, true, option);
     if (info != SPEX_OK)
     {
-        return (info) ;
+        return (info);
     }
 
 //  // Read in first values of A
@@ -61,7 +61,7 @@ SPEX_info spex_tripread_mpz
 //      &A->i[0], &A->j[0], &A->x.mpz[0]);
 //  if (feof (file) || info != SPEX_OK)
 //  {
-//      printf ("premature end-of-file\n") ;
+//      printf ("premature end-of-file\n");
 //      SPEX_matrix_free(&A, option);
 //      return SPEX_INCORRECT_INPUT;
 //  }
@@ -78,7 +78,7 @@ SPEX_info spex_tripread_mpz
             &A->i[p], &A->j[p], &A->x.mpz[p]);
         if ((feof(file) && p != nz-1) || info != SPEX_OK)
         {
-            printf ("premature end-of-file\n") ;
+            printf ("premature end-of-file\n");
             SPEX_matrix_free(&A, option);
             return SPEX_INCORRECT_INPUT;
         }
@@ -99,5 +99,5 @@ SPEX_info spex_tripread_mpz
     // Free A, set A_handle
     SPEX_matrix_free(&A, option);
     (*A_handle) = C;
-    return (info) ;
+    return (info);
 }

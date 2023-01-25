@@ -37,11 +37,11 @@ SPEX_info spex_cholesky_etree
 
     // All inputs are checked by the caller so asserts are used here as a
     // reminder of the appropriate formats
-    ASSERT (A != NULL) ;
-    ASSERT(A->kind == SPEX_CSC) ;
-    ASSERT(A->type == SPEX_MPZ) ;
+    ASSERT (A != NULL);
+    ASSERT(A->kind == SPEX_CSC);
+    ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->n == A->m);
-    ASSERT (tree_handle != NULL) ;
+    ASSERT (tree_handle != NULL);
     (*tree_handle) = NULL ;
 
     // Declare variables

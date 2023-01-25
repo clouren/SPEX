@@ -66,7 +66,7 @@ SPEX_info spex_expand_mpfr_array
     SPEX_CHECK(SPEX_mpz_init(gcd));
     SPEX_CHECK(SPEX_mpz_init(one));
 
-    x_mpq = spex_create_mpq_array (n) ;
+    x_mpq = spex_create_mpq_array (n);
     if (x_mpq == NULL)
     {
         SPEX_FREE_ALL;
@@ -124,7 +124,7 @@ SPEX_info spex_expand_mpfr_array
         // FIXME: no test coverage for this case
         for (i = k; i < n; i++)
         {
-            SPEX_CHECK(SPEX_mpz_divexact(x_out[i],x_out[i],gcd));
+            SPEX_MPZ_DIVEXACT(x_out[i],x_out[i],gcd);
         }
         SPEX_CHECK(SPEX_mpq_set_z(temp,gcd));
         SPEX_CHECK(SPEX_mpq_div(scale,scale,temp));

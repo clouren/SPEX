@@ -90,8 +90,8 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
 
     printf("solving Ax=b ...\n");
-    fflush (stdout) ;
-    fflush (stderr) ;
+    fflush (stdout);
+    fflush (stderr);
     clock_t start = clock();
 
     option->print_level = 0;

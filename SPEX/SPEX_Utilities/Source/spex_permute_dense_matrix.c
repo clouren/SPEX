@@ -14,7 +14,7 @@
  */
 
 #define SPEX_FREE_ALL        \
-    SPEX_matrix_free (&Atmp, NULL) ;
+    SPEX_matrix_free (&Atmp, NULL);
 
 #include "spex_util_internal.h"
 
@@ -32,7 +32,7 @@ SPEX_info spex_permute_dense_matrix
     //--------------------------------------------------------------------------
 
     SPEX_info info ;
-    SPEX_REQUIRE (A_in, SPEX_DENSE, SPEX_MPZ) ;
+    SPEX_REQUIRE (A_in, SPEX_DENSE, SPEX_MPZ);
 
     if (A_handle == NULL || !P) {return SPEX_INCORRECT_INPUT;}
     (*A_handle) = NULL ;
@@ -47,7 +47,7 @@ SPEX_info spex_permute_dense_matrix
     // allocate x
     SPEX_matrix Atmp = NULL ;
     SPEX_CHECK (SPEX_matrix_allocate (&Atmp, SPEX_DENSE, SPEX_MPZ, m, n,
-        0, false, true, option)) ;
+        0, false, true, option));
 
     // Set Atmp = P*A
     for (int64_t i = 0 ; i < m ; i++)

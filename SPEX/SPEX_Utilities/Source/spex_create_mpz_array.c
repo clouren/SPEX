@@ -36,7 +36,7 @@ mpz_t *spex_create_mpz_array
         #if __GNU_MP_RELEASE < 60200
         SPEX_info info =
         #endif
-        SPEX_mpz_init (x [i])  ;
+        SPEX_mpz_init (x [i]);
         #if __GNU_MP_RELEASE < 60200
         if (info != SPEX_OK)
         {

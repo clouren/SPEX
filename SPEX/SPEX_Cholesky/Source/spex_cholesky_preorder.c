@@ -77,7 +77,7 @@ SPEX_info spex_cholesky_preorder
     int64_t i, k, index, n = A->n;
 
     int64_t anz; // Number of nonzeros in A
-    SPEX_CHECK (SPEX_matrix_nnz(&anz, A, option)) ;
+    SPEX_CHECK (SPEX_matrix_nnz(&anz, A, option));
 
     // Allocate memory for S
     S = (SPEX_symbolic_analysis)
@@ -85,7 +85,7 @@ SPEX_info spex_cholesky_preorder
     if (S == NULL)
     {
         SPEX_FREE_ALL ;
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     S->kind = SPEX_CHOLESKY_FACTORIZATION ;
@@ -117,7 +117,7 @@ SPEX_info spex_cholesky_preorder
             if (S->P_perm == NULL)
             {
                 SPEX_FREE_ALL ;
-                return (SPEX_OUT_OF_MEMORY) ;
+                return (SPEX_OUT_OF_MEMORY);
             }
 
             for (i = 0; i < n+1; i++)
@@ -165,7 +165,7 @@ SPEX_info spex_cholesky_preorder
     if(!(S->Pinv_perm))
     {
         SPEX_FREE_ALL ;
-        return (SPEX_OUT_OF_MEMORY) ;
+        return (SPEX_OUT_OF_MEMORY);
     }
 
     // Populate pinv

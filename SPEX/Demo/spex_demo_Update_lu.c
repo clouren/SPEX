@@ -32,7 +32,7 @@ int main(int argc, char *argv[] )
     // Initialize SPEX CHOLMOD process
     //--------------------------------------------------------------------------
 
-    SPEX_initialize () ;
+    SPEX_initialize ();
 
     //--------------------------------------------------------------------------
     // Allocate memory
@@ -137,7 +137,7 @@ int main(int argc, char *argv[] )
     //--------------------------------------------------------------------------
 
     FREE_WORKSPACE;
-    printf ("\n%s: all tests passed\n\n", __FILE__) ;
+    printf ("\n%s: all tests passed\n\n", __FILE__);
     return 0;
 }
 

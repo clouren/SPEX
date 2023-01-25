@@ -33,13 +33,13 @@ bool spex_mex_check_for_inf     // true if x can be represented as int64_t
         // Check if inf
         if (mxIsInf (xk))
         {
-            spex_mex_error (1, "A must not have any Inf values") ;
+            spex_mex_error (1, "A must not have any Inf values");
         }
 
         // Check if NAN
         if (mxIsNaN (xk))
         {
-            spex_mex_error (1, "A must not have any NaN values") ;
+            spex_mex_error (1, "A must not have any NaN values");
         }
 
         // Check if int64
@@ -62,6 +62,6 @@ bool spex_mex_check_for_inf     // true if x can be represented as int64_t
         }
     }
 
-    return (x_is_int64) ;
+    return (x_is_int64);
 }
 

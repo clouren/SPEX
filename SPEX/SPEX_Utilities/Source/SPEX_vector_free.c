@@ -19,7 +19,7 @@ SPEX_info SPEX_vector_free
 )
 {
 
-    if (!spex_initialized ( )) { return (SPEX_PANIC) ; } ;
+    if (!spex_initialized ( )) { return (SPEX_PANIC); } ;
     if(v_handle == NULL || (*v_handle) == NULL) {return SPEX_OK;}
     spex_delete_mpz_array(&((*v_handle)->x), (*v_handle)->nzmax);
     SPEX_MPQ_CLEAR((*v_handle)->scale);

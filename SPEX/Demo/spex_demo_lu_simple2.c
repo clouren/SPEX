@@ -48,7 +48,7 @@ int main (int argc, char **argv)
     char *mat_name = NULL, *rhs_name = NULL;
     if (argc < 3)
     { 
-        perror ("usage: spex_demo_lu_simple2 matfile rhsfile") ;
+        perror ("usage: spex_demo_lu_simple2 matfile rhsfile");
         return 0 ;
     }
 
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 
     FREE_WORKSPACE;
 
-    printf ("\n%s: all tests passed\n\n", __FILE__) ;
+    printf ("\n%s: all tests passed\n\n", __FILE__);
     return 0;
 }
 
