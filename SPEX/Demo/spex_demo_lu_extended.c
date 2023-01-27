@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/spex_lu_demo.c: example of extended SPEX_LU call for double mat.
+// SPEX_LU/Demo/spex_demo_lu_extended.c: example of extended SPEX_LU call for 
+//                                       double mat.
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2022, Chris Lourenco, Jinhao Chen,

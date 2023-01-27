@@ -47,9 +47,10 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wredundant-decls -Wnested-externs -Wdisabled-optimization -std=c99 \
         -Wno-unused-parameter \
 	-I../Include/ \
+	-I../Demo/ \
 	-I../SPEX_Utilities/Source/ \
-	-I../SPEX_Cholesky/Source/ -I../SPEX_Cholesky/Demo/ \
-	-I../SPEX_LU/Source -I../SPEX_LU/Demo \
+	-I../SPEX_Cholesky/Source/ \
+	-I../SPEX_LU/Source  \
 	-I../SPEX_Update/Source \
         -I../../SuiteSparse_config -I../../COLAMD/Include \
 	-I../../AMD/Include \
@@ -257,10 +258,10 @@ runtests: runtests4llu runtests4luu runtests4chol
 
 # only run test for SPEX_LU
 runtests4llu: all
-	- ./spexlu_demo p 2 q 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu1.out
-	- ./spexlu_demo p 3 q 2 o 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu2.out
-	- ./spexlu_demo p 4 q 3 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt > lu3.out
-	- ./spexlu_demo p 5 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu4.out
+	- ./spex_demo_lu_extended p 2 q 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu1.out
+	- ./spex_demo_lu_extended p 3 q 2 o 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu2.out
+	- ./spex_demo_lu_extended p 4 q 3 o 1 f ../ExampleMats/test.mat.txt ../ExampleMats/test.rhs.txt > lu3.out
+	- ./spex_demo_lu_extended p 5 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
 	- ./tcov_for_lu > test_for_lu.out
 	- ./tcov_for_lu 0 1 1 > lu5.out
 
@@ -272,7 +273,7 @@ runtests4luu: all
 
 # only run test for SPEX_Cholesky
 runtests4chol: all
-	- ./tcov_for_cholesky ../ExampleMats/872.mat.txt > test_for_cholesky.out
+	- ./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
 
 #-------------------------------------------------------------------------------
 
