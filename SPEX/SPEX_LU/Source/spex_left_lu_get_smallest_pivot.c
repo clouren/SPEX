@@ -86,7 +86,7 @@ SPEX_info spex_left_lu_get_smallest_pivot
     {
         inew = xi[i];
         // check if inew can be pivotal
-        SPEX_MPZ_CMPabs(&r, small, x->x.mpz[inew]);
+        SPEX_MPZ_CMPABS(&r, small, x->x.mpz[inew]);
         if (pivs[inew] < 0 && r > 0)
         {
             SPEX_MPZ_SGN(&sgn, x->x.mpz[inew]);

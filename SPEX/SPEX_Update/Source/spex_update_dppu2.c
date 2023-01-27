@@ -103,7 +103,7 @@ SPEX_info spex_update_dppu2
         {
             // pending_scale = sd(k)/Uk_dense_row[Q[k]]
             SPEX_MPQ_SET_Z(pending_scale, sd[k]);
-            SPEX_MPQ_SET_Den(pending_scale, Uk_dense_row->x[Qk]);
+            SPEX_MPQ_SET_DEN(pending_scale, Uk_dense_row->x[Qk]);
             SPEX_MPQ_CANONICALIZE(pending_scale);
 
             // scale entries in frames k+1:n-2
@@ -190,7 +190,7 @@ SPEX_info spex_update_dppu2
             // get the scale for entries between frames k and ks % O(1) time
             // pending_scale = sd(k)/sd (ks);
             SPEX_MPQ_SET_Z(pending_scale, sd[k]);
-            SPEX_MPQ_SET_Den(pending_scale, sd[tmp_ks]);
+            SPEX_MPQ_SET_DEN(pending_scale, sd[tmp_ks]);
             SPEX_MPQ_CANONICALIZE(pending_scale);
             // scale entries in frames k+1:ks-1
             for (j = k+1; j < tmp_ks; j++)

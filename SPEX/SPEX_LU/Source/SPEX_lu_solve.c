@@ -114,7 +114,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     // x = Q*b2/scale
     //--------------------------------------------------------------------------
     // set scale = b->scale * rhos[n-1] / A_scale
-    SPEX_MPQ_SET_z(b2->scale, F->rhos->x.mpz[n-1]);
+    SPEX_MPQ_SET_Z(b2->scale, F->rhos->x.mpz[n-1]);
     SPEX_MPQ_MUL(b2->scale, b2->scale, b->scale);
     SPEX_MPQ_DIV(b2->scale, b2->scale, F->scale_for_A);
 

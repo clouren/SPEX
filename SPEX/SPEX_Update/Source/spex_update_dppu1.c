@@ -151,8 +151,8 @@ SPEX_info spex_update_dppu1
         if (n > k+2) // n-1 > k+1
         {
             // pending_scale = sd(k)/Uk_dense_row[Q[k]]
-            SPEX_MPQ_SET_z(pending_scale, sd[k]);
-            SPEX_MPQ_SET_den(pending_scale, Uk_dense_row->x[Qk]);
+            SPEX_MPQ_SET_Z(pending_scale, sd[k]);
+            SPEX_MPQ_SET_DEN(pending_scale, Uk_dense_row->x[Qk]);
             SPEX_MPQ_CANONICALIZE(pending_scale);
 
             for (j = k+1; j < n-1; j++)
@@ -185,7 +185,7 @@ SPEX_info spex_update_dppu1
         // L(P[n-1],n-1), U(n-1,Q[n-1]) and S for frame n-1
         // ---------------------------------------------------------------------
         // get the scale for IPGE update: pending_scale = sd(n-2)/sd(k-1);
-        SPEX_MPQ_SET_z(pending_scale, sd[n-2]);
+        SPEX_MPQ_SET_Z(pending_scale, sd[n-2]);
         if (k > 0)
         {
             SPEX_MPQ_SET_DEN(pending_scale, sd[k-1]);
@@ -211,7 +211,7 @@ SPEX_info spex_update_dppu1
 
         // S(:,n-1) = [1;1]
         SPEX_MPQ_SET_UI(SL(n-1), 1, 1);
-        SPEX_MPQ_SET_ui(SU(n-1), 1, 1);
+        SPEX_MPQ_SET_UI(SU(n-1), 1, 1);
 
         // reset nnz entries in Uk_dense_row to 0
         SPEX_MPZ_SET_UI(Uk_dense_row->x[Qk], 0);
@@ -235,7 +235,7 @@ SPEX_info spex_update_dppu1
     {
         SPEX_MPQ_SET_Z(pending_scale, sd[k-1]);
     }
-    SPEX_MPQ_SET_Den(pending_scale, sd[ks-1]);
+    SPEX_MPQ_SET_DEN(pending_scale, sd[ks-1]);
     // remove common factor in mpq_den and mpq_num
     SPEX_MPQ_CANONICALIZE(pending_scale);
 
@@ -409,7 +409,7 @@ SPEX_info spex_update_dppu1
     {
         // get the scale for entries between frames k and ks % O(1) time
         // pending_scale = sd(k)/sd (ks);
-        SPEX_MPQ_SET_z(pending_scale, sd[k]);
+        SPEX_MPQ_SET_Z(pending_scale, sd[k]);
         SPEX_MPQ_SET_DEN(pending_scale, sd[ks]);
         SPEX_MPQ_CANONICALIZE(pending_scale);
 
@@ -451,10 +451,10 @@ SPEX_info spex_update_dppu1
     // Since L(P[ks],k) will be 0 after swapping, the IPGE update for row k of
     // U can be done by multiplying with sd(ks-1)/sd(k-1).
     // get the scale for IPGE update: pending_scale = sd(ks-1)/sd (k-1);
-    SPEX_MPQ_SET_z(pending_scale, sd[ks-1]);
+    SPEX_MPQ_SET_Z(pending_scale, sd[ks-1]);
     if (k > 0)
     {
-        SPEX_MPQ_SET_Den(pending_scale, sd[k-1]);
+        SPEX_MPQ_SET_DEN(pending_scale, sd[k-1]);
         SPEX_MPQ_CANONICALIZE(pending_scale);
     }
     // S(2, ks) = S(2, ks)*pending_scale
@@ -628,7 +628,7 @@ SPEX_info spex_update_dppu1
 
         // skip the rest of IPGE iterations
         // pending_scale = sd(ks-1)/sd(k);
-        SPEX_MPQ_SET_z(pending_scale, sd[ks-1]);
+        SPEX_MPQ_SET_Z(pending_scale, sd[ks-1]);
         SPEX_MPQ_SET_DEN(pending_scale, sd[k]);
         SPEX_MPQ_CANONICALIZE(pending_scale);
         // set denominator of S(1,ks) = 1

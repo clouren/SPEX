@@ -129,7 +129,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
     SPEX_MPQ_SET_Z(pending_scale, sv_x->x[perm_j]);
     if (real_hj > -1)
     {
-        SPEX_MPQ_SET_Den(pending_scale, sd[real_hj]);
+        SPEX_MPQ_SET_DEN(pending_scale, sd[real_hj]);
         SPEX_MPQ_CANONICALIZE(pending_scale);
     }
 
