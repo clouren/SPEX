@@ -1,10 +1,11 @@
 SPEX_QR: Integer-Preserving QR Factorization
 
-Copyright (c) 2021-2022, Chris Lourenco, Lorena Mejia Domenzain,
+Copyright (c) 2021-2023, Christopher Lourenco, Lorena Mejia Domenzain,
 Timothy A. Davis, and Erick Moreno-Centeno.
 
-https://github.com/clouren/SPEX/SPEX_QR
-http://suitesparse.com
+Available at:
+    https://github.com/clouren/SPEX/SPEX_QR
+    http://suitesparse.com
 
 Contact Chris Lourenco, chrisjlourenco@gmail.com, or Tim Davis
 (timdavis@aldenmath.com or DrTimothyAldenDavis@gmail.com) for a commercial

@@ -2,7 +2,7 @@
 # SuiteSparse/SPEX/CMakeLists.txt:  cmake for SPEX
 #-------------------------------------------------------------------------------
 
-# Copyright (c) 2022, Timothy A. Davis.
+# Copyright (c) 2022-2023, Timothy A. Davis.
 # All Rights Reserved.
 # SPDX-License-Identifier: BSD-3-clause
 
