@@ -92,8 +92,8 @@ SPEX_info spex_cholesky_factor
     F->kind = SPEX_CHOLESKY_FACTORIZATION;
 
     // Allocate and set scale_for_A
-    SPEX_CHECK( SPEX_mpq_init(F->scale_for_A) );
-    SPEX_CHECK( SPEX_mpq_set (F->scale_for_A, A->scale) );
+    SPEX_MPQ_INIT(F->scale_for_A);
+    SPEX_MPQ_SET(F->scale_for_A, A->scale);
 
     // Inverse pivot ordering
     F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );

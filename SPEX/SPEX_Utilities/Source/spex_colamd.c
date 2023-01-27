@@ -44,7 +44,7 @@ SPEX_info spex_colamd
     perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
     if (perm == NULL)
     {
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return (SPEX_OUT_OF_MEMORY);
     }
 
@@ -54,7 +54,7 @@ SPEX_info spex_colamd
     if (!A2)
     {
         // out of memory
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return (SPEX_OUT_OF_MEMORY);
     }
 
@@ -77,7 +77,7 @@ SPEX_info spex_colamd
     if (!colamd_result)
     {
         // COLAMD failed: matrix is invalid
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return (SPEX_INCORRECT_INPUT);
     }
 

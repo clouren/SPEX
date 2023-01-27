@@ -69,15 +69,15 @@ SPEX_info SPEX_QR_IPGE
                               SPEX_2D(Q, j, i, mpz),
                               SPEX_2D(R, k, k, mpz));
                 // Q(j,i) = Q(j,i) - R(k,i)*Q(j,k)
-                SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(Q, j, i, mpz),
+                SPEX_MPZ_SUBMUL( SPEX_2D(Q, j, i, mpz),
                                  SPEX_2D(R, k, i, mpz),
-                                 SPEX_2D(Q, j, k, mpz)));
+                                 SPEX_2D(Q, j, k, mpz));
                 if (k > 0)
                 {
                     // Q(j,i) = Q(j,i)/R(k-1,k-1)
-                    SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(Q, j, i, mpz),
+                    SPEX_MPZ_DIVEXACT( SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(Q, j, i, mpz),
-                                       SPEX_2D(R, k-1, k-1, mpz)));
+                                       SPEX_2D(R, k-1, k-1, mpz));
                 }
             }
         }

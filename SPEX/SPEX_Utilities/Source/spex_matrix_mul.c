@@ -43,7 +43,7 @@ SPEX_info spex_matrix_mul   // multiplies x by a scalar
     for (int64_t i = 0; i < nz; i++)
     {
         // x[i] = x[i]*scalar
-        SPEX_CHECK( SPEX_mpz_mul( x->x.mpz[i], x->x.mpz[i], scalar));
+        SPEX_MPZ_MUL( x->x.mpz[i], x->x.mpz[i], scalar);
     }
 
     return (SPEX_OK);

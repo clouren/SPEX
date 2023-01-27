@@ -104,7 +104,7 @@ SPEX_info SPEX_lu_analyze
             if (S->Q_perm == NULL)
             {
                 // out of memory
-                SPEX_FREE_ALL ;
+                SPEX_FREE_ALL;
                 return (SPEX_OUT_OF_MEMORY);
             }
             for (i = 0; i < n+1; i++)

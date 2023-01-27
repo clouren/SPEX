@@ -35,7 +35,7 @@ SPEX_info spex_update_insert_new_entry
     int r;
     int64_t p;
 
-    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, S, 1, 1));
+    SPEX_MPQ_CMP_UI(&r, S, 1, 1);
     if (r != 0) //S != 1
     {
         for (p = 0; p < v->nz; p++)
@@ -43,10 +43,10 @@ SPEX_info spex_update_insert_new_entry
             // Since entries in v will be integer after scale, we can
             // perform division first to make it small, and this
             // division will preserve integer propety
-            SPEX_CHECK(SPEX_mpz_divexact(v->x[p], v->x[p], SPEX_MPQ_DEN(S)));
+            SPEX_MPZ_DIVEXACT(v->x[p], v->x[p], SPEX_MPQ_DEN(S));
             SPEX_MPZ_MUL(v->x[p], v->x[p], SPEX_MPQ_NUM(S));
         }
-        SPEX_CHECK(SPEX_mpq_set_ui(S, 1, 1));
+        SPEX_MPQ_SET_UI(S, 1, 1);
     }
     // append vi to v
     if (v->nz == v->nzmax)
@@ -55,7 +55,7 @@ SPEX_info spex_update_insert_new_entry
         SPEX_CHECK(SPEX_vector_realloc(v, v->nzmax+1, option));
     }
     v->i[v->nz] = i;
-    SPEX_CHECK(SPEX_mpz_swap(v->x[v->nz], vi));
+    SPEX_MPZ_SWAP(v->x[v->nz], vi);
     v->nz ++;
 
     return SPEX_OK;

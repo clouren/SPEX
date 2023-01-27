@@ -54,7 +54,7 @@ SPEX_info spex_cholesky_etree
     w = (int64_t*) SPEX_malloc( n * sizeof(int64_t) );
     if (!parent || !w)
     {
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
     ancestor = w ;

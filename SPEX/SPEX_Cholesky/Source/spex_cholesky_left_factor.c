@@ -160,7 +160,7 @@ SPEX_info spex_cholesky_left_factor
     for (i = 0; i < n; i++)
     {
         // Allocate memory for entries of x
-        SPEX_CHECK(SPEX_mpz_init2(x->x.mpz[i], estimate));
+        SPEX_MPZ_INIT2(x->x.mpz[i], estimate);
     }
 
     //--------------------------------------------------------------------------
@@ -197,10 +197,10 @@ SPEX_info spex_cholesky_left_factor
 
         // Set the pivot element If this element is equal to zero, no pivot
         // element exists and the matrix is either not SPD or singular
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k]));
+        SPEX_MPZ_SGN(&sgn, x->x.mpz[k]);
         if (sgn != 0)
         {
-            SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
+            SPEX_MPZ_SET(rhos->x.mpz[k], x->x.mpz[k]);
         }
         else
         {
@@ -221,10 +221,10 @@ SPEX_info spex_cholesky_left_factor
                 size = mpz_sizeinbase(x->x.mpz[jnew],2);
 
                 // GMP manual: Allocated size should be size+2
-                SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[lnz], size+2));
+                SPEX_MPZ_INIT2(L->x.mpz[lnz], size+2);
 
                 // Place the x value of this nonzero in row jnew of L
-                SPEX_CHECK(SPEX_mpz_set(L->x.mpz[lnz],x->x.mpz[jnew]));
+                SPEX_MPZ_SET(L->x.mpz[lnz],x->x.mpz[jnew]);
 
                 // Increment lnz
                 lnz += 1;

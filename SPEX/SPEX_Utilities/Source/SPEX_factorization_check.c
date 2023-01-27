@@ -112,14 +112,14 @@ SPEX_info SPEX_factorization_check
         {
             // row indices out of range
             SPEX_PR1 ("index out of range: P(%ld) = %ld\n", j, i);
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return (SPEX_INCORRECT_INPUT);
         }
         else if (work [i] == 1)
         {
             // duplicate
             SPEX_PR1 ("duplicate index: P(%ld) = %ld\n", j, i);
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return (SPEX_INCORRECT_INPUT);
         }
         else if (F->Pinv_perm[i] != j)
@@ -127,7 +127,7 @@ SPEX_info SPEX_factorization_check
             // P_perm and Pinv_perm not mutually inverse
             SPEX_PR1 ("unmatched P and Pinv: Pinv(P(%ld)) = %ld\n", j,
                 F->Pinv_perm[i]);
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return (SPEX_INCORRECT_INPUT);
         }
         work[i] = 1;
@@ -144,14 +144,14 @@ SPEX_info SPEX_factorization_check
             {
                 // row indices out of range
                 SPEX_PR1 ("index out of range: Q(%ld) = %ld\n", j, i);
-                SPEX_FREE_ALL ;
+                SPEX_FREE_ALL;
                 return (SPEX_INCORRECT_INPUT);
             }
             else if (work [i] == 2)
             {
                 // duplicate
                 SPEX_PR1 ("duplicate index: Q(%ld) = %ld\n", j, i);
-                SPEX_FREE_ALL ;
+                SPEX_FREE_ALL;
                 return (SPEX_INCORRECT_INPUT);
             }
             else if (F->updatable && F->Qinv_perm[i] != j)
@@ -159,7 +159,7 @@ SPEX_info SPEX_factorization_check
                 // Q_perm and Qinv_perm not mutually inverse
                 SPEX_PR1 ("unmatched Q and Qinv: Qinv(Q(%ld)) = %ld\n", j,
                     F->Qinv_perm[i]);
-                SPEX_FREE_ALL ;
+                SPEX_FREE_ALL;
                 return (SPEX_INCORRECT_INPUT);
             }
             work[i] = 2;
@@ -177,7 +177,7 @@ SPEX_info SPEX_factorization_check
 
     if (F->updatable)
     {
-        SPEX_CHECK(SPEX_mpz_init(tmpz));
+        SPEX_MPZ_INIT(tmpz);
         for (i = 0; i < n; i++)
         {
             // first entry in the nnz pattern of i-th column of L must be pivot
@@ -190,11 +190,11 @@ SPEX_info SPEX_factorization_check
             else
             {
                 // i-th pivot of L should be the same as rhos[i]
-                SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->L->v[i]->x[0],
-                    SPEX_MPQ_DEN(F->L->v[i]->scale)));
+                SPEX_MPZ_DIVEXACT(tmpz, F->L->v[i]->x[0],
+                    SPEX_MPQ_DEN(F->L->v[i]->scale));
                 SPEX_MPZ_MUL(tmpz, tmpz,
                     SPEX_MPQ_NUM(F->L->v[i]->scale));
-                SPEX_CHECK(SPEX_mpz_cmp(&r, tmpz, F->rhos->x.mpz[i]));
+                SPEX_MPZ_CMP(&r, tmpz, F->rhos->x.mpz[i]);
                 if (r != 0)
                 {
                     SPEX_PR1("incorrect pivot: L(%ld, %ld) != rhos(%ld) \n",
@@ -217,11 +217,11 @@ SPEX_info SPEX_factorization_check
                 else
                 {
                     // i-th pivot of U should be the same as rhos[i]
-                    SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->U->v[i]->x[0],
-                        SPEX_MPQ_DEN(F->U->v[i]->scale)));
+                    SPEX_MPZ_DIVEXACT(tmpz, F->U->v[i]->x[0],
+                        SPEX_MPQ_DEN(F->U->v[i]->scale));
                     SPEX_MPZ_MUL(tmpz, tmpz,
                         SPEX_MPQ_NUM(F->U->v[i]->scale));
-                    SPEX_CHECK(SPEX_mpz_cmp(&r, tmpz, F->rhos->x.mpz[i]));
+                    SPEX_MPZ_CMP(&r, tmpz, F->rhos->x.mpz[i]);
                     if (r != 0)
                     {
                         SPEX_PR1("incorrect pivot: U(%ld, %ld) != rhos(%ld) \n",
@@ -250,7 +250,7 @@ SPEX_info SPEX_factorization_check
             }
 
             // i-th pivot of L should be the same as rhos[i]
-            SPEX_CHECK(SPEX_mpz_cmp(&r, F->L->x.mpz[p], F->rhos->x.mpz[i]));
+            SPEX_MPZ_CMP(&r, F->L->x.mpz[p], F->rhos->x.mpz[i]);
             if (r != 0)
             {
                 SPEX_PR1("incorrect pivot: L(%ld, %ld) != rhos(%ld) \n",
@@ -275,7 +275,7 @@ SPEX_info SPEX_factorization_check
                 }
 
                 // i-th pivot of U should be the same as rhos[i]
-                SPEX_CHECK(SPEX_mpz_cmp(&r, F->U->x.mpz[p], F->rhos->x.mpz[i]));
+                SPEX_MPZ_CMP(&r, F->U->x.mpz[p], F->rhos->x.mpz[i]);
                 if (r != 0)
                 {
                     SPEX_PR1("incorrect pivot: U(%ld, %ld) != rhos(%ld) \n",

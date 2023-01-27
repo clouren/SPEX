@@ -88,8 +88,8 @@ SPEX_info SPEX_lu_factorize
     // set factorization kind
     F->kind = SPEX_LU_FACTORIZATION;
     // Allocate and set scale_for_A
-    SPEX_CHECK(SPEX_mpq_init(F->scale_for_A));
-    SPEX_CHECK(SPEX_mpq_set (F->scale_for_A, A->scale));
+    SPEX_MPQ_INIT(F->scale_for_A);
+    SPEX_MPQ_SET (F->scale_for_A, A->scale);
 
     // Inverse pivot ordering
     F->Pinv_perm = (int64_t*) SPEX_malloc (n * sizeof(int64_t));
@@ -182,7 +182,7 @@ SPEX_info SPEX_lu_factorize
     for (i = 0; i < n; i++)
     {
         // Allocate memory for entries of x
-        SPEX_CHECK(SPEX_mpz_init2(x->x.mpz[i], estimate));
+        SPEX_MPZ_INIT2(x->x.mpz[i], estimate);
     }
 
     //--------------------------------------------------------------------------
@@ -245,11 +245,11 @@ SPEX_info SPEX_lu_factorize
                 // Place the i location of the unz nonzero
                 F->U->i[unz] = jnew;
                 // Find the size in bits of x[j]
-                SPEX_CHECK(SPEX_mpz_sizeinbase(&size, x->x.mpz[jnew], 2));
+                SPEX_MPZ_SIZEINBASE(&size, x->x.mpz[jnew], 2);
                 // GMP manual: Allocated size should be size+2
-                SPEX_CHECK(SPEX_mpz_init2(F->U->x.mpz[unz], size+2));
+                SPEX_MPZ_INIT2(F->U->x.mpz[unz], size+2);
                 // Place the x value of the unz nonzero
-                SPEX_CHECK(SPEX_mpz_set(F->U->x.mpz[unz], x->x.mpz[jnew]));
+                SPEX_MPZ_SET(F->U->x.mpz[unz], x->x.mpz[jnew]);
                 // Increment unz
                 unz++;
             }
@@ -262,11 +262,11 @@ SPEX_info SPEX_lu_factorize
                 // Place the i location of the lnz nonzero
                 F->L->i[lnz] = jnew;
                 // Set the size of x[j]
-                SPEX_CHECK(SPEX_mpz_sizeinbase(&size, x->x.mpz[jnew], 2));
+                SPEX_MPZ_SIZEINBASE(&size, x->x.mpz[jnew], 2);
                 // GMP manual: Allocated size should be size+2
-                SPEX_CHECK(SPEX_mpz_init2(F->L->x.mpz[lnz], size+2));
+                SPEX_MPZ_INIT2(F->L->x.mpz[lnz], size+2);
                 // Place the x value of the lnz nonzero
-                SPEX_CHECK(SPEX_mpz_set(F->L->x.mpz[lnz], x->x.mpz[jnew]));
+                SPEX_MPZ_SET(F->L->x.mpz[lnz], x->x.mpz[jnew]);
                 // Increment lnz
                 lnz++;
             }

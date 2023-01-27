@@ -52,7 +52,7 @@ SPEX_info spex_left_lu_get_largest_pivot
     (*pivot) = -1 ;
     mpz_t big ;
     SPEX_MPZ_SET_NULL (big);
-    SPEX_CHECK (SPEX_mpz_init (big));
+    SPEX_MPZ_INIT (big);
 
     //--------------------------------------------------------------------------
     // Iterate accross the nonzeros in x
@@ -63,13 +63,13 @@ SPEX_info spex_left_lu_get_largest_pivot
         // Location of the ith nonzero
         inew = xi[i];
         // inew can be pivotal
-        SPEX_CHECK(SPEX_mpz_cmpabs(&r, big, x->x.mpz[inew]));
+        SPEX_MPZ_CMPABS(&r, big, x->x.mpz[inew]);
         if (pivs[inew] < 0 && r < 0)
         {
             // Current largest pivot location
             (*pivot) = inew;
             // Current largest pivot value
-            SPEX_CHECK(SPEX_mpz_set(big, x->x.mpz[inew]));
+            SPEX_MPZ_SET(big, x->x.mpz[inew]);
         }
     }
 

@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALL ;
+#define SPEX_FREE_ALL;
 
 #include "spex_cholesky_internal.h"
 
@@ -20,6 +20,7 @@
  * of the system Ax = (det A)*b L is the lower triangular REF Cholesky factor of
  * A. It is not modified on input/output
  */
+ 
 SPEX_info spex_cholesky_backward_sub
 (
     // Output
@@ -50,18 +51,18 @@ SPEX_info spex_cholesky_backward_sub
             for (p = L->p[j]+1; p < L->p[j+1]; p++)
             {
                 // If either x[p,k] or L[p,k] is 0, skip the operation
-                SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, L->i[p], k, mpz)));
-                SPEX_CHECK(SPEX_mpz_sgn(&sgn2, L->x.mpz[p]));
+                SPEX_MPZ_SGN(&sgn, SPEX_2D(x, L->i[p], k, mpz));
+                SPEX_MPZ_SGN(&sgn2, L->x.mpz[p]);
                 if (sgn == 0 || sgn2 ==0 ) continue;
 
                 // Compute x[j,k] = x[j,k] - L[p,k]*x[p,k]
-                SPEX_CHECK( SPEX_mpz_submul( SPEX_2D(x, j, k, mpz), L->x.mpz[p],
-                                      SPEX_2D( x, L->i[p], k, mpz)));
+                SPEX_MPZ_SUBMUL(SPEX_2D(x, j, k, mpz),
+                                L->x.mpz[p], SPEX_2D(x, L->i[p], k, mpz));
             }
 
             // Compute x[j,k] = x[j,k] / L[j,j]
-            SPEX_CHECK( SPEX_mpz_divexact( SPEX_2D(x, j, k, mpz),
-                        SPEX_2D(x, j, k, mpz), L->x.mpz[ L->p[j]]));
+            SPEX_MPZ_DIVEXACT(SPEX_2D(x, j, k, mpz),
+                              SPEX_2D(x, j, k, mpz), L->x.mpz[ L->p[j]]);
 
         }
     }

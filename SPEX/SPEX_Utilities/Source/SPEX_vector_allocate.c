@@ -48,7 +48,7 @@ SPEX_info SPEX_vector_allocate
 
     // initialize and set v->scale = 1
     SPEX_CHECK(spex_create_mpq(v->scale));
-    SPEX_CHECK(SPEX_mpq_set_ui(v->scale, 1, 1));
+    SPEX_MPQ_SET_UI(v->scale, 1, 1);
 
     // if nzmax == 0
     if (nzmax == 0)

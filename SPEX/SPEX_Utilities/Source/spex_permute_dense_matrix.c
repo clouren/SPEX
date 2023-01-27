@@ -54,8 +54,8 @@ SPEX_info spex_permute_dense_matrix
     {
         for (int64_t j = 0 ; j < n ; j++)
         {
-            SPEX_CHECK(SPEX_mpz_set(SPEX_2D(Atmp,  P[i], j, mpz),
-                                    SPEX_2D(A_in,    i , j, mpz)));
+            SPEX_MPZ_SET(SPEX_2D(Atmp,  P[i], j, mpz),
+                                    SPEX_2D(A_in,    i , j, mpz));
         }
     }
 

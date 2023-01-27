@@ -33,20 +33,20 @@ SPEX_info spex_expand_mpq_array
     SPEX_info info ;
     mpz_t temp;
     SPEX_MPZ_SET_NULL(temp);
-    SPEX_CHECK (SPEX_mpz_init(temp));
+    SPEX_MPZ_INIT(temp);
 
     // Find LCM of denominators of x
-    SPEX_CHECK(SPEX_mpz_set(temp,SPEX_MPQ_DEN(x[0])));
+    SPEX_MPZ_SET(temp,SPEX_MPQ_DEN(x[0]));
     for (int64_t i = 1; i < n; i++)
     {
-        SPEX_CHECK(SPEX_mpz_lcm(temp, SPEX_MPQ_DEN(x[i]), temp));
+        SPEX_MPZ_LCM(temp, SPEX_MPQ_DEN(x[i]), temp);
     }
-    SPEX_CHECK(SPEX_mpq_set_z(scale,temp));
+    SPEX_MPQ_SET_Z(scale,temp);
 
     for (int64_t i = 0; i < n; i++)
     {
         // x_out[i] = x[i]*temp
-        SPEX_CHECK(SPEX_mpz_divexact(x_out[i], temp, SPEX_MPQ_DEN(x[i])));
+        SPEX_MPZ_DIVEXACT(x_out[i], temp, SPEX_MPQ_DEN(x[i]));
         SPEX_MPZ_MUL(x_out[i], x_out[i], SPEX_MPQ_NUM(x[i]));
     }
     SPEX_FREE_ALL;

@@ -63,7 +63,7 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
             // of the update algorithm is alread more than O(n). The speedup
             // provided by traversing nnz pattern will not be significant.
             // skip if x(P[j]) == 0
-            SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[P[j]]));
+            SPEX_MPZ_SGN(&sgn, sv_x->x[P[j]]);
             if (sgn == 0)       {continue; }
 
             // perform j-th IPGE update for x
@@ -75,7 +75,7 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
         // double check if i_2ndlast gives the correct index for 2nd last nnz
         if(i_2ndlast != NULL && *i_2ndlast != -1)
         {
-            SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[*i_2ndlast]));
+            SPEX_MPZ_SGN(&sgn, sv_x->x[*i_2ndlast]);
             if (sgn == 0 || *i_2ndlast < k) // needs to update i_2ndlast
             {
                 int64_t p, real_j;
@@ -96,7 +96,7 @@ SPEX_info spex_update_triangular_solve // perform REF triangular solve for LDx=v
                         continue;
                     }
 
-                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[j]));
+                    SPEX_MPZ_SGN(&sgn, sv_x->x[j]);
                     if (sgn == 0)
                     {
                         // remove it from nnz pattern

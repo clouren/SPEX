@@ -38,7 +38,7 @@ SPEX_info spex_amd
     perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
     if (perm == NULL)
     {
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return (SPEX_OUT_OF_MEMORY);
     }
 
@@ -58,7 +58,7 @@ SPEX_info spex_amd
     if (!(amd_result == AMD_OK || amd_result == AMD_OK_BUT_JUMBLED))
     {
         // AMD failed: either out of memory, or bad input
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         if (amd_result == AMD_OUT_OF_MEMORY)
         {
             // AMD ran out of memory

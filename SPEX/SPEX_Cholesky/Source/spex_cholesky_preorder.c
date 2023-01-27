@@ -84,7 +84,7 @@ SPEX_info spex_cholesky_preorder
         SPEX_calloc(1, sizeof(SPEX_symbolic_analysis_struct));
     if (S == NULL)
     {
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return (SPEX_OUT_OF_MEMORY);
     }
 
@@ -116,7 +116,7 @@ SPEX_info spex_cholesky_preorder
             S->P_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
             if (S->P_perm == NULL)
             {
-                SPEX_FREE_ALL ;
+                SPEX_FREE_ALL;
                 return (SPEX_OUT_OF_MEMORY);
             }
 
@@ -164,7 +164,7 @@ SPEX_info spex_cholesky_preorder
     S->Pinv_perm = (int64_t*)SPEX_calloc(n, sizeof(int64_t));
     if(!(S->Pinv_perm))
     {
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return (SPEX_OUT_OF_MEMORY);
     }
 

@@ -49,9 +49,9 @@ SPEX_info SPEX_Qtb
         {
             for (j = 0; j < Q->m; j++)
             {
-                SPEX_CHECK( SPEX_mpz_addmul( SPEX_2D(b_new,i,k,mpz),
-                                             SPEX_2D(b, j, k, mpz),
-                                             SPEX_2D(Q, j, i, mpz)));
+                SPEX_MPZ_ADDMUL( SPEX_2D(b_new,i,k,mpz),
+                                 SPEX_2D(b, j, k, mpz),
+                                 SPEX_2D(Q, j, i, mpz));
             }
         }
     }

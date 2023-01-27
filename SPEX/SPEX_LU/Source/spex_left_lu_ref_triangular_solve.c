@@ -143,7 +143,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     // Reset x[i] = 0 for all i in nonzero pattern xi [top..n-1]
     for (i = top; i < n; i++)
     {
-        SPEX_CHECK (SPEX_mpz_set_ui (x_mpz[xi [i]], 0));
+        SPEX_MPZ_SET_UI (x_mpz[xi [i]], 0);
     }
     // Set x[col] = 0.  A(col,col) is the diagonal entry in the original
     // matrix.  The pivot search prefers to select the diagonal, if it is
@@ -151,7 +151,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     // not in the pattern xi [top..n-1].  The value x[col] is set to zero
     // here, in case the entry A(col,col) is not present, so that the pivot
     // search query the value of the diagonal.
-    SPEX_CHECK(SPEX_mpz_set_ui(x_mpz[col], 0));
+    SPEX_MPZ_SET_UI(x_mpz[col], 0);
 
     // Reset h[i] = -1 for all i in nonzero pattern xi [top..n-1]
     for (i = top; i < n; i++)
@@ -163,7 +163,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     for (i = A->p[col]; i < A->p[col + 1]; i++)
     {
         // Value of the ith nonzero
-        SPEX_CHECK(SPEX_mpz_set(x_mpz[A->i[i]], Ax_mpz[i]));
+        SPEX_MPZ_SET(x_mpz[A->i[i]], Ax_mpz[i]);
     }
 
 
@@ -176,7 +176,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
         j = xi[p];                         // First nonzero term
         jnew = pinv[j];                    // Location of nonzero term
         // Check if x[j] == 0, if so continue to next nonzero
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x_mpz[j]));
+        SPEX_MPZ_SGN(&sgn, x_mpz[j]);
         if (sgn == 0) {continue;}          // x[j] = 0 no work must be done
 
         // x[j] is nonzero
@@ -193,8 +193,8 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                 if (h[j] > -1)
                 {
                     // x[j] = x[j] / rho[h[j]]
-                    SPEX_CHECK(SPEX_mpz_divexact(x_mpz[j],x_mpz[j],
-                        rhos_mpz[h[j]]));
+                    SPEX_MPZ_DIVEXACT(x_mpz[j],x_mpz[j],
+                        rhos_mpz[h[j]]);
                 }
             }
 
@@ -210,11 +210,11 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                 if (inew > jnew)
                 {
                     /*************** If lij==0 then no update******************/
-                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, Lx_mpz[m]));
+                    SPEX_MPZ_SGN(&sgn, Lx_mpz[m]);
                     if (sgn == 0) {continue;}
 
                     // lij is nonzero. Check if x[i] is nonzero
-                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, x_mpz[i]));
+                    SPEX_MPZ_SGN(&sgn, x_mpz[i]);
 
                     //----------------------------------------------------------
                     /************* lij is nonzero, x[i] is zero****************/
@@ -228,8 +228,8 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                         if (jnew < 1)
                         {
                             // x[i] = 0 - lij*x[j]
-                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
-                                x_mpz[j]));
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                                x_mpz[j]);
                             h[i] = jnew;   // Entry is up to date
                         }
 
@@ -237,12 +237,12 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                         else
                         {
                             // x[i] = 0 - lij*x[j]
-                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
-                                x_mpz[j]));
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                                x_mpz[j]);
 
                             // x[i] = x[i] / rho[j-1]
-                            SPEX_CHECK(SPEX_mpz_divexact(x_mpz[i], x_mpz[i],
-                                rhos_mpz[jnew-1]));
+                            SPEX_MPZ_DIVEXACT(x_mpz[i], x_mpz[i],
+                                rhos_mpz[jnew-1]);
                             h[i] = jnew;   // Entry is up to date
                         }
                     }
@@ -260,8 +260,8 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                             SPEX_MPZ_MUL(x_mpz[i], x_mpz[i], rhos_mpz[0]);
 
                             // x[i] = x[i] - lij*xj
-                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
-                                x_mpz[j]));
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                                x_mpz[j]);
                             h[i] = jnew;   // Entry is now up to date
                         }
                         // There is a previous pivot
@@ -276,18 +276,18 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                                 if (h[i] > -1)
                                 {
                                     // x[i] = x[i] / rho[h[i]]
-                                    SPEX_CHECK(SPEX_mpz_divexact(x_mpz[i],
-                                        x_mpz[i], rhos_mpz[h[i]]));
+                                    SPEX_MPZ_DIVEXACT(x_mpz[i],
+                                        x_mpz[i], rhos_mpz[h[i]]);
                                 }
                             }
                             // x[i] = x[i] * rho[j]
                             SPEX_MPZ_MUL(x_mpz[i], x_mpz[i], rhos_mpz[jnew]);
                             // x[i] = x[i] - lij*xj
-                            SPEX_CHECK(SPEX_mpz_submul(x_mpz[i], Lx_mpz[m],
-                                x_mpz[j]));
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                                x_mpz[j]);
                             // x[i] = x[i] / rho[j-1]
-                            SPEX_CHECK(SPEX_mpz_divexact(x_mpz[i], x_mpz[i],
-                                rhos_mpz[jnew-1]));
+                            SPEX_MPZ_DIVEXACT(x_mpz[i], x_mpz[i],
+                                rhos_mpz[jnew-1]);
                             h[i] = jnew;   // Entry is up to date
                         }
                     }
@@ -306,8 +306,8 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                 if (h[j] > -1)
                 {
                     // x[j] = x[j] / rho[h[j]]
-                    SPEX_CHECK(SPEX_mpz_divexact(x_mpz[j], x_mpz[j],
-                        rhos_mpz[h[j]]));
+                    SPEX_MPZ_DIVEXACT(x_mpz[j], x_mpz[j],
+                        rhos_mpz[h[j]]);
                 }
             }
         }

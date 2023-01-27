@@ -41,13 +41,13 @@ SPEX_info spex_update_backward_sub // performs sparse REF backward substitution
     int64_t i, j, real_i, real_j, p, n = U->n;
     mpz_t *sd = rhos->x.mpz;
     mpz_t tmpz; SPEX_MPZ_SET_NULL(tmpz);
-    SPEX_CHECK(SPEX_mpz_init(tmpz));
+    SPEX_MPZ_INIT(tmpz);
 
     // Start at x[n-1], since x[n] will remain the same
     for (i = n-2; i >= 0; i--)
     {
         // tmpz = 0
-        SPEX_CHECK(SPEX_mpz_set_ui(tmpz, 0));
+        SPEX_MPZ_SET_UI(tmpz, 0);
         real_i = P[i];
 
         // skip the diagonal (pivot entry), which locates at p = 0
@@ -57,22 +57,22 @@ SPEX_info spex_update_backward_sub // performs sparse REF backward substitution
             real_j = P[Q_inv[j]];
 
             // skip if corresponding entry in x is zero
-            SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x[real_j]));
+            SPEX_MPZ_SGN(&sgn, x->x[real_j]);
             if (sgn == 0) {continue;}
 
             // tmpz -= U(i,j)*x[j]
-            SPEX_CHECK(SPEX_mpz_submul(tmpz, U->v[i]->x[p],x->x[real_j]));
+            SPEX_MPZ_SUBMUL(tmpz, U->v[i]->x[p],x->x[real_j]);
         }
         // tmpz = tmpz*S(2,i)
-        SPEX_CHECK(SPEX_mpz_divexact(tmpz, tmpz, SPEX_MPQ_DEN(U->v[i]->scale)));
+        SPEX_MPZ_DIVEXACT(tmpz, tmpz, SPEX_MPQ_DEN(U->v[i]->scale));
         SPEX_MPZ_MUL(tmpz, tmpz, SPEX_MPQ_NUM(U->v[i]->scale));
 
         // x[i] = x[i]*sd[n-1]+tmpz
         SPEX_MPZ_MUL(x->x[real_i], x->x[real_i], sd[n-1]);
-        SPEX_CHECK(SPEX_mpz_add(x->x[real_i], x->x[real_i], tmpz));
+        SPEX_MPZ_ADD(x->x[real_i], x->x[real_i], tmpz);
 
         // x[i] = x[i]/sd[i]
-        SPEX_CHECK(SPEX_mpz_divexact(x->x[real_i], x->x[real_i], sd[i]));
+        SPEX_MPZ_DIVEXACT(x->x[real_i], x->x[real_i], sd[i]);
     }
 
     SPEX_FREE_ALL;

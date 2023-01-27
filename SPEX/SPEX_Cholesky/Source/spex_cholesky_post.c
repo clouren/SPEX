@@ -50,7 +50,7 @@ SPEX_info spex_cholesky_post
     w = (int64_t*) SPEX_malloc (3*n* sizeof (int64_t));
     if ((w == NULL) || (post == NULL))
     {
-        SPEX_FREE_ALL ;
+        SPEX_FREE_ALL;
         return (SPEX_OUT_OF_MEMORY);
     }
     head = w ; next = w + n ; stack = w + 2*n ;

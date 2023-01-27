@@ -41,7 +41,7 @@ SPEX_info spex_update_verify
     SPEX_matrix x = NULL; // the dense solution matrix to be generated
     SPEX_matrix b2 = NULL; // the dense matrix to store the result of A*x
 
-    SPEX_CHECK(SPEX_mpq_init(temp));
+    SPEX_MPQ_INIT(temp);
     SPEX_CHECK(SPEX_matrix_allocate(&b , SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
         true, option));
     SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, n, 1, n, false,
@@ -56,7 +56,7 @@ SPEX_info spex_update_verify
     for (i = 0; i < n; i++)
     {
         tmp = i+1;//rand(); //TODO
-        SPEX_CHECK(SPEX_mpz_set_si(b->x.mpz[i], tmp));
+        SPEX_MPZ_SET_SI(b->x.mpz[i], tmp);
     }
 
     // -------------------------------------------------------------------------
@@ -69,31 +69,31 @@ SPEX_info spex_update_verify
     // -------------------------------------------------------------------------
     for (i = 0; i < n; i++)
     {
-        SPEX_CHECK(SPEX_mpq_sgn(&r, x->x.mpq[i]));
+        SPEX_MPQ_SGN(&r, x->x.mpq[i]);
         if (r == 0) { continue;}
 
         for (int64_t p = 0; p < A->v[i]->nz; p++)
         {
             int64_t j = A->v[i]->i[p];
-            SPEX_CHECK(SPEX_mpq_set_z(temp, A->v[i]->x[p]));
-            SPEX_CHECK(SPEX_mpq_mul(temp, temp, A->v[i]->scale));
+            SPEX_MPQ_SET_Z(temp, A->v[i]->x[p]);
+            SPEX_MPQ_MUL(temp, temp, A->v[i]->scale);
             // b2[j] += x[i]*A(j,i)
-            SPEX_CHECK(SPEX_mpq_mul(temp, temp, x->x.mpq[i]));
-            SPEX_CHECK(SPEX_mpq_add(b2->x.mpq[j], b2->x.mpq[j], temp));
+            SPEX_MPQ_MUL(temp, temp, x->x.mpq[i]);
+            SPEX_MPQ_ADD(b2->x.mpq[j], b2->x.mpq[j], temp);
         }
     }
     //--------------------------------------------------------------------------
     // Apply scales of A and b to b2 before comparing the b2 with scaled b'
     //--------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_mpq_div(temp, b->scale, A->scale));
+    SPEX_MPQ_DIV(temp, b->scale, A->scale);
 
     // Apply scaling factor, but ONLY if it is not 1
-    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, temp, 1, 1));
+    SPEX_MPQ_CMP_UI(&r, temp, 1, 1);
     if (r != 0)
     {
         for (i = 0; i < n; i++)
         {
-            SPEX_CHECK(SPEX_mpq_mul(b2->x.mpq[i], b2->x.mpq[i], temp));
+            SPEX_MPQ_MUL(b2->x.mpq[i], b2->x.mpq[i], temp);
         }
     }
 
@@ -104,10 +104,10 @@ SPEX_info spex_update_verify
     for (i = 0; i < n; i++)
     {
         // temp = b[i] (correct b)
-        SPEX_CHECK(SPEX_mpq_set_z(temp, b->x.mpz[i]));
+        SPEX_MPQ_SET_Z(temp, b->x.mpz[i]);
 
         // set check false if b!=b2
-        SPEX_CHECK(SPEX_mpq_equal(&r, temp, b2->x.mpq[i]));
+        SPEX_MPQ_EQUAL(&r, temp, b2->x.mpq[i]);
         if (r == 0)
         {
             *Is_correct = false;

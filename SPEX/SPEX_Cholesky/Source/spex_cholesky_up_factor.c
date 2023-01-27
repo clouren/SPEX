@@ -160,7 +160,7 @@ SPEX_info spex_cholesky_up_factor
     for (i = 0; i < n; i++)
     {
         // Allocate memory for entries of x to be estimate bits
-        SPEX_CHECK(SPEX_mpz_init2(x->x.mpz[i], estimate));
+        SPEX_MPZ_INIT2(x->x.mpz[i], estimate);
     }
 
     //--------------------------------------------------------------------------
@@ -190,7 +190,7 @@ SPEX_info spex_cholesky_up_factor
     //--------------------------------------------------------------------------
     // Iterations 0:n-1 (1:n in standard)
     //--------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_mpz_sgn(&prev_sgn, x->x.mpz[0]));
+    SPEX_MPZ_SGN(&prev_sgn, x->x.mpz[0]);
 
     for (k = 0; k < n; k++)
     {
@@ -200,15 +200,15 @@ SPEX_info spex_cholesky_up_factor
 
         // If x[k] is nonzero choose it as pivot. Otherwise, the matrix is
         // not SPD (indeed, it may even be singular).
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[k]));
+        SPEX_MPZ_SGN(&sgn, x->x.mpz[k]);
         if (sgn != 0)
         {
-            SPEX_CHECK(SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[k]));
+            SPEX_MPZ_SET(rhos->x.mpz[k], x->x.mpz[k]);
         }
         else
         {
             // A is not symmetric positive definite
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return SPEX_NOTSPD;
         }
 
@@ -233,17 +233,17 @@ SPEX_info spex_cholesky_up_factor
             size = mpz_sizeinbase(x->x.mpz[jnew],2);
 
             // GMP manual: Allocated size should be size+2
-            SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[p], size+2));
+            SPEX_MPZ_INIT2(L->x.mpz[p], size+2);
 
             // Place the x value of this nonzero
-            SPEX_CHECK(SPEX_mpz_set(L->x.mpz[p],x->x.mpz[jnew]));
+            SPEX_MPZ_SET(L->x.mpz[p],x->x.mpz[jnew]);
         }
         // Now, place L(k,k)
         p = c[k]++;
         L->i[p] = k;
         size = mpz_sizeinbase(x->x.mpz[k], 2);
-        SPEX_CHECK(SPEX_mpz_init2(L->x.mpz[p], size+2));
-        SPEX_CHECK(SPEX_mpz_set(L->x.mpz[p], x->x.mpz[k]));
+        SPEX_MPZ_INIT2(L->x.mpz[p], size+2);
+        SPEX_MPZ_SET(L->x.mpz[p], x->x.mpz[k]);
     }
     // Finalize L->p
     L->p[n] = S->lnz;

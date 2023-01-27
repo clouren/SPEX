@@ -110,7 +110,7 @@ SPEX_info spex_update_debug
     opt1->pivot = SPEX_DIAGONAL;
     SPEX_CHECK(SPEX_lu_factorize(&Ftmp, Atmp, Stmp, opt1));
 
-    SPEX_CHECK(SPEX_mpq_init(tmpq));
+    SPEX_MPQ_INIT(tmpq);
     for (int64_t jcol = 0; jcol < n; jcol++)
     {
         int64_t p, p1;
@@ -118,8 +118,8 @@ SPEX_info spex_update_debug
         //----------------------------------------------------------------------
         // check for rhos
         //----------------------------------------------------------------------
-        SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->rhos->x.mpz[jcol],
-                                F->rhos->x.mpz[jcol]));
+        SPEX_MPZ_CMP(&r, Ftmp->rhos->x.mpz[jcol],
+                                F->rhos->x.mpz[jcol]);
         if (r != 0)
         {
             mpq_set_num(tmpq, Ftmp->rhos->x.mpz[jcol]);
@@ -138,17 +138,17 @@ SPEX_info spex_update_debug
         //----------------------------------------------------------------------
         if (jcol == k && !finish_update)
         {
-            SPEX_CHECK(SPEX_mpz_divexact(tmpz, Lk_dense_col->x[P[jcol]],
-                                         SPEX_MPQ_DEN(SL(jcol))));
+            SPEX_MPZ_DIVEXACT(tmpz, Lk_dense_col->x[P[jcol]],
+                                         SPEX_MPQ_DEN(SL(jcol)));
         }
         else
         {
-            SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->L->v[jcol]->x[0],
-                                         SPEX_MPQ_DEN(SL(jcol))));
+            SPEX_MPZ_DIVEXACT(tmpz, F->L->v[jcol]->x[0],
+                                         SPEX_MPQ_DEN(SL(jcol)));
         }
         SPEX_MPZ_MUL     (tmpz, tmpz,
                                      SPEX_MPQ_NUM(SL(jcol)));
-        SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->rhos->x.mpz[jcol], tmpz));
+        SPEX_MPZ_CMP(&r, Ftmp->rhos->x.mpz[jcol], tmpz);
         if (r != 0)
         {
             printf("pivot of %ld-th column of L does not match rhos\n", jcol);
@@ -161,17 +161,17 @@ SPEX_info spex_update_debug
         //----------------------------------------------------------------------
         if (jcol == k && !finish_update)
         {
-            SPEX_CHECK(SPEX_mpz_divexact(tmpz, Uk_dense_row->x[Q[jcol]],
-                                         SPEX_MPQ_DEN(SU(jcol))));
+            SPEX_MPZ_DIVEXACT(tmpz, Uk_dense_row->x[Q[jcol]],
+                                         SPEX_MPQ_DEN(SU(jcol)));
         }
         else
         {
-            SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->U->v[jcol]->x[0],
-                                         SPEX_MPQ_DEN(SU(jcol))));
+            SPEX_MPZ_DIVEXACT(tmpz, F->U->v[jcol]->x[0],
+                                         SPEX_MPQ_DEN(SU(jcol)));
         }
         SPEX_MPZ_MUL     (tmpz, tmpz,
                                      SPEX_MPQ_NUM(SU(jcol)));
-        SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->rhos->x.mpz[jcol], tmpz));
+        SPEX_MPZ_CMP(&r, Ftmp->rhos->x.mpz[jcol], tmpz);
         if (r != 0)
         {
             printf("pivot of %ld-th row of U does not match rhos\n", jcol);
@@ -212,7 +212,7 @@ SPEX_info spex_update_debug
             }
             if (found_p == -1)
             {
-                SPEX_CHECK(SPEX_mpz_sgn(&r, Ftmp->L->x.mpz[p]));
+                SPEX_MPZ_SGN(&r, Ftmp->L->x.mpz[p]);
                 if (r != 0)
                 {
                     printf("L(%ld,%ld) should not be 0\n", irow, jcol);
@@ -223,19 +223,19 @@ SPEX_info spex_update_debug
             {
                 if (jcol == k && !finish_update)
                 {
-                    SPEX_CHECK(SPEX_mpz_divexact(tmpz,
+                    SPEX_MPZ_DIVEXACT(tmpz,
                                                  Lk_dense_col->x[P[irow]],
-                                                 SPEX_MPQ_DEN(SL(jcol))));
+                                                 SPEX_MPQ_DEN(SL(jcol)));
                 }
                 else
                 {
-                    SPEX_CHECK(SPEX_mpz_divexact(tmpz,
+                    SPEX_MPZ_DIVEXACT(tmpz,
                                                  F->L->v[jcol]->x[found_p],
-                                                 SPEX_MPQ_DEN(SL(jcol))));
+                                                 SPEX_MPQ_DEN(SL(jcol)));
                 }
                 SPEX_MPZ_MUL     (tmpz, tmpz,
                                              SPEX_MPQ_NUM(SL(jcol)));
-                SPEX_CHECK(SPEX_mpz_cmp(&r, Ftmp->L->x.mpz[p], tmpz));
+                SPEX_MPZ_CMP(&r, Ftmp->L->x.mpz[p], tmpz);
                 if (r != 0)
                 {
                     mpq_set_num(tmpq, Ftmp->L->x.mpz[p]);
@@ -321,7 +321,7 @@ SPEX_info spex_update_debug
             }
             if (found_p == -1)
             {
-                SPEX_CHECK(SPEX_mpz_sgn(&r, UT->x.mpz[p]));
+                SPEX_MPZ_SGN(&r, UT->x.mpz[p]);
                 if (r != 0)
                 {
                     // entries in the column k of U have been deleted
@@ -336,17 +336,17 @@ SPEX_info spex_update_debug
             {
                 if (i == k && !finish_update)
                 {
-                    SPEX_CHECK(SPEX_mpz_divexact(tmpz, Uk_dense_row->x[Q[j]],
-                                                 SPEX_MPQ_DEN(SU(i))));
+                    SPEX_MPZ_DIVEXACT(tmpz, Uk_dense_row->x[Q[j]],
+                                                 SPEX_MPQ_DEN(SU(i)));
                 }
                 else
                 {
-                    SPEX_CHECK(SPEX_mpz_divexact(tmpz, F->U->v[i]->x[found_p],
-                                                 SPEX_MPQ_DEN(SU(i))));
+                    SPEX_MPZ_DIVEXACT(tmpz, F->U->v[i]->x[found_p],
+                                                 SPEX_MPQ_DEN(SU(i)));
                 }
                 SPEX_MPZ_MUL     (tmpz, tmpz,
                                              SPEX_MPQ_NUM(SU(i)));
-                SPEX_CHECK(SPEX_mpz_cmp(&r, UT->x.mpz[p], tmpz));
+                SPEX_MPZ_CMP(&r, UT->x.mpz[p], tmpz);
                 if (r != 0)
                 {
                     mpq_set_num(tmpq, UT->x.mpz[p]);

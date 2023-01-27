@@ -170,7 +170,7 @@ SPEX_info SPEX_factorization_convert
         Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector));
         if (!Mv)
         {
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return SPEX_OUT_OF_MEMORY;
         }
 
@@ -197,7 +197,7 @@ SPEX_info SPEX_factorization_convert
                 // permute entry indices
                 Mv[j]->i[mp] = perm[i];
                 // Mv[j]->x[mp] = L->x[p]
-                SPEX_CHECK(SPEX_mpz_swap(Mv[j]->x[mp], L->x.mpz[p]));
+                SPEX_MPZ_SWAP(Mv[j]->x[mp], L->x.mpz[p]);
 
                 // make sure the first entry is the diagonal
                 if (!found_diag && i == j)
@@ -205,8 +205,8 @@ SPEX_info SPEX_factorization_convert
                     found_diag = true;
                     if (mp != 0)
                     {
-                        SPEX_CHECK(SPEX_mpz_swap(Mv[j]->x[0],
-                                                 Mv[j]->x[mp]));
+                        SPEX_MPZ_SWAP(Mv[j]->x[0],
+                                                 Mv[j]->x[mp]);
                         Mv[j]->i[mp] = Mv[j]->i[0];
                         Mv[j]->i[0] = perm[i];
                     }
@@ -242,7 +242,7 @@ SPEX_info SPEX_factorization_convert
             Mv = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector));
             if (!Mv)
             {
-                SPEX_FREE_ALL ;
+                SPEX_FREE_ALL;
                 return SPEX_OUT_OF_MEMORY;
             }
 
@@ -281,7 +281,7 @@ SPEX_info SPEX_factorization_convert
                     mp = Mv[i]->nz++;
                     Mv[i]->i[mp] = perm[j] ;
                     // Mv[i]->x[mp] = U->x[p]
-                    SPEX_CHECK(SPEX_mpz_swap(Mv[i]->x[mp], U->x.mpz[p]));
+                    SPEX_MPZ_SWAP(Mv[i]->x[mp], U->x.mpz[p]);
 
                     // Given U in CSC, getting UT in CSC is equivalent to
                     // obtaining U in CSR. Therefore, the pivot entry of j-th
@@ -337,7 +337,7 @@ SPEX_info SPEX_factorization_convert
         Mp[0] = 0;
         for (j = 0 ; j < n ; j++)
         {
-            SPEX_CHECK(SPEX_mpq_cmp_ui(&sgn, L->v[j]->scale, 1, 1));
+            SPEX_MPQ_CMP_UI(&sgn, L->v[j]->scale, 1, 1);
             for (p = 0 ; p < L->v[j]->nz ; p++)
             {
                 i = L->v[j]->i[p];
@@ -345,12 +345,12 @@ SPEX_info SPEX_factorization_convert
                 if (sgn != 0) // scale != 1
                 {
                     // apply scale to L->v[j]->x[p]
-                    SPEX_CHECK(SPEX_mpz_divexact(L->v[j]->x[p],
-                        L->v[j]->x[p], SPEX_MPQ_DEN(L->v[j]->scale)));
+                    SPEX_MPZ_DIVEXACT(L->v[j]->x[p],
+                        L->v[j]->x[p], SPEX_MPQ_DEN(L->v[j]->scale));
                     SPEX_MPZ_MUL(L->v[j]->x[p],
                         L->v[j]->x[p], SPEX_MPQ_NUM(L->v[j]->scale));
                 }
-                SPEX_CHECK(SPEX_mpz_swap(Mx[mp], L->v[j]->x[p]));
+                SPEX_MPZ_SWAP(Mx[mp], L->v[j]->x[p]);
                 mp++;
             }
             Mp[j+1] = mp;
@@ -412,7 +412,7 @@ SPEX_info SPEX_factorization_convert
             // construct Mi, Mp and Mx from U
             for (i = 0 ; i < n ; i++)
             {
-                SPEX_CHECK(SPEX_mpq_cmp_ui(&sgn, U->v[i]->scale, 1, 1));
+                SPEX_MPQ_CMP_UI(&sgn, U->v[i]->scale, 1, 1);
                 for (p = 0 ; p < U->v[i]->nz ; p++)
                 {
                     j = perm[U->v[i]->i[p]];
@@ -421,12 +421,12 @@ SPEX_info SPEX_factorization_convert
                     if (sgn != 0) // scale != 1
                     {
                         // apply scale to U->v[i]->x[p]
-                        SPEX_CHECK(SPEX_mpz_divexact(U->v[i]->x[p],
-                            U->v[i]->x[p], SPEX_MPQ_DEN(U->v[i]->scale)));
+                        SPEX_MPZ_DIVEXACT(U->v[i]->x[p],
+                            U->v[i]->x[p], SPEX_MPQ_DEN(U->v[i]->scale));
                         SPEX_MPZ_MUL(U->v[i]->x[p],
                             U->v[i]->x[p], SPEX_MPQ_NUM(U->v[i]->scale));
                     }
-                    SPEX_CHECK(SPEX_mpz_swap(Mx[mp], U->v[i]->x[p]));
+                    SPEX_MPZ_SWAP(Mx[mp], U->v[i]->x[p]);
                 }
             }
 

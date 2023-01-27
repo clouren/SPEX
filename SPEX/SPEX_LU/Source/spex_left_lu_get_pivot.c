@@ -88,7 +88,7 @@ SPEX_info spex_left_lu_get_pivot
         //----------------------------------------------------------------------
 
         // Check if x[col] is eligible. take smallest pivot    if not
-        SPEX_CHECK (SPEX_mpz_sgn(&sgn, x->x.mpz[col]));
+        SPEX_MPZ_SGN(&sgn, x->x.mpz[col]);
         if (sgn != 0 && pivs[col] < 0)
         {
             *pivot = col;
@@ -122,21 +122,21 @@ SPEX_info spex_left_lu_get_pivot
         //----------------------------------------------------------------------
         // Check x[col] vs largest potential pivot
         //----------------------------------------------------------------------
-        SPEX_CHECK (SPEX_mpz_sgn(&sgn, x->x.mpz[col]));
+        SPEX_MPZ_SGN(&sgn, x->x.mpz[col]);
         if (sgn != 0 && pivs[col] < 0)
         {
-            SPEX_CHECK(SPEX_mpq_init(tol));
-            SPEX_CHECK(SPEX_mpq_init(ratio));
+            SPEX_MPQ_INIT(tol);
+            SPEX_MPQ_INIT(ratio);
             // tol = user specified tolerance
-            SPEX_CHECK(SPEX_mpq_set_d(tol, tolerance));
+            SPEX_MPQ_SET_D(tol, tolerance);
             // ratio = diagonal/largest
-            SPEX_CHECK(SPEX_mpq_set_num(ratio, x->x.mpz[col]));
-            SPEX_CHECK(SPEX_mpq_set_den(ratio, x->x.mpz[*pivot]));
+            SPEX_MPQ_SET_NUM(ratio, x->x.mpz[col]);
+            SPEX_MPQ_SET_DEN(ratio, x->x.mpz[*pivot]);
             // ratio = |ratio|
-            SPEX_CHECK(SPEX_mpq_abs(ratio, ratio));
+            SPEX_MPQ_ABS(ratio, ratio);
 
             // Is ratio >= tol?
-            SPEX_CHECK(SPEX_mpq_cmp(&r, ratio, tol));
+            SPEX_MPQ_CMP(&r, ratio, tol);
             if (r >= 0)
             {
                 *pivot = col;
@@ -167,23 +167,23 @@ SPEX_info spex_left_lu_get_pivot
         //----------------------------------------------------------------------
         // Checking x[col] vs smallest pivot
         //----------------------------------------------------------------------
-        SPEX_CHECK (SPEX_mpz_sgn(&sgn, x->x.mpz[col]));
+        SPEX_MPZ_SGN(&sgn, x->x.mpz[col]);
         if (sgn != 0 && pivs[col] < 0)
         {
 
             // Initialize tolerance and ratio
-            SPEX_CHECK(SPEX_mpq_init(tol));
-            SPEX_CHECK(SPEX_mpq_init(ratio));
+            SPEX_MPQ_INIT(tol);
+            SPEX_MPQ_INIT(ratio);
 
             // ratio = |smallest/diagonal|
-            SPEX_CHECK(SPEX_mpz_abs(SPEX_MPQ_NUM(ratio), x->x.mpz[*pivot]));
-            SPEX_CHECK(SPEX_mpz_abs(SPEX_MPQ_DEN(ratio), x->x.mpz[col]));
+            SPEX_MPZ_ABS(SPEX_MPQ_NUM(ratio), x->x.mpz[*pivot]);
+            SPEX_MPZ_ABS(SPEX_MPQ_DEN(ratio), x->x.mpz[col]);
 
             // Set user specified tolerance
-            SPEX_CHECK(SPEX_mpq_set_d(tol, tolerance));
+            SPEX_MPQ_SET_D(tol, tolerance);
 
             // Is ratio >= tol?
-            SPEX_CHECK(SPEX_mpq_cmp(&r, ratio, tol));
+            SPEX_MPQ_CMP(&r, ratio, tol);
             if (r >= 0)
             {
                 *pivot = col;
@@ -213,11 +213,11 @@ SPEX_info spex_left_lu_get_pivot
     // Set the kth pivot.
     size_t size;
     // Get the size of x[pivot]
-    SPEX_CHECK(SPEX_mpz_sizeinbase(&size, x->x.mpz[*pivot], 2));
+    SPEX_MPZ_SIZEINBASE(&size, x->x.mpz[*pivot], 2);
     // GMP manual: Allocated size should be size+2
-    SPEX_CHECK(SPEX_mpz_init2(rhos->x.mpz[k], size+2));
+    SPEX_MPZ_INIT2(rhos->x.mpz[k], size+2);
     // The kth pivot is x[pivot]
-    SPEX_CHECK (SPEX_mpz_set(rhos->x.mpz[k], x->x.mpz[*pivot]));
+    SPEX_MPZ_SET(rhos->x.mpz[k], x->x.mpz[*pivot]);
 
     // Free memory
     SPEX_FREE_ALL;

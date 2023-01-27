@@ -46,7 +46,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
     A->p[0] = 0;
     for (j = 0 ; j < B->n ; j++)
     {
-        SPEX_CHECK(SPEX_mpq_cmp_ui(&sgn, B->v[j]->scale, 1, 1));
+        SPEX_MPQ_CMP_UI(&sgn, B->v[j]->scale, 1, 1);
         for (Bp = 0 ; Bp < B->v[j]->nz ; Bp++)
         {
             i = B->v[j]->i[Bp];
@@ -54,8 +54,8 @@ SPEX_info spex_dynamic_to_CSC_mpz
             // A->x[Ap] = B->v[j]->x[Bp]*scale
             if (sgn == 0) // scale == 1
             {
-                SPEX_CHECK(SPEX_mpz_set(SPEX_1D(A, Ap, mpz),
-                    B->v[j]->x[Bp]));
+                SPEX_MPZ_SET(SPEX_1D(A, Ap, mpz),
+                    B->v[j]->x[Bp]);
             }
             else
             {
@@ -68,7 +68,7 @@ SPEX_info spex_dynamic_to_CSC_mpz
         }
         A->p[j+1] = Ap;
     }
-    SPEX_CHECK(SPEX_mpq_set(A->scale, B->scale));
+    SPEX_MPQ_SET(A->scale, B->scale);
 
     (*A_handle) = A;
     return SPEX_OK;

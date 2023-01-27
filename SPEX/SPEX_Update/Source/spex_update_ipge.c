@@ -102,8 +102,8 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
                                     sv_x->x[perm_j], sd[j-1]);
             if (real_hj > -1)
             {
-                SPEX_CHECK(SPEX_mpz_divexact(sv_x->x[perm_j],
-                                             sv_x->x[perm_j], sd[real_hj]));
+                SPEX_MPZ_DIVEXACT(sv_x->x[perm_j],
+                                             sv_x->x[perm_j], sd[real_hj]);
             }
         }
         return SPEX_OK;
@@ -111,38 +111,38 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
 
     int64_t p, i, real_hi;
     int vscale = 0; // 1: v_scale == 1; -1: v_scale == -1; 0 none of above
-    SPEX_CHECK(SPEX_mpq_init(pending_scale));
-    SPEX_CHECK(SPEX_mpz_init(tmpz));
+    SPEX_MPQ_INIT(pending_scale);
+    SPEX_MPZ_INIT(tmpz);
 
-    SPEX_CHECK(SPEX_mpz_cmp_ui(&sgn, SPEX_MPQ_DEN(v->scale), 1));
+    SPEX_MPZ_CMP_UI(&sgn, SPEX_MPQ_DEN(v->scale), 1);
     if (sgn == 0) // den(v_scale) == 1
     {
-        SPEX_CHECK(SPEX_mpz_cmpabs_ui(&sgn, SPEX_MPQ_NUM(v->scale), 1));
+        SPEX_MPZ_CMPABS_UI(&sgn, SPEX_MPQ_NUM(v->scale), 1);
         if (sgn == 0)
         {
-            SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_MPQ_NUM(v->scale)));
+            SPEX_MPZ_SGN(&sgn, SPEX_MPQ_NUM(v->scale));
             vscale = sgn < 0 ? -1 : 1;
         }
     }
 
     // pending_scale = x[perm[j]]/sd[h[perm[j]]]
-    SPEX_CHECK(SPEX_mpq_set_z(pending_scale, sv_x->x[perm_j]));
+    SPEX_MPQ_SET_Z(pending_scale, sv_x->x[perm_j]);
     if (real_hj > -1)
     {
-        SPEX_CHECK(SPEX_mpq_set_den(pending_scale, sd[real_hj]));
-        SPEX_CHECK(SPEX_mpq_canonicalize(pending_scale));
+        SPEX_MPQ_SET_Den(pending_scale, sd[real_hj]);
+        SPEX_MPQ_CANONICALIZE(pending_scale);
     }
 
     // The pivot in vector v is v->p[0], simple apply scale to it if needed
     if (vscale != 1)
     {
-        SPEX_CHECK(SPEX_mpz_set(v->x[0], sd[j]));
+        SPEX_MPZ_SET(v->x[0], sd[j]);
     }
     // perform IPGE for x if the corresponding entry in v != 0, skip x(perm[j])
     // NOTE: this could cause fillin in x
     for (p = 1; p < v->nz; p++)
     {
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, v->x[p]));
+        SPEX_MPZ_SGN(&sgn, v->x[p]);
         if (sgn == 0)    // v[i] == 0
         {
             continue;
@@ -155,18 +155,18 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
         // apply scale factor to v(i): v(i) = v(i)*v_scale
         if (vscale == 0)
         {
-            SPEX_CHECK(SPEX_mpz_divexact(v->x[p],
-                                         v->x[p], SPEX_MPQ_DEN(v->scale)));
+            SPEX_MPZ_DIVEXACT(v->x[p],
+                                         v->x[p], SPEX_MPQ_DEN(v->scale));
             SPEX_MPZ_MUL     (v->x[p],
                                          v->x[p], SPEX_MPQ_NUM(v->scale));
         }
         else if (vscale == -1)
         {
-            SPEX_CHECK(SPEX_mpz_neg(v->x[p], v->x[p]));
+            SPEX_MPZ_NEG(v->x[p], v->x[p]);
         }
 
         // x[i] = x[i]*sd[j]
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, sv_x->x[i]));
+        SPEX_MPZ_SGN(&sgn, sv_x->x[i]);
         if (sgn != 0)    // x[i] != 0
         {
             // x[i] = x[i]*sd[j]
@@ -195,28 +195,28 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
             // tmpz = floor(v(i)*pending_scale)
             SPEX_MPZ_MUL(tmpz, v->x[p],
                                     SPEX_MPQ_NUM(pending_scale));
-            SPEX_CHECK(SPEX_mpz_fdiv_q(tmpz, tmpz,
-                                    SPEX_MPQ_DEN(pending_scale)));
+            SPEX_MPZ_FDIV_Q(tmpz, tmpz,
+                                    SPEX_MPQ_DEN(pending_scale));
 
             // x[i] = floor(x[i]/sd[h[i]])
             if (real_hi > -1)
             {
-                SPEX_CHECK(SPEX_mpz_fdiv_q(sv_x->x[i], sv_x->x[i],sd[real_hi]));
+                SPEX_MPZ_FDIV_Q(sv_x->x[i], sv_x->x[i],sd[real_hi]);
             }
 
             // x[i] = x[i]- tmpz
-            SPEX_CHECK(SPEX_mpz_sub(sv_x->x[i], sv_x->x[i], tmpz));
+            SPEX_MPZ_SUB(sv_x->x[i], sv_x->x[i], tmpz);
         }
         else
         {
             // -----------------------------------------------------------------
             // x[i] = (x[i]-v[i]*x[perm[j]])/sd[h[i]].
             // -----------------------------------------------------------------
-            SPEX_CHECK(SPEX_mpz_submul(sv_x->x[i], v->x[p], sv_x->x[perm_j]));
+            SPEX_MPZ_SUBMUL(sv_x->x[i], v->x[p], sv_x->x[perm_j]);
             if (real_hi > -1)
             {
-                SPEX_CHECK(SPEX_mpz_divexact(sv_x->x[i],
-                                             sv_x->x[i], sd[real_hi]));
+                SPEX_MPZ_DIVEXACT(sv_x->x[i],
+                                             sv_x->x[i], sd[real_hi]);
             }
         }
 
@@ -225,7 +225,7 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
     }
 
     // reset v_scale to 1
-    SPEX_CHECK(SPEX_mpq_set_ui(v->scale, 1, 1));
+    SPEX_MPQ_SET_UI(v->scale, 1, 1);
 
     if (j-1 > real_hj) // require history update
     {
@@ -233,8 +233,8 @@ SPEX_info spex_update_ipge // perform IPGE on x based on v
                                 sv_x->x[perm_j], sd[j-1]);
         if (real_hj > -1)
         {
-            SPEX_CHECK(SPEX_mpz_divexact(sv_x->x[perm_j],
-                                         sv_x->x[perm_j], sd[real_hj]));
+            SPEX_MPZ_DIVEXACT(sv_x->x[perm_j],
+                                         sv_x->x[perm_j], sd[real_hj]);
         }
     }
 

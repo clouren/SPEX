@@ -35,11 +35,11 @@ SPEX_info SPEX_dot
     int64_t k;
 
     // Set z = 0
-    SPEX_CHECK(SPEX_mpz_set_ui(z, 0));
+    SPEX_MPZ_SET_UI(z, 0);
     for (k = 0; k < x->m; k++)
     {
         // z += x[k]*y[k]
-        SPEX_CHECK(SPEX_mpz_addmul(z, x->x.mpz[k], y->x.mpz[k]));
+        SPEX_MPZ_ADDMUL(z, x->x.mpz[k], y->x.mpz[k]);
     }
     return SPEX_OK;
 }

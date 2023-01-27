@@ -124,7 +124,7 @@ SPEX_info SPEX_matrix_copy
                     W = (int64_t *) SPEX_calloc (n, sizeof (int64_t));
                     if (W == NULL)
                     {
-                        SPEX_FREE_ALL ;
+                        SPEX_FREE_ALL;
                         return (SPEX_OUT_OF_MEMORY);
                     }
 
@@ -153,9 +153,9 @@ SPEX_info SPEX_matrix_copy
                             {
                                 int64_t p = W [A->j [k]]++ ;
                                 C->i [p] = A->i [k] ;
-                                SPEX_CHECK (SPEX_mpz_set (
+                                SPEX_MPZ_SET (
                                     SPEX_1D (C, p, mpz),
-                                    SPEX_1D (Y, k, mpz)));
+                                    SPEX_1D (Y, k, mpz));
                             }
                             break ;
 
@@ -164,9 +164,9 @@ SPEX_info SPEX_matrix_copy
                             {
                                 int64_t p = W [A->j [k]]++ ;
                                 C->i [p] = A->i [k] ;
-                                SPEX_CHECK (SPEX_mpq_set (
+                                SPEX_MPQ_SET (
                                     SPEX_1D (C, p, mpq),
-                                    SPEX_1D (Y, k, mpq)));
+                                    SPEX_1D (Y, k, mpq));
                             }
                             break ;
 
@@ -175,10 +175,10 @@ SPEX_info SPEX_matrix_copy
                             {
                                 int64_t p = W [A->j [k]]++ ;
                                 C->i [p] = A->i [k] ;
-                                SPEX_CHECK (SPEX_mpfr_set (
+                                SPEX_MPFR_SET (
                                     SPEX_1D (C, p, mpfr),
                                     SPEX_1D (Y, k, mpfr),
-                                    round));
+                                    round);
                             }
                             break ;
 
@@ -225,8 +225,8 @@ SPEX_info SPEX_matrix_copy
                         case SPEX_MPZ:
                             for (int64_t k = 0 ; k < nz ; k++)
                             {
-                                SPEX_CHECK (SPEX_mpz_sgn (&s,
-                                    SPEX_1D (Y, k, mpz)));
+                                SPEX_MPZ_SGN (&s,
+                                    SPEX_1D (Y, k, mpz));
                                 if (s != 0) actual++ ;
                             }
                             break ;
@@ -234,8 +234,8 @@ SPEX_info SPEX_matrix_copy
                         case SPEX_MPQ:
                             for (int64_t k = 0 ; k < nz ; k++)
                             {
-                                SPEX_CHECK (SPEX_mpq_sgn (&s,
-                                    SPEX_1D (Y, k, mpq)));
+                                SPEX_MPQ_SGN (&s,
+                                    SPEX_1D (Y, k, mpq));
                                 if (s != 0) actual++ ;
                             }
                             break ;
@@ -243,8 +243,8 @@ SPEX_info SPEX_matrix_copy
                         case SPEX_MPFR:
                             for (int64_t k = 0 ; k < nz ; k++)
                             {
-                                SPEX_CHECK (SPEX_mpfr_sgn (&s,
-                                    SPEX_1D (Y, k, mpfr)));
+                                SPEX_MPFR_SGN (&s,
+                                    SPEX_1D (Y, k, mpfr));
                                 if (s != 0) actual++ ;
                             }
                             break ;
@@ -282,12 +282,12 @@ SPEX_info SPEX_matrix_copy
                                 C->p [j] = nz ;
                                 for (int64_t i = 0 ; i < m ; i++)
                                 {
-                                    SPEX_CHECK( SPEX_mpz_sgn( &s,
-                                        Y->x.mpz[ i + j*A->m]));
+                                    SPEX_MPZ_SGN(&s,
+                                        Y->x.mpz[ i + j*A->m]);
                                     if (s != 0)
                                     {
                                         C->i [nz] = i ;
-                                        SPEX_CHECK( SPEX_mpz_set (
+                                        SPEX_MPZ_SET (
                                             SPEX_1D (C, nz, mpz),
                                             Y->x.mpz[ i + j*A->m] ));
                                         nz++ ;
@@ -302,14 +302,14 @@ SPEX_info SPEX_matrix_copy
                                 C->p [j] = nz ;
                                 for (int64_t i = 0 ; i < m ; i++)
                                 {
-                                    SPEX_CHECK (SPEX_mpq_sgn (&s,
-                                        Y->x.mpq[ i + j*A->m]));
+                                    SPEX_MPQ_SGN (&s,
+                                        Y->x.mpq[ i + j*A->m]);
                                     if (s != 0)
                                     {
                                         C->i [nz] = i ;
-                                        SPEX_CHECK(SPEX_mpq_set (
+                                        SPEX_MPQ_SET (
                                             SPEX_1D(C, nz, mpq),
-                                            Y->x.mpq[ i + j*A->m]));
+                                            Y->x.mpq[ i + j*A->m]);
                                         nz++ ;
                                     }
                                 }
@@ -322,15 +322,15 @@ SPEX_info SPEX_matrix_copy
                                 C->p [j] = nz ;
                                 for (int64_t i = 0 ; i < m ; i++)
                                 {
-                                    SPEX_CHECK (SPEX_mpfr_sgn (&s,
-                                        Y->x.mpfr[i + j*A->m]));
+                                    SPEX_MPFR_SGN (&s,
+                                        Y->x.mpfr[i + j*A->m]);
                                     if (s != 0)
                                     {
                                         C->i [nz] = i ;
-                                        SPEX_CHECK (SPEX_mpfr_set (
+                                        SPEX_MPFR_SET (
                                             SPEX_1D (C, nz, mpfr),
                                             Y->x.mpfr[i + j*A->m],
-                                            round));
+                                            round);
 
                                         nz++ ;
                                     }
@@ -533,9 +533,9 @@ SPEX_info SPEX_matrix_copy
                                 for (int64_t p = A->p [j] ; p < A->p [j+1] ;p++)
                                 {
                                     int64_t i = A->i [p] ;
-                                    SPEX_CHECK (SPEX_mpz_set (
+                                    SPEX_MPZ_SET (
                                         SPEX_2D (C, i, j, mpz),
-                                        SPEX_1D (Y, p, mpz)));
+                                        SPEX_1D (Y, p, mpz));
                                 }
                             }
                             break ;
@@ -546,9 +546,9 @@ SPEX_info SPEX_matrix_copy
                                 for (int64_t p = A->p [j] ; p < A->p [j+1] ;p++)
                                 {
                                     int64_t i = A->i [p] ;
-                                    SPEX_CHECK (SPEX_mpq_set (
+                                    SPEX_MPQ_SET (
                                         SPEX_2D (C, i, j, mpq),
-                                        SPEX_1D (Y, p, mpq)));
+                                        SPEX_1D (Y, p, mpq));
                                 }
                             }
                             break ;
@@ -559,10 +559,10 @@ SPEX_info SPEX_matrix_copy
                                 for (int64_t p = A->p [j] ; p < A->p [j+1] ;p++)
                                 {
                                     int64_t i = A->i [p] ;
-                                    SPEX_CHECK (SPEX_mpfr_set (
+                                    SPEX_MPFR_SET (
                                         SPEX_2D (C, i, j, mpfr),
                                         SPEX_1D (Y, p, mpfr),
-                                        round));
+                                        round);
                                 }
                             }
                             break ;
@@ -619,9 +619,9 @@ SPEX_info SPEX_matrix_copy
                             {
                                 int64_t i = A->i [k] ;
                                 int64_t j = A->j [k] ;
-                                SPEX_CHECK (SPEX_mpz_set (
+                                SPEX_MPZ_SET (
                                     SPEX_2D (C, i, j, mpz),
-                                    SPEX_1D (Y, k, mpz)));
+                                    SPEX_1D (Y, k, mpz));
                             }
                             break ;
 
@@ -630,9 +630,9 @@ SPEX_info SPEX_matrix_copy
                             {
                                 int64_t i = A->i [k] ;
                                 int64_t j = A->j [k] ;
-                                SPEX_CHECK (SPEX_mpq_set (
+                                SPEX_MPQ_SET (
                                     SPEX_2D (C, i, j, mpq),
-                                    SPEX_1D (Y, k, mpq)));
+                                    SPEX_1D (Y, k, mpq));
                             }
                             break ;
 
@@ -641,10 +641,10 @@ SPEX_info SPEX_matrix_copy
                             {
                                 int64_t i = A->i [k] ;
                                 int64_t j = A->j [k] ;
-                                SPEX_CHECK (SPEX_mpfr_set (
+                                SPEX_MPFR_SET (
                                     SPEX_2D (C, i, j, mpfr),
                                     SPEX_1D (Y, k, mpfr),
-                                    round));
+                                    round);
                             }
                             break ;
 
@@ -745,8 +745,8 @@ SPEX_info SPEX_matrix_copy
 
                     for (int64_t p = 0; p < Aj_nz; p++)
                     {
-                        SPEX_CHECK(SPEX_mpz_set(C->v[j]->x[p],
-                            A->v[j]->x[p]));
+                        SPEX_MPZ_SET(C->v[j]->x[p],
+                            A->v[j]->x[p]);
                     }
                     C->v[j]->nz = Aj_nz;
                 }

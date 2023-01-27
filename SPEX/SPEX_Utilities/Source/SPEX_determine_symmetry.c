@@ -68,7 +68,7 @@ SPEX_info SPEX_determine_symmetry
             // is not the same as the number of nonzeros
             // in row k of A. So free all and exit
             // nnz( A(:,k)) != nnz( A(k,:))
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return SPEX_UNSYMMETRIC;
         }
     }
@@ -83,22 +83,22 @@ SPEX_info SPEX_determine_symmetry
         if (T->i[j] != R->i[j])
         {
             // Not pattern symmetric as row indices do not match
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return SPEX_UNSYMMETRIC;
         }
         // Check numerics
         int r;
-        SPEX_CHECK( SPEX_mpz_cmp(&r, R->x.mpz[j], T->x.mpz[j]) );
+        SPEX_MPZ_CMP(&r, R->x.mpz[j], T->x.mpz[j]);
         if (r != 0)
         {
             // Not numeric symmetric
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return SPEX_UNSYMMETRIC;
         }
     }
 
     // Free memory and return OK meaning the matrix is symmetric
-    SPEX_FREE_ALL ;
+    SPEX_FREE_ALL;
     return SPEX_OK;
 }
 

@@ -74,7 +74,7 @@ if (!pretend_to_fail)                                               \
     info = (method) ;                                               \
     if (info == SPEX_OUT_OF_MEMORY)                                 \
     {                                                               \
-        SPEX_FREE_ALL ;                                             \
+        SPEX_FREE_ALL;                                             \
         pretend_to_fail = true ;                                    \
     }                                                               \
     else if (info != SPEX_OK)                                       \

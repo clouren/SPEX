@@ -70,7 +70,7 @@ SPEX_info spex_cholesky_permute_A
         //----------------------------------------------------------------------
 
         // Set PAP scale
-        SPEX_CHECK(SPEX_mpq_set(PAP->scale, A->scale));
+        SPEX_MPQ_SET(PAP->scale, A->scale);
 
         // Populate the entries in PAP
         for (k = 0; k < n; k++)
@@ -86,7 +86,7 @@ SPEX_info spex_cholesky_permute_A
             {
                 // Set the nonzero value and location of the entries in column
                 // k of PAP
-                SPEX_CHECK(SPEX_mpz_set(PAP->x.mpz[nz], A->x.mpz[t]));
+                SPEX_MPZ_SET(PAP->x.mpz[nz], A->x.mpz[t]);
                 // Row i of this nonzero is equal to pinv[A->i[t]]
                 PAP->i[nz] = S->Pinv_perm[ A->i[t] ];
                 // Move to the next nonzero element of PAP

@@ -75,7 +75,7 @@ SPEX_info SPEX_vector_realloc
 
         for (p = old_size ; p < new_size ; p++)
         {
-            SPEX_CHECK(SPEX_mpz_init (v->x[p]));
+            SPEX_MPZ_INIT (v->x[p]);
         }
     }
 

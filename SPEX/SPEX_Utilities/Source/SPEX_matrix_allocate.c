@@ -102,7 +102,7 @@ SPEX_info SPEX_matrix_allocate
 
     // A->scale = 1
     SPEX_CHECK (spex_create_mpq (A->scale));
-    SPEX_CHECK (SPEX_mpq_set_ui (A->scale, 1, 1));
+    SPEX_MPQ_SET_UI (A->scale, 1, 1);
 
     //--------------------------------------------------------------------------
     // allocate the p, i, j, and x components
@@ -114,7 +114,7 @@ SPEX_info SPEX_matrix_allocate
         A->v = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector));
         if (!(A->v))
         {
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return SPEX_OUT_OF_MEMORY;
         }
 
@@ -216,7 +216,7 @@ SPEX_info SPEX_matrix_allocate
 
         if (!ok)
         {
-            SPEX_FREE_ALL ;
+            SPEX_FREE_ALL;
             return (SPEX_OUT_OF_MEMORY);
         }
     }

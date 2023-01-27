@@ -73,8 +73,8 @@ SPEX_info SPEX_QR_PURSELL2
     {
         for (j = 0; j < m; j++)
         {
-            SPEX_CHECK(SPEX_mpz_set( SPEX_2D(A_T, i, j, mpz),
-                          SPEX_2D(A, j, i, mpz)));
+            SPEX_MPZ_SET( SPEX_2D(A_T, i, j, mpz),
+                          SPEX_2D(A, j, i, mpz));
         }
     }
 
@@ -86,9 +86,9 @@ SPEX_info SPEX_QR_PURSELL2
             // Compute A2(i,j) = A_T(i,:) dot A(:,j)
             for (k = 0; k < m; k++)
             {
-                SPEX_CHECK(SPEX_mpz_addmul( SPEX_2D(A2, i, j, mpz),
+                SPEX_MPZ_ADDmul( SPEX_2D(A2, i, j, mpz),
                                  SPEX_2D(A_T, i, k, mpz),
-                                 SPEX_2D(A, k, j, mpz)));
+                                 SPEX_2D(A, k, j, mpz));
             }
         }
     }
@@ -104,8 +104,8 @@ SPEX_info SPEX_QR_PURSELL2
     {
         for (j = 0; j < n; j++)
         {
-            SPEX_CHECK(SPEX_mpz_set( SPEX_2D(A3, i, j, mpz),
-                          SPEX_2D(A2, i, j, mpz)));
+            SPEX_MPZ_SET( SPEX_2D(A3, i, j, mpz),
+                          SPEX_2D(A2, i, j, mpz));
         }
     }
 
@@ -114,8 +114,8 @@ SPEX_info SPEX_QR_PURSELL2
     {
         for (j = 0; j < m; j++)
         {
-            SPEX_CHECK(SPEX_mpz_set( SPEX_2D(A3, i, j+n, mpz),
-                          SPEX_2D(A_T, i, j, mpz)));
+            SPEX_MPZ_SET( SPEX_2D(A3, i, j+n, mpz),
+                          SPEX_2D(A_T, i, j, mpz));
         }
     }
 
@@ -129,13 +129,13 @@ SPEX_info SPEX_QR_PURSELL2
                 SPEX_MPZ_MUL ( SPEX_2D(A3, i, j, mpz),
                                SPEX_2D(A3, i, j, mpz),
                                SPEX_2D(A3, k, k, mpz));
-                SPEX_CHECK(SPEX_mpz_submul( SPEX_2D(A3, i, j, mpz),
+                SPEX_MPZ_SUBMUL( SPEX_2D(A3, i, j, mpz),
                                  SPEX_2D(A3, k, i, mpz),
-                                 SPEX_2D(A3, k, j, mpz)));
+                                 SPEX_2D(A3, k, j, mpz));
                 if (k > 0)
-                    SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(A3, i, j, mpz),
+                    SPEX_MPZ_DIVEXACT( SPEX_2D(A3, i, j, mpz),
                                        SPEX_2D(A3, i, j, mpz),
-                                       SPEX_2D(A3, k-1, k-1, mpz)));
+                                       SPEX_2D(A3, k-1, k-1, mpz));
             }
         }
     }
@@ -148,11 +148,11 @@ SPEX_info SPEX_QR_PURSELL2
         {
             if (i <= j)
             {
-            SPEX_CHECK(SPEX_mpz_set( SPEX_2D(R, i, j, mpz),
-                          SPEX_2D(A3, i, j, mpz)));
+            SPEX_MPZ_SET( SPEX_2D(R, i, j, mpz),
+                          SPEX_2D(A3, i, j, mpz));
             }
             else
-                SPEX_CHECK(SPEX_mpz_set_ui( SPEX_2D(R,i,j,mpz), 0));
+                SPEX_MPZ_SET_UI( SPEX_2D(R,i,j,mpz), 0);
         }
     }
 
@@ -161,8 +161,8 @@ SPEX_info SPEX_QR_PURSELL2
     {
         for (j = 0; j < m; j++)
         {
-            SPEX_CHECK(SPEX_mpz_set( SPEX_2D(Q, j, i, mpz),
-                          SPEX_2D(A3, i, j+n, mpz)));
+            SPEX_MPZ_SET( SPEX_2D(Q, j, i, mpz),
+                          SPEX_2D(A3, i, j+n, mpz));
         }
     }
 

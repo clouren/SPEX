@@ -140,9 +140,9 @@ SPEX_info spex_update_solve_internal
 
     // compute the scale first with scale = b->scale * rhos[n-1] / A_scale
     // the real solution is obtained by x->v[j]->x[i]/x->scale
-    SPEX_CHECK(SPEX_mpq_set_z(x->scale, rhos->x.mpz[n-1]));
-    SPEX_CHECK(SPEX_mpq_mul(x->scale, x->scale, b->scale));
-    SPEX_CHECK(SPEX_mpq_div(x->scale, x->scale, F->scale_for_A));
+    SPEX_MPQ_SET_Z(x->scale, rhos->x.mpz[n-1]);
+    SPEX_MPQ_MUL(x->scale, x->scale, b->scale);
+    SPEX_MPQ_DIV(x->scale, x->scale, F->scale_for_A);
 
     //--------------------------------------------------------------------------
     // solve each column of b seperately
@@ -152,7 +152,7 @@ SPEX_info spex_update_solve_internal
         // copy entries in j-th column of b with v
         for (i = 0; i < n; i++)
         {
-            SPEX_CHECK(SPEX_mpz_set(v->x[i], b->x.mpz[i+n*j]));
+            SPEX_MPZ_SET(v->x[i], b->x.mpz[i+n*j]);
         }
 
         // solve y for LD^(-1)y(P)=b, via forward substitution
@@ -165,13 +165,13 @@ SPEX_info spex_update_solve_internal
         for (i = 0; i < n; i++)
         {
             int64_t p = i+n*j;
-            SPEX_CHECK(SPEX_mpq_set_z(x->x.mpq[p], v->x[P[Q_inv[i]]]));
-            SPEX_CHECK(SPEX_mpq_div(x->x.mpq[p], x->x.mpq[p], x->scale));
+            SPEX_MPQ_SET_Z(x->x.mpq[p], v->x[P[Q_inv[i]]]);
+            SPEX_MPQ_DIV(x->x.mpq[p], x->x.mpq[p], x->scale);
         }
     }
 
     // reset the scale for the solution.
-    SPEX_CHECK(SPEX_mpq_set_ui(x->scale, 1, 1));
+    SPEX_MPQ_SET_UI(x->scale, 1, 1);
 
     //--------------------------------------------------------------------------
     // free workspace and return result

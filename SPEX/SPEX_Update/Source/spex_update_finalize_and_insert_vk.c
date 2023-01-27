@@ -46,14 +46,14 @@ SPEX_info spex_update_finalize_and_insert_vk
         real_i = P_inv[i];
         if (real_i < k)
         {
-            SPEX_CHECK(SPEX_mpz_sgn(&sgn, vk_dense->x[i]));
+            SPEX_MPZ_SGN(&sgn, vk_dense->x[i]);
             if (sgn != 0)
             {
                 // insert vk_dense->x[i] to U(P_inv[i],Q[k]) by swapping
                 SPEX_CHECK(spex_update_insert_new_entry(vk_dense->x[i],
                     U->v[real_i], U->v[real_i]->scale, Q[k], option));
                 // vk_dense->x[i] = 0
-                SPEX_CHECK(SPEX_mpz_set_ui(vk_dense->x[i], 0));
+                SPEX_MPZ_SET_UI(vk_dense->x[i], 0);
             }
             vk_nz--;
             vk_dense->i[p] = vk_dense->i[vk_nz];
@@ -75,7 +75,7 @@ SPEX_info spex_update_finalize_and_insert_vk
     for (p = 0; p < vk_nz; p++)
     {
         i = vk_dense->i[p];
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, vk_dense->x[i]));
+        SPEX_MPZ_SGN(&sgn, vk_dense->x[i]);
         if (sgn == 0)        {continue;}
 
         h[i] = SPEX_FLIP(h[i]);
@@ -85,23 +85,23 @@ SPEX_info spex_update_finalize_and_insert_vk
             SPEX_MPZ_MUL(vk_dense->x[i], vk_dense->x[i], sd[k-1]);
             if (h[i] > -1)
             {
-                SPEX_CHECK(SPEX_mpz_divexact(vk_dense->x[i],
-                                             vk_dense->x[i], sd[h[i]]));
+                SPEX_MPZ_DIVEXACT(vk_dense->x[i],
+                                             vk_dense->x[i], sd[h[i]]);
             }
         }
         if (P_inv[i] == diag) // put pivot as the first entry
         {
-            SPEX_CHECK(SPEX_mpz_swap(L->v[k]->x[0], vk_dense->x[i]));
+            SPEX_MPZ_SWAP(L->v[k]->x[0], vk_dense->x[i]);
             L->v[k]->i[0] = i;
         }
         else
         {
-            SPEX_CHECK(SPEX_mpz_swap(L->v[k]->x[Lk_nz], vk_dense->x[i]));
+            SPEX_MPZ_SWAP(L->v[k]->x[Lk_nz], vk_dense->x[i]);
             L->v[k]->i[Lk_nz] = i;
             Lk_nz++;
         }
         // vk_dense->x[i] = 0
-        SPEX_CHECK(SPEX_mpz_set_ui(vk_dense->x[i], 0));
+        SPEX_MPZ_SET_UI(vk_dense->x[i], 0);
     }
     L->v[k]->nz = Lk_nz;
 

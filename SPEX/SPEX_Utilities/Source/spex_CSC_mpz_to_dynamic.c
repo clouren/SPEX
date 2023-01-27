@@ -51,12 +51,12 @@ SPEX_info spex_CSC_mpz_to_dynamic
             i = B->i[p];
             A->v[j]->i[Ap] = i;
             // A->v[j]->x[Ap] = B->x[p]
-            SPEX_CHECK(SPEX_mpz_set(A->v[j]->x[Ap], SPEX_1D(B, p, mpz)));
+            SPEX_MPZ_SET(A->v[j]->x[Ap], SPEX_1D(B, p, mpz));
             Ap++;
         }
         A->v[j]->nz = Ap;
     }
-    SPEX_CHECK(SPEX_mpq_set(A->scale, B->scale));
+    SPEX_MPQ_SET(A->scale, B->scale);
 
     (*A_handle) = A;
     return SPEX_OK;

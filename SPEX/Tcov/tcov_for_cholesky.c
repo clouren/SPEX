@@ -100,7 +100,7 @@ bool spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     TEST_CHECK (SPEX_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
-    SPEX_FREE_ALL ;
+    SPEX_FREE_ALL;
     return (!pretend_to_fail);
 }
 
@@ -134,7 +134,7 @@ bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
     TEST_CHECK (SPEX_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
-    SPEX_FREE_ALL ;
+    SPEX_FREE_ALL;
     return (!pretend_to_fail);
 }
 
@@ -409,7 +409,7 @@ int main (int argc, char *argv [])
     TEST_CHECK_FAILURE (SPEX_cholesky_backslash (NULL, SPEX_MPQ, NULL, NULL, NULL),
         SPEX_PANIC);
     spex_set_initialized (true);
-    SPEX_FREE_ALL ;
+    SPEX_FREE_ALL;
 
     printf ("%s: all tests passed\n\n", __FILE__);
     fprintf (stderr, "%s: all tests passed\n\n", __FILE__);

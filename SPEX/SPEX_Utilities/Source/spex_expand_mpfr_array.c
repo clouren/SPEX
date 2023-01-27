@@ -62,9 +62,9 @@ SPEX_info spex_expand_mpfr_array
     SPEX_MPZ_SET_NULL(one);
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
 
-    SPEX_CHECK(SPEX_mpq_init(temp));
-    SPEX_CHECK(SPEX_mpz_init(gcd));
-    SPEX_CHECK(SPEX_mpz_init(one));
+    SPEX_MPQ_INIT(temp);
+    SPEX_MPZ_INIT(gcd);
+    SPEX_MPZ_INIT(one);
 
     x_mpq = spex_create_mpq_array (n);
     if (x_mpq == NULL)
@@ -82,25 +82,25 @@ SPEX_info spex_expand_mpfr_array
     // Find the gcd to reduce scale
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_mpz_set_ui(one, 1));
+    SPEX_MPZ_SET_UI(one, 1);
     // Find an initial GCD
     for (i = 0; i < n; i++)
     {
         if (!nz_found)
         {
-            SPEX_CHECK(SPEX_mpz_cmp_ui(&r1, x_out[i], 0));
+            SPEX_MPZ_CMP_UI(&r1, x_out[i], 0);
             if (r1 != 0)
             {
                 nz_found = true;
                 k = i;
-                SPEX_CHECK(SPEX_mpz_set(gcd, x_out[i]));
+                SPEX_MPZ_SET(gcd, x_out[i]);
             }
         }
         else
         {
             // Compute the GCD of the numbers, stop if gcd == 1
-            SPEX_CHECK(SPEX_mpz_gcd(gcd, gcd, x_out[i]));
-            SPEX_CHECK(SPEX_mpz_cmp(&r2, gcd, one));
+            SPEX_MPZ_GCD(gcd, gcd, x_out[i]);
+            SPEX_MPZ_CMP(&r2, gcd, one);
             if (r2 == 0)
             {
                 break;
@@ -126,8 +126,8 @@ SPEX_info spex_expand_mpfr_array
         {
             SPEX_MPZ_DIVEXACT(x_out[i],x_out[i],gcd);
         }
-        SPEX_CHECK(SPEX_mpq_set_z(temp,gcd));
-        SPEX_CHECK(SPEX_mpq_div(scale,scale,temp));
+        SPEX_MPQ_SET_Z(temp,gcd);
+        SPEX_MPQ_DIV(scale,scale,temp);
     }
     SPEX_FREE_ALL;
     return SPEX_OK;

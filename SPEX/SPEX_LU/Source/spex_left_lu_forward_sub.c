@@ -73,7 +73,7 @@ SPEX_info spex_left_lu_forward_sub
         {
             hx = SPEX_2D(h, i, k, int64);
             // If x[i][k] = 0, can skip operations and continue to next i
-            SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, i, k, mpz)));
+            SPEX_MPZ_SGN(&sgn, SPEX_2D(x, i, k, mpz));
             if (sgn == 0) {continue;}
 
             //------------------------------------------------------------------
@@ -89,9 +89,9 @@ SPEX_info spex_left_lu_forward_sub
                 // x[i] = x[i] / rhos[hx]
                 if (hx > -1)
                 {
-                    SPEX_CHECK(SPEX_mpz_divexact( SPEX_2D(x, i, k, mpz),
-                                                  SPEX_2D(x, i, k, mpz),
-                                                  SPEX_1D(rhos, hx, mpz)));
+                    SPEX_MPZ_DIVEXACT(SPEX_2D(x, i, k, mpz),
+                                      SPEX_2D(x, i, k, mpz),
+                                      SPEX_1D(rhos, hx, mpz));
                 }
             }
 
@@ -106,27 +106,26 @@ SPEX_info spex_left_lu_forward_sub
                 jnew = L->i[j];
 
                 // skip if Lx[j] is zero
-                SPEX_CHECK(SPEX_mpz_sgn(&sgn, L->x.mpz[j]));
+                SPEX_MPZ_SGN(&sgn, L->x.mpz[j]);
                 if (sgn == 0) {continue;}
 
                 // j > i
                 if (jnew > i)
                 {
                     // check if x[jnew] is zero
-                    SPEX_CHECK(SPEX_mpz_sgn(&sgn, SPEX_2D(x, jnew, k, mpz)));
+                    SPEX_MPZ_SGN(&sgn, SPEX_2D(x, jnew, k, mpz));
                     if (sgn == 0)
                     {
                         // x[j] = x[j] - lji xi
-                        SPEX_CHECK(SPEX_mpz_submul(SPEX_2D(x, jnew, k, mpz),
-                                                   SPEX_1D(L, j, mpz),
-                                                   SPEX_2D(x, i, k, mpz)));
+                        SPEX_MPZ_SUBMUL(SPEX_2D(x, jnew, k, mpz),
+                                        SPEX_1D(L, j, mpz),
+                                        SPEX_2D(x, i, k, mpz));
                         // x[j] = x[j] / rhos[i-1]
                         if (i > 0)
                         {
-                            SPEX_CHECK(
-                                SPEX_mpz_divexact(SPEX_2D(x, jnew, k, mpz),
-                                                  SPEX_2D(x, jnew, k, mpz),
-                                                  SPEX_1D(rhos, i-1, mpz)));
+                            SPEX_MPZ_DIVEXACT(SPEX_2D(x, jnew, k, mpz),
+                                              SPEX_2D(x, jnew, k, mpz),
+                                              SPEX_1D(rhos, i-1, mpz));
                         }
                     }
                     else
@@ -137,32 +136,30 @@ SPEX_info spex_left_lu_forward_sub
                         {
                             // x[j] = x[j] * rhos[i-1]
                             SPEX_MPZ_MUL(SPEX_2D(x, jnew, k, mpz),
-                                                    SPEX_2D(x, jnew, k, mpz),
-                                                    SPEX_1D(rhos, i-1, mpz));
+                                         SPEX_2D(x, jnew, k, mpz),
+                                         SPEX_1D(rhos, i-1, mpz));
                             // x[j] = x[j] / rhos[hx]
                             if (hx > -1)
                             {
-                                SPEX_CHECK(
-                                    SPEX_mpz_divexact(SPEX_2D(x, jnew, k, mpz),
-                                                      SPEX_2D(x, jnew, k, mpz),
-                                                      SPEX_1D(rhos, hx, mpz)));
+                                SPEX_MPZ_DIVEXACT(SPEX_2D(x, jnew, k, mpz),
+                                                  SPEX_2D(x, jnew, k, mpz),
+                                                  SPEX_1D(rhos, hx, mpz));
                             }
                         }
                         // x[j] = x[j] * rhos[i]
                         SPEX_MPZ_MUL(SPEX_2D(x, jnew, k, mpz),
-                                                SPEX_2D(x, jnew, k, mpz),
-                                                SPEX_1D(rhos, i, mpz));
+                                     SPEX_2D(x, jnew, k, mpz),
+                                     SPEX_1D(rhos, i, mpz));
                         // x[j] = x[j] - lmi xi
-                        SPEX_CHECK(SPEX_mpz_submul(SPEX_2D(x, jnew, k, mpz),
-                                                   SPEX_1D(L, j, mpz),
-                                                   SPEX_2D(x, i, k, mpz)));
+                        SPEX_MPZ_SUBMUL(SPEX_2D(x, jnew, k, mpz),
+                                        SPEX_1D(L, j, mpz),
+                                        SPEX_2D(x, i, k, mpz));
                         // x[j] = x[j] / rhos[i-1]
                         if (i > 0)
                         {
-                            SPEX_CHECK(
-                                SPEX_mpz_divexact(SPEX_2D(x, jnew, k, mpz),
-                                                  SPEX_2D(x, jnew, k, mpz),
-                                                  SPEX_1D(rhos, i-1, mpz)));
+                            SPEX_MPZ_DIVEXACT(SPEX_2D(x, jnew, k, mpz),
+                                              SPEX_2D(x, jnew, k, mpz),
+                                              SPEX_1D(rhos, i-1, mpz));
                         }
                     }
                     //h[jnew][k] = i;

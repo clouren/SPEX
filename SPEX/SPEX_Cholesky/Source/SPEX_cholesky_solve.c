@@ -130,9 +130,9 @@ SPEX_info SPEX_cholesky_solve
     // to convert x into into the actual solution of A x = b.
     // Mathematically, set scale = b->scale * rhos[n-1] / PAP->scale
 
-    SPEX_CHECK(SPEX_mpq_set_z(b2->scale, (*det)));
-    SPEX_CHECK(SPEX_mpq_mul(b2->scale, b2->scale, b->scale));
-    SPEX_CHECK(SPEX_mpq_div(b2->scale, b2->scale, F->scale_for_A));
+    SPEX_MPQ_SET_Z(b2->scale, (*det));
+    SPEX_MPQ_MUL(b2->scale, b2->scale, b->scale);
+    SPEX_MPQ_DIV(b2->scale, b2->scale, F->scale_for_A);
 
     // allocate space for x as dense MPQ matrix
     SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
@@ -145,10 +145,10 @@ SPEX_info SPEX_cholesky_solve
         for (int64_t j = 0 ; j < b->n ; j++)
         {
 
-            SPEX_CHECK(SPEX_mpq_set_z(SPEX_2D(x,  pi, j, mpq),
-                                      SPEX_2D(b2,  i, j, mpz)));
-            SPEX_CHECK(SPEX_mpq_div(SPEX_2D(x,  pi, j, mpq),
-                                    SPEX_2D(x,  pi, j, mpq), b2->scale));
+            SPEX_MPQ_SET_Z(SPEX_2D(x,  pi, j, mpq),
+                                      SPEX_2D(b2,  i, j, mpz));
+            SPEX_MPQ_DIV(SPEX_2D(x,  pi, j, mpq),
+                                    SPEX_2D(x,  pi, j, mpq), b2->scale);
         }
     }
 

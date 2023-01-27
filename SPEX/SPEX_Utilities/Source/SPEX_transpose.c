@@ -76,16 +76,16 @@ SPEX_info SPEX_transpose
             // assign C->x[q] = A->x[p]
             if (A->type == SPEX_MPZ)
             {
-                SPEX_CHECK(SPEX_mpz_set(C->x.mpz[q], A->x.mpz[p]));
+                SPEX_MPZ_SET(C->x.mpz[q], A->x.mpz[p]);
             }
             else if (A->type == SPEX_MPQ)
             {
-                SPEX_CHECK(SPEX_mpq_set(C->x.mpq[q], A->x.mpq[p]));
+                SPEX_MPQ_SET(C->x.mpq[q], A->x.mpq[p]);
             }
             else if (A->type == SPEX_MPFR)
             {
-                SPEX_CHECK(SPEX_mpfr_set(C->x.mpfr[q], A->x.mpfr[p],
-                    SPEX_OPTION_ROUND(option)));
+                SPEX_MPFR_SET(C->x.mpfr[q], A->x.mpfr[p],
+                    SPEX_OPTION_ROUND(option));
             }
             else if (A->type == SPEX_INT64)
             {
@@ -97,7 +97,7 @@ SPEX_info SPEX_transpose
             }
         }
     }
-    SPEX_CHECK(SPEX_mpq_set(C->scale, A->scale));
+    SPEX_MPQ_SET(C->scale, A->scale);
 
     (*C_handle) = C;
     SPEX_FREE_WORK;

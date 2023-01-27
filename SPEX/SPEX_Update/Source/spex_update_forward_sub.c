@@ -44,7 +44,7 @@ SPEX_info spex_update_forward_sub // perform sparse forward substitution
     for (i = 0; i < n; i++)
     {
         // skip if x(P[i]) == 0
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x[P[i]]));
+        SPEX_MPZ_SGN(&sgn, x->x[P[i]]);
         if (sgn == 0)       { continue; }
 
         // perform i-th IPGE update for x

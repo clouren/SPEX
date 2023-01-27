@@ -149,8 +149,8 @@ SPEX_info spex_check_solution
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
     mpq_t scale; SPEX_MPQ_SET_NULL(scale);
 
-    SPEX_CHECK (SPEX_mpq_init(temp));
-    SPEX_CHECK(SPEX_mpq_init(scale));
+    SPEX_MPQ_INIT(temp);
+    SPEX_MPQ_INIT(scale);
     SPEX_CHECK (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
         b->nzmax, false, true, option));
 
@@ -167,15 +167,15 @@ SPEX_info spex_check_solution
             {
                 // temp = A[p][i] (note this must be done seperately since A is
                 // mpz and temp is mpq)
-                SPEX_CHECK(SPEX_mpq_set_z(temp, A->x.mpz[p]));
+                SPEX_MPQ_SET_Z(temp, A->x.mpz[p]);
 
                 // temp = temp*x[i]
-                SPEX_CHECK(SPEX_mpq_mul(temp, temp,
-                                        SPEX_2D(x, i, j, mpq)));
+                SPEX_MPQ_MUL(temp, temp,
+                                        SPEX_2D(x, i, j, mpq));
 
                 // b2[p] = b2[p]-temp
-                SPEX_CHECK(SPEX_mpq_add(SPEX_2D(b2, A->i[p], j, mpq),
-                                        SPEX_2D(b2, A->i[p], j, mpq),temp));
+                SPEX_MPQ_ADD(SPEX_2D(b2, A->i[p], j, mpq),
+                                        SPEX_2D(b2, A->i[p], j, mpq),temp);
             }
         }
     }
@@ -184,16 +184,16 @@ SPEX_info spex_check_solution
     // Apply scales of A and b to b2 before comparing the b2 with scaled b'
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(SPEX_mpq_div(scale, b->scale, A->scale));
+    SPEX_MPQ_DIV(scale, b->scale, A->scale);
 
     // Apply scaling factor, but ONLY if it is not 1
     int r;
-    SPEX_CHECK(SPEX_mpq_cmp_ui(&r, scale, 1, 1));
+    SPEX_MPQ_CMP_UI(&r, scale, 1, 1);
     if (r != 0)
     {
         for (i = 0; i < b2->m*b2->n; i++)
         {
-            SPEX_CHECK(SPEX_mpq_mul(b2->x.mpq[i], b2->x.mpq[i], scale));
+            SPEX_MPQ_MUL(b2->x.mpq[i], b2->x.mpq[i], scale);
         }
     }
 
@@ -206,10 +206,10 @@ SPEX_info spex_check_solution
         for (i = 0; i < b->m; i++)
         {
             // temp = b[i] (correct b)
-            SPEX_CHECK(SPEX_mpq_set_z(temp, SPEX_2D(b, i, j, mpz)));
+            SPEX_MPQ_SET_Z(temp, SPEX_2D(b, i, j, mpz));
 
             // set check false if b!=b2
-            SPEX_CHECK(SPEX_mpq_equal(&r, temp, SPEX_2D(b2, i, j, mpq)));
+            SPEX_MPQ_EQUAL(&r, temp, SPEX_2D(b2, i, j, mpq));
             if (r == 0)
             {
                 *Is_correct = false;

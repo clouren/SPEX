@@ -57,7 +57,7 @@ SPEX_info spex_update_get_scattered_v
     for (p = 0 ; p < v->nz ; p++)
     {
         // skip the entry if it is exactly zero
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, v->x[p]));
+        SPEX_MPZ_SGN(&sgn, v->x[p]);
         if (sgn != 0)
         {
             i = v->i[p];
@@ -76,13 +76,13 @@ SPEX_info spex_update_get_scattered_v
             if (keep_v)
             {
                 // make a copy of the mpz value
-                SPEX_CHECK(SPEX_mpz_set (sv->x[i], v->x[p]));
+                SPEX_MPZ_SET (sv->x[i], v->x[p]);
             }
             else
             {
                 // swapping mpz pointer, which is more efficient
                 // in this case, v is modified
-                SPEX_CHECK(SPEX_mpz_swap(sv->x[i], v->x[p]));
+                SPEX_MPZ_SWAP(sv->x[i], v->x[p]);
             }
             sv->i[(sv->nz)++] = i;
         }

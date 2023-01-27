@@ -50,7 +50,7 @@ SPEX_info spex_left_lu_get_smallest_pivot
     j = n;
     flag = top;
     mpz_t small; SPEX_MPZ_SET_NULL(small);
-    SPEX_CHECK(SPEX_mpz_init(small));
+    SPEX_MPZ_INIT(small);
 
     //--------------------------------------------------------------------------
     // Find an initial pivot. Fails if all terms are 0 in array x
@@ -62,11 +62,11 @@ SPEX_info spex_left_lu_get_smallest_pivot
         inew = xi[flag];
 
         //check if inew can be pivotal
-        SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[inew]));
+        SPEX_MPZ_SGN(&sgn, x->x.mpz[inew]);
         if (pivs[inew] < 0 && sgn != 0)
         {
             // Current smallest pivot
-            SPEX_CHECK(SPEX_mpz_set(small, x->x.mpz[inew]));
+            SPEX_MPZ_SET(small, x->x.mpz[inew]);
             // Current smallest pivot location
             *pivot = inew;
             // Where to start the search for rest of nonzeros
@@ -86,16 +86,16 @@ SPEX_info spex_left_lu_get_smallest_pivot
     {
         inew = xi[i];
         // check if inew can be pivotal
-        SPEX_CHECK(SPEX_mpz_cmpabs(&r, small, x->x.mpz[inew]));
+        SPEX_MPZ_CMPabs(&r, small, x->x.mpz[inew]);
         if (pivs[inew] < 0 && r > 0)
         {
-            SPEX_CHECK(SPEX_mpz_sgn(&sgn, x->x.mpz[inew]));
+            SPEX_MPZ_SGN(&sgn, x->x.mpz[inew]);
             if (sgn != 0)
             {
                 // Current best pivot location
                 *pivot = inew;
                 // Current best pivot value
-                SPEX_CHECK(SPEX_mpz_set(small, x->x.mpz[inew]));
+                SPEX_MPZ_SET(small, x->x.mpz[inew]);
             }
         }
     }
