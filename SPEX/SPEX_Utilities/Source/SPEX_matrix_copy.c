@@ -289,7 +289,7 @@ SPEX_info SPEX_matrix_copy
                                         C->i [nz] = i ;
                                         SPEX_MPZ_SET (
                                             SPEX_1D (C, nz, mpz),
-                                            Y->x.mpz[ i + j*A->m] ));
+                                            Y->x.mpz[ i + j*A->m] );
                                         nz++ ;
                                     }
                                 }
