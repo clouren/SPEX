@@ -2,7 +2,7 @@
 // SPEX_Cholesky/spex_cholesky_up_factor: Up-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2022, Chris Lourenco, Jinhao Chen,
+// SPEX_Cholesky: (c) 2022-2023, Chris Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later

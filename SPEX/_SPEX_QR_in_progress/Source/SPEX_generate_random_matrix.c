@@ -2,7 +2,7 @@
 // SPEX_QR/Source/SPEX_generate_random_matrix.c: Generate a random dense matrix
 //------------------------------------------------------------------------------
 
-// SPEX_QR: (c) 2021-2022, Chris Lourenco, Lorena Mejia Domenzain,
+// SPEX_QR: (c) 2021-2023, Chris Lourenco, Lorena Mejia Domenzain,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

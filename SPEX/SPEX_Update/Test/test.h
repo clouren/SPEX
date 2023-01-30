@@ -2,7 +2,7 @@
 // SPEX_Update/Test/test.h: #include file for the test programs
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2022, Chris Lourenco, Jinhao Chen,
+// SPEX_Update: (c) 2020-2023, Chris Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

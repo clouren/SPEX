@@ -2,7 +2,7 @@
 # SPEX_Update/Test/Makefile: compile and run SPEX_update performance test
 #-------------------------------------------------------------------------------
 
-# SPEX_Update: (c) 2020-2021, Jinhao Chen, Timothy A. Davis,
+# SPEX_Update: (c) 2020-2023, Jinhao Chen, Timothy A. Davis,
 # Erick Moreno-Centeno, Texas A&M University.  All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
