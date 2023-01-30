@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_LU_demo2.c: example of simple SPEX_LU call for triplet format
+// Demos/spex_demo_lu_simple2.c: example of simple SPEX_LU call for triplet format
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_MPZ, option));
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_MPZ, option));
     fclose(mat_file);
 
     // Read in b. The output of this demo function is b in dense format with
@@ -92,7 +92,7 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(SPEX_read_dense(&b, rhs_file, option));
+    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
 
     // Check if the size of A matches b

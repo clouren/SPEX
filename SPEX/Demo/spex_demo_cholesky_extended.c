@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_Chol_demo_extended: example of extended call of SPEX_Cholesky
+// Demos/spex_demo_cholesky_extended: example of extended call of SPEX_Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022-2023, Chris Lourenco, Jinhao Chen,
@@ -53,7 +53,7 @@ int main( int argc, char *argv[] )
     DEMO_OK(SPEX_create_default_options(&option));
 
     // Process the command line
-    DEMO_OK(SPEX_process_command_line(argc, argv, option,
+    DEMO_OK(spex_demo_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ int main( int argc, char *argv[] )
         return 0;
     }
 
-    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_FP64, option));
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
     n = A->n;
     // For this code, we utilize a vector of all ones as the RHS vector
@@ -85,7 +85,7 @@ int main( int argc, char *argv[] )
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(SPEX_read_dense(&b, rhs_file, option));
+    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
 
     //--------------------------------------------------------------------------

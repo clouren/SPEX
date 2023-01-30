@@ -21,7 +21,7 @@
 
 #include "demos.h"
 
-SPEX_info spex_tripread_double
+SPEX_info spex_demo_tripread_double
 (
     SPEX_matrix *A_handle,      // Matrix to be populated
     FILE *file,                 // file to read from (must already be open)

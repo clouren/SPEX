@@ -12,7 +12,7 @@
 
 #include "demos.h"
 
-SPEX_info SPEX_process_command_line //processes the command line
+SPEX_info spex_demo_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char *argv[],           // set of command line arguments

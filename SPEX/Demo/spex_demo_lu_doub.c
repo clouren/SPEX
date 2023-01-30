@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_LU_demo_doub.c: example of simple SPEX_LU call for double matrix
+// Demos/spex_demo_lu_doub.c: example of simple SPEX_LU call for double matrix
 //------------------------------------------------------------------------------
 
 // SPEX_LU: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
@@ -127,7 +127,7 @@ int main (int argc, char *argv[])
     // option->order = SPEX_AMD.
     //--------------------------------------------------------------------------
 
-    DEMO_OK(SPEX_process_command_line(argc, argv, option,
+    DEMO_OK(spex_demo_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -148,7 +148,7 @@ int main (int argc, char *argv[])
     }
 
     //DEMO_OK(SPEX_tripread(&A, mat_file, option));
-    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_FP64, option));
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
 
 #if 0

@@ -15,7 +15,7 @@
 #include "demos.h"
 
 
-SPEX_info SPEX_read_dense
+SPEX_info spex_demo_read_dense
 (
     SPEX_matrix *b_handle,  // Matrix to be constructed
     FILE *file,             // file to read from (must already be open)

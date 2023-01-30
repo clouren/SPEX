@@ -21,7 +21,7 @@
 
 #include "demos.h"
 
-SPEX_info SPEX_tripread
+SPEX_info spex_demo_tripread
 (
     SPEX_matrix *A_handle,      // Matrix to be populated
     FILE *file,                 // file to read from (must already be open)
@@ -38,11 +38,12 @@ SPEX_info SPEX_tripread
     
     switch (C_type)
     {
+        default:
         case SPEX_MPZ:
-            SPEX_CHECK(spex_tripread_mpz(A_handle, file, option));
+            SPEX_CHECK(spex_demo_tripread_mpz(A_handle, file, option));
             break;
         case SPEX_FP64:
-            SPEX_CHECK(spex_tripread_double(A_handle, file, option));
+            SPEX_CHECK(spex_demo_tripread_double(A_handle, file, option));
             break;
     }
 

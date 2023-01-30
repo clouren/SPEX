@@ -20,7 +20,7 @@
 }
 
 
-SPEX_info SPEX_check_solution
+SPEX_info spex_demo_check_solution
 (
     const SPEX_matrix A,         // Input matrix
     const SPEX_matrix x,         // Solution vectors

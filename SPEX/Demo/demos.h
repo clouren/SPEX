@@ -18,7 +18,7 @@
     ok = method ;                               \
     if (ok != SPEX_OK)                          \
     {                                           \
-        SPEX_determine_error (ok) ;             \
+        spex_demo_determine_error (ok) ;             \
         FREE_WORKSPACE ;                        \
         return 0 ;                              \
     }                                           \
@@ -27,7 +27,7 @@
 #define SPEX_MIN(a,b) (((a) < (b)) ? (a) : (b))
 
 /* Purpose: This processes the command line for user specified options */
-SPEX_info SPEX_process_command_line //processes the command line
+SPEX_info spex_demo_process_command_line //processes the command line
 (
     int64_t argc,           // number of command line arguments
     char *argv[],           // set of command line arguments
@@ -44,7 +44,7 @@ void SPEX_show_usage(void);
 /* Purpose: This function reads in a matrix stored in a triplet format.
  * This format used can be seen in any of the example mat files.
  */
-SPEX_info SPEX_tripread
+SPEX_info spex_demo_tripread
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE *file,                 // file to read from (must already be open)
@@ -55,7 +55,7 @@ SPEX_info SPEX_tripread
 /* Purpose: This function reads in a double matrix stored in a triplet format.
  * This format used can be seen in any of the example mat files.
  */
-SPEX_info spex_tripread_double
+SPEX_info spex_demo_tripread_double
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE *file,                 // file to read from (must already be open)
@@ -65,7 +65,7 @@ SPEX_info spex_tripread_double
 /* Purpose: This function reads in a matrix stored in a triplet format.
  * This format used can be seen in any of the example mat files.
  */
-SPEX_info spex_tripread_mpz
+SPEX_info spex_demo_tripread_mpz
 (
     SPEX_matrix *A_handle,     // Matrix to be constructed
     FILE *file,                 // file to read from (must already be open)
@@ -73,7 +73,7 @@ SPEX_info spex_tripread_mpz
 ) ;
 
 /* Purpose: SPEX_read_dense: read a dense matrix. */
-SPEX_info SPEX_read_dense
+SPEX_info spex_demo_read_dense
 (
     SPEX_matrix *b_handle,      // Matrix to be constructed
     FILE *file,                  // file to read from (must already be open)
@@ -82,13 +82,13 @@ SPEX_info SPEX_read_dense
 
 /* Purpose: Determine why a SPEX_Chol function failed
  */
-void SPEX_determine_error
+void spex_demo_determine_error
 (
     SPEX_info ok
 );
 
 
-SPEX_info SPEX_check_solution
+SPEX_info spex_demo_check_solution
 (
     const SPEX_matrix A,         // Input matrix
     const SPEX_matrix x,         // Solution vectors

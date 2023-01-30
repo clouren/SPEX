@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_Backslash_demo: example of SPEX_Blackslash
+// Demos/spex_demo_backslash: example of SPEX_Blackslash
 //------------------------------------------------------------------------------
 
 // SPEX_Backslash: (c) 2021-2023, Chris Lourenco, Jinhao Chen,
@@ -20,7 +20,7 @@
     SPEX_matrix_free(&A,NULL);          \
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&x,NULL);          \
-    SPEX_matrix_free(&x2, NULL);        \	
+    SPEX_matrix_free(&x2, NULL);        \
     SPEX_FREE(option);                  \
     SPEX_finalize();                    \
 }                                       \
@@ -53,7 +53,7 @@ int main( int argc, char *argv[] )
     int64_t rat = 1;
 
     // Process the command line
-    DEMO_OK(SPEX_process_command_line(argc, argv, option,
+    DEMO_OK(spex_demo_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
 
     // Note, there are a few matrices in BasisLIB that dont fit in double
     // Need to use the other tripread for those.
-    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_MPZ, option));
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_MPZ, option));
     fclose(mat_file);
     n = A->n;
 
@@ -84,7 +84,7 @@ int main( int argc, char *argv[] )
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(SPEX_read_dense(&b, rhs_file, option));
+    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
 
     //--------------------------------------------------------------------------
@@ -106,14 +106,13 @@ int main( int argc, char *argv[] )
 
     printf("\nSPEX Backslash Factor & Solve time: %lf\n", t_tot);
 
-    // Note: roundoff will have occured in converting the exact solution
-    // to the double x.
-
     option->print_level=1;
-    DEMO_OK( SPEX_check_solution(A,x,b,option));
+    DEMO_OK( spex_demo_check_solution(A,x,b,option));
 
 
     // x2 is a copy of the solution. x2 is a dense matrix with double entries
+    // Note: roundoff will have occured in converting the exact solution
+    // to the double x.
     DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
 
     //--------------------------------------------------------------------------

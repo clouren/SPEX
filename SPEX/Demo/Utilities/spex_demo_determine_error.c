@@ -14,7 +14,7 @@
 #include "demos.h"
 
 
-void SPEX_determine_error
+void spex_demo_determine_error
 (
     SPEX_info ok
 )

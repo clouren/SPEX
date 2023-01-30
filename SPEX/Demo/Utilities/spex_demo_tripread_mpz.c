@@ -22,7 +22,7 @@
 #include "demos.h"
 
 
-SPEX_info spex_tripread_mpz
+SPEX_info spex_demo_tripread_mpz
 (
     SPEX_matrix *A_handle,      // Matrix to be constructed
     FILE *file,                 // file to read from (must already be open)

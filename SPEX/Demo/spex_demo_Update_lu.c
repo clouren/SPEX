@@ -51,7 +51,7 @@ int main(int argc, char *argv[] )
 
     char *mat_name, *rhs_name;
     int64_t rat = 1;
-    DEMO_OK(SPEX_process_command_line(argc, argv, option,
+    DEMO_OK(spex_demo_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
     
     FILE *mat_file = fopen(mat_name, "r");
@@ -61,7 +61,7 @@ int main(int argc, char *argv[] )
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_MPZ ,option));
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_MPZ ,option));
     fclose(mat_file);
 
     //--------------------------------------------------------------------------

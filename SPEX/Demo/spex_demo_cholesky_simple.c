@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demos/SPEX_Chol_demo_simple.c: example of simple call of SPEX_Cholesky
+// Demos/spex_demo_cholesky_simple.c: example of simple call of SPEX_Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2022-2023, Chris Lourenco, Jinhao Chen,
@@ -68,7 +68,7 @@ int main (int argc, char **argv)
     option->order = SPEX_AMD; //AMD is default for Cholesky
     
     // Process the command line
-    DEMO_OK(SPEX_process_command_line(argc, argv, option,
+    DEMO_OK(spex_demo_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -85,7 +85,7 @@ int main (int argc, char **argv)
         return 0;
     }
 
-    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_FP64, option));
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
 
     int64_t n = A->n;
@@ -101,7 +101,7 @@ int main (int argc, char **argv)
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(SPEX_read_dense(&b, rhs_file, option));
+    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
 
     // Check if the size of A matches b
@@ -131,7 +131,7 @@ int main (int argc, char **argv)
 
     // check solution
     option->print_level=1;
-    DEMO_OK ( SPEX_check_solution(A,x,b,option));
+    DEMO_OK ( spex_demo_check_solution(A,x,b,option));
 
     //--------------------------------------------------------------------------
     // Free memory
