@@ -20,6 +20,7 @@
     SPEX_matrix_free(&A,NULL);          \
     SPEX_matrix_free(&b,NULL);          \
     SPEX_matrix_free(&x,NULL);          \
+    SPEX_matrix_free(&x2, NULL);        \	
     SPEX_FREE(option);                  \
     SPEX_finalize();                    \
 }                                       \
@@ -42,6 +43,7 @@ int main( int argc, char *argv[] )
     SPEX_matrix A = NULL;
     SPEX_matrix b = NULL;
     SPEX_matrix x = NULL;
+    SPEX_matrix x2 = NULL;
 
     // Set default options
     SPEX_options option = NULL;
@@ -69,7 +71,7 @@ int main( int argc, char *argv[] )
 
     // Note, there are a few matrices in BasisLIB that dont fit in double
     // Need to use the other tripread for those.
-    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_FP64, option));
+    DEMO_OK(SPEX_tripread(&A, mat_file, SPEX_MPZ, option));
     fclose(mat_file);
     n = A->n;
 
@@ -96,7 +98,7 @@ int main( int argc, char *argv[] )
 
     option->print_level = 0;
 
-    DEMO_OK( SPEX_backslash(&x, SPEX_FP64, A, b, option));
+    DEMO_OK( SPEX_backslash(&x, SPEX_MPQ, A, b, option));
 
     clock_t end = clock();
 
@@ -107,10 +109,12 @@ int main( int argc, char *argv[] )
     // Note: roundoff will have occured in converting the exact solution
     // to the double x.
 
-    // compute residual?
+    option->print_level=1;
+    DEMO_OK( SPEX_check_solution(A,x,b,option));
 
-    // FIXME compute in integer / rational?
 
+    // x2 is a copy of the solution. x2 is a dense matrix with double entries
+    DEMO_OK ( SPEX_matrix_copy(&x2, SPEX_DENSE, SPEX_FP64, x, option));
 
     //--------------------------------------------------------------------------
     // Free Memory
