@@ -478,7 +478,6 @@ SPEX_info spex_cast_array
             break ;
 
     }
-    //FIXME TODO Why does this SPEX_FREE_ALL doesn't have a semicolon?
-    SPEX_FREE_ALL
+    SPEX_FREE_ALL ;
     return (SPEX_OK);
 }

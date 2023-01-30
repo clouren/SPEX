@@ -114,7 +114,7 @@
     #include "this file.h"
 */
 
-// then, since SPEC_FREE_ALL is already defined, it isn't #defined below.
+// then, since SPEX_FREE_ALL is already defined, it isn't #defined below.
 //
 // Definitions of these macros:
 //
@@ -162,7 +162,7 @@
         info = (method) ;           \
         if (info != SPEX_OK)        \
         {                           \
-            SPEX_FREE_ALL;         \
+            SPEX_FREE_ALL;          \
             return (info) ;         \
         }                           \
     }

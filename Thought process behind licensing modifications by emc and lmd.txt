@@ -1,4 +1,7 @@
-Utils - Basis of everything   - C,E,T,J
+
+Utils - Basis of everything   - C,E,T,J,L
+Demos - Basis of everything   - C,E,T,J,L
+
 LU    - Basis of everything   - C,E,T,J
 Chol  - Needs utils, part of the code is simply modified LU - C,E,T,L, <-- 'J'
 QR    - Needs utils, "structuraly" same, but the core functions are distinct  - C,E,T,L

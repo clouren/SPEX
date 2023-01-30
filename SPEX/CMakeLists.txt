@@ -217,7 +217,7 @@ if ( DEMO )
     include_directories ( Demo )
     file ( GLOB SPEX_DEMO_SOURCES "Demo/Utilities/*.c" )
 
-    add_executable ( spex_demo_backslash    "Demo/spex_demo_backslash.c"    ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_backslash         "Demo/spex_demo_backslash.c"         ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_cholesky_extended "Demo/spex_demo_cholesky_extended.c" ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_cholesky_simple   "Demo/spex_demo_cholesky_simple.c"   ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_lu_doub           "Demo/spex_demo_lu_doub.c"           ${SPEX_DEMO_SOURCES} )
@@ -227,9 +227,8 @@ if ( DEMO )
     add_executable ( spex_demo_Update_chol       "Demo/spex_demo_Update_chol.c"       ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_Update_lu         "Demo/spex_demo_Update_lu.c"         ${SPEX_DEMO_SOURCES} )
 
-
     # Libraries required for Demo programs
-    target_link_libraries ( spex_demo_backslash    PUBLIC spex )
+    target_link_libraries ( spex_demo_backslash         PUBLIC spex )
     target_link_libraries ( spex_demo_cholesky_extended PUBLIC spex )
     target_link_libraries ( spex_demo_cholesky_simple   PUBLIC spex )
     target_link_libraries ( spex_demo_lu_doub           PUBLIC spex )

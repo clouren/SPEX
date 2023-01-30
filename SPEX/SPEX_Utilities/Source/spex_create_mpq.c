@@ -11,8 +11,9 @@
 /* Purpose: This function safely creates and initializes an mpq_t entry.
  */
 
+// Tim FIXME: describe why this is here
+
 #include "spex_util_internal.h"
-//FIXME TODO why the heck do we need this function? instead of calling directly SPEX_MPQ_INIT == SPEX_CHECK(SPEX_mpq_init ?
 SPEX_info spex_create_mpq
 (
     mpq_t x                  // mpq_t entry to be initialized

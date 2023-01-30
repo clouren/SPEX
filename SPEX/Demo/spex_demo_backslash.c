@@ -104,7 +104,13 @@ int main( int argc, char *argv[] )
 
     printf("\nSPEX Backslash Factor & Solve time: %lf\n", t_tot);
 
-    // FIXME: so ... did it work or not???  Must check solution
+    // Note: roundoff will have occured in converting the exact solution
+    // to the double x.
+
+    // compute residual?
+
+    // FIXME compute in integer / rational?
+
 
     //--------------------------------------------------------------------------
     // Free Memory

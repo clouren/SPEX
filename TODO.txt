@@ -21,7 +21,7 @@ user guide: state that SPEX_initialize cannot be called by multiple
     SPEX_thread_finalize
         later: copy in user guide from Overleaf
 
-lots of FIXMEs in the code
+lots of FIXME's in the code
 
 
 later:
