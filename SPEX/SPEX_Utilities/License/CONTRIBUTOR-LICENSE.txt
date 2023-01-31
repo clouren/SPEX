@@ -1,6 +1,6 @@
-SLIP LU Individual Contributor License Agreement
+SPEX Utilities Individual Contributor License Agreement
 
-Thank you for your interest in contributing to SLIP LU ("We" or "Us").
+Thank you for your interest in contributing to SPEX ("We" or "Us").
 
 This contributor agreement ("Agreement") documents the rights granted by
 contributors to Us. To make this document effective, please sign it and send it
@@ -160,9 +160,11 @@ software project managed by Us.
     apply notwithstanding any failure of essential purpose of this Agreement or
     any limited remedy to the maximum extent possible under law.
 
-Us
-Christopher Lourenco, and all SLIP LU co-authors:
+
+All SPEX co-authors:
+Christopher Lourenco
 Jinhao Chen
+Lorena Mejia Domenzain
 Timothy A. Davis
 Erick Moreno-Centeno
 

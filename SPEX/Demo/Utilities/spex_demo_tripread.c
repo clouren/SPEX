@@ -1,23 +1,30 @@
 //------------------------------------------------------------------------------
-// SPEX_tripread: reads a matrix stored in triplet format
+// Demo/spex_demo_tripread: reads a matrix stored in triplet format of a given type
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function reads a double or mpz matrix stored in triplet format
- * This format used can be seen in any of the example mat files.
+/* Purpose: This function reads a matrix stored in triplet format of a given type
+ * This format used is illustrated in the example mat files.
  *
  * The first line of the file contains three integers: m, n, nnz,
  * where the matrix is m-by-n with nnz entries.
  *
- * This is followed by nnz lines, each containing a single triplet: i, j, aij,
+ * Each of the following nnz lines contains a single triplet: i, j, aij,
  * which defines the row index (i), column index (j), and value (aij) of
  * the entry A(i,j).  
  */
+
+// Lore FIXME: We had a miscommunication error. What we need is that the other two
+// trireads---which overlap about 80%, including all of the flow, logic and error 
+// checking---should be merged into a single file. This eliminates the unecessary 
+// and difficult to maintain redundancies.
+
 
 #include "demos.h"
 

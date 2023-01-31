@@ -2,8 +2,9 @@
 // SPEX_Utilities/spex_util_internal: include file for internal use in SPEX_Utility functions
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -146,12 +147,12 @@
 
     #define SPEX_CHECK(method)      \
     {                               \
-        info = (method) ;           \
+        info = (method);            \
         if (info != SPEX_OK)        \
         {                           \
             printf("file %s line %d\n",__FILE__,__LINE__);\
-            SPEX_FREE_ALL;         \
-            return (info) ;         \
+            SPEX_FREE_ALL;          \
+            return (info);          \
         }                           \
     }
 
@@ -159,11 +160,11 @@
 
     #define SPEX_CHECK(method)      \
     {                               \
-        info = (method) ;           \
+        info = (method);            \
         if (info != SPEX_OK)        \
         {                           \
             SPEX_FREE_ALL;          \
-            return (info) ;         \
+            return (info);          \
         }                           \
     }
 
@@ -179,11 +180,11 @@
 
 #define SPEX_PRINTF(...)                                    \
 {                                                           \
-    int (*prfunc) (const char *, ...) ;                     \
-    prfunc = SuiteSparse_config_printf_func_get ( ) ;       \
+    int (*prfunc)(const char *, ...);                       \
+    prfunc = SuiteSparse_config_printf_func_get( );         \
     if (prfunc != NULL)                                     \
     {                                                       \
-        prfunc (__VA_ARGS__) ;                              \
+        prfunc(__VA_ARGS__);                                \
     }                                                       \
 }
 

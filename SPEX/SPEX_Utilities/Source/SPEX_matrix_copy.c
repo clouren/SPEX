@@ -2,8 +2,9 @@
 // SPEX_Utilities/SPEX_matrix_copy: create a copy of a matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -22,14 +23,14 @@
 // matrix A in any of these 16 formats, into an output matrix C in any of the
 // 16 supported formats.
 
-#define SPEX_FREE_WORK                  \
-    SPEX_matrix_free (&T, option);     \
-    SPEX_matrix_free (&Y, option);     \
-    SPEX_FREE (W);
+#define SPEX_FREE_WORK                \
+    SPEX_matrix_free(&T, option);     \
+    SPEX_matrix_free(&Y, option);     \
+    SPEX_FREE(W);
 
-#define SPEX_FREE_ALL                   \
-    SPEX_FREE_WORK ;                    \
-    SPEX_matrix_free (&C, option);
+#define SPEX_FREE_ALL                 \
+    SPEX_FREE_WORK;                   \
+    SPEX_matrix_free(&C, option);
 
 #include "spex_util_internal.h"
 
@@ -214,7 +215,7 @@ SPEX_info SPEX_matrix_copy
                 case SPEX_DENSE:
                 {
                     // Y = typecast the values of A into the type of C
-                    SPEX_CHECK (spex_cast_matrix (&Y, C_type, A, option));
+                    SPEX_CHECK( spex_cast_matrix(&Y, C_type, A, option) );
                     int s ;
 
                     // count the actual nonzeros in Y
@@ -761,9 +762,8 @@ SPEX_info SPEX_matrix_copy
     // free workspace and return result
     //--------------------------------------------------------------------------
 
-    SPEX_FREE_WORK ;
-    (*C_handle) = C ;
-
+    SPEX_FREE_WORK;
+    (*C_handle) = C;
     return (SPEX_OK);
 }
 

@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/spex_demo_lu_extended.c: example of extended SPEX_LU call for 
-//                                       double mat.
+// Demo/spex_demo_lu_extended.c: example of extended SPEX_LU call for a double matrix.
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------

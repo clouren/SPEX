@@ -1,9 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_LU/Demo/example.c: example of simple SPEX_LU call for random matrix
+// Demo/example.c: example of simple SPEX_LU call using as input a random matrix
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------

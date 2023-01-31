@@ -1,5 +1,5 @@
-Utils - Basis of everything   - C,E,T,J,L (all coauthors always)
-Demos - Basis of everything   - C,E,T,J,L (all coauthors always)
+Utils - Basis of everything - C,E,T,J,L (everybody)
+Demos - Use everything      - C,E,T,J,L (everybody)
 
 LU    - Basis of everything   - C,E,T,J
 Chol  - Needs utils, part of the code is simply modified LU - C,E,T,L, <-- 'J'

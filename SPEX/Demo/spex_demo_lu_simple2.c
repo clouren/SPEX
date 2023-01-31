@@ -1,9 +1,10 @@
 //------------------------------------------------------------------------------
-// Demos/spex_demo_lu_simple2.c: example of simple SPEX_LU call for triplet format
+// Demo/spex_demo_lu_simple2.c: example of simple SPEX_LU call for triplet format
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
