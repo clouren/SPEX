@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demo/SPEX_Update_demo_lu.c: demo for SPEX_Update library
+// Demo/spex_update_demo_lu.c: demo for SPEX_Update library
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2020-2023, Christopher Lourenco, Jinhao Chen,

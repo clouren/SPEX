@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demo/SPEX_check_solution: checks whether a given vector exactly solves Ax=b
+// Demo/spex_check_solution: checks whether a given vector exactly solves Ax=b
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,

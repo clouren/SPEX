@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demo/SPEX_tripread_double: reads a double matrix stored in triplet format
+// Demo/spex_tripread_double: reads a double matrix stored in triplet format
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,

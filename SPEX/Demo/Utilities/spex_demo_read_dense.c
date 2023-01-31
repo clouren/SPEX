@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demo/SPEX_read_dense: reads an integral dense matrix
+// Demo/spex_read_dense: reads an integral dense matrix
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
