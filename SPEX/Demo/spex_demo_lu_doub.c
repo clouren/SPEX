@@ -148,7 +148,6 @@ int main (int argc, char *argv[])
         return 0;
     }
 
-    //DEMO_OK(SPEX_tripread(&A, mat_file, option));
     DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
 

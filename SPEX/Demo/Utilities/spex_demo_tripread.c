@@ -20,11 +20,6 @@
  * the entry A(i,j).  
  */
 
-// Lore FIXME: We had a miscommunication error. What we need is that the other two
-// trireads---which overlap about 80%, including all of the flow, logic and error 
-// checking---should be merged into a single file. This eliminates the unecessary 
-// and difficult to maintain redundancies.
-
 
 #include "demos.h"
 
@@ -32,27 +27,101 @@ SPEX_info spex_demo_tripread
 (
     SPEX_matrix *A_handle,      // Matrix to be populated
     FILE *file,                 // file to read from (must already be open)
-    SPEX_type C_type,          // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
+    SPEX_type C_type,          // C->type: mpz_t or double
     SPEX_options option
 )
 {
     SPEX_info info ;
-    if (A_handle == NULL || file == NULL)
+    ASSERT(A_handle!=NULL);
+    ASSERT(file!=NULL);
+
+    (*A_handle) = NULL ;
+
+    int64_t m, n, nz;
+    
+    if (C_type != SPEX_FP64 && C_type != SPEX_MPZ )
     {
-        printf ("invalid input\n");
+        printf("%d\n",C_type);
+        printf ("this function only supports double or mpz matrices\n");
+    }
+
+    // Read in size of matrix & number of nonzeros
+    int s = fscanf(file, "%"PRId64" %"PRId64" %"PRId64"\n", &m, &n, &nz);
+    if (feof(file) || s < 3)
+    {
+        printf ("premature end-of-file 1\n");
         return SPEX_INCORRECT_INPUT;
     }
     
-    switch (C_type)
+    // Allocate memory for A
+    // A is a triplet mpz_t or  double matrix
+    SPEX_matrix A = NULL;
+    info = SPEX_matrix_allocate(&A, SPEX_TRIPLET, C_type, m, n, nz,
+        false, true, option);
+
+    if (info != SPEX_OK)
     {
-        default:
-        case SPEX_MPZ:
-            SPEX_CHECK(spex_demo_tripread_mpz(A_handle, file, option));
-            break;
+        printf ("unable to allocate matrix\n");
+        return (info);
+    }
+    
+    // Read in the values from file
+    
+    switch(C_type)
+    {
         case SPEX_FP64:
-            SPEX_CHECK(spex_demo_tripread_double(A_handle, file, option));
+            for (int64_t k = 0; k < nz; k++)
+            {
+                s = fscanf(file, "%"PRId64" %"PRId64" %lf\n",
+                    &(A->i[k]), &(A->j[k]), &(A->x.fp64[k]));
+                if ((feof(file) && k != nz-1) || s < 3)
+                {
+                    printf ("premature end-of-file\n");
+                    SPEX_matrix_free(&A, option);
+                    return SPEX_INCORRECT_INPUT;
+                }
+                //Conversion from 1 based to 0 based
+                A->i[k] -= 1;
+                A->j[k] -= 1;
+            }
+            break;
+            
+        case SPEX_MPZ:
+            for (int64_t k = 0; k < nz; k++)
+            {
+                info = SPEX_gmp_fscanf(file, "%"PRId64" %"PRId64" %Zd\n",
+                        &A->i[k], &A->j[k], &A->x.mpz[k]);
+                if ((feof(file) && k != nz-1) || info != SPEX_OK)
+                {
+                    printf ("premature end-of-file 2\n");
+                    SPEX_matrix_free(&A, option);
+                    return SPEX_INCORRECT_INPUT;
+                }
+                A->i[k] -= 1;
+                A->j[k] -= 1;
+            }
             break;
     }
+    
+    // the triplet matrix now has nz entries
+    A->nz = nz;
+    
+    info = SPEX_matrix_check (A, option);
+    if (info != SPEX_OK)
+    {
+        printf ("invalid matrix\n");
+        return (info);
+    }
+    
+    // A now contains our input matrix in triplet format. We now
+    // do a matrix copy to get it into CSC form
+    // C is a copy of A which is CSC and mpz_t
+    SPEX_matrix C = NULL;
+    SPEX_matrix_copy(&C, SPEX_CSC, SPEX_MPZ, A, option);
+
+    // Free A, set A_handle
+    SPEX_matrix_free(&A, option);
+    (*A_handle) = C;
 
     return SPEX_OK;
 }
