@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALL;
+#define SPEX_FREE_ALL ;
 
 #include "spex_cholesky_internal.h"
 
