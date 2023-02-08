@@ -9,17 +9,39 @@ Files:
     matrix                  right-hand-side         description
     ------                  ---------------         -----------
     10teams.mat.txt         10teams.rhs.txt         Basislib matrix
-    tomography.mat          tomography.mat.rhs      Earth science matrix from MathWorks 
-    LF10.mat.txt            LF10.rhs.txt            SPD linear 1D beam matrix from Oberwolfach model reduction benchmark collection (collected from the SuiteSparse Matrix Collection)
-    LFAT5.mat.txt           LFAT5.rhs.txt           SPD linear 1D beam matrix from Oberwolfach model reduction benchmark collection (collected from the SuiteSparse Matrix Collection)
-    Trefethen_300.mat.txt   Trefethen_300.rhs.txt   Diagonal matrix with primes (collected from the SuiteSparse Matrix Collection)
-    494_bus.mat.txt         494_bus.rhs.txt         SPD matrix from the Harwell-Boeing collection (collected from the SuiteSparse Matrix Collection)
-    mesh1e1.mat.txt         mesh1e1.rhs.txt         SPD matrix from NASA (collected from the SuiteSparse Matrix Collection)
+    tomography.mat          tomography.mat.rhs      Earth science matrix from 
+                                                    MathWorks 
+    LF10.mat.txt            LF10.rhs.txt            SPD linear 1D beam matrix 
+                                                    from Oberwolfach model 
+                                                    reduction benchmark collection 
+                                                    (collected from the SuiteSparse 
+                                                    Matrix Collection)
+    LFAT5.mat.txt           LFAT5.rhs.txt           SPD linear 1D beam matrix 
+                                                    from Oberwolfach model 
+                                                    reduction benchmark collection 
+                                                    (collected from the SuiteSparse 
+                                                    Matrix Collection)
+    Trefethen_500.mat.txt   Trefethen_500.rhs.txt   Diagonal matrix with primes 
+                                                    (collected from the SuiteSparse 
+                                                    Matrix Collection)
+    494_bus.mat.txt         494_bus.rhs.txt         SPD matrix from the Harwell
+                                                    -Boeing collection (collected 
+                                                    from the SuiteSparse Matrix 
+                                                    Collection)
+    mesh1e1.mat.txt         mesh1e1.rhs.txt         SPD matrix from NASA 
+                                                    (collected from the SuiteSparse 
+                                                    Matrix Collection)
     example.mat.txt         example.rhs.txt         Integer matrix
-    NSR8K.mat.txt           NSR8K.rhs.txt           FIXME
-    test1.mat.txt           test1.rhs.txt           Unsymmetric double matrix created to test SPEX Cholesky
-    test2.mat.txt           test2.rhs.txt           Unsymmetric integer matrix created to test SPEX Cholesky
-    test3.mat.txt           test3.rhs.txt           Unsymmetric matrix created to test SPEX Cholesky
-    test4.mat.txt           test4.rhs.txt           Symmetric indefinite matrix created to test SPEX Cholesky
+    NSR8K.mat.txt           NSR8K.rhs.txt           Matrix from a real-world 
+                                                    mixed integer program 
+                                                    (collected from MIPLIB)
+    test1.mat.txt           test1.rhs.txt           Unsymmetric double matrix 
+                                                    created to test SPEX Cholesky
+    test2.mat.txt           test2.rhs.txt           Unsymmetric integer matrix 
+                                                    created to test SPEX Cholesky
+    test3.mat.txt           test3.rhs.txt           Unsymmetric matrix created 
+                                                    to test SPEX Cholesky
+    test4.mat.txt           test4.rhs.txt           Symmetric indefinite matrix 
+                                                    created to test SPEX Cholesky
     test.mat.txt            test.rhs.txt            Integer matrix to test SPEX LU
 

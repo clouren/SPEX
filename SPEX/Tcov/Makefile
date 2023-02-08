@@ -9,8 +9,6 @@
 
 #-------------------------------------------------------------------------------
 
-# FIXME: use the right demos
-
 default: cov
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
