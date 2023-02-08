@@ -198,6 +198,28 @@ if ( NOT NSTATIC )
 endif ( )
 
 #-------------------------------------------------------------------------------
+# python interface
+#-------------------------------------------------------------------------------
+
+file ( GLOB SPEX_PYTHON_SOURCES "Python/Source/*.c" )
+
+add_library ( spexpython SHARED ${SPEX_PYTHON_SOURCES} )
+
+set_target_properties ( spexpython PROPERTIES
+    VERSION ${SPEX_VERSION_MAJOR}.${SPEX_VERSION_MINOR}.${SPEX_VERSION_SUB}
+    C_STANDARD_REQUIRED 11
+    SOVERSION ${SPEX_VERSION_MAJOR}
+    PUBLIC_HEADER "Python/SPEX_connect.h" )
+
+target_link_libraries ( spexpython PUBLIC spex )
+
+install ( TARGETS spexpython
+    LIBRARY DESTINATION ${SUITESPARSE_LIBDIR}
+    ARCHIVE DESTINATION ${SUITESPARSE_LIBDIR}
+    RUNTIME DESTINATION ${SUITESPARSE_BINDIR}
+    PUBLIC_HEADER DESTINATION ${SUITESPARSE_INCLUDEDIR} )
+
+#-------------------------------------------------------------------------------
 # Demo library and programs
 #-------------------------------------------------------------------------------
 

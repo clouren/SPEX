@@ -7,6 +7,7 @@
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
+// FIXME: rename this file to spex_demos.h
 //------------------------------------------------------------------------------
 
 
@@ -40,7 +41,7 @@ SPEX_info spex_demo_process_command_line //processes the command line
 );
 
 /* Purpose: This function shows the usage of the code.*/
-void SPEX_show_usage(void);
+void SPEX_show_usage(void); // FIXME
 
 /* Purpose: This function reads in a matrix stored in a triplet format.
  * This format used can be seen in any of the example mat files.

@@ -54,7 +54,7 @@ err_matlab = norm (x-xtrue)
 % The matrix 2008 is a rank deficient rectangular matrix
 % If we compute A = A'*A we obtain this 9*9 integer matrix:
 %
-%    4    -1    -1     0    -1     0     0    -1     0
+%     4    -1    -1     0    -1     0     0    -1     0
 %    -1     4     0    -1     0    -1     0    -1     0
 %    -1     0     4    -1    -1     0    -1     0     0
 %     0    -1    -1     4     0    -1    -1     0     0

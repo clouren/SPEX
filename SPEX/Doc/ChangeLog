@@ -1,7 +1,50 @@
 FIXME, 2023: version 3.0.0
 
-    * major change to the API:
+    * major change to the API: new SPEX_factorization
+        and SPEX_symbolic_analysis objects.  Uniform
+        analyze/factorize/solve functions for all kinds
+        of factorizations.
     * FIXME: describe all changes since SPEX 2.0.2
+    * thread-safe: SPEX 2.0 was not thread-safe if the
+        user application called it in parallel; v3.0
+        is now thread-safe with SPEX_thread_initialize
+        and SPEX_thread_finalize.
+    * python interface: 1 or 2 lines here FIXME
+    * MATLAB interface: 1 or 2 lines here FIXME
+    * unified demos: 1 or 2 lines here FIXME
+    * SPEX_Cholesky: 1 or 2 lines here FIXME
+    * SPEX_Backslash: 1 or 2 lines here FIXME
+    * CMake build system
+
+    (1): provide SPEX Cholesky, robust implementation and documentation of
+    sparse REF Cholesky;
+
+    (2): provide a robust implementation of the SPEX Backslash package, which automatically determines (between SPEX LU and SPEX
+    Cholesky) the best exact algorithm to use when solving a sparse linear
+    system,
+
+    (3): provide MATLAB and Python interfaces to the entire SPEX library (including the previously published SPEX Left LU [Lourenco et al . 2022], which lacked a Python interface), and
+
+    Broadly, the entire SPEX software package has been redesigned since the
+    publication of SPEX Left LU in [Lourenco et al . 2022]. Specifically, the
+    ANSI C application programming interface (API) was completely redesigned
+    with new comprehensive symbolic analysis and factorization structures,
+    which greatly reduced the number of arguments required for all functions
+    (and handled/tracked by the user). For instance, this new interface allows
+    the expert API of the code to solve any given SLE with only three simple
+    function calls: analyze, factorize, and solve; and provides, in two simple
+    yet comprehensive structures, all the components that an expert user may
+    need to efficiently solve several related (either symbolically or
+    numerically) systems without the need for redoing the symbolic analysis or
+    re-factorizing. Moreover, the provided MATLAB and Python interfaces for
+    SPEX LU, Cholesky, and Backslash allow the user to obtain an exact solution
+    with a single line of code. Next, to simplify the installation for end
+    users, the build system has been overhauled to compile and create the SPEX
+    library using CMake. Most importantly, this CMake build system allows the
+    end user to utilize SPEX within C, MATLAB, or Python without ever having to
+    tinker with makefiles. Finally, to make the code amenable to use within
+    multi-threaded software systems, the entire SPEX package was made thread
+    safe.
 
 Dec 9, 2022: version 2.0.2
 
