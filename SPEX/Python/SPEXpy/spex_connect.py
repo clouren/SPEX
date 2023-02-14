@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/_connect/spex_connect.py: link SPEX to use in Python
+# SPEX/Python/SPEX/spex_connect.py: link SPEX to use in Python
 #-------------------------------------------------------------------------------
 
 # SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
@@ -12,9 +12,7 @@
 import ctypes
 import numpy as np
 from numpy.ctypeslib import ndpointer
-import scipy
-from scipy.sparse import csc_matrix
-from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc, linalg
+from .SPEX_error import *
 
 def spex_connect( A, b, order, charOut, algorithm ):
     ## A is a scipy.sparse.csc_matrix (data must be float64) #technically it only needs to be numerical
@@ -23,7 +21,7 @@ def spex_connect( A, b, order, charOut, algorithm ):
     ##--------------------------------------------------------------------------
     ## Load the library with the "C bridge code"
     ##--------------------------------------------------------------------------
-    lib = ctypes.CDLL('../build/SPEX_connect.so')
+    lib = ctypes.CDLL('../build/libspexpython.so')
     c_backslash = lib.spex_python
 
     ##--------------------------------------------------------------------------
@@ -62,7 +60,7 @@ def spex_connect( A, b, order, charOut, algorithm ):
                 charOut)
 
     if ok!=0:
-        raise SPEXerror(determine_error(ok))
+        raise SPEX_error(determine_error(ok))
 
     ##--------------------------------------------------------------------------
     ## Cast solution into correct type (string or double)
@@ -70,7 +68,7 @@ def spex_connect( A, b, order, charOut, algorithm ):
     if charOut:
         val = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_char_p))
         x=[]
-    	for i in range(n):
+        for i in range(n):
             x.append(val[i])
     else:
         #x = ctypes.cast(x_v, ctypes.POINTER(ctypes.c_double))

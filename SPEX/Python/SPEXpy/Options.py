@@ -29,8 +29,7 @@ class Options:
         elif self.ordering=="amd": ##amd is the default ordering for Cholesky
             order=2
         else:
-            print("Invalid order options")
-            raise ValueError
+            raise ValueError("Invalid order options")
 
         return order
 
@@ -41,8 +40,7 @@ class Options:
         elif self.output=="string":
             charOut=True
         else:
-            print("Invalid output type options")
-            raise ValueError
+            raise ValueError("Invalid output type options")
 
         return charOut
 

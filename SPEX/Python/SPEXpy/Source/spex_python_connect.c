@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_connect.h"
+#include "spex_python_connect.h"
 #include "spex_cholesky_internal.h"
 
 #define FREE_WORKSPACE                  \

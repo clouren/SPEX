@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/utilities/spex_from_matrix_file.py: read matrix from file
+# SPEX/Python/SPEXpy/spex_from_matrix_file.py: read matrix from file
 #-------------------------------------------------------------------------------
 
 # SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
@@ -11,9 +11,7 @@
 
 
 import numpy as np
-import scipy
-from scipy.sparse import csc_matrix
-from scipy.sparse import coo_matrix, isspmatrix, isspmatrix_csc, linalg
+from scipy.sparse import coo_matrix
 
 def spex_matrix_from_file(fname):
     #fname is the name of the file that contains matrix A
