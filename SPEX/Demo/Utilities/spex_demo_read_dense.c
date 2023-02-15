@@ -13,7 +13,7 @@
  * the values in the file must be integers
  */
 
-#include "demos.h"
+#include "spex_demos.h"
 
 
 SPEX_info spex_demo_read_dense

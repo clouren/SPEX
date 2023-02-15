@@ -21,7 +21,7 @@
  */
 
 
-#include "demos.h"
+#include "spex_demos.h"
 
 SPEX_info spex_demo_tripread
 (

@@ -53,7 +53,7 @@
 // If none of the above args is given, they are set to the following default:
 //
 
-#include "demos.h"
+#include "spex_demos.h"
 
 #define FREE_WORKSPACE                           \
 {                                                \

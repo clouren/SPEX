@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 
-#include "demos.h"
+#include "spex_demos.h"
 
 #undef  FREE_WORKSPACE
 #define FREE_WORKSPACE                      \
