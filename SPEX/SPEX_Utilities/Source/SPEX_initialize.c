@@ -53,7 +53,7 @@ SPEX_info SPEX_initialize ( void )
 
     spex_set_initialized (true);
 
-    // initialize the SPEX GMP interface for the master thread
-    return (spex_gmp_initialize ( ));
+    // initialize the SPEX GMP interface for the primary thread
+    return (spex_gmp_initialize (1));
 }
 

@@ -19,6 +19,6 @@
 SPEX_info SPEX_thread_initialize ( void )
 {
     if (!spex_initialized ( )) return (SPEX_PANIC);
-    return (spex_gmp_initialize ( ));
+    return (spex_gmp_initialize (0)) ;
 }
 

@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 
 // SPEX_finalize frees the working environment for SPEX library.
+// This function must be called by the same user thread that called
+// SPEX_initialize or SPEX_initialize_expert.
 
 #include "spex_util_internal.h"
 
@@ -23,7 +25,8 @@ SPEX_info SPEX_finalize
 
     SPEX_mpfr_free_cache ( );    // Free mpfr internal cache
 
-    spex_gmp_finalize ( );
+    // the primary thread always frees the spex_gmp object
+    spex_gmp_finalize (1);
 
     spex_set_initialized (false);
     return (SPEX_OK);

@@ -42,31 +42,31 @@
 
 #undef SPEX_DEBUG
 // uncomment this line to enable debugging
-//#define SPEX_DEBUG
+// #define SPEX_DEBUG
 
 #ifdef SPEX_DEBUG
 
-#ifdef MATLAB_MEX_FILE
-
-#define ASSERT(x)                                                             \
-{                                                                             \
-    if (!(x))                                                                 \
-    {                                                                         \
-        mexErrMsgTxt ("assertion failed: %s line %d\n", __FILE__, __LINE__) ; \
-    }                                                                         \
-}
+    // debugging enabled
+    #ifdef MATLAB_MEX_FILE
+        // debuging enabled for MATLAB interface
+        #define ASSERT(x)                                           \
+        {                                                           \
+            if (!(x))                                               \
+            {                                                       \
+                mexErrMsgTxt ("assertion failed: %s line %d\n",     \
+                    __FILE__, __LINE__) ;                           \
+            }                                                       \
+        }
+    #else
+        // debuging enabled for C library
+        #include <assert.h>
+        #define ASSERT(x) assert (x)
+    #endif
 
 #else
 
-#include <assert.h>
-#define ASSERT(x) assert (x)
-
-#endif
-
-#else
-
-// debugging disabled
-#define ASSERT(x)
+    // debugging disabled
+    #define ASSERT(x)
 
 #endif
 

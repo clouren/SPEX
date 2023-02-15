@@ -289,7 +289,8 @@ SPEX_info SPEX_factorization_convert
                     // column of U (in CSC) is always the first entry
                     // being inserted to the j-th row of U (in CSR).
                     // In fact, all entries in each vector will be in order.
-                    ASSERT(i == j && mp == 0);
+                    // Thus, i == j is true if and only if mp == 0 is true.
+                    ASSERT ((i == j) == (mp == 0)) ;
                 }
             }
 

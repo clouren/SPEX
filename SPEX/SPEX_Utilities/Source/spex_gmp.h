@@ -36,8 +36,9 @@ typedef struct
     mpz_t  *mpz_archive2 ;  // current second mpz object
     mpq_t  *mpq_archive  ;  // current mpq object
     mpfr_t *mpfr_archive ;  // current mpfr object
-}
-spex_gmp_t ;
+    int primary ;           // 1 if created by SPEX_initialize; 0 for
+                            // SPEX_thread_initialize
+} spex_gmp_t ;
 
 #ifndef SPEX_GMP_LIST_INIT
 // Initial size of the spex_gmp->list.  A size of 32 ensures that the list
@@ -61,9 +62,9 @@ int64_t spex_get_gmp_ntrials (void) ;
 // uncomment this to print memory debugging info
 // #define SPEX_GMP_MEMORY_DEBUG
 
-int spex_gmp_initialize (void) ;
+int spex_gmp_initialize (int primary) ;
 
-void spex_gmp_finalize (void) ;
+void spex_gmp_finalize (int primary) ;
 
 spex_gmp_t *spex_gmp_get (void) ;
 

@@ -12,7 +12,7 @@
 
 cmake_minimum_required ( VERSION 3.19 )
 
-set ( SPEX_DATE "Dec 27, 2022" )
+set ( SPEX_DATE "Feb 15, 2023" )
 set ( SPEX_VERSION_MAJOR 3 )
 set ( SPEX_VERSION_MINOR 0 )
 set ( SPEX_VERSION_SUB   0 )
@@ -248,6 +248,7 @@ if ( DEMO )
     add_executable ( spex_demo_lu_simple2        "Demo/spex_demo_lu_simple2.c"        ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_Update_chol       "Demo/spex_demo_Update_chol.c"       ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_Update_lu         "Demo/spex_demo_Update_lu.c"         ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_threaded          "Demo/spex_demo_threaded.c"          ${SPEX_DEMO_SOURCES} )
 
     # Libraries required for Demo programs
     target_link_libraries ( spex_demo_backslash         PUBLIC spex )
@@ -259,6 +260,7 @@ if ( DEMO )
     target_link_libraries ( spex_demo_lu_simple2        PUBLIC spex )
     target_link_libraries ( spex_demo_Update_chol       PUBLIC spex )
     target_link_libraries ( spex_demo_Update_lu         PUBLIC spex )
+    target_link_libraries ( spex_demo_threaded          PUBLIC spex )
 
 else ( )
 

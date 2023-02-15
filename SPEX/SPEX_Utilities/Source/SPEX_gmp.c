@@ -126,9 +126,10 @@
 // spex_gmp_initialize: initialize the SPEX GMP interface
 //------------------------------------------------------------------------------
 
-// This should be called by SPEX_initialize*, and by SPEX_gmp_initialize.
+// Called by SPEX_initialize* with primary == 1, and by SPEX_thread_initialize
+// with primary == 0.  The object is not allocated if it already exists.
 
-SPEX_info spex_gmp_initialize (void)
+SPEX_info spex_gmp_initialize (int primary)
 {
     if (spex_gmp == NULL)
     {
@@ -158,6 +159,7 @@ SPEX_info spex_gmp_initialize (void)
         spex_gmp->mpz_archive2 = NULL ;
         spex_gmp->mpq_archive  = NULL ;
         spex_gmp->mpfr_archive = NULL ;
+        spex_gmp->primary = primary ;
     }
     return (SPEX_OK);
 }
@@ -166,12 +168,18 @@ SPEX_info spex_gmp_initialize (void)
 // spex_gmp_finalize: finalize the SPEX GMP interface
 //------------------------------------------------------------------------------
 
-// This should be called by SPEX_finalize*, and by SPEX_gmp_finalize.
+// called by SPEX_finalize* with primary == 1, and by SPEX_thread_finalize with
+// primary == 0.
 
-void spex_gmp_finalize (void)
+void spex_gmp_finalize (int primary)
 {
-    // free the spex_gmp object for this thread, if it exists
-    if (spex_gmp != NULL)
+    // free the spex_gmp object for this thread, if it exists.  If this function
+    // is called by SPEX_finalize, then primary == 1 on input, and the spex_gmp
+    // object is always freed.  If primary == 0 on input, then the caller is
+    // SPEX_thread_finalize, and in this case the spex_gmp object is freed only
+    // if spex_gmp->primary is also zero.
+
+    if (spex_gmp != NULL && primary >= spex_gmp->primary)
     {
         // free the spex_gmp->list, if it exists
         if (spex_gmp->list != NULL)
