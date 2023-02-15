@@ -177,7 +177,7 @@ int main (int argc, char *argv [])
         tcov_free));
 
     // disable malloc testing for the first part of the test
-    spex_gmp_ntrials = INT64_MAX ;
+    spex_set_gmp_ntrials (INT64_MAX) ;
     malloc_count = INT64_MAX ;
 
     OK (SPEX_create_default_options (&option));
@@ -387,7 +387,7 @@ int main (int argc, char *argv [])
     option->algo = SPEX_CHOL_UP ;
 
     printf ("Cholesky analyze/factorize/solve, no malloc testing:\n");
-    spex_gmp_ntrials = INT64_MAX ;
+    spex_set_gmp_ntrials (INT64_MAX) ;
     malloc_count = INT64_MAX ;
     ok = spex_test_chol_afs (A, b, option);
     OK (ok ? SPEX_OK : SPEX_PANIC);

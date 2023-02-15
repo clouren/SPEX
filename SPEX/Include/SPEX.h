@@ -207,7 +207,7 @@ typedef enum
     SPEX_DEFAULT_ORDERING = SPEX_DEFAULT,   // Default: colamd for LU
                             // AMD for Cholesky
     SPEX_NO_ORDERING = 1,   // None: A is factorized as-is
-    SPEX_COLAMD = 2,        // COLAMD: Default for LU
+    SPEX_COLAMD = 2,        // COLAMD: Default for LU (and QR in the FUTURE)
     SPEX_AMD = 3            // AMD: Default for Cholesky
 }
 SPEX_preorder ;
@@ -241,7 +241,7 @@ typedef struct
 {
     SPEX_pivot pivot ;     // row pivoting scheme used.
     SPEX_preorder order ;  // column ordering scheme used
-    double tol ;           // tolerance for the row-pivotin methods
+    double tol ;           // tolerance for the row-pivoting methods
                            // SPEX_TOL_SMALLEST and SPEX_TOL_LARGEST
     int print_level ;      // 0: print nothing, 1: just errors,
                            // 2: terse (basic stats from COLAMD/AMD and the
@@ -585,7 +585,7 @@ typedef enum
 {
     SPEX_LU_FACTORIZATION = 0,            // LU factorization
     SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
-    SPEX_QR_FACTORIZATION = 2             // QR factorization
+    SPEX_QR_FACTORIZATION = 2             // QR factorization (FUTURE)
 }
 SPEX_factorization_kind ;
 
@@ -605,7 +605,7 @@ SPEX_factorization_kind ;
 
 typedef struct
 {
-    SPEX_factorization_kind kind;    // LU, Cholesky or QR
+    SPEX_factorization_kind kind;    // LU, Cholesky (or QR in the FUTURE)
 
     //--------------------------------------------------------------------------
     // The permutations of the matrix that are found during the symbolic

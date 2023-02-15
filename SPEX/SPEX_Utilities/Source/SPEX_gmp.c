@@ -212,7 +212,17 @@ spex_gmp_t *spex_gmp_get (void)
  */
 
 #ifdef SPEX_GMP_TEST_COVERAGE
-int64_t spex_gmp_ntrials = -1 ;     // for test coverage only
+static int64_t spex_gmp_ntrials = -1 ;     // for test coverage only
+
+int64_t spex_set_gmp_ntrials (int64_t ntrials)
+{
+    spex_gmp_ntrials = ntrials ;
+}
+
+int64_t spex_get_gmp_ntrials (void)
+{
+    return (spex_gmp_ntrials) ;
+}
 #endif
 
 void *spex_gmp_allocate
@@ -1504,8 +1514,8 @@ SPEX_info SPEX_mpq_set_si
     const uint64_t z
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x);
-    mpq_set_si (x, (signed long int) y, (unsigned long int) x);
+    SPEX_GMPQ_WRAPPER_START (x) ;
+    mpq_set_si (x, (signed long int) y, (unsigned long int) z) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK);
 }
