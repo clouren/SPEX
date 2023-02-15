@@ -51,11 +51,6 @@ is provided.  All it does is use cmake to build each of the packages.
                                 in just /usr/local/lib.
                                 Normally requires "sudu make install"
 
-                make both       compiles SuiteSparse, and then "make install"
-                                will instal in both ./lib and /usr/local/lib
-                                (the latter controlled by CMAKE_INSTALL_PATH).
-                                Normally requires "sudu make install"
-
                 make local      compiles SuiteSparse.
                                 Subsequent "make install will install only
                                 in ./lib, ./include only.  No sudo required.
@@ -129,15 +124,14 @@ You can also use cmake or ccmake directly.  For example, try:
 Acknowledgements
 -----------------------------------------------------------------------------
 
-I would like to thank François Bissey, Sebastien Villemot, Erik Welch, and Jim
-Kitchen for their valuable feedback on the SuiteSparse build system and how it
-works with various Linux / Python distros and other package managers.  If you
-are a maintainer of a SuiteSparse packaging for a Linux distro, conda-forge, R,
-spack, brew, vcpkg, etc, please feel free to contact me if there's anything I
-can do to make your life easier.
+We would like to thank François Bissey, Sebastien Villemot, Erik Welch, Jim
+Kitchen, Markus Mützel, and Fabian Wein for their valuable feedback on the
+SuiteSparse build system and how it works with various Linux / Python distros
+and other package managers.  If you are a maintainer of a SuiteSparse packaging
+for a Linux distro, conda-forge, R, spack, brew, vcpkg, etc, please feel free
+to contact us if there's anything we can do to make your life easier.
 
 See also the various Acknowledgements within each package.
-
 
 Primary Author: Chris Lourenco
 

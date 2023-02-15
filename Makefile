@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Makefile for all of SPEX and its dependent packages
+# Makefile for SPEX and its dependent packages (AMD, COLAMD, SuiteSparse_config)
 #-------------------------------------------------------------------------------
 
 # edit this variable to pass options to cmake:
@@ -41,14 +41,6 @@ global:
 	( cd AMD && $(MAKE) global )
 	( cd COLAMD && $(MAKE) global )
 	( cd SPEX && $(MAKE) global )
-
-# compile; "sudo make install" will install only in /usr/local
-# (or whatever your CMAKE_INSTALL_PREFIX is)
-both:
-	( cd SuiteSparse_config && $(MAKE) both )
-	( cd AMD && $(MAKE) both )
-	( cd COLAMD && $(MAKE) both )
-	( cd SPEX && $(MAKE) both )
 
 # install all packages.  Location depends on prior "make", "make global" etc
 install:
