@@ -62,7 +62,7 @@
 //  q = 1, i.e., using COLAMD
 //  t = 0.1, not being using since p != 3 or 4
 
-#include "demos.h"
+#include "spex_demos.h"
 
 #define FREE_WORKSPACE                           \
 {                                                \

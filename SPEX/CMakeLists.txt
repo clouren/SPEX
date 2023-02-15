@@ -201,7 +201,7 @@ endif ( )
 # python interface
 #-------------------------------------------------------------------------------
 
-file ( GLOB SPEX_PYTHON_SOURCES "Python/Source/*.c" )
+file ( GLOB SPEX_PYTHON_SOURCES "Python/SPEXpy/Source/*.c" )
 
 add_library ( spexpython SHARED ${SPEX_PYTHON_SOURCES} )
 
@@ -209,7 +209,7 @@ set_target_properties ( spexpython PROPERTIES
     VERSION ${SPEX_VERSION_MAJOR}.${SPEX_VERSION_MINOR}.${SPEX_VERSION_SUB}
     C_STANDARD_REQUIRED 11
     SOVERSION ${SPEX_VERSION_MAJOR}
-    PUBLIC_HEADER "Python/Source/SPEX_connect.h" )
+    PUBLIC_HEADER "Python/spex_python_connect.h" )
 
 target_link_libraries ( spexpython PUBLIC spex )
 

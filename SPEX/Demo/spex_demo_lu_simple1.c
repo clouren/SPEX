@@ -16,7 +16,7 @@
 // example > out
 // out is file for output calculated result
 
-#include "demos.h"
+#include "spex_demos.h"
 
 #define FREE_WORKSPACE                       \
 {                                            \

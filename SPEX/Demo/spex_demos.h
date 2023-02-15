@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demo/demos.h: #include file the demo programs
+// Demo/spex_demos.h: #include file the demo programs
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
@@ -7,7 +7,6 @@
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
-// FIXME: rename this file to spex_demos.h
 //------------------------------------------------------------------------------
 
 
@@ -39,9 +38,6 @@ SPEX_info spex_demo_process_command_line //processes the command line
     int64_t *rat            // data type of output solution.
                             // 1: mpz, 2: double, 3: mpfr
 );
-
-/* Purpose: This function shows the usage of the code.*/
-void SPEX_show_usage(void); // FIXME
 
 /* Purpose: This function reads in a matrix stored in a triplet format.
  * This format used can be seen in any of the example mat files.

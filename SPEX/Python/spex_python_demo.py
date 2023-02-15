@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/spex_demo.py: demo of 3 backslash functions with different input 
+# SPEX/Python/spex_python_demo.py: demo of 3 backslash functions with different input 
 #                           matrices
 #-------------------------------------------------------------------------------
 
@@ -15,14 +15,13 @@
 # always exact, unless the matrix A is perfectly singular.
 
 # Import SPEX
-from SPEX import utils, backslash
-from SPEX.utils import Options
+import SPEXpy as SPEX
 
 # Import scientific computing
 import numpy as np
 from numpy.random import default_rng
 from scipy.sparse import csc_matrix
-from scipy.sparse import coo_matrix
+#from scipy.sparse import coo_matrix
 from scipy.sparse import random
 from scipy import stats
 
@@ -31,18 +30,6 @@ from scipy import stats
 ## Cholesky
 ##--------------------------------------------------------------------------
 
-# Read in A from file and populate b
-fname=sys.argv[1]
-A=utils.spex_matrix_from_file(fname)
-b=np.ones(A.shape[0],dtype=np.float64)
-# Solve
-x=backslash.cholesky(A,b)
-print(x)
-
-
-##--------------------------------------------------------------------------
-## Left LU
-##--------------------------------------------------------------------------
 # Create A and B
 row = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
 col = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2])
@@ -51,12 +38,12 @@ A=csc_matrix((data, (row, col)), shape=(3, 3))
 b=np.ones(3,dtype=np.float64)
 
 # Solve
-options=Options("string")
-x=backslash.lu(A,b,options)
+x=SPEX.cholesky_backslash(A,b)
 print(x)
 
+
 ##--------------------------------------------------------------------------
-## Backslash
+## Left LU
 ##--------------------------------------------------------------------------
 
 # Generate a random sparse matrix A and populate b
@@ -69,5 +56,19 @@ A=csc_matrix(S2)
 b=np.ones(n,dtype=np.float64)
 
 # Solve
-x=backslash.general(A,b)
+options=Options("string")
+x=SPEX.lu_backslash(A,b,options)
 print(x)
+
+##--------------------------------------------------------------------------
+## Backslash
+##--------------------------------------------------------------------------
+
+# Read in A from file and populate b
+#fname=sys.argv[1]
+#A=utils.spex_matrix_from_file(fname)
+#b=np.ones(A.shape[0],dtype=np.float64)
+
+# Solve
+#x=SPEX.backslash(A,b)
+#print(x)

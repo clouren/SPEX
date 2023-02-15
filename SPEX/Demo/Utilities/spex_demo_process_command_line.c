@@ -11,7 +11,7 @@
 
 /* Purpose: This processes the command line for user specified options */
 
-#include "demos.h"
+#include "spex_demos.h"
 
 SPEX_info spex_demo_process_command_line //processes the command line
 (

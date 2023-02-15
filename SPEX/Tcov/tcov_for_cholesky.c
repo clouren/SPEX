@@ -14,7 +14,7 @@
  */
 
 #include "tcov_utilities.h"
-#include "chol_demos.h"
+#include "spex_demos.h"
 
 //------------------------------------------------------------------------------
 // BRUTAL: test a method with debug malloc, until it succeeds

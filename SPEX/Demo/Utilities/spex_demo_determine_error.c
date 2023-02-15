@@ -12,7 +12,7 @@
 /* Purpose: Determine why a SPEX function failed
  */
 
-#include "demos.h"
+#include "spex_demos.h"
 
 
 void spex_demo_determine_error
