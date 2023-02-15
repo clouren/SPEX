@@ -19,7 +19,7 @@
     ok = method ;                               \
     if (ok != SPEX_OK)                          \
     {                                           \
-        spex_demo_determine_error (ok) ;             \
+        spex_demo_determine_error (ok) ;        \
         FREE_WORKSPACE ;                        \
         return 0 ;                              \
     }                                           \
