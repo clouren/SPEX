@@ -19,7 +19,7 @@
  *     int64, 4 double. For Ab_type >= 5, it corresponds to 15 type of original
  *     matrix A (i.e., (csc, triplet, dense) x (mpz, mpq, mpfr, int64, double)),
  *     specifically, A->type=(Ab_type-5)%5, and A->kind=(Ab_type-5)/5.
- * N and list1 specify the test list for spex_gmp_ntrials (in SPEX_gmp.h)
+ * N and list1 specify the test list for spex_gmp_ntrials (in SPEX_gmp.c)
  * M and list2 specify the test list for malloc_count (in tcov_utilities.h)
  * N, list1, M, list2 are optional, but N and list1 are required when M and
  * list2 is wanted
@@ -42,8 +42,8 @@
  * information on how to properly use this code.
  */
 
-#define SPEX_FREE_ALL                               \
-{                                                   \
+#define SPEX_FREE_ALL                              \
+{                                                  \
     OK (SPEX_matrix_free (&A, option));            \
     OK (SPEX_matrix_free (&b, option));            \
     OK (SPEX_matrix_free (&B, option));            \
@@ -51,7 +51,7 @@
     OK (SPEX_matrix_free (&sol, option));          \
     OK (SPEX_matrix_free (&sol_doub, option));     \
     OK (SPEX_symbolic_analysis_free (&S, option)); \
-    SPEX_FREE (option);                             \
+    SPEX_FREE (option);                            \
     OK (SPEX_finalize ());                         \
 }
 
@@ -72,14 +72,14 @@ int64_t bxden3[4] = {15,  3,   6,  7};                      // Denominator of b
 
 int main ( int argc, char *argv[])
 {
-    bool IS_SIMPLE_TEST = true;
+    bool is_simple_test = true;
     int Ab_type = 0;
     int64_t malloc_count_list[20]= { -1, -1, -1, -1, -1,
                                      -1, -1, -1, -1, -1,
                                      -1, -1, -1, -1, -1,
                                      -1, -1, -1, -1, -1};
-    int64_t NUM_OF_TRIALS = 0 ;
-    int64_t NUM_OF_MALLOC_T = 0;
+    int64_t num_of_trials = 0 ;
+    int64_t num_of_malloc_t = 0;
     int64_t *gmp_ntrial_list=NULL;         // only used in simple test
     int64_t *malloc_trials_list=NULL;          // only used in simple test
     bool pretend_to_fail = false ;
@@ -109,12 +109,12 @@ int main ( int argc, char *argv[])
 
     if (argc == 1)                         // brutal test
     {
-        IS_SIMPLE_TEST = false;
-        NUM_OF_TRIALS = 20;
+        is_simple_test = false;
+        num_of_trials = 20;
     }
     else                                   // simple test
     {
-        IS_SIMPLE_TEST = true;
+        is_simple_test = true;
 
         int64_t arg_count = 0;
         // type of Matrix A and vector b:
@@ -122,16 +122,16 @@ int main ( int argc, char *argv[])
         Ab_type = atoi(argv[++arg_count]);
         if (!argv[++arg_count])
         {
-            NUM_OF_TRIALS=1;
-            gmp_ntrial_list= malloc (NUM_OF_TRIALS* sizeof(int64_t));
+            num_of_trials=1;
+            gmp_ntrial_list= malloc (num_of_trials* sizeof(int64_t));
             gmp_ntrial_list[0]=-1;
             arg_count--;
         }
         else
         {
-            NUM_OF_TRIALS=atoi(argv[arg_count]);
-            gmp_ntrial_list= malloc (NUM_OF_TRIALS* sizeof(int64_t));
-            for (int64_t k=0; k<NUM_OF_TRIALS; k++)
+            num_of_trials=atoi(argv[arg_count]);
+            gmp_ntrial_list= malloc (num_of_trials* sizeof(int64_t));
+            for (int64_t k=0; k<num_of_trials; k++)
             {
                 if (argv[++arg_count])
                 {
@@ -139,7 +139,7 @@ int main ( int argc, char *argv[])
                 }
                 else
                 {
-                    NUM_OF_TRIALS=1;
+                    num_of_trials=1;
                     gmp_ntrial_list[0]=-1;
                     arg_count--;
                 }
@@ -147,15 +147,15 @@ int main ( int argc, char *argv[])
         }
         if (!argv[++arg_count])
         {
-            NUM_OF_MALLOC_T=1;
-            malloc_trials_list= malloc (NUM_OF_MALLOC_T* sizeof(int64_t));
+            num_of_malloc_t=1;
+            malloc_trials_list= malloc (num_of_malloc_t* sizeof(int64_t));
             malloc_trials_list[0]=MAX_MALLOC_COUNT;//INT_MAX;
         }
         else
         {
-            NUM_OF_MALLOC_T=atoi(argv[arg_count]);
-            malloc_trials_list= malloc (NUM_OF_MALLOC_T* sizeof(int64_t));
-            for (int64_t k=0; k<NUM_OF_MALLOC_T; k++)
+            num_of_malloc_t=atoi(argv[arg_count]);
+            malloc_trials_list= malloc (num_of_malloc_t* sizeof(int64_t));
+            for (int64_t k=0; k<num_of_malloc_t; k++)
             {
                 if (argv[++arg_count])
                 {
@@ -163,7 +163,7 @@ int main ( int argc, char *argv[])
                 }
                 else
                 {
-                    NUM_OF_MALLOC_T=1;
+                    num_of_malloc_t=1;
                     malloc_trials_list[0]=MAX_MALLOC_COUNT;//INT_MAX;
                 }
             }
@@ -171,12 +171,12 @@ int main ( int argc, char *argv[])
 
         #ifdef SPEX_TCOV_SHOW_LIST
         printf ("gmp ntrials list is: ");
-        for (int64_t k=0; k<NUM_OF_TRIALS; k++)
+        for (int64_t k=0; k<num_of_trials; k++)
         {
             printf("%ld   ",gmp_ntrial_list[k]);
         }
         printf("\nmalloc trial list is: ");
-        for (int64_t k=0; k<NUM_OF_MALLOC_T; k++)
+        for (int64_t k=0; k<num_of_malloc_t; k++)
         {
             printf("%d   ",malloc_trials_list[k]);
         }
@@ -228,34 +228,34 @@ int main ( int argc, char *argv[])
     // inner loop iterates for malloc_count initialized from 0 to
     // MAX_MALLOC_COUNT, break when malloc_count>0 at the end of inner loop.
 
-    for (int64_t k=0; k<NUM_OF_TRIALS; k++)
+    for (int64_t k=0; k<num_of_trials; k++)
     {
-        if (IS_SIMPLE_TEST)
+        if (is_simple_test)
         {
             // only the first outter loop will iterate across all list2
             if (k == 1)
             {
-                NUM_OF_MALLOC_T=1;
+                num_of_malloc_t=1;
                 malloc_trials_list[0]=INT_MAX;
             }
         }
         else
         {
             Ab_type = k;
-            NUM_OF_MALLOC_T = MAX_MALLOC_COUNT;
+            num_of_malloc_t = MAX_MALLOC_COUNT;
         }
 
-        for (int64_t kk=0; kk<NUM_OF_MALLOC_T; kk++)
+        for (int64_t kk=0; kk<num_of_malloc_t; kk++)
         {
             pretend_to_fail = false ;
-            if (IS_SIMPLE_TEST)
+            if (is_simple_test)
             {
-                spex_gmp_ntrials=gmp_ntrial_list[k];
-                printf("initial spex_gmp_ntrials=%ld\n",spex_gmp_ntrials);
+                spex_set_gmp_ntrials (gmp_ntrial_list[k]) ;
+                printf("initial spex_gmp_ntrials=%ld\n",spex_get_gmp_ntrials());
                 malloc_count=malloc_trials_list[kk];
                 printf("%"PRId64" out of %"PRId64", "
                     "initial malloc_count=%"PRId64"\n",
-                    kk, NUM_OF_MALLOC_T, malloc_count);
+                    kk, num_of_malloc_t, malloc_count);
             }
             else
             {
@@ -847,7 +847,7 @@ int main ( int argc, char *argv[])
                 SPEX_FREE_ALL;
 
                 // for miscellaneous test, continue to next loop directly
-                if (!IS_SIMPLE_TEST)
+                if (!is_simple_test)
                 {
                     if (malloc_count > 0)
                     {
@@ -965,7 +965,7 @@ int main ( int argc, char *argv[])
             //------------------------------------------------------------------
 
             SPEX_FREE_ALL;
-            if(!IS_SIMPLE_TEST)
+            if(!is_simple_test)
             {
                 if (malloc_count > 0)
                 {
@@ -981,7 +981,7 @@ int main ( int argc, char *argv[])
     // wrapup
     //--------------------------------------------------------------------------
 
-    if (IS_SIMPLE_TEST)
+    if (is_simple_test)
     {
         free(gmp_ntrial_list);
         free(malloc_trials_list);

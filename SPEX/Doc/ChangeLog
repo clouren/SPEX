@@ -1,6 +1,6 @@
-2023: version 3.0.0
+FIXME DATE HERE, 2023: version 3.0.0
 
-    * major change to the API: new SPEX_factorization and SPEX_symbolic_analysis 
+    * major change to the API: new SPEX_factorization and SPEX_symbolic_analysis
         objects.  Uniform analyze/factorize/solve functions for all kinds of 
         factorizations.
     * thread-safe: SPEX 2.0 was not thread-safe if the user application called 

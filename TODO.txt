@@ -9,14 +9,7 @@ All: FIXME: just before submitting, do a pass over the
     Remove SPEX_Update section for v3.0;
     put back in for v3.1
 
-
-FIXME: Doc/ChangeLog DONE
-
 FIXME: 
-
-    #define SPEX_FREE_ALL;
-
-    #define SPEX_FREE_ALL ; DONE
 
 Tim user guide: state that SPEX_initialize cannot be called by multiple
     user threads.  Just one.  Discuss SPEX_thread_initialize and
@@ -24,9 +17,6 @@ Tim user guide: state that SPEX_initialize cannot be called by multiple
         later: copy in user guide from Overleaf
 
 lots of FIXME's in the code
-
-Tim gcc 12.2.0
-
 
 later for v3.1:
 

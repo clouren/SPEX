@@ -48,9 +48,11 @@ spex_gmp_t ;
 #define SPEX_GMP_LIST_INIT 32
 #endif
 
-// FIXME: fails on gcc 12.2.0
-// for debugging only:
-SUITESPARSE_PUBLIC int64_t spex_gmp_ntrials ;
+#ifdef SPEX_GMP_TEST_COVERAGE
+// For testing only
+int64_t spex_set_gmp_ntrials (int64_t ntrials) ;
+int64_t spex_get_gmp_ntrials (void) ;
+#endif
 
 //------------------------------------------------------------------------------
 // SPEX GMP functions

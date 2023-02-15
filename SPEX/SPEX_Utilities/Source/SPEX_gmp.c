@@ -212,7 +212,17 @@ spex_gmp_t *spex_gmp_get (void)
  */
 
 #ifdef SPEX_GMP_TEST_COVERAGE
-int64_t spex_gmp_ntrials = -1 ;     // for test coverage only
+static int64_t spex_gmp_ntrials = -1 ;     // for test coverage only
+
+int64_t spex_set_gmp_ntrials (int64_t ntrials)
+{
+    spex_gmp_ntrials = ntrials ;
+}
+
+int64_t spex_get_gmp_ntrials (void)
+{
+    return (spex_gmp_ntrials) ;
+}
 #endif
 
 void *spex_gmp_allocate
