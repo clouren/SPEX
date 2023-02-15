@@ -1504,8 +1504,8 @@ SPEX_info SPEX_mpq_set_si
     const uint64_t z
 )
 {
-    SPEX_GMPQ_WRAPPER_START (x);
-    mpq_set_si (x, (signed long int) y, (unsigned long int) x);
+    SPEX_GMPQ_WRAPPER_START (x) ;
+    mpq_set_si (x, (signed long int) y, (unsigned long int) z) ;
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK);
 }
