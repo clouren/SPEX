@@ -169,9 +169,15 @@ int main ( int argc, char *argv[])
                 // Initialize SPEX Update process
                 //--------------------------------------------------------------
 
-                TEST_OK(SPEX_initialize_expert (tcov_malloc, tcov_calloc,
+                info = (SPEX_initialize_expert (tcov_malloc, tcov_calloc,
                     tcov_realloc, tcov_free));
-                if (pretend_to_fail) {continue;}
+                if (pretend_to_fail || info == SPEX_OUT_OF_MEMORY)
+                {
+                    spex_set_initialized (false);
+                    continue;
+                }
+                printf ("info %d\n", info) ;
+                TEST_OK (info) ;
 
                 //--------------------------------------------------------------
                 // Allocate memory

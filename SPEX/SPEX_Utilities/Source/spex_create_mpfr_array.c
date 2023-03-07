@@ -41,7 +41,8 @@ mpfr_t *spex_create_mpfr_array
             SPEX_MPFR_SET_NULL(x[i]);
             for (int64_t j = 0; j < i; j++)
             {
-                if ( x[j] != NULL)
+                if ( x[j] != NULL)  // FIXME: compiler warning (tcov):
+                // "comparison will always evaluate to true"
                 {
                     SPEX_MPFR_CLEAR( x[j]);
                 }

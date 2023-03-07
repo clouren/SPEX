@@ -1,27 +1,14 @@
-Tcov: currently not working at all
+FIXME: Tcov: is working but coverage not complete
 
-Tim:
-    sync with latest SuiteSparse
+All: 
+    FIXME: just before submitting, do a pass over the user guide and code.
+    FIXME: Remove SPEX_Update section for v3.0;
+    FIXME: copy in user guide from Overleaf
+    FIXME: see compiler warnings, tagged in files, about NULL pointer tests
 
-    user guide:
-        add thread init/finalize, and SPEX_version to user guide on overleaf.
-        State that SPEX_initialize cannot be called by multiple user threads.
-        Just one.  Discuss SPEX_thread_initialize and SPEX_thread_finalize
-
-All: FIXME: just before submitting, do a pass over the
-    user guide and code.
-    Remove SPEX_Update section for v3.0;
-    then copy in user guide from Overleaf
-
-FIXME: 
-    pick a date: cmake, doc/changelog
-
-lots of FIXME's in the code
-
-
+FIXME: pick a date: cmake, doc/changelog
 
 --------------------------------------------------------------------------------
-
 
 later for v3.1:
 

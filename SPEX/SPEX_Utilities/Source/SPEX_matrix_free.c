@@ -65,7 +65,8 @@ SPEX_info SPEX_matrix_free
                     {
                         for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            if ( A->x.mpz[i] != NULL)
+                            if ( A->x.mpz[i] != NULL)   // FIXME warning:
+                            // "comparison will always evaluate to true"
                             {
                                 SPEX_MPZ_CLEAR( A->x.mpz[i]);
                             }
@@ -79,7 +80,8 @@ SPEX_info SPEX_matrix_free
                     {
                         for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            if ( A->x.mpq[i] != NULL)
+                            if ( A->x.mpq[i] != NULL)   // FIXME warning:
+                            // "comparison will always evaluate to true"
                             {
                                 SPEX_MPQ_CLEAR( A->x.mpq[i]);
                             }
@@ -93,7 +95,8 @@ SPEX_info SPEX_matrix_free
                     {
                         for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            if ( A->x.mpfr[i] != NULL)
+                            if ( A->x.mpfr[i] != NULL)  // FIXME warning:
+                            // "comparison will always evaluate to true"
                             {
                                 SPEX_MPFR_CLEAR( A->x.mpfr[i]);
                             }

@@ -37,13 +37,12 @@ int main (void)
     // is done by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
 
-    SPEX_initialize();
+    SPEX_info ok = SPEX_initialize();
 
     //--------------------------------------------------------------------------
     // Declare and initialize essential variables
     //--------------------------------------------------------------------------
 
-    SPEX_info ok;
     int64_t n = 50, nz = 2500, num=0;
     SPEX_matrix A = NULL ;                     // input matrix
     SPEX_matrix R = NULL ;                     // Random matrix to create A

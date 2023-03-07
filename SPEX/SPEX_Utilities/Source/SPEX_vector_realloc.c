@@ -38,7 +38,8 @@ SPEX_info SPEX_vector_realloc
     {
         for (p = new_size; p < old_size; p++)
         {
-            if (v->x[p] != NULL)
+            if (v->x[p] != NULL)    // FIXME: warning
+            // "comparison will always evaluate to true"
             {
                 SPEX_MPZ_CLEAR(v->x[p]);
             }

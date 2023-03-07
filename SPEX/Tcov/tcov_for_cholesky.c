@@ -49,7 +49,7 @@ void read_test_matrix (SPEX_matrix *A_handle, char *filename)
     SPEX_info info ;
     FILE *f = fopen (filename, "r");
     OK (f == NULL ? SPEX_PANIC : SPEX_OK);
-    OK (SPEX_tripread_double (A_handle, f, NULL));
+    OK (spex_demo_tripread (A_handle, f, SPEX_FP64, NULL));
     fclose (f);
 }
 
@@ -97,7 +97,7 @@ bool spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     TEST_CHECK (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option));
     // disable memory testing when checking the solution
     int64_t save = malloc_count ; malloc_count = INT64_MAX ;
-    TEST_CHECK (SPEX_check_solution (A, x, b, option));
+    TEST_CHECK (spex_demo_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
     SPEX_FREE_ALL;
@@ -131,7 +131,7 @@ bool spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
     TEST_CHECK (SPEX_cholesky_solve (&x, F, b, option));
     // disable memory testing when checking the solution
     int64_t save = malloc_count ; malloc_count = INT64_MAX ;
-    TEST_CHECK (SPEX_check_solution (A, x, b, option));
+    TEST_CHECK (spex_demo_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
     SPEX_FREE_ALL;

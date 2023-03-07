@@ -17,7 +17,7 @@
  *
  * Each of the following nnz lines contains a single triplet: i, j, aij,
  * which defines the row index (i), column index (j), and value (aij) of
- * the entry A(i,j).  
+ * the entry A(i,j).
  */
 
 
@@ -38,7 +38,7 @@ SPEX_info spex_demo_tripread
     (*A_handle) = NULL ;
 
     int64_t m, n, nz;
-    
+
     if (C_type != SPEX_FP64 && C_type != SPEX_MPZ )
     {
         printf("%d\n",C_type);
@@ -52,7 +52,7 @@ SPEX_info spex_demo_tripread
         printf ("premature end-of-file 1\n");
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // Allocate memory for A
     // A is a triplet mpz_t or  double matrix
     SPEX_matrix A = NULL;
@@ -64,9 +64,9 @@ SPEX_info spex_demo_tripread
         printf ("unable to allocate matrix\n");
         return (info);
     }
-    
+
     // Read in the values from file
-    
+
     switch(C_type)
     {
         case SPEX_FP64:
@@ -85,7 +85,7 @@ SPEX_info spex_demo_tripread
                 A->j[k] -= 1;
             }
             break;
-            
+
         case SPEX_MPZ:
             for (int64_t k = 0; k < nz; k++)
             {
@@ -101,18 +101,21 @@ SPEX_info spex_demo_tripread
                 A->j[k] -= 1;
             }
             break;
+        default:
+            printf ("type not supported\n");
+            return SPEX_INCORRECT_INPUT;
     }
-    
+
     // the triplet matrix now has nz entries
     A->nz = nz;
-    
+
     info = SPEX_matrix_check (A, option);
     if (info != SPEX_OK)
     {
         printf ("invalid matrix\n");
         return (info);
     }
-    
+
     // A now contains our input matrix in triplet format. We now
     // do a matrix copy to get it into CSC form
     // C is a copy of A which is CSC and mpz_t

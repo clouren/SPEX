@@ -19,7 +19,6 @@ void *SPEX_malloc
 )
 {
 
-    if (!spex_initialized ( )) return (NULL);
     return (SuiteSparse_malloc (1, size));
 }
 

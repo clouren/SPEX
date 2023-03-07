@@ -18,8 +18,8 @@
 //------------------------------------------------------------------------------
 
 // a global variable, but only accessible within this file.
-SUITESPARSE_PUBLIC
-bool spex_initialize_has_been_called;
+
+bool spex_initialize_has_been_called ;
 bool spex_initialize_has_been_called = false;
 
 bool spex_initialized ( void )
@@ -51,9 +51,12 @@ SPEX_info SPEX_initialize ( void )
         spex_gmp_free           // free function
     );
 
-    spex_set_initialized (true);
-
     // initialize the SPEX GMP interface for the primary thread
-    return (spex_gmp_initialize (1));
+    SPEX_info info = spex_gmp_initialize (1) ;
+    if (info == SPEX_OK)
+    {
+        spex_set_initialized (true);
+    }
+    return (info) ;
 }
 

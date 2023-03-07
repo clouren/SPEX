@@ -2,8 +2,6 @@
 // SPEX_Utilities/SPEX_free: wrapper for free
 //------------------------------------------------------------------------------
 
-//TEST 
-
 // SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 // All Rights Reserved.

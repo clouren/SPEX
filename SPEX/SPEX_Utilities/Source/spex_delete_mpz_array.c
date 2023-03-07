@@ -28,7 +28,8 @@ void spex_delete_mpz_array
     if (x == NULL || (*x) == NULL) {return;}
     for (int64_t i = 0; i < n; i++)
     {
-        if ( (*x) [i] != NULL)
+        if ( (*x) [i] != NULL)  // FIXME: warning
+        // "comparison will always evaluate to true"
         {
             SPEX_MPZ_CLEAR((*x) [i]);
         }

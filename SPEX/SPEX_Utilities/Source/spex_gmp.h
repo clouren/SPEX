@@ -51,7 +51,7 @@ typedef struct
 
 #ifdef SPEX_GMP_TEST_COVERAGE
 // For testing only
-int64_t spex_set_gmp_ntrials (int64_t ntrials) ;
+void spex_set_gmp_ntrials (int64_t ntrials) ;
 int64_t spex_get_gmp_ntrials (void) ;
 #endif
 

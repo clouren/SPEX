@@ -135,7 +135,7 @@ SPEX_info ;
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_DATE "Feb 15, 2023"
+#define SPEX_DATE "Mar FIXME, 2023"
 #define SPEX_VERSION_STRING "3.0.0"
 #define SPEX_VERSION_MAJOR 3
 #define SPEX_VERSION_MINOR 0
@@ -150,11 +150,8 @@ SPEX_info ;
 
 SPEX_info SPEX_version
 (
-    // output
     int version [3],            // SPEX major, minor, and sub version
-    char date [128],            // date of this version
-    char thread_safety [128]    // a string describing the mechanism used to
-                                // make SPEX thread-safe
+    char date [128]             // date of this version
 ) ;
 
 // Requirements: SPEX requires GMP 6.1.2 or later, and MPFR 4.0.2 or later.
@@ -929,12 +926,11 @@ SPEX_info SPEX_finalize
     void
 ) ;
 
-// SPEX is thread-safe but it requires each user thread other than the user's
-// master thread to call SPEX_thread_initialize when it starts, and
-// SPEX_thread_finalize when it finishes.  These two functions must be called
-// after the user's master thread calls SPEX_initialize (or
-// SPEX_initialize_experm) and before the user's master thread calls
-// SPEX_finalize.
+// SPEX is thread-safe but it requires each user thread to call
+// SPEX_thread_initialize when it starts, and SPEX_thread_finalize when it
+// finishes.  These two functions must be called after the user's primary thread
+// calls SPEX_initialize (or SPEX_initialize_experm) and before the user's
+// primary thread calls SPEX_finalize.
 
 SPEX_info SPEX_thread_initialize ( void ) ;
 

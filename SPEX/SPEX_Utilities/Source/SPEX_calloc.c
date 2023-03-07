@@ -20,7 +20,6 @@ void *SPEX_calloc
 )
 {
 
-    if (!spex_initialized ( )) return (NULL);
     return (SuiteSparse_calloc (nitems, size));
 }
 

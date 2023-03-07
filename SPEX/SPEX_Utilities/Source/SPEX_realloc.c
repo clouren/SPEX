@@ -46,12 +46,6 @@ void *SPEX_realloc      // pointer to reallocated block, or original block
 )
 {
 
-    if (!spex_initialized ( ))
-    {
-        (*ok) = false ;
-        return (p);
-    }
-
     int result ;
     void *pnew = SuiteSparse_realloc ((size_t) nitems_new, (size_t) nitems_old,
         size_of_item, p, &result);

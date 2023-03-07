@@ -33,6 +33,8 @@ SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 
 ################################################################################
 
+# FIXME: comment-out or remove SPEX_Update for v3.0
+
 # select the thread-safety mechanism to test: none, openmp, or pthreads.
 # THREADS =
 # THREADS = -fopenmp
@@ -60,7 +62,7 @@ LDLIBS += -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig -lm
 cov: runtests
 	./covall
 
-all: tcov_for_lu spexlu_demo tcov_for_update tcov_for_cholesky
+all: tcov_for_lu spex_demo_lu_extended tcov_for_update tcov_for_cholesky
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
@@ -146,7 +148,13 @@ OBJ_LU = \
     spex_left_lu_ref_triangular_solve.o \
     SPEX_lu_solve.o
 
-.PRECIOUS: SPEX_lu_%.c SPEX_lu_%.c spex_left_lu_%.c spexlu_demo.c lu_demos.c
+.PRECIOUS: SPEX_lu_%.c SPEX_lu_%.c spex_left_lu_%.c \
+    spex_demo_lu_extended.c \
+    spex_demo_check_solution.c \
+    spex_demo_determine_error.c \
+    spex_demo_process_command_line.c \
+    spex_demo_read_dense.c \
+    spex_demo_tripread.c
 
 SPEX_lu_%.c:
 	- ln -s ../SPEX_LU/Source/$@
@@ -157,11 +165,36 @@ SPEX_lu_%.c:
 spex_left_lu_%.c:
 	- ln -s ../SPEX_LU/Source/$@
 
-spexlu_demo.c:
-	- ln -s ../SPEX_LU/Demo/$@
+# spexlu_demo.c: repaced with spex_demo_lu_extended
+# 	- ln -s ../SPEX_LU/Demo/$@
 
-lu_demos.c:
-	- ln -s ../SPEX_LU/Demo/$@
+# lu_demos.c:
+#	- ln -s ../SPEX_LU/Demo/$@
+
+spex_demo_lu_extended.c:
+	- ln -s ../Demo/$@
+
+spex_demo_check_solution.c:
+	- ln -s ../Demo/Utilities/$@
+
+spex_demo_determine_error.c:
+	- ln -s ../Demo/Utilities/$@
+
+spex_demo_process_command_line.c:
+	- ln -s ../Demo/Utilities/$@
+
+spex_demo_read_dense.c:
+	- ln -s ../Demo/Utilities/$@
+
+spex_demo_tripread.c:
+	- ln -s ../Demo/Utilities/$@
+
+DEMO_UTIL = \
+    spex_demo_check_solution.c \
+    spex_demo_determine_error.c \
+    spex_demo_process_command_line.c \
+    spex_demo_read_dense.c \
+    spex_demo_tripread.c
 
 #-------------------------------------------------------------------------------
 # link and compile each .c file in SPEX_Update/Source
@@ -232,22 +265,25 @@ SPEX_cholesky_%.c:
 spex_cholesky_%.c:
 	- ln -s ../SPEX_Cholesky/Source/$@
 
-chol_demos.c:
-	- ln -s ../SPEX_Cholesky/Demo/$@
+#chol_demos.c:
+#	- ln -s ../SPEX_Cholesky/Demo/$@
 
 #-------------------------------------------------------------------------------
 
 tcov_for_lu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
 	$(CC) $(LDFLAGS) tcov_for_lu.c $(CFLAGS) -o tcov_for_lu $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
-spexlu_demo: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spexlu_demo.c lu_demos.c ../SPEX_LU/Demo/lu_demos.h
-	$(CC) $(LDFLAGS) spexlu_demo.c lu_demos.c $(CFLAGS) -o spexlu_demo $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
+# spexlu_demo: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spexlu_demo.c lu_demos.c ../SPEX_LU/Demo/lu_demos.h
+#	$(CC) $(LDFLAGS) spexlu_demo.c lu_demos.c $(CFLAGS) -o spexlu_demo $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
+
+spex_demo_lu_extended: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) spex_demo_lu_extended.c ${DEMO_UTIL} ../Demo/spex_demos.h
+	$(CC) $(LDFLAGS) spex_demo_lu_extended.c ${DEMO_UTIL} $(CFLAGS) -o spex_demo_lu_extended $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
 tcov_for_update: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_update.c simple_rand.c simple_rand.h
 	$(CC) $(LDFLAGS) tcov_for_update.c simple_rand.c $(CFLAGS) -o tcov_for_update $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LDLIBS)
 
-tcov_for_cholesky: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_cholesky.c simple_rand.c simple_rand.h chol_demos.c
-	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_cholesky.c simple_rand.c chol_demos.c -o tcov_for_cholesky $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) $(LDLIBS)
+tcov_for_cholesky: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_cholesky.c simple_rand.c simple_rand.h ${DEMO_UTIL}
+	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_cholesky.c simple_rand.c ${DEMO_UTIL} -o tcov_for_cholesky $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) $(LDLIBS)
 
 #-------------------------------------------------------------------------------
 
@@ -284,10 +320,10 @@ vtests: vtests4llu vtests4luu vtests4chol
 
 # run test for SPEX_LU with valgrind
 vtests4llu: all
-	- $(V) ./spexlu_demo p 2 q 0 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu1.out
-	- $(V) ./spexlu_demo p 3 q 1 o 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu2.out
-	- $(V) ./spexlu_demo p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt > lu3.out
-	- $(V) ./spexlu_demo p 5 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu4.out
+	- $(V) ./spex_demo_lu_extended p 2 q 0 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu1.out
+	- $(V) ./spex_demo_lu_extended p 3 q 1 o 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu2.out
+	- $(V) ./spex_demo_lu_extended p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt > lu3.out
+	- $(V) ./spex_demo_lu_extended p 5 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu4.out
 	- $(V) ./tcov_for_lu > test_for_lu.out
 	- $(V) ./tcov_for_lu 0 1 1 > lu5.out
 
@@ -306,9 +342,9 @@ vtests4chol: all
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_for_lu tcov_for_update spexlu_demo *.out *.a out Mats4Tcov/SPEX_Update/mat.txt
-	- $(RM) -r SPEX_*.c spex_*.c *.dSYM spexlu_demo.c lu_demos.c
-	- $(RM) -r tcov_for_cholesky chol_demos.c
+	- $(RM) tcov_for_lu tcov_for_update spex_demo_lu_extended *.out *.a out Mats4Tcov/SPEX_Update/mat.txt
+	- $(RM) -r SPEX_*.c spex_*.c *.dSYM
+	- $(RM) -r tcov_for_cholesky 
 
 purge: distclean
 

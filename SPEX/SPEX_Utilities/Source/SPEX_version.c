@@ -9,9 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-// Returns the library version, date, and thread-safety status
-
-// FIXME: add to user guide
+// Returns the library version and date.
 
 #include "spex_util_internal.h"
 
@@ -19,9 +17,7 @@ SPEX_info SPEX_version
 (
     // output
     int version [3],            // SPEX major, minor, and sub version
-    char date [128],            // date of this version
-    char thread_safety [128]    // a string describing the mechanism used to
-                                // make SPEX thread-safe
+    char date [128]             // date of this version
 )
 {
 
@@ -35,19 +31,6 @@ SPEX_info SPEX_version
     if (date != NULL)
     {
         strncpy (date, SPEX_DATE, 127);
-    }
-
-    if (thread_safety != NULL)
-    {
-        #if defined ( SPEX_USE_PTHREADS )
-            strncpy (thread_safety, "POSIX pthreads", 127);
-        #elif defined ( SPEX_USE_WIN32_THREADS )
-            strncpy (thread_safety, "Windows threads", 127);
-        #elif defined ( _OPENMP )
-            strncpy (thread_safety, "OpenMP", 127);
-        #else
-            strncpy (thread_safety, "unsafe", 127);
-        #endif
     }
 
     return (SPEX_OK);

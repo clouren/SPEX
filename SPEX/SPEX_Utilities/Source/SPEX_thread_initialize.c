@@ -12,8 +12,6 @@
 // SPEX_thread_initialize initializes the working evironment for SPEX for a
 // single user thread.
 
-// FIXME: add to user guide
-
 #include "spex_util_internal.h"
 
 SPEX_info SPEX_thread_initialize ( void )
