@@ -1,22 +1,27 @@
+Tcov: currently not working at all
 
-Tim     Thread-safety:  demo with multiple user threads
-
-in parallel:
-    user guide polish (see Overleaf)
+Tim:
+    fix spex_gmp_get ( )
+    sync with latest SuiteSparse
+    add thread init/finalize, and SPEX_version to user guide on overleaf
+    user guide: state that SPEX_initialize cannot be called by multiple
+    user threads.  Just one.  Discuss SPEX_thread_initialize and
+    SPEX_thread_finalize
 
 All: FIXME: just before submitting, do a pass over the
     user guide and code.
     Remove SPEX_Update section for v3.0;
-    put back in for v3.1
+    then copy in user guide from Overleaf
 
 FIXME: 
-
-Tim user guide: state that SPEX_initialize cannot be called by multiple
-    user threads.  Just one.  Discuss SPEX_thread_initialize and
-    SPEX_thread_finalize
-        later: copy in user guide from Overleaf
+    pick a date: cmake, doc/changelog
 
 lots of FIXME's in the code
+
+
+
+--------------------------------------------------------------------------------
+
 
 later for v3.1:
 

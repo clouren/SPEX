@@ -138,7 +138,6 @@ int main( int argc, char *argv[] )
                 printf ("SPEX thread %d: backslash failed\n", id) ;
                 my_test_pass = false ;
                 test_pass = false ;
-                SPEX_thread_finalize ( ) ;
                 break ;
             }
             info = spex_demo_check_solution (A,myx,b,option) ;
