@@ -794,7 +794,6 @@ int main ( int argc, char *argv[])
                     TEST_ASSERT (b == NULL);
                     if (pretend_to_fail) continue ;
 
-                    // FIXME: wrong place for this test
                     //test coverage for spex_gmp_reallocate()
                     void *p_new = NULL;
                     TEST_CHECK(spex_gmp_realloc_test(&p_new, NULL,0,1));

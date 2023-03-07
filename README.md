@@ -17,7 +17,7 @@ Files and folders in this distribution:
 
     SPEX                Folder containing the SPEX package
 
-    SuiteSparse_config  Configure file for all SuiteSparse functions.
+    SuiteSparse_config  Configuration for all SuiteSparse functions.
                         Please see www.suitesparse.com for information
 
 Dependencies of SPEX:

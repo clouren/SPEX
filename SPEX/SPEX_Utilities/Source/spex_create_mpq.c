@@ -12,7 +12,11 @@
 /* Purpose: This function safely creates and initializes an mpq_t entry.
  */
 
-// Tim FIXME: describe why this is here
+// The SPEX_mpq_init function is wrapped in this method to avoid a spurious
+// compiler warning in SPEX_MPQ_SET_NULL, about writing past the size of a
+// variable.  The warning arises when a high level of optimization is used.
+// The warning cannot be supressed entirely because it would require a
+// modifcation to GMP itself.
 
 #include "spex_util_internal.h"
 SPEX_info spex_create_mpq

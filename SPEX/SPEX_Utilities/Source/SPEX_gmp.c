@@ -60,7 +60,7 @@
 // The SPEX_GMP*_WRAPPER_START macros also take one or two 'archive' parameters,
 // for the current mpz, mpq, or mpfr object being operated on.  A pointer
 // parameter to this parameter is kept so that it can be safely freed in case
-// a memory error occurs (avoiding a double-free), in SPEX_GMP_SAFE_FREE.
+// a memory error occurs (avoiding a double-free), in spex_gmp_safe_free.
 // See the examples below.
 
 #include "spex_util_internal.h"
@@ -121,6 +121,45 @@
 
 #endif
 
+//------------------------------------------------------------------------------
+// GMP/MPFR wrapper macros
+//------------------------------------------------------------------------------
+
+#define SPEX_GMP_WRAPPER_START_HELPER(z1,z2,q,fr)                       \
+    /* spex_gmp_t *spex_gmp = spex_gmp_get ( ) ; */                     \
+    spex_gmp->mpz_archive  = (mpz_t  *) z1 ;                            \
+    spex_gmp->mpz_archive2 = (mpz_t  *) z2 ;                            \
+    spex_gmp->mpq_archive  = (mpq_t  *) q  ;                            \
+    spex_gmp->mpfr_archive = (mpfr_t *) fr ;                            \
+    /* setjmp returns 0 if called from here, or > 0 if from longjmp */  \
+    int status = setjmp (spex_gmp->environment) ;                       \
+    if (status != 0)                                                    \
+    {                                                                   \
+        /* failure from longjmp */                                      \
+        return (spex_gmp_failure (status)) ;                            \
+    }
+
+#define SPEX_GMP_WRAPPER_START                                          \
+    SPEX_GMP_WRAPPER_START_HELPER (NULL, NULL, NULL, NULL) ;
+
+#define SPEX_GMPZ_WRAPPER_START(z1)                                     \
+    SPEX_GMP_WRAPPER_START_HELPER (z1, NULL, NULL, NULL) ;
+
+#define SPEX_GMPZ_WRAPPER_START2(z1,z2)                                 \
+    SPEX_GMP_WRAPPER_START_HELPER (z1, z2, NULL, NULL) ;
+
+#define SPEX_GMPQ_WRAPPER_START(q)                                      \
+    SPEX_GMP_WRAPPER_START_HELPER (NULL, NULL, q, NULL) ;
+
+#define SPEX_GMPFR_WRAPPER_START(fr)                                    \
+    SPEX_GMP_WRAPPER_START_HELPER (NULL, NULL, NULL, fr) ;
+
+#define SPEX_GMP_WRAPPER_FINISH                                         \
+    spex_gmp->nmalloc = 0 ;                                             \
+    spex_gmp->mpz_archive  = NULL ;                                     \
+    spex_gmp->mpz_archive2 = NULL ;                                     \
+    spex_gmp->mpq_archive  = NULL ;                                     \
+    spex_gmp->mpfr_archive = NULL ;
 
 //------------------------------------------------------------------------------
 // spex_gmp_initialize: initialize the SPEX GMP interface
@@ -321,6 +360,47 @@ void *spex_gmp_allocate
 }
 
 //------------------------------------------------------------------------------
+// spex_gmp_safe_free:  free a block of memory and remove it from the archive
+//------------------------------------------------------------------------------
+
+static inline void spex_gmp_safe_free (void *p)
+{
+    if (spex_gmp->mpz_archive != NULL)
+    {
+        if (p == SPEX_MPZ_PTR(*(spex_gmp->mpz_archive)))
+        {
+            SPEX_MPZ_PTR(*(spex_gmp->mpz_archive)) = NULL ;
+        }
+    }
+    else if (spex_gmp->mpz_archive2 != NULL)
+    {
+        if (p == SPEX_MPZ_PTR(*spex_gmp->mpz_archive2))
+        {
+            SPEX_MPZ_PTR(*spex_gmp->mpz_archive2) = NULL ;
+        }
+    }
+    else if (spex_gmp->mpq_archive != NULL)
+    {
+        if (p == SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmp->mpq_archive)))
+        {
+            SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmp->mpq_archive)) = NULL ;
+        }
+        if (p == SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmp->mpq_archive)))
+        {
+            SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmp->mpq_archive)) = NULL ;
+        }
+    }
+    else if (spex_gmp->mpfr_archive != NULL)
+    {
+        if (p == SPEX_MPFR_REAL_PTR(*spex_gmp->mpfr_archive))
+        {
+            SPEX_MPFR_MANT(*spex_gmp->mpfr_archive) = NULL ;
+        }
+    }
+    SPEX_FREE (p) ;
+}
+
+//------------------------------------------------------------------------------
 // spex_gmp_free: free space for gmp
 //------------------------------------------------------------------------------
 
@@ -380,7 +460,7 @@ void spex_gmp_free
     // spex_gmp->list if it was allocated inside the current GMP function.
     // If the block was allocated by one GMP function and freed by another,
     // it is not in the list.
-    SPEX_GMP_SAFE_FREE (p);
+    spex_gmp_safe_free (p);
 }
 
 //------------------------------------------------------------------------------
@@ -495,7 +575,8 @@ SPEX_info spex_gmp_failure
     {
         for (int64_t i = 0 ; i < spex_gmp->nmalloc ; i++)
         {
-            SPEX_GMP_SAFE_FREE (spex_gmp->list [i]);
+            spex_gmp_safe_free (spex_gmp->list [i]);
+            spex_gmp->list [i] = NULL ;
         }
     }
 
