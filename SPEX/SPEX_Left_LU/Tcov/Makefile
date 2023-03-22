@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/SPEX/SPEX_Left_LU/Tcov/Makefile: compile and run SLIP_LU test coverage
+# SPEX/SPEX/SPEX_Left_LU/Tcov/Makefile: compile and run SPEX test coverage
 #-------------------------------------------------------------------------------
 
 # SPEX_Left_LU: (c) 2019-2022, Chris Lourenco (US Naval Academy), Jinhao Chen,
@@ -11,20 +11,39 @@
 default: run
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../../..)
-include ../../../SuiteSparse_config/SuiteSparse_config.mk
+
+################################################################################
+
+    INSTALL_LIB ?= $(SUITESPARSE)/lib
+
+    # use 8 jobs by default
+    JOBS ?= 8
+
+    LDFLAGS = --coverage
+    LDFLAGS += -L$(INSTALL_LIB)
+    LDFLAGS += -Wl,-rpath=$(INSTALL_LIB)
+
+    # remove object files, but keep compiled libraries via 'make clean'
+    CLEAN = *.o *.obj *.ln *.bb *.bbg *.da *.tcov *.gcov gmon.out *.bak *.d \
+        *.gcda *.gcno *.aux *.bbl *.blg *.log *.toc *.dvi *.lof *.lot
+
+    # also remove compiled libraries, via 'make distclean'
+    PURGE = *.so* *.a *.dll *.dylib *.dSYM
+
+################################################################################
 
 # Linux test coverage (gcc is required for test coverage)
 CC = gcc
 CFLAGS = -g -fprofile-arcs -ftest-coverage \
         -Wall -W -Wshadow -Wmissing-prototypes -Wstrict-prototypes \
         -Wredundant-decls -Wnested-externs -Wdisabled-optimization -std=c99 \
-        -Wno-unused-parameter -I../Include -I../Source -I../Demo \
+        -Wno-unused-parameter -I../../Include -I../Source -I../Demo \
 	-I../../SPEX_Util/Include/ -I../../SPEX_Util/Source/ \
         -I../../../SuiteSparse_config -I../../../COLAMD/Include \
 	-I../../../AMD/Include \
         -DSPEX_GMP_LIST_INIT=2
 
-LDLIBS += -lm -lgmp -lmpfr -lcolamd -lamd -lsuitesparseconfig
+LDLIBS += -lmpfr -lgmp -lcolamd -lamd -lsuitesparseconfig -lm 
 
 # run all statement coverage tests, and then check for 100% coverage
 run: runtests
@@ -80,7 +99,7 @@ CS = \
     SPEX_Left_LU_solve.o 
     #SPEX_determine_symmetry.o SPEX_transpose.o \
 
-$(CS): ../Include/SPEX_Left_LU.h ../../SPEX_Util/Include/SPEX_Util.h ../Source/spex_left_lu_internal.h ../../SPEX_Util/Source/spex_util_internal.h tcov_malloc_test.h ../Demo/demos.h
+$(CS): ../../Include/SPEX.h ../Source/spex_left_lu_internal.h ../../SPEX_Util/Source/spex_util_internal.h tcov_malloc_test.h ../Demo/demos.h
 
 .PRECIOUS: SPEX_Left_LU_%.c spex_left_lu_%.c spexlu_demo.c demos.c SPEX_%.c spex_%.c
 

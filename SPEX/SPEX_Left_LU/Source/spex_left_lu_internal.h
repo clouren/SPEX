@@ -10,13 +10,13 @@
 //------------------------------------------------------------------------------
 
 // This file is not intended to be #include'd in user applications.  Use
-// SPEX_Left_LU.h instead.
+// SPEX.h instead.
 
 #ifndef SPEX_LEFT_LU_INTERNAL_H
 #define SPEX_LEFT_LU_INTERNAL_H
 
 #include "spex_util_internal.h"
-#include "SPEX_Left_LU.h"
+#include "SPEX.h"
 
 // ============================================================================
 //                           Internal Functions

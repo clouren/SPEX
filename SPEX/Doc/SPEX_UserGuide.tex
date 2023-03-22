@@ -35,7 +35,7 @@
 \begin{large}
 \textbf{User Guide for the SPEX Software Package} \\
 \vspace{5mm}
-Version 1.1.5, July 2022 % VERSION
+\input{SPEX_version.tex}
 \vspace{20mm}
 
 Christopher Lourenco, Jinhao Chen, \\ Erick Moreno-Centeno, Timothy A. Davis \\
@@ -80,6 +80,7 @@ linear algebra routines. It currently is comprised of the following:
     \item GNU GMP \cite{granlund2015gnu} and MPFR
 \cite{fousse2007mpfr} libraries. Distributed under the LGPL3 and GPL2 and can be acquired and installed
 from \url{https://gmplib.org/} and \url{http://www.mpfr.org/}, respectively.
+
     \end{itemize}
 
 Within a Debian/Ubuntu based Linux system, a compatible version of GMP and MPFR can be installed with the following terminal commands:
@@ -90,6 +91,15 @@ Within a Debian/Ubuntu based Linux system, a compatible version of GMP and MPFR 
     sudo apt-get install libmpfr-dev libmpfr-doc
 \end{verbatim} }
 
+SPEX requires GMP 6.1.2 or later, and MPFR 4.0.2 or later.
+Be aware that the Debian package versions differ.
+The Debian \verb'libgmp.so.10.3.2' corresponds to GMP 6.1.2,
+and \verb'libmpfr.so.6.0.2' corresponds to MPFR 4.0.2.
+The same is true for the spack package manager.
+Do not rely on the suffix \verb'X.Y.Z' in the \verb'lib*.so.X.Y.Z' to
+determine the version.  The CMake script will display the correct
+version numbers of GMP and MPFR, and report an error if they are not
+recent enough.
 
 \chapter{SPEX Utilities} \label{ch:Util}
 
@@ -167,25 +177,20 @@ For example, the last column appears in positions 8 to 10 of \verb|A->i| and \ve
 \section{Installation} \label{s:util:install}
 %-------------------------------------------------------------------------------
 
-Installation of SPEX Util requires the \verb|make| utility in Linux/MacOS, or
-\verb|Cygwin make| in Windows. With the proper compiler, typing \verb|make|
-under the main directory will compile AMD, COLAMD and SPEX Util to the respective
-\verb|SPEX/Lib| folder. To further install the libraries onto your computer,
-simply type \verb|make install|.  Thereafter, to use the code inside of your
-program, precede your code with \newline \verb|#include "SPEX_Util.h"|. This is done
-by default in all SPEX factorization routines, thus a user should never have to
-directly include \verb|SPEX_Util|.
+Installation of SPEX requires cmake.  An optional top-level \verb'Makefile'
+is provided to simplify its use (just do \verb'make ; make install').
 
+\newpage
 %-------------------------------------------------------------------------------
 \section{Managing the SPEX environment} \label{s:user:setup}
 %-------------------------------------------------------------------------------
 
 %-------------------------------------------------------------------------------
-\cprotect\subsection{\verb|SPEX_UTIL_VERSION|: the software package version}
+\cprotect\subsection{\verb|SPEX_VERSION|: the software package version}
 %-------------------------------------------------------------------------------
 
-SPEX Util defines the following strings with \verb|#define|. Refer to
-the \verb|SPEX_Util.h| file for details.
+SPEX defines the following strings with \verb|#define|. Refer to
+the \verb|SPEX.h| file for details.
 
 %----------------------------------------
 \begin{center}
@@ -193,10 +198,10 @@ the \verb|SPEX_Util.h| file for details.
 \hline
 Macro & purpose \\
 \hline
-\verb|SPEX_UTIL_VERSION|       & current version of the code (as a string)\\
-\verb|SPEX_UTIL_VERSION_MAJOR| & major version of the code\\
-\verb|SPEX_UTIL_VERSION_MINOR| & minor version of the code   \\
-\verb|SPEX_UTIL_VERSION_SUB|   & sub version of the code\\
+\verb|SPEX_VERSION|       & current version of the code (as a string)\\
+\verb|SPEX_VERSION_MAJOR| & major version of the code\\
+\verb|SPEX_VERSION_MINOR| & minor version of the code   \\
+\verb|SPEX_VERSION_SUB|   & sub version of the code\\
 \hline
 \end{tabular}
 \end{center}
@@ -1613,14 +1618,10 @@ A key advantage of utilizing SPEX Left LU with floating-point output is that the
 \section{Installation} \label{s:install}
 %-------------------------------------------------------------------------------
 
-Installation of SPEX Left LU requires the \verb|make| utility in Linux/MacOS, or
-\verb|Cygwin make| in Windows. With the proper compiler, typing \verb|make|
-under the main directory will compile AMD, COLAMD and SPEX Left LU to the respective
-\verb|SPEX/Lib| folder. To further install the libraries onto your computer,
-simply type \verb|make install|.  Thereafter, to use the code inside of your
-program, precede your code with \newline \verb|#include "SPEX_Left_LU.h"|.
+Installation of SPEX requires cmake.  An optional top-level \verb'Makefile'
+is provided to simplify its use (just do \verb'make ; make install').
 
-To run the statement coverage tests, go to the \verb|Tcov| folder and
+To run the statement coverage tests (Linux required), go to the \verb|Tcov| folder and
 type \verb|make|.  The last line of output should read:
 
 \begin{verbatim}
@@ -1635,28 +1636,31 @@ the \verb|SPEX_Left_LU_backslash| function within MATLAB. Note that
 if you want to use \verb|SPEX_Left_LU_backslash| in future sessions, type
 \verb|pathtool| and save your path for future MATLAB sessions. If you cannot
 save your path because of file permissions, edit your \verb|startup.m| by
-adding \verb|addpath| commands (for more information on how this is done, please type \verb|doc startup| and \verb|doc addpath|).
+adding \verb|addpath| commands (for more information on how this is done,
+please type \verb|doc startup| and \verb|doc addpath|).
+
+\newpage
 
 %-------------------------------------------------------------------------------
-\cprotect\section{\verb|SPEX_Left_LU_VERSION|: the software package version}
+% \cprotect\section{\verb|SPEX_Left_LU_VERSION|: the software package version}
 %-------------------------------------------------------------------------------
 
-SPEX Left LU defines the following strings with \verb|#define|. Refer to
-the \verb|SPEX_Left_LU.h| file for details.
+% SPEX Left LU defines the following strings with \verb|#define|. Refer to
+% the \verb|SPEX_Left_LU.h| file for details.
 
 %----------------------------------------
-\begin{center}
-\begin{tabular}{ll}
-\hline
-Macro & purpose \\
-\hline
-\verb|SPEX_Left_LU_VERSION|       & current version of the code (as a string)\\
-\verb|SPEX_Left_LU_VERSION_MAJOR| & major version of the code\\
-\verb|SPEX_Left_LU_VERSION_MINOR| & minor version of the code   \\
-\verb|SPEX_Left_LU_VERSION_SUB|   & sub version of the code\\
-\hline
-\end{tabular}
-\end{center}
+% \begin{center}
+% \begin{tabular}{ll}
+% \hline
+% Macro & purpose \\
+% \hline
+% \verb|SPEX_Left_LU_VERSION|       & current version of the code (as a string)\\
+% \verb|SPEX_Left_LU_VERSION_MAJOR| & major version of the code\\
+% \verb|SPEX_Left_LU_VERSION_MINOR| & minor version of the code   \\
+% \verb|SPEX_Left_LU_VERSION_SUB|   & sub version of the code\\
+% \hline
+% \end{tabular}
+% \end{center}
 
 \section{Factorization and Solve Routines}
 

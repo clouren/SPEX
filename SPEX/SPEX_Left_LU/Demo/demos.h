@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "SPEX_Left_LU.h"
+#include "SPEX.h"
 #include <time.h>
 #include <stdint.h>
 #include <inttypes.h>
