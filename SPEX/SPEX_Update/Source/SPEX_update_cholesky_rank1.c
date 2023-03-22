@@ -35,7 +35,7 @@
 
 #include "spex_update_internal.h"
 
-// TODO allow w->v[0]->scale != 1
+// todo: allow w->v[0]->scale != 1
 
 SPEX_info SPEX_update_cholesky_rank1
 (
@@ -188,7 +188,7 @@ SPEX_info SPEX_update_cholesky_rank1
             // reset S(j) = 1
             SPEX_MPQ_SET_UI(L->v[j]->scale, 1, 1);
 
-            // TODO combine the above into following iteration as p=0
+            // todo: combine the above into following iteration as p=0
             // iterate across nnz in L->v[j] but skip the pivot entry L(j,j)
             for (p = 1; p < L->v[j]->nz; p++)
             {

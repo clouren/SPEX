@@ -61,45 +61,33 @@ SPEX_info SPEX_matrix_free
             switch (A->type)
             {
                 case SPEX_MPZ:
-                    if ( A->x.mpz)
+                    if ( A->x.mpz != NULL)
                     {
                         for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            if ( A->x.mpz[i] != NULL)   // FIXME warning:
-                            // "comparison will always evaluate to true"
-                            {
-                                SPEX_MPZ_CLEAR( A->x.mpz[i]);
-                            }
+                            SPEX_MPZ_CLEAR( A->x.mpz[i]);
                         }
                     }
                     SPEX_FREE (A->x.mpz);
                     break ;
 
                 case SPEX_MPQ:
-                    if ( A->x.mpq)
+                    if ( A->x.mpq != NULL)
                     {
                         for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            if ( A->x.mpq[i] != NULL)   // FIXME warning:
-                            // "comparison will always evaluate to true"
-                            {
-                                SPEX_MPQ_CLEAR( A->x.mpq[i]);
-                            }
+                            SPEX_MPQ_CLEAR( A->x.mpq[i]);
                         }
                     }
                     SPEX_FREE (A->x.mpq);
                     break ;
 
                 case SPEX_MPFR:
-                    if ( A->x.mpfr)
+                    if ( A->x.mpfr != NULL)
                     {
                         for (int64_t i = 0; i < A->nzmax; i++)
                         {
-                            if ( A->x.mpfr[i] != NULL)  // FIXME warning:
-                            // "comparison will always evaluate to true"
-                            {
-                                SPEX_MPFR_CLEAR( A->x.mpfr[i]);
-                            }
+                            SPEX_MPFR_CLEAR( A->x.mpfr[i]);
                         }
                     }
                     SPEX_FREE (A->x.mpfr);

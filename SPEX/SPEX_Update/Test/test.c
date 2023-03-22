@@ -1562,7 +1562,7 @@ SPEX_info MY_update_verify
     srand(seed);
     for (i = 0; i < n; i++)
     {
-        tmp = i+1;//rand(); //TODO
+        tmp = i+1;//rand(); //todo:
         OK1(SPEX_mpz_set_si(b->x.mpz[i], tmp));
     }
 

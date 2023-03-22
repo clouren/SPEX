@@ -112,7 +112,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//TODO Seperate and do the SPEX_CHECK
+//todo: Seperate and do the SPEX_CHECK
 
 // Current version of the code
 #define SPEX_QR_VERSION "0.0.1"
