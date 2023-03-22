@@ -63,12 +63,11 @@ This will also run a few short demos
 To install the package system-wide, copy the `lib/*` to /usr/local/lib,
 and copy `include/*` to /usr/local/include.
 
-Primary Author: Chris Lourenco
-
-Coauthors (alphabetical order):
+Authors (alphabetical order):
 
     Jinhao Chen
-    Tim Davis
-    Lorena Mejia Domenzain
+    Timothy A. Davis
+    Christopher Lourenco
+    Lorena Mejia-Domenzain
     Erick Moreno-Centeno
 

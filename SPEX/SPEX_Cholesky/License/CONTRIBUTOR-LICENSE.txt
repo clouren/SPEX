@@ -1,6 +1,6 @@
-SPEX_Chol Individual Contributor License Agreement
+SPEX_Cholesky Individual Contributor License Agreement
 
-Thank you for your interest in contributing to SPEX_Chol ("We" or "Us").
+Thank you for your interest in contributing to SPEX_Cholesky ("We" or "Us").
 
 This contributor agreement ("Agreement") documents the rights granted by
 contributors to Us. To make this document effective, please sign it and send it
@@ -161,8 +161,9 @@ software project managed by Us.
     any limited remedy to the maximum extent possible under law.
 
 Us
-Christopher Lourenco, and all SPEX_Chol co-authors:
+All SPEX_Cholesky co-authors:
+Christopher Lourenco
+Jinhao Chen
+Lorena Mejia Domenzain
 Timothy A. Davis
 Erick Moreno-Centeno
-Jinhao Chen
-

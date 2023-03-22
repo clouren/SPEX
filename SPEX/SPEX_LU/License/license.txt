@@ -1,13 +1,13 @@
 SPEX_LU: a Sparse Left-looking Integer-Preserving LU Factorization
 
-Copyright (c) 2019-2023, Christopher Lourenco, JinHao Chen,
+Copyright (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
 Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 
 Available at:
     https://github.com/clouren/SPEX
     http://suitesparse.com
 
-Contact Chris Lourenco, chrisjlourenco@gmail.com, or Tim Davis
+Contact Christopher Lourenco, chrisjlourenco@gmail.com, or Tim Davis
 (timdavis@aldenmath.com or DrTimothyAldenDavis@gmail.com) for a commercial
 license.
 

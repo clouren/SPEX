@@ -161,7 +161,8 @@ software project managed by Us.
     any limited remedy to the maximum extent possible under law.
 
 Us
-Christopher Lourenco, and all SPEX_QR co-authors:
+All SPEX_QR co-authors:
 Lorena Mejia Domenzain
+Christopher Lourenco
 Timothy A. Davis
 Erick Moreno-Centeno

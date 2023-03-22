@@ -1,13 +1,14 @@
 SPEX_Chol: Integer-Preserving Cholesky Factorization
 
-Copyright (c) 2020-2023, Christopher Lourenco, JinHao Chen,
-Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+Copyright (c) 2020-2023, Christopher Lourenco, Jinhao Chen,
+Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+All Rights Reserved.
 
 Available at:
     https://github.com/clouren/SPEX/SPEX_Cholesky
     http://suitesparse.com
 
-Contact Chris Lourenco, chrisjlourenco@gmail.com, or Tim Davis
+Contact Christopher Lourenco, chrisjlourenco@gmail.com, or Tim Davis
 (timdavis@aldenmath.com or DrTimothyAldenDavis@gmail.com) for a commercial
 license.
 

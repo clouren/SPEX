@@ -1,13 +1,13 @@
-SLIP LU: a Sparse Left-looking Integer-Preserving LU Factorization
+SPEX Update: Column-Replace and Rank-1 Up/Downdate of Sparse LU & Cholesky Fact.
 
-Copyright (c) 2019-2023, Christopher Lourenco, JinHao Chen,
+Copyright (c) 2020-2023, Christopher Lourenco, Jinhao Chen,
 Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 
 Available at:
-    https://github.com/clouren/SLIP_LU
+    https://github.com/clouren/SPEX
     http://suitesparse.com
 
-Contact Chris Lourenco, chrisjlourenco@gmail.com, or Tim Davis
+Contact Christopher Lourenco, chrisjlourenco@gmail.com, or Tim Davis
 (timdavis@aldenmath.com or DrTimothyAldenDavis@gmail.com) for a commercial
 license.
 
