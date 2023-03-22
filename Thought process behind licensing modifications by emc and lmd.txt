@@ -2,9 +2,9 @@ Utils - Basis of everything - C,E,T,J,L (everybody)
 Demos - Use everything      - C,E,T,J,L (everybody)
 
 LU    - Basis of everything   - C,E,T,J
-Chol  - Needs utils, part of the code is simply modified LU - C,E,T,L, <-- 'J'
+Chol  - Needs utils, part of the code is simply modified LU - C,E,T,L,J
 QR    - Needs utils, "structuraly" same, but the core functions are distinct  - C,E,T,L
-Update - Depends on LU/Chol - J,T, <---'E,C' (but fine if they exclude E---Chris?), ---> "L" (fine if they include you)
-Back - Depends on everything - True transitivity - ALL
+Update - Depends on LU/Chol - C,E,T,J
+Backslash - Depends on everything - C,E,T,J,L
 
-
+FIXME: Erick will double-check the above, in the code.

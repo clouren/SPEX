@@ -55,7 +55,7 @@ SPEX_info spex_update_verify
     srand(seed);
     for (i = 0; i < n; i++)
     {
-        tmp = i+1;//rand(); //TODO
+        tmp = i+1;//rand(); //todo:
         SPEX_MPZ_SET_SI(b->x.mpz[i], tmp);
     }
 

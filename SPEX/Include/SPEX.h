@@ -1457,6 +1457,7 @@ SPEX_info SPEX_cholesky_solve
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+// FIXME: remove SPEX Update for v3.0, put back in for v3.1
 
 // This portion of SPEX library update a exact Cholesky factorization PAQ =
 // LDL^T exactly when A is changed as A' = A+sigma*w*w^T, or a exact LU
@@ -1507,7 +1508,7 @@ SPEX_info SPEX_update_lu_colrep
                             // Therefore, if this function fails for any
                             // reason, the returned F should be considered as
                             // undefined.
-    // TODO: decide on utilities to help create this n-by-1 matrix:
+    // todo: decide on utilities to help create this n-by-1 matrix:
     SPEX_matrix vk,         // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
@@ -1547,7 +1548,7 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
 // user can compute A = A + sigma*w*w' *BEFORE* using this function (since w
 // will be modified).
 
-// TODO: describe how to create w n-by-1 matrix for update/downdate.
+// todo: describe how to create w n-by-1 matrix for update/downdate.
 
 SPEX_info SPEX_update_cholesky_rank1
 (

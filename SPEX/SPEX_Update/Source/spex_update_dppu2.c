@@ -232,7 +232,7 @@ SPEX_info spex_update_dppu2
         // no need to apply S(2,ks) if S(2,ks) == 1
         if (sgn == 0) { continue;}
 
-        // apply S(2,tmp_ks) to U(ks,cks) TODO try not to do this
+        // apply S(2,tmp_ks) to U(ks,cks) todo: try not to do this
         // This must be done so that the following IPGE update will have the
         // result in integer domain
         SPEX_MPZ_DIVEXACT(Uk_dense_row->x[cks],

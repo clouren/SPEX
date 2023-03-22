@@ -3,7 +3,7 @@
 // any skipped scaling process.
 //------------------------------------------------------------------------------
 
-// TODO rewrite this function, try to extract common factor
+// todo: rewrite this function, try to extract common factor
 
 // SPEX_Update: (c) 2020-2023, Chris Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.

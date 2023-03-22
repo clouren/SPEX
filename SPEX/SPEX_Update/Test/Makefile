@@ -8,7 +8,7 @@
 
 #-------------------------------------------------------------------------------
 
-# FIXME: this no longer works
+# fixme: this no longer works
 
 default: all
 

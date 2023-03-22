@@ -490,7 +490,7 @@ void *spex_gmp_reallocate
     // check inputs
     //--------------------------------------------------------------------------
 
-    // if spex_gmp does not exist, memory cannot be allocarted
+    // if spex_gmp does not exist, memory cannot be allocated
     if (spex_gmp == NULL) return (NULL) ;
 
     //--------------------------------------------------------------------------

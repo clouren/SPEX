@@ -83,15 +83,11 @@ include_directories ( Include
     ${GMP_INCLUDE_DIR} ${MPFR_INCLUDE_DIR}
     ${AMD_INCLUDE_DIR} ${COLAMD_INCLUDE_DIR} )
 
-# TODO:
-#   SPEX_QR/Source
-
 #-------------------------------------------------------------------------------
 # compiler flags
 #-------------------------------------------------------------------------------
 
-# gcc -O3 complains about SPEX_mpq_init
-
+# (for example):
 # if ( "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" )
 #     set ( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2" )
 # endif ( )

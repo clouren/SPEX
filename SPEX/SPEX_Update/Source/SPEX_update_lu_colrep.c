@@ -41,7 +41,7 @@
 #define SL(k) (L->v[(k)]->scale)
 #define SU(k) (UT->v[(k)]->scale)
 
-// TODO allow vk->v[0]->scale != 1?
+// todo: allow vk->v[0]->scale != 1?
 
 SPEX_info SPEX_update_lu_colrep
 (
@@ -51,7 +51,7 @@ SPEX_info SPEX_update_lu_colrep
                             // Therefore, if this function fails for any
                             // reason, the returned F should be considered as
                             // undefined.
-    // TODO: decide on utilities to help create this n-by-1 matrix:
+    // todo:: decide on utilities to help create this n-by-1 matrix:
     SPEX_matrix vk,         // Pointer to a n-by-1 dynamic_CSC matrix
                             // which contains the column to be inserted.
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
