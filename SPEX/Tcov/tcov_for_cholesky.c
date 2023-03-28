@@ -240,6 +240,7 @@ int main (int argc, char *argv [])
     OK ((n != m) ? SPEX_PANIC : SPEX_OK);
     create_test_rhs (&b, A->n);
 
+    //TODO tcov_for_utilities??
     //--------------------------------------------------------------------------
     // test SPEX_transpose
     //--------------------------------------------------------------------------
@@ -268,7 +269,74 @@ int main (int argc, char *argv [])
     SPEX_matrix_free(&T_mpfr,option);
     SPEX_matrix_free(&T_int,option);
     SPEX_matrix_free(&T_fp,option);
+    
+    //--------------------------------------------------------------------------
+    // test spex_expand_mpfr_array
+    //--------------------------------------------------------------------------
+    //create mpfr array where all elements are multiples of 220
+    mpfr_rnd_t round = SPEX_OPTION_ROUND (option);
+    mpfr_t* x_mpfr = spex_create_mpfr_array (3, option);
+    mpz_t* x_mpz = spex_create_mpz_array (3);
+    mpq_t x_scale;
+    OK (spex_create_mpq (x_scale));
+    SPEX_MPQ_SET_UI (x_scale, 1, 10);
+    for (int64_t k = 0 ; k < 3 ; k++)
+    {
+        SPEX_MPFR_SET_SI( x_mpfr[k],(k+2)*220, round);
+    }
+    
+    OK ( spex_expand_mpfr_array (x_mpz, x_mpfr, x_scale, 3, option));
+    
+    //--------------------------------------------------------------------------
+    // missing gmp coverage
+    //--------------------------------------------------------------------------
+    mpz_t gmp_x, gmp_y;
+    mpq_t gmp_a, gmp_b, gmp_c;
+    mpfr_t gmp_e, gmp_f, gmp_g, gmp_h ;
+    uint64_t num1=2;
+    uint64_t num2=3;
+    int r;
 
+    //Initialization   
+    SPEX_MPZ_INIT(gmp_x);
+    SPEX_MPZ_INIT(gmp_y);
+        
+    SPEX_MPQ_INIT(gmp_a);
+    SPEX_MPQ_INIT(gmp_b);
+    SPEX_MPQ_INIT(gmp_c);
+
+    SPEX_MPFR_INIT2(gmp_e, 128);
+    SPEX_MPFR_INIT2(gmp_f, 128);
+    SPEX_MPFR_INIT2(gmp_g, 128);
+    SPEX_MPFR_INIT2(gmp_h, 128);
+
+    //set values
+    SPEX_MPZ_SET_SI(gmp_y, -4);
+    SPEX_MPQ_SET_UI(gmp_b, 2, 7);
+    SPEX_MPFR_SET_SI(gmp_f, 10, round);
+    SPEX_MPFR_SET_SI(gmp_g, 7, round);
+
+
+    //Test
+    FILE *fil = fopen ("../ExampleMats/test4.mat.txt", "r");
+    SPEX_gmp_fscanf(fil,"c");
+    fclose (fil);
+    
+    SPEX_MPZ_ABS(gmp_x,gmp_y);
+
+    SPEX_MPQ_SET_NUM(gmp_c,gmp_x);
+
+    SPEX_MPQ_ABS(gmp_a,gmp_b);
+
+    SPEX_MPQ_CMP(&r,gmp_b,gmp_a);
+
+    SPEX_MPFR_MUL(gmp_e,gmp_f,gmp_g,round);
+
+    SPEX_MPFR_UI_POW_UI(gmp_h,num1,num2,round);
+
+    //Free
+
+    
     //--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------
