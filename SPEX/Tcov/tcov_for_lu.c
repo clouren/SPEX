@@ -450,10 +450,6 @@ int main ( int argc, char *argv[])
                     TEST_ASSERT (Ax != NULL);
                     if (Ab_type == 0)
                     {
-                        printf ("Ax %p\n", Ax) ;
-                        printf ("Ax->x %p\n", Ax->x) ;
-                        printf ("Axnum3 %p\n", Axnum3) ;
-                        printf ("Ax->x.mpz[j] %p\n", Ax->x.mpz[j]) ;
                         TEST_CHECK(SPEX_mpz_set_ui(Ax->x.mpz[j],Axnum3[j]));
                         if (pretend_to_fail) break ;
                     }

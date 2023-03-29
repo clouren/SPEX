@@ -53,8 +53,8 @@ extern int64_t malloc_count ;
 // The method must return a SPEX_info value.
 #define OK(method)                              \
 {                                               \
-    info = (method) ;                           \
-    if (info != SPEX_OK) TEST_ABORT (info) ;    \
+    SPEX_info info3 = (method) ;                \
+    if (info3 != SPEX_OK) TEST_ABORT (info3) ;  \
 }
 
 // OK2: call a method and assert that it succeeds or runs out of memory.
@@ -62,13 +62,13 @@ extern int64_t malloc_count ;
 // returned to the caller.  The method must return a SPEX_info value.
 #define OK2(method)                             \
 {                                               \
-    info = (method) ;                           \
-    if (info == SPEX_OUT_OF_MEMORY)             \
+    SPEX_info info4 = (method) ;                \
+    if (info4 == SPEX_OUT_OF_MEMORY)            \
     {                                           \
         SPEX_FREE_ALL;                          \
-        return (info) ;                         \
+        return (info4) ;                        \
     }                                           \
-    if (info != SPEX_OK) TEST_ABORT (info) ;    \
+    if (info4 != SPEX_OK) TEST_ABORT (info4) ;  \
 }
 
 // test wrapper for SPEX_initialize*, SPEX_finalize, and SPEX_*_free methods
@@ -85,7 +85,7 @@ if (!pretend_to_fail)                                               \
     info = (method) ;                                               \
     if (info == SPEX_OUT_OF_MEMORY)                                 \
     {                                                               \
-        SPEX_FREE_ALL;                                             \
+        SPEX_FREE_ALL;                                              \
         pretend_to_fail = true ;                                    \
     }                                                               \
     else if (info != SPEX_OK)                                       \

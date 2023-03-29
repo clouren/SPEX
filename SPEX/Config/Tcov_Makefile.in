@@ -16,14 +16,14 @@ SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 ################################################################################
 
 # configured by CMake:
-INC =   -I/home/davis/dev2/SPEX/SPEX/Include  -I/home/davis/dev2/SPEX/SPEX/SPEX_Backslash/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_Cholesky/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_LU/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_Update/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_Utilities/Source  -I/home/davis/dev2/SPEX/SuiteSparse_config  -I/raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/gmp-6.2.1-nu2ei6r3lun5dhgt54lsuqceazmso4e6/include  -I/raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/mpfr-4.1.0-daojf3yszyqjht3fg6xfbit7ysb2p7lw/include  -I/home/davis/dev2/SPEX/AMD/Include  -I/home/davis/dev2/SPEX/COLAMD/Include
-LIBS =  /home/davis/dev2/SPEX/SuiteSparse_config/build/libsuitesparseconfig.so.7.1.0 /home/davis/dev2/SPEX/AMD/build/libamd.so.3.0.3 /home/davis/dev2/SPEX/COLAMD/build/libcolamd.so.3.0.3 /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/mpfr-4.1.0-daojf3yszyqjht3fg6xfbit7ysb2p7lw/lib/libmpfr.so.6.1.0 /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/gmp-6.2.1-nu2ei6r3lun5dhgt54lsuqceazmso4e6/lib/libgmp.so.10.4.1 -lm
+INC = @SPEX_INC@
+LIBS = @SPEX_LIBRARIES@
 
-SUITESPARSE_CONFIG_PATH = /home/davis/dev2/SPEX/SuiteSparse_config/build
-COLAMD_PATH = /home/davis/dev2/SPEX/COLAMD/build
-AMD_PATH = /home/davis/dev2/SPEX/AMD/build
-GMP_PATH = /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/gmp-6.2.1-nu2ei6r3lun5dhgt54lsuqceazmso4e6/lib
-MPFR_PATH = /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/mpfr-4.1.0-daojf3yszyqjht3fg6xfbit7ysb2p7lw/lib
+SUITESPARSE_CONFIG_PATH = @SUITESPARSE_CONFIG_PATH@
+COLAMD_PATH = @COLAMD_PATH@
+AMD_PATH = @AMD_PATH@
+GMP_PATH = @GMP_PATH@
+MPFR_PATH = @MPFR_PATH@
 
 ################################################################################
 

@@ -19,14 +19,14 @@
 // test wrapper for SPEX_* function when expected error would produce
 #define ERR(method,expected_error)                                      \
 {                                                                       \
-    info = (method) ;                                                   \
-    if (info != expected_error)                                         \
+    SPEX_info info5 = (method) ;                                        \
+    if (info5 != expected_error)                                        \
     {                                                                   \
         printf ("SPEX method was expected to fail, but succeeded!\n") ; \
         printf ("this error was expected:\n") ;                         \
         SPEX_PRINT_INFO (expected_error) ;                              \
         printf ("but this error was obtained:\n") ;                     \
-        TEST_ABORT (info) ;                                             \
+        TEST_ABORT (info5) ;                                            \
     }                                                                   \
 }
 
@@ -41,16 +41,16 @@
 #define BRUTAL(method)                                                      \
 {                                                                           \
     int64_t trial = 0 ;                                                     \
-    SPEX_info info2 = SPEX_OK ;                                              \
+    SPEX_info info2 = SPEX_OK ;                                             \
     for (trial = 0 ; trial <= NTRIAL_MAX ; trial++)                         \
     {                                                                       \
-        /* printf (":"); fflush (stdout); */                                \
         malloc_count = trial ;                                              \
-        info2 = (method) ;                                                   \
-        if (info2 != SPEX_OUT_OF_MEMORY) break ;                             \
+        info2 = (method) ;                                                  \
+        if (info2 != SPEX_OUT_OF_MEMORY) break ;                            \
     }                                                                       \
-    OK (info2) ;                                                             \
-    printf ("\nCholesky trials %ld: tests passed\n", trial);                \
+    if (info2 != SPEX_OK) TEST_ABORT (info2) ;                              \
+    malloc_count = UINT64_MAX ;                                             \
+    printf ("\nBrutal Cholesky trials %ld: tests passed\n", trial);         \
 }
 
 //------------------------------------------------------------------------------
@@ -61,7 +61,6 @@ void read_test_matrix (SPEX_matrix *A_handle, char *filename);
 
 void read_test_matrix (SPEX_matrix *A_handle, char *filename)
 {
-    SPEX_info info ;
     FILE *f = fopen (filename, "r");
     OK (f == NULL ? SPEX_PANIC : SPEX_OK);
     OK (spex_demo_tripread (A_handle, f, SPEX_FP64, NULL));
@@ -76,7 +75,6 @@ void create_test_rhs (SPEX_matrix *b_handle, int64_t n);
 
 void create_test_rhs (SPEX_matrix *b_handle, int64_t n)
 {
-    SPEX_info info ;
     OK (SPEX_matrix_allocate (b_handle, SPEX_DENSE, SPEX_MPZ, n, 1, n, false,
         true, NULL));
     SPEX_matrix b = *(b_handle);
@@ -96,7 +94,7 @@ void create_test_rhs (SPEX_matrix *b_handle, int64_t n)
 #undef  SPEX_FREE_ALL
 #define SPEX_FREE_ALL                           \
 {                                               \
-    OK (SPEX_matrix_free (&x, option));        \
+    OK (SPEX_matrix_free (&x, option));         \
 }
 
 SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
@@ -105,7 +103,6 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
 SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     SPEX_options option)
 {
-    SPEX_info info ;
     SPEX_matrix x = NULL ;
     // solve Ax=b
     OK2 (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option));
@@ -125,9 +122,9 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
 #undef  SPEX_FREE_ALL
 #define SPEX_FREE_ALL                                   \
 {                                                       \
-    OK (SPEX_symbolic_analysis_free (&S, option));     \
-    OK (SPEX_factorization_free (&F, option));         \
-    OK (SPEX_matrix_free (&x, option));                \
+    OK (SPEX_symbolic_analysis_free (&S, option));      \
+    OK (SPEX_factorization_free (&F, option));          \
+    OK (SPEX_matrix_free (&x, option));                 \
 }
 
 SPEX_info spex_test_chol_afs
@@ -139,7 +136,6 @@ SPEX_info spex_test_chol_afs
 
 SPEX_info spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
 {
-    SPEX_info info ;
     SPEX_symbolic_analysis S = NULL ;
     SPEX_factorization F = NULL ;
     SPEX_matrix x = NULL ;
@@ -163,12 +159,12 @@ SPEX_info spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
 #undef  SPEX_FREE_ALL
 #define SPEX_FREE_ALL                                   \
 {                                                       \
-    OK (SPEX_symbolic_analysis_free (&S, option));     \
-    OK (SPEX_factorization_free (&F, option));         \
-    OK (SPEX_matrix_free (&x, option));                \
-    OK (SPEX_matrix_free (&A, option));                \
-    OK (SPEX_matrix_free (&b, option));                \
-    SPEX_FREE (option);                                \
+    OK (SPEX_symbolic_analysis_free (&S, option));      \
+    OK (SPEX_factorization_free (&F, option));          \
+    OK (SPEX_matrix_free (&x, option));                 \
+    OK (SPEX_matrix_free (&A, option));                 \
+    OK (SPEX_matrix_free (&b, option));                 \
+    SPEX_FREE (option);                                 \
 }
 
 int main (int argc, char *argv [])
@@ -460,7 +456,8 @@ int main (int argc, char *argv [])
     option->order = SPEX_AMD ;
     BRUTAL (spex_test_chol_backslash (A, b, option));
 
-    printf ("Cholesky backslash, up-looking with malloc testing, no ordering:\n");
+    printf ("Cholesky backslash, up-looking with malloc testing, "
+        " no ordering:\n");
     option->order = SPEX_NO_ORDERING ;
     BRUTAL (spex_test_chol_backslash (A, b, option));
 
@@ -469,7 +466,7 @@ int main (int argc, char *argv [])
     BRUTAL (spex_test_chol_backslash (A, b, option));
 
     //--------------------------------------------------------------------------
-    // solve Ax=b with SPEX_cholesky_[analyze,factorize,solve] and check solution
+    // solve Ax=b with SPEX_cholesky_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
 
     option->algo = SPEX_CHOL_UP ;

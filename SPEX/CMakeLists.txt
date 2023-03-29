@@ -69,8 +69,6 @@ configure_file ( "Config/SPEX.h.in"
                  "${PROJECT_SOURCE_DIR}/Include/SPEX.h")
 configure_file ( "Config/SPEX_version.tex.in"
                  "${PROJECT_SOURCE_DIR}/Doc/SPEX_version.tex")
-configure_file ( "Config/spex_deps.m.in"
-                 "${PROJECT_SOURCE_DIR}/MATLAB/spex_deps.m")
 
 #-------------------------------------------------------------------------------
 # include directories
@@ -207,6 +205,13 @@ set_target_properties ( spexpython PROPERTIES
     SOVERSION ${SPEX_VERSION_MAJOR}
     PUBLIC_HEADER "Python/SPEXpy/Source/spex_python_connect.h" )
 
+# MPFR:
+target_link_libraries ( spexpython PUBLIC ${MPFR_LIBRARIES} )
+
+# GMP:
+# must occur after MPFR
+target_link_libraries ( spexpython PUBLIC ${GMP_LIBRARIES} )
+
 target_link_libraries ( spexpython PUBLIC spex )
 
 install ( TARGETS spexpython
@@ -263,6 +268,55 @@ else ( )
     message ( STATUS "Skipping the demos in SPEX/Demo" )
 
 endif ( )
+
+#-------------------------------------------------------------------------------
+# configure MATLAB and Tcov
+#-------------------------------------------------------------------------------
+
+# get paths to libraries
+get_filename_component ( GMP_PATH ${GMP_LIBRARY} DIRECTORY )
+get_filename_component ( SUITESPARSE_CONFIG_PATH ${SUITESPARSE_CONFIG_LIBRARY} DIRECTORY )
+get_filename_component ( COLAMD_PATH ${COLAMD_LIBRARY} DIRECTORY )
+get_filename_component ( AMD_PATH ${AMD_LIBRARY} DIRECTORY )
+get_filename_component ( MPFR_PATH ${MPFR_LIBRARY} DIRECTORY )
+
+# message ( STATUS "suitesparseconfig path ${SUITESPARSE_CONFIG_PATH}" )
+# message ( STATUS "colamd path ${COLAMD_PATH}" )
+# message ( STATUS "amd path ${AMD_PATH}" )
+# message ( STATUS "gmp path ${GMP_PATH}" )
+# message ( STATUS "mpfr path ${MPFR_PATH}" )
+
+# construct the -I list
+get_target_property ( INCS spex INCLUDE_DIRECTORIES )
+list ( TRANSFORM INCS PREPEND " -I" )
+set ( SPEX_INC "" )
+foreach ( INC ${INCS} )
+    string ( APPEND SPEX_INC " " ${INC} )
+endforeach ( )
+# message ( STATUS "Incs: ${SPEX_INC}" )
+
+# construct the library list
+set ( SPEX_LIB_SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+get_target_property ( LIBS spex LINK_LIBRARIES )
+string ( REPLACE "." "\\." LIBSUFFIX ${SPEX_LIB_SUFFIX} )
+set ( SPEX_LIBRARIES "" )
+foreach ( LIB_NAME ${LIBS} )
+#       message ( STATUS "Lib: ${LIB_NAME}" )
+    if ( LIB_NAME MATCHES ${LIBSUFFIX} )
+#           message ( STATUS "has suffix" )
+        string ( APPEND SPEX_LIBRARIES " " ${LIB_NAME} )
+    else ( )
+#           message ( STATUS "no suffix" )
+        string ( APPEND SPEX_LIBRARIES " -l" ${LIB_NAME} )
+    endif ( )
+endforeach ( )
+# message ( STATUS "Libs: ${SPEX_LIBRARIES}" )
+
+configure_file ( "Config/spex_deps.m.in"
+                 "${PROJECT_SOURCE_DIR}/MATLAB/spex_deps.m")
+
+configure_file ( "Config/Tcov_Makefile.in"
+                 "${PROJECT_SOURCE_DIR}/Tcov/Makefile")
 
 #-------------------------------------------------------------------------------
 # report status
