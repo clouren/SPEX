@@ -41,15 +41,15 @@
 #define BRUTAL(method)                                                      \
 {                                                                           \
     int64_t trial = 0 ;                                                     \
-    SPEX_info info = SPEX_OK ;                                              \
+    SPEX_info info2 = SPEX_OK ;                                              \
     for (trial = 0 ; trial <= NTRIAL_MAX ; trial++)                         \
     {                                                                       \
         /* printf (":"); fflush (stdout); */                                \
         malloc_count = trial ;                                              \
-        info = (method) ;                                                   \
-        if (info != SPEX_OUT_OF_MEMORY) break ;                             \
+        info2 = (method) ;                                                   \
+        if (info2 != SPEX_OUT_OF_MEMORY) break ;                             \
     }                                                                       \
-    OK (info) ;                                                             \
+    OK (info2) ;                                                             \
     printf ("\nCholesky trials %ld: tests passed\n", trial);                \
 }
 
