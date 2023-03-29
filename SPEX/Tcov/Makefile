@@ -16,14 +16,14 @@ SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 ################################################################################
 
 # configured by CMake:
-INC =   -I/home/davis/dev2/SPEX/SPEX/Include  -I/home/davis/dev2/SPEX/SPEX/SPEX_Backslash/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_Cholesky/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_LU/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_Update/Source  -I/home/davis/dev2/SPEX/SPEX/SPEX_Utilities/Source  -I/home/davis/dev2/SPEX/SuiteSparse_config  -I/raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/gmp-6.2.1-nu2ei6r3lun5dhgt54lsuqceazmso4e6/include  -I/raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/mpfr-4.1.0-daojf3yszyqjht3fg6xfbit7ysb2p7lw/include  -I/home/davis/dev2/SPEX/AMD/Include  -I/home/davis/dev2/SPEX/COLAMD/Include
-LIBS =  /home/davis/dev2/SPEX/SuiteSparse_config/build/libsuitesparseconfig.so.7.1.0 /home/davis/dev2/SPEX/AMD/build/libamd.so.3.0.3 /home/davis/dev2/SPEX/COLAMD/build/libcolamd.so.3.0.3 /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/mpfr-4.1.0-daojf3yszyqjht3fg6xfbit7ysb2p7lw/lib/libmpfr.so.6.1.0 /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/gmp-6.2.1-nu2ei6r3lun5dhgt54lsuqceazmso4e6/lib/libgmp.so.10.4.1 -lm
+INC =   -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/Include  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/SPEX_Backslash/Source  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/SPEX_Cholesky/Source  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/SPEX_LU/Source  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/SPEX_Update/Source  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/SPEX/SPEX_Utilities/Source  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/include  -I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/include  -I/home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/include  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/include  -I/home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/include
+LIBS =  /home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib/libsuitesparseconfig.so.7.1.0 /home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib/libamd.so.3.0.3 /home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib/libcolamd.so.3.0.3 /home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/lib/libmpfr.so.6.1.0 /home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/lib/libgmp.so.10.4.1 -lm
 
-SUITESPARSE_CONFIG_PATH = /home/davis/dev2/SPEX/SuiteSparse_config/build
-COLAMD_PATH = /home/davis/dev2/SPEX/COLAMD/build
-AMD_PATH = /home/davis/dev2/SPEX/AMD/build
-GMP_PATH = /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/gmp-6.2.1-nu2ei6r3lun5dhgt54lsuqceazmso4e6/lib
-MPFR_PATH = /raid/spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.5.0/mpfr-4.1.0-daojf3yszyqjht3fg6xfbit7ysb2p7lw/lib
+SUITESPARSE_CONFIG_PATH = /home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib
+COLAMD_PATH = /home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib
+AMD_PATH = /home/grads/l/lorena.m.d/Documents/RESEARCH/SPEX/lib
+GMP_PATH = /home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/gmp-6.2.1-kbb7qvlehyep4sbupog6a4ugtrcjlte4/lib
+MPFR_PATH = /home/grads/l/lorena.m.d/spack/opt/spack/linux-ubuntu18.04-x86_64_v4/gcc-7.5.0/mpfr-4.1.0-qdbpzu652zw5zkmmngvhrjxg6iokbsls/lib
 
 ################################################################################
 
@@ -62,7 +62,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 cov: runtests
 	./covall
 
-all: tcov_for_lu spex_demo_lu_extended tcov_for_update tcov_for_cholesky
+all: tcov_for_lu spex_demo_lu_extended tcov_for_update tcov_for_cholesky tcov_for_lu2
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
@@ -245,6 +245,9 @@ spex_cholesky_%.c:
 
 tcov_for_lu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
 	$(CC) $(LDFLAGS) tcov_for_lu.c $(CFLAGS) -o tcov_for_lu $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LIBS)
+	
+tcov_for_lu2: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_lu2.c simple_rand.c simple_rand.h $(DEMO_SRC)
+	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_lu2.c simple_rand.c $(DEMO_SRC) -o tcov_for_lu2 $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(LIBS)
 
 spex_demo_lu_extended: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) ../Demo/spex_demo_lu_extended.c $(DEMO_SRC) ../Demo/spex_demos.h
 	$(CC) $(LDFLAGS) ../Demo/spex_demo_lu_extended.c $(DEMO_SRC) $(CFLAGS) -o spex_demo_lu_extended $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LIBS)
@@ -268,6 +271,7 @@ runtests4llu: all
 	- ./spex_demo_lu_extended p 5 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
 	- ./tcov_for_lu > test_for_lu.out
 	- ./tcov_for_lu 0 1 1 > lu5.out
+	- ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
 
 # only run test for SPEX_Update
 runtests4luu: all

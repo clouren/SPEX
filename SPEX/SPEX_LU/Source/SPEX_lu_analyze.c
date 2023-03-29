@@ -83,11 +83,9 @@ SPEX_info SPEX_lu_analyze
         default:
         case SPEX_DEFAULT_ORDERING:
         case SPEX_COLAMD:
-        // ---AMD ordering is used (DEFAULT)---
-        // S->q is set to AMD's column ordering on A.
-        // The number of nonzeros in L is given as AMD's computed
-        // number of nonzeros in the Cholesky factor L of A which is the exact
-        // nnz(L) for Cholesky factorization (barring numeric cancellation)
+        // ---COLAMD ordering is used (DEFAULT)---
+        // S->q is set to COLAMD's column ordering on A.
+
         {
             SPEX_CHECK( spex_colamd(&(S->Q_perm),&(S->unz),A,option));
             S->lnz = S->unz;
@@ -117,10 +115,8 @@ SPEX_info SPEX_lu_analyze
         break;
 
         case SPEX_AMD:
-        // --- COLAMD ordering is used
-        // S->q is set as COLAMD's column ordering.
-        // The number of nonzeros in L is set as 10 times the number of
-        // nonzeros in A. This is a crude estimate.
+        // --- AMD ordering is used
+        // S->q is set as AMD's column ordering.
         {
             SPEX_CHECK( spex_amd(&(S->Q_perm),&(S->unz),A,option));
             S->lnz = S->unz;
