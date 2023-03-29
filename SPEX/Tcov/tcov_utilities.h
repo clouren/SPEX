@@ -57,6 +57,20 @@ extern int64_t malloc_count ;
     if (info != SPEX_OK) TEST_ABORT (info) ;    \
 }
 
+// OK2: call a method and assert that it succeeds or runs out of memory.
+// If the method runs out of memory, all workspace is freed and control is
+// returned to the caller.  The method must return a SPEX_info value.
+#define OK2(method)                             \
+{                                               \
+    info = (method) ;                           \
+    if (info == SPEX_OUT_OF_MEMORY)             \
+    {                                           \
+        SPEX_FREE_ALL;                          \
+        return (info) ;                         \
+    }                                           \
+    if (info != SPEX_OK) TEST_ABORT (info) ;    \
+}
+
 // test wrapper for SPEX_initialize*, SPEX_finalize, and SPEX_*_free methods
 #define TEST_OK(method)                             \
 if (!pretend_to_fail)                               \
