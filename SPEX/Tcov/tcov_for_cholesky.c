@@ -335,7 +335,15 @@ int main (int argc, char *argv [])
     SPEX_MPFR_UI_POW_UI(gmp_h,num1,num2,round);
 
     //Free
-
+    SPEX_MPZ_CLEAR(gmp_x);
+    SPEX_MPZ_CLEAR(gmp_y);
+    SPEX_MPQ_CLEAR(gmp_a);
+    SPEX_MPQ_CLEAR(gmp_b);
+    SPEX_MPQ_CLEAR(gmp_c);
+    SPEX_MPFR_CLEAR(gmp_e);
+    SPEX_MPFR_CLEAR(gmp_f);
+    SPEX_MPFR_CLEAR(gmp_g);
+    SPEX_MPFR_CLEAR(gmp_h);
     
     //--------------------------------------------------------------------------
     // error handling
