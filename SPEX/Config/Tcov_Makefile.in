@@ -62,7 +62,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 cov: runtests
 	./covall
 
-all: tcov_for_lu spex_demo_lu_extended tcov_for_update tcov_for_cholesky
+all: tcov_for_lu spex_demo_lu_extended tcov_for_update tcov_for_cholesky tcov_for_lu2
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
@@ -246,6 +246,9 @@ spex_cholesky_%.c:
 tcov_for_lu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
 	$(CC) $(LDFLAGS) tcov_for_lu.c $(CFLAGS) -o tcov_for_lu $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LIBS)
 
+tcov_for_lu2: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_lu2.c simple_rand.c simple_rand.h $(DEMO_SRC)
+	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_lu2.c simple_rand.c $(DEMO_SRC) -o tcov_for_lu2 $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(LIBS)
+
 spex_demo_lu_extended: $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) ../Demo/spex_demo_lu_extended.c $(DEMO_SRC) ../Demo/spex_demos.h
 	$(CC) $(LDFLAGS) ../Demo/spex_demo_lu_extended.c $(DEMO_SRC) $(CFLAGS) -o spex_demo_lu_extended $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LIBS)
 
@@ -268,6 +271,7 @@ runtests4llu: all
 	- ./spex_demo_lu_extended p 5 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
 	- ./tcov_for_lu > test_for_lu.out
 	- ./tcov_for_lu 0 1 1 > lu5.out
+	- ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
 
 # only run test for SPEX_Update
 runtests4luu: all
