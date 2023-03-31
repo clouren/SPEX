@@ -160,6 +160,7 @@ int main (int argc, char *argv [])
     option->print_level = 0 ;
     
     option->pivot = SPEX_TOL_SMALLEST ;
+    option->tol = 0;
     option->order = SPEX_COLAMD ;
     option->print_level = 3 ;
     printf ("LU backslash, AMD ordering, no malloc testing:\n");
@@ -169,7 +170,8 @@ int main (int argc, char *argv [])
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
     
-    read_test_matrix (&A, "../ExampleMats/test3.mat.txt");
+    option->order = SPEX_AMD ;
+    read_test_matrix (&A, "../ExampleMats/test1.mat.txt");
     create_test_rhs (&b, A->n);
     OK (SPEX_lu_analyze( &S, A, option));
     
