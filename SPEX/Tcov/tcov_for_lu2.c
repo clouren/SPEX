@@ -97,6 +97,7 @@ SPEX_info spex_test_lu_backslash (SPEX_matrix A, SPEX_matrix b,
     OK (SPEX_matrix_free (&A, option));                 \
     OK (SPEX_matrix_free (&b, option));                 \
     OK (SPEX_matrix_free (&x, option));                 \
+    OK (SPEX_symbolic_analysis_free(&S, option))        \
 }
 
 
@@ -108,7 +109,7 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     SPEX_matrix A = NULL, b = NULL, x = NULL ;
-    //SPEX_symbolic_analysis S = NULL ;
+    SPEX_symbolic_analysis S = NULL ;
     //SPEX_factorization F = NULL, F2 = NULL ;
     SPEX_options option = NULL ;
 
@@ -164,9 +165,13 @@ int main (int argc, char *argv [])
     printf ("LU backslash, AMD ordering, no malloc testing:\n");
     OK (spex_test_lu_backslash (A, b, option));
     option->print_level = 0 ;
+
+    OK (SPEX_matrix_free (&A, option));
+    OK (SPEX_matrix_free (&b, option));
     
-    //option->pivot = SPEX_TOL_LARGEST //SPEX_FIRST_NONZERO //SPEX_TOL_SMALLEST
-    
+    read_test_matrix (&A, "../ExampleMats/test3.mat.txt");
+    create_test_rhs (&b, A->n);
+    OK (SPEX_lu_analyze( &S, A, option));
     
     SPEX_FREE_ALL;
     
