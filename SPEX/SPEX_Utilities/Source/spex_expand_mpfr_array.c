@@ -122,7 +122,6 @@ SPEX_info spex_expand_mpfr_array
 
     if (r2 != 0)  // If gcd == 1 stop
     {
-        // FIXME: no test coverage for this case
         for (i = k; i < n; i++)
         {
             SPEX_MPZ_DIVEXACT(x_out[i],x_out[i],gcd);

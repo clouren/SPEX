@@ -2143,7 +2143,6 @@ SPEX_info SPEX_mpfr_mul
     const mpfr_rnd_t rnd  // MPFR rounding mode
 )
 {
-    // FIXME: no test coverage for this function
     SPEX_GMPFR_WRAPPER_START (x);
     mpfr_mul (x, y, z, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
@@ -2210,7 +2209,6 @@ SPEX_info SPEX_mpfr_ui_pow_ui
     const mpfr_rnd_t rnd  // MPFR rounding mode
 )
 {
-    // FIXME: no test coverage for this function
     SPEX_GMPFR_WRAPPER_START (x);
     mpfr_ui_pow_ui (x, (unsigned long int) y, (unsigned long int) z, rnd);
     SPEX_GMP_WRAPPER_FINISH ;
