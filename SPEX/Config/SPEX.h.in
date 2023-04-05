@@ -218,11 +218,10 @@ SPEX_preorder ;
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
-                         // Up for Chol, Gram for QR
+                         // Up for Chol
     SPEX_LU_LEFT = 1,    // Left looking LU factorization
     SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
-    SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
-    SPEX_QR_GRAM = 4     // Default factorization for QR
+    SPEX_CHOL_UP = 3     // Up looking Cholesky factorization
 }
 SPEX_factorization_algorithm ;
 
@@ -236,9 +235,9 @@ SPEX_factorization_algorithm ;
 
 typedef struct
 {
-    SPEX_pivot pivot ;     // row pivoting scheme used.
-    SPEX_preorder order ;  // column ordering scheme used
-    double tol ;           // tolerance for the row-pivoting methods
+    SPEX_pivot pivot ;     // row pivoting scheme used (LU only)
+    SPEX_preorder order ;  // ordering scheme used
+    double tol ;           // tolerance for the row-pivoting methods for LU.
                            // SPEX_TOL_SMALLEST and SPEX_TOL_LARGEST
     int print_level ;      // 0: print nothing, 1: just errors,
                            // 2: terse (basic stats from COLAMD/AMD and the
@@ -259,14 +258,14 @@ typedef SPEX_options_struct *SPEX_options ;
 SPEX_info SPEX_create_default_options (SPEX_options *option_handle) ;
 
 //------------------------------------------------------------------------------
-// SPEX_vector: a compressed sparse vector data structure used to form
-// the SPEX_DYNAMIC_CSC matrix.
-// This is only used publicly when calling the functions in SPEX_Update
-// to construct the vector to modify original matrix A, (either w for
-// A'=A+sigma*w*w^T in rank-1 update/downdate or vk to be swapped with A->v[k]
-// in the update for column replacement). This is not intended to be used for
-// building any n-by-1 vector (e.g., the right-hand-side vector b in Ax=b),
-// which should be considered as a n-by-1 SPEX_matrix.
+// SPEX_vector: a compressed sparse vector data structure used to form the
+// SPEX_DYNAMIC_CSC matrix.  This will be used in SPEX v3.2 for SPEX_Update,
+// when calling the functions to construct the vector to modify original matrix
+// A, (either w for A'=A+sigma*w*w^T in rank-1 update/downdate or vk to be
+// swapped with A->v[k] in the update for column replacement). This is not
+// intended to be used for building any n-by-1 vector (e.g., the
+// right-hand-side vector b in Ax=b), which should be considered as a n-by-1
+// SPEX_matrix.
 //------------------------------------------------------------------------------
 
 // NOTE: the real value of the k-th nonzero entry in the list should be computed
@@ -396,14 +395,15 @@ SPEX_type ;
 // (3) SPEX_DYNAMIC_CSC: A sparse matrix in dynamic CSC (compressed sparse
 //     column) format with the number of nonzeros in each column changing
 //     independently and dynamically, which is only used in the update
-//     algorithms. The matrix is held as an array of n SPEX_vectors, one per
-//     column. Each column is held as a SPEX_vector, containing mpz_t values
-//     and its own scale factor.  For this kind, A->nzmax, A->nz, A->p, A->i,
-//     A->x and A->*_shallow are ignored and pointers p, i and x are remained
-//     as NULL pointers. To access entries in column j, A->v[j]->i[0 ...
-//     A->v[j]->nz-1] give the row indices of all nonzeros, and the mpz_t values
-//     of these entries appear in the same locations in A->v[j]->x.
-//     A->v[j]->nzmax is the max number of nonzeros allocated.
+//     algorithms that will appear in SPEX v3.2 in the future. The matrix is
+//     held as an array of n SPEX_vectors, one per column. Each column is held
+//     as a SPEX_vector, containing mpz_t values and its own scale factor.  For
+//     this kind, A->nzmax, A->nz, A->p, A->i, A->x and A->*_shallow are
+//     ignored and pointers p, i and x are remained as NULL pointers. To access
+//     entries in column j, A->v[j]->i[0 ...  A->v[j]->nz-1] give the row
+//     indices of all nonzeros, and the mpz_t values of these entries appear in
+//     the same locations in A->v[j]->x.  A->v[j]->nzmax is the max number of
+//     nonzeros allocated.
 
 // The SPEX_matrix may contain 'shallow' components, A->p, A->i, A->j, and
 // A->x.  For example, if A->p_shallow is true, then a non-NULL A->p is a
@@ -439,15 +439,13 @@ typedef struct
 
     int64_t *p ;        // if CSC: column pointers, an array size is n+1.
                         // if triplet or dense: A->p is NULL.
-    bool p_shallow ;    // if true, A->p is shallow.
 
     int64_t *i ;        // if CSC or triplet: row indices, of size nzmax.
                         // if dense: A->i is NULL.
-    bool i_shallow ;    // if true, A->i is shallow.
+
 
     int64_t *j ;        // if triplet: column indices, of size nzmax.
                         // if CSC or dense: A->j is NULL.
-    bool j_shallow ;    // if true, A->j is shallow.
 
     union               // A->x.type has size nzmax.
     {
@@ -457,7 +455,6 @@ typedef struct
         int64_t *int64 ;        // A->x.int64
         double *fp64 ;          // A->x.fp64
     } x ;
-    bool x_shallow ;    // if true, A->x.type is shallow.
 
     //--------------------------------------------------------------------------
     // This component is only used for SPEX_DYNAMIC_CSC matrix, and ignored for
@@ -467,11 +464,23 @@ typedef struct
     SPEX_vector *v;     // If SPEX_DYNAMIC_CSC: array of size n, each entry of
                         // this array is a dynamic column vector.
                         // Neither A->v nor any vector A->v[j] are shallow.
+
+    //--------------------------------------------------------------------------
+    // flags to indicate if any component is shallow
+    //--------------------------------------------------------------------------
+
+    bool p_shallow ;    // if true, A->p is shallow.
+    bool i_shallow ;    // if true, A->i is shallow.
+    bool j_shallow ;    // if true, A->j is shallow.
+    bool x_shallow ;    // if true, A->x.type is shallow.
+
 } SPEX_matrix_struct ;
 
 // A SPEX_matrix is a pointer to a SPEX_matrix_struct
 typedef SPEX_matrix_struct *SPEX_matrix ;
 
+
+// Start HERE for next meeting (after Apr 5, 2023)
 
 //------------------------------------------------------------------------------
 // SPEX_matrix_allocate: allocate an m-by-n SPEX_matrix

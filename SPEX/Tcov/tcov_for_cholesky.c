@@ -415,7 +415,7 @@ int main (int argc, char *argv [])
     OK (SPEX_factorization_free (&F, option));
 
     // invalid algorithm
-    option->algo = SPEX_QR_GRAM ;
+    option->algo = 99 ;
     ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_ALGORITHM);
     option->algo = SPEX_CHOL_UP ;

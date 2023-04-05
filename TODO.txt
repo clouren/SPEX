@@ -5,9 +5,8 @@ FIXME:
     (2) just before submitting, do a pass over the user guide and code: All
     (4) create v3.0.0 branch, from Developmental, then remove SPEX_Update, QR
         from that
-    (5) test the removal of the tagged tcov warnings (check this)
+
     (6) pick a date: cmake, doc/changelog
-    (7) double-check copyright statements: Erick
     (8) remove this file, "Thought*", FUTURE.txt ...
 
 --------------------------------------------------------------------------------
