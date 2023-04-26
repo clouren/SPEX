@@ -7,7 +7,6 @@
 !cover
 !covs
 !gcovs
-!Makefile
 !Mats4Tcov/
 !README.txt
 !simple_*.c

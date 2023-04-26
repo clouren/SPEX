@@ -1,6 +1,6 @@
 
 FIXME: 
-    (1) Tcov: is working but coverage not complete.
+    (1) Tcov: is working (?) but coverage not complete.
 
     (2) just before submitting, do a pass over the user guide and code: All
     (4) create v3.0.0 branch, from Developmental, then remove SPEX_Update, QR

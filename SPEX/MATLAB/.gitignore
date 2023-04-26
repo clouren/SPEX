@@ -1,3 +1,3 @@
-# Ingore the spex_deps.m file (constructed by cmake)
+# Ignore the spex_deps.m file (constructed by cmake)
 spex_deps.m
 !.gitignore

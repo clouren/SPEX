@@ -14,7 +14,7 @@
  *
  * Input/Output arguments:
  *
- * X_handle:    A pointer to the solution of the linear system. The output is
+ * x_handle:    A pointer to the solution of the linear system. The output is
  *              allowed to be returned in either double precision, mpfr_t, or
  *              rational mpq_t
  *
@@ -44,7 +44,7 @@
 SPEX_info SPEX_lu_backslash
 (
     // Output
-    SPEX_matrix *X_handle,        // Final solution vector
+    SPEX_matrix *x_handle,        // Final solution vector
     // Input
     SPEX_type type,               // Type of output desired. Must be
                                   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
@@ -61,11 +61,11 @@ SPEX_info SPEX_lu_backslash
     SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC);
 
-    if (X_handle == NULL)
+    if (x_handle == NULL)
     {
         return SPEX_INCORRECT_INPUT;
     }
-    (*X_handle) = NULL;
+    (*x_handle) = NULL;
 
     if (type != SPEX_MPQ && type != SPEX_FP64 && type != SPEX_MPFR)
     {
@@ -104,13 +104,13 @@ SPEX_info SPEX_lu_backslash
 
     if (type == SPEX_MPQ)
     {
-        (*X_handle) = x ;
+        (*x_handle) = x ;
     }
     else
     {
         SPEX_matrix x2 = NULL ;
         SPEX_CHECK (SPEX_matrix_copy (&x2, SPEX_DENSE, type, x, option));
-        (*X_handle) = x2 ;
+        (*x_handle) = x2 ;
         SPEX_matrix_free (&x, NULL);
     }
 

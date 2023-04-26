@@ -119,7 +119,6 @@ int main (int argc, char *argv [])
         TEST_ABORT (SPEX_INCORRECT_INPUT);
     }
 
-    SPEX_info info ;
     OK (SPEX_initialize_expert (tcov_malloc, tcov_calloc, tcov_realloc,
         tcov_free));
 

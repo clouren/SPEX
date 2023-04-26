@@ -118,14 +118,11 @@ typedef enum
     SPEX_OUT_OF_MEMORY = -1,      // out of memory
     SPEX_SINGULAR = -2,           // the input matrix A is singular
     SPEX_INCORRECT_INPUT = -3,    // one or more input arguments are incorrect
-    // FIXME: consider removal of SPEX_UNSYMMETRC
-    SPEX_UNSYMMETRIC = -4,        // The input matrix is unsymmetric
-    SPEX_NOTSPD = -5,             // The input matrix is not SPD
-                                  // UNSYMMETRIC and NOTSPD are used for
-                                  // Cholesky factorization
-    SPEX_INCORRECT_ALGORITHM = -6,// The algorithm is not compatible with
+    SPEX_NOTSPD = -4,             // The input matrix is not symmetric positive
+                                  // definite (for a Cholesky factorization)
+    SPEX_INCORRECT_ALGORITHM = -5,// The algorithm is not compatible with
                                   // the factorization
-    SPEX_PANIC = -7               // SPEX used without proper initialization,
+    SPEX_PANIC = -6               // SPEX used without proper initialization,
                                   // or other unrecoverable error
 }
 SPEX_info ;
@@ -257,7 +254,7 @@ typedef SPEX_options_struct *SPEX_options ;
 
 SPEX_info SPEX_create_default_options (SPEX_options *option_handle) ;
 
-// FIXME: trim for v3.0
+// FIXME: trim the following for v3.0
 
 //------------------------------------------------------------------------------
 // SPEX_vector: a compressed sparse vector data structure used to form the
@@ -970,9 +967,8 @@ SPEX_info SPEX_thread_finalize ( void ) ;
 // SPEX matrix utilities
 //------------------------------------------------------------------------------
 
-/* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
- * C_handle is NULL on input. On output, C_handle contains a pointer to A'
- */
+// Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
+// C_handle is NULL on input. On output, C_handle contains a pointer to A'
 
 SPEX_info SPEX_transpose
 (
@@ -985,13 +981,10 @@ SPEX_info SPEX_transpose
 // framework, the method checks if the matrix is symmetric both numerically
 // and in its symbolic pattern.  The method has no option for checking just
 // pattern symmetry.
-//
-// If the matrix is determined to be symmetric, SPEX_OK is returned; otherwise,
-// SPEX_UNSYMMETRIC is returned.
 
 SPEX_info SPEX_determine_symmetry
 (
-//  bool *is_symmetric,  FIXME: add this
+    bool *is_symmetric,         // true if matrix is symmetric, false otherwise
     const SPEX_matrix A,        // Input matrix to be checked for symmetry
     const SPEX_options option   // Command options
 ) ;
@@ -1155,25 +1148,6 @@ SPEX_info SPEX_mpfr_free_cache (void) ;
 
 SPEX_info SPEX_mpfr_free_str (char *str) ;
 
-#if 0
-// These functions are currently unused, but kept here for future reference.
-SPEX_info SPEX_gmp_asprintf (char **str, const char *format, ... ) ;
-SPEX_info SPEX_gmp_fprintf (FILE *fp, const char *format, ... ) ;
-SPEX_info SPEX_gmp_printf (const char *format, ... ) ;
-SPEX_info SPEX_mpfr_printf ( const char *format, ... ) ;
-SPEX_info SPEX_mpfr_fprintf (FILE *fp, const char *format, ... ) ;
-
-SPEX_info SPEX_mpz_set_d (mpz_t x, const double y) ;
-SPEX_info SPEX_mpz_set_q (mpz_t x, const mpq_t y) ;
-
-SPEX_info SPEX_mpq_swap (mpq_t x, mpq_t y);
-SPEX_info SPEX_mpq_cmp_z (int *r, const mpq_t x, const mpz_t y) ;
-SPEX_info SPEX_mpq_get_den (mpz_t x, const mpq_t y) ;
-
-SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
-#endif
-
-
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1271,11 +1245,12 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 // function encompasses both factorization and solve and returns the solution
 // vector in the user desired type.  It can be thought of as an exact version
 // of MATLAB sparse backslash.
+// x and b be can be single vectors, or matrices.
 
 SPEX_info SPEX_lu_backslash
 (
     // Output
-    SPEX_matrix *X_handle,        // Final solution vector
+    SPEX_matrix *x_handle,        // Final solution vector
     // Input
     SPEX_type type,               // Type of output desired. Must be
                                   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
@@ -1302,7 +1277,8 @@ SPEX_info SPEX_lu_factorize
     const SPEX_options option       // command options
 ) ;
 
-// solves the linear system Ax = b via LU factorization
+// solves the linear system Ax = b via LU factorization.
+// x and b be can be single vectors, or matrices.
 
 SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 (
@@ -1314,8 +1290,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
                             // is updatable on input, it is converted to
                             // non-updatable.  If F is already non-updatable,
                             // it is not modified.
+                            // FIXME: for v3.0, remove mention of updatable.
     // input:
-    const SPEX_matrix b,    // right hand side vector
+    const SPEX_matrix b,    // right hand side vector(s)
     const SPEX_options option // Command options
 ) ;
 
@@ -1413,10 +1390,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-/* Purpose: Compute the exact solution of Ax = b via Cholesky factorization of A
- * On input, A is expected to be SPD and x is NULL
- * On output, x contains the solution of the linear system
- */
+// Purpose: Compute the exact solution of Ax = b via Cholesky factorization of A
+// On input, A is expected to be SPD and x is NULL
+// On output, x contains the solution of the linear system
 
 SPEX_info SPEX_cholesky_backslash
 (
@@ -1458,15 +1434,16 @@ SPEX_info SPEX_cholesky_factorize
                                     // is used.
 ) ;
 
-/* Purpose: After computing the REF Cholesky factorization A = LDL',
- * this function solves the associated linear system LDL' x = b.
- *
- * On input x is undefined, F contains the REF Cholesky factorization
- * of A (including L, rhos, and row permutation), b contains
- * the user's right hand side.
- *
- * On output x contains the rational solution of the system LDL' x = b
- */
+// Purpose: After computing the REF Cholesky factorization A = LDL',
+// this function solves the associated linear system LDL' x = b.
+//
+// On input x is undefined, F contains the REF Cholesky factorization
+// of A (including L, rhos, and row permutation), b contains
+// the user's right hand side.
+//
+// On output x contains the rational solution of the system LDL' x = b
+// x and b be can be single vectors, or matrices.
+
 
 SPEX_info SPEX_cholesky_solve
 (
@@ -1480,6 +1457,7 @@ SPEX_info SPEX_cholesky_solve
                                 // F is updatable on input, it is converted to
                                 // non-updatable.  If F is already
                                 // non-updatable, it is not modified.
+                            // FIXME: for v3.0, remove mention of updatable.
     // input:
     const SPEX_matrix b,        // Right hand side vector
     const SPEX_options option   // command options
@@ -1659,6 +1637,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
 //
 // A must be square. If A is SPD, an exact up-looking Cholesky factorization is
 // applied.  Otherwise, an exact left-looking LU functionality is applied.
+// x and b be can be single vectors, or matrices.
 
 //------------------------------------------------------------------------------
 // Purpose: Solve Ax = b by analyzing the input matrix and applying the
@@ -1668,7 +1647,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
 SPEX_info SPEX_backslash
 (
     // Output
-    SPEX_matrix *X_handle,      // On output: Final solution vector
+    SPEX_matrix *x_handle,      // On output: Final solution vector(s)
                                 // On input: undefined
     // Input
     const SPEX_type type,       // Type of output desired

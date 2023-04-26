@@ -25,7 +25,7 @@
 
 #define SPEX_FREE_ALL                           \
 {                                               \
-    SPEX_symbolic_analysis_free (&S, option);  \
+    SPEX_symbolic_analysis_free (&S, option);   \
 }
 
 #include "spex_lu_internal.h"
@@ -49,11 +49,15 @@ SPEX_info SPEX_lu_analyze
     // A can have any data type, but must be in sparse CSC format
     SPEX_REQUIRE_KIND (A, SPEX_CSC);
 
-    if (!S_handle || A->n != A->m)
+    if (!S_handle)
     {
         return SPEX_INCORRECT_INPUT;
     }
     (*S_handle) = NULL;
+    if (A->n != A->m)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
 
     //--------------------------------------------------------------------------
     // allocate symbolic analysis object
