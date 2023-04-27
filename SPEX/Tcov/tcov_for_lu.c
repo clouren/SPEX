@@ -607,11 +607,6 @@ int main ( int argc, char *argv[])
                 TEST_CHECK (SPEX_matrix_check (Ax, option));
                 if (pretend_to_fail) continue ;
 
-                /*if (kind == 0) // CSC
-                {
-                    TEST_CHECK (SPEX_determine_symmetry(Ax, true));
-                }*/
-
                 // convert to all different type of matrix
                 for (int tk1 = 0; tk1 < 15 && !pretend_to_fail; tk1++)
                 {

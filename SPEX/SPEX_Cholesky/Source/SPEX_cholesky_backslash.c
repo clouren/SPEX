@@ -36,7 +36,7 @@
 {                                               \
     SPEX_factorization_free(&F, option);        \
     SPEX_symbolic_analysis_free (&S, option);   \
-    SPEX_matrix_free (&PAP, option);           \
+    SPEX_matrix_free (&PAP, option);            \
 }
 
 #define SPEX_FREE_ALL             \
@@ -86,7 +86,7 @@ SPEX_info SPEX_cholesky_backslash
     }
 
     // A must be the appropriate dimension
-    if (A->n == 0 || A->m == 0 || A->n != A->m)
+    if (A->n == 0 || A->m == 0)
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -105,21 +105,23 @@ SPEX_info SPEX_cholesky_backslash
     SPEX_matrix PAP = NULL;
 
     //--------------------------------------------------------------------------
+    // Determine if A is indeed symmetric. If so, we try Cholesky.  This
+    // symmetry check checks for both the nonzero pattern and values.
+    //--------------------------------------------------------------------------
+
+    bool is_symmetric ;
+    SPEX_CHECK( SPEX_determine_symmetry(&is_symmetric, A, option) );
+    if (!is_symmetric)
+    {
+        SPEX_FREE_WORKSPACE ;
+        return SPEX_NOTSPD ;
+    }
+
+    //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_cholesky_preorder(&S, A, option) );
-
-    //--------------------------------------------------------------------------
-    // Determine if A is indeed symmetric. If so, we try Cholesky.  This
-    // symmetry check checks for both the nonzero pattern and values.  In
-    // addition, the symmetry check also checks that no diagonal entry is zero;
-    // as otherwise this indicates that the matrix is not SPD (even if
-    // symmetric) If the symmetry check fails, the appropriate error code is
-    // returned
-    //--------------------------------------------------------------------------
-
-    SPEX_CHECK( SPEX_determine_symmetry(A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the

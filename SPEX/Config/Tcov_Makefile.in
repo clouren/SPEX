@@ -316,7 +316,7 @@ vtests4chol: all
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_for_lu tcov_for_update spex_demo_lu_extended *.out *.a out Mats4Tcov/SPEX_Update/mat.txt
+	- $(RM) tcov_for_lu tcov_for_update spex_demo_lu_extended *.out *.a out Mats4Tcov/SPEX_Update/mat.txt tcov_for_lu2
 	- $(RM) -r SPEX_*.c spex_*.c *.dSYM
 	- $(RM) -r tcov_for_cholesky 
 

@@ -70,20 +70,23 @@ SPEX_info SPEX_cholesky_analyze
     SPEX_symbolic_analysis S = NULL;
 
     //--------------------------------------------------------------------------
+    // Determine if A is indeed symmetric. If so, we try Cholesky.
+    // This symmetry check checks for both the nonzero pattern and values.
+    //--------------------------------------------------------------------------
+
+    bool is_symmetric ;
+    SPEX_CHECK( SPEX_determine_symmetry(&is_symmetric, A, option) );
+    if (!is_symmetric)
+    {
+        SPEX_FREE_WORKSPACE ;
+        return SPEX_NOTSPD ;
+    }
+
+    //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_cholesky_preorder(&S, A, option) );
-
-    //--------------------------------------------------------------------------
-    // Determine if A is indeed symmetric. If so, we try Cholesky.
-    // This symmetry check checks for both the nonzero pattern and values.
-    // In addition, the symmetry check also checks that no diagonal entry is zero;
-    // as otherwise this indicates that the matrix is not SPD (even if symmetric)
-    // If the symmetry check fails, the appropriate error code is returned
-    //--------------------------------------------------------------------------
-
-    SPEX_CHECK( SPEX_determine_symmetry(A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the

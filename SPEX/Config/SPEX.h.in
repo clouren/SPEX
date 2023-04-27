@@ -82,7 +82,6 @@
 // or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 // for more details.
 
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //---------------------Include files required by SPEX --------------------------
@@ -119,13 +118,11 @@ typedef enum
     SPEX_OUT_OF_MEMORY = -1,      // out of memory
     SPEX_SINGULAR = -2,           // the input matrix A is singular
     SPEX_INCORRECT_INPUT = -3,    // one or more input arguments are incorrect
-    SPEX_UNSYMMETRIC = -4,        // The input matrix is unsymmetric
-    SPEX_NOTSPD = -5,             // The input matrix is not SPD
-                                  // UNSYMMETRIC and NOTSPD are used for
-                                  // Cholesky factorization
-    SPEX_INCORRECT_ALGORITHM = -6,// The algorithm is not compatible with
+    SPEX_NOTSPD = -4,             // The input matrix is not symmetric positive
+                                  // definite (for a Cholesky factorization)
+    SPEX_INCORRECT_ALGORITHM = -5,// The algorithm is not compatible with
                                   // the factorization
-    SPEX_PANIC = -7               // SPEX used without proper initialization,
+    SPEX_PANIC = -6               // SPEX used without proper initialization,
                                   // or other unrecoverable error
 }
 SPEX_info ;
@@ -218,11 +215,10 @@ SPEX_preorder ;
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
-                         // Up for Chol, Gram for QR
+                         // Up for Chol
     SPEX_LU_LEFT = 1,    // Left looking LU factorization
     SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
-    SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
-    SPEX_QR_GRAM = 4     // Default factorization for QR
+    SPEX_CHOL_UP = 3     // Up looking Cholesky factorization
 }
 SPEX_factorization_algorithm ;
 
@@ -236,9 +232,9 @@ SPEX_factorization_algorithm ;
 
 typedef struct
 {
-    SPEX_pivot pivot ;     // row pivoting scheme used.
-    SPEX_preorder order ;  // column ordering scheme used
-    double tol ;           // tolerance for the row-pivoting methods
+    SPEX_pivot pivot ;     // row pivoting scheme used (LU only)
+    SPEX_preorder order ;  // ordering scheme used
+    double tol ;           // tolerance for the row-pivoting methods for LU.
                            // SPEX_TOL_SMALLEST and SPEX_TOL_LARGEST
     int print_level ;      // 0: print nothing, 1: just errors,
                            // 2: terse (basic stats from COLAMD/AMD and the
@@ -258,24 +254,29 @@ typedef SPEX_options_struct *SPEX_options ;
 
 SPEX_info SPEX_create_default_options (SPEX_options *option_handle) ;
 
+// FIXME: trim the following for v3.0
+
 //------------------------------------------------------------------------------
-// SPEX_vector: a compressed sparse vector data structure used to form
-// the SPEX_DYNAMIC_CSC matrix.
-// This is only used publicly when calling the functions in SPEX_Update
-// to construct the vector to modify original matrix A, (either w for
-// A'=A+sigma*w*w^T in rank-1 update/downdate or vk to be swapped with A->v[k]
-// in the update for column replacement). This is not intended to be used for
-// building any n-by-1 vector (e.g., the right-hand-side vector b in Ax=b),
-// which should be considered as a n-by-1 SPEX_matrix.
+// SPEX_vector: a compressed sparse vector data structure used to form the
+// SPEX_DYNAMIC_CSC matrix.  This will be used in SPEX v3.2 for SPEX_Update,
+// when calling the functions to construct the vector to modify original matrix
+// A, (either w for A'=A+sigma*w*w^T in rank-1 update/downdate or vk to be
+// swapped with A->v[k] in the update for column replacement). This is not
+// intended to be used for building any n-by-1 vector (e.g., the
+// right-hand-side vector b in Ax=b), which should be considered as a n-by-1
+// SPEX_matrix.
 //------------------------------------------------------------------------------
 
 // NOTE: the real value of the k-th nonzero entry in the list should be computed
 // as x[k]*scale. While scale is a rational number, the real values for all
-// entries should be ensured to be INTEGER!! If the real value for any entry
+// entries are be ensured to be INTEGER. If the real value for any entry
 // turns out to be non-integer, make sure to scale up all entries in the same
 // matrix such that the real values of all entries become integer, then
 // properly update the scale in the matrix (see the scale component in the
 // SPEX_matrix structure).
+
+// NOTE: The SPEX_vector object will be used in a near-future version of SPEX.
+// It appears here for future compatibility, but is currently unused.
 
 typedef struct
 {
@@ -291,6 +292,9 @@ typedef struct
 
 // A SPEX_vector is a pointer to a SPEX_vector_struct
 typedef SPEX_vector_struct *SPEX_vector ;
+
+// FIXME: make this 'if 0' for v3.0, or delete.
+#if 1
 
 //------------------------------------------------------------------------------
 // SPEX_vector_allocate: allocate a SPEX_vector with nzmax entries
@@ -333,6 +337,8 @@ SPEX_info SPEX_vector_free
     const SPEX_options option
 ) ;
 
+#endif
+
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix
 //------------------------------------------------------------------------------
@@ -348,6 +354,8 @@ typedef enum
     SPEX_DENSE = 2,         // matrix is in dense format (held by column)
     SPEX_DYNAMIC_CSC = 3    // matrix is in dynamic CSC format with each
                             // column dynamically allocated as SPEX_vector
+                            // This format will be used in in a future SPEX;
+                            // it is not used in this version of SPEX.
 }
 SPEX_kind ;
 
@@ -393,17 +401,19 @@ SPEX_type ;
 //      in column-oriented format.  The value of A(i,j) is A->x.type [p]
 //      with p = i + j*A->m.  A->nz is ignored; nz is A->m * A->n.
 
+// FIXME: trim for v3.0:
 // (3) SPEX_DYNAMIC_CSC: A sparse matrix in dynamic CSC (compressed sparse
 //     column) format with the number of nonzeros in each column changing
 //     independently and dynamically, which is only used in the update
-//     algorithms. The matrix is held as an array of n SPEX_vectors, one per
-//     column. Each column is held as a SPEX_vector, containing mpz_t values
-//     and its own scale factor.  For this kind, A->nzmax, A->nz, A->p, A->i,
-//     A->x and A->*_shallow are ignored and pointers p, i and x are remained
-//     as NULL pointers. To access entries in column j, A->v[j]->i[0 ...
-//     A->v[j]->nz-1] give the row indices of all nonzeros, and the mpz_t values
-//     of these entries appear in the same locations in A->v[j]->x.
-//     A->v[j]->nzmax is the max number of nonzeros allocated.
+//     algorithms that will appear in SPEX v3.2 in the future. The matrix is
+//     held as an array of n SPEX_vectors, one per column. Each column is held
+//     as a SPEX_vector, containing mpz_t values and its own scale factor.  For
+//     this kind, A->nzmax, A->nz, A->p, A->i, A->x and A->*_shallow are
+//     ignored and pointers p, i and x are remained as NULL pointers. To access
+//     entries in column j, A->v[j]->i[0 ...  A->v[j]->nz-1] give the row
+//     indices of all nonzeros, and the mpz_t values of these entries appear in
+//     the same locations in A->v[j]->x.  A->v[j]->nzmax is the max number of
+//     nonzeros allocated.
 
 // The SPEX_matrix may contain 'shallow' components, A->p, A->i, A->j, and
 // A->x.  For example, if A->p_shallow is true, then a non-NULL A->p is a
@@ -439,15 +449,13 @@ typedef struct
 
     int64_t *p ;        // if CSC: column pointers, an array size is n+1.
                         // if triplet or dense: A->p is NULL.
-    bool p_shallow ;    // if true, A->p is shallow.
 
     int64_t *i ;        // if CSC or triplet: row indices, of size nzmax.
                         // if dense: A->i is NULL.
-    bool i_shallow ;    // if true, A->i is shallow.
+
 
     int64_t *j ;        // if triplet: column indices, of size nzmax.
                         // if CSC or dense: A->j is NULL.
-    bool j_shallow ;    // if true, A->j is shallow.
 
     union               // A->x.type has size nzmax.
     {
@@ -457,21 +465,31 @@ typedef struct
         int64_t *int64 ;        // A->x.int64
         double *fp64 ;          // A->x.fp64
     } x ;
-    bool x_shallow ;    // if true, A->x.type is shallow.
 
     //--------------------------------------------------------------------------
     // This component is only used for SPEX_DYNAMIC_CSC matrix, and ignored for
-    // CSC, triplet and dense matrix.
+    // CSC, triplet and dense matrix, for a future version of SPEX.
     //--------------------------------------------------------------------------
 
     SPEX_vector *v;     // If SPEX_DYNAMIC_CSC: array of size n, each entry of
                         // this array is a dynamic column vector.
                         // Neither A->v nor any vector A->v[j] are shallow.
+                        // In this version of SPEX, v is always NULL, and
+                        // should not be used.
+
+    //--------------------------------------------------------------------------
+    // flags to indicate if any component is shallow
+    //--------------------------------------------------------------------------
+
+    bool p_shallow ;    // if true, A->p is shallow.
+    bool i_shallow ;    // if true, A->i is shallow.
+    bool j_shallow ;    // if true, A->j is shallow.
+    bool x_shallow ;    // if true, A->x.type is shallow.
+
 } SPEX_matrix_struct ;
 
 // A SPEX_matrix is a pointer to a SPEX_matrix_struct
 typedef SPEX_matrix_struct *SPEX_matrix ;
-
 
 //------------------------------------------------------------------------------
 // SPEX_matrix_allocate: allocate an m-by-n SPEX_matrix
@@ -502,7 +520,7 @@ typedef SPEX_matrix_struct *SPEX_matrix ;
 SPEX_info SPEX_matrix_allocate
 (
     SPEX_matrix *A_handle,  // matrix to allocate
-    SPEX_kind kind,         // CSC, triplet, dense, dynamic_CSC
+    SPEX_kind kind,         // CSC, triplet, dense (and a future dynamic CSC)
     SPEX_type type,         // mpz, mpq, mpfr, int64, or double
     int64_t m,              // # of rows
     int64_t n,              // # of columns
@@ -558,6 +576,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
 // SPEX_matrix_copy: make a copy of a SPEX_matrix, into another kind and type.
 
+// FIXME: trim for v3.0:
 // SPEX supports 16 matrix formats:  15 of them are all combinations of
 // (CSC, triplet, dense) x (mpz, mpq, mpfr, int64, double).  The 16th format
 // is dynamic CSC, which can only be mpz.  This function can convert an input
@@ -568,7 +587,8 @@ SPEX_info SPEX_matrix_copy
 (
     SPEX_matrix *C_handle,  // matrix to create (never shallow)
     // inputs, not modified:
-    SPEX_kind C_kind,       // C->kind: CSC, triplet, dense, or dynamic_CSC
+    SPEX_kind C_kind,       // C->kind: CSC, triplet, dense,
+                            // (or future dynamic CSC)
     SPEX_type C_type,       // C->type: mpz_t, mpq_t, mpfr_t, int64_t, or double
     const SPEX_matrix A,    // matrix to make a copy of (may be shallow)
     const SPEX_options option
@@ -592,13 +612,12 @@ SPEX_factorization_kind ;
 
 // This struct stores the results of symbolic analysis
 
-// This object is constructed by SPEX_lu_analyze, SPEX_cholesky_analyze,
-// and SPEX_QR_analyze. All these functions allocate space and assign values,
-// and thus do not require user to perform any memory allocation. Certain
-// components of this object can still be NULL after it is constructed. User
-// can access (read or print) components of this object, but should not try to
-// modify any of them other than calling SPEX_symbolic_analysis_free to free
-// the memory space.
+// This object is constructed by SPEX_lu_analyze and SPEX_cholesky_analyze.
+// All these functions allocate space and assign values, and thus do not
+// require user to perform any memory allocation. Certain components of this
+// object can still be NULL after it is constructed. User can access (read or
+// print) components of this object, but should not try to modify any of them
+// other than calling SPEX_symbolic_analysis_free to free the memory space.
 
 typedef struct
 {
@@ -659,10 +678,13 @@ SPEX_info SPEX_symbolic_analysis_free
 // SPEX_factorization: data structure for factorization
 //------------------------------------------------------------------------------
 
-// The SPEX_factorization object holds an LU, Cholesky, or QR numerical
-// factorization, in either non-updatable (static) or updatable form. All
-// SPEX_update_* functions require and output updatable factorization with L
-// (and U if exists) in SPEX_DYNAMIC_CSC MPZ form. All solvers (except
+// The SPEX_factorization object holds an LU, Cholesky, or (in the future) QR
+// numerical factorization, in either non-updatable (static) or updatable form.
+
+// FIXME: trim this discussion for v3.0:
+
+// All SPEX_update_* functions require and output updatable factorization with
+// L (and U if exists) in SPEX_DYNAMIC_CSC MPZ form. All solvers (except
 // SPEX_update_(t)solve) and functions that create factorization return
 // non-updatable factorization with L (and U if exists) in SPEX_CSC MPZ form.
 //
@@ -701,7 +723,8 @@ typedef struct
     SPEX_factorization_kind kind;         // LU, Cholesky, QR factorization
 
     bool updatable;                       // flag to denote if the factorization
-                                          // is in the updatable format.
+                                          // is in the updatable format
+                                          // (for a future SPEX version)
 
     mpq_t scale_for_A;                    // the scale of the target matrix
 
@@ -710,12 +733,12 @@ typedef struct
     // factorization.
     //--------------------------------------------------------------------------
 
-    SPEX_matrix L;                       // The lower-triangular matrix from LU
+    SPEX_matrix L;                        // The lower-triangular matrix from LU
                                           // or Cholesky factorization.
-    SPEX_matrix U;                       // The upper-triangular matrix from LU
+    SPEX_matrix U;                        // The upper-triangular matrix from LU
                                           // factorization. NULL for Cholesky
                                           // factorization.
-    SPEX_matrix rhos;                    // A n-by-1 dense matrix for the
+    SPEX_matrix rhos;                     // A n-by-1 dense matrix for the
                                           // pivot values
 
 
@@ -773,6 +796,9 @@ SPEX_info SPEX_factorization_check
     const SPEX_options option
 ) ;
 
+// FIXME: delete for v3.0, put back in for v3.1
+#if 1
+
 //------------------------------------------------------------------------------
 // Function for performing in-place conversion between updatable and
 // non-updatable factorization. For now, it only works for LU or Cholesky
@@ -823,6 +849,7 @@ SPEX_info SPEX_factorization_convert
                                 // if false: make non-updatable
     const SPEX_options option   // Command options
 ) ;
+#endif
 
 //------------------------------------------------------------------------------
 // Memory management
@@ -940,9 +967,8 @@ SPEX_info SPEX_thread_finalize ( void ) ;
 // SPEX matrix utilities
 //------------------------------------------------------------------------------
 
-/* Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
- * C_handle is NULL on input. On output, C_handle contains a pointer to A'
- */
+// Purpose: This function sets C = A', where A must be a SPEX_CSC matrix
+// C_handle is NULL on input. On output, C_handle contains a pointer to A'
 
 SPEX_info SPEX_transpose
 (
@@ -951,18 +977,19 @@ SPEX_info SPEX_transpose
     const SPEX_options option
 ) ;
 
-// Purpose: Determine if the input A is *numerically* (thus pattern-wise)
-// symmetric.  Since SPEX is an exact framework, it doesn't make sense to check
-// only pattern symmetry.
-//
-// If the matrix is determined to be symmetric, SPEX_OK is returned; otherwise,
-// SPEX_UNSYMMETRIC is returned.
+// Purpose: Determine if the input A is symmetric.  Since SPEX is an exact
+// framework, the method checks if the matrix is symmetric both numerically
+// and in its symbolic pattern.  The method has no option for checking just
+// pattern symmetry.
 
 SPEX_info SPEX_determine_symmetry
 (
+    bool *is_symmetric,         // true if matrix is symmetric, false otherwise
     const SPEX_matrix A,        // Input matrix to be checked for symmetry
     const SPEX_options option   // Command options
 ) ;
+
+// ended HERE on Apr 10.
 
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------
@@ -1121,25 +1148,6 @@ SPEX_info SPEX_mpfr_free_cache (void) ;
 
 SPEX_info SPEX_mpfr_free_str (char *str) ;
 
-#if 0
-// These functions are currently unused, but kept here for future reference.
-SPEX_info SPEX_gmp_asprintf (char **str, const char *format, ... ) ;
-SPEX_info SPEX_gmp_fprintf (FILE *fp, const char *format, ... ) ;
-SPEX_info SPEX_gmp_printf (const char *format, ... ) ;
-SPEX_info SPEX_mpfr_printf ( const char *format, ... ) ;
-SPEX_info SPEX_mpfr_fprintf (FILE *fp, const char *format, ... ) ;
-
-SPEX_info SPEX_mpz_set_d (mpz_t x, const double y) ;
-SPEX_info SPEX_mpz_set_q (mpz_t x, const mpq_t y) ;
-
-SPEX_info SPEX_mpq_swap (mpq_t x, mpq_t y);
-SPEX_info SPEX_mpq_cmp_z (int *r, const mpq_t x, const mpz_t y) ;
-SPEX_info SPEX_mpq_get_den (mpz_t x, const mpq_t y) ;
-
-SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
-#endif
-
-
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1237,11 +1245,12 @@ SPEX_info SPEX_mpfr_log2(mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 // function encompasses both factorization and solve and returns the solution
 // vector in the user desired type.  It can be thought of as an exact version
 // of MATLAB sparse backslash.
+// x and b be can be single vectors, or matrices.
 
 SPEX_info SPEX_lu_backslash
 (
     // Output
-    SPEX_matrix *X_handle,        // Final solution vector
+    SPEX_matrix *x_handle,        // Final solution vector
     // Input
     SPEX_type type,               // Type of output desired. Must be
                                   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
@@ -1268,7 +1277,8 @@ SPEX_info SPEX_lu_factorize
     const SPEX_options option       // command options
 ) ;
 
-// solves the linear system Ax = b via LU factorization
+// solves the linear system Ax = b via LU factorization.
+// x and b be can be single vectors, or matrices.
 
 SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 (
@@ -1280,8 +1290,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
                             // is updatable on input, it is converted to
                             // non-updatable.  If F is already non-updatable,
                             // it is not modified.
+                            // FIXME: for v3.0, remove mention of updatable.
     // input:
-    const SPEX_matrix b,    // right hand side vector
+    const SPEX_matrix b,    // right hand side vector(s)
     const SPEX_options option // Command options
 ) ;
 
@@ -1379,10 +1390,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-/* Purpose: Compute the exact solution of Ax = b via Cholesky factorization of A
- * On input, A is expected to be SPD and x is NULL
- * On output, x contains the solution of the linear system
- */
+// Purpose: Compute the exact solution of Ax = b via Cholesky factorization of A
+// On input, A is expected to be SPD and x is NULL
+// On output, x contains the solution of the linear system
 
 SPEX_info SPEX_cholesky_backslash
 (
@@ -1424,15 +1434,16 @@ SPEX_info SPEX_cholesky_factorize
                                     // is used.
 ) ;
 
-/* Purpose: After computing the REF Cholesky factorization A = LDL',
- * this function solves the associated linear system LDL' x = b.
- *
- * On input x is undefined, F contains the REF Cholesky factorization
- * of A (including L, rhos, and row permutation), b contains
- * the user's right hand side.
- *
- * On output x contains the rational solution of the system LDL' x = b
- */
+// Purpose: After computing the REF Cholesky factorization A = LDL',
+// this function solves the associated linear system LDL' x = b.
+//
+// On input x is undefined, F contains the REF Cholesky factorization
+// of A (including L, rhos, and row permutation), b contains
+// the user's right hand side.
+//
+// On output x contains the rational solution of the system LDL' x = b
+// x and b be can be single vectors, or matrices.
+
 
 SPEX_info SPEX_cholesky_solve
 (
@@ -1446,6 +1457,7 @@ SPEX_info SPEX_cholesky_solve
                                 // F is updatable on input, it is converted to
                                 // non-updatable.  If F is already
                                 // non-updatable, it is not modified.
+                            // FIXME: for v3.0, remove mention of updatable.
     // input:
     const SPEX_matrix b,        // Right hand side vector
     const SPEX_options option   // command options
@@ -1458,6 +1470,7 @@ SPEX_info SPEX_cholesky_solve
 //------------------------------------------------------------------------------
 
 // FIXME: remove SPEX Update for v3.0, put back in for v3.1
+#if 1
 
 // This portion of SPEX library update a exact Cholesky factorization PAQ =
 // LDL^T exactly when A is changed as A' = A+sigma*w*w^T, or a exact LU
@@ -1602,6 +1615,8 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
     const SPEX_options option // Command options
 ) ;
 
+#endif
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //--------------------------SPEX Backslash--------------------------------------
@@ -1622,6 +1637,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
 //
 // A must be square. If A is SPD, an exact up-looking Cholesky factorization is
 // applied.  Otherwise, an exact left-looking LU functionality is applied.
+// x and b be can be single vectors, or matrices.
 
 //------------------------------------------------------------------------------
 // Purpose: Solve Ax = b by analyzing the input matrix and applying the
@@ -1631,7 +1647,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
 SPEX_info SPEX_backslash
 (
     // Output
-    SPEX_matrix *X_handle,      // On output: Final solution vector
+    SPEX_matrix *x_handle,      // On output: Final solution vector(s)
                                 // On input: undefined
     // Input
     const SPEX_type type,       // Type of output desired

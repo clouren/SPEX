@@ -203,8 +203,7 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for unsymmetric matrix (1)\n");
     read_test_matrix (&A, "../ExampleMats/test1.mat.txt");
     create_test_rhs (&b, A->n);
-    ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
-        SPEX_UNSYMMETRIC);
+    ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option), SPEX_NOTSPD);
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
 
@@ -212,8 +211,7 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for unsymmetric matrix (2)\n");
     read_test_matrix (&A, "../ExampleMats/test2.mat.txt");
     create_test_rhs (&b, A->n);
-    ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
-        SPEX_UNSYMMETRIC);
+    ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option), SPEX_NOTSPD);
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
 
@@ -221,8 +219,7 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for unsymmetric matrix (3)\n");
     read_test_matrix (&A, "../ExampleMats/test3.mat.txt");
     create_test_rhs (&b, A->n);
-    ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
-        SPEX_UNSYMMETRIC);
+    ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option), SPEX_NOTSPD);
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
 
@@ -372,7 +369,7 @@ int main (int argc, char *argv [])
         SPEX_INCORRECT_INPUT);
     ERR (SPEX_cholesky_factorize (NULL, NULL, NULL, NULL),
         SPEX_INCORRECT_INPUT);
-    ERR (SPEX_determine_symmetry (NULL, NULL ),
+    ERR (SPEX_determine_symmetry (NULL, NULL, NULL ),
         SPEX_INCORRECT_INPUT);
 
     // type cannot be int64
@@ -391,7 +388,8 @@ int main (int argc, char *argv [])
     A->type = SPEX_INT64 ;
     ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_INPUT);
-    ERR (SPEX_determine_symmetry (A, option),
+    bool is_symmetric ;
+    ERR (SPEX_determine_symmetry (&is_symmetric, A, option),
         SPEX_INCORRECT_INPUT);
     A->type = SPEX_MPZ ;
 
@@ -414,7 +412,7 @@ int main (int argc, char *argv [])
     OK (SPEX_factorization_free (&F, option));
 
     // invalid algorithm
-    option->algo = SPEX_QR_GRAM ;
+    option->algo = 99 ;
     ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_ALGORITHM);
     option->algo = SPEX_CHOL_UP ;
