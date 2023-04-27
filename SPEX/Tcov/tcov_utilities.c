@@ -234,7 +234,7 @@ SPEX_info spex_check_solution
         SPEX_PR1 ("ERROR! Solution is wrong. This is a bug; please "
                   "contact the authors of SPEX.\n");
     }
-
+    
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------

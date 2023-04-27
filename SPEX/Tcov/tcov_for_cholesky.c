@@ -251,7 +251,6 @@ int main (int argc, char *argv [])
     OK ((n != m) ? SPEX_PANIC : SPEX_OK);
     create_test_rhs (&b, A->n);
 
-    //TODO tcov_for_utilities??
     //--------------------------------------------------------------------------
     // test SPEX_transpose
     //--------------------------------------------------------------------------
