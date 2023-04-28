@@ -234,7 +234,15 @@ int main (int argc, char *argv [])
     option->algo = SPEX_CHOL_UP ;
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
-
+    
+    //--------------------------------------------------------------------------
+    // symetry check
+    //--------------------------------------------------------------------------
+    read_test_matrix (&A, "../ExampleMats/test5.mat.txt");
+    SPEX_cholesky_analyze( &S, A, option);
+    OK (SPEX_matrix_free (&A, option));
+    OK (SPEX_matrix_free (&b, option));
+    
     //--------------------------------------------------------------------------
     // load the test matrix and create the right-hand-side
     //--------------------------------------------------------------------------

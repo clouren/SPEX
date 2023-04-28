@@ -171,8 +171,12 @@ int main (int argc, char *argv [])
     
     option->order = SPEX_AMD ;
     read_test_matrix (&A, "../ExampleMats/test1.mat.txt");
-    create_test_rhs (&b, A->n);
     OK (SPEX_lu_analyze( &S, A, option));
+    OK (SPEX_symbolic_analysis_free(&S, option));
+    OK (SPEX_matrix_free (&A, option));
+    
+    read_test_matrix (&A, "../ExampleMats/test5.mat.txt");
+    SPEX_lu_analyze( &S, A, option);    
     
     SPEX_FREE_ALL;
     

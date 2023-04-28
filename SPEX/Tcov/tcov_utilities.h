@@ -27,6 +27,7 @@ extern int64_t malloc_count ;
         case SPEX_OUT_OF_MEMORY:   printf("OUT OF MEMORY\n");      break;   \
         case SPEX_SINGULAR:        printf("Matrix is SINGULAR\n"); break;   \
         case SPEX_INCORRECT_INPUT: printf("INCORRECT INPUT\n");    break;   \
+        case SPEX_NOTSPD:          printf("Matrix is not SPD\n");  break;   \
         case SPEX_PANIC:           printf("SPEX_PANIC\n");         break;   \
         default:                   printf("unknown!\n");                    \
     }                                                                       \

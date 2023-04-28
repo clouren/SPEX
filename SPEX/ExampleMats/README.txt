@@ -43,5 +43,7 @@ Files:
                                                     to test SPEX Cholesky
     test4.mat.txt           test4.rhs.txt           Symmetric indefinite matrix 
                                                     created to test SPEX Cholesky
+    test5.mat.txt           test5.rhs.txt           Small rectangular matrix 
+                                                    created to test SPEX
     test.mat.txt            test.rhs.txt            Integer matrix to test SPEX LU
 
