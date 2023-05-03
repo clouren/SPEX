@@ -116,6 +116,28 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
 }
 
 //------------------------------------------------------------------------------
+// spex_test_cdiv_qr: test SPEX_cdiv_qr
+//------------------------------------------------------------------------------
+
+#undef  SPEX_FREE_ALL
+#define SPEX_FREE_ALL ;
+
+SPEX_info spex_test_cdiv_qr (void) ;
+
+SPEX_info spex_test_cdiv_qr (void)
+{
+    mpz_t q = ...
+    mpz_t r = ...
+    OK2 (SPEX_cdiv_qr (z1, z2, ... ))
+    check it ...
+    SPEX_FREE_ALL ;
+    return (SPEX_OK) ;
+}
+
+//  BRUTAL ( spex_test_cdiv_qr ()) ;
+
+
+//------------------------------------------------------------------------------
 // spex_test_chol_afs: test SPEX_cholesky_[analyze,factorize,solve]
 //------------------------------------------------------------------------------
 
