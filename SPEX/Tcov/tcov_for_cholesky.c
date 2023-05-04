@@ -36,7 +36,7 @@
 
 // The method must return a bool (true if successful, false if failure).
 
-#define NTRIAL_MAX 10000
+#define NTRIAL_MAX 1//10000
 
 #define BRUTAL(method)                                                      \
 {                                                                           \
@@ -120,17 +120,24 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
 //------------------------------------------------------------------------------
 
 #undef  SPEX_FREE_ALL
-#define SPEX_FREE_ALL ;
+#define SPEX_FREE_ALL       \
+{                           \
+    SPEX_MPZ_CLEAR(q);  \
+    SPEX_MPZ_CLEAR(r);  \
+}
 
-SPEX_info spex_test_cdiv_qr (void) ;
+SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d) ;
 
-SPEX_info spex_test_cdiv_qr (void)
+SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d)
 {
-    mpz_t q = ...
-    mpz_t r = ...
-    OK2 (SPEX_cdiv_qr (z1, z2, ... ))
-    check it ...
-    SPEX_FREE_ALL ;
+    //SPEX_info info ;
+    mpz_t q, r;
+    SPEX_MPZ_SET_NULL(q);
+    SPEX_MPZ_SET_NULL(r);
+
+    OK2 (SPEX_mpz_cdiv_qr(q,r,n,d));
+
+    SPEX_FREE_ALL ; 
     return (SPEX_OK) ;
 }
 
@@ -371,6 +378,15 @@ int main (int argc, char *argv [])
 
     SPEX_MPFR_UI_POW_UI(gmp_h,num1,num2,round);
 
+    printf("Brutal test of SPEX_cdiv_qr: \n");
+    mpz_t gmp_n,gmp_d;
+    SPEX_MPZ_INIT(gmp_n);
+    SPEX_MPZ_INIT(gmp_d);
+    SPEX_MPZ_SET_SI(gmp_n, 47);
+    SPEX_MPZ_SET_SI(gmp_d, 14);
+    //BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d)); 
+    //OK(spex_test_cdiv_qr (gmp_n,gmp_d));
+
     //Free
     SPEX_MPZ_CLEAR(gmp_x);
     SPEX_MPZ_CLEAR(gmp_y);
@@ -381,6 +397,8 @@ int main (int argc, char *argv [])
     SPEX_MPFR_CLEAR(gmp_f);
     SPEX_MPFR_CLEAR(gmp_g);
     SPEX_MPFR_CLEAR(gmp_h);
+    SPEX_MPZ_CLEAR(gmp_n);
+    SPEX_MPZ_CLEAR(gmp_d);
     
     //--------------------------------------------------------------------------
     // error handling
