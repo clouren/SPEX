@@ -384,8 +384,8 @@ int main (int argc, char *argv [])
     SPEX_MPZ_INIT(gmp_d);
     SPEX_MPZ_SET_SI(gmp_n, 47);
     SPEX_MPZ_SET_SI(gmp_d, 14);
-    //BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d)); 
-    //OK(spex_test_cdiv_qr (gmp_n,gmp_d));
+    //BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d)); FIXME
+    //OK(spex_test_cdiv_qr (gmp_n,gmp_d)); this works, maybe interaction with brutal is problem?
 
     //Free
     SPEX_MPZ_CLEAR(gmp_x);
