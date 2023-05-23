@@ -555,6 +555,18 @@ SPEX_info spex_amd
     const SPEX_options option
 ) ;
 
+SPEX_info spex_dot_product
+(
+    //Output
+    mpz_t prod,
+    //Input
+    const SPEX_matrix A,
+    const int64_t k,             //column number for A A(:,k)
+    const SPEX_matrix B,
+    const int64_t j,             //column number for B B(:,j)
+    const SPEX_options option  
+);
+
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type
 #define SPEX_X(A)                                                           \
     ((A->type == SPEX_MPZ  ) ? (void *) A->x.mpz   :                        \

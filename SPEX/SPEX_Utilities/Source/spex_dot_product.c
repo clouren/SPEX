@@ -44,6 +44,5 @@ SPEX_info spex_dot_product
         }
     }
 
-    printf("fini dot\n");
     return SPEX_OK;
 }

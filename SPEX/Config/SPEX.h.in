@@ -1463,6 +1463,70 @@ SPEX_info SPEX_cholesky_solve
     const SPEX_options option   // command options
 ) ;
 
+
+// SPEX QR
+
+SPEX_info SPEX_qr_analyze
+(
+    // Output
+    SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
+    // Input
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_options option   // Command options (Default if NULL)
+);
+
+SPEX_info SPEX_qr_factorize
+(
+    SPEX_matrix *R_handle,    // Null on input, contains R on output
+    SPEX_matrix *Q_handle,    // Null on input, contains Q on output
+    const SPEX_matrix A,      // Matrix to be factored
+    const SPEX_symbolic_analysis S,
+    SPEX_options option
+);
+
+/* Compute the dot product of two integer vectors x,y and return in z */
+SPEX_info SPEX_dot
+(
+    SPEX_matrix x,
+    SPEX_matrix y,
+    mpz_t z
+);
+
+/* Purpose: Given a matrix A in m*n and B in m*n, compute the dot product of
+ * A(:,i) and B(:,j). Assumed to be dense. prod = A(:,i) dot B(:,j)
+ */
+SPEX_info SPEX_dense_mat_dot
+(
+    SPEX_matrix A,
+    int64_t i,
+    SPEX_matrix B,
+    int64_t j,
+    mpz_t prod
+);
+
+/* Perform the IPGE version of SPEX QR (aka Algorithm 1 from workpage)
+ */
+SPEX_info SPEX_QR_IPGE
+(
+    SPEX_matrix A,            // Matrix to be factored
+    SPEX_matrix *R_handle,    // upper triangular matrix
+    SPEX_matrix *Q_handle     // orthogonal triangular matrix
+);
+
+SPEX_info SPEX_generate_random_matrix
+(
+    SPEX_matrix *A_handle, // Matrix to be created
+    int64_t m,              // Rows of the matrix
+    int64_t n,              // Columns of the matrix
+    unsigned int seed,      // Random number seed
+    int64_t lower,          // Lower bound for numbers to be generated
+    int64_t upper           // Upper bound for numbers to be generated
+);
+
+
+
+
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------SPEX Update-------------------------------------

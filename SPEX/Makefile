@@ -54,17 +54,18 @@ all: library
 
 demos:
 	( cd build && cmake $(CMAKE_OPTIONS) -DDEMO=1 .. && cmake --build . -j${JOBS} )
-	./build/spex_demo_lu_simple1
-	./build/spex_demo_lu_simple2          ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
-	./build/spex_demo_lu_extended       f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
-	./build/spex_demo_lu_doub           f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
-	./build/spex_demo_backslash         f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
-	./build/spex_demo_backslash         f ExampleMats/Trefethen_500.mat.txt ExampleMats/Trefethen_500.rhs.txt
-	./build/spex_demo_cholesky_simple   f ExampleMats/494_bus.mat.txt        ExampleMats/494_bus.rhs.txt
-	./build/spex_demo_cholesky_extended f ExampleMats/494_bus.mat.txt        ExampleMats/494_bus.rhs.txt
-	./build/spex_demo_Update_lu         f ExampleMats/10teams.mat.txt  ExampleMats/10teams.rhs.txt
-	./build/spex_demo_Update_chol       f ExampleMats/mesh1e1.mat.txt      ExampleMats/mesh1e1.rhs.txt
-	./build/spex_demo_threaded          f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
+	#./build/spex_demo_lu_simple1
+	#./build/spex_demo_lu_simple2          ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
+	#./build/spex_demo_lu_extended       f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
+	#./build/spex_demo_lu_doub           f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
+	#./build/spex_demo_backslash         f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
+	#./build/spex_demo_backslash         f ExampleMats/Trefethen_500.mat.txt ExampleMats/Trefethen_500.rhs.txt
+	#./build/spex_demo_cholesky_simple   f ExampleMats/494_bus.mat.txt        ExampleMats/494_bus.rhs.txt
+	#./build/spex_demo_cholesky_extended f ExampleMats/494_bus.mat.txt        ExampleMats/494_bus.rhs.txt
+	#./build/spex_demo_Update_lu         f ExampleMats/10teams.mat.txt  ExampleMats/10teams.rhs.txt
+	#./build/spex_demo_Update_chol       f ExampleMats/mesh1e1.mat.txt      ExampleMats/mesh1e1.rhs.txt
+	#./build/spex_demo_threaded          f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
+	./build/spex_demo_qr
 
 
 cov:
