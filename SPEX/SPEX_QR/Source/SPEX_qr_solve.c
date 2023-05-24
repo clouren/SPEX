@@ -20,10 +20,11 @@
 SPEX_info SPEX_qr_solve
 (
     SPEX_matrix *x_handle, // Solution
-    SPEX_matrix R,        // Upper triangular matrix
-    SPEX_matrix Q,
+    //SPEX_matrix R,        // Upper triangular matrix
+    //SPEX_matrix Q,
+    SPEX_factorization F
     SPEX_matrix b,        // Q^T * b
-    SPEX_matrix rhos,
+    //SPEX_matrix rhos,
     const SPEX_options option
 )
 {

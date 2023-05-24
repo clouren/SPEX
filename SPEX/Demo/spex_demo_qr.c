@@ -212,10 +212,13 @@ int main( int argc, char *argv[] )
     printf("dense\n");
     SPEX_matrix_check(R2, option);
     SPEX_matrix_check(Q2, option);*/
+    SPEX_factorization F = NULL ;
+
     printf("before analysis\n");
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
    printf("after analysis\n");
-    DEMO_OK (SPEX_qr_factorize(&R, &Q, &rhos, A, S, option));
+    //DEMO_OK (SPEX_qr_factorize(&R, &Q, &rhos, A, S, option));
+    DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     printf("after fact\n");
    
     SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
@@ -223,7 +226,7 @@ int main( int argc, char *argv[] )
     // Make a copy of b
     SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
 
-    DEMO_OK (SPEX_qr_solve(&x, R, Q, b, rhos, option));
+    DEMO_OK (SPEX_qr_solve(&x, F, b, option));
     printf("orint x sparse:\n");
     SPEX_matrix_check(x, option);
 
