@@ -60,7 +60,7 @@ SPEX_info spex_qr_preorder
     ASSERT(A->kind == SPEX_CSC);
 
     // m = n for Cholesky factorization
-    ASSERT(A->n == A->m);
+    ASSERT(A->n <= A->m);
 
     // Dimension can't be negative
     ASSERT(A->n >= 0);

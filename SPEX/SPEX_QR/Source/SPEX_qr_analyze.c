@@ -29,6 +29,8 @@
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
     SPEX_matrix_free(&PAQ, NULL);   \
+    SPEX_FREE(c);                   \
+    SPEX_FREE(cInv);                \
 }
 
 #define SPEX_FREE_ALL                               \
@@ -60,6 +62,7 @@ SPEX_info SPEX_qr_analyze
     // Check inputs
     if ( !S_handle || !A)
     {
+        printf("hcin\n");
         return SPEX_INCORRECT_INPUT;
     }
 
@@ -88,6 +91,7 @@ SPEX_info SPEX_qr_analyze
 
     SPEX_CHECK( spex_qr_permute_A(&PAQ, A, false, S, option) );
 
+
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of PAQ
     //--------------------------------------------------------------------------
@@ -95,11 +99,14 @@ SPEX_info SPEX_qr_analyze
     // Obtain elimination tree of A
     SPEX_CHECK( spex_qr_etree(&S->parent, A) );
 
+
     // Postorder the elimination tree of A
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
+
     // Get the column counts of A
     SPEX_CHECK( spex_qr_counts(&c, A, S->parent, post) ); //c is S->cp but backwards
+
 
     // Set the column pointers of R
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
@@ -110,7 +117,7 @@ SPEX_info SPEX_qr_analyze
     }
 
     cInv = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
-    for(i=0;i<=n;i++)
+    for(i=1;i<=n;i++)
     {
         cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
     }
@@ -118,12 +125,11 @@ SPEX_info SPEX_qr_analyze
     SPEX_CHECK( spex_cumsum(S->cp, cInv, n));
 
     nz=0;
-    for (i = 1 ; i <= n ; i++)
+    for (i = 0 ; i <= n ; i++)
     {
-        nz += S->cp [i] ;
+        nz += cInv[i];//S->cp [i] ;
     }
     S->unz=nz;//suma de todos los elementos de c
-
 
     //TODO non zero patern of Q?? dense??
 

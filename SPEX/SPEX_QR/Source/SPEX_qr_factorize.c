@@ -19,6 +19,7 @@ SPEX_info SPEX_qr_factorize
 (
     SPEX_matrix *R_handle,    // Null on input, contains R on output
     SPEX_matrix *Q_handle,    // Null on input, contains Q on output
+    SPEX_matrix *rhos_handle,
     const SPEX_matrix A,      // Matrix to be factored
     const SPEX_symbolic_analysis S,
     SPEX_options option
@@ -71,8 +72,9 @@ SPEX_info SPEX_qr_factorize
     // we pre-allocate R
     // by performing a symbolic version of the factorization and obtaining the
     // exact nonzero pattern of R
+
     SPEX_CHECK(spex_qr_pre_factor(&R, A, S));
-    
+
     /*SPEX_CHECK (SPEX_matrix_allocate(&Q, SPEX_CSC, SPEX_MPZ, m, n, m*n, false, false, NULL));
     //Set col pointers Q THIS IS DENSE
     for (k = 0; k < n; k++)
@@ -94,6 +96,7 @@ SPEX_info SPEX_qr_factorize
     }*/
     SPEX_CHECK(SPEX_matrix_copy(&Q, SPEX_CSC, SPEX_MPZ, A, NULL));//this is not the right way to do this because Q will be denser than A
     // Perform IPGS to get Q and R
+
     for (k=0;k<n-1;k++)
     {
         SPEX_CHECK(spex_qr_ipgs(R, Q, rhos, k, A,/* h, xi, c, S->parent,*/ option));
@@ -101,8 +104,10 @@ SPEX_info SPEX_qr_factorize
 
     //finish R
     SPEX_CHECK(spex_dot_product(R->x.mpz[R->p[n]-1],Q, n-1, A, n-1, option)); 
+    SPEX_MPZ_SET(rhos->x.mpz[n-1],R->x.mpz[R->p[n]-1]);
 
     (*R_handle)=R;
     (*Q_handle)=Q;
+    (*rhos_handle)=rhos;
     return SPEX_OK;
 }

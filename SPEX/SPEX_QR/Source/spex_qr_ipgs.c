@@ -121,7 +121,6 @@ SPEX_info spex_qr_ipgs
         }
     }*/
 
-    
     // Compute column j+1 of Q using IPGE and history updates (dependent on the j-th column of R)
     for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //if we had a pattern for Q_j this is where it would go
     {
@@ -133,11 +132,12 @@ SPEX_info spex_qr_ipgs
                 //History update
                 //Q(i,j)=rho^()*Q(i,k)/rho^()
                 // Q[pQ] = x[pQ] * rho[i]
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
+                printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ],pQ);
+                /*SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
                 if(i>=1)
                 {
                     SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
-                }
+                }*/
             }
 
             SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]); //Q(i,k)
@@ -166,6 +166,7 @@ SPEX_info spex_qr_ipgs
 
                 
             }
+
             h[pQ]=i;
         }
 
@@ -173,11 +174,12 @@ SPEX_info spex_qr_ipgs
         {
             //History update
             //Q(i,j)=rho^()*Q(i,k)/rho^()
-            SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
+            printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ],j,pQ);
+            /*SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(j>=1 && h[pQ]>=0)
             {
                 SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
-            }
+            }*/
         }
 
     }

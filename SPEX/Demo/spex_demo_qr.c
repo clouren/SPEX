@@ -59,7 +59,8 @@ int main( int argc, char *argv[] )
         printf("\nExpected usage: ./SPEX_QR_dense SEED M N LOWER UPPER\n");
         printf("\nUsing default settings\n");
         seed = 10;
-        m = 100;
+        //m = 100;
+        m= 50;
         n = 50;
         lower = 1;
         upper = 10;
@@ -74,7 +75,7 @@ int main( int argc, char *argv[] )
         upper = atoi(argv[5]);
     }
 
-    m=4;n=4;seed=14;
+//m=5;n=5;seed=14;
     // Input checks
     ASSERT(m >= 0);
     ASSERT(n >= 0);
@@ -139,14 +140,14 @@ int main( int argc, char *argv[] )
     // playing with sparse
     //will need to change DEMO_OK back to DEMO_OK
     SPEX_info info;
-    SPEX_matrix rhos = NULL,R3=NULL;
+    SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
     int64_t *h;
     int64_t j=0, nnz=n*m;
     int64_t i,pQ, pR;
     int sgn;
 
     h = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
-    DEMO_OK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
+    DEMO_OK (SPEX_matrix_allocate(&(rhos2), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
     // Allocate R. We are performing the Thin REF QR factorization so
@@ -164,7 +165,7 @@ int main( int argc, char *argv[] )
 
     for (i = 0; i < n; i++)
     {
-        SPEX_MPZ_SET(rhos->x.mpz[i], SPEX_2D(R2, i, i, mpz)); //rho^i=R2(i,i)
+        SPEX_MPZ_SET(rhos2->x.mpz[i], SPEX_2D(R2, i, i, mpz)); //rho^i=R2(i,i)
     }
 
     option->print_level = 3;
@@ -205,25 +206,39 @@ int main( int argc, char *argv[] )
         R->p[k] = S->cp[k];
         printf("k %ld, p[k] %ld\n", k, R->p[k]);
     }
-*/
-
+*/ /*printf("sparse\n");
+    SPEX_matrix_check(R, option);
+    SPEX_matrix_check(Q, option);
+    printf("dense\n");
+    SPEX_matrix_check(R2, option);
+    SPEX_matrix_check(Q2, option);*/
+    printf("before analysis\n");
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
-    DEMO_OK (SPEX_qr_factorize(&R, &Q, A, S, option));
-
+   printf("after analysis\n");
+    DEMO_OK (SPEX_qr_factorize(&R, &Q, &rhos, A, S, option));
+    printf("after fact\n");
+   
     SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
     b2->nz = m;
-
     // Make a copy of b
     SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
 
-
-    DEMO_OK (SPEX_qr_solve(&x, R, Q, b, option));
-    printf("orint x:\n");
+    DEMO_OK (SPEX_qr_solve(&x, R, Q, b, rhos, option));
+    printf("orint x sparse:\n");
     SPEX_matrix_check(x, option);
 
-    SPEX_Qtb(Q, b, &b_new);
-    spex_matrix_mul(b_new,R->x.mpz[R->nz]);
-    SPEX_matrix_check(b_new, option);
+    SPEX_Qtb(Q2, b, &b_new);
+    //spex_matrix_mul(b_new,R->x.mpz[R->nz]);
+
+    SPEX_QR_backsolve(R2, b_new, &x2);
+    printf("orint x dense:\n");
+    SPEX_matrix_check(x2, option);
+    /*SPEX_mpq_set_num(x->scale, SPEX_2D(R, n-1, n-1, mpz));
+
+
+    // Create a double version of x
+    SPEX_matrix_copy(&x_doub, SPEX_DENSE, SPEX_FP64, x, option);
+    SPEX_matrix_check(b_new, option);*/
 
    /* DEMO_OK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
                                     false, false, option));
@@ -250,15 +265,22 @@ int main( int argc, char *argv[] )
 
 
 
-
+*/
+  /* spex_qr_pre_factor(&R,A,S);
+   printf("here %ld\n",R->nz);
+   for (i = 0; i < R->n; i++)
+    {
+        printf("p: %ld %ld\n",R->p[i],i);
+    }
+    
     for (i = 0; i < R->nzmax; i++)
     {
         SPEX_MPZ_INIT(R->x.mpz[i]);
         SPEX_MPZ_SET_UI(R->x.mpz[i],i);
-    }*/
+    }
 
-    /*SPEX_matrix_check(R, option);
-    SPEX_matrix_check(Q, option);*/
+    SPEX_matrix_check(R, option);*/
+    /*SPEX_matrix_check(Q, option);*/
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
