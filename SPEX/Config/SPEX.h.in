@@ -1484,6 +1484,15 @@ SPEX_info SPEX_qr_factorize
     SPEX_options option
 );
 
+SPEX_info SPEX_qr_solve
+(
+    SPEX_matrix* x_handle, // Solution
+    SPEX_matrix R,        // Upper triangular matrix
+    SPEX_matrix Q,
+    SPEX_matrix b,        // Q^T * b
+    const SPEX_options option
+);
+
 /* Compute the dot product of two integer vectors x,y and return in z */
 SPEX_info SPEX_dot
 (
@@ -1511,6 +1520,13 @@ SPEX_info SPEX_QR_IPGE
     SPEX_matrix A,            // Matrix to be factored
     SPEX_matrix *R_handle,    // upper triangular matrix
     SPEX_matrix *Q_handle     // orthogonal triangular matrix
+);
+
+SPEX_info SPEX_Qtb
+(
+    SPEX_matrix Q,        // Q matrix, want Q'
+    SPEX_matrix b,        // Original RHS Vector
+    SPEX_matrix* b_handle // Null on input. Contains Q'*b on output
 );
 
 SPEX_info SPEX_generate_random_matrix

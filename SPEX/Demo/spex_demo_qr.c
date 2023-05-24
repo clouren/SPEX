@@ -97,6 +97,12 @@ int main( int argc, char *argv[] )
     SPEX_matrix R = NULL;
     SPEX_matrix Q2 = NULL;
     SPEX_matrix R2 = NULL;
+
+    SPEX_matrix b = NULL;
+    SPEX_matrix b2 = NULL;
+    SPEX_matrix b_new = NULL;
+    SPEX_matrix x = NULL;
+    SPEX_matrix x2 = NULL;
     
     // SPEX Options
     SPEX_options option = NULL;
@@ -204,6 +210,21 @@ int main( int argc, char *argv[] )
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
     DEMO_OK (SPEX_qr_factorize(&R, &Q, A, S, option));
 
+    SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
+    b2->nz = m;
+
+    // Make a copy of b
+    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
+
+
+    DEMO_OK (SPEX_qr_solve(&x, R, Q, b, option));
+    printf("orint x:\n");
+    SPEX_matrix_check(x, option);
+
+    SPEX_Qtb(Q, b, &b_new);
+    spex_matrix_mul(b_new,R->x.mpz[R->nz]);
+    SPEX_matrix_check(b_new, option);
+
    /* DEMO_OK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
                                     false, false, option));
     // Set the column pointers of R
@@ -236,8 +257,8 @@ int main( int argc, char *argv[] )
         SPEX_MPZ_SET_UI(R->x.mpz[i],i);
     }*/
 
-    SPEX_matrix_check(R, option);
-    SPEX_matrix_check(Q, option);
+    /*SPEX_matrix_check(R, option);
+    SPEX_matrix_check(Q, option);*/
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------

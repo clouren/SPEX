@@ -19,10 +19,11 @@
 
 SPEX_info SPEX_qr_solve
 (
-    SPEX_matrix* x_handle // Solution
+    SPEX_matrix *x_handle, // Solution
     SPEX_matrix R,        // Upper triangular matrix
     SPEX_matrix Q,
     SPEX_matrix b,        // Q^T * b
+    const SPEX_options option
 )
 {
     SPEX_info info;
@@ -32,16 +33,16 @@ SPEX_info SPEX_qr_solve
     ASSERT( Q->type == SPEX_MPZ);
     ASSERT( b->type == SPEX_MPZ);
     ASSERT( Q->kind == SPEX_CSC);
-    ASSERT( b->kind == SPEX_CSC);
+    ASSERT( b->kind == SPEX_DENSE);
 
     SPEX_matrix b_new = NULL;
-    int64_t k, p, i;
-    mpz_t det;
+    int64_t k, p, i,j;
+    mpz_t *det;
 
     // b->new has Q->n rows and b->n columns
-    SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_CSC, SPEX_MPZ, Q->n, b->n, Q->n*b->n,
+    SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, Q->n, b->n, Q->n*b->n,
         false, true, NULL));
-    SPEX_MPZ_SET(det, R->x.mpz[R->nz]);
+    det = &(R->x.mpz[R->nz]); //det = &(F->rhos->x.mpz[F->L->n-1]);
     
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
@@ -49,12 +50,15 @@ SPEX_info SPEX_qr_solve
     // Iterate across every RHS vector
     for (k = 0; k < b->n; k++)
     {
-        // Compute b[i,k]
-        for(p =b->p[k]; p< b->p[k+1];p++)
+        // Compute b[j,k]
+        for(j=0;j<Q->n;j++)
         {
-            i=b->i[p];
-            SPEX_CHECK (spex_dot_product(b_new->x.mpz[i],Q, i, b, k,option));
-            SPEX_MPZ_PROD (b_new->x.mpz[i],b_new->x.mpz[i],det);
+            for(p=Q->p[j]; p < Q->p[j+1]; p++)
+            {
+                i=Q->i[p];
+                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),Q->x.mpz[p],SPEX_2D(b, i, k, mpz));
+            }
+            SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),det);
         }
     }
     
@@ -63,4 +67,5 @@ SPEX_info SPEX_qr_solve
     SPEX_CHECK (spex_left_lu_back_sub(R,b_new));
     
     (*x_handle)=b_new;
+    return SPEX_OK;
 }
