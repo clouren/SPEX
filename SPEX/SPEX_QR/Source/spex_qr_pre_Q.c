@@ -18,13 +18,13 @@
 
 SPEX_info spex_qr_pre_Q
 (
-    SPEX_matrix *Q_handle;
-    SPEX matrix A;
+    SPEX_matrix *Q_handle,
+    SPEX_matrix A,
     SPEX_options option
 )
 {
     SPEX_info info;
-    
+   /* 
     SPEX_matrix Q;
 
     SPEX_CHECK (SPEX_matrix_allocate(&Q, SPEX_CSC, SPEX_MPZ, m, n, m*n, false, false, NULL));
@@ -62,6 +62,6 @@ SPEX_info spex_qr_pre_Q
         }
     }
 
-    (*Q_handle)=Q;
+    (*Q_handle)=Q;*/
     return SPEX_OK;
 }

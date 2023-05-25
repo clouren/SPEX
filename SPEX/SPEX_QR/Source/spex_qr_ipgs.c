@@ -32,6 +32,8 @@
 
 SPEX_info spex_qr_ipgs
 (
+    /*SPEX_matrix r,
+    SPEX_matrix q,*/
     SPEX_matrix R,    
     SPEX_matrix Q,    
     SPEX_matrix rhos,         // sequence of pivots
@@ -92,8 +94,6 @@ SPEX_info spex_qr_ipgs
         }
     }
 
-
-    //TOASK where can I do the "Find the number of bits" should this function create vectors y and x instead of R(j,:) and Q(:,j+1) and then in wrapper we do what chol_up_factor does
     top=0;
     // Compute row k of R
     for (p = top; p < l; p++)
@@ -109,16 +109,13 @@ SPEX_info spex_qr_ipgs
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[xi[top]]); //rhos stores the diagonal of R
 
     // Set Q(:,j)=A(:,j)
-   /* for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //if we had a pattern for Q_j this is where it would go
+    /*for (i = 0; i < m; i++)
     {
-        if(A->i[pQ]==Q->i[pQ])
-        {
-            SPEX_MPZ_SET(Q->x.mpz[pQ],A->x.mpz[pQ]); 
-        }
-        else
-        {//I don't like this
-            SPEX_MPZ_SET_UI(Q->x.mpz[pQ],0);
-        }
+        SPEX_mpz_set_ui(q->x.mpz[ i ], 0);
+    }
+    for (i = A->p[j]; i < A->p[j+1]; i++)
+    {
+        SPEX_MPZ_SET(q->x.mpz[A->i[i]], A->x.mpz[i]);
     }*/
 
     // Compute column j+1 of Q using IPGE and history updates (dependent on the j-th column of R)
@@ -133,11 +130,11 @@ SPEX_info spex_qr_ipgs
                 //Q(i,j)=rho^()*Q(i,k)/rho^()
                 // Q[pQ] = x[pQ] * rho[i]
                 printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ],pQ);
-                /*SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
+                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
                 if(i>=1)
                 {
                     SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
-                }*/
+                }
             }
 
             SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]); //Q(i,k)
@@ -175,11 +172,11 @@ SPEX_info spex_qr_ipgs
             //History update
             //Q(i,j)=rho^()*Q(i,k)/rho^()
             printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ],j,pQ);
-            /*SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
+            SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(j>=1 && h[pQ]>=0)
             {
                 SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
-            }*/
+            }
         }
 
     }
