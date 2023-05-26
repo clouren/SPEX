@@ -115,7 +115,7 @@ SPEX_info spex_qr_preorder
         {
             //TODO SPEX_CHECK( spex_matrix_multiply(ATA,A,option));
             //SPEX_CHECK( spex_amd(&(S->P_perm),&(S->unz),ATA,option));
-            SPEX_CHECK( spex_amd(&(S->P_perm),&(S->unz),A,option));
+            SPEX_CHECK( spex_amd(&(S->Q_perm),&(S->unz),A,option));
         }
         break;
 
@@ -125,8 +125,8 @@ SPEX_info spex_qr_preorder
         // to be 10 times the number of nonzeros in A.
         // This is a very crude estimate on the nnz(L)
         {
-            S->P_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
-            if (S->P_perm == NULL)
+            S->Q_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
+            if (S->Q_perm == NULL)
             {
                 SPEX_FREE_ALL;
                 return (SPEX_OUT_OF_MEMORY);
@@ -134,7 +134,7 @@ SPEX_info spex_qr_preorder
 
             for (i = 0; i < n+1; i++)
             {
-                S->P_perm[i] = i;
+                S->Q_perm[i] = i;
             }
             // Very crude estimate for number of L and U nonzeros
             S->unz = 10*anz;

@@ -120,7 +120,15 @@ SPEX_info SPEX_qr_analyze
     for(i=1;i<=n;i++)
     {
         cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
+        //printf("%ld cinv %ld c %ld\n",i, cInv[i],c[i]);
     }
+    
+    //FIXME hardcode col counts for miniZeros, something is wrong with the analysis
+    /*cInv[1]=1;
+    cInv[2]=1;
+    cInv[3]=2;
+    cInv[4]=2;
+    cInv[5]=3;*/
 
     SPEX_CHECK( spex_cumsum(S->cp, cInv, n));
 

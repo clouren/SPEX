@@ -115,7 +115,7 @@ m=5;n=5;seed=14;
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
 
-    SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
+    /*SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
     Ainit->nz = m*n;
 
     // Create A as a copy of Ainit
@@ -127,20 +127,53 @@ m=5;n=5;seed=14;
     SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, Ainit, option);
     
      option->print_level = 3;
+     //SPEX_matrix_check(A, option);
+     
+     SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
+    b2->nz = m;
+    // Make a copy of b
+    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);*/
+    char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+    //char *mat_name = "ExampleMats/LF10.mat.txt";
+    //char *rhs_name = "ExampleMats/LF10.rhs.txt";
+    // Read in A
+    FILE *mat_file = fopen(mat_name,"r");
+    if( mat_file == NULL )
+    {
+        perror("Error while opening the file");
+        FREE_WORKSPACE;
+        return 0;
+    }
+
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
+    fclose(mat_file);
+    n = A->n;
+
+    // Read in b. The output of this demo function is b in dense format with
+    // mpz_t entries
+    FILE *rhs_file = fopen(rhs_name,"r");
+    if( rhs_file == NULL )
+    {
+        perror("Error while opening the file");
+        FREE_WORKSPACE;
+        return 0;
+    }
+    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
+    fclose(rhs_file);
+    
+    option->print_level = 3;
+    //SPEX_matrix_check(A, option);
 
     //--------------------------------------------------------------------------
     // Dense
     //--------------------------------------------------------------------------
-
-
+    
+   SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
+    option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
     /*SPEX_matrix_check(Q2, option);
     SPEX_matrix_check(R2, option);*/
-    
-    SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
-    b2->nz = m;
-    // Make a copy of b
-    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
     
     
     SPEX_Qtb(Q2, b, &b_new);
@@ -172,6 +205,7 @@ m=5;n=5;seed=14;
 
     printf("analysis:\n");
     option->print_level = 0;
+    //option->order = SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
 
     printf("facts:\n");
