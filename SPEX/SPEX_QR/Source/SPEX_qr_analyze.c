@@ -89,24 +89,23 @@ SPEX_info SPEX_qr_analyze
     // symbolic analysis step to get the permuted matrix PAQ.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_qr_permute_A(&PAQ, A, false, S, option) );
-
-
+    SPEX_CHECK( spex_qr_permute_A(&PAQ, A, true, S, option) ); //TODO can make false when you can transpose an empty matrix 
+    //SPEX_matrix_check(PAQ, option);
+    
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of PAQ
     //--------------------------------------------------------------------------
 
     // Obtain elimination tree of A
-    SPEX_CHECK( spex_qr_etree(&S->parent, A) );
-
+    SPEX_CHECK( spex_qr_etree(&S->parent, PAQ) );
+    
 
     // Postorder the elimination tree of A
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
 
     // Get the column counts of A
-    SPEX_CHECK( spex_qr_counts(&c, A, S->parent, post) ); //c is S->cp but backwards
-
+    SPEX_CHECK( spex_qr_counts(&c, PAQ, S->parent, post) ); //c is S->cp but backwards
 
     // Set the column pointers of R
     S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
@@ -120,7 +119,12 @@ SPEX_info SPEX_qr_analyze
     for(i=1;i<=n;i++)
     {
         cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
-        //printf("%ld cinv %ld c %ld\n",i, cInv[i],c[i]);
+    }
+    
+    for(i=0;i<=n;i++)
+    {
+        //cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
+        printf("%ld cinv %ld c %ld\n",i, cInv[i],c[i]);
     }
     
     //FIXME hardcode col counts for miniZeros, something is wrong with the analysis

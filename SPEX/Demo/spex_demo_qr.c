@@ -169,11 +169,11 @@ m=5;n=5;seed=14;
     // Dense
     //--------------------------------------------------------------------------
     
-   SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
+   /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
-    /*SPEX_matrix_check(Q2, option);
-    SPEX_matrix_check(R2, option);*/
+    //SPEX_matrix_check(Q2, option);
+    //SPEX_matrix_check(R2, option);
     
     
     SPEX_Qtb(Q2, b, &b_new);
@@ -204,8 +204,8 @@ m=5;n=5;seed=14;
     SPEX_factorization F = NULL ;
 
     printf("analysis:\n");
-    option->print_level = 0;
-    //option->order = SPEX_NO_ORDERING;
+    option->print_level = 3;
+    option->order = SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
 
     printf("facts:\n");

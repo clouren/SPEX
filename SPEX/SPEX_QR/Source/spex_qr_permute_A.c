@@ -92,7 +92,7 @@ SPEX_info spex_qr_permute_A
                 // k of PAQ
                 SPEX_MPZ_SET(PAQ->x.mpz[nz], A->x.mpz[t]);
                 // Row i of this nonzero is equal to pinv[A->i[t]]
-                PAQ->i[nz] = S->Pinv_perm[ A->i[t] ];
+                PAQ->i[nz] = A->i[t];
                 // Move to the next nonzero element of PAQ
                 nz++;
             }
@@ -121,7 +121,7 @@ SPEX_info spex_qr_permute_A
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
                 // Row i of this nonzero is equal to pinv[A->i[t]]
-                PAQ->i[nz] = S->Pinv_perm[ A->i[t] ];
+                PAQ->i[nz] = A->i[t];
                 // Move to the next nonzero element of PAQ
                 nz++;
             }

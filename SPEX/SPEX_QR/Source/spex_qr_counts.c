@@ -39,7 +39,10 @@ static void spex_qr_init_ata
     for (k = 0 ; k < n ; k++) w [post [k]] = k ;    /* invert post */
     for (i = 0 ; i < m ; i++)
     {
-        for (k = n, p = AT->p[i] ; p < AT->p[i+1] ; p++) k = SPEX_MIN (k, w [AT->i[p]]);
+        for (k = n, p = AT->p[i] ; p < AT->p[i+1] ; p++) 
+        {
+            k = SPEX_MIN (k, w [AT->i[p]]);
+        }
         (*next) [i] = (*head) [k] ;     /* place row i in linked list k */
         (*head) [k] = i ;
     }
@@ -61,7 +64,7 @@ SPEX_info spex_qr_counts
     const int64_t *post     // Post-order of the tree
 )
 {
-
+    
     SPEX_info info;
     int64_t i, j, k, n, m, J, s, p, q, jleaf, *colcount = NULL, *w = NULL;
     int64_t *head=NULL, *next=NULL;
@@ -145,6 +148,7 @@ SPEX_info spex_qr_counts
             colcount[parent[j]] += colcount[j] ;
         }
     }
+    printf("here\n");
     (*c_handle) = colcount;
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

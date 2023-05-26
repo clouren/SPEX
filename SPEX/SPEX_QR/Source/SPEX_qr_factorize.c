@@ -59,6 +59,8 @@ SPEX_info SPEX_qr_factorize
     memcpy(F->Pinv_perm, S->Pinv_perm, n*sizeof(int64_t));
 
 */
+    //also do estimate here
+
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
@@ -75,6 +77,8 @@ SPEX_info SPEX_qr_factorize
     {
         //printf("iteration: %ld\n",k);
         SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, A, option));
+        
+        //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes
     }
 
     //finish R
