@@ -106,4 +106,11 @@ SPEX_info spex_qr_pre_factor
                                   // inverse
 );
 
+SPEX_info spex_qr_pre_Q
+(
+    SPEX_matrix *Q_handle,
+    SPEX_matrix A,
+    SPEX_options option
+);
+
 #endif

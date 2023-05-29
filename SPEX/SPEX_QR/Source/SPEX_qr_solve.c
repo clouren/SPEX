@@ -20,11 +20,8 @@
 SPEX_info SPEX_qr_solve
 (
     SPEX_matrix *x_handle, // Solution
-    //SPEX_matrix R,        // Upper triangular matrix
-    //SPEX_matrix Q,
-    SPEX_factorization F
+    SPEX_factorization F,
     SPEX_matrix b,        // Q^T * b
-    //SPEX_matrix rhos,
     const SPEX_options option
 )
 {
@@ -42,11 +39,11 @@ SPEX_info SPEX_qr_solve
     mpz_t det;
 
     // b->new has Q->n rows and b->n columns
-    SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, Q->n, b->n, Q->n*b->n,
+    SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, F->Q->n, b->n, F->Q->n*b->n,
         false, true, NULL));
     //det = &(R->x.mpz[R->n-1]); //det = &(F->rhos->x.mpz[F->L->n-1]);
     SPEX_MPZ_INIT(det);
-    SPEX_MPZ_SET(det,rhos->x.mpz[R->n-1]);
+    SPEX_MPZ_SET(det,F->rhos->x.mpz[F->R->n-1]);
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
     
@@ -54,12 +51,12 @@ SPEX_info SPEX_qr_solve
     for (k = 0; k < b->n; k++)
     {
         // Compute b[j,k]
-        for(j=0;j<Q->n;j++)
+        for(j=0;j<F->Q->n;j++)
         {
-            for(p=Q->p[j]; p < Q->p[j+1]; p++)
+            for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
-                i=Q->i[p];
-                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),Q->x.mpz[p],SPEX_2D(b, i, k, mpz));
+                i=F->Q->i[p];
+                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],SPEX_2D(b, i, k, mpz));
             }
             SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),det);
         }
@@ -69,7 +66,7 @@ SPEX_info SPEX_qr_solve
     SPEX_matrix_check(b_new, option);*/
     //backwards substitution
     //Solves Rx=b_new (overwrites b_new into x)
-    SPEX_CHECK (spex_left_lu_back_sub(R,b_new));
+    SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new));
     
     (*x_handle)=b_new;
     return SPEX_OK;

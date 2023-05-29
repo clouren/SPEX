@@ -18,19 +18,21 @@
 
 SPEX_info spex_qr_pre_Q
 (
-    SPEX_matrix *Q_handle;
-    SPEX matrix A;
+    SPEX_matrix *Q_handle,
+    SPEX_matrix A,
     SPEX_options option
 )
 {
     SPEX_info info;
-    
-    SPEX_matrix Q;
+   
+    SPEX_matrix Q=NULL;
+    int64_t p,q,i, n=A->n, m=A->m, nz=n*m;
 
     SPEX_CHECK (SPEX_matrix_allocate(&Q, SPEX_CSC, SPEX_MPZ, m, n, m*n, false, false, NULL));
+    Q->nz=nz;
     
     //set Q->p
-    for(i=0; i<n:i++)
+    for(i=0; i<n+1;i++)
     {
         Q->p[i]=i*n;
     }
@@ -43,16 +45,17 @@ SPEX_info spex_qr_pre_Q
     //this is very inefficient, i don't know how to do thissssss
     for(i=0;i<nz;i++)
     {
-        SPEX_MPZ_SETUI(Q->x.mpz[i],0);
+        SPEX_MPZ_SET_UI(Q->x.mpz[i],0);
     }
 
-    for(i=0;i<n:i++)
+    for(i=0;i<n;i++)
     {
-        for(p=A->p[i];q<A->p[i+1];p++)
+        for(p=A->p[i];p<A->p[i+1];p++)
         {
-            for(q=Q->p[i];q<Q->p[i+1];p++)
+            for(q=Q->p[i];q<Q->p[i+1];q++)
             {
-                if(A->i[p]==Q->i[p])
+                //printf("pA %ld iA %ld, pQ %ld iQ %ld\n",p,A->i[p],q,Q->i[p]);
+                if(A->i[p]==Q->i[q])
                 {
                     SPEX_MPZ_SET(Q->x.mpz[q],A->x.mpz[p]);
                     break;
@@ -61,6 +64,8 @@ SPEX_info spex_qr_pre_Q
             }
         }
     }
+    
+    //SPEX_matrix_check(Q, option);
 
     (*Q_handle)=Q;
     return SPEX_OK;

@@ -24,8 +24,6 @@
 #define FREE_WORKSPACE                          \
     SPEX_matrix_free(&A,  NULL);                \
     SPEX_matrix_free(&A2, NULL);                \
-    SPEX_matrix_free(&R,  NULL);                \
-    SPEX_matrix_free(&Q,  NULL);                \
     SPEX_matrix_free(&R2, NULL);                \
     SPEX_matrix_free(&Q2, NULL);                \
     SPEX_FREE(option);                          \
@@ -75,7 +73,7 @@ int main( int argc, char *argv[] )
         upper = atoi(argv[5]);
     }
 
-//m=5;n=5;seed=14;
+m=5;n=5;seed=14;
     // Input checks
     ASSERT(m >= 0);
     ASSERT(n >= 0);
@@ -94,8 +92,6 @@ int main( int argc, char *argv[] )
 
     // Next we define 3 Q R pairs. Each pair is generated via a different dense
     // algorithm
-    SPEX_matrix Q = NULL;
-    SPEX_matrix R = NULL;
     SPEX_matrix Q2 = NULL;
     SPEX_matrix R2 = NULL;
 
@@ -119,7 +115,7 @@ int main( int argc, char *argv[] )
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
 
-    SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
+    /*SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
     Ainit->nz = m*n;
 
     // Create A as a copy of Ainit
@@ -129,106 +125,56 @@ int main( int argc, char *argv[] )
     // Create A2 as a copy of Ainit
     // A2 is a copy of the Ainit matrix. A is a dense matrix with mpz_t entries
     SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, Ainit, option);
-
-    //--------------------------------------------------------------------------
-    // Factorize
-    //--------------------------------------------------------------------------
-
-
-    SPEX_QR_IPGE( A2, &R2, &Q2);
-
-    // playing with sparse
-    //will need to change DEMO_OK back to DEMO_OK
-    SPEX_info info;
-    SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
-    int64_t *h;
-    int64_t j=0, nnz=n*m;
-    int64_t i,pQ, pR;
-    int sgn;
-
-    h = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
-    DEMO_OK (SPEX_matrix_allocate(&(rhos2), SPEX_DENSE, SPEX_MPZ, n, 1, n,
-        false, true, option));
-
-    // Allocate R. We are performing the Thin REF QR factorization so
-    // R is n*n
-    //DEMO_OK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, n*n, false, true, NULL));
-    //SPEX_matrix_copy(&R, SPEX_CSC, SPEX_MPZ, R2, option);
-
-    //Q=A (will need to change as soon as A is actually sparse)
-    DEMO_OK(SPEX_matrix_copy(&Q, SPEX_CSC, SPEX_MPZ, A, NULL));
-    //will also need to change once A is actually sparse (and we're actually only doing one col)
-    for (i = 0; i < nnz; i++)
-    {
-        h[i] = -1;
-    }
-
-    for (i = 0; i < n; i++)
-    {
-        SPEX_MPZ_SET(rhos2->x.mpz[i], SPEX_2D(R2, i, i, mpz)); //rho^i=R2(i,i)
-    }
-
-    option->print_level = 3;
-    SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, Ainit, option);
-    /*SPEX_matrix_check(A, option); //checa que onda, a lo mejor es lo de option
-    printf("finishA\n");
-    SPEX_matrix_check(R2, option);
-    SPEX_matrix_check(Q2, option);*/
-
     
-    //R
-    SPEX_symbolic_analysis S = NULL;
-    /*SPEX_matrix PAQ = NULL;
-    int64_t *post = NULL;
-    int64_t *c = NULL;
-
-    DEMO_OK( spex_qr_preorder(&S, A, option) );
-
-    DEMO_OK( spex_qr_permute_A(&PAQ, A, false, S,option) );
-
-    // Obtain elimination tree of A
-    DEMO_OK( spex_qr_etree(&S->parent, A) );
-
-    // Postorder the elimination tree of A
-    DEMO_OK( spex_cholesky_post(&post, S->parent, n) );
-
-    // Get the column counts of A
-    DEMO_OK( spex_qr_counts(&c, A, S->parent, post) );*/
-    /*DEMO_OK (SPEX_qr_analyze(&S, A, option));
-   
-
-    SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
-                                    false, false, option));
-    printf("here\n");
-    // Set the column pointers of L
-    for (int64_t k = 0; k < n; k++)
-    {   
-        R->p[k] = S->cp[k];
-        printf("k %ld, p[k] %ld\n", k, R->p[k]);
-    }
-*/ /*printf("sparse\n");
-    SPEX_matrix_check(R, option);
-    SPEX_matrix_check(Q, option);
-    printf("dense\n");
-    SPEX_matrix_check(R2, option);
-    SPEX_matrix_check(Q2, option);*/
-    SPEX_factorization F = NULL ;
-
-    printf("before analysis\n");
-    DEMO_OK (SPEX_qr_analyze(&S, A, option));
-   printf("after analysis\n");
-    //DEMO_OK (SPEX_qr_factorize(&R, &Q, &rhos, A, S, option));
-    DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    printf("after fact\n");
-   
-    SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
+     option->print_level = 3;
+     //SPEX_matrix_check(A, option);
+     
+     SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
     b2->nz = m;
     // Make a copy of b
-    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
+    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);*/
+    char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+    //char *mat_name = "ExampleMats/LF10.mat.txt";
+    //char *rhs_name = "ExampleMats/LF10.rhs.txt";
+    // Read in A
+    FILE *mat_file = fopen(mat_name,"r");
+    if( mat_file == NULL )
+    {
+        perror("Error while opening the file");
+        FREE_WORKSPACE;
+        return 0;
+    }
 
-    DEMO_OK (SPEX_qr_solve(&x, F, b, option));
-    printf("orint x sparse:\n");
-    SPEX_matrix_check(x, option);
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
+    fclose(mat_file);
+    n = A->n;
+
+    // Read in b. The output of this demo function is b in dense format with
+    // mpz_t entries
+    FILE *rhs_file = fopen(rhs_name,"r");
+    if( rhs_file == NULL )
+    {
+        perror("Error while opening the file");
+        FREE_WORKSPACE;
+        return 0;
+    }
+    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
+    fclose(rhs_file);
+    
+    option->print_level = 3;
+    //SPEX_matrix_check(A, option);
+
+    //--------------------------------------------------------------------------
+    // Dense
+    //--------------------------------------------------------------------------
+    
+   /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
+    option->print_level = 3;
+    SPEX_QR_IPGE( A2, &R2, &Q2);
+    //SPEX_matrix_check(Q2, option);
+    //SPEX_matrix_check(R2, option);
+    
 
     SPEX_Qtb(Q2, b, &b_new);
     //spex_matrix_mul(b_new,R->x.mpz[R->nz]);
@@ -243,47 +189,35 @@ int main( int argc, char *argv[] )
     SPEX_matrix_copy(&x_doub, SPEX_DENSE, SPEX_FP64, x, option);
     SPEX_matrix_check(b_new, option);*/
 
-   /* DEMO_OK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
-                                    false, false, option));
-    // Set the column pointers of R
-    for (int64_t k = 0; k < n; k++)
-    {   
-        R->p[k] = S->cp[k+1];
-        printf("k %ld, p[k] %ld\n", k, R->p[k]);
-    }
-    R->p[n] = S->unz;
-
-    R->i[0]=0;
-    R->i[1]=0;
-    R->i[2]=1;
-    R->i[3]=0;
-
-    R->i[4]=1;
-    R->i[5]=2;
-    R->i[6]=0;
-    R->i[7]=1;
-
-    R->i[8]=2;
-    R->i[9]=3;
+    //--------------------------------------------------------------------------
+    // Sparse
+    //--------------------------------------------------------------------------
 
 
+    SPEX_info info;
+    SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
+    int64_t *h;
+    int64_t j=0, nnz=n*m;
+    int64_t i,pQ, pR;
+    int sgn;
+    SPEX_symbolic_analysis S = NULL;
+    SPEX_factorization F = NULL ;
 
-*/
-  /* spex_qr_pre_factor(&R,A,S);
-   printf("here %ld\n",R->nz);
-   for (i = 0; i < R->n; i++)
-    {
-        printf("p: %ld %ld\n",R->p[i],i);
-    }
-    
-    for (i = 0; i < R->nzmax; i++)
-    {
-        SPEX_MPZ_INIT(R->x.mpz[i]);
-        SPEX_MPZ_SET_UI(R->x.mpz[i],i);
-    }
+    printf("analysis:\n");
+    option->print_level = 3;
+    option->order = SPEX_NO_ORDERING;
+    DEMO_OK (SPEX_qr_analyze(&S, A, option));
 
-    SPEX_matrix_check(R, option);*/
-    /*SPEX_matrix_check(Q, option);*/
+    printf("facts:\n");
+    option->print_level = 3;
+    DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
+
+    printf("solve:\n");
+    DEMO_OK (SPEX_qr_solve(&x, F, b, option));
+    printf("orint x sparse:\n");
+    SPEX_matrix_check(x, option);
+
+
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------

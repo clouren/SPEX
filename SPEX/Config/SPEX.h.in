@@ -738,8 +738,8 @@ typedef struct
     SPEX_matrix U;                        // The upper-triangular matrix from LU
                                           // factorization. NULL for Cholesky
                                           // factorization.
-    SPEX_matrix Q;                        // The matrix with pair-wise orthogonal vectors from QR
-    SPEX_matrix R;                        // The upper triangular matrix from QR
+    SPEX_matrix Q;
+    SPEX_matrix R;
     SPEX_matrix rhos;                     // A n-by-1 dense matrix for the
                                           // pivot values
 
@@ -1479,9 +1479,6 @@ SPEX_info SPEX_qr_analyze
 
 SPEX_info SPEX_qr_factorize
 (
-    /*SPEX_matrix *R_handle,    // Null on input, contains R on output
-    SPEX_matrix *Q_handle,    // Null on input, contains Q on output
-    SPEX_matrix *rhos_handle,*/
     SPEX_factorization *F_handle,
     const SPEX_matrix A,      // Matrix to be factored
     const SPEX_symbolic_analysis S,
@@ -1491,11 +1488,8 @@ SPEX_info SPEX_qr_factorize
 SPEX_info SPEX_qr_solve
 (
     SPEX_matrix* x_handle, // Solution
-    //SPEX_matrix R,        // Upper triangular matrix
-    //SPEX_matrix Q,
     SPEX_factorization F,
     SPEX_matrix b,        // Q^T * b
-    //SPEX_matrix rhos,  
     const SPEX_options option
 );
 
