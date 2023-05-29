@@ -148,7 +148,7 @@ SPEX_info spex_qr_counts
             colcount[parent[j]] += colcount[j] ;
         }
     }
-    printf("here\n");
+    
     (*c_handle) = colcount;
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

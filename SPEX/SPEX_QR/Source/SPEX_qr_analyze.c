@@ -104,42 +104,15 @@ SPEX_info SPEX_qr_analyze
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
 
-    // Get the column counts of A
-    SPEX_CHECK( spex_qr_counts(&c, PAQ, S->parent, post) ); //c is S->cp but backwards
+    // Get the column counts of R' aka the row counts of R
+    SPEX_CHECK( spex_qr_counts(&(S->cp), PAQ, S->parent, post) ); 
 
-    // Set the column pointers of R
-    S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
-    if (S->cp == NULL)
-    {
-        SPEX_FREE_ALL;
-        return SPEX_OUT_OF_MEMORY;
-    }
-
-    cInv = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
-    for(i=1;i<=n;i++)
-    {
-        cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
-    }
     
-    for(i=0;i<=n;i++)
-    {
-        //cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
-        printf("%ld cinv %ld c %ld\n",i, cInv[i],c[i]);
-    }
-    
-    //FIXME hardcode col counts for miniZeros, something is wrong with the analysis
-    /*cInv[1]=1;
-    cInv[2]=1;
-    cInv[3]=2;
-    cInv[4]=2;
-    cInv[5]=3;*/
-
-    SPEX_CHECK( spex_cumsum(S->cp, cInv, n));
-
     nz=0;
-    for (i = 0 ; i <= n ; i++)
+    for (i = 0 ; i < n ; i++)
     {
-        nz += cInv[i];//S->cp [i] ;
+        nz += S->cp [i] ;
+        printf("%ld\n",S->cp[i]);
     }
     S->unz=nz;//suma de todos los elementos de c
 

@@ -75,7 +75,7 @@ SPEX_info spex_qr_pre_factor
     // Declare memory for L and c
     //--------------------------------------------------------------------------
 
-    // Allocate L
+    // Allocate R
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
         false, false, NULL));
 
@@ -92,11 +92,11 @@ SPEX_info spex_qr_pre_factor
     }
 
     // Set the column pointers of L and c
-    for (k = 0; k < n; k++)
+    /*for (k = 0; k < n; k++)
     {
         R->p[k] = S->cp[k+1];
     }
-
+*/
     R->i[0] = 0;
     //c[0]++;
 
@@ -117,6 +117,7 @@ SPEX_info spex_qr_pre_factor
     rnz = 0 ;
     for (k = 0; k < n; k++)
     {
+        R->p [k] = rnz ;      
         w [k] = k ;  
         top = n ;
 
@@ -148,6 +149,12 @@ SPEX_info spex_qr_pre_factor
     // Finalize R->p
     R->p[n] = S->unz = rnz;
     (*R_handle) = R;
+    /*
+
+    SPEX_options option = NULL;
+    SPEX_create_default_options(&option);
+    option->print_level = 3;
+    SPEX_matrix_check(R, option);*/
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
