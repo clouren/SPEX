@@ -17,7 +17,6 @@
 
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
-    SPEX_FREE(col);                   \
     SPEX_FREE(h);                   \
 }
 
@@ -84,7 +83,8 @@ SPEX_info spex_qr_ipgs
             if(R->i[p]==j)
             {
                 xi[l]=p;
-                col[l++]=i;
+                col[l]=i;
+                l++;
                 break;
             }
             else if (R->i[p]>j)
@@ -103,22 +103,11 @@ SPEX_info spex_qr_ipgs
         i = col[p];//column number
         // R(j,i) = Q(:,j) dot A(:,i)
         SPEX_MPZ_INIT(R->x.mpz[x]);
-        //printf("j %ld x %ld i %ld \n", j,x,i);
         SPEX_CHECK(spex_dot_product(R->x.mpz[x],Q, j, A, i, option)); 
     }
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[xi[top]]); //rhos stores the diagonal of R
     
-    //SPEX_matrix_check(R, option);
-    // Set Q(:,j)=A(:,j)
-    /*for (i = 0; i < m; i++)
-    {
-        SPEX_mpz_set_ui(q->x.mpz[ i ], 0);
-    }
-    for (i = A->p[j]; i < A->p[j+1]; i++)
-    {
-        SPEX_MPZ_SET(q->x.mpz[A->i[i]], A->x.mpz[i]);
-    }*/
-
+    printf("here\n");
     // Compute column j+1 of Q using IPGE and history updates (dependent on the j-th column of R)
     for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //if we had a pattern for Q_j this is where it would go
     {

@@ -91,8 +91,8 @@ SPEX_info spex_qr_permute_A
                 // Set the nonzero value and location of the entries in column
                 // k of PAQ
                 SPEX_MPZ_SET(PAQ->x.mpz[nz], A->x.mpz[t]);
-                // Row i of this nonzero is equal to pinv[A->i[t]]
-                PAQ->i[nz] = A->i[t];
+                // Row i of this nonzero is equal to A->i[t]
+                PAQ->i[nz] = S->Pinv_perm[A->i[t]]; //this should be just A->i[t], I don't understand
                 // Move to the next nonzero element of PAQ
                 nz++;
             }

@@ -71,18 +71,17 @@ SPEX_info SPEX_qr_factorize
 
 
     SPEX_CHECK(spex_qr_pre_factor(&F->R, A, S));
-    
+    SPEX_matrix_check(F->R, option);
     //SPEX_CHECK(SPEX_matrix_copy(&F->Q, SPEX_CSC, SPEX_MPZ, A, NULL));//this is not the right way to do this because Q will be denser than A
     SPEX_CHECK(spex_qr_pre_Q(&F->Q,A,option));
 
     // Perform IPGS to get Q and R
-    /*printf("Q=A:\n");
-    SPEX_matrix_check(F->Q, option);*///there is something off with Q that causes a weird free after printing
+   // printf("Q=A:\n");
+    //SPEX_matrix_check(F->Q, option);///there is something off with Q that causes a weird free after printing
 
     for (k=0;k<n-1;k++)
     {
-
-        //printf("iteration: %ld\n",k);
+        printf("iteration: %ld\n",k);
         SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, A, option));
         
         //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes
