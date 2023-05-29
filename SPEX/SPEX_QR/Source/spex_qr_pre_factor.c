@@ -12,6 +12,7 @@
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
     SPEX_FREE(w);                   \
+    SPEX_FREE(leftmost);                   \
 }
 
 # define SPEX_FREE_ALL               \

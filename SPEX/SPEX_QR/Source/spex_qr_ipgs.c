@@ -85,6 +85,7 @@ SPEX_info spex_qr_ipgs
                 xi[l]=p;
                 col[l]=i;
                 l++;
+                //printf("i %ld p %ld",i,p);
                 break;
             }
             else if (R->i[p]>j)
@@ -93,6 +94,7 @@ SPEX_info spex_qr_ipgs
             }
         }
     }
+    int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
 
     top=0;
     // Compute row k of R
@@ -103,11 +105,12 @@ SPEX_info spex_qr_ipgs
         i = col[p];//column number
         // R(j,i) = Q(:,j) dot A(:,i)
         SPEX_MPZ_INIT(R->x.mpz[x]);
+        //SPEX_MPZ_INIT2(R->x.mpz[i], estimate);
         SPEX_CHECK(spex_dot_product(R->x.mpz[x],Q, j, A, i, option)); 
     }
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[xi[top]]); //rhos stores the diagonal of R
     
-    printf("here\n");
+    //printf("here\n");
     // Compute column j+1 of Q using IPGE and history updates (dependent on the j-th column of R)
     for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //if we had a pattern for Q_j this is where it would go
     {

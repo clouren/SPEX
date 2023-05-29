@@ -71,7 +71,7 @@ SPEX_info SPEX_qr_factorize
 
 
     SPEX_CHECK(spex_qr_pre_factor(&F->R, A, S));
-    SPEX_matrix_check(F->R, option);
+    //SPEX_matrix_check(F->R, option);
     //SPEX_CHECK(SPEX_matrix_copy(&F->Q, SPEX_CSC, SPEX_MPZ, A, NULL));//this is not the right way to do this because Q will be denser than A
     SPEX_CHECK(spex_qr_pre_Q(&F->Q,A,option));
 
@@ -88,6 +88,7 @@ SPEX_info SPEX_qr_factorize
     }
 
     //finish R
+    SPEX_MPZ_INIT(F->R->x.mpz[F->R->p[n]-1]);
     SPEX_CHECK(spex_dot_product(F->R->x.mpz[F->R->p[n]-1],F->Q, n-1, A, n-1, option)); 
     SPEX_MPZ_SET(F->rhos->x.mpz[n-1],F->R->x.mpz[F->R->p[n]-1]);
 

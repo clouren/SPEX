@@ -134,6 +134,7 @@ m=5;n=5;seed=14;
     b2->nz = m;
     // Make a copy of b
     SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);*/
+
     char *mat_name = "ExampleMats/smallZeros.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
@@ -164,13 +165,13 @@ m=5;n=5;seed=14;
     fclose(rhs_file);
     
     //option->print_level = 3;
-    //SPEX_matrix_check(A, option);
+    //SPEX_matrix_check(A, option);*/
 
     //--------------------------------------------------------------------------
     // Dense
     //--------------------------------------------------------------------------
     
-   /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
+    /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
     //SPEX_matrix_check(Q2, option);

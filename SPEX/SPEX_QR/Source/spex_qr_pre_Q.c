@@ -28,7 +28,7 @@ SPEX_info spex_qr_pre_Q
     SPEX_matrix Q=NULL;
     int64_t p,q,i, n=A->n, m=A->m, nz=n*m;
 
-    SPEX_CHECK (SPEX_matrix_allocate(&Q, SPEX_CSC, SPEX_MPZ, m, n, m*n, false, false, NULL));
+    SPEX_CHECK (SPEX_matrix_allocate(&Q, SPEX_CSC, SPEX_MPZ, m, n, m*n, false, true, NULL));
     Q->nz=nz;
     
     //set Q->p
@@ -41,10 +41,12 @@ SPEX_info spex_qr_pre_Q
     {
         Q->i[i]=i%n;
     }
+    //int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
     
     //this is very inefficient, i don't know how to do thissssss
     for(i=0;i<nz;i++)
     {
+        //SPEX_MPZ_INIT2(Q->x.mpz[i], estimate);
         SPEX_MPZ_SET_UI(Q->x.mpz[i],0);
     }
 

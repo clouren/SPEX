@@ -112,7 +112,6 @@ SPEX_info SPEX_qr_analyze
     for (i = 0 ; i < n ; i++)
     {
         nz += S->cp [i] ;
-        printf("%ld\n",S->cp[i]);
     }
     S->unz=nz;//suma de todos los elementos de c
 
