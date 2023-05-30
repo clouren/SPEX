@@ -29,6 +29,7 @@ SPEX_info SPEX_qr_factorize
     int64_t *c, *h, *xi;
     int64_t n=A->n, m=A->m, k,i,pQ;
     SPEX_factorization F = NULL ;
+    SPEX_matrix PAQ;
 
     //Allocate variables
     
@@ -44,10 +45,10 @@ SPEX_info SPEX_qr_factorize
     SPEX_MPQ_SET(F->scale_for_A, A->scale);
 
     // Inverse pivot ordering
- /*   F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
+   /* F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
     // row/column permutation, to be copied from S->P_perm
     F->Q_perm =    (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
-    if (!(F->Pinv_perm) || !(F->Q_perm))
+   /* if (!(F->Pinv_perm) || !(F->Q_perm))
     {
         // out of memory: free everything and return
         SPEX_FREE_ALL;
@@ -57,13 +58,13 @@ SPEX_info SPEX_qr_factorize
     // Copy row/column permutation from symbolic analysis to factorization
     memcpy(F->Q_perm, S->Q_perm, n*sizeof(int64_t));
     memcpy(F->Pinv_perm, S->Pinv_perm, n*sizeof(int64_t));
-
+*/
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the row/column ordering from
     // the symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_qr_permute_A(&PAQ, A, true, S));*/
+    SPEX_CHECK( spex_qr_permute_A(&PAQ, A, true, S, option) );
 
 
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
@@ -81,7 +82,7 @@ SPEX_info SPEX_qr_factorize
 
     for (k=0;k<n-1;k++)
     {
-        printf("iteration: %ld\n",k);
+        //printf("iteration: %ld\n",k);
         SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, A, option));
         
         //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes

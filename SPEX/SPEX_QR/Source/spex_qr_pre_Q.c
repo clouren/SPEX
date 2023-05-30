@@ -34,12 +34,12 @@ SPEX_info spex_qr_pre_Q
     //set Q->p
     for(i=0; i<n+1;i++)
     {
-        Q->p[i]=i*n;
+        Q->p[i]=i*m;
     }
 
     for(i=0;i<nz;i++)
     {
-        Q->i[i]=i%n;
+        Q->i[i]=i%m;
     }
     //int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
     

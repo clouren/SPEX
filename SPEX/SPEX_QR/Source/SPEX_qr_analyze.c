@@ -81,25 +81,21 @@ SPEX_info SPEX_qr_analyze
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of ATA (Default is COLAMD)
     //--------------------------------------------------------------------------
-
     SPEX_CHECK( spex_qr_preorder(&S, A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the
     // symbolic analysis step to get the permuted matrix PAQ.
     //--------------------------------------------------------------------------
-
     SPEX_CHECK( spex_qr_permute_A(&PAQ, A, true, S, option) ); //TODO can make false when you can transpose an empty matrix 
     //SPEX_matrix_check(PAQ, option);
     
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of PAQ
     //--------------------------------------------------------------------------
-
     // Obtain elimination tree of A
     SPEX_CHECK( spex_qr_etree(&S->parent, PAQ) );
     
-
     // Postorder the elimination tree of A
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 

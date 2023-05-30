@@ -75,6 +75,7 @@ int main( int argc, char *argv[] )
     }
 
 m=5;n=5;seed=14;
+//FIXME colamd (colamd_l) only accepts square
     // Input checks
     ASSERT(m >= 0);
     ASSERT(n >= 0);
@@ -116,7 +117,7 @@ m=5;n=5;seed=14;
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
 
-    /*SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
+   /* SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
     Ainit->nz = m*n;
 
     // Create A as a copy of Ainit
@@ -133,8 +134,11 @@ m=5;n=5;seed=14;
      SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
     b2->nz = m;
     // Make a copy of b
-    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);*/
+    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
 
+    //option->print_level = 3;
+    //SPEX_matrix_check(A, option);
+*/
     char *mat_name = "ExampleMats/smallZeros.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
@@ -143,7 +147,7 @@ m=5;n=5;seed=14;
     FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
     {
-        perror("Error while opening the file");
+        perror("Error while opening the mat file");
         FREE_WORKSPACE;
         return 0;
     }
@@ -157,7 +161,7 @@ m=5;n=5;seed=14;
     FILE *rhs_file = fopen(rhs_name,"r");
     if( rhs_file == NULL )
     {
-        perror("Error while opening the file");
+        perror("Error while opening the rhs file");
         FREE_WORKSPACE;
         return 0;
     }
@@ -174,8 +178,8 @@ m=5;n=5;seed=14;
     /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
-    //SPEX_matrix_check(Q2, option);
-    //SPEX_matrix_check(R2, option);
+    SPEX_matrix_check(Q2, option);
+    SPEX_matrix_check(R2, option);
     
 
     SPEX_Qtb(Q2, b, &b_new);
@@ -213,11 +217,20 @@ m=5;n=5;seed=14;
     printf("facts:\n");
     option->print_level = 3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
+    //SPEX_matrix_check(F->Q, option);
+    //SPEX_matrix_check(F->R, option);
     
     printf("solve:\n");
     DEMO_OK (SPEX_qr_solve(&x, F, b, option));
-    printf("orint x sparse:\n");
-    SPEX_matrix_check(x, option);
+    printf("Success!!\n");
+
+    /*
+    option->order =  SPEX_NO_ORDERING;
+    SPEX_qr_backslash(&x,SPEX_FP64,A,b, option);*/
+    
+
+    //printf("orint x sparse:\n");
+    //SPEX_matrix_check(x, option);
     
     
     

@@ -102,6 +102,7 @@ SPEX_info spex_qr_preorder
         // The number of nonzeros in L is set as 10 times the number of
         // nonzeros in A. This is a crude estimate.
         {
+            printf("here\n");
             SPEX_CHECK( spex_colamd(&(S->Q_perm),&(S->unz),A,option));
         }
         break;
@@ -148,7 +149,7 @@ SPEX_info spex_qr_preorder
     // too small for L. In this case, this block of code ensures that the
     // estimates on nnz(L) and nnz(U) are at least n and no more than n*n.
     //--------------------------------------------------------------------------
-
+    
     // estimate exceeds max number of nnz in A
     if (S->unz > (double) n*n)
     {
