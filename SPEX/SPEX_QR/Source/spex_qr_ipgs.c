@@ -38,10 +38,6 @@ SPEX_info spex_qr_ipgs
     SPEX_matrix rhos,         // sequence of pivots
     const int64_t j,          // Row of R to compute (col j+1 of Q will also be computed)
     const SPEX_matrix A,      // Matrix to be factored
-    /*int64_t *h,         // History vector
-    int64_t *xi,        // Nonzero pattern vector of row j of R
-    int64_t *c,
-    const int64_t *parent,          // Elimination tree*/
     SPEX_options option
 )
 {
@@ -74,18 +70,19 @@ SPEX_info spex_qr_ipgs
     xi = (int64_t*) SPEX_malloc(n*sizeof(int64_t)); //TOASK how to free xi becasue we dont use all of it
 
     col = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
+    //printf("here\n");
     // Obtain the nonzero pattern of the jth row of R (kind of a shitty reach)
     l=0;
-    for(i=0;i<n;i++)
+    for(i=j;i<n;i++)
     {
         for (p=R->p[i];p<R->p[i+1];p++)
         {
             if(R->i[p]==j)
             {
+                //printf("i %ld p %ld\n",i,p);
                 xi[l]=p;
                 col[l]=i;
                 l++;
-                //printf("i %ld p %ld",i,p);
                 break;
             }
             else if (R->i[p]>j)
@@ -94,8 +91,9 @@ SPEX_info spex_qr_ipgs
             }
         }
     }
+    
     int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
-
+   
     top=0;
     // Compute row k of R
     for (p = top; p < l; p++)
@@ -104,13 +102,13 @@ SPEX_info spex_qr_ipgs
         x = xi[p];
         i = col[p];//column number
         // R(j,i) = Q(:,j) dot A(:,i)
-        SPEX_MPZ_INIT(R->x.mpz[x]);
-        //SPEX_MPZ_INIT2(R->x.mpz[i], estimate);
+        //SPEX_MPZ_INIT(R->x.mpz[x]);
+        SPEX_MPZ_INIT2(R->x.mpz[x], estimate);
         SPEX_CHECK(spex_dot_product(R->x.mpz[x],Q, j, A, i, option)); 
     }
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[xi[top]]); //rhos stores the diagonal of R
+    SPEX_matrix_check(rhos,option);
     
-    //printf("here\n");
     // Compute column j+1 of Q using IPGE and history updates (dependent on the j-th column of R)
     for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //if we had a pattern for Q_j this is where it would go
     {
@@ -129,12 +127,13 @@ SPEX_info spex_qr_ipgs
                 //Q(i,j)=rho^()*Q(i,k)/rho^()
                 // Q[pQ] = x[pQ] * rho[i]
                 //printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ],pQ);
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]+1]);
-                if(i>1)
+                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
+                if(i>1 && h[pQ]>-1)
                 {
                     SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
                 }
             }
+
 
             SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]); //Q(i,k)
             if(sgn==0)
@@ -170,7 +169,7 @@ SPEX_info spex_qr_ipgs
         {
             //History update
             //Q(i,j)=rho^()*Q(i,k)/rho^()
-            //printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ],j,pQ);
+            printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ],j,pQ);
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(j>=1 && h[pQ]>=0)
             {

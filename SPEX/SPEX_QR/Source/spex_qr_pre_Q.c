@@ -41,18 +41,18 @@ SPEX_info spex_qr_pre_Q
     {
         Q->i[i]=i%m;
     }
-    //int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
+    int64_t estimate = 64 * SPEX_MAX (2, ceil (log2 ((double) n)));
     
     //this is very inefficient, i don't know how to do thissssss
     for(i=0;i<nz;i++)
     {
-        //SPEX_MPZ_INIT2(Q->x.mpz[i], estimate);
-        SPEX_MPZ_SET_UI(Q->x.mpz[i],0);
+        SPEX_MPZ_INIT2(Q->x.mpz[i], estimate);
+        //SPEX_MPZ_SET_UI(Q->x.mpz[i],0);
     }
 
-    for(i=0;i<n;i++)
+    for(i=0;i<n;i++) //this gives cols
     {
-        for(p=A->p[i];p<A->p[i+1];p++)
+        for(p=A->p[i];p<A->p[i+1];p++) //FIXME
         {
             for(q=Q->p[i];q<Q->p[i+1];q++)
             {

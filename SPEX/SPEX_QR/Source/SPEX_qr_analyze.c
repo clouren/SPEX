@@ -29,8 +29,7 @@
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
     SPEX_matrix_free(&PAQ, NULL);   \
-    SPEX_FREE(c);                   \
-    SPEX_FREE(cInv);                \
+    SPEX_free(post);                 \
 }
 
 #define SPEX_FREE_ALL                               \
@@ -75,7 +74,6 @@ SPEX_info SPEX_qr_analyze
     // Declare local variables for symbolic analysis
     int64_t n = A->n, m=A->m;
     int64_t *post = NULL;
-    int64_t *c = NULL, *cInv=NULL;
     int64_t i, nz;
 
     //--------------------------------------------------------------------------
@@ -87,7 +85,7 @@ SPEX_info SPEX_qr_analyze
     // Permute matrix A, that is apply the row/column ordering from the
     // symbolic analysis step to get the permuted matrix PAQ.
     //--------------------------------------------------------------------------
-    SPEX_CHECK( spex_qr_permute_A(&PAQ, A, true, S, option) ); //TODO can make false when you can transpose an empty matrix 
+    SPEX_CHECK( spex_qr_permute_A(&PAQ, A, false, S, option) );
     //SPEX_matrix_check(PAQ, option);
     
     //--------------------------------------------------------------------------
@@ -96,7 +94,7 @@ SPEX_info SPEX_qr_analyze
     // Obtain elimination tree of A
     SPEX_CHECK( spex_qr_etree(&S->parent, PAQ) );
     
-    // Postorder the elimination tree of A
+    // Postorder the elimination tree of ATA
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
 

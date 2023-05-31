@@ -14,6 +14,17 @@
  * back solve.  Returns x as integer.
  */
 
+#define SPEX_FREE_WORKSPACE        \
+{                                  \
+    SPEX_matrix_free(&b2, option); \
+}
+
+# define SPEX_FREE_ALL             \
+{                                  \
+    SPEX_FREE_WORKSPACE            \
+    SPEX_matrix_free(&b_new, option); \
+}
+
 # include "spex_qr_internal.h"
 # include "spex_lu_internal.h"
 
@@ -21,7 +32,7 @@ SPEX_info SPEX_qr_solve
 (
     SPEX_matrix *x_handle, // Solution
     SPEX_factorization F,
-    SPEX_matrix b,        // Q^T * b
+    const SPEX_matrix b,        // Q^T * b
     const SPEX_options option
 )
 {
@@ -34,19 +45,19 @@ SPEX_info SPEX_qr_solve
     ASSERT( Q->kind == SPEX_CSC);
     ASSERT( b->kind == SPEX_DENSE);
 
-    SPEX_matrix b_new = NULL;
+    SPEX_matrix b_new = NULL, b2=NULL;
     int64_t k, p, i,j;
     mpz_t det;
 
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, F->Q->n, b->n, F->Q->n*b->n,
         false, true, NULL));
-    //det = &(R->x.mpz[R->n-1]); //det = &(F->rhos->x.mpz[F->L->n-1]);
     SPEX_MPZ_INIT(det);
     SPEX_MPZ_SET(det,F->rhos->x.mpz[F->R->n-1]);
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
     
+    //SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Q_perm, option)); TODO when I fix the memory issues
     // Iterate across every RHS vector
     for (k = 0; k < b->n; k++)
     {

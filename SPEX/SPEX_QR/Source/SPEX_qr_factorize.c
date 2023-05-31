@@ -14,6 +14,18 @@
 
 # include "spex_qr_internal.h"
 
+#define SPEX_FREE_WORKSPACE         \
+{                                   \
+    SPEX_matrix_free(&PAQ, option);                   \
+}
+
+# define SPEX_FREE_ALL               \
+{                                    \
+    SPEX_FREE_WORKSPACE              \
+    SPEX_factorization_free(&F, NULL);      \
+}
+
+
 
 SPEX_info SPEX_qr_factorize
 (
@@ -26,7 +38,6 @@ SPEX_info SPEX_qr_factorize
     SPEX_info info;
 
     // Declare variables
-    int64_t *c, *h, *xi;
     int64_t n=A->n, m=A->m, k,i,pQ;
     SPEX_factorization F = NULL ;
     SPEX_matrix PAQ;
@@ -45,7 +56,7 @@ SPEX_info SPEX_qr_factorize
     SPEX_MPQ_SET(F->scale_for_A, A->scale);
 
     // Inverse pivot ordering
-   /* F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
+   /* F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) ); //not doing this because it segfaults
     // row/column permutation, to be copied from S->P_perm
     F->Q_perm =    (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
    /* if (!(F->Pinv_perm) || !(F->Q_perm))
@@ -65,16 +76,16 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_qr_permute_A(&PAQ, A, true, S, option) );
-
+    //printf("aferperute\n");
+    //SPEX_matrix_check(A, option); //if I print here I can't do the rest
 
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
 
-    SPEX_CHECK(spex_qr_pre_factor(&F->R, A, S));
+    SPEX_CHECK(spex_qr_pre_factor(&F->R, PAQ, S));
     //SPEX_matrix_check(F->R, option);
-    //SPEX_CHECK(SPEX_matrix_copy(&F->Q, SPEX_CSC, SPEX_MPZ, A, NULL));//this is not the right way to do this because Q will be denser than A
-    SPEX_CHECK(spex_qr_pre_Q(&F->Q,A,option));
+    SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
 
     // Perform IPGS to get Q and R
    // printf("Q=A:\n");
@@ -82,17 +93,19 @@ SPEX_info SPEX_qr_factorize
 
     for (k=0;k<n-1;k++)
     {
-        //printf("iteration: %ld\n",k);
-        SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, A, option));
+        printf("iteration: %ld\n",k);
+        SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, option));
         
         //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes
     }
 
     //finish R
     SPEX_MPZ_INIT(F->R->x.mpz[F->R->p[n]-1]);
-    SPEX_CHECK(spex_dot_product(F->R->x.mpz[F->R->p[n]-1],F->Q, n-1, A, n-1, option)); 
+    SPEX_CHECK(spex_dot_product(F->R->x.mpz[F->R->p[n]-1],F->Q, n-1, PAQ, n-1, option)); 
     SPEX_MPZ_SET(F->rhos->x.mpz[n-1],F->R->x.mpz[F->R->p[n]-1]);
 
     (*F_handle)=F;
+    
+    SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }

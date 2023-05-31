@@ -24,12 +24,13 @@
 
 #define FREE_WORKSPACE                          \
     SPEX_matrix_free(&A,  NULL);                \
-    SPEX_matrix_free(&A2, NULL);                \
-    SPEX_matrix_free(&R2, NULL);                \
-    SPEX_matrix_free(&Q2, NULL);                \
     SPEX_FREE(option);                          \
-    SPEX_finalize();                            \
+    SPEX_finalize(); 
+    
 
+    /*    SPEX_matrix_free(&A2, NULL);                \
+    SPEX_matrix_free(&R2, NULL);                \
+    SPEX_matrix_free(&Q2, NULL);                \*/
 #ifndef ASSERT
 #define ASSERT assert
 #endif
@@ -75,7 +76,7 @@ int main( int argc, char *argv[] )
     }
 
 m=5;n=5;seed=14;
-//FIXME colamd (colamd_l) only accepts square
+//colamd m<n
     // Input checks
     ASSERT(m >= 0);
     ASSERT(n >= 0);
@@ -117,8 +118,10 @@ m=5;n=5;seed=14;
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
 
-   /* SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
+   SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
     Ainit->nz = m*n;
+    option->print_level = 3;
+    SPEX_matrix_check(Ainit, option);
 
     // Create A as a copy of Ainit
     // A is a copy of the Ainit matrix. A is a sparse matrix with mpz_t entries
@@ -138,7 +141,7 @@ m=5;n=5;seed=14;
 
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
-*/
+/*
     char *mat_name = "ExampleMats/smallZeros.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
@@ -178,8 +181,8 @@ m=5;n=5;seed=14;
     /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
-    SPEX_matrix_check(Q2, option);
-    SPEX_matrix_check(R2, option);
+    //SPEX_matrix_check(Q2, option);
+    //SPEX_matrix_check(R2, option);
     
 
     SPEX_Qtb(Q2, b, &b_new);
@@ -210,18 +213,18 @@ m=5;n=5;seed=14;
     SPEX_factorization F = NULL ;
 
     printf("analysis:\n");
-    option->print_level = 3;
-    option->order =  SPEX_NO_ORDERING;
+    //option->print_level = 3;
+    //option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
-
+    //SPEX_matrix_check(A, option); if i print here then i can't print x after we're done
     printf("facts:\n");
     option->print_level = 3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     //SPEX_matrix_check(F->Q, option);
     //SPEX_matrix_check(F->R, option);
-    
+    //SPEX_matrix_check(A, option); never works
     printf("solve:\n");
-    DEMO_OK (SPEX_qr_solve(&x, F, b, option));
+    DEMO_OK (SPEX_qr_solve(&x, F, b, option));//going to be wrong until I can permute it
     printf("Success!!\n");
 
     /*
@@ -233,102 +236,30 @@ m=5;n=5;seed=14;
     //SPEX_matrix_check(x, option);
     
     
-    
-    
-    ////////////////////////////////////////////////////////////////////////////
-    // Declare permuted matrix and S
-    /*SPEX_matrix PAQ = NULL, ATA = NULL;
-    SPEX_symbolic_analysis S = NULL;
-    // Declare local variables for symbolic analysis
-    int64_t *post = NULL;
-    int64_t *c = NULL, *cInv=NULL;
-    int64_t i, nz;
-    
-    char *mat_name2 = "ExampleMats/smallZerosATA.mat.txt";
-    //char *mat_name = "ExampleMats/LF10.mat.txt";
-    //char *rhs_name = "ExampleMats/LF10.rhs.txt";
-    // Read in A
-    FILE *mat_file2 = fopen(mat_name2,"r");
-    if( mat_file2 == NULL )
-    {
-        perror("Error while opening the file");
-        FREE_WORKSPACE;
-        return 0;
-    }
-
-DEMO_OK(spex_demo_tripread(&ATA, mat_file2, SPEX_FP64, option));
-    fclose(mat_file);
-
-    //--------------------------------------------------------------------------
-    // Preorder: obtain the row/column ordering of ATA (Default is COLAMD)
-    //--------------------------------------------------------------------------
-/*
-option->order = 0;
-    DEMO_OK( spex_cholesky_preorder(&S, ATA, option) );
-    S->Q_perm=S->Pinv_perm;
-    //--------------------------------------------------------------------------
-    // Permute matrix A, that is apply the row/column ordering from the
-    // symbolic analysis step to get the permuted matrix PAQ.
-    //--------------------------------------------------------------------------
-
-    DEMO_OK( spex_qr_permute_A(&PAQ, A, true, S, option)); //TODO can make false when you can transpose an empty matrix 
-    //DEMO_OK( spex_cholesky_permute_A(&PAQ, ATA, true, S)); 
+    //
+    //
+   /*SPEX_matrix PAQ=NULL;
     option->print_level = 3;
-    SPEX_matrix_check(PAQ, option);
-    
-    //--------------------------------------------------------------------------
-    // Symbolic Analysis: compute the elimination tree of PAQ
-    //--------------------------------------------------------------------------
-
-    // Obtain elimination tree of A
-    DEMO_OK( spex_qr_etree(&S->parent, PAQ) );
-    
-
-    // Postorder the elimination tree of A
-    DEMO_OK( spex_cholesky_post(&post, S->parent, n) );
-
-
-    // Get the column counts of A
-    DEMO_OK( spex_qr_counts(&c, PAQ, S->parent, post) ); //c is S->cp but backwards
-
-    // Set the column pointers of R
-    S->cp = (int64_t*) SPEX_malloc( (n+1)*sizeof(int64_t*));
-    if (S->cp == NULL)
-    {
-        SPEX_FREE_ALL;
-        return SPEX_OUT_OF_MEMORY;
-    }
-
-    cInv = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
-    for(i=1;i<=n;i++)
-    {
-        cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
-    }
-    
-    for(i=0;i<=n;i++)
-    {
-        //cInv[i]=c[n-i];//FIXME there has to be a better way of doing this check L vs R
-        printf("%ld cinv %ld c %ld\n",i, cInv[i],c[i]);
-    }
-    
-    
-    /*SPEX_factorization F = NULL ;
-
-    printf("analysis:\n");
+    DEMO_OK (SPEX_qr_analyze(&S, A, option));
+    spex_qr_permute_A(&PAQ, A, true, S, option);
+    //SPEX_matrix_check(PAQ, option);
+    SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, PAQ, option);
+    SPEX_matrix_check(A2, option);
     option->print_level = 3;
-    option->order = SPEX_NO_ORDERING;
-    DEMO_OK (SPEX_cholesky_analyze(&S, ATA, option));
-
-    printf("facts:\n");
-    option->print_level = 3;
-    DEMO_OK (SPEX_cholesky_factorize(&F, ATA, S, option));
-    SPEX_matrix_check(F->L, option);
-    */
+    SPEX_QR_IPGE( A2, &R2, &Q2);
+    SPEX_matrix_check(Q2, option);
+    SPEX_matrix_check(R2, option);*/
     
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
-    FREE_WORKSPACE;
+    //FREE_WORKSPACE;
+    SPEX_factorization_free(&F, NULL);      
+    SPEX_symbolic_analysis_free(&S, NULL);    
+    //SPEX_matrix_free(&A,  NULL);              
+    SPEX_matrix_free(&x,  NULL);   
+    SPEX_FREE(option);                         
+    
 
 }
 
