@@ -133,7 +133,7 @@ SPEX_info spex_qr_pre_factor
             while (len > 0) s [--top] = s [--len] ; /* push path on stack */
         }
         //from here to 
-        i = A->i [p] ;             /* i = permuted row of A(:,col) */
+        i = A->i [p-1] ;             /* i = permuted row of A(:,col) */
         if (i > k && w [i] < k)         /* pattern of V(:,k) = x (k+1:m) */
         {
             w [i] = k ;

@@ -57,9 +57,9 @@ SPEX_info spex_qr_ipgs
     int sgn;
     int64_t *xi=NULL, *h=NULL, *col=NULL;
 
-    h = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
+    h = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     // initialize workspace history array
-    for (i = 0; i < n*m; i++)//TODO maybe, h could be of size n and then I would only need to do modulo or something
+    for (i = 0; i < m; i++)//TODO maybe, h could be of size n and then I would only need to do modulo or something
     {
         h[i] = -1;
     }
@@ -107,7 +107,7 @@ SPEX_info spex_qr_ipgs
         SPEX_CHECK(spex_dot_product(R->x.mpz[x],Q, j, A, i, option)); 
     }
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[xi[top]]); //rhos stores the diagonal of R
-    SPEX_matrix_check(rhos,option);
+    //SPEX_matrix_check(rhos,option);
     
     // Compute column j+1 of Q using IPGE and history updates (dependent on the j-th column of R)
     for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //if we had a pattern for Q_j this is where it would go
@@ -121,16 +121,16 @@ SPEX_info spex_qr_ipgs
             }
             //printf("j %ld j+1 %ld  pR %ld\n",j,j+1,pR);
             
-            if(i>h[pQ]+1) //"an update of Q(i,j)" has been skipped 
+            if(i>h[pQ%m]+1) //"an update of Q(i,j)" has been skipped 
             {
                 //History update
                 //Q(i,j)=rho^()*Q(i,k)/rho^()
                 // Q[pQ] = x[pQ] * rho[i]
                 //printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ],pQ);
                 SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
-                if(i>1 && h[pQ]>-1)
+                if(i>1 && h[pQ%m]>-1)
                 {
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
+                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ%m]]);
                 }
             }
 
@@ -162,18 +162,18 @@ SPEX_info spex_qr_ipgs
                 
             }
 
-            h[pQ]=i;
+            h[pQ%m]=i;
         }
        // printf("pQ %ld h[pQ] %ld j %ld\n",pQ, h[pQ], j);
-        if(h[pQ]<j) //to finalize element
+        if(h[pQ%m]<j) //to finalize element
         {
             //History update
             //Q(i,j)=rho^()*Q(i,k)/rho^()
-            printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ],j,pQ);
+            //printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ%m],j,pQ);
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
-            if(j>=1 && h[pQ]>=0)
+            if(j>=1 && h[pQ%m]>=0)
             {
-                SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
+                SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ%m]]);
             }
         }
 

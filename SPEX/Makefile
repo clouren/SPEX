@@ -53,7 +53,7 @@ debug:
 all: library
 
 demos:
-	( cd build && cmake $(CMAKE_OPTIONS) -DDEMO=1 .. && cmake --build . -j${JOBS} )
+	( cd build && cmake $(CMAKE_OPTIONS) -DCMAKE_BUILD_TYPE=Debug -DDEMO=1 .. && cmake --build . -j${JOBS} )
 	#./build/spex_demo_lu_simple1
 	#./build/spex_demo_lu_simple2          ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
 	#./build/spex_demo_lu_extended       f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
@@ -65,7 +65,7 @@ demos:
 	#./build/spex_demo_Update_lu         f ExampleMats/10teams.mat.txt  ExampleMats/10teams.rhs.txt
 	#./build/spex_demo_Update_chol       f ExampleMats/mesh1e1.mat.txt      ExampleMats/mesh1e1.rhs.txt
 	#./build/spex_demo_threaded          f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
-	./build/spex_demo_qr
+	./build/spex_demo_qr f ExampleMats/LF10.mat.txt
 
 
 cov:

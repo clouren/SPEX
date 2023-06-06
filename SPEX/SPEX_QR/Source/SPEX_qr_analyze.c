@@ -61,7 +61,6 @@ SPEX_info SPEX_qr_analyze
     // Check inputs
     if ( !S_handle || !A)
     {
-        printf("hcin\n");
         return SPEX_INCORRECT_INPUT;
     }
 
@@ -80,14 +79,14 @@ SPEX_info SPEX_qr_analyze
     // Preorder: obtain the row/column ordering of ATA (Default is COLAMD)
     //--------------------------------------------------------------------------
     SPEX_CHECK( spex_qr_preorder(&S, A, option) );
-
+    
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the
     // symbolic analysis step to get the permuted matrix PAQ.
     //--------------------------------------------------------------------------
     SPEX_CHECK( spex_qr_permute_A(&PAQ, A, false, S, option) );
     //SPEX_matrix_check(PAQ, option);
-    
+   
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of PAQ
     //--------------------------------------------------------------------------

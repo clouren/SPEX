@@ -26,7 +26,7 @@ SPEX_info spex_qr_pre_Q
     SPEX_info info;
    
     SPEX_matrix Q=NULL;
-    int64_t p,q,i, n=A->n, m=A->m, nz=n*m;
+    int64_t p,q,i,j, n=A->n, m=A->m, nz=n*m;
 
     SPEX_CHECK (SPEX_matrix_allocate(&Q, SPEX_CSC, SPEX_MPZ, m, n, m*n, false, true, NULL));
     Q->nz=nz;
@@ -47,25 +47,21 @@ SPEX_info spex_qr_pre_Q
     for(i=0;i<nz;i++)
     {
         SPEX_MPZ_INIT2(Q->x.mpz[i], estimate);
-        //SPEX_MPZ_SET_UI(Q->x.mpz[i],0);
     }
-
-    for(i=0;i<n;i++) //this gives cols
+    
+   for(j=0;j<n;j++) //this works because Q is "dense"
     {
-        for(p=A->p[i];p<A->p[i+1];p++) //FIXME
+        for(p=A->p[j];p<A->p[j+1];p++)
         {
-            for(q=Q->p[i];q<Q->p[i+1];q++)
+            i=A->i[p];
+            if(i==Q->i[j*n+i])
             {
-                //printf("pA %ld iA %ld, pQ %ld iQ %ld\n",p,A->i[p],q,Q->i[p]);
-                if(A->i[p]==Q->i[q])
-                {
-                    SPEX_MPZ_SET(Q->x.mpz[q],A->x.mpz[p]);
-                    break;
-                }
-
+                SPEX_MPZ_SET(Q->x.mpz[j*n+i],A->x.mpz[p]);
             }
+
         }
     }
+   
     
     //SPEX_matrix_check(Q, option);
 

@@ -16,7 +16,7 @@
 
 #define SPEX_FREE_WORKSPACE        \
 {                                  \
-    SPEX_matrix_free(&b2, option); \
+    SPEX_matrix_free(&b_perm, option); \
 }
 
 # define SPEX_FREE_ALL             \
@@ -45,7 +45,7 @@ SPEX_info SPEX_qr_solve
     ASSERT( Q->kind == SPEX_CSC);
     ASSERT( b->kind == SPEX_DENSE);
 
-    SPEX_matrix b_new = NULL, b2=NULL;
+    SPEX_matrix b_new = NULL, b_perm=NULL;
     int64_t k, p, i,j;
     mpz_t det;
 
@@ -57,7 +57,7 @@ SPEX_info SPEX_qr_solve
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
     
-    //SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Q_perm, option)); TODO when I fix the memory issues
+    SPEX_CHECK (spex_permute_dense_matrix (&b_perm, b, F->Q_perm, option)); 
     // Iterate across every RHS vector
     for (k = 0; k < b->n; k++)
     {
@@ -67,7 +67,7 @@ SPEX_info SPEX_qr_solve
             for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
                 i=F->Q->i[p];
-                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],SPEX_2D(b, i, k, mpz));
+                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],SPEX_2D(b_perm, i, k, mpz));
             }
             SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),det);
         }

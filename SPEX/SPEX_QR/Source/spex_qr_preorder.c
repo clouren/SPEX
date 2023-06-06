@@ -102,7 +102,6 @@ SPEX_info spex_qr_preorder
         // The number of nonzeros in L is set as 10 times the number of
         // nonzeros in A. This is a crude estimate.
         {
-            printf("here\n");
             SPEX_CHECK( spex_colamd(&(S->Q_perm),&(S->unz),A,option));
         }
         break;

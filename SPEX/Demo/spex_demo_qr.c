@@ -44,7 +44,7 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
 
     SPEX_initialize();
-
+/*
     // Input arguments.
     unsigned int seed;
     int64_t m;
@@ -112,13 +112,13 @@ m=5;n=5;seed=14;
         fprintf (stderr, "Error! OUT of MEMORY!\n");
         FREE_WORKSPACE;
         return 0;
-    }
+    }*/
 
     //--------------------------------------------------------------------------
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
 
-   SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
+    /*SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
     Ainit->nz = m*n;
     option->print_level = 3;
     SPEX_matrix_check(Ainit, option);
@@ -137,12 +137,12 @@ m=5;n=5;seed=14;
      SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
     b2->nz = m;
     // Make a copy of b
-    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
+    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);*/
 
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
-/*
-    char *mat_name = "ExampleMats/smallZeros.mat.txt";
+
+   /* char *mat_name = "ExampleMats/smallZeros.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
     //char *rhs_name = "ExampleMats/LF10.rhs.txt";
@@ -202,7 +202,7 @@ m=5;n=5;seed=14;
     // Sparse
     //--------------------------------------------------------------------------
 
-
+/*
     SPEX_info info;
     SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
     int64_t *h;
@@ -235,20 +235,76 @@ m=5;n=5;seed=14;
     //printf("orint x sparse:\n");
     //SPEX_matrix_check(x, option);
     
+    ////
+    // Tests
+    ////
+    SPEX_info info;
+    SPEX_info ok;
     
-    //
-    //
-   /*SPEX_matrix PAQ=NULL;
-    option->print_level = 3;
+    char *mat_name, *rhs_name;
+    int64_t rat = 1;
+    
+    SPEX_matrix A = NULL ; 
+    SPEX_symbolic_analysis S = NULL;
+    SPEX_factorization F = NULL ;
+    SPEX_options option = NULL;
+    DEMO_OK(SPEX_create_default_options(&option));
+    if (option == NULL)
+    {
+        fprintf (stderr, "Error! OUT of MEMORY!\n");
+        FREE_WORKSPACE;
+        return 0;
+    }
+    
+    //DEMO_OK(spex_demo_process_command_line(argc, argv, option,
+       // &mat_name, &rhs_name, &rat));
+    mat_name = argv[2];
+    //printf("%s\n",mat_name);
+
+    //--------------------------------------------------------------------------
+    // Allocate memory, read in A and b
+    //--------------------------------------------------------------------------
+
+    // Read in A. The output of this demo function is A in CSC format with
+    // double entries.
+    FILE *mat_file = fopen(mat_name,"r");
+    if( mat_file == NULL )
+    {
+        perror("Error while opening the file");
+        FREE_WORKSPACE;
+        return 0;
+    }
+    
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
+    fclose(mat_file);
+    
+    int64_t n = A->n, col_sum;
+    int sgn;
+    
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
-    spex_qr_permute_A(&PAQ, A, true, S, option);
-    //SPEX_matrix_check(PAQ, option);
-    SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, PAQ, option);
-    SPEX_matrix_check(A2, option);
-    option->print_level = 3;
-    SPEX_QR_IPGE( A2, &R2, &Q2);
-    SPEX_matrix_check(Q2, option);
-    SPEX_matrix_check(R2, option);*/
+    DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
+    
+    //SPEX_matrix_check(F->Q, option);
+    
+    printf("%s, ",mat_name);
+    printf("%ld,  ",n);
+    printf("%ld, ",F->R->nz);
+    
+    for(int64_t i=0;i<n;i++)
+    {
+        col_sum=0;
+        for(int64_t p=F->Q->p[i]; p<F->Q->p[i+1]; p++)
+        {
+            SPEX_MPZ_SGN(&sgn, F->Q->x.mpz[p]); //Q(i,k)
+            if(sgn!=0)
+            {
+                col_sum++;
+            }
+            //printf("%ld %ld\n",i,p);
+        }
+        printf(" %ld, ", col_sum);
+    }
+    printf("\n");
     
     //--------------------------------------------------------------------------
     // Free Memory
@@ -256,8 +312,8 @@ m=5;n=5;seed=14;
     //FREE_WORKSPACE;
     SPEX_factorization_free(&F, NULL);      
     SPEX_symbolic_analysis_free(&S, NULL);    
-    //SPEX_matrix_free(&A,  NULL);              
-    SPEX_matrix_free(&x,  NULL);   
+    SPEX_matrix_free(&A,  NULL);              
+    //SPEX_matrix_free(&x,  NULL);   
     SPEX_FREE(option);                         
     
 
