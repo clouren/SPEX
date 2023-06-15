@@ -12,6 +12,7 @@
 #define SPEX_FREE_WORKSPACE    \
 {                              \
     SPEX_FREE(w);              \
+    SPEX_matrix_free(&AT,NULL); \
 }
 
 #define SPEX_FREE_ALL          \

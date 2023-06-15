@@ -105,6 +105,8 @@ SPEX_info SPEX_qr_factorize
     SPEX_MPZ_SET(F->rhos->x.mpz[n-1],F->R->x.mpz[F->R->p[n]-1]);
     F->R->nz=F->R->p[n]-1;
 
+
+
     (*F_handle)=F;
     
     SPEX_FREE_WORKSPACE;

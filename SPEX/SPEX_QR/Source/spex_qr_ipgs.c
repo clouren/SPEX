@@ -102,8 +102,7 @@ SPEX_info spex_qr_ipgs
         x = xi[p];
         i = col[p];//column number
         // R(j,i) = Q(:,j) dot A(:,i)
-        //SPEX_MPZ_INIT(R->x.mpz[x]);
-        SPEX_MPZ_INIT2(R->x.mpz[x], estimate);
+        //SPEX_MPZ_INIT2(R->x.mpz[x], estimate); //if I do this I get a valgrind leak
         SPEX_CHECK(spex_dot_product(R->x.mpz[x],Q, j, A, i, option)); 
     }
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[xi[top]]); //rhos stores the diagonal of R
