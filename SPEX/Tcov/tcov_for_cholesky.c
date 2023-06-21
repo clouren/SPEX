@@ -36,7 +36,7 @@
 
 // The method must return a bool (true if successful, false if failure).
 
-#define NTRIAL_MAX 1//10000
+#define NTRIAL_MAX 10000
 
 #define BRUTAL(method)                                                      \
 {                                                                           \
