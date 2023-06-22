@@ -49,7 +49,7 @@
         if (info2 != SPEX_OUT_OF_MEMORY) break ;                            \
     }                                                                       \
     if (info2 != SPEX_OK) TEST_ABORT (info2) ;                              \
-    malloc_count = UINT64_MAX ;                                             \
+    malloc_count = INT64_MAX ;                                             \
     printf ("\nBrutal Cholesky trials %ld: tests passed\n", trial);         \
 }
 
@@ -91,8 +91,8 @@ void create_test_rhs (SPEX_matrix *b_handle, int64_t n)
 // spex_test_chol_backslash: test SPEX_cholesky_backslash
 //------------------------------------------------------------------------------
 
-#undef  SPEX_FREE_ALL
-#define SPEX_FREE_ALL                           \
+#undef  SPEX_FREE_ALL1
+#define SPEX_FREE_ALL1                           \
 {                                               \
     OK (SPEX_matrix_free (&x, option));         \
 }
@@ -111,7 +111,7 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     OK (spex_demo_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
-    SPEX_FREE_ALL;
+    SPEX_FREE_ALL1;
     return (SPEX_OK) ;
 }
 
@@ -119,8 +119,8 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
 // spex_test_cdiv_qr: test SPEX_cdiv_qr
 //------------------------------------------------------------------------------
 
-#undef  SPEX_FREE_ALL
-#define SPEX_FREE_ALL       \
+#undef  SPEX_FREE_ALL2
+#define SPEX_FREE_ALL2       \
 {                           \
     SPEX_MPZ_CLEAR(q);  \
     SPEX_MPZ_CLEAR(r);  \
@@ -137,7 +137,7 @@ SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d)
 
     OK2 (SPEX_mpz_cdiv_qr(q,r,n,d));
 
-    SPEX_FREE_ALL ; 
+    SPEX_FREE_ALL2 ; 
     return (SPEX_OK) ;
 }
 
@@ -148,8 +148,8 @@ SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d)
 // spex_test_chol_afs: test SPEX_cholesky_[analyze,factorize,solve]
 //------------------------------------------------------------------------------
 
-#undef  SPEX_FREE_ALL
-#define SPEX_FREE_ALL                                   \
+#undef  SPEX_FREE_ALL3
+#define SPEX_FREE_ALL3                                   \
 {                                                       \
     OK (SPEX_symbolic_analysis_free (&S, option));      \
     OK (SPEX_factorization_free (&F, option));          \
@@ -177,7 +177,7 @@ SPEX_info spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
     OK (spex_demo_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
-    SPEX_FREE_ALL;
+    SPEX_FREE_ALL3;
     return (SPEX_OK);
 }
 
@@ -384,7 +384,7 @@ int main (int argc, char *argv [])
     SPEX_MPZ_INIT(gmp_d);
     SPEX_MPZ_SET_SI(gmp_n, 47);
     SPEX_MPZ_SET_SI(gmp_d, 14);
-    //BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d)); FIXME
+    BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d));// FIXME
     //OK(spex_test_cdiv_qr (gmp_n,gmp_d)); this works, maybe interaction with brutal is problem?
 
     //Free
