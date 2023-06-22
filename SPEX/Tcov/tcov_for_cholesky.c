@@ -91,8 +91,8 @@ void create_test_rhs (SPEX_matrix *b_handle, int64_t n)
 // spex_test_chol_backslash: test SPEX_cholesky_backslash
 //------------------------------------------------------------------------------
 
-#undef  SPEX_FREE_ALL1
-#define SPEX_FREE_ALL1                           \
+#undef  SPEX_FREE_ALL
+#define SPEX_FREE_ALL                           \
 {                                               \
     OK (SPEX_matrix_free (&x, option));         \
 }
@@ -111,7 +111,7 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
     OK (spex_demo_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
-    SPEX_FREE_ALL1;
+    SPEX_FREE_ALL;
     return (SPEX_OK) ;
 }
 
@@ -119,11 +119,11 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
 // spex_test_cdiv_qr: test SPEX_cdiv_qr
 //------------------------------------------------------------------------------
 
-#undef  SPEX_FREE_ALL2
-#define SPEX_FREE_ALL2       \
+#undef  SPEX_FREE_ALL
+#define SPEX_FREE_ALL       \
 {                           \
-    SPEX_MPZ_CLEAR(q);  \
-    SPEX_MPZ_CLEAR(r);  \
+    SPEX_MPZ_CLEAR(q1);  \
+    SPEX_MPZ_CLEAR(r1);  \
 }
 
 SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d) ;
@@ -131,13 +131,15 @@ SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d) ;
 SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d)
 {
     //SPEX_info info ;
-    mpz_t q, r;
-    SPEX_MPZ_SET_NULL(q);
-    SPEX_MPZ_SET_NULL(r);
+    mpz_t q1, r1;
+    SPEX_MPZ_SET_NULL(q1);
+    SPEX_MPZ_SET_NULL(r1);
+    OK2 (SPEX_mpz_init2(q1,1));
+    OK2 (SPEX_mpz_init2(r1,1));
 
-    OK2 (SPEX_mpz_cdiv_qr(q,r,n,d));
+    OK2 (SPEX_mpz_cdiv_qr(q1,r1,n,d));
 
-    SPEX_FREE_ALL2 ; 
+    SPEX_FREE_ALL ; 
     return (SPEX_OK) ;
 }
 
@@ -148,8 +150,8 @@ SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d)
 // spex_test_chol_afs: test SPEX_cholesky_[analyze,factorize,solve]
 //------------------------------------------------------------------------------
 
-#undef  SPEX_FREE_ALL3
-#define SPEX_FREE_ALL3                                   \
+#undef  SPEX_FREE_ALL
+#define SPEX_FREE_ALL                                   \
 {                                                       \
     OK (SPEX_symbolic_analysis_free (&S, option));      \
     OK (SPEX_factorization_free (&F, option));          \
@@ -177,7 +179,7 @@ SPEX_info spex_test_chol_afs (SPEX_matrix A, SPEX_matrix b, SPEX_options option)
     OK (spex_demo_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
-    SPEX_FREE_ALL3;
+    SPEX_FREE_ALL;
     return (SPEX_OK);
 }
 
@@ -379,11 +381,19 @@ int main (int argc, char *argv [])
     SPEX_MPFR_UI_POW_UI(gmp_h,num1,num2,round);
 
     printf("Brutal test of SPEX_cdiv_qr: \n");
-    mpz_t gmp_n,gmp_d;
-    SPEX_MPZ_INIT(gmp_n);
+    mpz_t gmp_n,gmp_d,tmpz;
+    SPEX_MPZ_INIT2(gmp_n,1);
     SPEX_MPZ_INIT(gmp_d);
-    SPEX_MPZ_SET_SI(gmp_n, 47);
-    SPEX_MPZ_SET_SI(gmp_d, 14);
+    SPEX_MPZ_INIT(tmpz);
+    SPEX_MPZ_SET_SI(tmpz, 1); //tmpz=1
+    SPEX_MPZ_SET_SI(gmp_n, INT64_MAX);
+    for (int ii = 0; ii<3;ii++){
+    SPEX_MPZ_MUL(gmp_n, gmp_n, gmp_n);
+    }// gmp_n = INT64_MAX^8
+    SPEX_MPZ_SET(gmp_d, gmp_n); //gmp_d = gmp_n = INT64_MAX^8
+    SPEX_MPZ_MUL(gmp_n, gmp_n, gmp_n);
+    SPEX_MPZ_SUB(gmp_n, gmp_n, tmpz);// gmp_n = (INT64_MAX^8)^2-1
+    // we should get q = r = INT64_MAX^8-1
     BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d));// FIXME
     //OK(spex_test_cdiv_qr (gmp_n,gmp_d)); this works, maybe interaction with brutal is problem?
 
@@ -399,6 +409,7 @@ int main (int argc, char *argv [])
     SPEX_MPFR_CLEAR(gmp_h);
     SPEX_MPZ_CLEAR(gmp_n);
     SPEX_MPZ_CLEAR(gmp_d);
+    SPEX_MPZ_CLEAR(tmpz);
     
     //--------------------------------------------------------------------------
     // error handling

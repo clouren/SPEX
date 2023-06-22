@@ -379,14 +379,14 @@ static inline void spex_gmp_safe_free (void *p)
                 SPEX_MPZ_PTR(*(spex_gmp->mpz_archive)) = NULL ;
             }
         }
-        else if (spex_gmp->mpz_archive2 != NULL)
+        if (spex_gmp->mpz_archive2 != NULL)
         {
-            if (p == SPEX_MPZ_PTR(*spex_gmp->mpz_archive2))
+            if (p == SPEX_MPZ_PTR(*(spex_gmp->mpz_archive2)))
             {
-                SPEX_MPZ_PTR(*spex_gmp->mpz_archive2) = NULL ;
+                SPEX_MPZ_PTR(*(spex_gmp->mpz_archive2)) = NULL ;
             }
         }
-        else if (spex_gmp->mpq_archive != NULL)
+        if (spex_gmp->mpq_archive != NULL)
         {
             if (p == SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmp->mpq_archive)))
             {
@@ -397,7 +397,7 @@ static inline void spex_gmp_safe_free (void *p)
                 SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmp->mpq_archive)) = NULL ;
             }
         }
-        else if (spex_gmp->mpfr_archive != NULL)
+        if (spex_gmp->mpfr_archive != NULL)
         {
             if (p == SPEX_MPFR_REAL_PTR(*spex_gmp->mpfr_archive))
             {
