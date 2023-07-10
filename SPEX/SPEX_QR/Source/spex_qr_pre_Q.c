@@ -32,7 +32,7 @@ SPEX_info spex_qr_pre_Q
     Q->nz=nz;
     
     //set Q->p
-    for(i=0; i<n+1;i++)
+    /*for(i=0; i<n+1;i++)
     {
         Q->p[i]=i*m;
     }
@@ -60,7 +60,12 @@ SPEX_info spex_qr_pre_Q
             }
 
         }
-    }
+    }*/
+    
+    //compute tree of A
+    
+    
+    //get the rows of Q using the tree of A
    
     
     //SPEX_matrix_check(Q, option);

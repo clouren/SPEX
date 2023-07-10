@@ -66,16 +66,16 @@ SPEX_info spex_qr_transpose
 
     // Compute row pointers
     spex_cumsum (C->p, w, m);
-    // Populate C
+
     for (j = 0 ; j < n ; j++)
     {
         for (p = A->p [j] ; p < A->p [j+1] ; p++)
         {
             q = w [A->i [p]]++;
-            C->i [q] = j ;                 // place A(i,j) as entry C(j,i)
+            C->i [q] = j ;                 
         }
     }
-    SPEX_MPQ_SET(C->scale, A->scale);
+    //SPEX_MPQ_SET(C->scale, A->scale);
 
     (*C_handle) = C;
     SPEX_FREE_WORK;

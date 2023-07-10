@@ -113,23 +113,6 @@ SPEX_info spex_qr_pre_Q
     SPEX_options option
 );
 
-SPEX_info spex_qr_pre_factorQR
-(
-    // Output
-    SPEX_matrix *R_handle,        // On output: partial R matrix
-                                  // On input: undefined
-    SPEX_matrix *Q_handle,        // On output: partial R matrix
-                                  // On input: undefined
-    // Input
-    //int64_t *xi,                  // Workspace nonzero pattern vector
-    const SPEX_matrix A,          // Input Matrix
-    const SPEX_symbolic_analysis S  // Symbolic analysis struct containing the
-                                  // number of nonzeros in L, the elimination
-                                  // tree, the row/coluimn permutation and its
-                                  // inverse
-);
-
-
 SPEX_info spex_qr_transpose
 (
     SPEX_matrix *C_handle,      // C = A'

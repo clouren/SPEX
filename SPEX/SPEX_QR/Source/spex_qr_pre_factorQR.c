@@ -12,13 +12,15 @@
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
     SPEX_FREE(w);                   \
-    SPEX_FREE(leftmost);                   \
+    SPEX_FREE(leftmost);            \
+    SPEX_matrix_free(&QT,NULL);     \
 }
 
 # define SPEX_FREE_ALL               \
 {                                    \
     SPEX_FREE_WORKSPACE              \
     SPEX_matrix_free(&R, NULL);      \
+    SPEX_matrix_free(&Q,NULL);       \
 }
 
 #include "spex_cholesky_internal.h"
@@ -28,6 +30,8 @@
  * each column of R
  * It allocates the memory for the R matrix and determines the full nonzero
  * pattern of R
+ * It also obtains the nonzero pattern of Q using the column elimination 
+ * tree.
  *
  * Importantly, this function assumes that A has already been permuted.
  *
@@ -35,6 +39,9 @@
  *
  * R_handle:    A handle to the R matrix. Null on input.
  *              On output, contains a pointer to the partial R matrix.
+ * 
+ * Q_handle:    A handle to the Q matrix. Null on input.
+ *              On output, contains a pointer to the partial Q matrix
  *
  * A:           The user's permuted input matrix
  *
@@ -44,7 +51,7 @@
  *               On output it contains the number of nonzeros in R.
  */
 
-SPEX_info spex_qr_pre_factor
+SPEX_info spex_qr_pre_factorQR
 (
     // Output
     SPEX_matrix *R_handle,        // On output: partial R matrix
@@ -69,9 +76,10 @@ SPEX_info spex_qr_pre_factor
 
     //int64_t  top, k, j, jnew, n = A->n, p = 0;
     int64_t *w, *s, *leftmost;
-    int64_t top, k, len, i, p, n = A->n, m2=n, m=A->m, rnz, qnz;
+    int64_t top, k, len, i, p, n = A->n, m2=n, m=A->m, rnz, qnz, j,h;
     //int64_t *c = NULL;
     SPEX_matrix R = NULL, Q=NULL;
+    SPEX_matrix QT= NULL;
     ASSERT(n >= 0);
 
     //--------------------------------------------------------------------------
@@ -82,9 +90,10 @@ SPEX_info spex_qr_pre_factor
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
         false, false, NULL));
 
-    SPEX_CHECK(SPEX_matrix_allocate(&Q, SPEX_CSC, SPEX_MPZ, m, n, S->lnz,
+    SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, m, n, m*n,
         false, false, NULL));
 
+ 
     // Allocate c
     //c = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
 
@@ -117,6 +126,8 @@ SPEX_info spex_qr_pre_factor
             leftmost [A->i [p]] = k ;         /* leftmost[i] = min(find(A(i,:)))*/
         }
     }
+    
+   
     //--------------------------------------------------------------------------
     // Iterations 1:n-1
     //--------------------------------------------------------------------------
@@ -162,55 +173,72 @@ SPEX_info spex_qr_pre_factor
     option->print_level = 3;
     SPEX_matrix_check(R, option);*/
 
-
-
     // Q
     qnz = 0 ;
-    for (k = 0; k < n; k++)
+    for (k = 0; k < n; k++) //find Q(k,:) pattern
     {
-        Q->p [k] = rnz ;      
-        //w [k] = k ;  
-        top = n ;
+        QT->p [k] = qnz ;      
 
-        for (p = A->p [k] ; p < A->p [k+1] ; p++)   /* find Q(k,:) pattern */
-        {
-            i = leftmost [A->i [p]] ;         /* i = min(find(A(i,q))) */
-            //for (len = 0 ; w [i] != k ; i = S->parent [i]) /* traverse up to k */
-            for (len = 0 ; i==-1 ; i = S->parent [i])
+        top = n ;
+        p=A->p[k];
+
+            i = leftmost[k];
+            //printf("k %ld  left %ld\n",k,i);
+            for (len = 0 ; i!=-1 && w [i] != k; i = S->parent [i]) /* traverse up to root*/
             {
+                //printf("k %ld p %ld i: %ld\n",k,p,i);
                 s [len++] = i ;
                 w [i] = k ;
             }
             while (len > 0) s [--top] = s [--len] ; /* push path on stack */
-        }
+
  
         for (p = top ; p < n ; p++) /* for each i in pattern of Q(:,k) */
         {
             i = s [p] ;                     /* Q(i,k) is nonzero */
-            Q->i [rnz++] = i ;                  /* Q(i,k) = x(i) */
+            QT->i [qnz++] = i ;                  /* Q(i,k) = x(i) */
         }
-        //Q->i [rnz++] = k ;                     /* Q(k,k) */
+        
     }
     // Finalize Q->p
-    Q->p[n] = S->lnz = qnz;
-
+    QT->p[n] = S->lnz = qnz;
+    SPEX_CHECK(spex_qr_transpose(&Q, QT, NULL));
 
     //copy A into Q
-    for(j=0;j<n;j++) //this works because Q is "dense" //FIXME
+    //first column is exactly the same
+    for(p=A->p[0];p<A->p[1];p++)
     {
-        for(p=A->p[j];p<A->p[j+1];p++)
+        SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[p]);
+    }
+    
+    for(k=1;k<n;k++)
+    {
+        h=0; //h makes it so that we don't start at the begining of the column of Q every single time, but we start where we left off
+        for(p=A->p[k];p<A->p[k+1];p++)
         {
             i=A->i[p];
-            if(i==Q->i[j*n+i])
+            for(j=Q->p[k]+h;j<Q->p[k+1];j++)
             {
-                SPEX_MPZ_SET(Q->x.mpz[j*n+i],A->x.mpz[p]);
+                if(i==Q->i[j])
+                {
+                    h=j-Q->p[k];
+                    SPEX_MPZ_SET(Q->x.mpz[j],A->x.mpz[p]);
+                    continue;
+                }
+                
             }
-
         }
+        
     }
 
 
     (*Q_handle) = Q;
+    
+    /*SPEX_options option = NULL;
+    SPEX_create_default_options(&option);
+    option->print_level = 3;
+    SPEX_matrix_check(A, option);
+    SPEX_matrix_check(Q, option);*/
 
 
     SPEX_FREE_WORKSPACE;

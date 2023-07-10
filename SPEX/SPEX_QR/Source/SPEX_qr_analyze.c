@@ -88,12 +88,12 @@ SPEX_info SPEX_qr_analyze
     //SPEX_matrix_check(PAQ, option);
    
     //--------------------------------------------------------------------------
-    // Symbolic Analysis: compute the elimination tree of PAQ
+    // Symbolic Analysis: compute the column elimination tree of PAQ
     //--------------------------------------------------------------------------
-    // Obtain elimination tree of A
+    // Obtain elimination tree of ATA
     SPEX_CHECK( spex_qr_etree(&S->parent, PAQ) );
     
-    // Postorder the elimination tree of ATA
+    // Postorder the column elimination tree of ATA
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
 

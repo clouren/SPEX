@@ -125,7 +125,7 @@ SPEX_info spex_qr_ipgs
                 //History update
                 //Q(i,j)=rho^()*Q(i,k)/rho^()
                 // Q[pQ] = x[pQ] * rho[i]
-                //printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ],pQ);
+                //printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ%m],pQ);
                 SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
                 if(i>1 && h[pQ%m]>-1)
                 {
@@ -139,7 +139,8 @@ SPEX_info spex_qr_ipgs
             {
                 //Q(i,j)=-R(k,j)*Q(i,k)/rho^(k-1)
                 // Q[pQ] = Q[pQ] - R[pR]*Q[k]
-                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pQ-m*(j+1-i)]);
+                //printf("pQ %ld q_ %ld, m %ld j %ld i %ld\n",pQ,pQ-m*(j+1-i),m,j,i);
+                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pQ-m*(j-i)]); // Q->x.mpz[pQ-m*(j+1-i)
                 if(i>=1)
                 {
                     SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
@@ -147,17 +148,18 @@ SPEX_info spex_qr_ipgs
             }
             else
             {
+                printf("pQ %ld pR %ld m %ld j %ld i %ld\n",pQ, pR,m, j,i);
+                if(pQ==10){SPEX_matrix_check(Q, option);}
                 //Q(i,j)=(rho^k*Q(i,j)-R(k,j)*Q(i,k))/rho^(k-1)
-                //DOUBLECHECK, it seems like we don't check for Q(i,j)!=0
                 // Q[pQ] = x[pQ] * rho[i]
                 SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
                 // Q[pQ] = Q[pQ] - R[pR]*Q[k]
-                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pQ-m*(j+1-i)]);
+                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pQ-m*(j-i)]);
                 if(i>=1)
                 {
                     SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
                 }
-
+                //if(pQ==6){SPEX_matrix_check(Q, option);}
                 
             }
 
@@ -169,11 +171,13 @@ SPEX_info spex_qr_ipgs
             //History update
             //Q(i,j)=rho^()*Q(i,k)/rho^()
             //printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ%m],j,pQ);
+            //if(pQ==5){SPEX_matrix_check(Q, option);}
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(j>=1 && h[pQ%m]>=0)
             {
                 SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ%m]]);
             }
+            if(pQ==6){SPEX_matrix_check(Q, option);}
         }
 
     }

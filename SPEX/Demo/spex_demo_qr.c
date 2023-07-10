@@ -44,7 +44,7 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
 
     SPEX_initialize();
-/*
+
     // Input arguments.
     unsigned int seed;
     int64_t m;
@@ -112,7 +112,7 @@ m=5;n=5;seed=14;
         fprintf (stderr, "Error! OUT of MEMORY!\n");
         FREE_WORKSPACE;
         return 0;
-    }*/
+    }
 
     //--------------------------------------------------------------------------
     // Generate a random dense matrix
@@ -142,7 +142,7 @@ m=5;n=5;seed=14;
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
 
-   /* char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    char *mat_name = "ExampleMats/smallZeros.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
     //char *rhs_name = "ExampleMats/LF10.rhs.txt";
@@ -178,11 +178,12 @@ m=5;n=5;seed=14;
     // Dense
     //--------------------------------------------------------------------------
     
-    /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
+    SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
-    //SPEX_matrix_check(Q2, option);
-    //SPEX_matrix_check(R2, option);
+    printf("Dense Q, R\n");
+    SPEX_matrix_check(Q2, option);
+    SPEX_matrix_check(R2, option);
     
 
     SPEX_Qtb(Q2, b, &b_new);
@@ -202,7 +203,7 @@ m=5;n=5;seed=14;
     // Sparse
     //--------------------------------------------------------------------------
 
-/*
+
     SPEX_info info;
     SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
     int64_t *h;
@@ -214,15 +215,15 @@ m=5;n=5;seed=14;
 
     printf("analysis:\n");
     //option->print_level = 3;
-    //option->order =  SPEX_NO_ORDERING;
+    option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
-    //SPEX_matrix_check(A, option); if i print here then i can't print x after we're done
+    //SPEX_matrix_check(A, option); 
     printf("facts:\n");
     option->print_level = 3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    //SPEX_matrix_check(F->Q, option);
-    //SPEX_matrix_check(F->R, option);
-    //SPEX_matrix_check(A, option); never works
+    SPEX_matrix_check(F->Q, option);
+    SPEX_matrix_check(F->R, option);
+
     printf("solve:\n");
     DEMO_OK (SPEX_qr_solve(&x, F, b, option));//going to be wrong until I can permute it
     printf("Success!!\n");
@@ -238,7 +239,7 @@ m=5;n=5;seed=14;
     ////
     // Tests
     ////
-    SPEX_info info;
+ /*   SPEX_info info;
     SPEX_info ok;
     
     char *mat_name, *rhs_name;
@@ -280,11 +281,11 @@ m=5;n=5;seed=14;
     
     int64_t n = A->n, col_sum;
     int sgn;
-    
+
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
+
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     
-    //SPEX_matrix_check(F->Q, option);
     
     printf("%s, ",mat_name);
     printf("%ld,  ",n);
@@ -305,6 +306,7 @@ m=5;n=5;seed=14;
         printf(" %ld, ", col_sum);
     }
     printf("\n");
+*/
     
     //--------------------------------------------------------------------------
     // Free Memory

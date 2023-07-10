@@ -76,21 +76,18 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_qr_permute_A(&PAQ, A, true, S, option) );
-    //printf("aferperute\n");
-    //SPEX_matrix_check(A, option); //if I print here I can't do the rest
 
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
 
-    SPEX_CHECK(spex_qr_pre_factor(&F->R, PAQ, S));
-    //SPEX_matrix_check(F->R, option);
-    SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
+    //SPEX_CHECK(spex_qr_pre_factor(&F->R, PAQ, S));
+    //SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
+    SPEX_CHECK(spex_qr_pre_factorQR(&F->R, &F->Q, PAQ, S));
+    //SPEX_matrix_check(F->Q, option);
 
     // Perform IPGS to get Q and R
-   // printf("Q=A:\n");
-    //SPEX_matrix_check(F->Q, option);///there is something off with Q that causes a weird free after printing
-
+    
     for (k=0;k<n-1;k++)
     {
         //printf("iteration: %ld\n",k);
