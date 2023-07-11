@@ -43,6 +43,7 @@ SPEX_info SPEX_qr_factorize
     SPEX_matrix PAQ;
 
     //Allocate variables
+    int64_t *Prev, *vec;
     
      // Allocate memory for the factorization
     F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
@@ -56,7 +57,7 @@ SPEX_info SPEX_qr_factorize
     SPEX_MPQ_SET(F->scale_for_A, A->scale);
 
     // Inverse pivot ordering
-    F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) ); //not doing this because it segfaults
+    F->Pinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) ); 
     // row/column permutation, to be copied from S->P_perm
     F->Q_perm =    (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
     if (!(F->Pinv_perm) || !(F->Q_perm))
@@ -85,13 +86,24 @@ SPEX_info SPEX_qr_factorize
     //SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
     SPEX_CHECK(spex_qr_pre_factorQR(&F->R, &F->Q, PAQ, S));
     //SPEX_matrix_check(F->Q, option);
+    
+    Prev = (int64_t*) SPEX_malloc ( (F->Q->nz)*sizeof(int64_t) ); 
+    vec = (int64_t*) SPEX_malloc ( m*sizeof(int64_t) ); 
+    for(k=0;k<m;k++)
+    {
+        vec[k]=-1;
+    }
+    for(k=F->Q->p[0];k<F->Q->p[1];k++)
+    {
+        vec[F->Q->i[k]]=k;
+    }
 
     // Perform IPGS to get Q and R
     
     for (k=0;k<n-1;k++)
     {
         //printf("iteration: %ld\n",k);
-        SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, option));
+        SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, Prev, vec, option));
         
         //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes
     }

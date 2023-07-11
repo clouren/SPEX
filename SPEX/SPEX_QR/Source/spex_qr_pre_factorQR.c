@@ -203,7 +203,7 @@ SPEX_info spex_qr_pre_factorQR
     // Finalize Q->p
     QT->p[n] = S->lnz = qnz;
     SPEX_CHECK(spex_qr_transpose(&Q, QT, NULL));
-
+    Q->nz=qnz;
     //copy A into Q
     //first column is exactly the same
     for(p=A->p[0];p<A->p[1];p++)

@@ -89,6 +89,8 @@ SPEX_info spex_qr_ipgs
     int64_t *xi,        // Nonzero pattern vector of row j of R
     int64_t *c,
     const int64_t *parent,          // Elimination tree*/
+    int64_t *Prev,
+    int64_t *vec,
     SPEX_options option
 );
 
