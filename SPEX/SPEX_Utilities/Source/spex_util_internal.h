@@ -462,22 +462,7 @@ SPEX_info spex_cast_matrix
     const SPEX_options option   // Command options, if NULL defaults are used
 ) ;
 
-SPEX_info spex_CSC_mpz_to_dynamic
-(
-    SPEX_matrix *A_handle,          // converted SPEX_matrix of dynamic_CSC
-    // input:
-    const SPEX_matrix B,            // original matrix (unmodified)
-    const SPEX_options option
-) ;
 
-SPEX_info spex_dynamic_to_CSC_mpz
-(
-    SPEX_matrix *A_handle,          // converted CSC matrix
-    // input:
-    const SPEX_matrix B,            // original matrix (not modified)
-    const int64_t nnz,              // number of nonzeros in B
-    const SPEX_options option
-) ;
 
 /* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
  * size of x and i. so that they only take up the number of elements in the
@@ -531,13 +516,6 @@ SPEX_info spex_cumsum
     int64_t n            // size of c
 ) ;
 
-/* Purpose: perform basic check for a given factorization
- */
-
-SPEX_info spex_factorization_basic_check
-(
-    SPEX_factorization F
-) ;
 
 SPEX_info spex_colamd
 (
