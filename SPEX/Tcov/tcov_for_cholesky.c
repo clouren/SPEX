@@ -49,7 +49,7 @@
         if (info2 != SPEX_OUT_OF_MEMORY) break ;                            \
     }                                                                       \
     if (info2 != SPEX_OK) TEST_ABORT (info2) ;                              \
-    malloc_count = UINT64_MAX ;                                             \
+    malloc_count = INT64_MAX ;                                             \
     printf ("\nBrutal Cholesky trials %ld: tests passed\n", trial);         \
 }
 
@@ -122,8 +122,8 @@ SPEX_info spex_test_chol_backslash (SPEX_matrix A, SPEX_matrix b,
 #undef  SPEX_FREE_ALL
 #define SPEX_FREE_ALL       \
 {                           \
-    SPEX_MPZ_CLEAR(q);  \
-    SPEX_MPZ_CLEAR(r);  \
+    SPEX_MPZ_CLEAR(q1);  \
+    SPEX_MPZ_CLEAR(r1);  \
 }
 
 SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d) ;
@@ -131,11 +131,13 @@ SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d) ;
 SPEX_info spex_test_cdiv_qr (mpz_t n, mpz_t d)
 {
     //SPEX_info info ;
-    mpz_t q, r;
-    SPEX_MPZ_SET_NULL(q);
-    SPEX_MPZ_SET_NULL(r);
+    mpz_t q1, r1;
+    SPEX_MPZ_SET_NULL(q1);
+    SPEX_MPZ_SET_NULL(r1);
+    OK2 (SPEX_mpz_init2(q1,1));
+    OK2 (SPEX_mpz_init2(r1,1));
 
-    OK2 (SPEX_mpz_cdiv_qr(q,r,n,d));
+    OK2 (SPEX_mpz_cdiv_qr(q1,r1,n,d));
 
     SPEX_FREE_ALL ; 
     return (SPEX_OK) ;
@@ -379,12 +381,20 @@ int main (int argc, char *argv [])
     SPEX_MPFR_UI_POW_UI(gmp_h,num1,num2,round);
 
     printf("Brutal test of SPEX_cdiv_qr: \n");
-    mpz_t gmp_n,gmp_d;
-    SPEX_MPZ_INIT(gmp_n);
+    mpz_t gmp_n,gmp_d,tmpz;
+    SPEX_MPZ_INIT2(gmp_n,1);
     SPEX_MPZ_INIT(gmp_d);
-    SPEX_MPZ_SET_SI(gmp_n, 47);
-    SPEX_MPZ_SET_SI(gmp_d, 14);
-    //BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d)); FIXME
+    SPEX_MPZ_INIT(tmpz);
+    SPEX_MPZ_SET_SI(tmpz, 1); //tmpz=1
+    SPEX_MPZ_SET_SI(gmp_n, INT64_MAX);
+    for (int ii = 0; ii<3;ii++){
+    SPEX_MPZ_MUL(gmp_n, gmp_n, gmp_n);
+    }// gmp_n = INT64_MAX^8
+    SPEX_MPZ_SET(gmp_d, gmp_n); //gmp_d = gmp_n = INT64_MAX^8
+    SPEX_MPZ_MUL(gmp_n, gmp_n, gmp_n);
+    SPEX_MPZ_SUB(gmp_n, gmp_n, tmpz);// gmp_n = (INT64_MAX^8)^2-1
+    // we should get q = r = INT64_MAX^8-1
+    BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d));// FIXME
     //OK(spex_test_cdiv_qr (gmp_n,gmp_d)); this works, maybe interaction with brutal is problem?
 
     //Free
@@ -399,6 +409,7 @@ int main (int argc, char *argv [])
     SPEX_MPFR_CLEAR(gmp_h);
     SPEX_MPZ_CLEAR(gmp_n);
     SPEX_MPZ_CLEAR(gmp_d);
+    SPEX_MPZ_CLEAR(tmpz);
     
     //--------------------------------------------------------------------------
     // error handling

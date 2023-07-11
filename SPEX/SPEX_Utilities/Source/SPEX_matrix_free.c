@@ -37,19 +37,7 @@ SPEX_info SPEX_matrix_free
     // free any non-shallow components
     //--------------------------------------------------------------------------
 
-    if (A->kind == SPEX_DYNAMIC_CSC)
-    {
-        if (A->v != NULL)
-        {
-            for (int64_t i = 0; i < A->n; i++)
-            {
-                SPEX_vector_free(&(A->v[i]), option);
-            }
-            SPEX_FREE(A->v);
-        }
-    }
-    else
-    {
+   
         // free the integer pattern
         if (!(A->p_shallow)) SPEX_FREE (A->p);
         if (!(A->i_shallow)) SPEX_FREE (A->i);
@@ -106,7 +94,7 @@ SPEX_info SPEX_matrix_free
                     break ;
             }
         }
-    }
+
 
     // A->scale is never shallow
     SPEX_MPQ_CLEAR (A->scale);

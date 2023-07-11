@@ -70,13 +70,14 @@ SPEX_info spex_colamd
     {
         A2[i] = A->i[i];
     }
-
+    
     // find the colamd ordering
     int64_t stats[COLAMD_STATS];
     int64_t colamd_result = colamd_l (n, n, Alen, A2, perm,
         (double *) NULL, stats);
     if (!colamd_result)
     {
+        printf("fail\n");
         // COLAMD failed: matrix is invalid
         SPEX_FREE_ALL;
         return (SPEX_INCORRECT_INPUT);

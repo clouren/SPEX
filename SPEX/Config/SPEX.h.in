@@ -293,51 +293,6 @@ typedef struct
 // A SPEX_vector is a pointer to a SPEX_vector_struct
 typedef SPEX_vector_struct *SPEX_vector ;
 
-// FIXME: make this 'if 0' for v3.0, or delete.
-#if 1
-
-//------------------------------------------------------------------------------
-// SPEX_vector_allocate: allocate a SPEX_vector with nzmax entries
-//------------------------------------------------------------------------------
-
-// *v_handle->x is allocated as a mpz_t vector with nzmax mpz_t entries
-// initialized, and *v_handle->i is allocated with length of nzmax.
-
-SPEX_info SPEX_vector_allocate
-(
-    SPEX_vector *v_handle,          // vector to be allocated
-    const int64_t nzmax,            // number of nnz entries in v
-    const SPEX_options option
-) ;
-
-//------------------------------------------------------------------------------
-// SPEX_vector_realloc: reallocate SPEX_vector with new_size entries
-//------------------------------------------------------------------------------
-
-// Purpose: This function realloc a SPEX_vector to given new size. If
-// new_size > (v->nzmax), it will reallocate v->i and v->x with new size, and
-// initialize/allocate for all the new mpz entries. Otherwise, It will first
-// free (v->nzmax) - new_size of mpz entries from v->x and then shrink the size
-// of both v->i and v->x.
-
-SPEX_info SPEX_vector_realloc
-(
-    SPEX_vector v,              // the vector to be expanded
-    const int64_t new_size,     // desired new size for v
-    const SPEX_options option
-) ;
-
-//------------------------------------------------------------------------------
-// SPEX_vector_free: free the given SPEX_vector object and set *v = NULL
-//------------------------------------------------------------------------------
-
-SPEX_info SPEX_vector_free
-(
-    SPEX_vector *v_handle,      // vector to be deleted
-    const SPEX_options option
-) ;
-
-#endif
 
 //------------------------------------------------------------------------------
 // SPEX_matrix: a sparse CSC, sparse triplet, or dense matrix

@@ -98,8 +98,7 @@ int main( int argc, char *argv[] )
     option->order = SPEX_AMD;  // AMD
     //option->order = SPEX_COLAMD; // COLAMD
     DEMO_OK(SPEX_cholesky_analyze(&S, A, option));
-    printf("here sdce\n");
-    //DEMO_OK(SPEX_cholesky_preorder(&S, A, option));
+
     clock_t end_col = clock();
 
     //--------------------------------------------------------------------------

@@ -89,9 +89,6 @@ SPEX_info SPEX_cholesky_solve
     // get b2 = Pinv*b
     //--------------------------------------------------------------------------
 
-    // Ensure that F is in a non-updatable form
-    SPEX_CHECK( SPEX_factorization_convert(F, false, option));
-
     SPEX_CHECK (spex_permute_dense_matrix (&b2, b, F->Pinv_perm, option));
 
     //--------------------------------------------------------------------------

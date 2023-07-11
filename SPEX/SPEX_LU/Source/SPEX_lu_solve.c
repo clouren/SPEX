@@ -68,10 +68,6 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
         return SPEX_INCORRECT_INPUT;
     }
 
-    // convert the factorization F to non-updatable
-    info = SPEX_factorization_convert(F, false, option);
-    if (info != SPEX_OK) return info;
-
     // check components of F in debug mode
     ASSERT_MATRIX (F->L,    SPEX_CSC,   SPEX_MPZ);
     ASSERT_MATRIX (F->U,    SPEX_CSC,   SPEX_MPZ);
