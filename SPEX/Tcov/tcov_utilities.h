@@ -13,7 +13,6 @@
 #define TCOV_UTILITIES_H
 
 #include "spex_lu_internal.h"
-#include "spex_update_internal.h"
 #include <assert.h>
 #include <float.h>
 
