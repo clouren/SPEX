@@ -1,4 +1,4 @@
-Mar FIXME, 2023: version 3.0.0
+Jul 12 FIXME, 2023: version 3.0.0
 
     * major change to the API: new SPEX_factorization and SPEX_symbolic_analysis
         objects.  Uniform analyze/factorize/solve functions for all kinds of 

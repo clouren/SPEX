@@ -398,7 +398,7 @@ int main (int argc, char *argv [])
     SPEX_MPZ_MUL(gmp_n, gmp_n, gmp_n);
     SPEX_MPZ_SUB(gmp_n, gmp_n, tmpz);// gmp_n = (INT64_MAX^8)^2-1
     // we should get q = r = INT64_MAX^8-1
-    BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d));// FIXME
+    BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d));
 
     ERR(SPEX_mpz_cdiv_qr(gmp_x,gmp_y,gmp_n,gmp_0),SPEX_PANIC);
     ERR(SPEX_mpz_divexact(gmp_x,gmp_y,gmp_0),SPEX_PANIC);

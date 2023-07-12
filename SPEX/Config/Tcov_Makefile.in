@@ -42,8 +42,6 @@ MPFR_PATH = @MPFR_PATH@
 
 ################################################################################
 
-# FIXME: comment-out or remove SPEX_Update for v3.0
-
 # select the thread-safety mechanism to test: none, openmp, or pthreads.
 # THREADS =
 # THREADS = -fopenmp
