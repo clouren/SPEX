@@ -336,7 +336,7 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
     // missing gmp coverage
     //--------------------------------------------------------------------------
-    mpz_t gmp_x, gmp_y;
+    mpz_t gmp_x, gmp_y, gmp_0;
     mpq_t gmp_a, gmp_b, gmp_c;
     mpfr_t gmp_e, gmp_f, gmp_g, gmp_h ;
     uint64_t num1=2;
@@ -346,6 +346,7 @@ int main (int argc, char *argv [])
     //Initialization   
     SPEX_MPZ_INIT(gmp_x);
     SPEX_MPZ_INIT(gmp_y);
+    SPEX_MPZ_INIT(gmp_0);
         
     SPEX_MPQ_INIT(gmp_a);
     SPEX_MPQ_INIT(gmp_b);
@@ -362,6 +363,7 @@ int main (int argc, char *argv [])
     SPEX_MPFR_SET_SI(gmp_f, 10, round);
     SPEX_MPFR_SET_SI(gmp_g, 7, round);
 
+    SPEX_MPZ_SET_SI(gmp_0, 0);
 
     //Test
     FILE *fil = fopen ("../ExampleMats/test4.mat.txt", "r");
@@ -379,6 +381,8 @@ int main (int argc, char *argv [])
     SPEX_MPFR_MUL(gmp_e,gmp_f,gmp_g,round);
 
     SPEX_MPFR_UI_POW_UI(gmp_h,num1,num2,round);
+    
+    SPEX_MPQ_NEG(gmp_a,gmp_b);
 
     printf("Brutal test of SPEX_cdiv_qr: \n");
     mpz_t gmp_n,gmp_d,tmpz;
@@ -395,8 +399,10 @@ int main (int argc, char *argv [])
     SPEX_MPZ_SUB(gmp_n, gmp_n, tmpz);// gmp_n = (INT64_MAX^8)^2-1
     // we should get q = r = INT64_MAX^8-1
     BRUTAL(spex_test_cdiv_qr (gmp_n,gmp_d));// FIXME
-    //OK(spex_test_cdiv_qr (gmp_n,gmp_d)); this works, maybe interaction with brutal is problem?
 
+    ERR(SPEX_mpz_cdiv_qr(gmp_x,gmp_y,gmp_n,gmp_0),SPEX_PANIC);
+    ERR(SPEX_mpz_divexact(gmp_x,gmp_y,gmp_0),SPEX_PANIC);
+    
     //Free
     SPEX_MPZ_CLEAR(gmp_x);
     SPEX_MPZ_CLEAR(gmp_y);
