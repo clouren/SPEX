@@ -41,12 +41,11 @@
 \usepackage{cprotect}
 
 \begin{document}
-%TODO: Do the date thing to mimic what's in C
 \begin{center}
 \begin{large}
 \textbf{User Guide for the SPEX Software Package} \\
 \vspace{5mm}
-Version 3.0, March 2023 % VERSION
+Version 3.0, July 2023 % VERSION
 \vspace{20mm}
 
 Jinhao Chen,  Timothy A. Davis, Christopher Lourenco, Lorena Mejia-Domenzain, Erick Moreno-Centeno  \\
@@ -189,13 +188,11 @@ an enumerated type called \verb|SPEX_info|. All current possible values for
 \hline
     -3& \verb|SPEX_INCORRECT_INPUT|& One or more input arguments are incorrect.\\
 \hline
-    -4& \verb|SPEX_UNSYMMETRIC|& The input matrix is unsymmetric (for Cholesky)\\
+    -4 & \verb|SPEX_NOTSPD| & The input matrix is not SPD (thus can't use Cholesky) \\
 \hline
-    -5 & \verb|SPEX_NOTSPD| & The input matrix is not SPD (it may still be symmetric) \\
+    -5 & \verb|SPEX_INCORRECT_ALGORITHM| & The algorithm is not compatible with the factorization \\
 \hline
-    -6 & \verb|SPEX_INCORRECT_ALGORITHM| & The algorithm is not compatible with the factorization \\
-\hline
-    -7& \verb|SPEX_PANIC| & SPEX environment error \\
+    -6& \verb|SPEX_PANIC| & SPEX environment error \\
 \hline
 \end{tabular}
 \end{center}
@@ -395,8 +392,8 @@ function/macro name & description & section \\
 %\cprotect\section{\verb|SPEX_vector|} \label{ss:SPEX_vector}
 \section{\texttt{SPEX\_vector}} \label{ss:SPEX_vector}
 
-% TODO: If we commment this entire thing out for version 3.0 make sure the flag for it is commented out in the SPEX_Kind
-SPEX vector is a compressed sparse vector data structure which is used for the SPEX dynamic CSC matrices. 
+SPEX vector is a compressed sparse vector data structure which will be used for SPEX dynamic CSC matrices. This struct is not used in SPEX version 3.0 and its funcionality will be fully developed in a future release of SPEX; however the struct is provided here so that future versions of SPEX have backward compatibility. 
+
 \update{
 This is only used publicly when calling the functions in SPEX Update to construct the vector to modify original matrix A, (either \verb|w| for $A'=A+\sigma ww^T$ in rank-1 update/downdate or \verb|vk| to be swapped with \verb|A->v[k]| in the update for column replacement).
 }
@@ -415,6 +412,8 @@ This is \textbf{NOT} intended to be used for building any n-by-1 vector (e.g., t
 \verb|vector->scale|: A scaling parameter for the vector. The actual value of the $k$-th nonzero should be computed as \verb|x[k]*scale|. Both  \verb|x[k]*scale| and \verb|x[k]/mpq_denref(scale)| must be integer for all entries, where \verb|mpq_denref(scale)| is a GMP macro that gives the denominator of \verb|scale|. This is used to skip explicit update(s) for a column/row of the factorization matrix, when all entries are to be multiplied with the same scaling factor(s). Data Type: \verb|mpq_t|.
 \end{itemize}
 
+In the current release, the \verb|SPEX_vector| is only used as a part of the \verb|SPEX_matrix| struct and is always a NULL pointer.
+\update{
 The SPEX package has a set of functions to allocate,
 destroy and reallocate a SPEX vector, \verb|SPEX_vector|, as shown in the following table.
 
@@ -440,7 +439,7 @@ function name & description & section \\
 \end{tabular}
 \end{center}
 }
-
+}
 %-------------------------------------------------------------------------------
 %\cprotect\section{The \verb|SPEX_matrix| structure} \label{ss:SPEX_matrix}
 \section{The \texttt{SPEX\_matrix} structure} \label{ss:SPEX_matrix}
@@ -619,7 +618,7 @@ Data Type: \verb|union|.
 \item \verb|A->x_shallow|: A boolean indicating whether \verb|A->x| is
 shallow. Data Type: \verb|bool|.
 
-\item \verb|A->v|: If the matrix is a \verb|SPEX_DYNAMIC_CSC| this is an array of size \verb|A->n|, each of which is a dynamic column vector. Data Type: \verb|SPEX_vector**|
+\item \verb|A->v|: If the matrix is a \verb|SPEX_DYNAMIC_CSC| this is an array of size \verb|A->n|, each of which is a dynamic column vector. Data Type: \verb|SPEX_vector**|. Always NULL in SPEX 3.0
 \end{itemize}
 
 Specifically, for different kinds of \verb|A| of size \verb|A->m| $\times$ \verb|A->n|
@@ -658,7 +657,9 @@ with \verb|nz| nonzero entries, its components are defined as:
      of entries in \verb|A| is \verb|A->m| $\times$ \verb|A->n|.
 
 \item
- (3) \verb|SPEX_DYNAMIC_CSC|: A sparse matrix in dynamic CSC
+ (3) \verb|SPEX_DYNAMIC_CSC|: Currently unused
+ \update{
+    A sparse matrix in dynamic CSC
      format with the number of nonzeros in each column changing
      independently and dynamically, which is only used in the SPEX update
      functions. The matrix is held as an array of \verb|A->n| SPEX vectors, one per
@@ -669,7 +670,7 @@ with \verb|nz| nonzero entries, its components are defined as:
      give the row indices of all nonzeros, and the \verb|mpz_t| values
      of these entries appear in the same locations in \verb|A->v[j]->x|.
      \verb|A->v[j]->nzmax| is the max number of nonzeros allocated for the $j$th column, while \verb|A->v[j]->nz| is the number of existing nonzeros in the $j$th column. Therefore, the total number
-     of existing nonzeros is computed as $\sum_{j=0}^{n-1}$(\verb|A->v[j]->nz|).
+     of existing nonzeros is computed as $\sum_{j=0}^{n-1}$(\verb|A->v[j]->nz|).}
 
 
 \end{itemize}
@@ -808,6 +809,10 @@ The components of a \verb|SPEX_factorization* F| are as follows:
 
 \item \verb|F->U|: The upper triangular matrix for LU factorization. This is always \verb|NULL| for Cholesky factorization. Data type: \verb|SPEX_matrix*|
 
+\item \verb|F->Q|: The matrix for (future) QR factorization. Provided here so that future versions of SPEX have backward compatibility. Data type: \verb|SPEX_matrix*|
+
+\item \verb|F->R|: The right triangular matrix for (future) QR factorization. Provided here so that future versions of SPEX have backward compatibility. Data type: \verb|SPEX_matrix*|
+
 \item \verb|F->rhos|: An $n \times 1$ dense matrix containing the pivot values used for LU or Cholesky factorization. Data type: \verb|SPEX_matrix*|
 
 \item \verb|F->P_perm|: Row permutation of the LU or Cholesky factors. Data type: \verb|int64_t*|
@@ -874,10 +879,10 @@ function name & description & section \\
 \end{center}
 }
 
-It should be noted that all solvers (except
+\update{It should be noted that all solvers (except
 \verb|SPEX_Update_(t)solve|) and functions that create factorization return
 non-updatable factorization with \verb|F->L| (and \verb|F->U| if exists) in \verb|SPEX_CSC SPEX_MPZ| form. On the other hand, all \verb|SPEX_Update_*| functions require and output updatable factorization with \verb|F->L|
-(and \verb|F->U| if exists) in \verb|SPEX_DYNAMIC_CSC SPEX_MPZ| form. These \verb|SPEX_Update_*| functions check the input factorization, convert it (if not updatable) automatically, and output updatable factorization.
+(and \verb|F->U| if exists) in \verb|SPEX_DYNAMIC_CSC SPEX_MPZ| form. These \verb|SPEX_Update_*| functions check the input factorization, convert it (if not updatable) automatically, and output updatable factorization.}
 
 
 
@@ -903,7 +908,6 @@ these external libraries. SPEX Util is written in ANSI C.
 Either \verb|SPEX_initialize| or \verb|SPEX_initialize_expert| (but not both)
 must be called prior to using any other SPEX functions. Otherwise, all SPEX user-callable functions would return \verb|SPEX_PANIC|. \verb|SPEX_finalize|
 must be called as the last SPEX function. 
-% TODO: Is this correct
 Note that if a user is working in a multi threaded environment then only one user thread should call the \verb|SPEX_initialize| and \verb|SPEX_finalize| functions.
 
 Subsequent SPEX sessions can be restarted after a call to
@@ -1236,6 +1240,8 @@ All functions that require \verb|SPEX_options *option| as an input argument can
 have a \verb'NULL' pointer passed instead. In this case, the default value of
 the corresponding command option is used. 
 
+\update{
+
 %\cprotect\section{\verb|SPEX_vector| helper functions} \label{s:spex_vector_helper}
 \section{\texttt{SPEX\_vector} helper functions} \label{s:spex_vector_helper}
 
@@ -1289,7 +1295,7 @@ the corresponding command option is used.
 } \end{mdframed}
 
 \verb|SPEX_vector_free| frees the \verb|SPEX_vector *v| that \verb|v_handle| points to. On output, the memory associated with \verb|v| is freed and \verb|v| is set to \verb|NULL|.
-
+}
 %\cprotect\section{\verb|SPEX_matrix| helper functions} \label{s:spex_matrix_functions}
 \section{\texttt{SPEX\_matrix} helper functions} \label{s:spex_matrix_functions}
 
@@ -1600,13 +1606,14 @@ The \verb'date' is the string \verb'SPEX_DATE', in the form
 \begin{verbatim}
     SPEX_info SPEX_determine_symmetry
     (
+        bool *is_symmetric,        // true if symmetric
         SPEX_matrix* A,            // Input matrix to be checked for symmetry
         const SPEX_options* option // Command options
     ); 
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_determine_symmetry| checks if \verb|A| is numerically symmetric. It first checks for pattern symmetry. If it is pattern symmetric, it is checked for numerical symmetry. Returns \verb|SPEX_OK| if \verb|A| is symmetric (and thus a candidate for Cholesky) or \verb|SPEX_UNSYMMETRIC| if it is not symmetric.
+\verb|SPEX_determine_symmetry| checks if \verb|A| is pattern and numerically symmetric. It first checks for pattern symmetry. If it is pattern symmetric, it is checked for numerical symmetry. If $A$ is a symmetric matrix, \verb|is_symmetric| is returned as \verb|true|. 
 
 % removed
 %\cprotect\subsection{\verb|SPEX_scale|: Scale a matrix by a constant}
@@ -1655,7 +1662,6 @@ The wrapper class provides error-handling for out-of-memory conditions
 that are not handled by the GMP and MPFR libraries.  These wrapper functions
 are used inside all SPEX functions, wherever any GMP or MPFR functions are
 used.  These functions may also be called by the end-user application. 
-% TODO: This is no longer true, correct?
 \ul{For SPEX v2.0, the wrapper mechanism is {\bf NOT} thread-safe.} 
 
 Each wrapped function has the same name as its corresponding GMP/MPFR function
@@ -2082,7 +2088,7 @@ If any error occurs, \verb|F| is returned as \verb|NULL|, and an appropriate err
         // Output
         SPEX_matrix **x_handle, // rational solution to the system
         // input/output:
-        SPEX_factorization *F,  // The non-updatable LU factorization.
+        SPEX_factorization *F,  // The LU factorization.
         // input:
         const SPEX_matrix *b,   // right hand side vector
         const SPEX_options* option // Command options
@@ -2095,7 +2101,9 @@ linear system $Ax=b$ upon a successful factorization.  This function may be
 called after a successful return from \verb|SPEX_lu_factorize|.
 
 On input, \verb|SPEX_matrix *x| that \verb|x_handle| points to is undefined; \verb|F| must be a valid LU factorization; and \verb|b| must be a dense \verb|mpz_t| matrix with same number of rows as \verb|F->L|;  Default settings are used if
-\verb|option| is input as \verb|NULL|. Upon successful completion, the function returns \verb|SPEX_OK|, and \verb|x| contains the solution of \verb|mpq_t| type with dense format to the linear system $Ax=b$. \verb|F| is mathematically unchanged on output. However, if \verb|F| is updatable on input, it is converted to non-updatable. If \verb|F| is already non-updatable, it is not modified.
+\verb|option| is input as \verb|NULL|. Upon successful completion, the function returns \verb|SPEX_OK|, and \verb|x| contains the solution of \verb|mpq_t| type with dense format to the linear system $Ax=b$. 
+\update{
+\verb|F| is mathematically unchanged on output. However, if \verb|F| is updatable on input, it is converted to non-updatable. If \verb|F| is already non-updatable, it is not modified.}
 In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is returned.
 
 %-------------------------------------------------------------------------------
@@ -2555,7 +2563,9 @@ called after a successful return from \verb|SPEX_Chol_factorize|.
 On input, \verb|SPEX_matrix *x| that \verb|x_handle| points to is undefined; \verb|F| must be a valid Cholesky factorization and \verb|b| must be dense \verb|mpz_t| with same number of rows as \verb|F->L|. Default settings are used if
 \verb|option| is input as \verb|NULL|. Upon successful completion, the function returns \verb|SPEX_OK|, and \verb|x|
 contains the solution of \verb|mpq_t| type with dense format to the linear
-system $Ax=b$. \verb|F| is mathematically unchanged on output. However, if \verb|F| is updatable on input, it is converted to non-updatable. If \verb|F| is already non-updatable, it is not modified.
+system $Ax=b$. 
+\update{
+\verb|F| is mathematically unchanged on output. However, if \verb|F| is updatable on input, it is converted to non-updatable. If \verb|F| is already non-updatable, it is not modified.}
 In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is returned.
 
 
