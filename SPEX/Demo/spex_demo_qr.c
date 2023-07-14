@@ -171,8 +171,8 @@ m=5;n=5;seed=14;
     DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
     
-    //option->print_level = 3;
-    //SPEX_matrix_check(A, option);*/
+    //option->print_level = 3;*/
+    //SPEX_matrix_check(A, option);
 
     //--------------------------------------------------------------------------
     // Dense
@@ -184,7 +184,6 @@ m=5;n=5;seed=14;
     printf("Dense Q, R\n");
     SPEX_matrix_check(Q2, option);
     SPEX_matrix_check(R2, option);
-    
 
     SPEX_Qtb(Q2, b, &b_new);
     //spex_matrix_mul(b_new,R->x.mpz[R->nz]);

@@ -137,12 +137,16 @@ SPEX_info spex_qr_ipgs
                     //History update
                     //Q(i,j)=rho^()*Q(i,k)/rho^()
                     // Q[pQ] = x[pQ] * rho[i]
-                    //printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ%m],pQ);
+                    printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ%m],pQ);
                     SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
                     if(i>1 && h[pQ%m]>-1)
                     {
                         SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ%m]]);
                     }
+                    if(pQ==10)
+                {
+                    SPEX_matrix_check(Q,option);                    
+                }
                 }
 
                 //check if Q->x.mpz[Prev[pPrev]] is nonzero
@@ -154,7 +158,7 @@ SPEX_info spex_qr_ipgs
                     //Q(i,j)=-R(k,j)*Q(i,k)/rho^(k-1)
                     // Q[pQ] = Q[pQ] - R[pR]*Q[k]
                     //printf("pQ %ld q_ %ld, m %ld j %ld i %ld\n",pQ,pQ-m*(j+1-i),m,j,i);
-                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[Prev[pPrev]]); // Q->x.mpz[pQ-m*(j+1-i)
+                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pPrev]); // Q->x.mpz[pQ-m*(j+1-i)
                     if(i>=1)
                     {
                         SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
@@ -162,12 +166,12 @@ SPEX_info spex_qr_ipgs
                 }
                 else
                 {
-                    printf("pQ %ld q_ %ld, m %ld j %ld i %ld\n",pQ,Prev[pPrev],pPrev);
+                    printf("pQ %ld q_ %ld, pPrev %ld pR %ld i %ld\n",pQ,Prev[pPrev],pPrev,pR,i);
                     //Q(i,j)=(rho^k*Q(i,j)-R(k,j)*Q(i,k))/rho^(k-1)
                     // Q[pQ] = x[pQ] * rho[i]
                     SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
                     // Q[pQ] = Q[pQ] - R[pR]*Q[k]
-                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[Prev[pPrev]]);
+                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pPrev]);
                     if(i>=1)
                     {
                         SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
@@ -177,13 +181,17 @@ SPEX_info spex_qr_ipgs
                 pPrev=Prev[pPrev];
 
                 h[pQ%m]=i;
+                if(pQ==10)
+                {
+                    SPEX_matrix_check(Q,option);                    
+                }
             }
         
         if(h[pQ%m]<j) //to finalize element
         {
             //History update
             //Q(i,j)=rho^()*Q(i,k)/rho^()
-            //printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ%m],j,pQ);
+           // printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ%m],j,pQ);
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(j>=1 && h[pQ%m]>=0)
             {
@@ -198,11 +206,11 @@ SPEX_info spex_qr_ipgs
         printf("%ld \n",vec[i]);
     }
     printf("done ipgs\n");*/
-    printf("j+1 : %ld\n",j+1); 
+    /*printf("j+1 : %ld\n",j+1); 
     for(pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++)
     {
         printf("%ld \n",Prev[pQ]);
-    }
+    }*/
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
