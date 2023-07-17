@@ -291,10 +291,6 @@ typedef enum
     SPEX_CSC = 0,           // matrix is in compressed sparse column format
     SPEX_TRIPLET = 1,       // matrix is in sparse triplet format
     SPEX_DENSE = 2,         // matrix is in dense format (held by column)
-    SPEX_DYNAMIC_CSC = 3    // matrix is in dynamic CSC format with each
-                            // column dynamically allocated as SPEX_vector
-                            // This format will be used in in a future SPEX;
-                            // it is not used in this version of SPEX.
 }
 SPEX_kind ;
 
@@ -314,7 +310,6 @@ SPEX_type ;
 
 // This gives a total of 16 different matrix types:
 // (sparse CSC, triplet, dense) x (5 data types) = 15 formats,
-// plus the sparse dynamic CSC format (only in MPZ).
 
 // Not all functions accept all 16 matrices types, however.
 
@@ -344,15 +339,13 @@ SPEX_type ;
 // A->x.  For example, if A->p_shallow is true, then a non-NULL A->p is a
 // pointer to a read-only array, and the A->p array is not freed by
 // SPEX_matrix_free.  If A->p is NULL (for a triplet or dense matrix), then
-// A->p_shallow has no effect.  A SPEX_matrix held in SPEX_DYNAMIC_CSC
-// format never contains shallow components.
+// A->p_shallow has no effect.  
 
 typedef struct
 {
-    SPEX_kind kind ;    // CSC, triplet, dense or SPEX_DYNAMIC_CSC
+    SPEX_kind kind ;    // CSC, triplet, dense
     SPEX_type type ;    // mpz, mpq, mpfr, int64, or fp64 (double)
-                        // NOTE: entries of SPEX_DYNAMIC_CSC matrix must be
-                        // mpz type.
+
 
     int64_t m ;         // number of rows
     int64_t n ;         // number of columns
@@ -364,13 +357,12 @@ typedef struct
                         // should be computed as A(i,j)/scale.
 
     //--------------------------------------------------------------------------
-    // these are used for CSC, triplet or dense matrix, but ignored for
-    // SPEX_DYNAMIC_CSC matrix
+    // these are used for CSC, triplet or dense matrix
     //--------------------------------------------------------------------------
 
     int64_t nzmax ;     // size of A->i, A->j, and A->x.
     int64_t nz ;        // # nonzeros in a triplet matrix .
-                        // Ignored for CSC, dense or SPEX_DYNAMIC_CSC matrices.
+                        // Ignored for CSC, or dense.
 
     int64_t *p ;        // if CSC: column pointers, an array size is n+1.
                         // if triplet or dense: A->p is NULL.
@@ -396,10 +388,7 @@ typedef struct
     // CSC, triplet and dense matrix, for a future version of SPEX.
     //--------------------------------------------------------------------------
 
-    SPEX_vector *v;     // If SPEX_DYNAMIC_CSC: array of size n, each entry of
-                        // this array is a dynamic column vector.
-                        // Neither A->v nor any vector A->v[j] are shallow.
-                        // In this version of SPEX, v is always NULL, and
+    SPEX_vector *v;     // In this version of SPEX, v is always NULL, and
                         // should not be used.
 
     //--------------------------------------------------------------------------
@@ -420,21 +409,17 @@ typedef SPEX_matrix_struct *SPEX_matrix ;
 // SPEX_matrix_allocate: allocate an m-by-n SPEX_matrix
 //------------------------------------------------------------------------------
 
-// Allocate an m-by-n SPEX_matrix, in either dynamic_CSC x mpz or one of
-// 15 data structures:
+// Allocate an m-by-n SPEX_matrix, in one of 15 data structures:
 // (sparse CSC, sparse triplet, or dense) x
 // (mpz, mpz, mfpr, int64, or double).
 
-// If the matrix is not dynamic_CSC, then it may be created as 'shallow', in
+// The matrix may be created as 'shallow', in
 // which case A->p, A->i, A->j, and A->x are all returned as NULL, and all
 // A->*_shallow flags are returned as true.  The user can then set A->p, A->i,
 // A->j, and/or A->x accordingly, from their own arrays. For non-shallow
 // matrix, the components (p,i,j,x) are allocated according to the kind, type
 // and size (m, n, nzmax) of the matrix.
 
-// If the matrix is dynamic_CSC, each column of the returned matrix will be
-// allocated as SPEX_vector with zero available entry. Additional reallocation
-// for each column will be needed.
 
 // if shallow is false: All components (p,i,j,x) are allocated and set to zero,
 //                      and then shallow flags are all false.
