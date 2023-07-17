@@ -91,6 +91,7 @@ SPEX_info spex_qr_ipgs
     const int64_t *parent,          // Elimination tree*/
     int64_t *Prev,
     int64_t *vec,
+    const int64_t *leftmost,
     SPEX_options option
 );
 

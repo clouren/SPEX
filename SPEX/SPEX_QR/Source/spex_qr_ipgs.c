@@ -40,6 +40,7 @@ SPEX_info spex_qr_ipgs
     const SPEX_matrix A,      // Matrix to be factored
     int64_t *Prev,
     int64_t *vec,
+    const int64_t *leftmost,
     SPEX_options option
 )
 {
@@ -55,7 +56,7 @@ SPEX_info spex_qr_ipgs
     ASSERT (Q != NULL);
 
     // Declare variables
-    int64_t p, pQ, pR, i, top, x,l, pPrev, iQ;
+    int64_t p, pQ, pR, i, top, x,l, prev, iQ;
     int sgn;
     int64_t *xi=NULL, *h=NULL, *col=NULL;
 
@@ -115,9 +116,7 @@ SPEX_info spex_qr_ipgs
     for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //Iterate over the nonzeros in col j+1 of Q
     {
         iQ=Q->i[pQ];
-        Prev[pQ]=vec[iQ];
-        vec[iQ]=pQ;
-        pPrev=Prev[pQ];
+        prev=leftmost[iQ];
         
         //if(Prev[pQ]==-1) continue; //if Prev[pQ] is -1, then Q(i,j) is zero and no work must be done
         
@@ -158,7 +157,7 @@ SPEX_info spex_qr_ipgs
                     //Q(i,j)=-R(k,j)*Q(i,k)/rho^(k-1)
                     // Q[pQ] = Q[pQ] - R[pR]*Q[k]
                     //printf("pQ %ld q_ %ld, m %ld j %ld i %ld\n",pQ,pQ-m*(j+1-i),m,j,i);
-                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pPrev]); // Q->x.mpz[pQ-m*(j+1-i)
+                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[prev]); // Q->x.mpz[pQ-m*(j+1-i)
                     if(i>=1)
                     {
                         SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
@@ -166,19 +165,21 @@ SPEX_info spex_qr_ipgs
                 }
                 else
                 {
-                    printf("pQ %ld q_ %ld, pPrev %ld pR %ld i %ld\n",pQ,Prev[pPrev],pPrev,pR,i);
+                    printf("pQ %ld q_ %ld, pPrev %ld pR %ld i %ld\n",pQ,Prev[prev],prev,pR,i);
                     //Q(i,j)=(rho^k*Q(i,j)-R(k,j)*Q(i,k))/rho^(k-1)
                     // Q[pQ] = x[pQ] * rho[i]
                     SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
                     // Q[pQ] = Q[pQ] - R[pR]*Q[k]
-                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[pPrev]);
+                    SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[prev]);
                     if(i>=1)
                     {
                         SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
                     }
                     
                 }
-                pPrev=Prev[pPrev];
+                Prev[vec[iQ]]=pQ;
+                vec[iQ]=pQ;
+                prev=Prev[prev];
 
                 h[pQ%m]=i;
                 if(pQ==10)

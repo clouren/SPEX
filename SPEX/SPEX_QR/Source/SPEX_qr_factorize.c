@@ -38,12 +38,12 @@ SPEX_info SPEX_qr_factorize
     SPEX_info info;
 
     // Declare variables
-    int64_t n=A->n, m=A->m, k,i,pQ;
+    int64_t n=A->n, m=A->m, k,i,pQ,p;
     SPEX_factorization F = NULL ;
     SPEX_matrix PAQ;
 
     //Allocate variables
-    int64_t *Prev, *vec;
+    int64_t *Prev, *vec, *leftmost;
     
      // Allocate memory for the factorization
     F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
@@ -89,6 +89,8 @@ SPEX_info SPEX_qr_factorize
     
     Prev = (int64_t*) SPEX_malloc ( (F->Q->nz)*sizeof(int64_t) ); 
     vec = (int64_t*) SPEX_malloc ( m*sizeof(int64_t) ); 
+    leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
+
     for(k=0;k<m;k++)
     {
         vec[k]=-1;
@@ -97,13 +99,21 @@ SPEX_info SPEX_qr_factorize
     {
         vec[F->Q->i[k]]=k;
     }
+    for (i = 0 ; i < m ; i++) leftmost [i] = -1 ;
+    for (k = n-1 ; k >= 0 ; k--)
+    {
+        for (p = F->Q->p [k] ; p < F->Q->p [k+1] ; p++)
+        {
+            leftmost [F->Q->i [p]] = p ;         /* leftmost[i] =possition of first nonzero in row i*/
+        }
+    }
 
     // Perform IPGS to get Q and R
     
     for (k=0;k<n-1;k++)
     {
         //printf("iteration: %ld\n",k);
-        SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, Prev, vec, option));
+        SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, Prev, vec, leftmost, option));
         
         //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes
     }
