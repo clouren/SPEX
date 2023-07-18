@@ -65,7 +65,7 @@ SPEX_info SPEX_matrix_allocate
     }
     (*A_handle) = NULL ;
     if (m < 0 || n < 0 ||
-        kind  < SPEX_CSC || kind  > SPEX_DYNAMIC_CSC ||
+        kind  < SPEX_CSC || kind  > SPEX_DENSE ||
         type  < SPEX_MPZ || type  > SPEX_FP64) 
     {
         return (SPEX_INCORRECT_INPUT);
