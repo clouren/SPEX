@@ -85,20 +85,13 @@ SPEX_info SPEX_qr_factorize
     //SPEX_CHECK(spex_qr_pre_factor(&F->R, PAQ, S));
     //SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
     SPEX_CHECK(spex_qr_pre_factorQR(&F->R, &F->Q, PAQ, S));
-    //SPEX_matrix_check(F->Q, option);
+    SPEX_matrix_check(F->R, option);
     
     Prev = (int64_t*) SPEX_malloc ( (F->Q->nz)*sizeof(int64_t) ); 
     vec = (int64_t*) SPEX_malloc ( m*sizeof(int64_t) ); 
     leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
 
-    for(k=0;k<m;k++)
-    {
-        vec[k]=-1;
-    }
-    for(k=F->Q->p[0];k<F->Q->p[1];k++)
-    {
-        vec[F->Q->i[k]]=k;
-    }
+
     for (i = 0 ; i < m ; i++) leftmost [i] = -1 ;
     for (k = n-1 ; k >= 0 ; k--)
     {
@@ -107,6 +100,14 @@ SPEX_info SPEX_qr_factorize
             leftmost [F->Q->i [p]] = p ;         /* leftmost[i] =possition of first nonzero in row i*/
         }
     }
+    for(k=0;k<m;k++)
+    {
+        vec[k]=leftmost[k];//-1;
+    }
+    /*for(k=F->Q->p[0];k<F->Q->p[1];k++)
+    {
+        vec[F->Q->i[k]]=k;
+    }*/
 
     // Perform IPGS to get Q and R
     
