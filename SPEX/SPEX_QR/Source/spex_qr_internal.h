@@ -95,6 +95,18 @@ SPEX_info spex_qr_ipgs
     SPEX_options option
 );
 
+SPEX_info spex_qr_ipgsM
+(
+    SPEX_matrix R,    
+    SPEX_matrix Q,    
+    SPEX_matrix rhos,         // sequence of pivots
+    int64_t *Qj,
+    const int64_t j,          // Row of R to compute (col j+1 of Q will also be computed)
+    const SPEX_matrix A,      // Matrix to be factored
+    int64_t *h,
+    SPEX_options option
+);
+
 SPEX_info spex_qr_pre_factor
 (
     // Output

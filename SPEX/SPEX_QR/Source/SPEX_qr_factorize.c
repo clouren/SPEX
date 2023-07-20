@@ -43,7 +43,7 @@ SPEX_info SPEX_qr_factorize
     SPEX_matrix PAQ;
 
     //Allocate variables
-    int64_t *Prev, *vec, *leftmost;
+    int64_t *Prev, *vec, *leftmost, *h, *Qk;
     
      // Allocate memory for the factorization
     F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
@@ -85,11 +85,13 @@ SPEX_info SPEX_qr_factorize
     //SPEX_CHECK(spex_qr_pre_factor(&F->R, PAQ, S));
     //SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
     SPEX_CHECK(spex_qr_pre_factorQR(&F->R, &F->Q, PAQ, S));
-    SPEX_matrix_check(F->R, option);
+    SPEX_CHECK(SPEX_transpose(&F->L,F->R,option));
+    //SPEX_matrix_check(F->Q, option);
     
     Prev = (int64_t*) SPEX_malloc ( (F->Q->nz)*sizeof(int64_t) ); 
     vec = (int64_t*) SPEX_malloc ( m*sizeof(int64_t) ); 
     leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
+    
 
 
     for (i = 0 ; i < m ; i++) leftmost [i] = -1 ;
@@ -108,13 +110,29 @@ SPEX_info SPEX_qr_factorize
     {
         vec[F->Q->i[k]]=k;
     }*/
-
-    // Perform IPGS to get Q and R
+    h = (int64_t*) SPEX_malloc((F->Q->nz)*sizeof(int64_t));
+    Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
+    // initialize workspace history array
+    for (i = 0; i < F->Q->nz; i++)
+    {
+        h[i] = 0;
+    }
+    for(k=0;k<m;k++)
+    {
+        Qk[k]=-1;
+    }
+    for(k=F->Q->p[0];k<F->Q->p[1];k++)
+    {
+        Qk[F->Q->i[k]]=k;
+    }
     
+    
+    // Perform IPGS to get Q and R
     for (k=0;k<n-1;k++)
     {
-        //printf("iteration: %ld\n",k);
-        SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, Prev, vec, leftmost, option));
+        printf("iteration: %ld\n",k);
+        //SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, Prev, vec, leftmost, option));
+        SPEX_CHECK(spex_qr_ipgsM(F->L, F->Q, F->rhos, Qk, k, PAQ, h, option));
         
         //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes
     }
