@@ -50,6 +50,38 @@
  *               function such as the row/column permutation
  *               On output it contains the number of nonzeros in R.
  */
+void swap(int64_t* xp, int64_t* yp)
+{
+    int64_t temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+// An optimized version of Bubble Sort
+void bubbleSort(int64_t *arr, int64_t top,int64_t n)
+{
+    int i, j;
+    bool swapped;
+    
+    for (i = 0; i < n - 1; i++) 
+    {
+        swapped = false;
+        for (j = top; j < n - i - 1; j++) 
+        {
+            if (arr[j] > arr[j + 1]) 
+            {
+                swap(&arr[j], &arr[j + 1]);
+                swapped = true;
+            }
+        }
+        // If no two elements were swapped by inner loop,
+        // then break
+        if (swapped == false) break;
+        
+    }
+    
+}
+
 
 SPEX_info spex_qr_pre_factorQR
 (
@@ -76,7 +108,7 @@ SPEX_info spex_qr_pre_factorQR
 
     //int64_t  top, k, j, jnew, n = A->n, p = 0;
     int64_t *w, *s, *leftmost;
-    int64_t top, k, len, i, p, n = A->n, m2=n, m=A->m, rnz, qnz, j,h;
+    int64_t top, k, len, i, p, n = A->n, m2=n, m=A->m, rnz, qnz, j,h,len2;
     //int64_t *c = NULL;
     SPEX_matrix R = NULL, Q=NULL;
     SPEX_matrix QT= NULL;
@@ -105,13 +137,9 @@ SPEX_info spex_qr_pre_factorQR
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
+    
+    
 
-    // Set the column pointers of L and c
-    /*for (k = 0; k < n; k++)
-    {
-        R->p[k] = S->cp[k+1];
-    }
-*/
     R->i[0] = 0;
     //c[0]++;
 
@@ -146,15 +174,13 @@ SPEX_info spex_qr_pre_factorQR
                 s [len++] = i ;
                 w [i] = k ;
             }
+
             while (len > 0) s [--top] = s [--len] ; /* push path on stack */
         }
-        //from here to 
-        i = A->i [p-1] ;             /* i = permuted row of A(:,col) */
-        if (i > k && w [i] < k)         /* pattern of V(:,k) = x (k+1:m) */
-        {
-            w [i] = k ;
-        }
-        //here is prob not needed
+    
+        //order s
+        bubbleSort(s,top,n);
+        
 
         for (p = top ; p < n ; p++) /* for each i in pattern of R(:,k) */
         {
@@ -174,6 +200,9 @@ SPEX_info spex_qr_pre_factorQR
     SPEX_matrix_check(R, option);*/
 
     // Q
+    for (i = 0 ; i < m2 ; i++) w [i] = -1 ; /* clear w, to mark nodes */
+
+    
     qnz = 0 ;
     for (k = 0; k < n; k++) //find Q(k,:) pattern
     {

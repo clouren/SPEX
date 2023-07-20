@@ -142,7 +142,7 @@ m=5;n=5;seed=14;
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
 
-    char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    char *mat_name = "ExampleMats/smallZerosPAQ.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
     //char *rhs_name = "ExampleMats/LF10.rhs.txt";
@@ -171,8 +171,8 @@ m=5;n=5;seed=14;
     DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
     
-    //option->print_level = 3;*/
-    //SPEX_matrix_check(A, option);
+    option->print_level = 3;
+    SPEX_matrix_check(A, option);
 
     //--------------------------------------------------------------------------
     // Dense
@@ -181,9 +181,9 @@ m=5;n=5;seed=14;
     SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
-    printf("Dense Q, R\n");
-    SPEX_matrix_check(Q2, option);
-    SPEX_matrix_check(R2, option);
+    //printf("Dense Q, R\n");
+    //SPEX_matrix_check(Q2, option);
+    //SPEX_matrix_check(R2, option);
 
     SPEX_Qtb(Q2, b, &b_new);
     //spex_matrix_mul(b_new,R->x.mpz[R->nz]);
@@ -224,16 +224,16 @@ m=5;n=5;seed=14;
     SPEX_matrix_check(F->R, option);
 
     printf("solve:\n");
-    DEMO_OK (SPEX_qr_solve(&x, F, b, option));//going to be wrong until I can permute it
+    DEMO_OK (SPEX_qr_solve(&x, F, b, option));
     printf("Success!!\n");
 
     /*
-    option->order =  SPEX_NO_ORDERING;
+    //option->order =  SPEX_NO_ORDERING;
     SPEX_qr_backslash(&x,SPEX_FP64,A,b, option);*/
     
 
     //printf("orint x sparse:\n");
-    //SPEX_matrix_check(x, option);
+     SPEX_matrix_check(x, option);
     
     ////
     // Tests

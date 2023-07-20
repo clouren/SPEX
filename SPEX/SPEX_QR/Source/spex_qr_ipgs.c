@@ -76,7 +76,7 @@ SPEX_info spex_qr_ipgs
 
     
     // Obtain the nonzero pattern of the jth row of R (kind of a shitty reach) FIXME
-    printf("j: %ld\n",j);
+    //printf("j: %ld\n",j);
     l=0;
     for(i=j;i<n;i++)
     {
@@ -84,7 +84,7 @@ SPEX_info spex_qr_ipgs
         {
             if(R->i[p]==j)
             {
-                printf("i %ld p %ld\n",i,p);
+                //printf("i %ld p %ld\n",i,p);
                 xi[l]=p;
                 col[l]=i;
                 l++;
@@ -124,21 +124,23 @@ SPEX_info spex_qr_ipgs
             for(pR =R->p[j+1];pR <R->p[j+2];pR++) //Iterate over the nonzeros in col j+1 of R R(:,j+1)
             {
                 i=R->i[pR];
-                
-                
+                //necesito controlar que i sea igual que el num de columna de Q->x[prev]
                 if(i==(j+1)) //row number is the same as column number
                 {
                     break;//TODO we know that R has to have a nonzero diagonal, so we can just change the for to pR < R->p[j+2]-1 and avoid lines 117-121
                 }
                 
                 if(prev==pQ) break; 
-
+                if(pQ==10)
+                {
+                    printf("i %ld, j %ld, h[pQm] %ld\n",i,j+1,h[pQ%m]+1);
+                }
                 if(i>h[pQ%m]+1) //"an update of Q(i,j)" has been skipped because R(i,l) is zero or Q(i,l) is zero
                 {
                     //History update
                     //Q(i,j)=rho^()*Q(i,k)/rho^()
                     // Q[pQ] = x[pQ] * rho[i]
-                    //printf("hist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ%m],pQ);
+                    printf("hhist i %ld h[pQ] %ld pQ %ld \n",i,h[pQ%m],pQ);
                     SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
                     if(i>1 && h[pQ%m]>-1)
                     {
@@ -155,7 +157,7 @@ SPEX_info spex_qr_ipgs
                 {
                     //Q(i,j)=-R(k,j)*Q(i,k)/rho^(k-1)
                     // Q[pQ] = Q[pQ] - R[pR]*Q[k]
-                    //printf("0 pQ %ld Prev[prev] %ld, prev %ld pR %ld i %ld\n",pQ,Prev[prev],prev,pR,i);
+                    printf("0 pQ %ld Prev[prev] %ld, prev %ld pR %ld i %ld\n",pQ,Prev[prev],prev,pR,i);
 
                     SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[prev]); // Q->x.mpz[pQ-m*(j+1-i)
                     if(i>=1)
@@ -165,7 +167,7 @@ SPEX_info spex_qr_ipgs
                 }
                 else
                 {
-                    //printf("pQ %ld Prev[prev] %ld, prev %ld pR %ld i %ld\n",pQ,Prev[prev],prev,pR,i);
+                    printf("pQ %ld Prev[prev] %ld, prev %ld pR %ld i %ld\n",pQ,Prev[prev],prev,pR,i);
                     //Q(i,j)=(rho^k*Q(i,j)-R(k,j)*Q(i,k))/rho^(k-1)
                     // Q[pQ] = x[pQ] * rho[i]
                     SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i]);
@@ -189,7 +191,7 @@ SPEX_info spex_qr_ipgs
         {
             //History update
             //Q(i,j)=rho^()*Q(i,k)/rho^()
-            //printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ%m],j,pQ);
+            printf("hist h[pQ] %ld j %ld pQ %ld\n",h[pQ%m],j,pQ);
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(j>=1 && h[pQ%m]>=0)
             {

@@ -17,7 +17,7 @@
 
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
-    SPEX_FREE(h);                   \
+    SPEX_FREE(final);                   \
 }
 
 # define SPEX_FREE_ALL               \
@@ -75,7 +75,7 @@ SPEX_info spex_qr_ipgsM
     {
         final[k]=-1;
     }
-  
+    printf("HERE %ld\n",j);
     // Compute row k of R
     for (pR =R->p[j];pR <R->p[j+1];pR++)
     {
@@ -85,7 +85,7 @@ SPEX_info spex_qr_ipgsM
         SPEX_CHECK(spex_dot_product(R->x.mpz[pR],Q, j, A, i, option)); 
     }
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]); //rhos stores the diagonal of R
-    SPEX_matrix_check(rhos,option);
+    //SPEX_matrix_check(rhos,option);
     
     /*printf("qj for iter %ld\n",j);
     for(i=0;i<m;i++)
@@ -108,6 +108,21 @@ SPEX_info spex_qr_ipgsM
             prev=Qj[iQ];
             printf("pQ %ld iQ %ld prev %ld\n",pQ,iQ,prev);
             
+            //fix logic
+            if(prev==-1 && k==j+1)
+            {
+                printf("last hist %ld %ld %ld %ld\n",pQ, h[pQ],k,j);
+                //Q(i,j)=rho^()*Q(i,k)/rho^()
+                // Q[pQ] = x[pQ] * rho[i]
+                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
+                if(k>1 && h[pQ]>0)
+                {
+                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
+                }
+                final[iQ]=pQ;
+            }
+            
+            
             
             //check if column j of Q had a nonzero element in row iQ
             if(prev==-1) continue;
@@ -121,11 +136,12 @@ SPEX_info spex_qr_ipgsM
                 printf("hist %ld %ld\n",pQ, h[pQ]);
                 //Q(i,j)=rho^()*Q(i,k)/rho^()
                 // Q[pQ] = x[pQ] * rho[i]
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[i-1]);
+                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
                 if(i>1 && h[pQ%m]>-1)
                 {
                     SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]]);
                 }
+                
             }
             
             //IPGE update
@@ -170,7 +186,7 @@ SPEX_info spex_qr_ipgsM
     {
         Qj[i]=final[i];
     }
-    SPEX_matrix_check(Q, option);
+    //SPEX_matrix_check(Q, option);
     /*for(i=0;i<m;i++)
     {
         printf("%ld \n",vec[i]);
