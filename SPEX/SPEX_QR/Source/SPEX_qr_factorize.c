@@ -133,7 +133,6 @@ SPEX_info SPEX_qr_factorize
     // Perform IPGS to get Q and R
     for (k=0;k<n-1;k++)
     {
-        printf("iteration: %ld\n",k);
         //SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, Prev, vec, leftmost, option));
         SPEX_CHECK(spex_qr_ipgsM(F->L, F->Q, F->rhos, Qk,col, k, PAQ, h, option));
         
