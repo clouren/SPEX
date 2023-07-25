@@ -63,7 +63,7 @@ SPEX_info SPEX_matrix_copy
         // checked in SPEX_matrix_nnz:
         //A == NULL || A->kind < SPEX_CSC 
         A->type < SPEX_MPZ || A->type > SPEX_FP64  ||
-        C_kind  < SPEX_CSC || C_kind  > SPEX_DYNAMIC_CSC ||
+        C_kind  < SPEX_CSC || C_kind  > SPEX_DENSE ||
         C_type  < SPEX_MPZ || C_type  > SPEX_FP64 )
     {
         return (SPEX_INCORRECT_INPUT);
