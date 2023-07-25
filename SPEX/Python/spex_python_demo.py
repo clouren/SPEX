@@ -21,7 +21,6 @@ import SPEXpy as SPEX
 import numpy as np
 from numpy.random import default_rng
 from scipy.sparse import csc_matrix
-#from scipy.sparse import coo_matrix
 from scipy.sparse import random
 from scipy import stats
 
@@ -64,11 +63,9 @@ print(x)
 ## Backslash
 ##--------------------------------------------------------------------------
 
-# Read in A from file and populate b
-#fname=sys.argv[1]
-#A=utils.spex_matrix_from_file(fname)
-#b=np.ones(A.shape[0],dtype=np.float64)
+# Use the previous matrices
 
 # Solve
-#x=SPEX.backslash(A,b)
-#print(x)
+x=SPEX.backslash(A,b)
+print(x)
+#SPEX.backslash always returns the output as float64

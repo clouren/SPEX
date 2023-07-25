@@ -36,7 +36,7 @@ def backslash( A, b):#, options=Options('double')):
     ##--------------------------------------------------------------------------
     ## Call SPEX
     ##--------------------------------------------------------------------------
-    x=spex_connect(A,b,0,True,1)
+    x=spex_connect(A,b,0,False,1)
     #x=spex_connect(A,b,0,options.charOut(),1) #1 calls the general backslash
 
     return x
