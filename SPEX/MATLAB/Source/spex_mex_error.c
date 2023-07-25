@@ -38,9 +38,6 @@ void spex_mex_error
             SPEX_finalize ( );
             mexErrMsgTxt ("invalid inputs");
 
-        case SPEX_NOTSPD :              // Matrix is not SPD, can't use Cholesky
-            SPEX_finalize ( );
-            mexErrMsgTxt ("input matrix is not symmetric positive definite");
 
         case SPEX_PANIC :               // SPEX used without proper
                                         // initialization
