@@ -14,12 +14,13 @@
     SPEX_FREE(w);                   \
     SPEX_FREE(leftmost);            \
     SPEX_matrix_free(&QT,NULL);     \
+    SPEX_matrix_free(&R, NULL);      \
 }
 
 # define SPEX_FREE_ALL               \
 {                                    \
     SPEX_FREE_WORKSPACE              \
-    SPEX_matrix_free(&R, NULL);      \
+    SPEX_matrix_free(&L, NULL);      \
     SPEX_matrix_free(&Q,NULL);       \
 }
 
@@ -111,7 +112,7 @@ SPEX_info spex_qr_pre_factorQR
     int64_t top, k, len, i, p, n = A->n, m2=n, m=A->m, rnz, qnz, j,h,len2;
     //int64_t *c = NULL;
     SPEX_matrix R = NULL, Q=NULL;
-    SPEX_matrix QT= NULL;
+    SPEX_matrix QT= NULL, L=NULL;
     ASSERT(n >= 0);
 
     //--------------------------------------------------------------------------
@@ -120,6 +121,8 @@ SPEX_info spex_qr_pre_factorQR
 
     // Allocate R
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
+        false, false, NULL));
+    SPEX_CHECK(SPEX_matrix_allocate(&L, SPEX_CSC, SPEX_MPZ, n, n, S->unz,
         false, false, NULL));
 
     SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, m, n, m*n,
@@ -191,7 +194,8 @@ SPEX_info spex_qr_pre_factorQR
     }
     // Finalize R->p
     R->p[n] = S->unz = rnz;
-    (*R_handle) = R;
+    SPEX_CHECK(spex_qr_transpose(&L,R,NULL));
+    (*R_handle) = L;//this is a messs, FIXME
     /*
 
     SPEX_options option = NULL;

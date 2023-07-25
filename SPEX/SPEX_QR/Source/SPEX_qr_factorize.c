@@ -84,8 +84,8 @@ SPEX_info SPEX_qr_factorize
 
     //SPEX_CHECK(spex_qr_pre_factor(&F->R, PAQ, S));
     //SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
-    SPEX_CHECK(spex_qr_pre_factorQR(&F->R, &F->Q, PAQ, S));
-    SPEX_CHECK(SPEX_transpose(&F->L,F->R,option));
+    SPEX_CHECK(spex_qr_pre_factorQR(&F->L, &F->Q, PAQ, S));
+    
     //SPEX_matrix_check(F->Q, option);
     
     Prev = (int64_t*) SPEX_malloc ( (F->Q->nz)*sizeof(int64_t) ); 
@@ -149,6 +149,8 @@ SPEX_info SPEX_qr_factorize
     SPEX_MPZ_SET(F->rhos->x.mpz[n-1],F->L->x.mpz[F->L->p[n]-1]);
     F->L->nz=F->L->p[n]-1;
     
+    
+    SPEX_CHECK(SPEX_transpose(&F->R,F->L,option));
 
 
     (*F_handle)=F;

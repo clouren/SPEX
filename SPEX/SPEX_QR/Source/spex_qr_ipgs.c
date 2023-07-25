@@ -111,7 +111,7 @@ SPEX_info spex_qr_ipgs
         SPEX_CHECK(spex_dot_product(R->x.mpz[x],Q, j, A, i, option)); 
     }
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[xi[top]]); //rhos stores the diagonal of R
-    //SPEX_matrix_check(rhos,option);
+    SPEX_matrix_check(rhos,option);
     
     // Compute column j+1 of Q using IPGE and history updates (dependent on the j-th column of R)
     for (pQ =Q->p[j+1]; pQ < Q->p[j+2]; pQ++) //Iterate over the nonzeros in col j+1 of Q
