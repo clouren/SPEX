@@ -1,4 +1,5 @@
-\documentclass[12pt]{report}
+\documentclass[12pt,oneside]{book}
+
 \usepackage{amsmath,amssymb,amsthm,latexsym,paralist,comment}
 \usepackage{graphicx}
 \usepackage{psfrag}
@@ -20,7 +21,7 @@
        linkcolor = blue,
        urlcolor = Maroon
 }
-\usepackage{geometry}
+\usepackage[letterpaper,margin=1in]{geometry}
 \theoremstyle{definition}
 
 \newcommand{\N}{\mathbf{N}}
@@ -36,44 +37,45 @@
 \setboolean{update}{false}
 \newcommand{\update}[1]{\ifthenelse{\boolean{update}}{#1}{}}
 
-
+\usepackage[Glenn]{fncychap} %Fancy Chapter Headers
 
 \usepackage{cprotect}
 
 \begin{document}
-\begin{center}
-\begin{large}
-\textbf{User Guide for the SPEX Software Package} \\
-\vspace{5mm}
-Version 3.0, July 2023 % VERSION
-\vspace{20mm}
 
-Jinhao Chen,  Timothy A. Davis, Christopher Lourenco, Lorena Mejia-Domenzain, Erick Moreno-Centeno  \\
+\thispagestyle{empty}
+\begin{center}\begin{large}
+    \phantom{.}\\[1in]
+    \textbf{User Guide for the SPEX Software Package} \\
+    \vspace{5mm}
+    
+    Version 3.0, July 2023 % VERSION
+    \vspace{20mm}
+    
+    Jinhao Chen, Timothy A. Davis, Christopher Lourenco, Lorena Mejia-Domenzain, Erick Moreno-Centeno \\
+    Texas A\&M University and US Naval Academy
+    \vspace{20mm}
+    
+    Contact Information: Contact Chris Lourenco, \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, \href{mailto:lourenco@usna.edu}{lourenco@usna.edu}, or Tim Davis,
+    \href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
+    \href{mailto:davis@tamu.edu}{davis@tamu.edu},
+    \href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}
+\end{large}\end{center}
 
-Texas A\&M University and US Naval Academy
 
-\vspace{20mm}
-Contact Information: Contact Chris Lourenco, \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, \href{mailto:lourenco@usna.edu}{lourenco@usna.edu}, or Tim Davis,
-\href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
-\href{mailto:davis@tamu.edu}{davis@tamu.edu},
-\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}
-
-\end{large}
-\end{center}
 
 \newpage
 \tableofcontents
 
-\newpage
-    
-\chapter{SPEX Overview}
 
+\newpage
+\chapter{SPEX Overview}\vspace{-0.75in}
 SPEX is a software package comprising several state-of-the-art SParse EXact
 linear algebra routines. It currently consists of the following:
 
 \begin{description}
-\item[SPEX Utilities] Utility and auxiliary functions for all SPEX routines: interface to the GMP/MPFR library, memory management functions, the \verb|SPEX_matrix|, \verb|SPEX_factorization|, and \verb|SPEX_symbolic_analysis| data structures, and various functions that are auxiliary to the factorization and solve functions. Please refer to Chapter \ref{ch:Util} for further details.
-\item[SPEX LU] Sparse exact left-looking LU factorization to solve the linear system $A \mathbf{x} = \mathbf{b}$. The solution time is proportional to the arithmetic work in the bit-complexity model; this is an asymptotically efficient complexity bound. Please refer to Chapter \ref{ch:LeftLU} for further details.
+\item[SPEX Utilities] Utility and auxiliary functions for all SPEX routines: interface to the GMP/MPFR library, memory management functions, the \verb|SPEX_matrix|, \linebreak \verb|SPEX_factorization|, and \verb|SPEX_symbolic_analysis| data structures, and various functions that are auxiliary to the factorization and solve functions. Please refer to Chapter \ref{ch:Util} for further details.
+\item[SPEX LU] Sparse exact left-looking LU factorization to solve the linear system $A \mathbf{x} = \mathbf{b}$. The solution time is proportional to the arithmetic work in the bit-complexity model; which is asymptotically efficient. Please refer to Chapter \ref{ch:LeftLU} for further details.
 \item[SPEX Cholesky] Sparse exact left-looking and up-looking Cholesky factorizations to solve the symmetric positive definite (SPD) linear system $A \mathbf{x} = \mathbf{b}$. The solution time is proportional to the arithmetic work in the bit-complexity model; this is an asymptotically efficient complexity bound. Please refer to Chapter \ref{ch:Chol} for further details.
 \item[SPEX Backslash] Routines to exactly solve the system $A \mathbf{x} = \mathbf{b}$ using either LU or Cholesky factorization. This is the simplest way to access the SPEX software package. Please refer to Chapter \ref{ch:Backslash} for further details.
 \update{
@@ -85,39 +87,26 @@ linear algebra routines. It currently consists of the following:
 \url{www.suitesparse.com}\\
 
 \noindent \textbf{Required Packages:} SPEX depends on the following packages:
-    \begin{itemize} 
-    \item AMD \cite{amestoy1996approximate,amestoy2004algorithmamd}, available under a BSD
-3-clause license and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
-    \item COLAMD \cite{davis2004column,davis2004algorithmcolamd}, available under a BSD
-3-clause license and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
-    \item
-    \verb|SuiteSparse_config| \cite{davis2020suitesparse}, no license restrictions and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
-    \item GNU GMP \cite{granlund2015gnu} and MPFR
-\cite{fousse2007mpfr} libraries. Distributed under the LGPL3 and GPL2 and can be acquired and installed
-from \url{https://gmplib.org/} and \url{http://www.mpfr.org/}, respectively.
-    \end{itemize}
+\begin{itemize} 
+    \item GNU GMP \cite{granlund2015gnu} and MPFR \cite{fousse2007mpfr} libraries. Distributed under the LGPL3 and GPL2 and can be acquired and installed from \url{https://gmplib.org/} and \url{http://www.mpfr.org/}, respectively.
+    \item CMake \cite{hoffman2003cmake}, available under a BSD 3-clause license. May be independently obtained at \url{https://cmake.org}.
+    \item AMD \cite{amestoy1996approximate,amestoy2004algorithmamd}, available under a BSD 3-clause license and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
+    \item COLAMD \cite{davis2004column,davis2004algorithmcolamd}, available under a BSD 3-clause license and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
+    %COMMENTED OUT because (1) no license, (2) distributed in SPEX, and (3) consistency with paper
+    %\item \verb|SuiteSparse_config| \cite{davis2020suitesparse}, no license restrictions and distributed along with SPEX. May be independently obtained at \url{www.suitesparse.com}
+\end{itemize}
 
-Within a Debian/Ubuntu based Linux system, a compatible version of GMP and MPFR can be installed with the following terminal commands:
 
-{\small
-\begin{verbatim}
-    sudo apt-get install libgmp3-dev
-    sudo apt-get install libmpfr-dev libmpfr-doc libmpfr4 libmpfr4-dbg
-\end{verbatim} }
 
-\chapter{Setting up SPEX}
+\chapter{Setting up SPEX}\vspace{-0.75in}
 
-%-------------------------------------------------------------------------------
 \section{Licensing} \label{s:util:licensing}
-%-------------------------------------------------------------------------------
-
 \textbf{Copyright:} The copyright of this software is held by Christopher Lourenco, Jinhao Chen, Lorena Mejia-Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.\\
 
-\noindent \textbf{Contact Info:} Contact Chris Lourenco,
+\noindent \textbf{Contact Info:} Chris Lourenco,
 \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com} \href{mailto:lourenco@usna.edu}{lourenco@usna.edu}, or Tim Davis,
 \href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
-\href{mailto:davis@tamu.edu}{davis@tamu.edu}, or
-\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}\\
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}, or \href{mailto:davis@tamu.edu}{davis@tamu.edu}\\
 
 \noindent \textbf{License:} This software package is dual licensed under the GNU General Public License version 2 or the GNU Lesser General Public License version 3. Details of this license are in \verb|SPEX/License/license.txt|. For alternative licenses, please contact the authors.
 
@@ -141,7 +130,7 @@ MATLAB addpath tool.
 
 The Python interface does not need any additional installation, but does require the \texttt{Numpy}, \texttt{SciPy}, and \texttt{ctypes} libraries.
 
-\chapter{General SPEX Data Structures and Macros}
+\chapter{General SPEX Data Structures and Macros}\vspace{-0.75in}
 
 The following macros/data structures are defined in \verb|SPEX.h| and are used in all SPEX functions.
 
@@ -154,18 +143,13 @@ SPEX defines the following strings with \verb|#define|. Refer to
 the \verb|SPEX.h| file for details.
 
 %----------------------------------------
-\begin{center}
-\begin{tabular}{ll}
-\hline
-Macro & purpose \\
-\hline
-\verb|SPEX_VERSION|       & current version of the code (as a string)\\
-\verb|SPEX_VERSION_MAJOR| & major version of the code\\
-\verb|SPEX_VERSION_MINOR| & minor version of the code   \\
-\verb|SPEX_VERSION_SUB|   & sub version of the code\\
-\hline
-\end{tabular}
-\end{center}
+\begin{center}\begin{tabular}{ll}\hline
+    Macro                    & Purpose                                  \\ \hline
+   \verb|SPEX_VERSION|       & Current version of the code (as a string)\\
+   \verb|SPEX_VERSION_MAJOR| & Major version of the code                \\
+   \verb|SPEX_VERSION_MINOR| & Minor version of the code                \\
+   \verb|SPEX_VERSION_SUB|   & Sub version of the code                  \\ \hline
+\end{tabular}\end{center}
 
 %-------------------------------------------------------------------------------
 %\cprotect\section{\verb|SPEX_info|: status codes returned by SPEX}
@@ -177,29 +161,18 @@ Most SPEX functions return their status to the caller as their return value,
 an enumerated type called \verb|SPEX_info|. All current possible values for
 \verb|SPEX_info| are listed as follows:
 
-\begin{center}
-\begin{tabular}{rll}
-\hline
-    0& \verb|SPEX_OK|& The function was successfully executed.\\
-\hline
-    -1& \verb|SPEX_OUT_OF_MEMORY|& out of memory\\
-\hline
-    -2& \verb|SPEX_SINGULAR|& The input matrix $A$ is exactly singular.\\
-\hline
-    -3& \verb|SPEX_INCORRECT_INPUT|& One or more input arguments are incorrect.\\
-\hline
-    -4 & \verb|SPEX_NOTSPD| & The input matrix is not SPD (thus can't use Cholesky) \\
-\hline
-    -5 & \verb|SPEX_INCORRECT_ALGORITHM| & The algorithm is not compatible with the factorization \\
-\hline
-    -6& \verb|SPEX_PANIC| & SPEX environment error \\
-\hline
-\end{tabular}
-\end{center}
+\begin{center}\begin{tabular}{rll}\hline
+     0 & \verb|SPEX_OK|& The function was successfully executed.\\ \hline
+    -1 & \verb|SPEX_OUT_OF_MEMORY|& Out of memory\\ \hline
+    -2 & \verb|SPEX_SINGULAR|& The input matrix $A$ is exactly singular.\\ \hline
+    -3 & \verb|SPEX_INCORRECT_INPUT|& One or more input arguments are incorrect.\\ \hline
+    -4 & \verb|SPEX_NOTSPD| & The input matrix is not SPD (thus can't use Cholesky) \\ \hline
+    -5 & \verb|SPEX_INCORRECT_ALGORITHM| & The algorithm is not compatible with the factorization \\ \hline
+    -6 & \verb|SPEX_PANIC| & SPEX environment error \\ \hline
+\end{tabular}\end{center}
 
 %\cprotect\section{\verb|SPEX_pivot|: enum for pivoting schemes}
-\section{\texttt{SPEX\_pivot}: enum for pivoting schemes}
-\label{ss:SPEX_pivot}
+\section{\texttt{SPEX\_pivot}: enum for pivoting schemes}\label{ss:SPEX_pivot}
 %-------------------------------------------------------------------------------
 
 There are six available pivoting schemes provided in SPEX that can be
@@ -217,87 +190,61 @@ The pivot tolerance for two of the pivoting schemes is specified by the
 follows:
 
 %----------------------------------------
-{\small
-\begin{center}
-\begin{tabular}{llp{4in}}
-\hline
-0 & \verb|SPEX_SMALLEST|        & The $k$-th pivot is selected as the smallest
-                                  entry in the $k$-th column.\\
-\hline
+{\small\begin{center}\begin{tabular}{llp{4in}}\hline
+0 & \verb|SPEX_SMALLEST|        & The $k$-th pivot is selected as the smallest 
+                                  entry in the $k$-th column.\\ \hline
 1 & \verb|SPEX_DIAGONAL|        & The $k$-th pivot is selected as the diagonal
                                   entry. If the diagonal entry is zero,
                                   this method instead selects the smallest
-                                  pivot in the column.\\
-\hline
+                                  pivot in the column.\\ \hline
 2 & \verb|SPEX_FIRST_NONZERO|   & The $k$-th pivot is selected as the first
-                                  eligible nonzero in the column. \\
-\hline
+                                  eligible nonzero in the column. \\ \hline
 3 & \verb|SPEX_TOL_SMALLEST|    & The $k$-th pivot is selected as the diagonal
                                   entry if the diagonal is within a
                                   specified tolerance of the smallest entry in
                                   the column. Otherwise, the smallest
                                   entry in the $k$-th column is selected.
                                   This is the default pivot selection
-                                  strategy. \\
-\hline
+                                  strategy. \\ \hline
 4 & \verb|SPEX_TOL_LARGEST|     & The $k$-th pivot is selected as the diagonal
                                   entry if the diagonal is within a
                                   specified tolerance of the largest entry in
                                   the column.  Otherwise, the largest
-                                  entry in the $k$-th column is selected. \\
-\hline
+                                  entry in the $k$-th column is selected. \\ \hline
 5 & \verb|SPEX_LARGEST|         & The $k$-th pivot is selected as the largest
-                                  entry in the $k$-th column. \\
-\hline
-\end{tabular}
-\end{center}
-}
+                                  entry in the $k$-th column. \\ \hline
+\end{tabular}\end{center}}
 
 %\cprotect\section{\verb|SPEX_preorder|} \label{ss:SPEX_preorder}
 \section{\texttt{SPEX\_preorder}} \label{ss:SPEX_preorder}
-
 The SPEX Library provides three ordering schemes: no ordering, COLAMD, and AMD. In LU factorization, the ordering is applied only to the columns, that is this ordering gives the matrix Q. In Cholesky factorizations, the ordering is applied to both the rows and columns, that is the ordering gives the matrices P and Q.
 
-{\small
-\begin{center}
-\begin{tabular}{llp{4in}}
-\hline
-1 & \verb|SPEX_NO_ORDERING| & No pre-ordering is performed on the matrix $A$,
-                              that is $Q = I$. \\
-\hline
-2 & \verb|SPEX_COLAMD|      & The rows and/or columns of $A$ are permuted prior to
-                              factorization using the COLAMD
-                              \cite{davis2004algorithmcolamd} ordering.
-                              This is recommended for LU factorization. \\
-\hline
-3 & \verb|SPEX_AMD|         & The rows and/or columns of $A$ are permuted prior 
-                              to the factorization using the the AMD
-                             \cite{amestoy2004algorithmamd}.
-                             This is recommended for Cholesky factorization. \\
-\hline
-\end{tabular}
-\end{center}
-}
+{\small\begin{center}\begin{tabular}{llp{4in}} \hline
+    1 & \verb|SPEX_NO_ORDERING| & No pre-ordering is performed on the matrix $A$,
+                                  that is $Q = I$. \\ \hline
+    2 & \verb|SPEX_COLAMD|      & The rows and/or columns of $A$ are permuted prior to
+                                  factorization using the COLAMD
+                                  \cite{davis2004algorithmcolamd} ordering.
+                                  This is recommended for LU factorization. \\ \hline
+    3 & \verb|SPEX_AMD|         & The rows and/or columns of $A$ are permuted prior 
+                                  to the factorization using the the AMD
+                                 \cite{amestoy2004algorithmamd}.
+                                 This is recommended for Cholesky factorization. \\ \hline
+\end{tabular}\end{center}}
 
+%-------------------------------------------------------------------------------
 %\cprotect\section{\verb|SPEX_factorization_algorithm|} \label{ss:SPEX_factorization_algorithm}
 \section{\texttt{SPEX\_factorization\_algorithm}} \label{ss:SPEX_factorization_algorithm}
-
+%-------------------------------------------------------------------------------
 This code tells SPEX which factorization is being used. Importantly, this is only used within a given solver. That is, this code is only used within LU/Cholesky factorization codes themselves. This is \textbf{NOT} used in the SPEX Backslash routines as that code selects the type of factorization using its own logic.
 
-{\small
-\begin{center}
-\begin{tabular}{llp{4in}}
-\hline
-1 & \verb|SPEX_LU_LEFT|      & Left-looking LU factorization \\
-\hline
-2 & \verb|SPEX_CHOL_LEFT|    & Left-looking Chokesy factorization\\
-\hline
-3 & \verb|SPEX_CHOL_UP|      & Up-looking Cholesky factorization \\
-\hline
-\end{tabular}
-\end{center}
-}
+{\small\begin{center}\begin{tabular}{llp{4in}} \hline
+    1 & \verb|SPEX_LU_LEFT|      & Left-looking LU factorization \\ \hline
+    2 & \verb|SPEX_CHOL_LEFT|    & Left-looking Chokesy factorization\\ \hline
+    3 & \verb|SPEX_CHOL_UP|      & Up-looking Cholesky factorization \\ \hline
+\end{tabular}\end{center}}
 
+%-------------------------------------------------------------------------------
 %\cprotect\section{ \verb|SPEX_options| structure}
 \section{\texttt{SPEX\_options} structure}
 \label{ss:SPEX_options_struct}
@@ -317,7 +264,7 @@ contains the following components:
 
 \item
 \verb|option->tol|: A \verb|double| tolerance for
-the tolerance-based pivoting scheme, i.e., \verb|SPEX_TOL_SMALLEST| or
+the tolerance-based pivoting scheme, i.e., \newline \verb|SPEX_TOL_SMALLEST| or
 \verb|SPEX_TOL_LARGEST|. \verb|option->tol| must be in the range of $(0,1]$.
 Default value: 1 meaning that the diagonal entry will be selected if it has the
 same magnitude as the smallest entry in the $k$ the column.
@@ -409,7 +356,7 @@ This is \textbf{NOT} intended to be used for building any n-by-1 vector (e.g., t
 \item
 \verb|vector->x|: An array of size \verb|nzmax| containing the numeric values of all explicit entries in the vector. The last \verb|(nzmax-nz)| entries are undefined. Data Type: \verb|mpz_t*|.
 \item
-\verb|vector->scale|: A scaling parameter for the vector. The actual value of the $k$-th nonzero should be computed as \verb|x[k]*scale|. Both  \verb|x[k]*scale| and \verb|x[k]/mpq_denref(scale)| must be integer for all entries, where \verb|mpq_denref(scale)| is a GMP macro that gives the denominator of \verb|scale|. This is used to skip explicit update(s) for a column/row of the factorization matrix, when all entries are to be multiplied with the same scaling factor(s). Data Type: \verb|mpq_t|.
+\verb|vector->scale|: Scaling parameter. The actual value of the $k$-th nonzero should be computed as \verb|x[k]*scale|. Both  \verb|x[k]*scale| and \verb|x[k]/mpq_denref(scale)| must be integer for all entries, where \verb|mpq_denref(scale)| is a GMP macro that gives the denominator of \verb|scale|. This is used to skip explicit update(s) for a column/row of the factorization matrix, when all entries are to be multiplied with the same scaling factor(s). Data Type: \verb|mpq_t|.
 \end{itemize}
 
 In the current release, the \verb|SPEX_vector| is only used as a part of the \verb|SPEX_matrix| struct and is always a NULL pointer.
@@ -887,7 +834,7 @@ non-updatable factorization with \verb|F->L| (and \verb|F->U| if exists) in \ver
 
 
 
-\chapter{SPEX Utilities} \label{ch:Util}
+\chapter{SPEX Utilities}\vspace{-0.75in} \label{ch:Util}
 
 \section{Overview} \label{s:util:overview}
 %-------------------------------------------------------------------------------
@@ -916,12 +863,11 @@ Subsequent SPEX sessions can be restarted after a call to
 \verb|SPEX_finalize| when finished.
 
 %-------------------------------------------------------------------------------
-\newpage
 %\cprotect\subsection{\verb|SPEX_initialize|: initialize the working environment}
 \subsection{\texttt{SPEX\_initialize}: initialize the working environment}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_initialize
@@ -943,7 +889,7 @@ already been initialized, or \verb|SPEX_OK| if successful.
 \subsection{\texttt{SPEX\_initialize\_expert}: initialize environment (expert version)}\label{ss:SPEX_initialize_expert}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_initialize_expert
@@ -962,7 +908,7 @@ and GMP/ MPFR.  The four inputs to this function are pointers to four
 functions with the same signatures as the ANSI C \verb'malloc', \verb'calloc',
 \verb'realloc', and \verb'free' functions.  That is:
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     #include <stdlib.h>
@@ -977,13 +923,12 @@ Returns \verb|SPEX_PANIC| if SPEX has already been initialized,
 or \verb|SPEX_OK| if successful.
 
 %-------------------------------------------------------------------------------
-\newpage
 %\cprotect\subsection{\verb|SPEX_finalize|: free the working environment}
 \subsection{\texttt{SPEX\_finalize}: free the working environment}
 \label{ss:SPEX_finalize}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_finalize
@@ -1002,7 +947,7 @@ or \verb|SPEX_OK| if successful.
 
 \subsection{\texttt{SPEX\_thread\_initialize}: initialize working environment for a single thread}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_thread_initialize 
@@ -1032,7 +977,7 @@ An example usage can be found in the \verb'SPEX/Demo' folder in the
 
 \subsection{\texttt{SPEX\_thread\_finalize}: finalize the working environment for a single thread}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_thread_finalize
@@ -1068,7 +1013,7 @@ changed by initializing the SPEX environment with
 \label{ss:SPEX_calloc}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     void *SPEX_calloc 
@@ -1093,7 +1038,7 @@ Returns \verb|NULL| if SPEX has not been initialized.
 \label{ss:SPEX_malloc}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     void *SPEX_malloc
@@ -1117,7 +1062,7 @@ Returns \verb|NULL| if SPEX has not been initialized.
 \label{ss:SPEX_realloc}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     void *SPEX_realloc      // pointer to reallocated block, or original block
@@ -1150,7 +1095,7 @@ Typical usage:  the following code fragment allocates an array of 10
 the \verb|SPEX_malloc| succeeds but the \verb|SPEX_realloc| fails, then the
 array remains unmodified, of size 10.
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
      int *p ;
@@ -1167,11 +1112,12 @@ array remains unmodified, of size 10.
 
 %-------------------------------------------------------------------------------
 %\cprotect\subsection{\verb|SPEX_free|: free allocated memory}
+\newpage
 \subsection{\texttt{SPEX\_free}: free allocated memory}
 \label{ss:SPEX_free}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     void SPEX_free
@@ -1188,7 +1134,7 @@ To guard against freeing the same memory space twice, the following macro
 \verb|SPEX_FREE| is provided, which calls \verb|SPEX_free| and then sets the
 freed pointer to \verb|NULL|.
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     #define SPEX_FREE(p)                        \
@@ -1222,7 +1168,7 @@ are provided.
 \label{ss:create_default_options}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_options* SPEX_create_default_options
@@ -1248,7 +1194,7 @@ the corresponding command option is used.
 %\cprotect\subsection{\verb|SPEX_vector_allocate|: Allocate a spex vector} \label{ss:spex_vector_allocate}
 \subsection{\texttt{SPEX\_vector\_allocate}: Allocate a SPEX vector} \label{ss:spex_vector_allocate}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_vector_allocate
@@ -1266,7 +1212,7 @@ the corresponding command option is used.
 \subsection{\texttt{SPEX\_vector\_realloc}: Reallocate a SPEX vector} \label{ss:spex_vector_realloc}
 
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_vector_realloc
@@ -1283,7 +1229,7 @@ the corresponding command option is used.
 %\cprotect\subsection{\verb|SPEX_vector_free|: Free a spex vector} \label{ss:spex_vector_free}
 \subsection{\texttt{SPEX\_vector\_free}: Free a SPEX vector} \label{ss:spex_vector_free}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_vector_free
@@ -1297,6 +1243,7 @@ the corresponding command option is used.
 \verb|SPEX_vector_free| frees the \verb|SPEX_vector *v| that \verb|v_handle| points to. On output, the memory associated with \verb|v| is freed and \verb|v| is set to \verb|NULL|.
 }
 %\cprotect\section{\verb|SPEX_matrix| helper functions} \label{s:spex_matrix_functions}
+\newpage
 \section{\texttt{SPEX\_matrix} helper functions} \label{s:spex_matrix_functions}
 
 These functions provide several utilities for a \verb|SPEX_matrix|.
@@ -1307,7 +1254,7 @@ These functions provide several utilities for a \verb|SPEX_matrix|.
 \label{s:user:matrix_allocate}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_matrix_allocate
@@ -1362,11 +1309,12 @@ for each column will be needed.
 
 %-------------------------------------------------------------------------------
 %\cprotect\subsection{\verb|SPEX_matrix_free|: free a \verb|SPEX_matrix|}
+\newpage
 \subsection{\texttt{SPEX\_matrix\_free}: free a \texttt{SPEX\_matrix}}
 \label{s:user:matrix_free}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_matrix_free
@@ -1391,7 +1339,7 @@ that could be caused by double \verb|free|.
 \label{s:user:matrix_copy}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_matrix_copy
@@ -1420,7 +1368,7 @@ Results are undefined for an invalid input matrix \verb|A|. Though all matrices 
 \label{s:user:matrix_nnz}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_matrix_nnz     // return # of entries in A, or -1 on error
@@ -1445,7 +1393,7 @@ For any matrix with invalid dimension(s), nnz is returned as -1.
 \label{s:user:matrix_check}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_matrix_check     // returns a SPEX status code
@@ -1472,7 +1420,7 @@ As mentioned, if default settings are desired, \verb|option| can be input as \ve
 
 %\cprotect\subsection{\verb|SPEX_symbolic_analysis_free|: free a symbolic analysis struct}
 \subsection{\texttt{SPEX\_symbolic\_analysis\_free}: free a symbolic analysis struct}
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_symbolic_analysis_free
@@ -1491,10 +1439,12 @@ As mentioned, if default settings are desired, \verb|option| can be input as \ve
 
 These functions provide several utilities for a \verb|SPEX_factorization|
 
+
+\update{
 %\cprotect\subsection{\verb|SPEX_factorization_check|: check correctness of a factorizations struct}
 \subsection{\texttt{SPEX\_factorization\_check}: check correctness of a factorizations struct}\label{ss:spex_factorization_check}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_factorization_check
@@ -1505,6 +1455,7 @@ These functions provide several utilities for a \verb|SPEX_factorization|
 \end{verbatim}
 } \end{mdframed}
 
+
 \verb|SPEX_factorization_check| checks if a given factorization \verb|F| is correctly formatted. Specifically, it checks the following 5 conditions:
 \begin{enumerate}
     \item All required components of \verb|F| are present (e.g., an array was not erroneously freed)
@@ -1514,14 +1465,15 @@ These functions provide several utilities for a \verb|SPEX_factorization|
     \item Each permutation has no repeated indices and maps from $[0..n-1]$ to $[0..n-1]$; \verb|P_perm| and \verb|Pinv_perm| are mutually inverse vectors, same applied to \verb|(Q_perm,| \verb|Qinv_perm)| if exists
 \end{enumerate}
 
+
 Similar to \verb|SPEX_matrix_check|, \verb|SPEX_factorization_check| also prints values of the factorization, together with any error found, with proper print level specified by
 \verb|option->print_level|. Specifically, \verb|SPEX_factorization_check| prints nothing for \verb|print_level|=0 (default); or just errors for \verb|print_level|=1; or errors and terse output of the factorization for \verb|print_level|=2; or errors and detailed output of the factorization for \verb|print_level|=3.
-As mentioned, if default settings are desired, \verb|option| can be input as \verb|NULL|. 
+As mentioned, if default settings are desired, \verb|option| can be input as \verb|NULL|. }
 
 %\cprotect\subsection{\verb|SPEX_factorization_convert|: Convert between updatable and non updatable}
-\subsection{\texttt{SPEX\_factorization\_convert}: Convert between updatable and non-updatable}\label{ss:spex_factorization_convert}
+\update{\subsection{\texttt{SPEX\_factorization\_convert}: Convert between updatable and non-updatable}\label{ss:spex_factorization_convert}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_factorization_convert
@@ -1548,15 +1500,13 @@ if exists) must be \verb|SPEX_DYNAMIC_CSC SPEX_MPZ| matrix for updatable factori
 SPEX functions output factorization in either of these two formats and
 non-shallow. Therefore, these input requirements can be met easily if users
 do not try to modify any individual component of \verb|F|.
-
+}
 
 
 
 %\cprotect\subsection{\verb|SPEX_factorization_free|: Free a SPEX factorization} \label{ss:spex_factorization_free}
 \subsection{\texttt{SPEX\_factorization\_free}: Free a SPEX factorization} \label{ss:spex_factorization_free}
-
-\newpage % This is only here to fix the error
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_factorization_free
@@ -1569,11 +1519,10 @@ do not try to modify any individual component of \verb|F|.
 
 \verb|SPEX_factorization_free| frees the memory of the \verb|SPEX_factorization *F| that \verb|F_handle| points to, and sets \verb|F| to \verb|NULL|.
 
+\newpage
 \section{Misc Utilty Functions}
-
 \subsection{\texttt{SPEX\_version}: Return version of the code}
-
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_version
@@ -1601,7 +1550,7 @@ The \verb'date' is the string \verb'SPEX_DATE', in the form
 %\cprotect\subsection{\verb|SPEX_determine_symmetry|: Determine if a matrix is symmetric}
 \subsection{\texttt{SPEX\_determine\_symmetry}: Determine if a matrix is symmetric}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_determine_symmetry
@@ -1619,7 +1568,7 @@ The \verb'date' is the string \verb'SPEX_DATE', in the form
 %\cprotect\subsection{\verb|SPEX_scale|: Scale a matrix by a constant}
 %\subsection{\texttt{SPEX\_scale}: Scale a matrix by a constant}
 
-%\begin{mdframed}[userdefinedwidth=6in]
+%\begin{mdframed}[userdefinedwidth=\textwidth]
 %{\footnotesize
 %\begin{verbatim}
 %    SPEX_info SPEX_scale
@@ -1639,7 +1588,7 @@ The \verb'date' is the string \verb'SPEX_DATE', in the form
 %\cprotect\subsection{\verb|SPEX_transpose|: Transpose a csc mpz matrix}
 \subsection{\texttt{SPEX\_transpose}: Transpose a CSC mpz matrix}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_transpose
@@ -1654,7 +1603,8 @@ The \verb'date' is the string \verb'SPEX_DATE', in the form
 \verb|SPEX_transpose| sets $C = A^T$. Currently, it is only supported if $A$ is CSC and \verb|mpz_t|. Returns \verb|SPEX_OK| if successful otherwise returns the appropriate error code.
 
 %-------------------------------------------------------------------------------
-\section{SPEX wrapper functions for GMP/MPFR}
+\newpage
+\section{\texttt{SPEX\_gmp}: SPEX wrapper functions for GMP/MPFR}
 %-------------------------------------------------------------------------------
 
 SPEX provides a wrapper class for all GMP and MPFR functions used by SPEX.
@@ -1662,7 +1612,6 @@ The wrapper class provides error-handling for out-of-memory conditions
 that are not handled by the GMP and MPFR libraries.  These wrapper functions
 are used inside all SPEX functions, wherever any GMP or MPFR functions are
 used.  These functions may also be called by the end-user application. 
-\ul{For SPEX v2.0, the wrapper mechanism is {\bf NOT} thread-safe.} 
 
 Each wrapped function has the same name as its corresponding GMP/MPFR function
 with the added prefix \verb|SPEX_|. For example, the default GMP function
@@ -1768,9 +1717,9 @@ function. Each function is declared in \verb|SPEX.h| and defined in
 \verb|mpz_set_si(x, y)|
     & \verb|SPEX_mpz_set_si(x, y)|
     & $x = y$ (\verb|int64_t|) \\ \hline
-\verb|mpz_swap(x, y)|
-    & \verb|SPEX_mpz_swap(x, y)|
-    & Swap the values of $x$ and $y$ \\ \hline
+%\verb|mpz_swap(x, y)|
+%    & \verb|SPEX_mpz_swap(x, y)|
+%    & Swap the values of $x$ and $y$ \\ \hline
 %\verb|mpz_set_d(x, y)|
 %    & \verb|SPEX_mpz_set_d(x, y)|
 %    & $x = y$ (double)\\ \hline
@@ -1789,24 +1738,24 @@ function. Each function is declared in \verb|SPEX.h| and defined in
 \verb|mpz_mul_si(x, y, z)|
     & \verb|SPEX_mpz_mul(x, y, z)|
     & $x = y*z (\verb|int64_t|)$ \\ \hline
-\verb|mpz_add(x, y, z)|
-    & \verb|SPEX_mpz_add(x, y, z)|
-    & $x = y+z$ \\ \hline
-\verb|mpz_addmul(x, y, z)|
-    & \verb|SPEX_mpz_addmul(x, y, z)|
-    & $x = x+y*z$ \\ \hline
+%\verb|mpz_add(x, y, z)|
+%    & \verb|SPEX_mpz_add(x, y, z)|
+%    & $x = y+z$ \\ \hline
+%\verb|mpz_addmul(x, y, z)|
+%    & \verb|SPEX_mpz_addmul(x, y, z)|
+%    & $x = x+y*z$ \\ \hline
 \verb|mpz_sub(x, y, z)|
     & \verb|SPEX_mpz_sub(x, y, z)|
     & $x = y-z$ \\ \hline
 \verb|mpz_submul(x, y, z)|
     & \verb|SPEX_mpz_submul(x, y, z)|
     & $x = x-y*z$ \\ \hline
-\verb|mpz_fdiv_q(q, x, y)|
-    & \verb|SPEX_mpz_fdiv_q(q, x, y)|
-    & $q = \text{floor}(x/y)$ \\ \hline
-\verb|mpz_cdiv_q(q, x, y)|
-    & \verb|SPEX_mpz_cdiv_q(q, x, y)|
-    & $q = \text{ceil}(x/y)$ \\ \hline
+%\verb|mpz_fdiv_q(q, x, y)|
+%    & \verb|SPEX_mpz_fdiv_q(q, x, y)|
+%    & $q = \text{floor}(x/y)$ \\ \hline
+%\verb|mpz_cdiv_q(q, x, y)|
+%    & \verb|SPEX_mpz_cdiv_q(q, x, y)|
+%    & $q = \text{ceil}(x/y)$ \\ \hline
 \verb|mpz_cdiv_qr(q, r, x, y)|
     & \verb|SPEX_mpz_cdiv_qr(q, r, x, y)|
     & $q = \text{ceil}(x/y), r = x-q*y$ \\ \hline
@@ -1828,9 +1777,9 @@ function. Each function is declared in \verb|SPEX.h| and defined in
 \verb|r = mpz_cmp(x, y)|
     & \verb|SPEX_mpz_cmp(r, x, y)|
     & $r = \text{sgn}(x-y)$ \\ \hline
-\verb|r = mpz_cmpabs(x, y)|
-    & \verb|SPEX_mpz_cmpabs(r, x, y)|
-    & $r = \text{sgn}(|x|-|y|)$\\ \hline
+%\verb|r = mpz_cmpabs(x, y)|
+%    & \verb|SPEX_mpz_cmpabs(r, x, y)|
+%    & $r = \text{sgn}(|x|-|y|)$\\ \hline
 \verb|r = mpz_cmp_ui(x, y)|
     & \verb|SPEX_mpz_cmp_ui(r, x, y)|
     & $r = \text{sgn}(x-y)$ (\verb|uint64_t|) \\ \hline
@@ -1867,9 +1816,9 @@ function. Each function is declared in \verb|SPEX.h| and defined in
 \verb|mpq_set_den(x, y)|
     & \verb|SPEX_mpq_set_den(x, y)|
     & $den(x) = y$ \\ \hline
-\verb|mpq_canonicalize(x)|
-    & \verb|SPEX_mpq_canonicalize(x)|
-    & Canonicalize x \\ \hline
+%\verb|mpq_canonicalize(x)|
+%    & \verb|SPEX_mpq_canonicalize(x)|
+%    & Canonicalize x \\ \hline
 %\verb|mpq_get_den(x, y)|
 %    & \verb|SPEX_mpq_get_den(x, y)|
 %    & $x = den(y)$ \\ \hline
@@ -1916,11 +1865,12 @@ Given a GMP function \verb|void gmpfunc(TYPEa a, TYPEb b, ...)|, where
 \verb|TYPEa| and \verb|TYPEb| can be GMP type data (\verb|mpz_t|,
 \verb|mpq_t| and \verb|mpfr_t|, for example) or non-GMP type data (\verb|int|,
 \verb|double|, for example), and they need not to be the same.
+\pagebreak
 A wrapper for a new GMP or MPFR function can be created by following
 this outline:
 
 %\newpage
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_gmpfunc
@@ -1954,6 +1904,7 @@ this outline:
 \end{verbatim}
 } \end{mdframed}
 
+\newpage
 Note that, other than \verb|SPEX_mpfr_fprintf|, \verb|SPEX_gmp_fprintf|,
 \verb|SPEX_gmp_printf| and \verb|SPEX_gmp_fscanf|, all of the wrapped GMP/MPFR
 functions always return \verb|SPEX_info| to the caller. Therefore, for some
@@ -1963,7 +1914,7 @@ parameter of the wrapped function. In general, a GMP/MPFR function in the form
 of \verb|TYPEr gmpfunc(TYPEa a, TYPEb b, ...)|, the wrapped
 function can be constructed as follows:
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_gmpfunc
@@ -1988,7 +1939,7 @@ function can be constructed as follows:
 } \end{mdframed}
 
 
-\chapter{SPEX LU} \label{ch:LeftLU}
+\chapter{SPEX LU}\vspace{-0.75in} \label{ch:LeftLU}
 
 %-------------------------------------------------------------------------------
 \section{Overview} \label{s:LeftLU:intro}
@@ -2033,7 +1984,7 @@ To factorize and solve a linear system $A \mathbf{x} = \mathbf{b}$ via the SPEX 
 %\cprotect\subsection{\verb|SPEX_LU_analyze|: symbolic analysis for LU factorization} \label{ss:spex_lu_analyze}
 \subsection{\texttt{SPEX\_lu\_analyze}: symbolic analysis for LU factorization} \label{ss:spex_lu_analyze}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_lu_analyze
@@ -2053,7 +2004,7 @@ To factorize and solve a linear system $A \mathbf{x} = \mathbf{b}$ via the SPEX 
 %\cprotect\subsection{\verb|SPEX_Left_LU_factorize|: Compute the LU factorization of A} \label{ss:spex_left_lu_factorize}
 \subsection{\texttt{SPEX\_lu\_factorize}: Compute the LU factorization of A} \label{ss:spex_left_lu_factorize}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_lu_factorize
@@ -2068,7 +2019,8 @@ To factorize and solve a linear system $A \mathbf{x} = \mathbf{b}$ via the SPEX 
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_lu_factorize| performs the left-looking LU factorization. On input, the \verb|SPEX_factorization *F| that \verb|F_handle| points to is undefined; \verb|A| must be a square matrix of \verb|SPEX_CSC SPEX_MPZ| format; \verb|S| is obtained from \verb|SPEX_lu_analyze| that contains the column ordering of \verb|A|; and \verb|option| contains any command parameters (default settings are used if
+\verb|SPEX_lu_factorize| performs the left-looking LU factorization. On input, the \linebreak
+\verb|SPEX_factorization *F| that \verb|F_handle| points to is undefined; \verb|A| must be a square matrix of \verb|SPEX_CSC SPEX_MPZ| format; \verb|S| is obtained from \verb|SPEX_lu_analyze| that contains the column ordering of \verb|A|; and \verb|option| contains any command parameters (default settings are used if
 \verb|option| is input as \verb|NULL|). On output, \verb|A|, \verb|S|, and \verb|option| are unmodified and \verb|F|  contains the REF LU factorization of \verb|A|.
 
 %Returns \verb|SPEX_PANIC| if SPEX has not been initialized.  Otherwise, if another
@@ -2076,11 +2028,12 @@ If any error occurs, \verb|F| is returned as \verb|NULL|, and an appropriate err
 
 %-------------------------------------------------------------------------------
 %\cprotect\subsection{\verb|SPEX_Left_LU_solve|: solve the linear system $Ax=b$}
+\newpage
 \subsection{\texttt{SPEX\_lu\_solve}: solve the linear system}
 \label{ss:SPEX_Left_LU_solve}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_lu_solve // solves the linear system LD^(-1)U x = b
@@ -2098,7 +2051,7 @@ If any error occurs, \verb|F| is returned as \verb|NULL|, and an appropriate err
 
 \verb|SPEX_lu_solve| obtains the solution of \verb|mpq_t| type to the
 linear system $Ax=b$ upon a successful factorization.  This function may be
-called after a successful return from \verb|SPEX_lu_factorize|.
+called after a successful return from \linebreak \verb|SPEX_lu_factorize|.
 
 On input, \verb|SPEX_matrix *x| that \verb|x_handle| points to is undefined; \verb|F| must be a valid LU factorization; and \verb|b| must be a dense \verb|mpz_t| matrix with same number of rows as \verb|F->L|;  Default settings are used if
 \verb|option| is input as \verb|NULL|. Upon successful completion, the function returns \verb|SPEX_OK|, and \verb|x| contains the solution of \verb|mpq_t| type with dense format to the linear system $Ax=b$. 
@@ -2112,7 +2065,7 @@ In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate erro
 \label{ss:SPEX_Left_LU_backslash}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_lu_backslash
@@ -2195,7 +2148,7 @@ failures, which GMP/MPFR does not handle.  To enable this mechanism, SPEX
 requires initialization.  The following must be done before using any other
 SPEX function:
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_initialize ( ) ;
@@ -2452,7 +2405,7 @@ to replicate the results from \cite{lourenco2019exact}.
 %-------------------------------------------------------------------------------
 
 
-\chapter{SPEX Cholesky} \label{ch:Chol}
+\chapter{SPEX Cholesky}\vspace{-0.75in} \label{ch:Chol}
 
 %-------------------------------------------------------------------------------
 \section{Overview} \label{s:Chol:intro}
@@ -2486,9 +2439,10 @@ Note that, in order to solve a linear system, the matrix $D$ is never explicitly
 To factorize and solve a linear system $A \mathbf{x} = \mathbf{b}$ via the SPEX Cholesky factorization, a user must call analyze, factorize, and solve. The functions are explained below:
 
 %\cprotect\subsection{\verb|SPEX_Chol_analyze|: symbolic analysis for Cholesky factorization} \label{ss:spex_chol_analyze}
+\newpage
 \subsection{\texttt{SPEX\_cholesky\_analyze}: symbolic analysis for Cholesky factorization} \label{ss:spex_chol_analyze}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_cholesky_analyze
@@ -2510,7 +2464,7 @@ To factorize and solve a linear system $A \mathbf{x} = \mathbf{b}$ via the SPEX 
 %\cprotect\subsection{\verb|SPEX_Chol_factorize|: Compute the Cholesky factorization of A} \label{ss:spex_chol_factorize}
 \subsection{\texttt{SPEX\_cholesky\_factorize}: Compute the Cholesky factorization of A} \label{ss:spex_chol_factorize}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_cholesky_factorize
@@ -2536,11 +2490,12 @@ If error occurs, \verb|F| is returned as \verb|NULL|, and an appropriate error c
 
 %-------------------------------------------------------------------------------
 %\cprotect\subsection{\verb|SPEX_Chol_solve|: solve the linear system $Ax=b$}
+\newpage
 \subsection{\texttt{SPEX\_cholesky\_solve}: solve the linear system}
 \label{ss:SPEX_Chol_solve}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_cholesky_solve   // solves the linear system LD^(-1)L^T x = b
@@ -2575,7 +2530,7 @@ In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate erro
 \label{ss:SPEX_Chol_backslash}
 %-------------------------------------------------------------------------------
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_cholesky_backslash
@@ -2611,7 +2566,7 @@ Upon successful completion, the function returns \verb|SPEX_OK|, and
 \verb|type| to the linear system $Ax=b$. In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is returned.
 %Returns \verb|SPEX_PANIC| if SPEX has not been initialized.
 
-\chapter{SPEX Backslash} \label{ch:Backslash}
+\chapter{SPEX Backslash}\vspace{-0.75in} \label{ch:Backslash}
 
 %-------------------------------------------------------------------------------
 \section{Overview} \label{s:Backslash:intro}
@@ -2640,9 +2595,10 @@ SPEX Backslash is written in ANSI C and is accompanied by MATLAB and Python inte
 \noindent \textbf{License:} This software package is dual licensed under the GNU General Public License version 2 or the GNU Lesser General Public License version 3. Details of this license are in \verb|SPEX/License/license.txt|. For alternative licenses, please contact the authors.
 
 %\cprotect\section{\verb|SPEX_Backslash|: Exactly solve sparse linear systems}
+\newpage
 \section{\texttt{SPEX\_backslash}: Exactly solve sparse linear systems}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_backslash
@@ -2676,7 +2632,7 @@ Upon successful completion, the function returns \verb|SPEX_OK|, and
 \verb|type| to the linear system $Ax=b$. If an error occurs, \verb|x| is freed and the appropriate error code is returned.
 
 \update{
-\chapter{SPEX Update} \label{ch:Update}
+\chapter{SPEX Update}\vspace{-0.75in} \label{ch:Update}
 
 %-------------------------------------------------------------------------------
 \section{Overview} \label{s:Update:intro}
@@ -2713,7 +2669,7 @@ SPEX update provides the following functions to perform factorization updates.
 %\cprotect\subsection{\verb|SPEX_Update_Chol_Rank1|: rank 1 update to REF Cholesky}
 \subsection{\texttt{SPEX\_Update\_Chol\_Rank1}: rank-1 REF Cholesky update/downdate}\label{ss:SPEX_Update_Chol_Rank1}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_Update_Chol_Rank1
@@ -2745,7 +2701,7 @@ This function does not require/use/modify the original matrix $A$. Therefore, if
 \subsection{\texttt{SPEX\_Update\_LU\_ColRep}: Column-replacement REF LU update}\label{ss:SPEX_Update_LU_ColRep}
 
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_Update_LU_ColRep
@@ -2779,7 +2735,7 @@ When factorization is updated iteratively, it should not be converted back and f
 %\cprotect\subsection{\verb|SPEX_Update_solve|: Solve $Ax=b$ with the updatable factorization}
 \subsection{\texttt{SPEX\_Update\_solve}: Solve linear system with the updatable factorization}\label{ss:SPEX_Update_solve}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_Update_solve // solves Ax = b
@@ -2807,7 +2763,7 @@ In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate erro
 %\cprotect\subsection{\verb|SPEX_Update_tsolve|: Solve $A^Tx=b$ with the updatable factorization}
 \subsection{\texttt{SPEX\_Update\_tsolve}: Solve transposed linear system with the updatable factorization}\label{ss:SPEX_Update_tsolve}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_Update_tsolve // solves A^T x = b
@@ -2837,7 +2793,7 @@ In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate erro
 \section {SPEX Update Helper Functions}
 \subsection{\texttt{SPEX\_Update\_matrix\_colrep}: Swap the columns of a matrix}\label{ss:SPEX_Update_matrix_colrep}
 
-\begin{mdframed}[userdefinedwidth=6in]
+\begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
     SPEX_info SPEX_Update_matrix_colrep// performs column replacement
@@ -2863,7 +2819,7 @@ This function requires that the rows of \verb|vk| are in the same order as that 
 On output, \verb|A->v[k]| and \verb|vk->v[0]| are simply swapped. 
 }
 
-\chapter{Using SPEX in MATLAB}
+\chapter{Using SPEX in MATLAB}\vspace{-0.75in}
 \label{s:Use:MATLAB}
 %-------------------------------------------------------------------------------
 
@@ -3055,7 +3011,7 @@ This function provides a demo of the SPEX library. It shows the usage for an exa
 solution as well as error checking and tuning the parameters. The typical output
 of this function may be seen in the provided \verb|MATLAB/html| folder.
 
-\chapter{Using SPEX in Python}
+\chapter{Using SPEX in Python}\vspace{-0.75in}
 
 
 The Python interface of SPEX can be installed by navigating to the Python folder and typing make. Doing so allows the use of the Python SPEX library. First, this section describes the \verb|Option| object in Section \ref{s:Python:option}. The use of SPEX to solve $Ax=b$ is discussed in Section \ref{s:Python:Funcs}.
