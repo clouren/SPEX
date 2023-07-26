@@ -64,7 +64,7 @@ for k = 1:m
 end
 
 % Compiler flags
-flags = 'CFLAGS=''-std=c99 -fPIC''';
+flags = 'CFLAGS=''-std=c99 -fPIC'' LDFLAGS=''-Wl,-rpath=''../../lib''''';
 
 % External libraries: GMP, MPRF, AMD, and COLAMD
 [suitesparse_libdir, suitesparse_incdir, gmp_lib, gmp_include, mpfr_lib, mpfr_include] = spex_deps ;

@@ -17,7 +17,7 @@ export SUITESPARSE = $(CURDIR)
 
 # default: "make install" will install all libraries in /usr/local/lib
 # and include files in /usr/local/include.  Not installed in SuiteSparse/lib.
-default: library
+default: local install
 
 # compile; "sudo make install" will install only in /usr/local
 # (or whatever your CMAKE_INSTALL_PREFIX is)
