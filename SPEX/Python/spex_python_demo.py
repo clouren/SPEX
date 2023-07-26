@@ -16,6 +16,7 @@
 
 # Import SPEX
 import SPEXpy as SPEX
+from SPEXpy import Options
 
 # Import scientific computing
 import numpy as np
