@@ -106,12 +106,10 @@ SPEX_info SPEX_qr_analyze
     {
         nz += S->cp [i] ;
     }
-    S->unz=nz;//suma de todos los elementos de c
-
-    //TODO non zero patern of Q?? dense??
+    S->lnz=nz;//suma de todos los elementos de c
 
     // set num non-zeros in Q
-    S->lnz = m*n; //Q is dense right now
+    S->unz = m*n; //Q is dense right now
 
     //--------------------------------------------------------------------------
     // Set output, free all workspace and return success

@@ -16,7 +16,11 @@
 
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
-    SPEX_matrix_free(&PAQ, option);                   \
+    SPEX_matrix_free(&PAQ, option); \
+    SPEX_matrix_free(&(F->L),option); \
+    SPEX_free(h);                   \
+    SPEX_free(col);                 \
+    SPEX_free(Qk);                   \
 }
 
 # define SPEX_FREE_ALL               \
@@ -43,7 +47,7 @@ SPEX_info SPEX_qr_factorize
     SPEX_matrix PAQ;
 
     //Allocate variables
-    int64_t *Prev, *vec, *leftmost, *h, *Qk, *col;
+    int64_t *h, *Qk, *col;
     
      // Allocate memory for the factorization
     F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
@@ -82,34 +86,10 @@ SPEX_info SPEX_qr_factorize
         false, true, option));
 
 
-    //SPEX_CHECK(spex_qr_pre_factor(&F->R, PAQ, S));
-    //SPEX_CHECK(spex_qr_pre_Q(&F->Q,PAQ,option));
-    SPEX_CHECK(spex_qr_pre_factorQR(&F->L, &F->Q, PAQ, S));
+    SPEX_CHECK(spex_qr_pre_nonzero_structure(&F->L, &F->Q, PAQ, S));
     
     //SPEX_matrix_check(F->Q, option);
-    
-    Prev = (int64_t*) SPEX_malloc ( (F->Q->nz)*sizeof(int64_t) ); 
-    vec = (int64_t*) SPEX_malloc ( m*sizeof(int64_t) ); 
-    leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
-    
 
-
-    for (i = 0 ; i < m ; i++) leftmost [i] = -1 ;
-    for (k = n-1 ; k >= 0 ; k--)
-    {
-        for (p = F->Q->p [k] ; p < F->Q->p [k+1] ; p++)
-        {
-            leftmost [F->Q->i [p]] = p ;         /* leftmost[i] =possition of first nonzero in row i*/
-        }
-    }
-    for(k=0;k<m;k++)
-    {
-        vec[k]=leftmost[k];//-1;
-    }
-    /*for(k=F->Q->p[0];k<F->Q->p[1];k++)
-    {
-        vec[F->Q->i[k]]=k;
-    }*/
     h = (int64_t*) SPEX_malloc((F->Q->nz)*sizeof(int64_t));
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     col = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
@@ -133,10 +113,7 @@ SPEX_info SPEX_qr_factorize
     // Perform IPGS to get Q and R
     for (k=0;k<n-1;k++)
     {
-        //SPEX_CHECK(spex_qr_ipgs(F->R, F->Q, F->rhos, k, PAQ, Prev, vec, leftmost, option));
-        SPEX_CHECK(spex_qr_ipgsM(F->L, F->Q, F->rhos, Qk,col, k, PAQ, h, option));
-        
-        //here i need to actually assign R(k,:) and Q(:,k+1) with appropiate sizes
+        SPEX_CHECK(spex_qr_ipgs(F->L, F->Q, F->rhos, Qk,col, k, PAQ, h, option));
     }
 
     //finish R

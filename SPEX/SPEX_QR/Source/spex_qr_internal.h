@@ -58,14 +58,6 @@ SPEX_info spex_qr_etree
     const SPEX_matrix A         // Input matrix (must be SPD).
 );
 
-/*static void spex_qr_init_ata 
-(
-    SPEX_matrix AT, 
-    const int64_t *post, 
-    int64_t *w, 
-    int64_t**head, 
-    int64_t **next
-);*/
 
 SPEX_info spex_qr_counts
 (
@@ -83,23 +75,6 @@ SPEX_info spex_qr_ipgs
     SPEX_matrix R,    
     SPEX_matrix Q,    
     SPEX_matrix rhos,         // sequence of pivots
-    const int64_t j,          // Row of R to compute (col j+1 of Q will also be computed)
-    const SPEX_matrix A,      // Matrix to be factored
-    /*int64_t *h,         // History vector
-    int64_t *xi,        // Nonzero pattern vector of row j of R
-    int64_t *c,
-    const int64_t *parent,          // Elimination tree*/
-    int64_t *Prev,
-    int64_t *vec,
-    const int64_t *leftmost,
-    SPEX_options option
-);
-
-SPEX_info spex_qr_ipgsM
-(
-    SPEX_matrix R,    
-    SPEX_matrix Q,    
-    SPEX_matrix rhos,         // sequence of pivots
     int64_t *Qj,
     int64_t *col,
     const int64_t j,          // Row of R to compute (col j+1 of Q will also be computed)
@@ -108,28 +83,8 @@ SPEX_info spex_qr_ipgsM
     SPEX_options option
 );
 
-SPEX_info spex_qr_pre_factor
-(
-    // Output
-    SPEX_matrix *R_handle,        // On output: partial L matrix
-                                  // On input: undefined
-    // Input
-    //int64_t *xi,                  // Workspace nonzero pattern vector
-    const SPEX_matrix A,          // Input Matrix
-    const SPEX_symbolic_analysis S  // Symbolic analysis struct containing the
-                                  // number of nonzeros in L, the elimination
-                                  // tree, the row/coluimn permutation and its
-                                  // inverse
-);
 
-SPEX_info spex_qr_pre_Q
-(
-    SPEX_matrix *Q_handle,
-    SPEX_matrix A,
-    SPEX_options option
-);
-
-SPEX_info spex_qr_pre_factorQR
+SPEX_info spex_qr_nonzero_structure
 (
     // Output
     SPEX_matrix *R_handle,        // On output: partial R matrix

@@ -84,7 +84,7 @@ void bubbleSort(int64_t *arr, int64_t top,int64_t n)
 }
 
 
-SPEX_info spex_qr_pre_factorQR
+SPEX_info spex_qr_nonzero_structure
 (
     // Output
     SPEX_matrix *R_handle,        // On output: partial R matrix

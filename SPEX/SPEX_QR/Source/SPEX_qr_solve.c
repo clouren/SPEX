@@ -64,7 +64,7 @@ SPEX_info SPEX_qr_solve
         // Compute b[j,k]
         for(j=0;j<F->Q->n;j++)
         {
-            for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
+            for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++) //dot product probably not good sparse FIXME
             {
                 i=F->Q->i[p];
                 SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],SPEX_2D(b_perm, i, k, mpz));
@@ -73,8 +73,6 @@ SPEX_info SPEX_qr_solve
         }
     }
     
-    /*printf("orint b_new sparse:\n");
-    SPEX_matrix_check(b_new, option);*/
     //backwards substitution
     //Solves Rx=b_new (overwrites b_new into x)
     SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new));
