@@ -105,7 +105,7 @@ SPEX_info spex_qr_ipgs
             SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
             if(sgn==0) continue;
             
-            if(col[iQ]!=j) continue; 
+            if(col[iQ]!=j) continue; //when does this happen??
             
             //history update
             if(j+1>h[pQ]+1) //"an update of Q(i,j)" has been skipped because R(i,l) is zero or Q(i,l) is zero
@@ -201,6 +201,7 @@ SPEX_info spex_qr_ipgs
             
             if(col[iQ]!=j)
             {
+                printf("HERE\n");
                 SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
                 if(j>=1)
                 {

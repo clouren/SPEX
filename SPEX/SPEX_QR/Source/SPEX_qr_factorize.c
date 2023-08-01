@@ -86,7 +86,7 @@ SPEX_info SPEX_qr_factorize
         false, true, option));
 
 
-    SPEX_CHECK(spex_qr_pre_nonzero_structure(&F->L, &F->Q, PAQ, S));
+    SPEX_CHECK(spex_qr_nonzero_structure(&F->L, &F->Q, PAQ, S));
     
     //SPEX_matrix_check(F->Q, option);
 
