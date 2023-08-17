@@ -25,12 +25,13 @@ SPEX_info spex_dot_product
 {
     SPEX_info info;
     int64_t pA, pB, iA, iB;
+    int64_t p,q;
     SPEX_MPZ_INIT(prod);
     SPEX_MPZ_SET_UI(prod,0);
 
     ASSERT(A->m==B->m);
 
-    for(pA=A->p[k]; pA < A->p[k+1]; pA++) //goes through every element of col j of A 
+    /*for(pA=A->p[k]; pA < A->p[k+1]; pA++) //goes through every element of col j of A 
     {
         iA=A->i[pA]; //A(Ai,j) is non zero
         for(pB=B->p[j]; pB < B->p[j+1]; pB++ )//goes through every element of col j of B
@@ -42,6 +43,29 @@ SPEX_info spex_dot_product
                 SPEX_MPZ_ADDMUL(prod,A->x.mpz[pA],B->x.mpz[pB]);
             }
         }
+    }*/
+    
+    p=A->p[k];
+    q=B->p[j];
+    
+    while(p < A->p[k+1] && q < B->p[j+1])
+    {
+        if(A->i[p] < B->i[q])
+        {
+            p++;
+        }
+        else if(A->i[p] > B->i[q])
+        {
+            q++;
+        }
+        else
+        {
+            //prod=prod+A->x.mpz[p]*B->x.mpz[p]
+            SPEX_MPZ_ADDMUL(prod,A->x.mpz[p],B->x.mpz[q]);
+            p++;
+            q++;
+        }
+        
     }
 
     return SPEX_OK;

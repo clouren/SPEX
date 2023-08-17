@@ -59,12 +59,12 @@ SPEX_info SPEX_qr_solve
     
     SPEX_CHECK (spex_permute_dense_matrix (&b_perm, b, F->Q_perm, option)); 
     // Iterate across every RHS vector
-    for (k = 0; k < b->n; k++)
+    for (k = 0; k < b->n; k++) //if b is a vector this will only be once, but b can be a matrix or rhs's
     {
         // Compute b[j,k]
         for(j=0;j<F->Q->n;j++)
         {
-            for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++) //dot product probably not good sparse FIXME
+            for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
                 i=F->Q->i[p];
                 SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],SPEX_2D(b_perm, i, k, mpz));

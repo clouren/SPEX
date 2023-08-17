@@ -36,7 +36,7 @@
 
 # define SPEX_FREE_ALL              \
     SPEX_FREE_WORKSPACE             \
-    SPEX_matrix_free(&x, NULL);     \
+    SPEX_matrix_free(&x, NULL)     \
 
 #include "spex_qr_internal.h"
 
@@ -52,11 +52,9 @@ SPEX_info SPEX_qr_backslash
     const SPEX_options option     // Command options
 )
 {
-
     //-------------------------------------------------------------------------
     // check inputs
     //-------------------------------------------------------------------------
-
     SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC);
 
@@ -81,19 +79,16 @@ SPEX_info SPEX_qr_backslash
     //--------------------------------------------------------------------------
     // Symbolic Analysis
     //--------------------------------------------------------------------------
-
     SPEX_CHECK(SPEX_qr_analyze(&S, A, option));
 
     //--------------------------------------------------------------------------
-    // LU Factorization
+    // QR Factorization
     //--------------------------------------------------------------------------
-
     SPEX_CHECK(SPEX_qr_factorize(&F, A, S, option));
 
     //--------------------------------------------------------------------------
     // Solve
     //--------------------------------------------------------------------------
-
     SPEX_CHECK (SPEX_qr_solve (&x, F, b, option));
 
     //--------------------------------------------------------------------------

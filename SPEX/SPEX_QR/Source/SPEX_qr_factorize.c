@@ -128,6 +128,7 @@ SPEX_info SPEX_qr_factorize
     
     
     SPEX_CHECK(SPEX_transpose(&F->R,F->L,option));
+    F->R->nz=F->L->p[n]-1;
 
 
     (*F_handle)=F;

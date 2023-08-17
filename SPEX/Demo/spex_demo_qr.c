@@ -44,7 +44,7 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
 
     SPEX_initialize();
-/*
+
     // Input arguments.
     unsigned int seed;
     int64_t m;
@@ -112,7 +112,7 @@ m=5;n=5;seed=14;
         fprintf (stderr, "Error! OUT of MEMORY!\n");
         FREE_WORKSPACE;
         return 0;
-    }*/
+    }
 
     //--------------------------------------------------------------------------
     // Generate a random dense matrix
@@ -141,11 +141,11 @@ m=5;n=5;seed=14;
 
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
-/*
-    //char *mat_name = "ExampleMats/smallZeros.mat.txt";
-    //char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
-    char *mat_name = "ExampleMats/LF10.mat.txt";
-    char *rhs_name = "ExampleMats/LF10.rhs.txt";
+/**/
+    char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+    //char *mat_name = "ExampleMats/LF10.mat.txt";
+    //char *rhs_name = "ExampleMats/LF10.rhs.txt";
     // Read in A
     FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
@@ -158,6 +158,7 @@ m=5;n=5;seed=14;
     DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
     n = A->n;
+    m = A->m;
 
     // Read in b. The output of this demo function is b in dense format with
     // mpz_t entries
@@ -177,7 +178,7 @@ m=5;n=5;seed=14;
     //--------------------------------------------------------------------------
     // Dense
     //--------------------------------------------------------------------------
-    /*
+    /**/
     SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
@@ -202,7 +203,7 @@ m=5;n=5;seed=14;
     // Sparse
     //--------------------------------------------------------------------------
 
-/*
+/**/
     SPEX_info info;
     SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
     int64_t *h;
@@ -230,14 +231,15 @@ m=5;n=5;seed=14;
     /*
     //option->order =  SPEX_NO_ORDERING;
     //SPEX_qr_backslash(&x,SPEX_FP64,A,b, option);
-    
+    */
 
     //printf("orint x sparse:\n");
      SPEX_matrix_check(x, option);
-    */
+   /* */
     ////
     // Tests
     ////
+    /*
     SPEX_info info;
     SPEX_info ok;
     
@@ -280,7 +282,7 @@ m=5;n=5;seed=14;
     
     int64_t n = A->n, col_sum;
     int sgn;
-
+    option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
 
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
@@ -290,7 +292,7 @@ m=5;n=5;seed=14;
     printf("%ld,  ",n);
     printf("%ld, ",F->R->nz);
     
-    for(int64_t i=0;i<n;i++)
+   /* for(int64_t i=0;i<n;i++)
     {
         col_sum=0;
         for(int64_t p=F->Q->p[i]; p<F->Q->p[i+1]; p++)
@@ -304,9 +306,10 @@ m=5;n=5;seed=14;
         }
         printf(" %ld, ", col_sum);
     }
-    printf("\n");
-
-    
+    printf("\n");*/
+/*
+    printf("%ld,\n ",F->Q->nz);
+    */
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
