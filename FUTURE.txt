@@ -47,10 +47,17 @@ user-callable functions for computing SPEX_matrix
 
     propose: thread-safe GMP wrapper, more general wrapper, extensible ...
 
+    propose:
+        QR factorization in SPEX (Lorena)
+        QR up/down for SuiteSparse (SPQR, floating-point)
+        QR up/down for SPEX
 
-
-
-user guide and cmake
+SPEX 3.1:
+    add back update/downdate
+    remove 'todo'
+    update cmake build system to latest SuiteSparse
+    papers (see below)
+    user guide
 
 Near-term Papers: (4 or 5)
 
@@ -65,29 +72,20 @@ Near-term Papers: (4 or 5)
     perhaps conf paper: on Chol col replacement and LU up/down
         Jinhao and Tim
 
-    ACM TOMS Algorithm 10xx+1 paper: code for LU col repl, Chol up/down
+    TODO: ACM TOMS Algorithm 10xx+1 paper: code for LU col repl, Chol up/down
         authors: Jinhao, Lorena, Chris, Tim, Erick
-        submitted by Aug 2022??
-        SPEX v2.1.0
+        SPEX v3.1.0
 
-    ACM TOMS Algorithm 10xx paper: Cholesky alone (+code)
+    DONE: ACM TOMS Algorithm 10xx paper: Cholesky alone (+code)
         needs some code work, add to user guide, computational results
         authors: Lorena, Jinhao, Chris, Erick, Tim
-        submitted by Aug 2022??
-        SPEX v2.0.0
+        SPEX v3.0.0
 
 Submitted:
     dense QR (submitted to SIAM)
 
 Future: (add to proposal)
-    SIAM on dense Gram-Schmidt, theory
+    SIAM on dense Gram-Schmidt, theory (submitted)
     SIAM paper on sparse QR theory
-    ACM TOMS sparse QR code (left-looking Gram-Schmidt)
-        starting Fall 2022:
-
------------- code review for SPEX_Update --------
-
-spex_update_triangular_solve
-
-how to create vk or w
+    ACM TOMS sparse QR code (left-looking Gram-Schmidt): in progress
 
