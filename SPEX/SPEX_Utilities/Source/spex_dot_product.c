@@ -24,7 +24,8 @@ SPEX_info spex_dot_product
 )
 {
     SPEX_info info;
-    int64_t pA, pB, iA, iB;
+    //int64_t pA, pB, iA, iB;
+    int sgnA, sgnB;
     int64_t p,q;
     SPEX_MPZ_INIT(prod);
     SPEX_MPZ_SET_UI(prod,0);
@@ -60,6 +61,9 @@ SPEX_info spex_dot_product
         }
         else
         {
+            SPEX_MPZ_SGN(&sgnA, A->x.mpz[p]);
+            SPEX_MPZ_SGN(&sgnB, B->x.mpz[q]);
+            if(sgnA==0 || sgnB==0) continue;
             //prod=prod+A->x.mpz[p]*B->x.mpz[p]
             SPEX_MPZ_ADDMUL(prod,A->x.mpz[p],B->x.mpz[q]);
             p++;

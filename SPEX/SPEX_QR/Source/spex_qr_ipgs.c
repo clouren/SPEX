@@ -88,14 +88,17 @@ SPEX_info spex_qr_ipgs
     //SPEX_matrix_check(rhos,option);
 
     // Update columns j+1 to n of Q (column j+1 is finalized after this)
-    for (k=j+2;k<n;k++)
+    //for (k=j+2;k<n;k++) //change this to iterate over i in Rp[j]
+    for (pR =R->p[j]+1; pQ < R->p[j+1]; pQ++)//the +1 is so that
     {
         //find R(j+1,k)
-        pR=binarySearch(R->i, R->p[j], R->p[j+1]-1,k);
-        if(pR==-1) continue;
+        //pR=binarySearch(R->i, R->p[j], R->p[j+1]-1,k);
+        //if(pR==-1) continue;
+        i = R->i[pR];
+        if(i==j+1) continue;//when i=j+1 (Qj+i is worked on at the end)
         
         //for all elements in column k of Q
-        for (pQ =Q->p[k]; pQ < Q->p[k+1]; pQ++)
+        for (pQ =Q->p[i]; pQ < Q->p[i+1]; pQ++)
         {
             iQ=Q->i[pQ];
             prev=Qj[iQ];
@@ -105,7 +108,7 @@ SPEX_info spex_qr_ipgs
             SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
             if(sgn==0) continue;
             
-            if(col[iQ]!=j) continue; //when does this happen??
+            if(col[iQ]!=j) continue; //reset or this??
             
             //history update
             if(j+1>h[pQ]+1) //"an update of Q(i,j)" has been skipped because R(i,l) is zero or Q(i,l) is zero
@@ -154,10 +157,13 @@ SPEX_info spex_qr_ipgs
         }
     }
     //for k=j+1
+    //IPGE and finalize the first vector
     k=j+1;
         //find R(j+1,k)
-        pR=binarySearch(R->i, R->p[j], R->p[j+1]-1,k);
+        //pR=binarySearch(R->i, R->p[j], R->p[j+1]-1,k); //change
         //printf("k %ld,pR %ld\n",k,pR);
+    i = R->i[R->p[j]+1]; //FiXME
+    if(i==j+1) continue;
 
 
         //for all elements in column k of Q
@@ -236,14 +242,14 @@ SPEX_info spex_qr_ipgs
                 }
                 
             }
-            }
-            h[pQ]=k;
-            
-            final[iQ]=pQ;
-            col[iQ]=k;
-            
-            
         }
+        h[pQ]=k;
+            
+        final[iQ]=pQ;
+        col[iQ]=k;
+            
+            
+    }
     
     
     for(i=0;i<m;i++)
