@@ -80,6 +80,7 @@ SPEX_info spex_qr_ipgs
     const int64_t j,          // Row of R to compute (col j+1 of Q will also be computed)
     const SPEX_matrix A,      // Matrix to be factored
     int64_t *h,
+    bool isZeros,
     SPEX_options option
 );
 

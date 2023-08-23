@@ -63,9 +63,11 @@ SPEX_info spex_dot_product
         {
             SPEX_MPZ_SGN(&sgnA, A->x.mpz[p]);
             SPEX_MPZ_SGN(&sgnB, B->x.mpz[q]);
-            if(sgnA==0 || sgnB==0) continue;
-            //prod=prod+A->x.mpz[p]*B->x.mpz[p]
-            SPEX_MPZ_ADDMUL(prod,A->x.mpz[p],B->x.mpz[q]);
+            if(sgnA!=0 && sgnB!=0)
+            {
+                //prod=prod+A->x.mpz[p]*B->x.mpz[p]
+                SPEX_MPZ_ADDMUL(prod,A->x.mpz[p],B->x.mpz[q]);
+            }
             p++;
             q++;
         }

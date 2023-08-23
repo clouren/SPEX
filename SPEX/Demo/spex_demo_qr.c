@@ -75,7 +75,7 @@ int main( int argc, char *argv[] )
         upper = atoi(argv[5]);
     }
 
-m=5;n=5;seed=14;
+m=5;n=4;seed=14;
 //colamd m<n
     // Input checks
     ASSERT(m >= 0);
@@ -118,10 +118,10 @@ m=5;n=5;seed=14;
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
 
-    /*SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
+    SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
     Ainit->nz = m*n;
     option->print_level = 3;
-    SPEX_matrix_check(Ainit, option);
+    //SPEX_matrix_check(Ainit, option);
 
     // Create A as a copy of Ainit
     // A is a copy of the Ainit matrix. A is a sparse matrix with mpz_t entries
@@ -137,11 +137,11 @@ m=5;n=5;seed=14;
      SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
     b2->nz = m;
     // Make a copy of b
-    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);*/
+    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
 
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
-/**/
+/*
     char *mat_name = "ExampleMats/smallZeros.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
@@ -215,7 +215,7 @@ m=5;n=5;seed=14;
 
     printf("analysis:\n");
     //option->print_level = 3;
-    option->order =  SPEX_NO_ORDERING;
+    //option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
     //SPEX_matrix_check(A, option); 
     printf("facts:\n");

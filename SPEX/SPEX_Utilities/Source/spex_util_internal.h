@@ -567,6 +567,19 @@ SPEX_info spex_dot_product
     const SPEX_options option  
 );
 
+SPEX_info spex_ipge
+(
+    SPEX_matrix A,    
+    SPEX_matrix B,    
+    SPEX_matrix rhos,         // sequence of pivots
+    const int64_t a,
+    const int64_t b,
+    const int64_t i,
+    const int64_t j,
+    const int64_t k,         
+    SPEX_options option
+);
+
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type
 #define SPEX_X(A)                                                           \
     ((A->type == SPEX_MPZ  ) ? (void *) A->x.mpz   :                        \

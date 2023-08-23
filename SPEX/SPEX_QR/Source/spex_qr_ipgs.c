@@ -28,18 +28,6 @@
     SPEX_matrix_free(&rhos, NULL);      \
 }
 
-int binarySearch(int64_t *arr, int low, int high, int key)
-{
-    if (high < low)
-        return -1;
-    int mid = (low + high) / 2; /*low + (high - low)/2;*/
-    if (key == arr[mid])
-        return mid;
-    if (key > arr[mid])
-        return binarySearch(arr, (mid + 1), high, key);
-    return binarySearch(arr, low, (mid - 1), key);
-}
-
 
 SPEX_info spex_qr_ipgs
 (
@@ -51,6 +39,7 @@ SPEX_info spex_qr_ipgs
     const int64_t j,          // Row of R to compute (col j+1 of Q will also be computed)
     const SPEX_matrix A,      // Matrix to be factored
     int64_t *h,
+    bool isZeros,
     SPEX_options option
 )
 {
@@ -64,11 +53,13 @@ SPEX_info spex_qr_ipgs
     ASSERT( A->kind == SPEX_CSC);
     ASSERT (R != NULL);
     ASSERT (Q != NULL);
-
+    
     // Declare variables
     int64_t p, pQ, pR, iR, top, x,l, prev, iQ,k,i;
     int sgn;
     int64_t *final;
+    
+    isZeros=true; //start by assuming column of Q is linearly dependent
    
     final = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     
@@ -88,15 +79,11 @@ SPEX_info spex_qr_ipgs
     //SPEX_matrix_check(rhos,option);
 
     // Update columns j+1 to n of Q (column j+1 is finalized after this)
-    //for (k=j+2;k<n;k++) //change this to iterate over i in Rp[j]
-    for (pR =R->p[j]+1; pQ < R->p[j+1]; pQ++)//the +1 is so that
+    for (pR =R->p[j]; pR < R->p[j+1]; pR++)//the +1 is so that we don't use the diagonal
     {
-        //find R(j+1,k)
-        //pR=binarySearch(R->i, R->p[j], R->p[j+1]-1,k);
-        //if(pR==-1) continue;
         i = R->i[pR];
-        if(i==j+1) continue;//when i=j+1 (Qj+i is worked on at the end)
-        
+        if(i<=j+1) continue;//when i=j+1 (Qj+i is worked on at the end)
+    
         //for all elements in column k of Q
         for (pQ =Q->p[i]; pQ < Q->p[i+1]; pQ++)
         {
@@ -107,8 +94,7 @@ SPEX_info spex_qr_ipgs
             if(prev==-1) continue;
             SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
             if(sgn==0) continue;
-            
-            if(col[iQ]!=j) continue; //reset or this??
+            if(col[iQ]!=j) continue; 
             
             //history update
             if(j+1>h[pQ]+1) //"an update of Q(i,j)" has been skipped because R(i,l) is zero or Q(i,l) is zero
@@ -122,75 +108,54 @@ SPEX_info spex_qr_ipgs
                 }
                 
             }
-            
-            
-            
+ 
             //IPGE update
-            SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]); //Q(i,k)==0 this can happen when A(i,k)=0, but Q(i,k) is nonzero
-            if(sgn==0)
-            {
-                //Q(i,j)=-R(k,j)*Q(i,k)/rho^(k-1)
-                // Q[pQ] = Q[pQ] - R[pR]*Q[prev]
-                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[prev]); 
-                if(j>=1) //TO CHECK, is this needed?
-                {
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j-1]);
-                }
-            }
-            else
-            {
-                //printf("j %ld\n",j);
-                //Q(i,j)=(rho^k*Q(i,j)-R(k,j)*Q(i,k))/rho^(k-1)
-                // Q[pQ] = x[pQ] * rho[i]
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
-                // Q[pQ] = Q[pQ] - R[pR]*Q[k]
-                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[prev]);
-                if(j>=1)
-                {
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j-1]);
-                }
-                
-            }
+            SPEX_CHECK(spex_ipge(Q,R,rhos,pQ,pR,j-1,j,prev,option));
             
             h[pQ]=j+1;
             
         }
     }
+    
+    
     //for k=j+1
     //IPGE and finalize the first vector
     k=j+1;
-        //find R(j+1,k)
-        //pR=binarySearch(R->i, R->p[j], R->p[j+1]-1,k); //change
-        //printf("k %ld,pR %ld\n",k,pR);
-    i = R->i[R->p[j]+1]; //FiXME
-    if(i==j+1) continue;
-
-
-        //for all elements in column k of Q
-        for (pQ =Q->p[k]; pQ < Q->p[k+1]; pQ++)
+    //find R(j+1,k)
+    //pR=binarySearch(R->i, R->p[j], R->p[j+1]-1,k);
+    //printf("k %ld,pR %ld\n",k,pR);
+    for(pR =R->p[j]; pR < R->p[j+1]; pR++)
+    {
+        i=R->i[pR];
+        //printf("i %ld pR %ld \n",i, pR);
+        if(i>=k) break; //should happen in the first couple of elements of R[j]
+    }
+    //printf("k %ld,pR %ld, i %ld\n",k,pR,i );
+    //for all elements in column k of Q
+    for (pQ =Q->p[k]; pQ < Q->p[k+1]; pQ++)
+    {
+        iQ=Q->i[pQ];
+        prev=Qj[iQ];
+        
+        //fix logic
+        if(prev==-1 || i!=k)
         {
-            iQ=Q->i[pQ];
-            prev=Qj[iQ];
-            
-            //fix logic
-            if(prev==-1 || pR==-1)
-            {
-                //check if column j of Q had a nonzero element in row iQ
+            //check if column j of Q had a nonzero element in row iQ
             //SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
             //if(sgn==0) continue;
-                //Q(i,j)=rho^()*Q(i,k)/rho^()
-                // Q[pQ] = x[pQ] * rho[i]
-                
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
-                if(k>1 && h[pQ]>0)
-                {
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]-1]);
-                }
-                final[iQ]=pQ;
-                h[pQ]=k;
-            }
-            else
+            //Q(i,j)=rho^()*Q(i,k)/rho^()
+            // Q[pQ] = x[pQ] * rho[i]
+            
+            SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
+            if(k>1 && h[pQ]>0)
             {
+                SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]-1]);
+            }
+            final[iQ]=pQ;
+            h[pQ]=k;
+        }
+        else
+        {
             
             if(j+1>h[pQ]+1) //"an update of Q(i,j)" has been skipped because R(i,l) is zero or Q(i,l) is zero
             {
@@ -198,8 +163,8 @@ SPEX_info spex_qr_ipgs
                 // Q[pQ] = x[pQ] * rho[i]
                 SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j-1]);
                 if(h[pQ]>0)
-               {
-               
+                {
+                    
                     SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[h[pQ]-1]);
                 }
                 
@@ -218,37 +183,18 @@ SPEX_info spex_qr_ipgs
             }
             
             //IPGE update
-            SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]); //Q(i,k)==0 this can happen when A(i,k)=0, but Q(i,k) is nonzero
-            if(sgn==0)
-            {
-                //Q(i,j)=-R(k,j)*Q(i,k)/rho^(k-1)
-                // Q[pQ] = Q[pQ] - R[pR]*Q[prev]
-                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[prev]); 
-                if(j>=1) 
-                {
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j-1]);
-                }
-            }
-            else
-            {   
-                //Q(i,j)=(rho^k*Q(i,j)-R(k,j)*Q(i,k))/rho^(k-1)
-                // Q[pQ] = x[pQ] * rho[i]
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
-                // Q[pQ] = Q[pQ] - R[pR]*Q[k]
-                SPEX_MPZ_SUBMUL(Q->x.mpz[pQ], R->x.mpz[pR], Q->x.mpz[prev]);
-                if(j>=1)
-                {
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j-1]);
-                }
-                
-            }
+            SPEX_CHECK(spex_ipge(Q,R,rhos,pQ,pR,j-1,j,prev,option));
         }
         h[pQ]=k;
-            
+        
         final[iQ]=pQ;
         col[iQ]=k;
-            
-            
+        
+        SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
+        if(sgn!=0)
+        {
+            isZeros=false;
+        }
     }
     
     
@@ -256,7 +202,7 @@ SPEX_info spex_qr_ipgs
     {
         Qj[i]=final[i];
     }
-
+    //SPEX_matrix_check(Q,option);
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }
