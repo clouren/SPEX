@@ -42,12 +42,11 @@ SPEX_info SPEX_qr_factorize
     SPEX_info info;
 
     // Declare variables
-    int64_t n=A->n, m=A->m, k,i,pQ,p;
+    int64_t n=A->n, m=A->m, k,i,pQ,p, iQ, pR;
     SPEX_factorization F = NULL ;
     SPEX_matrix PAQ;
-
-    //Allocate variables
-    int64_t *h, *Qk, *col;
+    int64_t *h, *Qk, *col, *rankReveal;
+    bool isZeros=false;
     
      // Allocate memory for the factorization
     F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
@@ -109,11 +108,45 @@ SPEX_info SPEX_qr_factorize
         col[F->Q->i[k]]=0;
     }
     
+    rankReveal = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     
     // Perform IPGS to get Q and R
     for (k=0;k<n-1;k++)
     {
-        SPEX_CHECK(spex_qr_ipgs(F->L, F->Q, F->rhos, Qk,col, k, PAQ, h, option));
+        //when the kth column of Q is all zeros (it is linearly dependent)
+        //then the kth row of R is all zeros too and you skip operations on k
+        if(isZeros)
+        {
+            rankReveal[k]=1; //idk what is the best way to do this
+            for (pR =F->L->p[k];pR <F->L->p[k+1];pR++)
+            {
+                // row of R is zeros
+                SPEX_MPZ_SET(F->L->x.mpz[pR],0); 
+            }
+            SPEX_MPZ_SET(F->rhos->x.mpz[k],F->rhos->x.mpz[k-1]);
+            for(k=0;k<m;k++)
+            {
+                Qk[k]=-1;
+            }
+            for (pQ =F->Q->p[k+1]; pQ < F->Q->p[k+2]; pQ++)
+            {
+                h[pQ]=k;//need to update all hist vector or we'll do unnecessary hist updates
+                iQ=F->Q->i[pQ];
+                Qk[iQ]=pQ;
+                col[iQ]=k;
+            }
+            for(i=k+2;i<n;i++)
+            {
+                for (pQ =F->Q->p[i]; pQ < F->Q->p[i+1]; pQ++)
+                {
+                    h[pQ]=k;
+                }
+            }
+        }
+        else
+        {
+            SPEX_CHECK(spex_qr_ipgs(F->L, F->Q, F->rhos, Qk,col, k, PAQ, h, isZeros, option));
+        }
     }
 
     //finish R
