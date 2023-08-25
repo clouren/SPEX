@@ -78,14 +78,14 @@ SPEX_info SPEX_qr_factorize
     // the symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_qr_permute_A(&AQ, A, true, S, option) );
+    SPEX_CHECK( spex_qr_permute_A(&AQ, A, true, S->Q_perm, option) );
 
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
 
-    SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, AQ, S));
-    
+    SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, AQ, S, option));
+   
 
     h = (int64_t*) SPEX_calloc((F->Q->nz),sizeof(int64_t));
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
@@ -106,8 +106,8 @@ SPEX_info SPEX_qr_factorize
         col[F->Q->i[k]]=0;
     }
     
-    ldCols = (int64_t*) SPEX_calloc((n),sizeof(int64_t));//bool?
-    
+    ldCols = (bool*) SPEX_calloc((n),sizeof(bool));//bool?
+   
     //--------------------------------------------------------------------------
     // Perform IPGS to get Q and R
     //--------------------------------------------------------------------------
@@ -115,7 +115,7 @@ SPEX_info SPEX_qr_factorize
     {
         //when the kth column of Q is all zeros (it is linearly dependent)
         //then the kth row of R is all zeros too and you skip operations on k
-        /*if(isZeros)
+        if(isZeros)
         {
             ldCols[k]=true;//kth pivot of R is zeros, kth column of Q is ld
             // row k of R is zeros
@@ -148,31 +148,46 @@ SPEX_info SPEX_qr_factorize
             rankDeficient++;
         }
         else
-        {*/
+        {
             // Integer-preserving Gram-Schmidt
             SPEX_CHECK(spex_qr_ipgs(RT, F->Q, F->rhos, Qk,col, k, AQ, h,
                                      isZeros, option));
-        //}
+        }
     }
     // Finish R (get the last element/pivot)
     SPEX_MPZ_INIT(RT->x.mpz[RT->p[n]-1]);
     SPEX_CHECK(spex_dot_product(RT->x.mpz[RT->p[n]-1],F->Q, n-1, AQ, n-1, option)); 
     SPEX_MPZ_SET(F->rhos->x.mpz[n-1],RT->x.mpz[RT->p[n]-1]);    
 
-    // TODO use rankReveal to create permutation Pi and "combine" perm Q and perm Pi, save perm Pi in the space of perm Q in F (or do we want F->Pi??)
     //--------------------------------------------------------------------------
     // Get rank revealing permutation 
     //--------------------------------------------------------------------------
     if(rankDeficient>0)
     {
         int64_t *Pi_perm;
+        int64_t *final_perm;
+        int64_t iZero=n, iNon=0;
         F->rank=n-rankDeficient;
 
-        for(k=0;k<n:k++)
+        for(k=0;k<n;k++)
         {
-            
+            if(ldCols[k]) //ldCols[k] is true when the k col is linearly dependent
+            {
+                Pi_perm[iZero]=k;
+                final_perm[iZero]=Q_perm[k];
+                iZero--;
+            }
+            else
+            {
+                Pi_perm[iNon]=k;
+                final_perm[iNon]=Q_perm[k];
+                iNon++;
+            }
         }
-
+        
+        
+        SPEX_CHECK( spex_qr_permute_A(&QPi, Q, true, Pi_perm, option) );
+        SPEX_CHECK( spex_qr_permute_A(&RTPi, RT, true, Pi_perm, option) );
     }
 
     //--------------------------------------------------------------------------

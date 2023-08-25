@@ -95,10 +95,11 @@ SPEX_info spex_qr_nonzero_structure
     // Input
     //int64_t *xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix A,          // Input Matrix
-    const SPEX_symbolic_analysis S  // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S,  // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
+    SPEX_options option
 );
 
 

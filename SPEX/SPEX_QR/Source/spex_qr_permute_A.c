@@ -36,9 +36,8 @@ SPEX_info spex_qr_permute_A
     const SPEX_matrix A,       // Input matrix
     const bool numeric,        // True if user wants to permute pattern and
                                // numbers, false if only pattern
-    const SPEX_symbolic_analysis S,  // Symbolic analysis struct that contains
-                                // row/column permutations
-    const SPEX_options option   // Command options (Default if NULL)
+    const int64_t *Q_perm,     // column permutation
+    const SPEX_options option  // Command options (Default if NULL)
 )
 {
 
@@ -80,11 +79,11 @@ SPEX_info spex_qr_permute_A
         {
             // Set the number of nonzeros in the kth column of AQ
             AQ->p[k] = nz;
-            // Column k of AQ is equal to column S->Q_perm[k] of A. j is the
-            // starting point for nonzeros and indices for column S->Q_perm[k]
+            // Column k of AQ is equal to column Q_perm[k] of A. j is the
+            // starting point for nonzeros and indices for column Q_perm[k]
             // of A
-            j = S->Q_perm[k];
-            // Iterate across the nonzeros in column S->P_perm[k]
+            j = Q_perm[k];
+            // Iterate across the nonzeros in column Q_perm[k]
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
                 // Set the nonzero value and location of the entries in column
@@ -113,10 +112,10 @@ SPEX_info spex_qr_permute_A
         {
             // Set the number of nonzeros in the kth column of AQ
             AQ->p[k] = nz;
-            // Column k of AQ is equal to column S->p[k] of A. j is the
-            // starting point for nonzeros and indices for column S->p[k] of A
-            j = S->Q_perm[k];
-            // Iterate across the nonzeros in column S->p[k]
+            // Column k of AQ is equal to column Q_perm[k] of A. j is the
+            // starting point for nonzeros and indices for column Q_perm[k] of A
+            j = Q_perm[k];
+            // Iterate across the nonzeros in column Q_perm[k]]
             for (t = A->p[j]; t < A->p[j+1]; t++)
             {
                 // Row i of this nonzero is equal to pinv[A->i[t]]

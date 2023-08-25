@@ -96,10 +96,11 @@ SPEX_info spex_qr_nonzero_structure
     // Input
     //int64_t *xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix A,          // Input Matrix
-    const SPEX_symbolic_analysis S  // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S,  // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
+    SPEX_options option
 )
 {
 
@@ -111,7 +112,7 @@ SPEX_info spex_qr_nonzero_structure
 
     int64_t *w, *s, *leftmost;
     int64_t *Qi, *Qp;
-    int64_t top, k, len, i, p, n = A->n, m2=n, m=A->m, rnz, qnz, j,h,len2;
+    int64_t top, k, len, i, p, n = A->n, m=A->m, m2=m, rnz, qnz, j,h,len2;
     SPEX_matrix R = NULL, Q=NULL;
     SPEX_matrix QT= NULL, RT=NULL;
     ASSERT(n >= 0);
@@ -196,7 +197,7 @@ SPEX_info spex_qr_nonzero_structure
     for (i = 0 ; i < m2 ; i++) w [i] = -1 ; /* clear w, to mark nodes */
     
     qnz = 0 ;
-    for (k = 0; k < n; k++) //find Q(k,:) pattern
+    for (k = 0; k < m; k++) //find Q(k,:) pattern
     {
         Qp [k] = qnz ;      
 
@@ -268,7 +269,6 @@ SPEX_info spex_qr_nonzero_structure
 
 
     (*Q_handle) = Q;
-    
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
