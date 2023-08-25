@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Utilities/spex_dot_product: Get dot product of two column vectors
+// SPEX_Utilities/spex_ipge_update: Performs IPGE update
 //------------------------------------------------------------------------------
 
 // SPEX_QR: (c) 2020-2023, Lorena Mejia Domenzain, Christopher Lourenco,
@@ -12,7 +12,7 @@
 #include "spex_util_internal.h"
 
 
-SPEX_info spex_ipge
+SPEX_info spex_ipge_update
 (
     SPEX_matrix A,    
     SPEX_matrix B,    

@@ -47,13 +47,10 @@ SPEX_info SPEX_qr_solve
 
     SPEX_matrix b_new = NULL, b_perm=NULL;
     int64_t k, p, i,j;
-    mpz_t det;
 
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, F->Q->n, b->n, F->Q->n*b->n,
         false, true, NULL));
-    SPEX_MPZ_INIT(det);
-    SPEX_MPZ_SET(det,F->rhos->x.mpz[F->R->n-1]);
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
     
@@ -69,7 +66,8 @@ SPEX_info SPEX_qr_solve
                 i=F->Q->i[p];
                 SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],SPEX_2D(b_perm, i, k, mpz));
             }
-            SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),det);
+            //F->rhos->x.mpz[F->R->n-1] is the determinant
+            SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),F->rhos->x.mpz[F->R->n-1]);
         }
     }
     
@@ -77,6 +75,11 @@ SPEX_info SPEX_qr_solve
     //Solves Rx=b_new (overwrites b_new into x)
     SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new));
     
+    //--------------------------------------------------------------------------
+    // Return result and free workspace
+    //--------------------------------------------------------------------------
     (*x_handle)=b_new;
+
+    SPEX_FREE_WORKSPACE;
     return SPEX_OK;
 }

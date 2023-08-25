@@ -109,12 +109,9 @@ SPEX_info spex_qr_preorder
         case SPEX_AMD:
         // ---AMD ordering is used---
         // S->p is set to AMD's column ordering on ATA.
-        // The number of nonzeros in L is given as AMD's computed
-        // number of nonzeros in the Cholesky factor L of ATA which is the exact
-        // nnz(L) for Cholesky factorization (barring numeric cancellation)
+        // The number of nonzeros in R is given as AMD's computed
+        // number of nonzeros in the Cholesky factor L of ATA 
         {
-            //TODO SPEX_CHECK( spex_matrix_multiply(ATA,A,option));
-            //SPEX_CHECK( spex_amd(&(S->P_perm),&(S->unz),ATA,option));
             SPEX_CHECK( spex_amd(&(S->Q_perm),&(S->unz),A,option));
         }
         break;

@@ -28,7 +28,7 @@
 
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
-    SPEX_matrix_free(&PAQ, NULL);   \
+    SPEX_matrix_free(&AQ, NULL);   \
     SPEX_free(post);                 \
 }
 
@@ -68,7 +68,7 @@ SPEX_info SPEX_qr_analyze
     SPEX_REQUIRE_KIND(A, SPEX_CSC);
 
     // Declare permuted matrix and S
-    SPEX_matrix PAQ = NULL;
+    SPEX_matrix AQ = NULL;
     SPEX_symbolic_analysis S = NULL;
     // Declare local variables for symbolic analysis
     int64_t n = A->n, m=A->m;
@@ -79,25 +79,24 @@ SPEX_info SPEX_qr_analyze
     // Preorder: obtain the row/column ordering of ATA (Default is COLAMD)
     //--------------------------------------------------------------------------
     SPEX_CHECK( spex_qr_preorder(&S, A, option) );
+
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the
-    // symbolic analysis step to get the permuted matrix PAQ.
+    // symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
-    SPEX_CHECK( spex_qr_permute_A(&PAQ, A, false, S, option) );
-    //SPEX_matrix_check(PAQ, option);
+    SPEX_CHECK( spex_qr_permute_A(&AQ, A, false, S, option) ); //TOASK merge chol_permute and qr_permute??
    
     //--------------------------------------------------------------------------
-    // Symbolic Analysis: compute the column elimination tree of PAQ
+    // Symbolic Analysis: compute the column elimination tree of AQ
     //--------------------------------------------------------------------------
     // Obtain elimination tree of ATA
-    SPEX_CHECK( spex_qr_etree(&S->parent, PAQ) );
+    SPEX_CHECK( spex_qr_etree(&S->parent, AQ) );
     
     // Postorder the column elimination tree of ATA
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
-
     // Get the column counts of R' aka the row counts of R
-    SPEX_CHECK( spex_qr_counts(&(S->cp), PAQ, S->parent, post) ); 
+    SPEX_CHECK( spex_qr_counts(&(S->cp), AQ, S->parent, post) ); 
 
     
     nz=0;
@@ -105,10 +104,10 @@ SPEX_info SPEX_qr_analyze
     {
         nz += S->cp [i] ;
     }
-    S->lnz=nz;//suma de todos los elementos de c
+    S->rnz=nz;
 
-    // set num non-zeros in Q
-    S->unz = m*n; //Q is dense right now
+    // non-zeros in Q //TODO get Q->nnz (use tree?)
+    S->qnz = m*n; //upper bound on number of nonzeros of Q nnzA*number get number from test runs
 
     //--------------------------------------------------------------------------
     // Set output, free all workspace and return success
