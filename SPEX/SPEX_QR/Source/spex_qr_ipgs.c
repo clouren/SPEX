@@ -40,7 +40,7 @@ SPEX_info spex_qr_ipgs
     const int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
     const SPEX_matrix A, // Matrix to be factored
     int64_t *h,
-    bool isZeros,
+    bool *isZeros,
     SPEX_options option
 )
 {
@@ -60,7 +60,7 @@ SPEX_info spex_qr_ipgs
     int sgn;
     int64_t *final;
     
-    isZeros=true; //start by assuming column of Q is linearly dependent
+    *isZeros=true; //start by assuming column of Q is linearly dependent
    
     final = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     
@@ -107,15 +107,7 @@ SPEX_info spex_qr_ipgs
             // or Q(i,l) is zero //TODO fix index in comments
             if(j+1>h[pQ]+1)
             {
-                //Q(i,j)=rho^()*Q(i,k)/rho^()
-                // Q[pQ] = x[pQ] * rho[i]
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j-1]);
-                if(h[pQ]>0)
-                {
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], 
-                                        rhos->x.mpz[h[pQ]-1]);
-                }
-                
+                SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
             }
  
             // IPGE update
@@ -154,7 +146,6 @@ SPEX_info spex_qr_ipgs
             //if(sgn==0) continue;
             //Q(i,j)=rho^()*Q(i,k)/rho^()
             // Q[pQ] = x[pQ] * rho[i]
-            
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(k>1 && h[pQ]>0)
             {
@@ -172,15 +163,7 @@ SPEX_info spex_qr_ipgs
                 //"an update of Q(i,j)" has been skipped because R(i,l) is zero 
                 // or Q(i,l) is zero TODO same as before
 
-                //Q(i,j)=rho^()*Q(i,k)/rho^()
-                // Q[pQ] = x[pQ] * rho[i]
-                SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j-1]);
-                if(h[pQ]>0)
-                {
-                    
-                    SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], 
-                                        rhos->x.mpz[h[pQ]-1]);
-                }
+                SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
                 
             }
             
@@ -211,7 +194,7 @@ SPEX_info spex_qr_ipgs
         SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
         if(sgn!=0)
         {
-            isZeros=false;
+            *isZeros=false;
         }
     }
     
@@ -220,7 +203,7 @@ SPEX_info spex_qr_ipgs
     {
         Qj[i]=final[i];
     }
-
+    //SPEX_matrix_check(Q, option); 
     //--------------------------------------------------------------------------
     // Free workspace
     //--------------------------------------------------------------------------

@@ -44,7 +44,7 @@ SPEX_info spex_qr_permute_A
     const SPEX_matrix A,       // Input matrix
     const bool numeric,        // True if user wants to permute pattern and
                                // numbers, false if only pattern
-    const SPEX_symbolic_analysis S,  // Symbolic analysis struct that contains
+    const int64_t *Q_perm,     // column permutation
                                 // row/column permutations
     const SPEX_options option        
 );
@@ -80,7 +80,7 @@ SPEX_info spex_qr_ipgs
     const int64_t j,          // Row of R to compute (col j+1 of Q will also be computed)
     const SPEX_matrix A,      // Matrix to be factored
     int64_t *h,
-    bool isZeros,
+    bool *isZeros,
     SPEX_options option
 );
 
