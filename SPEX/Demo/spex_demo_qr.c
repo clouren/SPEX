@@ -117,7 +117,7 @@ m=5;n=4;seed=14;
     //--------------------------------------------------------------------------
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
-
+/*
     SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
     Ainit->nz = m*n;
     option->print_level = 3;
@@ -141,11 +141,13 @@ m=5;n=4;seed=14;
 
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
-/*
-    char *mat_name = "ExampleMats/smallZeros.mat.txt";
-    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+/**/
+    //char *mat_name = "ExampleMats/smallRankDeficient.mat.txt";
+    //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
     //char *rhs_name = "ExampleMats/LF10.rhs.txt";
+    char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     // Read in A
     FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
@@ -178,7 +180,7 @@ m=5;n=4;seed=14;
     //--------------------------------------------------------------------------
     // Dense
     //--------------------------------------------------------------------------
-    /**/
+    /*
     SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);

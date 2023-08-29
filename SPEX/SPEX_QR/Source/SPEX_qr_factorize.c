@@ -67,13 +67,13 @@ SPEX_info SPEX_qr_factorize
     // the symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_qr_permute_A(&AQ, A, true, S->Q_perm, option) );//TODO don't do this, just access cols of A in the order of qperm (need to rethink some logic)
+    //SPEX_CHECK( spex_qr_permute_A(&AQ, A, true, S->Q_perm, option) );//TODO don't do this, just access cols of A in the order of qperm (need to rethink some logic)
 
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
 
-    SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, AQ, S, option));
+    SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, A, S, option));
    
 
     h = (int64_t*) SPEX_calloc((F->Q->nz),sizeof(int64_t));
@@ -124,6 +124,7 @@ SPEX_info SPEX_qr_factorize
                 if(h[pQ]<k)
                 {
                     SPEX_CHECK(spex_history_update(F->Q,F->rhos,pQ,k-2,h[pQ],h[pQ]-1,0,option)); //TODO check
+                }
                 else
                 {
                     h[pQ]=k+1;
@@ -147,8 +148,8 @@ SPEX_info SPEX_qr_factorize
         else
         {
             // Integer-preserving Gram-Schmidt
-            SPEX_CHECK(spex_qr_ipgs(RT, F->Q, F->rhos, Qk,col, k, AQ, h,
-                                     &isZeros, option));
+            SPEX_CHECK(spex_qr_ipgs(RT, F->Q, F->rhos, Qk,col, k, A, h,
+                                     &isZeros, S->Q_perm, option));
         }
     }
     
@@ -190,25 +191,26 @@ SPEX_info SPEX_qr_factorize
         {
             if(ldCols[k]) //ldCols[k] is true when the k col is linearly dependent
             {
-                Pi_perm[iZero]=k;
+                //Pi_perm[iZero]=k;
                 F->Q_perm[iZero]=S->Q_perm[k];
                 iZero--;
             }
             else
             {
-                Pi_perm[iNon]=k;
+                //Pi_perm[iNon]=k;
                 F->Q_perm[iNon]=S->Q_perm[k];
                 iNon++;
             }
         }
         
-        SPEX_CHECK( spex_qr_permute_A(&QPi, F->Q, true, Pi_perm, option) );
+        /*SPEX_CHECK( spex_qr_permute_A(&QPi, F->Q, true, Pi_perm, option) );
         SPEX_CHECK( spex_qr_permute_A(&RTPi, RT, true, Pi_perm, option) );
         
         SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
         F->R->nz=RT->p[n]-1;
         
         F->Q=QPi;//TODO check memleaks, maybe should coypy
+        */
               
     }
     else
@@ -225,11 +227,12 @@ SPEX_info SPEX_qr_factorize
 
         // Copy column permutation from symbolic analysis to factorization
         memcpy(F->Q_perm, S->Q_perm, n*sizeof(int64_t));
-        
-        SPEX_CHECK(SPEX_transpose(&F->R,RT,option));
-        F->R->nz=RT->p[n]-1;
 
     }
+    
+    
+    SPEX_CHECK(SPEX_transpose(&F->R,RT,option));
+    F->R->nz=RT->p[n]-1;
 
     //--------------------------------------------------------------------------
     // Return result and free workspace

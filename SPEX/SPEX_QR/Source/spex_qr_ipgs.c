@@ -41,6 +41,7 @@ SPEX_info spex_qr_ipgs
     const SPEX_matrix A, // Matrix to be factored
     int64_t *h,
     bool *isZeros,
+    int64_t *Q_perm,
     SPEX_options option
 )
 {

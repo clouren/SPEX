@@ -649,6 +649,8 @@ typedef struct
                                     // the initial space for L and U; the
                                     // space is reallocated as needed.
                                     // Available only for SPEX_LU_FACTORIZATION.
+    int64_t qnz;
+    int64_t rnz;
 
     //--------------------------------------------------------------------------
     // These are only used in the Cholesky analysis process
@@ -760,6 +762,8 @@ typedef struct
 
     int64_t *Q_perm;                     // column permutation
     int64_t *Qinv_perm;                  // inverse of column permutation
+    
+    int64_t rank;
 
 } SPEX_factorization_struct ;
 
