@@ -567,7 +567,7 @@ SPEX_info spex_dot_product
     const SPEX_options option  
 );
 
-SPEX_info spex_ipge
+SPEX_info spex_ipge_update
 (
     SPEX_matrix A,    
     SPEX_matrix B,    

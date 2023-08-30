@@ -85,6 +85,12 @@ void bubbleSort(int64_t *arr, int64_t top,int64_t n)
     
 }
 
+// Sorting function
+static inline int compare (const void * a, const void * b)
+{
+    return ( *(int64_t*)a - *(int64_t*)b );
+}
+
 
 SPEX_info spex_qr_nonzero_structure
 (
@@ -112,7 +118,7 @@ SPEX_info spex_qr_nonzero_structure
 
     int64_t *w, *s, *leftmost;
     int64_t *Qi, *Qp;
-    int64_t top, k, len, i, p, n = A->n, m=A->m, m2=m, rnz, qnz, j,h,len2;
+    int64_t top, k, len, i, p, n = A->n, m=A->m, m2=m, rnz, qnz, j,h,len2, col;
     SPEX_matrix R = NULL, Q=NULL;
     SPEX_matrix QT= NULL, RT=NULL;
     ASSERT(n >= 0);
@@ -147,13 +153,13 @@ SPEX_info spex_qr_nonzero_structure
     for (i = 0 ; i < m ; i++) leftmost [i] = -1 ;
     for (k = n-1 ; k >= 0 ; k--)
     {
-        for (p = A->p [k] ; p < A->p [k+1] ; p++)
+        col = S->Q_perm[k];
+        for (p = A->p [col] ; p < A->p [col+1] ; p++)
         {
             leftmost [A->i [p]] = k ;         /* leftmost[i] = min(find(A(i,:)))*/
         }
     }
-    
-   
+
     //--------------------------------------------------------------------------
     // Iterations 1:n-1
     //--------------------------------------------------------------------------
@@ -163,8 +169,9 @@ SPEX_info spex_qr_nonzero_structure
         R->p [k] = rnz ;      
         w [k] = k ;  
         top = n ;
+        col = S->Q_perm[k];
 
-        for (p = A->p [k] ; p < A->p [k+1] ; p++)   /* find R(:,k) pattern */
+        for (p = A->p [col] ; p < A->p [col+1] ; p++)   /* find R(:,k) pattern */
         {
             i = leftmost [A->i [p]] ;         /* i = min(find(A(i,q))) */
             for (len = 0 ; w [i] != k ; i = S->parent [i]) /* traverse up to k */
@@ -172,20 +179,27 @@ SPEX_info spex_qr_nonzero_structure
                 s [len++] = i ;
                 w [i] = k ;
             }
-
             while (len > 0) s [--top] = s [--len] ; /* push path on stack */
-        }
-    
+            
+            i=A->i [p];
+            //i=pinv[A->i [p]];
+            if (i > k && w [i] < k)         /* pattern of V(:,k) = x (k+1:m) */
+            {
+                w [i] = k ;
+            }
+        } 
+
         //order s
-        bubbleSort(s,top,n);//FIXME
-        
+        bubbleSort(s,top,n);//FIXME qsort(&xi[top], n-top, sizeof(int64_t), compare);     
 
         for (p = top ; p < n ; p++) /* for each i in pattern of R(:,k) */
         {
             i = s [p] ;                     /* R(i,k) is nonzero */
-            R->i [rnz++] = i ;                  /* R(i,k) = x(i) */
+            R->i [rnz] = i ;                  /* R(i,k) = x(i) */
+            rnz++;
         }
-        R->i [rnz++] = k ;                     /* R(k,k) */
+        R->i [rnz] = k ;                     /* R(k,k) */
+        rnz++;
     }
     // Finalize R->p
     R->p[n] = S->rnz = rnz;
@@ -198,25 +212,26 @@ SPEX_info spex_qr_nonzero_structure
     
     qnz = 0 ;
     for (k = 0; k < m; k++) //find Q(k,:) pattern
-    {
-        Qp [k] = qnz ;      
-
+    {    
+        Qp [k] = qnz ;  
         top = n ;
-        p=A->p[k];
+        col = S->Q_perm[k];
 
-            i = leftmost[k];
-            //printf("k %ld  left %ld\n",k,i);
-            for (len = 0 ; i!=-1 && w [i] != k; i = S->parent [i]) /* traverse up to root*/
-            {
-                //printf("k %ld p %ld i: %ld\n",k,p,i);
-                s [len++] = i ;
-                w [i] = k ;
-            }
-            while (len > 0) s [--top] = s [--len] ; /* push path on stack */
+        //i = leftmost[col];
+        i = leftmost[k];
+        //printf("k %ld col %ld  left %ld\n",k,col,i);
+        for (len = 0 ; i!=-1 && w [i] != k; i = S->parent [i]) /* traverse up to root*/
+        {
+            //printf("k %ld p %ld i: %ld\n",k,p,i);
+            s [len++] = i ;
+            w [i] = k ;
+        }
+        while (len > 0) s [--top] = s [--len] ; /* push path on stack */
 
  
         for (p = top ; p < n ; p++) /* for each i in pattern of Q(:,k) */
         {
+            //printf("p %ld i %ld\n", p, s[p]);
             i = s [p] ;                     /* Q(i,k) is nonzero */
             Qi [qnz++] = i ;                  /* Q(i,k) = x(i) */
         }
@@ -247,17 +262,18 @@ SPEX_info spex_qr_nonzero_structure
         SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[p]);
     }
     
-    for(k=1;k<n;k++)
+    for(k=1;k<n;k++) //FIXME there has to be a better more sparse way of doing this, maybe look at dotprod
     {
         h=0; //h makes it so that we don't start at the begining of the column of Q every single time, but we start where we left off
-        for(p=A->p[k];p<A->p[k+1];p++)
+        col = S->Q_perm[k];
+        for(p=A->p[col];p<A->p[col+1];p++)
         {
             i=A->i[p];
-            for(j=Q->p[k]+h;j<Q->p[k+1];j++)
+            for(j=Q->p[col]+h;j<Q->p[col+1];j++)
             {
                 if(i==Q->i[j])
                 {
-                    h=j-Q->p[k];
+                    h=j-Q->p[col];
                     SPEX_MPZ_SET(Q->x.mpz[j],A->x.mpz[p]);
                     continue;
                 }
@@ -269,6 +285,16 @@ SPEX_info spex_qr_nonzero_structure
 
 
     (*Q_handle) = Q;
+
+    for (i = 0; i < n; i++)
+    {
+        printf("%ld %ld: ", i, Q->p[i]);
+        for(p=Q->p[i];p<Q->p[i+1];p++)
+        {
+            printf("%ld %ld, ", p, Q->i[p]);
+        }
+        printf("\n");
+    }
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_history_update: Performs history update
 //------------------------------------------------------------------------------
 
-// SPEX_QR: (c) 2020-2023, Lorena Mejia Domenzain, Christopher Lourenco,
-// Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

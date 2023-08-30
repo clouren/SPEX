@@ -16,7 +16,6 @@
 
 #define SPEX_FREE_WORKSPACE         \
 {                                   \
-    SPEX_matrix_free(&AQ, option); \
     SPEX_matrix_free(&(RT),option); \
     SPEX_free(h);                   \
     SPEX_free(col);                 \
@@ -45,7 +44,7 @@ SPEX_info SPEX_qr_factorize
     // Declare variables
     int64_t n=A->n, m=A->m, k,i,pQ,p, iQ, pR, rankDeficient;
     SPEX_factorization F = NULL ;
-    SPEX_matrix AQ, RT;
+    SPEX_matrix RT;
     int64_t *h, *Qk, *col;
     bool isZeros=false, *ldCols;
     
@@ -72,9 +71,7 @@ SPEX_info SPEX_qr_factorize
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
-
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, A, S, option));
-   
 
     h = (int64_t*) SPEX_calloc((F->Q->nz),sizeof(int64_t));
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
@@ -162,10 +159,9 @@ SPEX_info SPEX_qr_factorize
     }
     else
     {
-        SPEX_CHECK(spex_dot_product(RT->x.mpz[RT->p[n]-1],F->Q, n-1, AQ, n-1, option)); 
+        SPEX_CHECK(spex_dot_product(RT->x.mpz[RT->p[n]-1],F->Q, n-1, A, n-1, option)); 
         SPEX_MPZ_SET(F->rhos->x.mpz[n-1],RT->x.mpz[RT->p[n]-1]);    
     }
-
     //--------------------------------------------------------------------------
     // Get rank revealing permutation 
     //--------------------------------------------------------------------------

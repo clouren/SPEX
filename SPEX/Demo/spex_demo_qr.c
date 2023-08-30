@@ -144,10 +144,10 @@ m=5;n=4;seed=14;
 /**/
     //char *mat_name = "ExampleMats/smallRankDeficient.mat.txt";
     //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
-    //char *mat_name = "ExampleMats/LF10.mat.txt";
-    //char *rhs_name = "ExampleMats/LF10.rhs.txt";
-    char *mat_name = "ExampleMats/smallZeros.mat.txt";
-    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+    char *mat_name = "ExampleMats/LF10.mat.txt";
+    char *rhs_name = "ExampleMats/LF10.rhs.txt";
+    //char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    //char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     // Read in A
     FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
