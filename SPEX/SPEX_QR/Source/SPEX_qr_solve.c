@@ -11,7 +11,7 @@
 
 /* This code performs the sparse R \ Q^T b. First it computes R(n,n)*Q^T b has already
  * been computed. Then does
- * back solve.  Returns x as integer.
+ * back solve.  Returns x as mpq. //TOASK what to return x as, rn I'm mimic-ing LU where it is returned as a rational number
  */
 
 #define SPEX_FREE_WORKSPACE        \
@@ -45,11 +45,12 @@ SPEX_info SPEX_qr_solve
     ASSERT( Q->kind == SPEX_CSC);
     ASSERT( b->kind == SPEX_DENSE);
 
-    SPEX_matrix b_new = NULL, b_perm=NULL;
+    SPEX_matrix b_new = NULL, b_perm=NULL, x=NULL;
     int64_t k, p, i,j;
+    int64_t qi;
 
     // b->new has Q->n rows and b->n columns
-    SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, F->Q->n, b->n, F->Q->n*b->n,
+    SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
@@ -76,9 +77,35 @@ SPEX_info SPEX_qr_solve
     SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new));
     
     //--------------------------------------------------------------------------
+    // x = Q*b_new/scale
+    //--------------------------------------------------------------------------
+    // set scale = b->scale * rhos[n-1] / A_scale
+    SPEX_MPQ_SET_Z(b_new->scale, F->rhos->x.mpz[F->R->n-1]);
+    SPEX_MPQ_MUL(b_new->scale, b_new->scale, b->scale);
+    SPEX_MPQ_DIV(b_new->scale, b_new->scale, F->scale_for_A);
+
+    // allocate space for x as dense MPQ matrix
+    SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
+        0, false, true, option));
+    
+    // obtain x from permuted b2 with scale applied
+    for (i = 0 ; i < b->m ; i++)
+    {
+        qi = F->Q_perm[i];
+        for (j = 0 ; j < b->n ; j++)
+        {
+            SPEX_MPQ_SET_Z(SPEX_2D(x,  qi, j, mpq),
+                                      SPEX_2D(b_new,  i, j, mpz));
+            SPEX_MPQ_DIV(SPEX_2D(x,  qi, j, mpq),
+                                    SPEX_2D(x,  qi, j, mpq), b_new->scale);
+        }
+    }
+
+    
+    //--------------------------------------------------------------------------
     // Return result and free workspace
     //--------------------------------------------------------------------------
-    (*x_handle)=b_new;
+    (*x_handle)=x;//b_new;
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

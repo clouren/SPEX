@@ -84,7 +84,7 @@ SPEX_info SPEX_qr_analyze
     // Permute matrix A, that is apply the row/column ordering from the
     // symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
-    SPEX_CHECK( spex_qr_permute_A(&AQ, A, false, S->Q_perm, option) ); //TOASK merge chol_permute and qr_permute??
+    SPEX_CHECK( spex_qr_permute_A(&AQ, A, false, S->Q_perm, option) );
    
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the column elimination tree of AQ
@@ -105,9 +105,6 @@ SPEX_info SPEX_qr_analyze
         nz += S->cp [i] ;
     }
     S->rnz=nz;
-
-    // non-zeros in Q //TODO get Q->nnz (use tree?)
-    S->qnz = m*n; //upper bound on number of nonzeros of Q nnzA*number get number from test runs
 
     //--------------------------------------------------------------------------
     // Set output, free all workspace and return success

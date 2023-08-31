@@ -42,7 +42,7 @@ SPEX_info SPEX_qr_factorize
     SPEX_info info;
 
     // Declare variables
-    int64_t n=A->n, m=A->m, k,i,pQ,p, iQ, pR, rankDeficient;
+    int64_t n=A->n, m=A->m, k,i,pQ,p, iQ, pR, rankDeficient=0;
     SPEX_factorization F = NULL ;
     SPEX_matrix RT;
     int64_t *h, *Qk, *col;
@@ -60,18 +60,16 @@ SPEX_info SPEX_qr_factorize
     SPEX_MPQ_INIT(F->scale_for_A);
     SPEX_MPQ_SET(F->scale_for_A, A->scale);
 
-
     //--------------------------------------------------------------------------
     // Numerically permute matrix A, that is apply the column ordering from
     // the symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
-
-    //SPEX_CHECK( spex_qr_permute_A(&AQ, A, true, S->Q_perm, option) );//TODO don't do this, just access cols of A in the order of qperm (need to rethink some logic)
-
+    
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, A, S, option));
+    //SPEX_matrix_check(F->Q, option);
 
     h = (int64_t*) SPEX_calloc((F->Q->nz),sizeof(int64_t));
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
@@ -103,6 +101,7 @@ SPEX_info SPEX_qr_factorize
         //then the kth row of R is all zeros too and you skip operations on k
         if(isZeros)
         {
+            printf("here\n");
             ldCols[k]=true;//kth pivot of R is zeros, kth column of Q is ld
             // row k of R is zeros
             for (pR =RT->p[k];pR <RT->p[k+1];pR++)
@@ -120,7 +119,7 @@ SPEX_info SPEX_qr_factorize
             {
                 if(h[pQ]<k)
                 {
-                    SPEX_CHECK(spex_history_update(F->Q,F->rhos,pQ,k-2,h[pQ],h[pQ]-1,0,option)); //TODO check
+                    SPEX_CHECK(spex_history_update(F->Q,F->rhos,pQ,k-1,h[pQ],h[pQ]-1,0,option)); //TODO check
                 }
                 else
                 {
@@ -148,6 +147,8 @@ SPEX_info SPEX_qr_factorize
             SPEX_CHECK(spex_qr_ipgs(RT, F->Q, F->rhos, Qk,col, k, A, h,
                                      &isZeros, S->Q_perm, option));
         }
+        //SPEX_matrix_check(F->Q, option);
+        //SPEX_matrix_check(RT, option);
     }
     
     // Finish R (get the last element/pivot)
@@ -159,7 +160,7 @@ SPEX_info SPEX_qr_factorize
     }
     else
     {
-        SPEX_CHECK(spex_dot_product(RT->x.mpz[RT->p[n]-1],F->Q, n-1, A, n-1, option)); 
+        SPEX_CHECK(spex_dot_product(RT->x.mpz[RT->p[n]-1],F->Q, n-1, A, S->Q_perm[n-1], option)); 
         SPEX_MPZ_SET(F->rhos->x.mpz[n-1],RT->x.mpz[RT->p[n]-1]);    
     }
     //--------------------------------------------------------------------------
@@ -173,6 +174,7 @@ SPEX_info SPEX_qr_factorize
         SPEX_matrix QPi=NULL, RTPi=NULL;
         
         F->rank=n-rankDeficient;
+        printf("rank %ld %ld\n",F->rank,rankDeficient);
         
         Pi_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) ); //if we don't permute A we don't need Pi perm unless we want to store both F->pi and F->Q
         F->Q_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );

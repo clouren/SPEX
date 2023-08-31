@@ -9,8 +9,6 @@
 
 //------------------------------------------------------------------------------
 
-//TOASK this feels a little silly because it is basically the same as cholesky_permute_A except for Q_perm instead of P_perm
-
 #include "spex_qr_internal.h"
 
 #undef  SPEX_FREE_ALL

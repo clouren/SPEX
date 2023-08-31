@@ -73,12 +73,13 @@ SPEX_info spex_qr_ipgs
     //--------------------------------------------------------------------------
     // Compute row j of R, store as column
     //--------------------------------------------------------------------------
+
     for (pR =R->p[j];pR <R->p[j+1];pR++)
     {
         // Obtain the index of the current nonzero
         i = R->i[pR];//column number where j is row number
         // R(j,i) = Q(:,j) dot A(:,i)
-        SPEX_CHECK(spex_dot_product(R->x.mpz[pR],Q, j, A, i, option)); 
+        SPEX_CHECK(spex_dot_product(R->x.mpz[pR],Q, j, A, Q_perm[i], option)); 
     }
     //rhos stores the diagonal of R (pivots)
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]);

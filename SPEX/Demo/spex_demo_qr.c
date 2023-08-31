@@ -144,10 +144,10 @@ m=5;n=4;seed=14;
 /**/
     //char *mat_name = "ExampleMats/smallRankDeficient.mat.txt";
     //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
-    char *mat_name = "ExampleMats/LF10.mat.txt";
-    char *rhs_name = "ExampleMats/LF10.rhs.txt";
-    //char *mat_name = "ExampleMats/smallZeros.mat.txt";
-    //char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+    //char *mat_name = "ExampleMats/LF10.mat.txt";
+    //char *rhs_name = "ExampleMats/LF10.rhs.txt";
+    char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
+    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     // Read in A
     FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
@@ -217,14 +217,14 @@ m=5;n=4;seed=14;
 
     printf("analysis:\n");
     //option->print_level = 3;
-    //option->order =  SPEX_NO_ORDERING;
+    option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
-    //SPEX_matrix_check(A, option); 
+    SPEX_matrix_check(A, option); 
     printf("facts:\n");
     option->print_level = 3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    //SPEX_matrix_check(F->Q, option);
-    //SPEX_matrix_check(F->L, option);
+    SPEX_matrix_check(F->Q, option);
+    SPEX_matrix_check(F->R, option);
 
     printf("solve:\n");
     DEMO_OK (SPEX_qr_solve(&x, F, b, option));
@@ -237,6 +237,9 @@ m=5;n=4;seed=14;
 
     //printf("orint x sparse:\n");
      SPEX_matrix_check(x, option);
+     
+     printf("Rank of matrix: %ld, is deficient? %ld\n",F->rank,(F->R->n)-(F->rank)); //if rank defficient then sol will be wrong
+     DEMO_OK(spex_demo_check_solution(A,x,b,option)); //works is x is mpq
    /* */
     ////
     // Tests

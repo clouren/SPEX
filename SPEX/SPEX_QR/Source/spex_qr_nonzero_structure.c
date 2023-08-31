@@ -118,7 +118,7 @@ SPEX_info spex_qr_nonzero_structure
 
     int64_t *w, *s, *leftmost;
     int64_t *Qi, *Qp;
-    int64_t top, k, len, i, p, n = A->n, m=A->m, m2=m, rnz, qnz, j,h,len2, col;
+    int64_t top, k, len, i, p, n = A->n, m=A->m, m2=m, rnz, qnz, j,h,len2, col,q;
     SPEX_matrix R = NULL, Q=NULL;
     SPEX_matrix QT= NULL, RT=NULL;
     ASSERT(n >= 0);
@@ -174,30 +174,28 @@ SPEX_info spex_qr_nonzero_structure
         for (p = A->p [col] ; p < A->p [col+1] ; p++)   /* find R(:,k) pattern */
         {
             i = leftmost [A->i [p]] ;         /* i = min(find(A(i,q))) */
+            //printf("col %ld lefrmost %ld p %ld\n",col,i,A->i[p]);
             for (len = 0 ; w [i] != k ; i = S->parent [i]) /* traverse up to k */
             {
                 s [len++] = i ;
                 w [i] = k ;
+                //printf("len %ld i %ld paretn %ld\n",len,i,S->parent[i]);
             }
             while (len > 0) s [--top] = s [--len] ; /* push path on stack */
             
-            i=A->i [p];
-            //i=pinv[A->i [p]];
-            if (i > k && w [i] < k)         /* pattern of V(:,k) = x (k+1:m) */
-            {
-                w [i] = k ;
-            }
         } 
 
         //order s
-        bubbleSort(s,top,n);//FIXME qsort(&xi[top], n-top, sizeof(int64_t), compare);     
+        //qsort(&s[top], n-top, sizeof(int64_t), compare); //TODO check if this is needed, seems like it isn't, but it's staying here in case things start going wrong
 
         for (p = top ; p < n ; p++) /* for each i in pattern of R(:,k) */
         {
+            //printf("k %ld i %ld rnz %ld\n",k,s[p],rnz);
             i = s [p] ;                     /* R(i,k) is nonzero */
             R->i [rnz] = i ;                  /* R(i,k) = x(i) */
             rnz++;
         }
+        //printf("k %ld rnz %ld\n",k,rnz);
         R->i [rnz] = k ;                     /* R(k,k) */
         rnz++;
     }
@@ -205,9 +203,11 @@ SPEX_info spex_qr_nonzero_structure
     R->p[n] = S->rnz = rnz;
     SPEX_CHECK(spex_qr_transpose(&RT,R,NULL));
     (*R_handle) = RT;
-
+    //SPEX_matrix_check(R, option);
 
     // Q
+    
+    
     for (i = 0 ; i < m2 ; i++) w [i] = -1 ; /* clear w, to mark nodes */
     
     qnz = 0 ;
@@ -215,7 +215,6 @@ SPEX_info spex_qr_nonzero_structure
     {    
         Qp [k] = qnz ;  
         top = n ;
-        col = S->Q_perm[k];
 
         //i = leftmost[col];
         i = leftmost[k];
@@ -261,40 +260,34 @@ SPEX_info spex_qr_nonzero_structure
     {
         SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[p]);
     }
-    
-    for(k=1;k<n;k++) //FIXME there has to be a better more sparse way of doing this, maybe look at dotprod
+    //similar logic to dot product
+    for(k=1;k<n;k++) 
     {
-        h=0; //h makes it so that we don't start at the begining of the column of Q every single time, but we start where we left off
         col = S->Q_perm[k];
-        for(p=A->p[col];p<A->p[col+1];p++)
+        p=A->p[col];
+        q=Q->p[k];
+        while(p < A->p[col+1] && q < Q->p[k+1])
         {
-            i=A->i[p];
-            for(j=Q->p[col]+h;j<Q->p[col+1];j++)
+            if(A->i[p] < Q->i[q])
             {
-                if(i==Q->i[j])
-                {
-                    h=j-Q->p[col];
-                    SPEX_MPZ_SET(Q->x.mpz[j],A->x.mpz[p]);
-                    continue;
-                }
-                
+                p++;
+            }
+            else if(A->i[p] > Q->i[q])
+            {
+                q++;
+            }
+            else
+            {
+                SPEX_MPZ_SET(Q->x.mpz[q],A->x.mpz[p]);
+                p++;
+                q++;
             }
         }
-        
     }
 
 
     (*Q_handle) = Q;
-
-    for (i = 0; i < n; i++)
-    {
-        printf("%ld %ld: ", i, Q->p[i]);
-        for(p=Q->p[i];p<Q->p[i+1];p++)
-        {
-            printf("%ld %ld, ", p, Q->i[p]);
-        }
-        printf("\n");
-    }
+    
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

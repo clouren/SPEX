@@ -30,7 +30,7 @@ SPEX_info spex_demo_check_solution
 )
 {
     if (!SPEX_initialize ( )) return (SPEX_PANIC);
-
+   
     //--------------------------------------------------------------------------
     // check inputs. Input are also checked by the two callers
     //--------------------------------------------------------------------------
@@ -48,7 +48,7 @@ SPEX_info spex_demo_check_solution
     SPEX_matrix b2 = NULL;   // b2 stores the solution of A*x
     mpq_t temp; SPEX_MPQ_SET_NULL(temp);
     mpq_t scale; SPEX_MPQ_SET_NULL(scale);
-
+   
     SPEX_MPQ_INIT(temp);
     SPEX_MPQ_INIT(scale);
     SPEX_CHECK (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
@@ -69,7 +69,7 @@ SPEX_info spex_demo_check_solution
                 // temp = A[p][i] (note this must be done seperately since A is
                 // mpz and temp is mpq)
                 SPEX_MPQ_SET_Z(temp, A->x.mpz[p]);
-
+                
                 // temp = temp*x[i]
                 SPEX_MPQ_MUL(temp, temp,
                                         SPEX_2D(x, i, j, mpq));
@@ -102,7 +102,7 @@ SPEX_info spex_demo_check_solution
     //--------------------------------------------------------------------------
     // check if b==b2
     //--------------------------------------------------------------------------
-
+    
     for (j = 0; j < b->n; j++)
     {
         for (i = 0; i < b->m; i++)
