@@ -26,7 +26,7 @@
     SPEX_matrix_free(&Q,NULL);       \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_qr_internal.h"
 
 
 /* Purpose: This function performs a symbolic sparse triangular solve for

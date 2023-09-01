@@ -580,6 +580,18 @@ SPEX_info spex_ipge_update
     SPEX_options option
 );
 
+SPEX_info spex_history_update
+(
+    SPEX_matrix A,    
+    SPEX_matrix rhos,         // sequence of pivots
+    const int64_t a,
+    const int64_t i,
+    const int64_t j,
+    const int64_t k,
+    const int64_t thres,         
+    SPEX_options option
+);
+
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type
 #define SPEX_X(A)                                                           \
     ((A->type == SPEX_MPZ  ) ? (void *) A->x.mpz   :                        \

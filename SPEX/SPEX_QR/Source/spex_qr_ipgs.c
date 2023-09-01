@@ -148,8 +148,8 @@ SPEX_info spex_qr_ipgs
             if(col[iQ]!=j) continue; 
             
             //history update
-            //"an update of Q(i,j)" has been skipped because R(i,l) is zero 
-            // or Q(i,l) is zero //TODO fix index in comments
+            //"an update of Q(iQ,i)" has been skipped because R(j,i) is zero 
+            // or Q(iQ,i-1) is zero
             if(j+1>h[pQ]+1)
             {
                 SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
@@ -183,14 +183,8 @@ SPEX_info spex_qr_ipgs
         iQ=Q->i[pQ];
         prev=Qj[iQ];
         
-        //fix logic
         if(prev==-1 || i!=k)
         {
-            //check if column j of Q had a nonzero element in row iQ
-            //SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
-            //if(sgn==0) continue;
-            //Q(i,j)=rho^()*Q(i,k)/rho^()
-            // Q[pQ] = x[pQ] * rho[i]
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(k>1 && h[pQ]>0)
             {
@@ -205,9 +199,8 @@ SPEX_info spex_qr_ipgs
             
             if(j+1>h[pQ]+1) //"an u
             {
-                //"an update of Q(i,j)" has been skipped because R(i,l) is zero 
-                // or Q(i,l) is zero TODO same as before
-
+                //"an update of Q(iQ,j+1)" has been skipped because R(j,i) is zero 
+                // or Q(iQ,j) is zero
                 SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
                 
             }
