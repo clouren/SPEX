@@ -9,7 +9,21 @@
 //------------------------------------------------------------------------------
 
 
-/* This code performs the REF QR factorization via Integer-preserving Gram-Schmidt
+/* Purpose: This function performs the REF QR factorization via 
+ * Integer-preserving Gram-Schmidt
+ *
+ * Input arguments of the function:
+ *
+ * F_handle:    Handle to the factorization struct. Null on input.
+ *              On output, contains a pointer to the factorization.
+ *
+ * A:           User's input matrix. Must be SPEX_MPZ and SPEX_CSC.
+ *
+ * S:           Symbolic analysis struct for QR factorization.
+ *              On input it contains the column elimination tree and
+ *              the number of nonzeros in R.
+ *
+ * option:      Command options.
  */
 
 # include "spex_qr_internal.h"
@@ -33,10 +47,15 @@
 
 SPEX_info SPEX_qr_factorize
 (
-    SPEX_factorization *F_handle,
-    const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_symbolic_analysis S,
-    SPEX_options option
+    // Output
+    SPEX_factorization *F_handle,   // QR factorization struct
+    //Input
+    const SPEX_matrix A,            // Matrix to be factored. Must be SPEX_MPZ
+                                    // and SPEX_CSC
+    SPEX_symbolic_analysis S,       // Symbolic analysis struct containing the
+                                    // column elimination tree of A, the column
+                                    // permutation, and number of nonzeros in R
+    const SPEX_options option       // command options.
 )
 {
     SPEX_info info;
@@ -61,24 +80,20 @@ SPEX_info SPEX_qr_factorize
     SPEX_MPQ_SET(F->scale_for_A, A->scale);
 
     //--------------------------------------------------------------------------
-    // Numerically permute matrix A, that is apply the column ordering from
-    // the symbolic analysis step to get the permuted matrix AQ.
+    // Allocate and compute the nonzero structure of Q and R
     //--------------------------------------------------------------------------
+
+    SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, A, S, option));
     
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
-    SPEX_CHECK(spex_qr_nonzero_structure(&RT, &F->Q, A, S, option));
-    //SPEX_matrix_check(F->Q, option);
-
+    //--------------------------------------------------------------------------
+    // Allocate and initialize supporting vectors
+    //--------------------------------------------------------------------------
     h = (int64_t*) SPEX_calloc((F->Q->nz),sizeof(int64_t));
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     col = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
-    // initialize workspace history array
-    /*for (i = 0; i < F->Q->nz; i++)
-    {
-        h[i] = 0;
-    }*/
     for(k=0;k<m;k++)
     {
         Qk[k]=-1;
@@ -90,7 +105,7 @@ SPEX_info SPEX_qr_factorize
         col[F->Q->i[k]]=0;
     }
     
-    ldCols = (bool*) SPEX_calloc((n),sizeof(bool));//bool?
+    ldCols = (bool*) SPEX_calloc((n),sizeof(bool));
    
     //--------------------------------------------------------------------------
     // Perform IPGS to get Q and R
@@ -101,7 +116,6 @@ SPEX_info SPEX_qr_factorize
         //then the kth row of R is all zeros too and you skip operations on k
         if(isZeros)
         {
-            printf("here\n");
             ldCols[k]=true;//kth pivot of R is zeros, kth column of Q is ld
             // row k of R is zeros
             for (pR =RT->p[k];pR <RT->p[k+1];pR++)
@@ -117,9 +131,11 @@ SPEX_info SPEX_qr_factorize
             // Finalize Q k+1 (it keeps its previous values)
             for (pQ =F->Q->p[k+1]; pQ < F->Q->p[k+2]; pQ++)
             {
+                //History update
                 if(h[pQ]<k)
                 {
-                    SPEX_CHECK(spex_history_update(F->Q,F->rhos,pQ,k-1,h[pQ],h[pQ]-1,0,option)); //TODO check
+                    SPEX_CHECK(spex_history_update(F->Q,F->rhos,pQ,k-1,h[pQ],
+                                                    h[pQ]-1,0,option));
                 }
                 else
                 {
@@ -129,7 +145,7 @@ SPEX_info SPEX_qr_factorize
                 Qk[iQ]=pQ;
                 col[iQ]=k+1;
             }
-            // Update the entire history vector
+            // Update the history vector
             for(i = pQ; i < F->Q->nz; i++)
             {
                 if(h[i]==k)
@@ -137,6 +153,7 @@ SPEX_info SPEX_qr_factorize
                     h[i]=k+1;
                 }
             }
+
             rankDeficient++;
             
             isZeros=false;
@@ -147,11 +164,10 @@ SPEX_info SPEX_qr_factorize
             SPEX_CHECK(spex_qr_ipgs(RT, F->Q, F->rhos, Qk,col, k, A, h,
                                      &isZeros, S->Q_perm, option));
         }
-        //SPEX_matrix_check(F->Q, option);
-        //SPEX_matrix_check(RT, option);
+
     }
     
-    // Finish R (get the last element/pivot)
+    // Finalize R (get the last element/pivot)
     if(isZeros)
     {
         ldCols[k]=true;
@@ -160,9 +176,12 @@ SPEX_info SPEX_qr_factorize
     }
     else
     {
-        SPEX_CHECK(spex_dot_product(RT->x.mpz[RT->p[n]-1],F->Q, n-1, A, S->Q_perm[n-1], option)); 
+        SPEX_CHECK(spex_dot_product(RT->x.mpz[RT->p[n]-1],F->Q, n-1, A, 
+                                       S->Q_perm[n-1], option)); 
         SPEX_MPZ_SET(F->rhos->x.mpz[n-1],RT->x.mpz[RT->p[n]-1]);    
     }
+
+
     //--------------------------------------------------------------------------
     // Get rank revealing permutation 
     //--------------------------------------------------------------------------
@@ -174,7 +193,6 @@ SPEX_info SPEX_qr_factorize
         SPEX_matrix QPi=NULL, RTPi=NULL;
         
         F->rank=n-rankDeficient;
-        printf("rank %ld %ld\n",F->rank,rankDeficient);
         
         Pi_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) ); //if we don't permute A we don't need Pi perm unless we want to store both F->pi and F->Q
         F->Q_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
@@ -200,6 +218,7 @@ SPEX_info SPEX_qr_factorize
                 iNon++;
             }
         }
+        //TODO b4 meeting!!!
         
         /*SPEX_CHECK( spex_qr_permute_A(&QPi, F->Q, true, Pi_perm, option) );
         SPEX_CHECK( spex_qr_permute_A(&RTPi, RT, true, Pi_perm, option) );
@@ -213,7 +232,7 @@ SPEX_info SPEX_qr_factorize
     }
     else
     {
-        
+        F->rank=n;
         // column permutation, to be copied from S->Q_perm
         F->Q_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
         if (!(F->Q_perm))

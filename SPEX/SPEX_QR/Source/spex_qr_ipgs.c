@@ -9,9 +9,37 @@
 //------------------------------------------------------------------------------
 
 
-/* Given the non-zero pattern of the j-th row of R, this code performs one 
- * iteration of REF QR via Integer-preserving Gram-Schmidt to obtain row j of R 
- * and column j+1 of Q
+/* This function obtains row j of R (using a dot product) and column j+1 pf Q 
+ * (using Integer-preserving Gram-Schmidt).
+ * 
+ * 
+ * Input/output arguments:
+ *
+ * R:        Right triangular matrix. On input contains j-1 columns computed
+ *           On output contains j columns computed.
+ *  
+ * Q:        Pair-wise orthogonal matrix. On input contains j columns finalized
+ *           and n-j columns in progress. On output contains j+1 columns finalized
+ *           and n-j+1 columns in progress.
+ *    
+ * rhos:     Sequence of pivots. R(k,k)
+ *
+ * Qj:       Vector containing the pointers to the elements of the j-th column of Q
+ *
+ * col:      Vector containing column numbers
+ *
+ * j:        Row of R to compute (col j+1 of Q will be finalized)
+ *
+ * A:        Matrix to be factored
+ *
+ * h:        History vector
+ * isZeros:  boolean value. On output it's true if column j+1 is linearly dependent
+ *           of columns 0 to j of Q, false otherwise. The numerical values of 
+ *           linearly dependent columns are zero.
+ *
+ * Q_perm:   Column permutation
+ *
+ * option:   Command options
  */
 
 # include "spex_qr_internal.h"
@@ -28,21 +56,36 @@
     SPEX_matrix_free(&Q, NULL);      \
     SPEX_matrix_free(&rhos, NULL);      \
 }
-
+/* TOASK
+    //Input/Output
+    SPEX_matrix R,       // Right triangular matrix
+    SPEX_matrix Q,       // Pair-wise orthogonal matrix
+    SPEX_matrix rhos,    // sequence of pivots
+    int64_t *Qj,         // pointers to elements of the jth column of Q
+    int64_t *col,        // column numbers
+    int64_t *h,          // History vector
+    //Output
+    bool *isZeros,       // True if j+1th column of Q is linearly dependent
+    //Input
+    onst int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
+    const SPEX_matrix A, // Matrix to be factored
+    int64_t *Q_perm,     // Column permutation
+    SPEX_options option  // Command options
+*/
 
 SPEX_info spex_qr_ipgs
 (
-    SPEX_matrix R,    
-    SPEX_matrix Q,    
+    SPEX_matrix R,       // Right triangular matrix
+    SPEX_matrix Q,       // Pair-wise orthogonal matrix
     SPEX_matrix rhos,    // sequence of pivots
-    int64_t *Qj,
-    int64_t *col,
+    int64_t *Qj,         // pointers to elements of the jth column of Q
+    int64_t *col,        // column numbers
     const int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
     const SPEX_matrix A, // Matrix to be factored
-    int64_t *h,
-    bool *isZeros,
-    int64_t *Q_perm,
-    SPEX_options option
+    int64_t *h,          // History vector
+    bool *isZeros,       // True if j+1th column of Q is linearly dependent
+    int64_t *Q_perm,     // Column permutation
+    SPEX_options option  // Command options
 )
 {
     SPEX_info info;

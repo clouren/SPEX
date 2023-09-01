@@ -8,13 +8,16 @@
 
 //------------------------------------------------------------------------------
 
-/* This code contains a dense REF QR factorization. It is meant to be proof of
- * concept for the REF QR factorization algorithms. It computes the
- * factorization A = Q D R where Q and R is integer. Note that all code in this
- * version of SPEX QR assumes that A is a fully dense matrix; thus these
- * routines are not yet appropriate for sparse matrices.
- */
-
+//(future) TODO:
+/* 
+* python + matlab interface
+* user guide
+* tcov
+* tests with rank deficient (ideally also ill conditioned so we can compare to matlab?)
+* tests with ls probs
+* matrix multiply (to compare with chol for ls probs)
+* actual demo like chol's
+*/
 
 # include "SPEX.h"
 # include "spex_util_internal.h"
@@ -146,7 +149,7 @@ m=5;n=4;seed=14;
     //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
     //char *rhs_name = "ExampleMats/LF10.rhs.txt";
-    char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
+    char *mat_name = "ExampleMats/smallZeros.mat.txt";
     char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     // Read in A
     FILE *mat_file = fopen(mat_name,"r");

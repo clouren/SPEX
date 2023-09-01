@@ -9,14 +9,24 @@
 //------------------------------------------------------------------------------
 
 
-/* This code performs the sparse R \ Q^T b. First it computes R(n,n)*Q^T b has already
- * been computed. Then does
- * back solve.  Returns x as mpq. //TOASK what to return x as, rn I'm mimic-ing LU where it is returned as a rational number
+/* Purpose: This function performs the sparse R \ Q^T b. First it computes Q^T b 
+ * then it solves R \ (Q^T b) using backward substitution.
+ *
+ * Input/output arguments:
+ *
+ * x_handle: A pointer to the solution vectors. Unitialized on input.
+ *           on output, contains the exact rational solution of the system
+ *
+ * b:        Set of RHS vectors
+ *
+ * F:        QR factorization of A.
+ *
+ * option:   command options
  */
 
 #define SPEX_FREE_WORKSPACE        \
 {                                  \
-    SPEX_matrix_free(&b_perm, option); \
+    SPEX_matrix_free(&b_new, option); \
 }
 
 # define SPEX_FREE_ALL             \
@@ -30,10 +40,14 @@
 
 SPEX_info SPEX_qr_solve
 (
-    SPEX_matrix *x_handle, // Solution
-    SPEX_factorization F,
-    const SPEX_matrix b,        // Q^T * b
-    const SPEX_options option
+    // Output
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: Rational solution (SPEX_MPQ)
+                                // to the system.
+    // input
+    const SPEX_factorization F, // The QR factorization.
+    const SPEX_matrix b,        // Right hand side vector
+    const SPEX_options option   // command options
 )
 {
     SPEX_info info;
@@ -45,19 +59,19 @@ SPEX_info SPEX_qr_solve
     ASSERT( Q->kind == SPEX_CSC);
     ASSERT( b->kind == SPEX_DENSE);
 
-    SPEX_matrix b_new = NULL, b_perm=NULL, x=NULL;
-    int64_t k, p, i,j;
-    int64_t qi;
+    SPEX_matrix b_new = NULL, x=NULL;
+    int64_t k, p, i,j,qi;
 
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));
+    
+    //--------------------------------------------------------------------------
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
-    
-    SPEX_CHECK (spex_permute_dense_matrix (&b_perm, b, F->Q_perm, option)); 
+    //--------------------------------------------------------------------------
     // Iterate across every RHS vector
-    for (k = 0; k < b->n; k++) //if b is a vector this will only be once, but b can be a matrix or rhs's
+    for (k = 0; k < b->n; k++) //if b is a vector this will only be once
     {
         // Compute b[j,k]
         for(j=0;j<F->Q->n;j++)
@@ -65,14 +79,18 @@ SPEX_info SPEX_qr_solve
             for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
                 i=F->Q->i[p];
-                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],SPEX_2D(b_perm, i, k, mpz));
+                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],
+                                 SPEX_2D(b, i, k, mpz));
             }
             //F->rhos->x.mpz[F->R->n-1] is the determinant
-            SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),F->rhos->x.mpz[F->R->n-1]);
+            SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),
+                             F->rhos->x.mpz[F->R->n-1]);
         }
     }
     
-    //backwards substitution
+    //--------------------------------------------------------------------------
+    // backwards substitution
+    //--------------------------------------------------------------------------
     //Solves Rx=b_new (overwrites b_new into x)
     SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new));
     
@@ -88,7 +106,7 @@ SPEX_info SPEX_qr_solve
     SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
         0, false, true, option));
     
-    // obtain x from permuted b2 with scale applied
+    // obtain x from permuted b_new with scale applied
     for (i = 0 ; i < b->m ; i++)
     {
         qi = F->Q_perm[i];

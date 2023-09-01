@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_QR/spex_qr_pre_factor: Symbolic left-looking Cholesky for QR
+// SPEX_QR/spex_qr_nonzero_structure: Nonzero patten for QR
 //------------------------------------------------------------------------------
 
 // SPEX_QR: (c) 2020-2023, Lorena Mejia Domenzain, Christopher Lourenco,
@@ -34,56 +34,24 @@
  * It allocates the memory for the R matrix and determines the full nonzero
  * pattern of R
  * It also obtains the nonzero pattern of Q using the column elimination 
- * tree.
- *
- * Importantly, this function assumes that A has already been permuted.
+ * tree. And fills in the values from A into Q
  *
  * Input arguments of the function:
  *
  * R_handle:    A handle to the R matrix. Null on input.
- *              On output, contains a pointer to the partial R matrix.
+ *              On output, contains a pointer to the partial RT matrix.
  * 
  * Q_handle:    A handle to the Q matrix. Null on input.
  *              On output, contains a pointer to the partial Q matrix
  *
- * A:           The user's permuted input matrix
+ * A:           The user's input matrix
  *
  * S:            Symbolic analysis struct for QR factorization.
- *               On input it contains information that is not used in this
- *               function such as the row/column permutation
- *               On output it contains the number of nonzeros in R.
+ *               On input it contains the column permutation
+ *               On output it contains the number of nonzeros in R and Q.
+ *
+ * option:       command options
  */
-void swap(int64_t* xp, int64_t* yp)
-{
-    int64_t temp = *xp;
-    *xp = *yp;
-    *yp = temp;
-}
-
-// An optimized version of Bubble Sort
-void bubbleSort(int64_t *arr, int64_t top,int64_t n)
-{
-    int i, j;
-    bool swapped;
-    
-    for (i = 0; i < n - 1; i++) 
-    {
-        swapped = false;
-        for (j = top; j < n - i - 1; j++) 
-        {
-            if (arr[j] > arr[j + 1]) 
-            {
-                swap(&arr[j], &arr[j + 1]);
-                swapped = true;
-            }
-        }
-        // If no two elements were swapped by inner loop,
-        // then break
-        if (swapped == false) break;
-        
-    }
-    
-}
 
 // Sorting function
 static inline int compare (const void * a, const void * b)
@@ -100,9 +68,8 @@ SPEX_info spex_qr_nonzero_structure
     SPEX_matrix *Q_handle,        // On output: partial R matrix
                                   // On input: undefined
     // Input
-    //int64_t *xi,                  // Workspace nonzero pattern vector
     const SPEX_matrix A,          // Input Matrix
-    const SPEX_symbolic_analysis S,  // Symbolic analysis struct containing the
+    SPEX_symbolic_analysis S,     // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
@@ -124,7 +91,7 @@ SPEX_info spex_qr_nonzero_structure
     ASSERT(n >= 0);
 
     //--------------------------------------------------------------------------
-    // Declare memory for R
+    // Allocate memory
     //--------------------------------------------------------------------------
 
     // Allocate R
@@ -161,7 +128,7 @@ SPEX_info spex_qr_nonzero_structure
     }
 
     //--------------------------------------------------------------------------
-    // Iterations 1:n-1
+    // Nonzero pattern of R
     //--------------------------------------------------------------------------
     rnz = 0 ;
     for (k = 0; k < n; k++)
@@ -174,12 +141,10 @@ SPEX_info spex_qr_nonzero_structure
         for (p = A->p [col] ; p < A->p [col+1] ; p++)   /* find R(:,k) pattern */
         {
             i = leftmost [A->i [p]] ;         /* i = min(find(A(i,q))) */
-            //printf("col %ld lefrmost %ld p %ld\n",col,i,A->i[p]);
             for (len = 0 ; w [i] != k ; i = S->parent [i]) /* traverse up to k */
             {
                 s [len++] = i ;
                 w [i] = k ;
-                //printf("len %ld i %ld paretn %ld\n",len,i,S->parent[i]);
             }
             while (len > 0) s [--top] = s [--len] ; /* push path on stack */
             
@@ -190,24 +155,23 @@ SPEX_info spex_qr_nonzero_structure
 
         for (p = top ; p < n ; p++) /* for each i in pattern of R(:,k) */
         {
-            //printf("k %ld i %ld rnz %ld\n",k,s[p],rnz);
             i = s [p] ;                     /* R(i,k) is nonzero */
             R->i [rnz] = i ;                  /* R(i,k) = x(i) */
             rnz++;
         }
-        //printf("k %ld rnz %ld\n",k,rnz);
         R->i [rnz] = k ;                     /* R(k,k) */
         rnz++;
     }
     // Finalize R->p
     R->p[n] = S->rnz = rnz;
     SPEX_CHECK(spex_qr_transpose(&RT,R,NULL));
-    (*R_handle) = RT;
     //SPEX_matrix_check(R, option);
 
-    // Q
     
     
+    //--------------------------------------------------------------------------
+    // Nonzero pattern of QT
+    //--------------------------------------------------------------------------
     for (i = 0 ; i < m2 ; i++) w [i] = -1 ; /* clear w, to mark nodes */
     
     qnz = 0 ;
@@ -215,13 +179,10 @@ SPEX_info spex_qr_nonzero_structure
     {    
         Qp [k] = qnz ;  
         top = n ;
-
-        //i = leftmost[col];
         i = leftmost[k];
-        //printf("k %ld col %ld  left %ld\n",k,col,i);
+
         for (len = 0 ; i!=-1 && w [i] != k; i = S->parent [i]) /* traverse up to root*/
         {
-            //printf("k %ld p %ld i: %ld\n",k,p,i);
             s [len++] = i ;
             w [i] = k ;
         }
@@ -230,7 +191,6 @@ SPEX_info spex_qr_nonzero_structure
  
         for (p = top ; p < n ; p++) /* for each i in pattern of Q(:,k) */
         {
-            //printf("p %ld i %ld\n", p, s[p]);
             i = s [p] ;                     /* Q(i,k) is nonzero */
             Qi [qnz++] = i ;                  /* Q(i,k) = x(i) */
         }
@@ -240,27 +200,27 @@ SPEX_info spex_qr_nonzero_structure
     Qp[n] = S->qnz = qnz;
     SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, S->qnz,
         true, false, NULL));
-    /*bool ok ;
-    Qi = (int64_t *) SPEX_realloc (qnz, n*m, sizeof (int64_t), Qi, &ok);
-    if (!ok)    {return SPEX_OUT_OF_MEMORY;}
-    Qp = (int64_t *) SPEX_realloc (qnz, n*m, sizeof (int64_t), Qp, &ok);
-    if (!ok)    {return SPEX_OUT_OF_MEMORY;}*/
+    
     QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
     QT->p = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
     memcpy(QT->i, Qi, qnz*sizeof(int64_t));
     memcpy(QT->p, Qp, qnz*sizeof(int64_t));
     QT->p_shallow=false;
     QT->i_shallow=false;
+
+    // Transpose to obtain the nonzero pattern of Q
     SPEX_CHECK(spex_qr_transpose(&Q, QT, NULL));
     Q->nz=qnz;
 
-    //copy A into Q
+    //--------------------------------------------------------------------------
+    // Copy values of A into Q
+    //--------------------------------------------------------------------------
     //first column is exactly the same
     for(p=A->p[0];p<A->p[1];p++)
     {
         SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[p]);
     }
-    //similar logic to dot product
+    //For all other columns the logic is similar to that of the dot product
     for(k=1;k<n;k++) 
     {
         col = S->Q_perm[k];
@@ -284,10 +244,13 @@ SPEX_info spex_qr_nonzero_structure
             }
         }
     }
-
-
-    (*Q_handle) = Q;
     
+    ///--------------------------------------------------------------------------
+    // free workspace and return result
+    //--------------------------------------------------------------------------
+    (*Q_handle) = Q;
+    (*R_handle) = RT; //Return R transpose because of how we store R in factorization
+
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

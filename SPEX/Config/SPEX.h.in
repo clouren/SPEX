@@ -1492,7 +1492,7 @@ SPEX_info SPEX_qr_factorize
 SPEX_info SPEX_qr_solve
 (
     SPEX_matrix* x_handle, // Solution
-    SPEX_factorization F,
+    const SPEX_factorization F,
     const SPEX_matrix b,        // Q^T * b
     const SPEX_options option
 );
