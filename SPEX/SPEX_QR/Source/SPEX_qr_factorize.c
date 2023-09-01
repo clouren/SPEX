@@ -32,7 +32,6 @@
 {                                   \
     SPEX_matrix_free(&(RT),option); \
     SPEX_free(h);                   \
-    SPEX_free(col);                 \
     SPEX_free(Qk);                   \
     SPEX_free(ldCols);                   \
 }
@@ -64,7 +63,7 @@ SPEX_info SPEX_qr_factorize
     int64_t n=A->n, m=A->m, k,i,pQ,p, iQ, pR, rankDeficient=0;
     SPEX_factorization F = NULL ;
     SPEX_matrix RT, Q;
-    int64_t *h, *Qk, *col;
+    int64_t *h, *Qk;
     bool isZeros=false, *ldCols;
     
     
@@ -93,16 +92,13 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     h = (int64_t*) SPEX_calloc((Q->nz),sizeof(int64_t));
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
-    col = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     for(k=0;k<m;k++)
     {
         Qk[k]=-1;
-        col[k]=-1;
     }
     for(k=Q->p[0];k<Q->p[1];k++)
     {
         Qk[Q->i[k]]=k;
-        col[Q->i[k]]=0;
     }
     
     ldCols = (bool*) SPEX_calloc((n),sizeof(bool));
@@ -143,7 +139,6 @@ SPEX_info SPEX_qr_factorize
                 }
                 iQ=Q->i[pQ];
                 Qk[iQ]=pQ;
-                col[iQ]=k+1;
             }
             // Update the history vector
             for(i = pQ; i < Q->nz; i++)
@@ -161,7 +156,7 @@ SPEX_info SPEX_qr_factorize
         else
         {
             // Integer-preserving Gram-Schmidt
-            SPEX_CHECK(spex_qr_ipgs(RT, Q, F->rhos, Qk,col, k, A, h,
+            SPEX_CHECK(spex_qr_ipgs(RT, Q, F->rhos, Qk, k, A, h,
                                      &isZeros, S->Q_perm, option));
         }
 
@@ -181,7 +176,8 @@ SPEX_info SPEX_qr_factorize
         SPEX_MPZ_SET(F->rhos->x.mpz[n-1],RT->x.mpz[RT->p[n]-1]);    
     }
 
-
+    SPEX_matrix_check(Q, option);
+    SPEX_matrix_check(RT, option);
     //--------------------------------------------------------------------------
     // Get rank revealing permutation 
     //--------------------------------------------------------------------------
@@ -225,13 +221,16 @@ SPEX_info SPEX_qr_factorize
         SPEX_CHECK( spex_qr_permute_A(&F->Q, Q, true, Pi_perm, option) );
         SPEX_CHECK( spex_qr_permute_A(&RTPi, RT, true, Pi_perm, option) );
         
+        
         SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
         F->R->nz=RT->p[n]-1;
-              
+        
+        SPEX_matrix_free(&Q,option);
     }
     else
     {
-        F->rank=n;
+        F->rank=n; //matrix has full rank
+        
         // column permutation, to be copied from S->Q_perm
         F->Q_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
         if (!(F->Q_perm))

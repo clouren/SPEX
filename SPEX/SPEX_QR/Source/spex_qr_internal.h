@@ -76,7 +76,6 @@ SPEX_info spex_qr_ipgs
     SPEX_matrix Q,       // Pair-wise orthogonal matrix
     SPEX_matrix rhos,    // sequence of pivots
     int64_t *Qj,         // pointers to elements of the jth column of Q
-    int64_t *col,        // column numbers
     const int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
     const SPEX_matrix A, // Matrix to be factored
     int64_t *h,          // History vector
