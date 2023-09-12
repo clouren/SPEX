@@ -53,11 +53,23 @@ SPEX_info SPEX_qr_solve
     SPEX_info info;
     // Check inputs, the number of columns of Q' must equal the number of rows of b
     // Also, both matrices must be mpz and dense
-    ASSERT( Q->m == b->m);
-    ASSERT( Q->type == SPEX_MPZ);
-    ASSERT( b->type == SPEX_MPZ);
-    ASSERT( Q->kind == SPEX_CSC);
-    ASSERT( b->kind == SPEX_DENSE);
+    // Ensure SPEX is initialized
+    if (!spex_initialized())
+    {
+        return SPEX_PANIC;
+    }
+
+    // Check the inputs
+    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE
+        || F->kind != QR_FACTORIZATION)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+    if(F->rank!=A->n) //A is rank deficient
+    {
+        return SPEX_RANK_DEFICIENT;
+    }
+
 
     SPEX_matrix b_new = NULL, x=NULL;
     int64_t k, p, i,j,qi;

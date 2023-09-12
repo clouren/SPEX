@@ -69,11 +69,11 @@ SPEX_info spex_qr_nonzero_structure
                                   // On input: undefined
     // Input
     const SPEX_matrix A,          // Input Matrix
-    SPEX_symbolic_analysis S,     // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
-    SPEX_options option
+    const SPEX_options option
 )
 {
 
@@ -99,7 +99,7 @@ SPEX_info spex_qr_nonzero_structure
         false, false, NULL));
 
     Qi = (int64_t*) SPEX_malloc((n*m)* sizeof (int64_t));
-    Qp = (int64_t*) SPEX_malloc((n*m)* sizeof (int64_t));
+    Qp = (int64_t*) SPEX_malloc((m)* sizeof (int64_t));
 
     w = (int64_t*) SPEX_malloc((n+m2)* sizeof (int64_t));
     leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
@@ -163,7 +163,7 @@ SPEX_info spex_qr_nonzero_structure
         rnz++;
     }
     // Finalize R->p
-    R->p[n] = S->rnz = rnz;
+    R->p[n] = rnz;
     SPEX_CHECK(spex_qr_transpose(&RT,R,NULL));
     //SPEX_matrix_check(R, option);
 
@@ -197,7 +197,7 @@ SPEX_info spex_qr_nonzero_structure
         
     }
     // Finalize Q->p
-    Qp[n] = S->qnz = qnz;
+    Qp[n] =  qnz;
     SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, S->qnz,
         true, false, NULL));
     

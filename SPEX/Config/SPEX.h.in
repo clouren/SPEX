@@ -122,11 +122,12 @@ typedef enum
                                   // definite (for a Cholesky factorization)
     SPEX_INCORRECT_ALGORITHM = -5,// The algorithm is not compatible with
                                   // the factorization
-    SPEX_PANIC = -6               // SPEX used without proper initialization,
+    SPEX_RANK_DEFICIENT = -6,     // Input matrix is rank deficient
+    SPEX_PANIC = -7               // SPEX used without proper initialization,
                                   // or other unrecoverable error
 }
 SPEX_info ;
-
+//TODO matlab and python
 //------------------------------------------------------------------------------
 // SPEX Version
 //------------------------------------------------------------------------------
@@ -215,10 +216,11 @@ SPEX_preorder ;
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
-                         // Up for Chol
+                         // Up for Chol, GS for QR
     SPEX_LU_LEFT = 1,    // Left looking LU factorization
     SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
-    SPEX_CHOL_UP = 3     // Up looking Cholesky factorization
+    SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
+    SPEX_QR_GS = 4       // QR factorization via Gram-Schmidt process
 }
 SPEX_factorization_algorithm ;
 
@@ -649,7 +651,6 @@ typedef struct
                                     // the initial space for L and U; the
                                     // space is reallocated as needed.
                                     // Available only for SPEX_LU_FACTORIZATION.
-    int64_t qnz;
     int64_t rnz;
 
     //--------------------------------------------------------------------------
@@ -1483,18 +1484,27 @@ SPEX_info SPEX_qr_analyze
 
 SPEX_info SPEX_qr_factorize
 (
-    SPEX_factorization *F_handle,
-    const SPEX_matrix A,      // Matrix to be factored
-    const SPEX_symbolic_analysis S,
-    SPEX_options option
+    // Output
+    SPEX_factorization *F_handle,   // QR factorization struct
+    //Input
+    const SPEX_matrix A,            // Matrix to be factored. Must be SPEX_MPZ
+                                    // and SPEX_CSC
+    SPEX_symbolic_analysis S,       // Symbolic analysis struct containing the
+                                    // column elimination tree of A, the column
+                                    // permutation, and number of nonzeros in R
+    const SPEX_options option       // command options.
 );
 
 SPEX_info SPEX_qr_solve
 (
-    SPEX_matrix* x_handle, // Solution
-    const SPEX_factorization F,
-    const SPEX_matrix b,        // Q^T * b
-    const SPEX_options option
+    // Output
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: Rational solution (SPEX_MPQ)
+                                // to the system.
+    // input
+    const SPEX_factorization F, // The QR factorization.
+    const SPEX_matrix b,        // Right hand side vector
+    const SPEX_options option   // command options
 );
 
 SPEX_info SPEX_qr_backslash

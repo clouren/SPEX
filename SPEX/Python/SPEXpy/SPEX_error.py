@@ -18,9 +18,9 @@ def determine_error(ok):
         1:"out of memory",
         2:"the input matrix A is singular",
         3:"one or more input arguments are incorrect",
-        4:"the input matrix is unsymmetric",
-        5:"the input matrix is not SPD",
-        6:"the algorithm is not compatible with the factorization",
+        4:"the input matrix is not SPD",
+        5:"the algorithm is not compatible with the factorization",
+        6:"the input matrix A is rank deficient",
         7:"SPEX used without proper initialization",
     }
     return errorMessages.get(ok*(-1))

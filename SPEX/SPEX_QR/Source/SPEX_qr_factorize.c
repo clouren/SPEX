@@ -156,8 +156,8 @@ SPEX_info SPEX_qr_factorize
         else
         {
             // Integer-preserving Gram-Schmidt
-            SPEX_CHECK(spex_qr_ipgs(RT, Q, F->rhos, Qk, k, A, h,
-                                     &isZeros, S->Q_perm, option));
+            SPEX_CHECK(spex_qr_ipgs(RT, Q, F->rhos, Qk, h, &isZeros, k, A,
+                                     S->Q_perm, option));
         }
 
     }

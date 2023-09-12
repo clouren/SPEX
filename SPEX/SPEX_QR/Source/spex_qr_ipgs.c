@@ -54,7 +54,10 @@
     SPEX_matrix_free(&Q, NULL);      \
     SPEX_matrix_free(&rhos, NULL);      \
 }
-/* TOASK
+
+
+SPEX_info spex_qr_ipgs
+(
     //Input/Output
     SPEX_matrix R,       // Right triangular matrix
     SPEX_matrix Q,       // Pair-wise orthogonal matrix
@@ -64,25 +67,10 @@
     //Output
     bool *isZeros,       // True if j+1th column of Q is linearly dependent
     //Input
-    onst int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
-    const SPEX_matrix A, // Matrix to be factored
-    int64_t *Q_perm,     // Column permutation
-    SPEX_options option  // Command options
-*/
-
-SPEX_info spex_qr_ipgs
-(
-    SPEX_matrix R,       // Right triangular matrix
-    SPEX_matrix Q,       // Pair-wise orthogonal matrix
-    SPEX_matrix rhos,    // sequence of pivots
-    int64_t *Qj,         // pointers to elements of the jth column of Q
     const int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
     const SPEX_matrix A, // Matrix to be factored
-    int64_t *h,          // History vector
-    bool *isZeros,       // True if j+1th column of Q is linearly dependent
-    int64_t *Q_perm,     // Column permutation
-    SPEX_options option  // Command options
-)
+    const int64_t *Q_perm,     // Column permutation
+    const SPEX_options option  // Command options
 {
     SPEX_info info;
     int64_t m = A->m, n = A->n;
@@ -155,7 +143,7 @@ SPEX_info spex_qr_ipgs
         else
         {
             
-            if(j+1>h[pQ]+1) //"an u
+            if(j+1>h[pQ]+1)
             {
                 //"an update of Q(iQ,j+1)" has been skipped because R(j,i) is zero 
                 // or Q(iQ,j) is zero

@@ -111,7 +111,7 @@ int main( int argc, char *argv[] )
     //SPEX_matrix_check(x, option);
      
     printf("Success!!\n");
-    printf("Rank of matrix: %ld, is deficient? %ld\n",F->rank,(F->R->n)-(F->rank)); //if rank defficient then sol will be wrong
+    printf("Rank of matrix: %ld, is deficient? %ld\n",F->rank,(F->R->n)-(F->rank));
     // Check solution
     option->print_level=1;
     DEMO_OK(spex_demo_check_solution(A,x,b,option)); //works is x is mpq

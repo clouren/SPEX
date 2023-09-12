@@ -72,16 +72,19 @@ SPEX_info spex_qr_counts
 
 SPEX_info spex_qr_ipgs
 (
+    //Input/Output
     SPEX_matrix R,       // Right triangular matrix
     SPEX_matrix Q,       // Pair-wise orthogonal matrix
     SPEX_matrix rhos,    // sequence of pivots
     int64_t *Qj,         // pointers to elements of the jth column of Q
+    int64_t *h,          // History vector
+    //Output
+    bool *isZeros,       // True if j+1th column of Q is linearly dependent
+    //Input
     const int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
     const SPEX_matrix A, // Matrix to be factored
-    int64_t *h,          // History vector
-    bool *isZeros,       // True if j+1th column of Q is linearly dependent
-    int64_t *Q_perm,     // Column permutation
-    SPEX_options option  // Command options
+    const int64_t *Q_perm,     // Column permutation
+    const SPEX_options option  // Command options
 );
 
 
@@ -94,11 +97,11 @@ SPEX_info spex_qr_nonzero_structure
                                   // On input: undefined
     // Input
     const SPEX_matrix A,          // Input Matrix
-    SPEX_symbolic_analysis S,     // Symbolic analysis struct containing the
+    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                   // number of nonzeros in L, the elimination
                                   // tree, the row/coluimn permutation and its
                                   // inverse
-    SPEX_options option           // Command options
+    const SPEX_options option     // Command options
 );
 
 

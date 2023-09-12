@@ -11,17 +11,26 @@
 
 #include "spex_util_internal.h"
 
+/*
+ * History Update
+ *
+ * A[a]=(rhos[i]*A[a])/rhos[k]
+ *
+ * Used in LU triangular solve, Cholesky up and left triangular solve and QR IPGS
+ * In LU and Cholesky A is L
+ * In QR A is Q
+ */
 
 SPEX_info spex_history_update
 (
-    SPEX_matrix A,    
-    SPEX_matrix rhos,         // sequence of pivots
-    const int64_t a,
-    const int64_t i,
-    const int64_t j,
-    const int64_t k,
-    const int64_t thres,         
-    SPEX_options option
+    SPEX_matrix A,              // Matrix to be updated
+    const SPEX_matrix rhos,     // sequence of pivots
+    const int64_t a,            // Index of element in A to be updated   
+    const int64_t i,            // Index of current pivot
+    const int64_t j,            // History value
+    const int64_t k,            // Index of last updated pivot
+    const int64_t thres,        // Threshold after which division must be performed
+    const SPEX_options option   // Command options
 )
 {
     
@@ -34,7 +43,7 @@ SPEX_info spex_history_update
     
     
     //Q(i,j)=rho^()*Q(i,k)/rho^()
-    // Q[pQ] = x[pQ] * rho[i]
+    // Q[pQ] = x[pQ] * rho[i] TODO fix comment
     SPEX_MPZ_MUL(A->x.mpz[a], A->x.mpz[a], rhos->x.mpz[i]);
     if(j>thres)
     {
@@ -43,3 +52,5 @@ SPEX_info spex_history_update
     
     return SPEX_OK;
 }
+
+

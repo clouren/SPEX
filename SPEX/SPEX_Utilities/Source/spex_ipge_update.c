@@ -11,18 +11,27 @@
 
 #include "spex_util_internal.h"
 
+/*
+ * IPGE Update
+ *
+ * A[a]=(rhos[j]*A[a]-B[b]*A[k])/rhos[i]
+ *
+ * Used in LU triangular solve, Cholesky up and left triangular solve and QR IPGS
+ * In LU and Cholesky A is L and B is x
+ * In QR A is Q and B is R
+ */
 
 SPEX_info spex_ipge_update
 (
-    SPEX_matrix A,    
-    SPEX_matrix B,    
-    SPEX_matrix rhos,         // sequence of pivots
-    const int64_t a,
-    const int64_t b,
-    const int64_t i,
-    const int64_t j,
-    const int64_t k,         
-    SPEX_options option
+    SPEX_matrix A,            // Matrix to be updated
+    SPEX_matrix B,            // Matrix B
+    const SPEX_matrix rhos,   // Sequence of pivots
+    const int64_t a,          // Index for the element in A to be updated
+    const int64_t b,          // Index for matrix B
+    const int64_t i,          // Index for the dividing pivot
+    const int64_t j,          // Index for the multiplying pivot
+    const int64_t k,          // Index for matrix A
+    const SPEX_options option // Command options
 )
 {
     
