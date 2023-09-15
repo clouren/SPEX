@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Makefile for all SuiteSparse packages
+# Makefile for SPEX and its dependent packages (AMD, COLAMD, SuiteSparse_config)
 #-------------------------------------------------------------------------------
 
 # edit this variable to pass options to cmake:
@@ -153,9 +153,10 @@ purge:
 	#- ( cd SPQR && $(MAKE) purge )
 	#- $(RM) MATLAB_Tools/*/*.mex* MATLAB_Tools/*/*/*.mex*
 	#- $(RM) MATLAB_Tools/*/*.o    MATLAB_Tools/*/*/*.o
-	#- $(RM) -r include/* bin/* lib/* Example/build/*
+	#- $(RM) -r Example/build/*
 	#- ( cd GraphBLAS && $(MAKE) purge )
 	- ( cd SPEX && $(MAKE) purge )
+	- $(RM) -r include/* bin/* lib/*
 
 clean: purge
 
@@ -188,7 +189,7 @@ docs:
 	#( cd KLU && $(MAKE) docs )
 	#( cd LDL && $(MAKE) docs )
 	#( cd UMFPACK && $(MAKE) docs )
-	( cd CHOLMOD && $(MAKE) docs )
+	#( cd CHOLMOD && $(MAKE) docs )
 	#( cd SPQR && $(MAKE) docs )
 	( cd SPEX && $(MAKE) docs )
 
@@ -226,6 +227,6 @@ debug:
 	#( cd SuiteSparse_GPURuntime && $(MAKE) )
 	#( cd GPUQREngine && $(MAKE) )
 	#( cd SPQR && $(MAKE) debug )
-	#( cd GraphBLAS && $(MAKE) debug )
+	#( cd GraphBLAS && $(MAKE) cdebug )
 	( cd SPEX && $(MAKE) debug )
 
