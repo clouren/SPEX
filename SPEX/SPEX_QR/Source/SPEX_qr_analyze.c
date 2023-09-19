@@ -38,7 +38,6 @@
     SPEX_symbolic_analysis_free (&S, option);      \
 }
 
-#include "spex_cholesky_internal.h"
 #include "spex_qr_internal.h"
 
 SPEX_info SPEX_qr_analyze
@@ -53,10 +52,7 @@ SPEX_info SPEX_qr_analyze
 
     SPEX_info info;
     // SPEX must be initialized
-    if (!spex_initialized())
-    {
-        return SPEX_PANIC;
-    }
+    if ( !spex_initialized() ) return SPEX_PANIC;
 
     // Check inputs
     if ( !S_handle || !A)
@@ -64,7 +60,7 @@ SPEX_info SPEX_qr_analyze
         return SPEX_INCORRECT_INPUT;
     }
 
-    // SPEX must be CSC
+    // Matrix must be CSC
     SPEX_REQUIRE_KIND(A, SPEX_CSC);
 
     // Declare permuted matrix and S
@@ -81,7 +77,7 @@ SPEX_info SPEX_qr_analyze
     SPEX_CHECK( spex_qr_preorder(&S, A, option) );
 
     //--------------------------------------------------------------------------
-    // Permute matrix A, that is apply the row/column ordering from the
+    // Permute matrix A, that is apply the column ordering from the
     // symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
     SPEX_CHECK( spex_qr_permute_A(&AQ, A, false, S->Q_perm, option) );
@@ -103,8 +99,8 @@ SPEX_info SPEX_qr_analyze
     for (i = 0 ; i < n ; i++)
     {
         nz += S->cp [i] ;
-    }
-    S->rnz=nz;
+    } //move to qr_counts TODO
+    S->rnz=nz; //S->rnz=S->cp[n]
 
     //--------------------------------------------------------------------------
     // Set output, free all workspace and return success

@@ -145,7 +145,7 @@ m=5;n=4;seed=14;
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
 /**/
-    char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
+    char *mat_name = "ExampleMats/smallZeros.mat.txt";
     //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
     //char *rhs_name = "ExampleMats/LF10.rhs.txt";

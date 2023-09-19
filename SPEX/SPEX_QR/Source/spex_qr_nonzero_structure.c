@@ -99,7 +99,7 @@ SPEX_info spex_qr_nonzero_structure
         false, false, NULL));
 
     Qi = (int64_t*) SPEX_malloc((n*m)* sizeof (int64_t));
-    Qp = (int64_t*) SPEX_malloc((m)* sizeof (int64_t));
+    Qp = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
 
     w = (int64_t*) SPEX_malloc((n+m2)* sizeof (int64_t));
     leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
@@ -198,13 +198,13 @@ SPEX_info spex_qr_nonzero_structure
     }
     // Finalize Q->p
     Qp[n] =  qnz;
-    SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, S->qnz,
+    SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz,
         true, false, NULL));
     
     QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
     QT->p = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
     memcpy(QT->i, Qi, qnz*sizeof(int64_t));
-    memcpy(QT->p, Qp, qnz*sizeof(int64_t));
+    memcpy(QT->p, Qp, (n+1)*sizeof(int64_t)); //TODO check m vs n
     QT->p_shallow=false;
     QT->i_shallow=false;
 

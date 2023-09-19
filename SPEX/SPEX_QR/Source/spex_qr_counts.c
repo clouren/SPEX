@@ -26,6 +26,7 @@
 #define HEAD(k,j) ( head[k])
 #define NEXT(J)   ( next[J])
 
+// This is a modified version of Csparse's cs_init_ata function
 static void spex_qr_init_ata 
 (
     SPEX_matrix AT, 

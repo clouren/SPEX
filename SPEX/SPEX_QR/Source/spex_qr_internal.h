@@ -22,6 +22,13 @@
 //                           Internal Functions
 // ============================================================================
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//-------------------Internal REF QR Analysis Routines--------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+/* Purpose: Matrix preordering for integer-preserving QR factorization. */
 SPEX_info spex_qr_preorder
 (
     // Output
@@ -35,19 +42,30 @@ SPEX_info spex_qr_preorder
     const SPEX_options option       // Control parameters (use default if NULL)
 );
 
+
+/* Purpose: Permute the matrix A and return AQ = AQ */
 SPEX_info spex_qr_permute_A
 (
     //Output
-    SPEX_matrix* PAQ_handle,   // On input: undefined
+    SPEX_matrix* AQ_handle,   // On input: undefined
                                // On output: contains the permuted matrix
     //Input
     const SPEX_matrix A,       // Input matrix
     const bool numeric,        // True if user wants to permute pattern and
                                // numbers, false if only pattern
     const int64_t *Q_perm,     // column permutation
-                                // row/column permutations
-    const SPEX_options option        
+    const SPEX_options option  // Command options (Default if NULL)    
 );
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//---------Routines to compute and anayze the elimination tree------------------
+// ----These routines are taken and lightly modified from Tim Davis' Csparse----
+// -------------------------www.suitesparse.com---------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+/* Purpose: Compute the column elimination tree of A */
 
 SPEX_info spex_qr_etree
 (
@@ -58,7 +76,7 @@ SPEX_info spex_qr_etree
     const SPEX_matrix A         // Input matrix (must be SPD).
 );
 
-
+/* Purpose: Obtain the column counts for QR factorization */
 SPEX_info spex_qr_counts
 (
     // Output
@@ -70,6 +88,31 @@ SPEX_info spex_qr_counts
     const int64_t *post     // Post-order of the tree
 );
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//-------------------Internal REF QR Factorization Routines-------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+/* Purpose: Obtain the nonzero structure of Q and R for QR factorization */
+SPEX_info spex_qr_nonzero_structure
+(
+    // Output
+    SPEX_matrix *R_handle,        // On output: partial R matrix
+                                  // On input: undefined
+    SPEX_matrix *Q_handle,        // On output: partial R matrix
+                                  // On input: undefined
+    // Input
+    const SPEX_matrix A,          // Input Matrix
+    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
+                                  // number of nonzeros in L, the elimination
+                                  // tree, the row/coluimn permutation and its
+                                  // inverse
+    const SPEX_options option     // Command options
+);
+
+/* Purpose: Perfmorm one interation of IPGS-QR.
+ * Computes one row of R and updates n-j columns of Q (finalizing the j+1th column)*/
 SPEX_info spex_qr_ipgs
 (
     //Input/Output
@@ -88,23 +131,16 @@ SPEX_info spex_qr_ipgs
 );
 
 
-SPEX_info spex_qr_nonzero_structure
+SPEX_info spex_qr_back_sub  // performs sparse REF backward substitution
 (
-    // Output
-    SPEX_matrix *R_handle,        // On output: partial R matrix
-                                  // On input: undefined
-    SPEX_matrix *Q_handle,        // On output: partial R matrix
-                                  // On input: undefined
-    // Input
-    const SPEX_matrix A,          // Input Matrix
-    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
-                                  // number of nonzeros in L, the elimination
-                                  // tree, the row/coluimn permutation and its
-                                  // inverse
-    const SPEX_options option     // Command options
+    SPEX_matrix bx,         // right hand side matrix
+    const SPEX_matrix R,   // input upper triangular matrix
+    const int64_t rank     // rank of right triangular matrix
 );
 
 
+
+//future TODO merge qr transpose and normal utilities transpose
 SPEX_info spex_qr_transpose
 (
     SPEX_matrix *C_handle,      // C = A'

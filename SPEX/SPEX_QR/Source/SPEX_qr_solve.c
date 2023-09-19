@@ -61,18 +61,20 @@ SPEX_info SPEX_qr_solve
 
     // Check the inputs
     if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE
-        || F->kind != QR_FACTORIZATION)
+        || F->kind != SPEX_QR_FACTORIZATION)
     {
         return SPEX_INCORRECT_INPUT;
     }
-    if(F->rank!=A->n) //A is rank deficient
+    /*if(F->rank!=b->n) //A is rank deficient
     {
         return SPEX_RANK_DEFICIENT;
-    }
+    }*/
+    //TODO decide on what the philosophy is
 
 
     SPEX_matrix b_new = NULL, x=NULL;
     int64_t k, p, i,j,qi;
+    int64_t rank=F->rank; //when matrix is full rank, rank=n
 
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
@@ -86,7 +88,7 @@ SPEX_info SPEX_qr_solve
     for (k = 0; k < b->n; k++) //if b is a vector this will only be once
     {
         // Compute b[j,k]
-        for(j=0;j<F->Q->n;j++)
+        for(j=0;j<F->rank;j++)
         {
             for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
@@ -104,8 +106,9 @@ SPEX_info SPEX_qr_solve
     // backwards substitution
     //--------------------------------------------------------------------------
     //Solves Rx=b_new (overwrites b_new into x)
-    SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new));
-    
+    //SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new)); //TODO basic solution of under-determined (last are zeros)
+    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank));
+
     //--------------------------------------------------------------------------
     // x = Q*b_new/scale
     //--------------------------------------------------------------------------

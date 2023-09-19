@@ -71,6 +71,7 @@ SPEX_info spex_qr_ipgs
     const SPEX_matrix A, // Matrix to be factored
     const int64_t *Q_perm,     // Column permutation
     const SPEX_options option  // Command options
+)
 {
     SPEX_info info;
     int64_t m = A->m, n = A->n;
@@ -84,7 +85,7 @@ SPEX_info spex_qr_ipgs
     ASSERT (Q != NULL);
     
     // Declare variables
-    int64_t p, pQ, pR, iR, top, x,l, prev, iQ,k,i;
+    int64_t p, pQ, pR, iR, top, x,l, prev, iQ, k, i;
     int sgn;
     int64_t *final;
     
@@ -92,7 +93,7 @@ SPEX_info spex_qr_ipgs
    
     final = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     
-    for(k=0;k<m;k++)
+    for(k=0;k<m;k++) //TODO change For (I = A->p[k-2]; I < A->p[k-1]; I++) like factorize
     {
         final[k]=-1;
     }
@@ -106,7 +107,7 @@ SPEX_info spex_qr_ipgs
         // Obtain the index of the current nonzero
         i = R->i[pR];//column number where j is row number
         // R(j,i) = Q(:,j) dot AQ(:,i)
-        SPEX_CHECK(spex_dot_product(R->x.mpz[pR],Q, j, A, Q_perm[i], option)); 
+        SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, Q_perm[i], option)); 
     }
     //rhos stores the diagonal of R (pivots)
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]);
@@ -141,8 +142,7 @@ SPEX_info spex_qr_ipgs
             h[pQ]=k;
         }
         else
-        {
-            
+        {            
             if(j+1>h[pQ]+1)
             {
                 //"an update of Q(iQ,j+1)" has been skipped because R(j,i) is zero 
@@ -157,7 +157,7 @@ SPEX_info spex_qr_ipgs
         // Update history vector
         h[pQ]=k;
         
-        // Update the final and col vectors needed for the next iteration
+        // Update the final vectors needed for the next iteration
         final[iQ]=pQ;
         
         // Checks if the entire column k of Q is zeros for rank revealing QR

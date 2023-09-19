@@ -32,14 +32,14 @@
 {                                   \
     SPEX_matrix_free(&(RT),option); \
     SPEX_free(h);                   \
-    SPEX_free(Qk);                   \
-    SPEX_free(ldCols);                   \
+    SPEX_free(Qk);                  \
+    SPEX_free(ldCols);              \
 }
 
-# define SPEX_FREE_ALL               \
-{                                    \
-    SPEX_FREE_WORKSPACE              \
-    SPEX_factorization_free(&F, NULL);      \
+# define SPEX_FREE_ALL                \
+{                                     \
+    SPEX_FREE_WORKSPACE               \
+    SPEX_factorization_free(&F, NULL);\
 }
 
 
@@ -60,11 +60,15 @@ SPEX_info SPEX_qr_factorize
     SPEX_info info;
 
     // Declare variables
-    int64_t n=A->n, m=A->m, k,i,pQ,p, iQ, pR, rankDeficient=0;
+    int64_t n=A->n, m=A->m, k, i, pQ, p, iQ, pR;
     SPEX_factorization F = NULL ;
     SPEX_matrix RT, Q;
     int64_t *h, *Qk;
+    // Varibles needed to compute the rank of a matrix.
+    // assume matrix is full rank. isZeros is true if a column is linearly dependent
+    // ldCols keeps track of linearly dependent columns
     bool isZeros=false, *ldCols;
+    int64_t rank=n;
     
     
      // Allocate memory for the factorization
@@ -90,7 +94,8 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Allocate and initialize supporting vectors
     //--------------------------------------------------------------------------
-    h = (int64_t*) SPEX_calloc((Q->nz),sizeof(int64_t));
+    //TODO add explanation for Qk
+    h = (int64_t*) SPEX_calloc((Q->nz),sizeof(int64_t)); //history matrix
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     for(k=0;k<m;k++)
     {
@@ -120,7 +125,7 @@ SPEX_info SPEX_qr_factorize
             }
             // Set the kth pivot to be equal to the k-1th pivot for computations
             SPEX_MPZ_SET(F->rhos->x.mpz[k],F->rhos->x.mpz[k-1]);
-            for(i=0;i<m;i++)
+            for(i=0;i<m;i++) //TODO change to For (I = A->p[k-2]; I < A->p[k-1]; I++) "erase prev nonzeros"
             {
                 Qk[i]=-1;
             }
@@ -149,7 +154,7 @@ SPEX_info SPEX_qr_factorize
                 }
             }
 
-            rankDeficient++;
+            rank--;
             
             isZeros=false;
         }
@@ -176,19 +181,17 @@ SPEX_info SPEX_qr_factorize
         SPEX_MPZ_SET(F->rhos->x.mpz[n-1],RT->x.mpz[RT->p[n]-1]);    
     }
 
-    SPEX_matrix_check(Q, option);
-    SPEX_matrix_check(RT, option);
     //--------------------------------------------------------------------------
     // Get rank revealing permutation 
     //--------------------------------------------------------------------------
-    if(rankDeficient>0)
+    if(rank!=n)
     {
         int64_t *Pi_perm;
         int64_t iZero=n-1, iNon=0;
         
         SPEX_matrix RTPi=NULL;
         
-        F->rank=n-rankDeficient;
+        F->rank=rank;
         
         Pi_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
         F->Q_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
@@ -199,6 +202,7 @@ SPEX_info SPEX_qr_factorize
             return SPEX_OUT_OF_MEMORY;
         }
 
+        // TODO coment more, explain iZero, iNon, change to iLD iLI
         for(k=0;k<n;k++)
         {
             if(ldCols[k]) //ldCols[k] is true when the k col is linearly dependent

@@ -59,7 +59,7 @@ SPEX_info spex_qr_preorder
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
-    // m = n for Cholesky factorization
+    // m >= n for QR factorization
     ASSERT(A->n <= A->m);
 
     // Dimension can't be negative
@@ -98,9 +98,7 @@ SPEX_info spex_qr_preorder
         case SPEX_DEFAULT_ORDERING:
         case SPEX_COLAMD:
         // --- COLAMD ordering is used (DEFAULT)
-        // S->p is set as COLAMD's column ordering.
-        // The number of nonzeros in L is set as 10 times the number of
-        // nonzeros in A. This is a crude estimate.
+        // S->q is set as COLAMD's column ordering.
         {
             SPEX_CHECK( spex_colamd(&(S->Q_perm),&(S->unz),A,option));
         }
@@ -108,7 +106,7 @@ SPEX_info spex_qr_preorder
 
         case SPEX_AMD:
         // ---AMD ordering is used---
-        // S->p is set to AMD's column ordering on ATA.
+        // S->q is set to AMD's column ordering on ATA.
         // The number of nonzeros in R is given as AMD's computed
         // number of nonzeros in the Cholesky factor L of ATA 
         {
@@ -118,9 +116,9 @@ SPEX_info spex_qr_preorder
 
         case SPEX_NO_ORDERING:
         // ---No ordering is used---
-        // S->p is set to [0 ... n] and the number of nonzeros in L is estimated
+        // S->q is set to [0 ... n] and the number of nonzeros in R is estimated
         // to be 10 times the number of nonzeros in A.
-        // This is a very crude estimate on the nnz(L)
+        // This is a very crude estimate on the nnz(R)
         {
             S->Q_perm = (int64_t*)SPEX_malloc( (n+1)*sizeof(int64_t) );
             if (S->Q_perm == NULL)
@@ -133,7 +131,7 @@ SPEX_info spex_qr_preorder
             {
                 S->Q_perm[i] = i;
             }
-            // Very crude estimate for number of L and U nonzeros
+            // Very crude estimate for number of R nonzeros
             S->unz = 10*anz;
         }
         break;
@@ -141,9 +139,9 @@ SPEX_info spex_qr_preorder
 
     //--------------------------------------------------------------------------
     // Make sure appropriate space is allocated. It is possible to return
-    // estimates which exceed the dimension of L or estimates which are
-    // too small for L. In this case, this block of code ensures that the
-    // estimates on nnz(L) and nnz(U) are at least n and no more than n*n.
+    // estimates which exceed the dimension of R or estimates which are
+    // too small for R. In this case, this block of code ensures that the
+    // estimates on nnz(R) are at least n and no more than n*n.
     //--------------------------------------------------------------------------
     
     // estimate exceeds max number of nnz in A
