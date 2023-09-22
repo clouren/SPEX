@@ -93,9 +93,11 @@ SPEX_info spex_qr_ipgs
    
     final = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     
-    for(k=0;k<m;k++) //TODO change For (I = A->p[k-2]; I < A->p[k-1]; I++) like factorize
+    //for(i=0;i<m;i++)//
+    for(i=Q->p[k];i<Q->p[k+1];i++) //TODO change For (I = A->p[k-2]; I < A->p[k-1]; I++) like factorize
     {
-        final[k]=-1;
+        //final[i]=-1;
+        final[Q->i[i]]=-1;
     }
 
     //--------------------------------------------------------------------------
@@ -138,8 +140,8 @@ SPEX_info spex_qr_ipgs
                 SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], 
                                     rhos->x.mpz[h[pQ]-1]);
             }
-            final[iQ]=pQ;
-            h[pQ]=k;
+            //final[iQ]=pQ;
+            //h[pQ]=k;
         }
         else
         {            
@@ -205,9 +207,11 @@ SPEX_info spex_qr_ipgs
     
     
     // Update the final and col vectors needed for the next iteration
-    for(i=0;i<m;i++)
+    //for(i=0;i<m;i++)//
+    for(i = Q->p[j+1]; i < Q->p[j+2]; i++)
     {
-        Qj[i]=final[i];
+        //Qj[i]=final[i];
+        Qj[Q->i[i]]=final[Q->i[i]];
     }
     //SPEX_matrix_check(Q, option); 
     //--------------------------------------------------------------------------

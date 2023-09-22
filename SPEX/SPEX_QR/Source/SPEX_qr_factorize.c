@@ -65,8 +65,8 @@ SPEX_info SPEX_qr_factorize
     SPEX_matrix RT, Q;
     int64_t *h, *Qk;
     // Varibles needed to compute the rank of a matrix.
-    // assume matrix is full rank. isZeros is true if a column is linearly dependent
-    // ldCols keeps track of linearly dependent columns
+    // assume matrix is full rank. isZeros is true if a column is linearly 
+    // dependent, ldCols keeps track of linearly dependent columns
     bool isZeros=false, *ldCols;
     int64_t rank=n;
     
@@ -87,21 +87,23 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &Q, A, S, option));
-    
+    SPEX_matrix_check(Q, option);
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
     //--------------------------------------------------------------------------
     // Allocate and initialize supporting vectors
     //--------------------------------------------------------------------------
-    //TODO add explanation for Qk
     h = (int64_t*) SPEX_calloc((Q->nz),sizeof(int64_t)); //history matrix
+    // Qk contains the position of the nonzero elements in each row of the 
+    // latest column of Q to be finalized (or -1 if the corresponding element 
+    // in that row is symbolically zero
     Qk = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
     for(k=0;k<m;k++)
     {
         Qk[k]=-1;
     }
-    for(k=Q->p[0];k<Q->p[1];k++)
+    for(k=Q->p[0];k<Q->p[1];k++) // Q(:,0)=A(:,0) first column of Q is finalized
     {
         Qk[Q->i[k]]=k;
     }
@@ -125,9 +127,9 @@ SPEX_info SPEX_qr_factorize
             }
             // Set the kth pivot to be equal to the k-1th pivot for computations
             SPEX_MPZ_SET(F->rhos->x.mpz[k],F->rhos->x.mpz[k-1]);
-            for(i=0;i<m;i++) //TODO change to For (I = A->p[k-2]; I < A->p[k-1]; I++) "erase prev nonzeros"
+            for(i=Q->p[k];i<Q->p[k+1];i++) //erase prev nonzeros
             {
-                Qk[i]=-1;
+                Qk[Q->i[i]]=-1;
             }
             // Finalize Q k+1 (it keeps its previous values)
             for (pQ =Q->p[k+1]; pQ < Q->p[k+2]; pQ++)
@@ -186,14 +188,25 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     if(rank!=n)
     {
-        int64_t *Pi_perm;
-        int64_t iZero=n-1, iNon=0;
+        // If A is rank deficient then Q and RT have at least one 0 column
+        // Here those columns will be permuted to the right side of the 
+        // respective matrix. And as such the column permutation of A (Q_perm)
+        // will be updated.
+        
+        int64_t *Pi_perm; // Column permutation for rank deficient matrices
+        int64_t *Piinv_perm; // Inverse row permutation for rank deficient matrices
+        // Indices for modifying Q_perm (and creating Pi_perm) according to 
+        // whether a column of Q is linearly dependent or linearly independent 
+        // of the previous columns
+        int64_t iLD=n-1, iLI=0;
         
         SPEX_matrix RTPi=NULL;
+        SPEX_matrix RPi=NULL;
         
         F->rank=rank;
         
         Pi_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
+        Piinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
         F->Q_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
         if (!(F->Q_perm))
         {
@@ -202,34 +215,50 @@ SPEX_info SPEX_qr_factorize
             return SPEX_OUT_OF_MEMORY;
         }
 
-        // TODO coment more, explain iZero, iNon, change to iLD iLI
+        // If the k-th column of Q is linearly dependent (ldCols[k]=true), then
+        // k needs to be towards the end of Pi_perm and the original Q_perm[k]
+        // needs to be towards the end of the updated column permutation
         for(k=0;k<n;k++)
         {
             if(ldCols[k]) //ldCols[k] is true when the k col is linearly dependent
             {
-                Pi_perm[iZero]=k;
-                F->Q_perm[iZero]=S->Q_perm[k];
-                iZero--;
+                Pi_perm[iLD]=k;
+                //Piinv_perm[n+iLD]=k;
+                F->Q_perm[iLD]=S->Q_perm[k];
+                iLD--;
             }
             else
             {
-                Pi_perm[iNon]=k;
-                F->Q_perm[iNon]=S->Q_perm[k];
-                iNon++;
+                Pi_perm[iLI]=k;
+                //Piinv_perm[n-iLI]=k;
+                F->Q_perm[iLI]=S->Q_perm[k];
+                iLI++;
             }
         }
-
+        
+        for(k=0;k<n;k++)
+        {
+            Piinv_perm[k]=Pi_perm[n-1-k];
+            printf("pi %ld pi inv %ld\n", Pi_perm[k], Piinv_perm[k]);
+        }
         // Permute Q and RT
         // Zero columns of Q will be on the right 
-        // Zero rows of R will be on the bottom (Zero columns of RT will be on the right)
+        // Zero rows of R will be on the bottom (Zero columns of RT will be on 
+        // the right)
         SPEX_CHECK( spex_qr_permute_A(&F->Q, Q, true, Pi_perm, option) );
         SPEX_CHECK( spex_qr_permute_A(&RTPi, RT, true, Pi_perm, option) );
+        //SPEX_CHECK( spex_qr_permute_A2(&RTPi, RT, true, Pi_perm, Piinv_perm, option) );
+
+        SPEX_CHECK(SPEX_transpose(&RPi,RTPi,option)); //FIXME
+        SPEX_CHECK( spex_qr_permute_A(&F->R, RPi, true, Pi_perm, option) );
         
-        
-        SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
+        //SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
         F->R->nz=RT->p[n]-1;
+        SPEX_matrix_check(RT, option);
+        SPEX_matrix_check(RTPi, option);
+        SPEX_matrix_check(F->R, option);
         
-        SPEX_matrix_free(&Q,option);
+        //SPEX_matrix_free(&Q,option); valgrind this!!
     }
     else
     {
@@ -257,7 +286,6 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Return result and free workspace
     //--------------------------------------------------------------------------
-
     (*F_handle)=F;
     
     SPEX_FREE_WORKSPACE;

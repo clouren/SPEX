@@ -145,7 +145,7 @@ m=5;n=4;seed=14;
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
 /**/
-    char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
     //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
     //char *mat_name = "ExampleMats/LF10.mat.txt";
     //char *rhs_name = "ExampleMats/LF10.rhs.txt";
@@ -228,12 +228,14 @@ m=5;n=4;seed=14;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     //SPEX_matrix_check(F->Q, option);
     //SPEX_matrix_check(F->R, option);
-    printf("Rank of matrix: %ld, is deficient? %ld\n",F->rank,(F->R->n)-(F->rank)); 
+    printf("Rank of matrix: %ld, num of cols: %ld\n",F->rank,(F->R->n)); 
+    
+    printf("solve:\n");
+    DEMO_OK (SPEX_qr_solve(&x, F, b, option));
+    SPEX_matrix_check(x, option);
     
     if(F->rank,(F->R->n)-(F->rank)==0) //TOASK
     {
-        printf("solve:\n");
-        DEMO_OK (SPEX_qr_solve(&x, F, b, option));
         DEMO_OK(spex_demo_check_solution(A,x,b,option));
     }
     printf("Success!!\n");

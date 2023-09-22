@@ -88,7 +88,7 @@ SPEX_info SPEX_qr_solve
     for (k = 0; k < b->n; k++) //if b is a vector this will only be once
     {
         // Compute b[j,k]
-        for(j=0;j<F->rank;j++)
+        for(j=0;j<F->rank;j++)//for(j=0;j<F->rank;j++)
         {
             for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
@@ -101,14 +101,14 @@ SPEX_info SPEX_qr_solve
                              F->rhos->x.mpz[F->R->n-1]);
         }
     }
-    
+    SPEX_matrix_check(b_new, option);
     //--------------------------------------------------------------------------
     // backwards substitution
     //--------------------------------------------------------------------------
     //Solves Rx=b_new (overwrites b_new into x)
     //SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new)); //TODO basic solution of under-determined (last are zeros)
-    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank));
-
+    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank)); //idk how necessary this actually is because of the if zero continue in lu_back_sub
+    
     //--------------------------------------------------------------------------
     // x = Q*b_new/scale
     //--------------------------------------------------------------------------

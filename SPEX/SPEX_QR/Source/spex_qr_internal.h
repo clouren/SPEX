@@ -147,5 +147,18 @@ SPEX_info spex_qr_transpose
     SPEX_matrix A,              // Matrix to be transposed
     const SPEX_options option   // Command options
 );
+SPEX_info spex_qr_permute_A2
+(
+    //Output
+    SPEX_matrix* PAQ_handle,   // On input: undefined
+                               // On output: contains the permuted matrix
+    //Input
+    const SPEX_matrix A,       // Input matrix
+    const bool numeric,        // True if user wants to permute pattern and
+                               // numbers, false if only pattern
+    const int64_t *Q_perm,     // column permutation
+    const int64_t *P_perm,     // row permutation
+    const SPEX_options option  // Command options (Default if NULL)
+);
 
 #endif
