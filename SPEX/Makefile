@@ -66,7 +66,8 @@ demos:
 	#./build/spex_demo_Update_chol       f ExampleMats/mesh1e1.mat.txt      ExampleMats/mesh1e1.rhs.txt
 	#./build/spex_demo_threaded          f ExampleMats/10teams.mat.txt   ExampleMats/10teams.rhs.txt
 	#./build/spex_demo_qr f ExampleMats/LF10.mat.txt
-	./build/spex_demo_qr f ExampleMats/smallZeros.mat.txt
+	#./build/spex_demo_qr f ExampleMats/smallZeros.mat.txt
+	./build/spex_demo_qr_cluster f ExampleMats/smallZeros.mat.txt ExampleMats/smallZeros.rhs.txt
 
 
 cov:

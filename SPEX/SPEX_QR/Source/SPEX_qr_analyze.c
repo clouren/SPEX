@@ -69,7 +69,6 @@ SPEX_info SPEX_qr_analyze
     // Declare local variables for symbolic analysis
     int64_t n = A->n, m=A->m;
     int64_t *post = NULL;
-    int64_t i, nz;
 
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of ATA (Default is COLAMD)
@@ -92,15 +91,8 @@ SPEX_info SPEX_qr_analyze
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 
     // Get the column counts of R' aka the row counts of R
-    SPEX_CHECK( spex_qr_counts(&(S->cp), AQ, S->parent, post) ); 
+    SPEX_CHECK( spex_qr_counts(&(S->cp),&(S->rnz), AQ, S->parent, post) ); 
 
-    
-    nz=0;
-    for (i = 0 ; i < n ; i++)
-    {
-        nz += S->cp [i] ;
-    } //move to qr_counts TODO
-    S->rnz=nz; //S->rnz=S->cp[n]
 
     //--------------------------------------------------------------------------
     // Set output, free all workspace and return success

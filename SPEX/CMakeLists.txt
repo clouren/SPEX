@@ -251,6 +251,9 @@ if ( DEMO )
     add_executable ( spex_demo_Update_lu         "Demo/spex_demo_Update_lu.c"         ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_threaded          "Demo/spex_demo_threaded.c"          ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_qr                "Demo/spex_demo_qr.c"                ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_simple         "Demo/spex_demo_qr_simple.c"         ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_extended       "Demo/spex_demo_qr_extended.c"       ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_cluster        "Demo/spex_demo_qr_cluster.c"        ${SPEX_DEMO_SOURCES} )
 
     # Libraries required for Demo programs
     target_link_libraries ( spex_demo_backslash         PUBLIC spex )
@@ -264,6 +267,9 @@ if ( DEMO )
     target_link_libraries ( spex_demo_Update_lu         PUBLIC spex )
     target_link_libraries ( spex_demo_threaded          PUBLIC spex )
     target_link_libraries ( spex_demo_qr                PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_simple         PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_extended       PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_cluster        PUBLIC spex )
 
 else ( )
 

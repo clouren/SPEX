@@ -82,6 +82,7 @@ SPEX_info spex_qr_counts
     // Output
     int64_t **c_handle,     // On ouptut: column counts
                             // On input: undefined
+    int64_t *rnz,            // On output: number of nonzeros in R
     // Input
     const SPEX_matrix A,    // Input matrix
     const int64_t *parent,  // Elimination tree

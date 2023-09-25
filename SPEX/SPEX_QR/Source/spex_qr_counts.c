@@ -60,6 +60,7 @@ SPEX_info spex_qr_counts
     // Output
     int64_t **c_handle,     // On ouptut: column counts
                             // On input: undefined
+    int64_t *rnz,            // On output: number of nonzeros in R
     // Input
     const SPEX_matrix A,    // Input matrix
     const int64_t *parent,  // Elimination tree
@@ -68,7 +69,8 @@ SPEX_info spex_qr_counts
 {
     
     SPEX_info info;
-    int64_t i, j, k, n, m, J, s, p, q, jleaf, *colcount = NULL, *w = NULL;
+    int64_t i, j, k, n, m, J, s, p, q, jleaf, nz;
+    int64_t *colcount = NULL, *w = NULL;
     int64_t *head=NULL, *next=NULL;
     SPEX_matrix AT;
     // Auxiliary variables
@@ -150,6 +152,13 @@ SPEX_info spex_qr_counts
             colcount[parent[j]] += colcount[j] ;
         }
     }
+    
+    nz=0;
+    for (i = 0 ; i < n ; i++)
+    {
+        nz += colcount [i] ;
+    }
+    *rnz=nz;
     
     (*c_handle) = colcount;
     SPEX_FREE_WORKSPACE;

@@ -198,7 +198,7 @@ SPEX_info SPEX_qr_factorize
         // Indices for modifying Q_perm (and creating Pi_perm) according to 
         // whether a column of Q is linearly dependent or linearly independent 
         // of the previous columns
-        int64_t iLD=n-1, iLI=0;
+        int64_t iLD=n-1, iLI=0, index;
         
         SPEX_matrix RTPi=NULL;
         SPEX_matrix RPi=NULL;
@@ -236,29 +236,26 @@ SPEX_info SPEX_qr_factorize
             }
         }
         
-        for(k=0;k<n;k++)
+        // Populate pinv
+        for (k = 0; k < n; k++)
         {
-            Piinv_perm[k]=Pi_perm[n-1-k];
-            printf("pi %ld pi inv %ld\n", Pi_perm[k], Piinv_perm[k]);
+            index = Pi_perm[k];
+            Piinv_perm[index] = k;
         }
         // Permute Q and RT
         // Zero columns of Q will be on the right 
         // Zero rows of R will be on the bottom (Zero columns of RT will be on 
         // the right)
         SPEX_CHECK( spex_qr_permute_A(&F->Q, Q, true, Pi_perm, option) );
-        SPEX_CHECK( spex_qr_permute_A(&RTPi, RT, true, Pi_perm, option) );
-        //SPEX_CHECK( spex_qr_permute_A2(&RTPi, RT, true, Pi_perm, Piinv_perm, option) );
-
-        SPEX_CHECK(SPEX_transpose(&RPi,RTPi,option)); //FIXME
-        SPEX_CHECK( spex_qr_permute_A(&F->R, RPi, true, Pi_perm, option) );
+        SPEX_CHECK( spex_qr_permute_A2(&RTPi, RT, true, Pi_perm, Piinv_perm, option) );
         
-        //SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
+        SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
         F->R->nz=RT->p[n]-1;
         SPEX_matrix_check(RT, option);
         SPEX_matrix_check(RTPi, option);
         SPEX_matrix_check(F->R, option);
         
-        //SPEX_matrix_free(&Q,option); valgrind this!!
+        //SPEX_matrix_free(&Q,option); valgrind this!! TODO
     }
     else
     {

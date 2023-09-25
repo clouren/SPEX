@@ -106,8 +106,8 @@ SPEX_info SPEX_qr_solve
     // backwards substitution
     //--------------------------------------------------------------------------
     //Solves Rx=b_new (overwrites b_new into x)
-    //SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new)); //TODO basic solution of under-determined (last are zeros)
-    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank)); //idk how necessary this actually is because of the if zero continue in lu_back_sub
+    //SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new)); 
+    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank)); //idk how necessary this actually is because of the if zero continue in lu_back_sub TOASK
     
     //--------------------------------------------------------------------------
     // x = Q*b_new/scale
