@@ -256,6 +256,9 @@ SPEX_info SPEX_qr_factorize
         SPEX_matrix_check(F->R, option);
         
         //SPEX_matrix_free(&Q,option); valgrind this!! TODO
+        SPEX_matrix_free(&RTPi,option);
+        SPEX_free(Pi_perm);
+        SPEX_free(Piinv_perm);
     }
     else
     {
