@@ -70,6 +70,8 @@ SPEX_info SPEX_qr_factorize
     bool isZeros=false, *ldCols;
     int64_t rank=n;
     
+    clock_t start, end;
+    double times;
     
      // Allocate memory for the factorization
     F = (SPEX_factorization) SPEX_calloc(1, sizeof(SPEX_factorization_struct));
@@ -85,9 +87,11 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Allocate and compute the nonzero structure of Q and R
     //--------------------------------------------------------------------------
-
+    start = clock();
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &Q, A, S, option));
-    SPEX_matrix_check(Q, option);
+    end = clock();
+    times=(double) (end - start) / CLOCKS_PER_SEC;
+            printf("time %f \n",times);
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
@@ -162,9 +166,13 @@ SPEX_info SPEX_qr_factorize
         }
         else
         {
+            start = clock();
             // Integer-preserving Gram-Schmidt
             SPEX_CHECK(spex_qr_ipgs(RT, Q, F->rhos, Qk, h, &isZeros, k, A,
                                      S->Q_perm, option));
+            end = clock();
+            times=(double) (end - start) / CLOCKS_PER_SEC;
+            printf("k %ld time %f \n",k,times);
         }
 
     }
