@@ -90,6 +90,30 @@ int main( int argc, char *argv[] )
     fclose(rhs_file);
 
     //--------------------------------------------------------------------------
+    // Dense test
+    //--------------------------------------------------------------------------
+    SPEX_matrix A2 = NULL;     // Matrix to be randomly generated
+    SPEX_matrix Q2 = NULL;
+    SPEX_matrix R2 = NULL;
+    SPEX_matrix b_new = NULL;
+    SPEX_matrix x2 = NULL;
+
+    SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
+    clock_t start_f = clock();
+    SPEX_QR_IPGE( A2, &R2, &Q2);
+    clock_t end_f= clock();
+
+    clock_t start_s = clock();
+    SPEX_Qtb(Q2, b, &b_new);
+
+    SPEX_QR_backsolve(R2, b_new, &x2);
+    clock_t end_s = clock();
+
+    double t_f = (double) (end_f - start_f) / CLOCKS_PER_SEC;
+    double t_s =  (double) (end_s - start_s) / CLOCKS_PER_SEC;
+    printf("%s %ld %ld  %f %f\n", mat_name, A->n, A->m, t_f, t_s);
+/*
+    //--------------------------------------------------------------------------
     // Perform Analysis of A
     //--------------------------------------------------------------------------
     clock_t start_col = clock();
@@ -117,10 +141,11 @@ int main( int argc, char *argv[] )
     double t_factor = (double) (end_factor - start_factor) / CLOCKS_PER_SEC;
     double t_solve =  (double) (end_solve - start_solve) / CLOCKS_PER_SEC;
     printf("%s %ld %ld %ld %ld %ld %ld %f %f %f\n", mat_name, A->n, A->m, F->rank, A->p[A->n], (F->Q->p[F->Q->n]), (F->R->p[F->R->n]), t_sym, t_factor, t_solve);
+
     // Check solution
     //option->print_level=1;
     //DEMO_OK(spex_demo_check_solution(A,x,b,option)); //works is x is mpq
-   
+   */
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------

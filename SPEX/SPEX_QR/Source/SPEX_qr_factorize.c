@@ -91,7 +91,11 @@ SPEX_info SPEX_qr_factorize
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &Q, A, S, option));
     end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
-            printf("time %f \n",times);
+    printf("time %f \n",times);
+    for (i = 0; i < n+1; ++i)
+    {
+        printf("i %ld Q %ld R %ld\n",i,Q->p[i],RT->p[i]);
+    }
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
@@ -172,10 +176,11 @@ SPEX_info SPEX_qr_factorize
                                      S->Q_perm, option));
             end = clock();
             times=(double) (end - start) / CLOCKS_PER_SEC;
-            printf("k %ld time %f \n",k,times);
+            //printf("k %ld time %f \n",k,times);
         }
 
     }
+
     
     // Finalize R (get the last element/pivot)
     if(isZeros)

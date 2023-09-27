@@ -204,7 +204,7 @@ SPEX_info spex_qr_nonzero_structure
     QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
     QT->p = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
     memcpy(QT->i, Qi, qnz*sizeof(int64_t));
-    memcpy(QT->p, Qp, (n+1)*sizeof(int64_t)); //TODO check m vs n
+    memcpy(QT->p, Qp, (n+1)*sizeof(int64_t)); //TODO check m vs n es num cols, pero en matrix m es num cols :/
     QT->p_shallow=false;
     QT->i_shallow=false;
 
