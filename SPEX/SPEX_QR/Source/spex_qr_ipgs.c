@@ -91,22 +91,16 @@ SPEX_info spex_qr_ipgs
 
     clock_t start, end;
     double times;
+    size_t size;
     
     *isZeros=true; //start by assuming column of Q is linearly dependent
    
     final = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
-    
-    //for(i=0;i<m;i++)//
-    for(i=Q->p[j];i<Q->p[j+1];i++) //TODO change For (I = A->p[k-2]; I < A->p[k-1]; I++) like factorize
-    {
-        //final[i]=-1;
-        final[Q->i[i]]=-1;
-    }
 
     //--------------------------------------------------------------------------
     // Compute row j of R, store as column
     //--------------------------------------------------------------------------
-    start = clock();
+    //start = clock();
     for (pR =R->p[j];pR <R->p[j+1];pR++)
     {
         // Obtain the index of the current nonzero
@@ -114,9 +108,9 @@ SPEX_info spex_qr_ipgs
         // R(j,i) = Q(:,j) dot AQ(:,i)
         SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, Q_perm[i], option)); 
     }
-    end = clock();
+   /* end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
-    printf("k  %ld timeR %f",j, times);
+    printf("k  %ld timeR %f",j, times);*/
     //rhos stores the diagonal of R (pivots)
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]);
     
@@ -124,8 +118,9 @@ SPEX_info spex_qr_ipgs
     // IPGE and finalize column j+1 of Q
     //--------------------------------------------------------------------------
     k=j+1;
-    start=clock();
+    //start=clock();
     // Find the necessary element of R
+    //printf("k: %ld\n",k);
     for(pR = R->p[j]; pR < R->p[j+1]; pR++)
     {
         i=R->i[pR];
@@ -146,11 +141,9 @@ SPEX_info spex_qr_ipgs
                 SPEX_MPZ_DIVEXACT(Q->x.mpz[pQ], Q->x.mpz[pQ], 
                                     rhos->x.mpz[h[pQ]-1]);
             }
-            //final[iQ]=pQ;
-            //h[pQ]=k;
         }
         else
-        {            
+        {     
             if(j+1>h[pQ]+1)
             {
                 //"an update of Q(iQ,j+1)" has been skipped because R(j,i) is zero 
@@ -174,12 +167,16 @@ SPEX_info spex_qr_ipgs
         {
             *isZeros=false;
         }
+
+        size = mpz_sizeinbase(Q->x.mpz[pQ],10);
+        //printf("%zu, ",size);
     }
-    end = clock();
+    //printf("\n");
+    /*end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
     printf(" timeQj+1 %f",times);
 
-    start=clock();
+    start=clock();*/
     //--------------------------------------------------------------------------
     // Update columns j+2 to n of Q
     //--------------------------------------------------------------------------
@@ -212,17 +209,23 @@ SPEX_info spex_qr_ipgs
             
             // Record changes in history vector
             h[pQ]=j+1;
+            /*if(j+1<=5)
+            {
+                printf("iR %ld iQ %ld pQ %ld h[pQ] %ld\n",i,iQ,pQ,h[pQ]);
+            }*/
         }
     }
-    end = clock();
+   /* end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
-    printf(" timeQall %f\n",times);
+    printf(" timeQall %f\n",times);*/
     
     // Update the final and col vectors needed for the next iteration
-    //for(i=0;i<m;i++)//
+    for(i = Q->p[j]; i < Q->p[j+1]; i++)
+    {
+        Qj[Q->i[i]]=-1;
+    }
     for(i = Q->p[j+1]; i < Q->p[j+2]; i++)
     {
-        //Qj[i]=final[i];
         Qj[Q->i[i]]=final[Q->i[i]];
     }
     //SPEX_matrix_check(Q, option); 

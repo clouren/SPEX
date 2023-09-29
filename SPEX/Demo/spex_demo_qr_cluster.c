@@ -92,18 +92,26 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
     // Dense test
     //--------------------------------------------------------------------------
-    SPEX_matrix A2 = NULL;     // Matrix to be randomly generated
+  /*  SPEX_matrix A2 = NULL;     // Matrix to be randomly generated
     SPEX_matrix Q2 = NULL;
     SPEX_matrix R2 = NULL;
     SPEX_matrix b_new = NULL;
     SPEX_matrix x2 = NULL;
+
+    DEMO_OK (SPEX_qr_analyze(&S, A, option));
 
     SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     clock_t start_f = clock();
     SPEX_QR_IPGE( A2, &R2, &Q2);
     clock_t end_f= clock();
 
-    clock_t start_s = clock();
+    option->print_level = 3;
+    SPEX_matrix_check(Q2, option);
+
+    double t_s = (double) (start_f)/CLOCKS_PER_SEC;
+    double t_e= (double) (end_f)/CLOCKS_PER_SEC;
+    printf("%s  %f %f\n", mat_name,  t_s, t_e);
+    /*clock_t start_s = clock();
     SPEX_Qtb(Q2, b, &b_new);
 
     SPEX_QR_backsolve(R2, b_new, &x2);
@@ -111,28 +119,33 @@ int main( int argc, char *argv[] )
 
     double t_f = (double) (end_f - start_f) / CLOCKS_PER_SEC;
     double t_s =  (double) (end_s - start_s) / CLOCKS_PER_SEC;
-    printf("%s %ld %ld  %f %f\n", mat_name, A->n, A->m, t_f, t_s);
-/*
+    printf("%s %ld %ld  %f %f\n", mat_name, A->n, A->m, t_f, t_s);*/
+
     //--------------------------------------------------------------------------
     // Perform Analysis of A
     //--------------------------------------------------------------------------
-    clock_t start_col = clock();
+    //clock_t start_col = clock();
+    option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
-    clock_t end_col = clock();
+    //clock_t end_col = clock();
 
     //--------------------------------------------------------------------------
     // Factorize AQ
     //--------------------------------------------------------------------------
     clock_t start_factor = clock();
+    option->print_level = 3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     clock_t end_factor = clock();
     //SPEX_matrix_check(F->Q, option);
     //SPEX_matrix_check(F->R, option);
+    double t_s = (double) (start_factor)/CLOCKS_PER_SEC;
+    double t_e= (double) (end_factor)/CLOCKS_PER_SEC;
+    printf("sparse%s  %f %f\n", mat_name,  t_s, t_e);
 
     //--------------------------------------------------------------------------
     // Solve linear system
     //--------------------------------------------------------------------------
-    clock_t start_solve = clock();
+    /*clock_t start_solve = clock();
     DEMO_OK (SPEX_qr_solve(&x, F, b, option));
     clock_t end_solve = clock();
     //SPEX_matrix_check(x, option);
@@ -141,11 +154,11 @@ int main( int argc, char *argv[] )
     double t_factor = (double) (end_factor - start_factor) / CLOCKS_PER_SEC;
     double t_solve =  (double) (end_solve - start_solve) / CLOCKS_PER_SEC;
     printf("%s %ld %ld %ld %ld %ld %ld %f %f %f\n", mat_name, A->n, A->m, F->rank, A->p[A->n], (F->Q->p[F->Q->n]), (F->R->p[F->R->n]), t_sym, t_factor, t_solve);
-
+*/
     // Check solution
     //option->print_level=1;
     //DEMO_OK(spex_demo_check_solution(A,x,b,option)); //works is x is mpq
-   */
+   
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------

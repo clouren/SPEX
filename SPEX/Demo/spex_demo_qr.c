@@ -145,12 +145,12 @@ m=5;n=4;seed=14;
     //option->print_level = 3;
     //SPEX_matrix_check(A, option);
 /**/
-    char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
+    //char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
     //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
-    //char *mat_name = "ExampleMats/LF10.mat.txt";
-    //char *rhs_name = "ExampleMats/LF10.rhs.txt";
+    char *mat_name = "ExampleMats/494_bus.mat.txt";
+    char *rhs_name = "ExampleMats/494_bus.rhs.txt";
     //char *mat_name = "ExampleMats/smallZeros.mat.txt";
-    char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+    //char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
     // Read in A
     FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
@@ -183,9 +183,9 @@ m=5;n=4;seed=14;
     //--------------------------------------------------------------------------
     // Dense
     //--------------------------------------------------------------------------
-    /*
-    SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
-    option->print_level = 3;
+    
+    /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
+    //option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
     //printf("Dense Q, R\n");
     //SPEX_matrix_check(Q2, option);
@@ -196,7 +196,7 @@ m=5;n=4;seed=14;
 
     SPEX_QR_backsolve(R2, b_new, &x2);
     printf("orint x dense:\n");
-    SPEX_matrix_check(x2, option);
+    //SPEX_matrix_check(x2, option);
     /*SPEX_mpq_set_num(x->scale, SPEX_2D(R, n-1, n-1, mpz));
 
 
@@ -208,7 +208,7 @@ m=5;n=4;seed=14;
     // Sparse
     //--------------------------------------------------------------------------
 
-/**/
+
     SPEX_info info;
     SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
     int64_t *h;
@@ -224,7 +224,7 @@ m=5;n=4;seed=14;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
     //SPEX_matrix_check(A, option); 
     printf("facts:\n");
-    option->print_level = 3;
+    //option->print_level = 3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     //SPEX_matrix_check(F->Q, option);
     //SPEX_matrix_check(F->R, option);
@@ -232,7 +232,7 @@ m=5;n=4;seed=14;
     
     printf("solve:\n");
     DEMO_OK (SPEX_qr_solve(&x, F, b, option));
-    SPEX_matrix_check(x, option);
+    //SPEX_matrix_check(x, option);
     
     if(F->rank,(F->R->n)-(F->rank)==0) //TOASK
     {
@@ -327,12 +327,12 @@ m=5;n=4;seed=14;
     // Free Memory
     //--------------------------------------------------------------------------
     //FREE_WORKSPACE;
-    SPEX_factorization_free(&F, NULL);      
+    /*SPEX_factorization_free(&F, NULL);      
     SPEX_symbolic_analysis_free(&S, NULL);    
     SPEX_matrix_free(&A,  NULL);              
     SPEX_matrix_free(&x,  NULL); 
     SPEX_matrix_free(&b,  NULL);  
-    SPEX_FREE(option);                         
+    SPEX_FREE(option);           */              
     
 
 }

@@ -210,7 +210,7 @@ SPEX_info spex_qr_nonzero_structure
 
     // Transpose to obtain the nonzero pattern of Q
     SPEX_CHECK(spex_qr_transpose(&Q, QT, NULL));
-    Q->nz=qnz;
+    Q->nz=qnz; //TODO change
 
     //--------------------------------------------------------------------------
     // Copy values of A into Q

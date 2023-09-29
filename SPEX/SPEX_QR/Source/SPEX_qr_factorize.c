@@ -87,15 +87,15 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Allocate and compute the nonzero structure of Q and R
     //--------------------------------------------------------------------------
-    start = clock();
+    //start = clock();
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &Q, A, S, option));
-    end = clock();
+    /*end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
     printf("time %f \n",times);
     for (i = 0; i < n+1; ++i)
     {
         printf("i %ld Q %ld R %ld\n",i,Q->p[i],RT->p[i]);
-    }
+    }*/
     SPEX_CHECK (SPEX_matrix_allocate(&(F->rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
@@ -264,11 +264,8 @@ SPEX_info SPEX_qr_factorize
         
         SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
         F->R->nz=RT->p[n]-1;
-        SPEX_matrix_check(RT, option);
-        SPEX_matrix_check(RTPi, option);
-        SPEX_matrix_check(F->R, option);
         
-        //SPEX_matrix_free(&Q,option); valgrind this!! TODO
+        SPEX_matrix_free(&Q,option); //valgrind this!! TODO
         SPEX_matrix_free(&RTPi,option);
         SPEX_free(Pi_perm);
         SPEX_free(Piinv_perm);
