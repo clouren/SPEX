@@ -86,7 +86,6 @@ SPEX_info SPEX_qr_analyze
     //--------------------------------------------------------------------------
     // Obtain elimination tree of ATA
     SPEX_CHECK( spex_qr_etree(&S->parent, AQ) );
-    
     // Postorder the column elimination tree of ATA
     SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
 

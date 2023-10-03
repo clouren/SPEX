@@ -56,7 +56,6 @@ int main( int argc, char *argv[] )
     // Process the command line
     DEMO_OK(spex_demo_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
-
      //--------------------------------------------------------------------------
     // Allocate memory
     //--------------------------------------------------------------------------
@@ -69,25 +68,21 @@ int main( int argc, char *argv[] )
         FREE_WORKSPACE;
         return 0;
     }
-
+    //option->print_level = 4;
     DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
+
     n = A->n;
     // For this code, we utilize a vector of all ones as the RHS vector
-    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true,
-        option);
-    
-    // Read in b. The output of this demo function is b in dense format with
-    // mpz_t entries
-    FILE *rhs_file = fopen(rhs_name,"r");
-    if( rhs_file == NULL )
-    {
-        perror("Error while opening the file");
-        FREE_WORKSPACE;
-        return 0;
+    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
+    if(!b){
+        printf("scream \n");
     }
-    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
-    fclose(rhs_file);
+
+    // Create RHS
+    for (int64_t k = 0; k < n; k++)
+        DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
+
 
     //--------------------------------------------------------------------------
     // Dense test

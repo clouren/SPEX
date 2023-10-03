@@ -113,6 +113,7 @@ SPEX_info spex_demo_tripread
     if (info != SPEX_OK)
     {
         printf ("invalid matrix\n");
+        printf("%d\n",info);
         return (info);
     }
 
