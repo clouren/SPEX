@@ -68,6 +68,7 @@ demos:
 	#./build/spex_demo_qr f ExampleMats/LF10.mat.txt
 	#./build/spex_demo_qr f ExampleMats/smallZeros.mat.txt
 	./build/spex_demo_qr_cluster f ExampleMats/smallZeros.mat.txt ExampleMats/smallZeros.rhs.txt
+	./build/spex_demo_qr_leastSquares f ExampleMats/smallZeros.mat.txt s
 
 
 cov:
