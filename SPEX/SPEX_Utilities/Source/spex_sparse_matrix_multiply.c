@@ -23,7 +23,7 @@ SPEX_info spex_sparse_matrix_multiply
     SPEX_info info;
     //Declare variables
     int64_t p, j, nz = 0, anz, *Cp, *Ci, *Bp, m, n, bnz, *w, values, *Bi ;
-    SPEX_matrix x, Bx, Cx, C;
+    SPEX_matrix x, Bx, Cx, C=NULL;
     mpz_t one;
 
 
@@ -31,6 +31,7 @@ SPEX_info spex_sparse_matrix_multiply
     //if (!CS_CSC (A) || !CS_CSC (B)) return (NULL) ;    
     if (A->n != B->m) return SPEX_INCORRECT_INPUT ;
 
+    SPEX_mpz_init(one);
     SPEX_MPZ_SET_UI(one,1);
 
     m = A->m ; anz = A->p [A->n] ;
@@ -41,7 +42,7 @@ SPEX_info spex_sparse_matrix_multiply
     if(values)
     {
         SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPZ, m, 1, m,
-        true, false, NULL));
+        false, false, NULL));
     }
     else
     {
@@ -49,9 +50,9 @@ SPEX_info spex_sparse_matrix_multiply
     }
     
     SPEX_CHECK(SPEX_matrix_allocate(&C, SPEX_CSC, SPEX_MPZ, m, n, anz+bnz,
-        true, false, NULL));
+        false, false, NULL));
     if (!C || !w || (values && !x)) return (SPEX_OUT_OF_MEMORY) ;
-    
+
     for (j = 0 ; j < n ; j++)
     {
         if (nz + m > C->nzmax && !spex_sparse_realloc(C))

@@ -81,7 +81,9 @@ int main( int argc, char *argv[] )
         DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
 
     DEMO_OK(SPEX_transpose(&AT,A,option));
-    DEMO_OK(spex_sparse_matrix_multiply (&ATA,A,AT));
+    DEMO_OK(spex_sparse_matrix_multiply (&ATA,AT,A));
+    option->print_level = 3;
+    SPEX_matrix_check(ATA, option);
     DEMO_OK(SPEX_cholesky_backslash( &x, SPEX_MPQ, A, b, option));
 /*
     //--------------------------------------------------------------------------

@@ -52,6 +52,11 @@ SPEX_info spex_ipge_update
         SPEX_MPZ_SUBMUL(A->x.mpz[a], B->x.mpz[b], A->x.mpz[k]);
         if(j>=1)
         {
+            SPEX_MPZ_SGN(&sgn, rhos->x.mpz[i]);
+            if(sgn==0)
+            {
+                printf("rhos==0 %ld\n",i);
+            }
             SPEX_MPZ_DIVEXACT(A->x.mpz[a], A->x.mpz[a], rhos->x.mpz[i]);
         }
     }

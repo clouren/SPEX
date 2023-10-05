@@ -38,7 +38,7 @@ SPEX_info spex_scatter
         if (w [i] < mark)
         {
             w [i] = mark ;                      /* i is new entry in column j */
-            Ci [*nz++] = i ;                     /* add i to pattern of C(:,j) */
+            Ci [(*nz)++] = i ;                     /* add i to pattern of C(:,j) */
             if (x) SPEX_MPZ_MUL(x->x.mpz [i], beta, A->x.mpz [p]) ;      /* x(i) = beta*A(i,j) */
         }
         else if (x) SPEX_MPZ_ADDMUL(x->x.mpz [i], beta , A->x.mpz [p]) ;    /* i exists in C(:,j) already x [i] += beta * Ax [p] */

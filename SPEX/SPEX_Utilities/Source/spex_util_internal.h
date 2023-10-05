@@ -163,6 +163,7 @@
         info = (method);            \
         if (info != SPEX_OK)        \
         {                           \
+            printf("file %s line %d\n",__FILE__,__LINE__);\
             SPEX_FREE_ALL;          \
             return (info);          \
         }                           \
