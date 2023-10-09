@@ -122,11 +122,12 @@ typedef enum
                                   // definite (for a Cholesky factorization)
     SPEX_INCORRECT_ALGORITHM = -5,// The algorithm is not compatible with
                                   // the factorization
-    SPEX_PANIC = -6               // SPEX used without proper initialization,
+    SPEX_RANK_DEFICIENT = -6,     // Input matrix is rank deficient
+    SPEX_PANIC = -7               // SPEX used without proper initialization,
                                   // or other unrecoverable error
 }
 SPEX_info ;
-
+//TODO matlab and python
 //------------------------------------------------------------------------------
 // SPEX Version
 //------------------------------------------------------------------------------
@@ -215,10 +216,11 @@ SPEX_preorder ;
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
-                         // Up for Chol
+                         // Up for Chol, GS for QR
     SPEX_LU_LEFT = 1,    // Left looking LU factorization
     SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
-    SPEX_CHOL_UP = 3     // Up looking Cholesky factorization
+    SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
+    SPEX_QR_GS = 4       // QR factorization via Gram-Schmidt process
 }
 SPEX_factorization_algorithm ;
 
@@ -649,6 +651,7 @@ typedef struct
                                     // the initial space for L and U; the
                                     // space is reallocated as needed.
                                     // Available only for SPEX_LU_FACTORIZATION.
+    int64_t rnz;
 
     //--------------------------------------------------------------------------
     // These are only used in the Cholesky analysis process
@@ -738,6 +741,8 @@ typedef struct
     SPEX_matrix U;                        // The upper-triangular matrix from LU
                                           // factorization. NULL for Cholesky
                                           // factorization.
+    SPEX_matrix Q;
+    SPEX_matrix R;
     SPEX_matrix rhos;                     // A n-by-1 dense matrix for the
                                           // pivot values
 
@@ -758,6 +763,8 @@ typedef struct
 
     int64_t *Q_perm;                     // column permutation
     int64_t *Qinv_perm;                  // inverse of column permutation
+    
+    int64_t rank;
 
 } SPEX_factorization_struct ;
 
@@ -1462,6 +1469,113 @@ SPEX_info SPEX_cholesky_solve
     const SPEX_matrix b,        // Right hand side vector
     const SPEX_options option   // command options
 ) ;
+
+
+// SPEX QR
+
+SPEX_info SPEX_qr_analyze
+(
+    // Output
+    SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
+    // Input
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_options option   // Command options (Default if NULL)
+);
+
+SPEX_info SPEX_qr_factorize
+(
+    // Output
+    SPEX_factorization *F_handle,   // QR factorization struct
+    //Input
+    const SPEX_matrix A,            // Matrix to be factored. Must be SPEX_MPZ
+                                    // and SPEX_CSC
+    SPEX_symbolic_analysis S,       // Symbolic analysis struct containing the
+                                    // column elimination tree of A, the column
+                                    // permutation, and number of nonzeros in R
+    const SPEX_options option       // command options.
+);
+
+SPEX_info SPEX_qr_solve
+(
+    // Output
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: Rational solution (SPEX_MPQ)
+                                // to the system.
+    // input
+    const SPEX_factorization F, // The QR factorization.
+    const SPEX_matrix b,        // Right hand side vector
+    const SPEX_options option   // command options
+);
+
+SPEX_info SPEX_qr_backslash
+(
+    // Output
+    SPEX_matrix *x_handle,        // Final solution vector
+    // Input
+    SPEX_type type,               // Type of output desired. Must be
+                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,          // Input matrix
+    const SPEX_matrix b,          // Right hand side vector(s)
+    const SPEX_options option     // Command options
+);
+
+//delete all qr functions after this
+/* Compute the dot product of two integer vectors x,y and return in z */
+SPEX_info SPEX_dot
+(
+    SPEX_matrix x,
+    SPEX_matrix y,
+    mpz_t z
+);
+
+/* Purpose: Given a matrix A in m*n and B in m*n, compute the dot product of
+ * A(:,i) and B(:,j). Assumed to be dense. prod = A(:,i) dot B(:,j)
+ */
+SPEX_info SPEX_dense_mat_dot
+(
+    SPEX_matrix A,
+    int64_t i,
+    SPEX_matrix B,
+    int64_t j,
+    mpz_t prod
+);
+
+/* Perform the IPGE version of SPEX QR (aka Algorithm 1 from workpage)
+ */
+SPEX_info SPEX_QR_IPGE
+(
+    SPEX_matrix A,            // Matrix to be factored
+    SPEX_matrix *R_handle,    // upper triangular matrix
+    SPEX_matrix *Q_handle     // orthogonal triangular matrix
+);
+
+SPEX_info SPEX_Qtb
+(
+    SPEX_matrix Q,        // Q matrix, want Q'
+    SPEX_matrix b,        // Original RHS Vector
+    SPEX_matrix* b_handle // Null on input. Contains Q'*b on output
+);
+
+SPEX_info SPEX_QR_backsolve
+(
+    SPEX_matrix R,        // Upper triangular matrix
+    SPEX_matrix b,        // Q^T * b
+    SPEX_matrix* x_handle // Solution
+);
+
+SPEX_info SPEX_generate_random_matrix
+(
+    SPEX_matrix *A_handle, // Matrix to be created
+    int64_t m,              // Rows of the matrix
+    int64_t n,              // Columns of the matrix
+    unsigned int seed,      // Random number seed
+    int64_t lower,          // Lower bound for numbers to be generated
+    int64_t upper           // Upper bound for numbers to be generated
+);
+
+
+
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

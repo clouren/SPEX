@@ -59,7 +59,7 @@ SPEX_info SPEX_backslash
     }
 
     // Check for data types and dimension of A and b
-    if (A->m != A->n || A->type != SPEX_MPZ || A->kind != SPEX_CSC
+    if (A->type != SPEX_MPZ || A->kind != SPEX_CSC
         || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {
         return SPEX_INCORRECT_INPUT;
@@ -91,47 +91,86 @@ SPEX_info SPEX_backslash
     // Declare output
     SPEX_matrix x = NULL;
 
-    // Attempt a Cholesky factorization of A.
-    // If Cholesky is occuring, we update the option
-    // struct to do AMD and diagonal pivoting
-    backslash_options->order = SPEX_AMD;
-    backslash_options->pivot = SPEX_DIAGONAL;
-
-    // Try SPEX Cholesky. The output for this function
-    // is either:
-    // SPEX_OK:       Cholesky success, x is the exact solution
-    // SPEX_NOTSPD:   Cholesky failed. This means
-    //                A is not SPD. In this case, we try LU
-    // Other error code: Some error. Return the error code and exit
-    info = SPEX_cholesky_backslash(&x, type, A, b, backslash_options);
-    if (info == SPEX_OK)
+    if(A->m==A->n)
     {
-        // Cholesky was successful. Set x_handle = x
-        (*x_handle) = x;
+        // Attempt a Cholesky factorization of A.
+        // If Cholesky is occuring, we update the option
+        // struct to do AMD and diagonal pivoting
+        backslash_options->order = SPEX_AMD;
+        backslash_options->pivot = SPEX_DIAGONAL;
 
-        // x_handle contains the exact solution of Ax = b and is
-        // stored in the user desired type. Now, we exit and return ok
-        SPEX_FREE(backslash_options);
-        return SPEX_OK;
-    }
-    else if (info == SPEX_NOTSPD)
-    {
-        // Cholesky factorization failed. Must try
-        // LU factorization now
-
-        // Since LU is occuring, we update the option
-        // struct to do COLAMD and small pivoting
-        backslash_options->order = SPEX_COLAMD;
-        backslash_options->pivot = SPEX_SMALLEST;
-
-        // The LU factorization can return either:
-        // SPEX_OK: LU success, x is the exact solution
-        // Other error code: Some error. Return the error
-        //                   code and exit
-        info = SPEX_lu_backslash(&x, type, A, b, backslash_options);
+        // Try SPEX Cholesky. The output for this function
+        // is either:
+        // SPEX_OK:       Cholesky success, x is the exact solution
+        // SPEX_NOTSPD:   Cholesky failed. This means
+        //                A is not SPD. In this case, we try LU
+        // Other error code: Some error. Return the error code and exit
+        info = SPEX_cholesky_backslash(&x, type, A, b, backslash_options);
         if (info == SPEX_OK)
         {
-            // LU success, set x_handle = x
+            // Cholesky was successful. Set x_handle = x
+            (*x_handle) = x;
+
+            // x_handle contains the exact solution of Ax = b and is
+            // stored in the user desired type. Now, we exit and return ok
+            SPEX_FREE(backslash_options);
+            return SPEX_OK;
+        }
+        else if (info == SPEX_NOTSPD)
+        {
+            // Cholesky factorization failed. Must try
+            // LU factorization now
+
+            // Since LU is occuring, we update the option
+            // struct to do COLAMD and small pivoting
+            backslash_options->order = SPEX_COLAMD;
+            backslash_options->pivot = SPEX_SMALLEST;
+
+            // The LU factorization can return either:
+            // SPEX_OK: LU success, x is the exact solution
+            // Other error code: Some error. Return the error
+            //                   code and exit
+            info = SPEX_lu_backslash(&x, type, A, b, backslash_options);
+            if (info == SPEX_OK)
+            {
+                // LU success, set x_handle = x
+                (*x_handle) = x;
+
+                // x_handle contains the exact solution of Ax = b and is
+                // stored in the user desired type. Now, we exit and return ok
+                SPEX_FREE(backslash_options);
+                return SPEX_OK;
+            }
+            else
+            {
+                // Both Cholesky and LU have failed, info contains
+                // the problem, most likely that A is singular
+                // Note that, because LU failed, x_handle is still
+                // NULL so there is no potential for a memory leak here
+                SPEX_FREE(backslash_options);
+                return info;
+            }
+        }
+        else
+        {
+            // Cholesky failed, but not due to a SPEX_NOTSPD
+            // error code. Most likely invalid input or out of
+            // memory condition.
+            // Note that since Cholesky failed, x_handle is still NULL
+            // so there is no potential for a memory leak here
+            SPEX_FREE(backslash_options);
+            return info;
+        }
+    }
+    else
+    {
+        // Attempt a QR factorization of A.
+        backslash_options->order = SPEX_COLAMD;
+
+        info = SPEX_qr_backslash(&x, type, A, b, backslash_options);
+        if (info == SPEX_OK)
+        {
+            // QR was successful. Set x_handle = x
             (*x_handle) = x;
 
             // x_handle contains the exact solution of Ax = b and is
@@ -141,23 +180,13 @@ SPEX_info SPEX_backslash
         }
         else
         {
-            // Both Cholesky and LU have failed, info contains
-            // the problem, most likely that A is singular
-            // Note that, because LU failed, x_handle is still
-            // NULL so there is no potential for a memory leak here
+            // QR failed
+            // Note that since QR failed, x_handle is still NULL
+            // so there is no potential for a memory leak here
             SPEX_FREE(backslash_options);
             return info;
         }
-    }
-    else
-    {
-        // Cholesky failed, but not due to a SPEX_NOTSPD
-        // error code. Most likely invalid input or out of
-        // memory condition.
-        // Note that since Cholesky failed, x_handle is still NULL
-        // so there is no potential for a memory leak here
-        SPEX_FREE(backslash_options);
-        return info;
+
     }
 
 }

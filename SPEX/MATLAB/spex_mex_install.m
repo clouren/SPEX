@@ -104,6 +104,7 @@ verbose = '' ;
 m1 = ['mex ', verbose, ' -R2018a ', includes, ' spex_lu_mex_soln.c ' , src, ' ', flags, ' ', libs] ;
 m2 = ['mex ', verbose, ' -R2018a ', includes, ' spex_cholesky_mex_soln.c ' , src, ' ', flags, ' ', libs];
 m3 = ['mex ', verbose, ' -R2018a ', includes, ' spex_backslash_mex_soln.c ' , src, ' ', flags, ' ', libs];
+m4 = ['mex ', verbose, ' -R2018a ', includes, ' spex_qr_mex_soln.c ' , src, ' ', flags, ' ', libs];
 
 if (~isempty (verbose))
     fprintf ('%s\n', m1) ;
@@ -113,6 +114,7 @@ end
 eval (m1) ;
 eval (m2) ;
 eval (m3) ;
+eval (m4) ;
 
 if (run_demo)
     % Test SPEX

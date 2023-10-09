@@ -37,6 +37,9 @@ SPEX_info SPEX_QR_IPGE
     // Indices
     int64_t i, j, k;
 
+    size_t size;
+    int sgn;
+
     // Final matrices Q and R
     SPEX_matrix Q, R;
 
@@ -62,6 +65,8 @@ SPEX_info SPEX_QR_IPGE
         // IPGE update Q
         for (i = k+1; i < n; i++)
         {
+            //if(i==k+1) printf("i: %ld\n",i);
+
             for ( j = 0; j < m; j++)
             {
                 // Q(j,i) = Q(j,i)*R(k,k)
@@ -79,7 +84,18 @@ SPEX_info SPEX_QR_IPGE
                                        SPEX_2D(Q, j, i, mpz),
                                        SPEX_2D(R, k-1, k-1, mpz));
                 }
+
+                if(i==k+1)
+                {
+                    size = mpz_sizeinbase(SPEX_2D(Q, j, i, mpz),10);
+                    SPEX_MPZ_SGN(&sgn, SPEX_2D(Q, j, i, mpz));
+                    if(sgn!=0)
+                    {
+                        //printf("%zu, ",size); 
+                    }  
+                }
             }
+            //if(i==k+1) printf("\n");
         }
     }
 

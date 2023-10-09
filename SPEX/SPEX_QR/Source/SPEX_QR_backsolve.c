@@ -44,6 +44,11 @@ SPEX_info SPEX_QR_backsolve
     {
         SPEX_mpz_mul( x->x.mpz[i], x->x.mpz[i], SPEX_2D(R, R->n-1, R->n-1, mpz));
     }
+    /*SPEX_options option = NULL;
+    SPEX_create_default_options(&option);
+    option->print_level = 3;
+    printf("orint b_new dense:\n");
+    SPEX_matrix_check(x, option);*/
 
     // Solve R x = x for each RHS vector
 

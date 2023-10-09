@@ -76,7 +76,7 @@ configure_file ( "Config/SPEX_version.tex.in"
 
 include_directories ( Include
     SPEX_Backslash/Source SPEX_Cholesky/Source SPEX_LU/Source
-    SPEX_Update/Source SPEX_Utilities/Source
+    SPEX_Update/Source SPEX_Utilities/Source SPEX_QR/Source
     ${SUITESPARSE_CONFIG_INCLUDE_DIR}
     ${GMP_INCLUDE_DIR} ${MPFR_INCLUDE_DIR}
     ${AMD_INCLUDE_DIR} ${COLAMD_INCLUDE_DIR} )
@@ -250,6 +250,11 @@ if ( DEMO )
     add_executable ( spex_demo_Update_chol       "Demo/spex_demo_Update_chol.c"       ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_Update_lu         "Demo/spex_demo_Update_lu.c"         ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_threaded          "Demo/spex_demo_threaded.c"          ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr                "Demo/spex_demo_qr.c"                ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_simple         "Demo/spex_demo_qr_simple.c"         ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_extended       "Demo/spex_demo_qr_extended.c"       ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_cluster        "Demo/spex_demo_qr_cluster.c"        ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_leastSquares        "Demo/spex_demo_qr_leastSquares.c"        ${SPEX_DEMO_SOURCES} )
 
     # Libraries required for Demo programs
     target_link_libraries ( spex_demo_backslash         PUBLIC spex )
@@ -262,6 +267,11 @@ if ( DEMO )
     target_link_libraries ( spex_demo_Update_chol       PUBLIC spex )
     target_link_libraries ( spex_demo_Update_lu         PUBLIC spex )
     target_link_libraries ( spex_demo_threaded          PUBLIC spex )
+    target_link_libraries ( spex_demo_qr                PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_simple         PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_extended       PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_cluster        PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_leastSquares        PUBLIC spex )
 
 else ( )
 
