@@ -128,7 +128,7 @@ int main( int argc, char *argv[] )
     // Factorize AQ
     //--------------------------------------------------------------------------
     clock_t start_factor = clock();
-    //option->print_level = 3;
+    option->print_level = 3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     clock_t end_factor = clock();
     //SPEX_matrix_check(F->Q, option);

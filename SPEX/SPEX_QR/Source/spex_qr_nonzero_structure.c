@@ -202,7 +202,7 @@ SPEX_info spex_qr_nonzero_structure
         true, false, NULL));
     
     QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
-    QT->p = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
+    QT->p = (int64_t*) SPEX_malloc((n+1)* sizeof (int64_t));
     memcpy(QT->i, Qi, qnz*sizeof(int64_t));
     memcpy(QT->p, Qp, (n+1)*sizeof(int64_t)); //TODO check m vs n es num cols, pero en matrix m es num cols :/
     QT->p_shallow=false;
@@ -211,7 +211,10 @@ SPEX_info spex_qr_nonzero_structure
     // Transpose to obtain the nonzero pattern of Q
     SPEX_CHECK(spex_qr_transpose(&Q, QT, NULL));
     Q->nz=qnz; //TODO change
-
+    //printf("n %ld m %ld %ld qnz\n",n,m,qnz );
+    //option->print_level = 3;
+    //SPEX_matrix_check(Q, option);
+    //SPEX_matrix_check(QT, option);
     //--------------------------------------------------------------------------
     // Copy values of A into Q
     //--------------------------------------------------------------------------

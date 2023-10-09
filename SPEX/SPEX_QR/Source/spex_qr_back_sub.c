@@ -52,7 +52,8 @@ SPEX_info spex_qr_back_sub  // performs sparse REF backward substitution
             // If bx[j] is zero skip this iteration
             SPEX_MPZ_SGN(&sgn, SPEX_2D( bx, j, k, mpz));
             if (sgn == 0) {continue;}
-
+            SPEX_MPZ_SGN(&sgn, Rx[Rp[j+1]-1]);//there might be a better way of doing this
+            if (sgn == 0) {continue;}
             // Obtain bx[j]
             SPEX_MPZ_DIVEXACT(SPEX_2D(bx, j, k, mpz),
                                           SPEX_2D(bx, j, k, mpz),

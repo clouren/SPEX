@@ -88,7 +88,7 @@ SPEX_info SPEX_qr_solve
     for (k = 0; k < b->n; k++) //if b is a vector this will only be once
     {
         // Compute b[j,k]
-        for(j=0;j<F->rank;j++)//for(j=0;j<F->rank;j++)
+        for(j=0;j<F->Q->n;j++)//for(j=0;j<F->rank;j++)
         {
             for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
@@ -101,7 +101,6 @@ SPEX_info SPEX_qr_solve
                              F->rhos->x.mpz[F->R->n-1]);
         }
     }
-    SPEX_matrix_check(b_new, option);
     //--------------------------------------------------------------------------
     // backwards substitution
     //--------------------------------------------------------------------------
@@ -120,7 +119,7 @@ SPEX_info SPEX_qr_solve
     // allocate space for x as dense MPQ matrix
     SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
         0, false, true, option));
-    
+
     // obtain x from permuted b_new with scale applied
     for (i = 0 ; i < b->m ; i++)
     {

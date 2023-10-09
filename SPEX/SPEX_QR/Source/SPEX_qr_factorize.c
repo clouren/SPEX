@@ -69,6 +69,7 @@ SPEX_info SPEX_qr_factorize
     // dependent, ldCols keeps track of linearly dependent columns
     bool isZeros=false, *ldCols;
     int64_t rank=n;
+    int sgn;
     
     clock_t start, end;
     double times;
@@ -87,12 +88,10 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Allocate and compute the nonzero structure of Q and R
     //--------------------------------------------------------------------------
-    //start = clock();
+
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &Q, A, S, option));
-    /*end = clock();
-    times=(double) (end - start) / CLOCKS_PER_SEC;
-    printf("time %f \n",times);
-    for (i = 0; i < n+1; ++i)
+ 
+    /*for (i = 0; i < n+1; ++i)
     {
         printf("i %ld Q %ld R %ld\n",i,Q->p[i],RT->p[i]);
     }*/
@@ -127,7 +126,11 @@ SPEX_info SPEX_qr_factorize
         //then the kth row of R is all zeros too and you skip operations on k
         if(isZeros)
         {
+            //printf("%ld in isZeros\n",k);
             ldCols[k]=true;//kth pivot of R is zeros, kth column of Q is ld
+
+            isZeros=true;
+
             // row k of R is zeros
             for (pR =RT->p[k];pR <RT->p[k+1];pR++)
             {
@@ -154,6 +157,13 @@ SPEX_info SPEX_qr_factorize
                 }
                 iQ=Q->i[pQ];
                 Qk[iQ]=pQ;
+
+                SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
+                if(sgn!=0)
+                {
+                    //printf("k %ld\n",k);
+                    isZeros=false;
+                }
             }
             // Update the history vector
             for(i = pQ; i < Q->nz; i++)
@@ -165,18 +175,20 @@ SPEX_info SPEX_qr_factorize
             }
 
             rank--;
-            
-            isZeros=false;
+
+            if(k==11){
+                //option->print_level = 3;
+                //SPEX_matrix_check(F->rhos, option);
+            }
         }
         else
         {
-            start = clock();
             // Integer-preserving Gram-Schmidt
             SPEX_CHECK(spex_qr_ipgs(RT, Q, F->rhos, Qk, h, &isZeros, k, A,
                                      S->Q_perm, option));
-            end = clock();
-            times=(double) (end - start) / CLOCKS_PER_SEC;
-            //printf("k %ld time %f \n",k,times);
+            //option->print_level = 3;
+            //SPEX_matrix_check(Q, option);
+            //SPEX_matrix_check(RT, option);
         }
 
     }
@@ -185,7 +197,9 @@ SPEX_info SPEX_qr_factorize
     // Finalize R (get the last element/pivot)
     if(isZeros)
     {
+        //printf("last isZeros\n");
         ldCols[k]=true;
+        rank--;
         SPEX_MPZ_SET_UI(RT->x.mpz[RT->p[n]-1],0); 
         SPEX_MPZ_SET(F->rhos->x.mpz[n-1],F->rhos->x.mpz[n-2]);
     }
@@ -255,17 +269,17 @@ SPEX_info SPEX_qr_factorize
             index = Pi_perm[k];
             Piinv_perm[index] = k;
         }
+
         // Permute Q and RT
         // Zero columns of Q will be on the right 
         // Zero rows of R will be on the bottom (Zero columns of RT will be on 
         // the right)
         SPEX_CHECK( spex_qr_permute_A(&F->Q, Q, true, Pi_perm, option) );
         SPEX_CHECK( spex_qr_permute_A2(&RTPi, RT, true, Pi_perm, Piinv_perm, option) );
-        
         SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
         F->R->nz=RT->p[n]-1;
         
-        SPEX_matrix_free(&Q,option); //valgrind this!! TODO
+        SPEX_matrix_free(&Q,option);
         SPEX_matrix_free(&RTPi,option);
         SPEX_free(Pi_perm);
         SPEX_free(Piinv_perm);
@@ -282,7 +296,7 @@ SPEX_info SPEX_qr_factorize
             SPEX_FREE_ALL;
             return SPEX_OUT_OF_MEMORY;
         }
-
+        
         // Copy column permutation from symbolic analysis to factorization
         memcpy(F->Q_perm, S->Q_perm, n*sizeof(int64_t));
         

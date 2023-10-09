@@ -118,6 +118,10 @@ SPEX_info spex_qr_ipgs
     // IPGE and finalize column j+1 of Q
     //--------------------------------------------------------------------------
     k=j+1;
+    if(Q->p[k]== Q->p[k+1])
+    {
+
+    }
     //start=clock();
     // Find the necessary element of R
     //printf("k: %ld\n",k);
@@ -168,9 +172,10 @@ SPEX_info spex_qr_ipgs
             *isZeros=false;
         }
 
-        size = mpz_sizeinbase(Q->x.mpz[pQ],10);
+        //size = mpz_sizeinbase(Q->x.mpz[pQ],10);
         //printf("%zu, ",size);
     }
+
     //printf("\n");
     /*end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
