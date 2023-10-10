@@ -41,10 +41,6 @@ void spex_mex_error
         case SPEX_NOTSPD :              // Matrix is not SPD, can't use Cholesky
             SPEX_finalize ( );
             mexErrMsgTxt ("input matrix is not symmetric positive definite");
-            
-        case SPEX_RANK_DEFICIENT :              // Matrix is rank deficient
-            SPEX_finalize ( );
-            mexErrMsgTxt ("input matrix is rank deficient");
 
         case SPEX_PANIC :               // SPEX used without proper
                                         // initialization

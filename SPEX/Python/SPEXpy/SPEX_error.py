@@ -20,7 +20,6 @@ def determine_error(ok):
         3:"one or more input arguments are incorrect",
         4:"the input matrix is not SPD",
         5:"the algorithm is not compatible with the factorization",
-        6:"the input matrix A is rank deficient",
-        7:"SPEX used without proper initialization",
+        6:"SPEX used without proper initialization",
     }
     return errorMessages.get(ok*(-1))
