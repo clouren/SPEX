@@ -75,7 +75,7 @@ SPEX_info SPEX_qr_solve
     SPEX_matrix b_new = NULL, x=NULL;
     int64_t k, p, i,j,qi;
     int64_t rank=F->rank; //when matrix is full rank, rank=n
-
+    printf("bm %ld bn %ld \n",b->m,b->n);
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));
@@ -93,6 +93,7 @@ SPEX_info SPEX_qr_solve
             for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
                 i=F->Q->i[p];
+                //printf("j %ld , p %ld, i %ld\n",j,p,i);
                 SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],
                                  SPEX_2D(b, i, k, mpz));
             }
@@ -106,8 +107,8 @@ SPEX_info SPEX_qr_solve
     //--------------------------------------------------------------------------
     //Solves Rx=b_new (overwrites b_new into x)
     //SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new)); 
-    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank)); //idk how necessary this actually is because of the if zero continue in lu_back_sub TOASK
-    
+    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank));
+    //SPEX_matrix_check(b_new, option);
     //--------------------------------------------------------------------------
     // x = Q*b_new/scale
     //--------------------------------------------------------------------------
@@ -117,11 +118,11 @@ SPEX_info SPEX_qr_solve
     SPEX_MPQ_DIV(b_new->scale, b_new->scale, F->scale_for_A);
 
     // allocate space for x as dense MPQ matrix
-    SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
+    SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, F->Q->n, b->n,
         0, false, true, option));
 
     // obtain x from permuted b_new with scale applied
-    for (i = 0 ; i < b->m ; i++)
+    for (i = 0 ; i < F->Q->n ; i++)
     {
         qi = F->Q_perm[i];
         for (j = 0 ; j < b->n ; j++)

@@ -100,7 +100,7 @@ SPEX_info spex_qr_nonzero_structure
 
     Qi = (int64_t*) SPEX_malloc((n*m)* sizeof (int64_t));
     Qp = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
-
+    printf("m %ld n %ld mn %ld\n",m,n,m*n);
     w = (int64_t*) SPEX_malloc((n+m2)* sizeof (int64_t));
     leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
     s = w + n ;
@@ -192,19 +192,20 @@ SPEX_info spex_qr_nonzero_structure
         for (p = top ; p < n ; p++) /* for each i in pattern of Q(:,k) */
         {
             i = s [p] ;                     /* Q(i,k) is nonzero */
+            //printf("qnz %ld\n",qnz);
             Qi [qnz++] = i ;                  /* Q(i,k) = x(i) */
         }
         
     }
     // Finalize Q->p
-    Qp[n] =  qnz;
+    Qp[m] =  qnz;
     SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz,
         true, false, NULL));
     
-    QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
-    QT->p = (int64_t*) SPEX_malloc((n+1)* sizeof (int64_t));
-    memcpy(QT->i, Qi, qnz*sizeof(int64_t));
-    memcpy(QT->p, Qp, (n+1)*sizeof(int64_t)); //TODO check m vs n es num cols, pero en matrix m es num cols :/
+    QT->i = (int64_t*) SPEX_malloc(qnz* sizeof (int64_t));
+    QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
+    memcpy(QT->i, Qi, (qnz)*sizeof(int64_t));
+    memcpy(QT->p, Qp, (m+1)*sizeof(int64_t)); //TODO check m vs n es num cols, pero en matrix m es num cols :/
     QT->p_shallow=false;
     QT->i_shallow=false;
 
