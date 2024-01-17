@@ -255,6 +255,7 @@ if ( DEMO )
     add_executable ( spex_demo_qr_extended       "Demo/spex_demo_qr_extended.c"       ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_qr_cluster        "Demo/spex_demo_qr_cluster.c"        ${SPEX_DEMO_SOURCES} )
     add_executable ( spex_demo_qr_leastSquares        "Demo/spex_demo_qr_leastSquares.c"        ${SPEX_DEMO_SOURCES} )
+    add_executable ( spex_demo_qr_randomDense        "Demo/spex_demo_qr_randomDense.c"        ${SPEX_DEMO_SOURCES} )
 
     # Libraries required for Demo programs
     target_link_libraries ( spex_demo_backslash         PUBLIC spex )
@@ -272,6 +273,7 @@ if ( DEMO )
     target_link_libraries ( spex_demo_qr_extended       PUBLIC spex )
     target_link_libraries ( spex_demo_qr_cluster        PUBLIC spex )
     target_link_libraries ( spex_demo_qr_leastSquares        PUBLIC spex )
+    target_link_libraries ( spex_demo_qr_randomDense        PUBLIC spex )
 
 else ( )
 

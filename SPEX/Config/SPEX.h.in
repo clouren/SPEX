@@ -110,6 +110,7 @@
 // Most SPEX functions return a code that indicates if it was successful
 // or not. Otherwise the code returns a pointer to the object that was created
 // or it returns void (in the case that an object was deleted)
+int countIPGE; //TODO remove
 
 typedef enum
 {
@@ -127,7 +128,7 @@ typedef enum
                                   // or other unrecoverable error
 }
 SPEX_info ;
-//TODO matlab and python
+
 //------------------------------------------------------------------------------
 // SPEX Version
 //------------------------------------------------------------------------------

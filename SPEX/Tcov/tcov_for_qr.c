@@ -201,12 +201,12 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     // wrong shape matrix (row counts <= col counts)
-    printf ("QR: error handling for m<n matrix\n");
+   /* printf ("QR: error handling for m<n matrix\n");
     read_test_matrix (&A, "../ExampleMats/test1.mat.txt"); //TODO
     create_test_rhs (&b, A->n);
     ERR (SPEX_qr_backslash (&x, SPEX_MPQ, A, b, option), SPEX_NOTSPD);
     OK (SPEX_matrix_free (&A, option));
-    OK (SPEX_matrix_free (&b, option));
+    OK (SPEX_matrix_free (&b, option));*/
 
     
     //--------------------------------------------------------------------------

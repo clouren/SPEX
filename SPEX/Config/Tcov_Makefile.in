@@ -62,7 +62,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 cov: runtests
 	./covall
 
-all: tcov_for_lu spex_demo_lu_extended tcov_for_update tcov_for_cholesky tcov_for_lu2
+all: tcov_for_lu spex_demo_lu_extended tcov_for_update tcov_for_cholesky tcov_for_lu2 tcov_for_qr
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
@@ -118,7 +118,10 @@ OBJ_Util = \
     SPEX_transpose.o \
     spex_amd.o \
     spex_colamd.o \
-    spex_create_mpq.o
+    spex_create_mpq.o \
+    spex_history_update.o \
+    spex_ipge_update.o \
+    spex_dot_product.o
 
 $(OBJ_Util): ../Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
 
@@ -242,6 +245,34 @@ spex_cholesky_%.c:
 #	- ln -s ../SPEX_Cholesky/Demo/$@
 
 #-------------------------------------------------------------------------------
+# link and compile each .c file in SPEX_QR/Source
+
+OBJ_QR = \
+    SPEX_qr_analyze.o \
+    SPEX_qr_backslash.o \
+    spex_qr_back_sub.o \
+    spex_qr_counts.o \
+    spex_qr_etree.o \
+    SPEX_qr_factorize.o \
+    spex_qr_ipgs.o \
+    spex_qr_nonzero_structure.o \
+    spex_qr_permute_A.o \
+    spex_qr_permute_A2.o \
+    spex_qr_preorder.o \
+    SPEX_qr_solve.o \
+    spex_qr_transpose.o
+    
+$(OBJ_QR): ../Include/SPEX.h ../SPEX_QR/Source/spex_qr_internal.h
+
+.PRECIOUS: SPEX_qr_%.c spex_qr_%.c 
+
+SPEX_qr_%.c:
+	- ln -s ../SPEX_QR/Source/$@
+
+spex_qr_%.c:
+	- ln -s ../SPEX_QR/Source/$@
+
+#-------------------------------------------------------------------------------
 
 tcov_for_lu: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_lu.c
 	$(CC) $(LDFLAGS) tcov_for_lu.c $(CFLAGS) -o tcov_for_lu $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) $(LIBS)
@@ -257,11 +288,14 @@ tcov_for_update: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU) $(OBJ_Update) tcov_for_update
 
 tcov_for_cholesky: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_cholesky.c simple_rand.c simple_rand.h $(DEMO_SRC)
 	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_cholesky.c simple_rand.c $(DEMO_SRC) -o tcov_for_cholesky $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) $(LIBS)
+	
+tcov_for_qr: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) $(OBJ_QR) tcov_for_qr.c simple_rand.c simple_rand.h $(DEMO_SRC)
+	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_qr.c simple_rand.c $(DEMO_SRC) -o tcov_for_qr $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) $(OBJ_QR) $(LIBS)
 
 #-------------------------------------------------------------------------------
 
 # run all statement coverage tests
-runtests: runtests4llu runtests4luu runtests4chol
+runtests: runtests4llu runtests4luu runtests4chol runtests4qr
 
 # only run test for SPEX_LU
 runtests4llu: all
@@ -282,6 +316,10 @@ runtests4luu: all
 # only run test for SPEX_Cholesky
 runtests4chol: all
 	- ./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
+	
+# only run test for SPEX_QR
+runtests4qr: all
+	- ./tcov_for_qr ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_qr.out
 
 #-------------------------------------------------------------------------------
 
