@@ -71,5 +71,7 @@ SPEX_info spex_ipge_update
         }
     }
     
+    countIPGE++;
+    
     return SPEX_OK;
 }

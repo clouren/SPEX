@@ -31,7 +31,7 @@ SPEX_info spex_scatter
     if (!w ) return (SPEX_INCORRECT_INPUT) ;     /* check inputs */
         
     Ap = A->p ; Ai = A->i ; ; Ci = C->i ;
-    
+
     for (p = Ap [j] ; p < Ap [j+1] ; p++)
     {
         i = Ai [p] ;                            /* A(i,j) is nonzero */

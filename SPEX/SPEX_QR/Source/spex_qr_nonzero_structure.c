@@ -164,7 +164,7 @@ SPEX_info spex_qr_nonzero_structure
     }
     // Finalize R->p
     R->p[n] = rnz;
-    SPEX_CHECK(spex_qr_transpose(&RT,R,NULL));
+    SPEX_CHECK(SPEX_transpose(&RT,R,false,NULL));
     //SPEX_matrix_check(R, option);
 
     
@@ -210,7 +210,7 @@ SPEX_info spex_qr_nonzero_structure
     QT->i_shallow=false;
 
     // Transpose to obtain the nonzero pattern of Q
-    SPEX_CHECK(spex_qr_transpose(&Q, QT, NULL));
+    SPEX_CHECK(SPEX_transpose(&Q, QT, false, NULL));
     Q->nz=qnz; //TODO change
     //printf("n %ld m %ld %ld qnz\n",n,m,qnz );
     //option->print_level = 3;

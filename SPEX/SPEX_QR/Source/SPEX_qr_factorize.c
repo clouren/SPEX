@@ -276,7 +276,7 @@ SPEX_info SPEX_qr_factorize
         // the right)
         SPEX_CHECK( spex_qr_permute_A(&F->Q, Q, true, Pi_perm, option) );
         SPEX_CHECK( spex_qr_permute_A2(&RTPi, RT, true, Pi_perm, Piinv_perm, option) );
-        SPEX_CHECK(SPEX_transpose(&F->R,RTPi,option));
+        SPEX_CHECK(SPEX_transpose(&F->R,RTPi, true, option));
         F->R->nz=RT->p[n]-1;
         
         SPEX_matrix_free(&Q,option);
@@ -301,7 +301,7 @@ SPEX_info SPEX_qr_factorize
         memcpy(F->Q_perm, S->Q_perm, n*sizeof(int64_t));
         
         F->Q=Q;
-        SPEX_CHECK(SPEX_transpose(&F->R,RT,option));
+        SPEX_CHECK(SPEX_transpose(&F->R,RT, true, option));
         F->R->nz=RT->p[n]-1;
 
     }

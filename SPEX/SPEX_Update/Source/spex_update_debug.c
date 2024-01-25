@@ -286,7 +286,7 @@ SPEX_info spex_update_debug
     //----------------------------------------------------------------------
     // check for values of all entries in U
     //----------------------------------------------------------------------
-    SPEX_CHECK(SPEX_transpose(&UT, Ftmp->U, option));
+    SPEX_CHECK(SPEX_transpose(&UT, Ftmp->U, true, option));
 
     for (int64_t i = 0; i < n; i++)
     {
