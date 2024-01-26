@@ -250,7 +250,7 @@ int main (int argc, char *argv [])
     ERR (SPEX_qr_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_INPUT);
     A->n = n ;
-    A->m = n ;
+    A->m = m ;
 
     // mangle the matrix: invalid type
     A->type = SPEX_INT64 ;

@@ -75,7 +75,7 @@ SPEX_info SPEX_qr_solve
     SPEX_matrix b_new = NULL, x=NULL;
     int64_t k, p, i,j,qi;
     int64_t rank=F->rank; //when matrix is full rank, rank=n
-    printf("bm %ld bn %ld \n",b->m,b->n);
+    //printf("bm %ld bn %ld \n",b->m,b->n);
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));

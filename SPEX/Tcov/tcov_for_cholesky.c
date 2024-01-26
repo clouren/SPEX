@@ -296,16 +296,16 @@ int main (int argc, char *argv [])
     SPEX_matrix T_mpq = NULL, T_mpfr = NULL, T_int = NULL, T_fp = NULL;
     // T = A'
     OK ( SPEX_matrix_copy(&A_mpq, SPEX_CSC, SPEX_MPQ, A, option));
-    OK ( SPEX_transpose(&T_mpq, A_mpq, option) );
+    OK ( SPEX_transpose(&T_mpq, A_mpq, true ,option) );
 
     OK ( SPEX_matrix_copy(&A_mpfr, SPEX_CSC, SPEX_MPFR, A, option));
-    OK ( SPEX_transpose(&T_mpfr, A_mpfr, option) );
+    OK ( SPEX_transpose(&T_mpfr, A_mpfr, true, option) );
 
     OK ( SPEX_matrix_copy(&A_int, SPEX_CSC, SPEX_INT64, A, option));
-    OK ( SPEX_transpose(&T_int, A_int, option) );
+    OK ( SPEX_transpose(&T_int, A_int, true, option) );
 
     OK ( SPEX_matrix_copy(&A_fp, SPEX_CSC, SPEX_FP64, A, option));
-    OK ( SPEX_transpose(&T_fp, A_fp, option));
+    OK ( SPEX_transpose(&T_fp, A_fp, true, option));
 
     SPEX_matrix_free(&A_mpq,option);
     SPEX_matrix_free(&A_mpfr,option);
