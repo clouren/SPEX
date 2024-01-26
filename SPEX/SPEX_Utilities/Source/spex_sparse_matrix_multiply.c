@@ -55,7 +55,7 @@ SPEX_info spex_sparse_matrix_multiply
 
     for (j = 0 ; j < n ; j++)
     {
-        if (nz + m > C->nzmax && !spex_sparse_realloc(C))
+        if (nz + m > C->nzmax && spex_sparse_realloc(C)!=SPEX_OK)
         {
             return (SPEX_OUT_OF_MEMORY) ;             /* out of memory */
         } 
@@ -67,7 +67,7 @@ SPEX_info spex_sparse_matrix_multiply
         if (values) for (p = C->p [j] ; p < nz ; p++) SPEX_MPZ_SET( C->x.mpz[p] , x->x.mpz[C->i[p]] );
     }
     C->p [n] = nz ;                       /* finalize the last column of C */
-    
+
     spex_sparse_collapse(C); /*remove extra space from C*/
     //SPEX_FREE_WORKSPACE;
     (*C_handle)=C;

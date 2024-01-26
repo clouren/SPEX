@@ -85,7 +85,7 @@ SPEX_info spex_qr_counts
     // Create a workspace of size s
     w = (int64_t*) SPEX_malloc (s* sizeof (int64_t));
     // Transpose matrix A
-    SPEX_CHECK(spex_qr_transpose(&AT, A, NULL));
+    SPEX_CHECK(SPEX_transpose(&AT, A, false, NULL));
     if (colcount == NULL || w == NULL)
     {
         SPEX_FREE_ALL;

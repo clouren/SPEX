@@ -982,6 +982,7 @@ SPEX_info SPEX_transpose
 (
     SPEX_matrix *C_handle,      // C = A'
     SPEX_matrix A,              // Matrix to be transposed
+    const bool numeric,
     const SPEX_options option
 ) ;
 
