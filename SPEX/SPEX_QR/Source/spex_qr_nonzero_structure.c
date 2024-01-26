@@ -100,7 +100,7 @@ SPEX_info spex_qr_nonzero_structure
 
     Qi = (int64_t*) SPEX_malloc((n*m)* sizeof (int64_t));
     Qp = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
-    printf("m %ld n %ld mn %ld\n",m,n,m*n);
+    //printf("m %ld n %ld mn %ld\n",m,n,m*n);
     w = (int64_t*) SPEX_malloc((n+m2)* sizeof (int64_t));
     leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
     s = w + n ;

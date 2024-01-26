@@ -59,6 +59,24 @@ SPEX_info SPEX_qr_factorize
 {
     SPEX_info info;
 
+    if (!spex_initialized())
+    {
+        return SPEX_PANIC;
+    }
+
+    // Check inputs for NULL
+    if (!F_handle || !A || !S)
+    {
+        return (SPEX_INCORRECT_INPUT);
+    }
+
+    // Ensure inputs are in the correct format
+    if (A->kind != SPEX_CSC || A->type != SPEX_MPZ
+        || S->kind != SPEX_QR_FACTORIZATION)
+    {
+        return (SPEX_INCORRECT_INPUT);
+    }
+
     // Declare variables
     int64_t n=A->n, m=A->m, k, i, pQ, p, iQ, pR;
     SPEX_factorization F = NULL ;
