@@ -15,7 +15,7 @@ env:
   # string with name of libraries to be checked
   CHECK_LIBS: "SuiteSparse_config:AMD:COLAMD:SPEX"
   # string with name of libraries that are installed
-  INSTALLED_LIBS: "SuiteSparse_config:AMD::COLAMD:SPEX"
+  INSTALLED_LIBS: "SuiteSparse_config:AMD:COLAMD:SPEX"
 
 
 jobs:
