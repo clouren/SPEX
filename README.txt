@@ -46,6 +46,7 @@ To build all packages, use either of the following:
     make                using top-level Makefile
     make local          compile for installation in SPEX/lib, SPEX/include
     make install        to install AMD, COLAMD, SuiteSparse_config and SPEX
+    make demos          run a few demos of AMD, COLAMD, and SPEX
     make clean          remove all but original files
 
 or using cmake:
