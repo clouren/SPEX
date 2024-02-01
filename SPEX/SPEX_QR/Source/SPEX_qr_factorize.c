@@ -77,6 +77,12 @@ SPEX_info SPEX_qr_factorize
         return (SPEX_INCORRECT_INPUT);
     }
 
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if(algo!=SPEX_QR_GS)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
+
     // Declare variables
     int64_t n=A->n, m=A->m, k, i, pQ, p, iQ, pR;
     SPEX_factorization F = NULL ;

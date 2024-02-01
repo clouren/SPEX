@@ -221,6 +221,7 @@ int main (int argc, char *argv [])
     printf ("\nInput matrix: %ld-by-%ld with %ld entries\n", n, m, anz);
     OK ((n != m) ? SPEX_PANIC : SPEX_OK);
     create_test_rhs (&b, A->n);
+    option->algo = SPEX_QR_GS ;
 
     //--------------------------------------------------------------------------
     // error handling
@@ -275,11 +276,11 @@ int main (int argc, char *argv [])
     OK (SPEX_symbolic_analysis_free (&S, option));
     OK (SPEX_factorization_free (&F, option));
 
-    // invalid algorithm
+    // invalid algorithm //TODO
     option->algo = 99 ;
     ERR (SPEX_qr_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_ALGORITHM);
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_QR_GS ;
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_backslash and check the solution
@@ -312,7 +313,7 @@ int main (int argc, char *argv [])
     // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
 
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_QR_GS ;
 
     printf ("QR analyze/factorize/solve, no malloc testing:\n");
     spex_set_gmp_ntrials (INT64_MAX) ;

@@ -38,7 +38,7 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
     // Declare memory & Process Command Line
     //--------------------------------------------------------------------------
-    int64_t n = 0, ok;
+    int64_t n = 0, ok,m;
 
     SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL ;
@@ -73,14 +73,15 @@ int main( int argc, char *argv[] )
     fclose(mat_file);
 
     n = A->n;
+    m= A->m;
     // For this code, we utilize a vector of all ones as the RHS vector
-    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, n, 1, n, false, true, option);
+    SPEX_matrix_allocate(&b, SPEX_DENSE, SPEX_MPZ, m, 1, 0, false, true, option);
     if(!b){
         printf("scream \n");
     }
 
     // Create RHS
-    for (int64_t k = 0; k < n; k++)
+    for (int64_t k = 0; k < m; k++)
         DEMO_OK(SPEX_mpz_set_ui(b->x.mpz[k],1));
 
 

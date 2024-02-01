@@ -124,7 +124,7 @@ SPEX_info spex_qr_nonzero_structure
         for (p = A->p [col] ; p < A->p [col+1] ; p++)
         {
             leftmost [A->i [p]] = k ;         /* leftmost[i] = min(find(A(i,:)))*/
-        }
+        }//
     }
 
     //--------------------------------------------------------------------------
@@ -165,6 +165,7 @@ SPEX_info spex_qr_nonzero_structure
     // Finalize R->p
     R->p[n] = rnz;
     SPEX_CHECK(SPEX_transpose(&RT,R,false,NULL));
+    //SPEX_CHECK(spex_qr_transpose(&RT,R,NULL));
     //SPEX_matrix_check(R, option);
 
     
