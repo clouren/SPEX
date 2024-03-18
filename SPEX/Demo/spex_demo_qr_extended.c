@@ -93,28 +93,39 @@ int main( int argc, char *argv[] )
     // Perform Analysis of A
     //--------------------------------------------------------------------------
     printf("Analysis:\n");
+    //option->order = SPEX_AMD ;
+    option->order = SPEX_NO_ORDERING ;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
+    /*for(int i; i<n;i++)
+    {
+        printf("%ld\n",S->Q_perm[i]);
+    }*/
 
     //--------------------------------------------------------------------------
     // Factorize AQ
     //--------------------------------------------------------------------------
     printf("Factorization:\n");
+    option->algo = SPEX_QR_GS ;
+    option->print_level=3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    //SPEX_matrix_check(F->Q, option);
-    //SPEX_matrix_check(F->R, option);
-
+    SPEX_matrix_check(F->Q, option);
+     SPEX_matrix_check(F->R, option);
+    
     //--------------------------------------------------------------------------
     // Solve linear system
     //--------------------------------------------------------------------------
     printf("Solve:\n");
     DEMO_OK (SPEX_qr_solve(&x, F, b, option));
-    //SPEX_matrix_check(x, option);
+    SPEX_matrix_check(x, option);
      
     printf("Success!!\n");
-    printf("Rank of matrix: %ld, is deficient? %ld\n",F->rank,(F->R->n)-(F->rank));
+    printf("Rank of matrix: %ld, n-rank=%ld\n",F->rank,(F->R->n)-(F->rank));
     // Check solution
-    option->print_level=1;
-    DEMO_OK(spex_demo_check_solution(A,x,b,option)); //works is x is mpq
+    if((F->R->n)-(F->rank)==0)
+    {
+        option->print_level=1;
+        DEMO_OK(spex_demo_check_solution(A,x,b,option)); //works is x is mpq
+    }
    
     //--------------------------------------------------------------------------
     // Free Memory

@@ -107,6 +107,7 @@ SPEX_info spex_qr_ipgs
         i = R->i[pR];//column number where j is row number
         // R(j,i) = Q(:,j) dot AQ(:,i)
         SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, Q_perm[i], option)); 
+        //SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, i, option)); 
     }
    /* end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
@@ -114,7 +115,49 @@ SPEX_info spex_qr_ipgs
     //rhos stores the diagonal of R (pivots)
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]);
     
+   
     //--------------------------------------------------------------------------
+    // Update columns j+2 to n of Q
+    //--------------------------------------------------------------------------
+    for (pR =R->p[j]; pR < R->p[j+1]; pR++)
+    {
+        i = R->i[pR];
+        if(i<=j+1) continue;//the j+1 column has already been updated/finalized
+    
+        //for all elements in column i of Q
+        for (pQ =Q->p[i]; pQ < Q->p[i+1]; pQ++)
+        {
+            iQ=Q->i[pQ];
+            prev=Qj[iQ];
+
+            //check if column j of Q had a zero element in row iQ
+            if((k>0 && prev<Q->p[k-1]) || (k==0 && prev==-1)) 
+            {
+                continue;
+            }//simbolic zero
+            SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
+            if(sgn==0) continue;//numeric zero
+        
+            //history update
+            //"an update of Q(iQ,i)" has been skipped because R(j,i) is zero 
+            // or Q(iQ,i-1) is zero
+            if(j+1>h[pQ]+1)
+            {
+                SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
+            }
+ 
+            // IPGE update
+            SPEX_CHECK(spex_ipge_update(Q,R,rhos,pQ,pR,j-1,j,prev,option));
+            
+            // Record changes in history vector
+            h[pQ]=j+1;
+            /*if(j+1<=5)
+            {
+                printf("iR %ld iQ %ld pQ %ld h[pQ] %ld\n",i,iQ,pQ,h[pQ]);
+            }*/
+        }
+    }
+     //--------------------------------------------------------------------------
     // IPGE and finalize column j+1 of Q
     //--------------------------------------------------------------------------
     k=j+1;
@@ -137,7 +180,7 @@ SPEX_info spex_qr_ipgs
         iQ=Q->i[pQ];
         prev=Qj[iQ];
         
-        if(prev==-1 || i!=k)
+        if((k>0 && prev<Q->p[k-1]) || (k==0 && prev==-1) || i!=k)
         {
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if(k>1 && h[pQ]>0)
@@ -163,7 +206,7 @@ SPEX_info spex_qr_ipgs
         h[pQ]=k;
         
         // Update the final vectors needed for the next iteration
-        final[iQ]=pQ;
+        Qj[iQ]=pQ;
         
         // Checks if the entire column k of Q is zeros for rank revealing QR
         SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
@@ -182,57 +225,19 @@ SPEX_info spex_qr_ipgs
     printf(" timeQj+1 %f",times);
 
     start=clock();*/
-    //--------------------------------------------------------------------------
-    // Update columns j+2 to n of Q
-    //--------------------------------------------------------------------------
-    for (pR =R->p[j]; pR < R->p[j+1]; pR++)
-    {
-        i = R->i[pR];
-        if(i<=j+1) continue;//the j+1 column has already been updated/finalized
-    
-        //for all elements in column i of Q
-        for (pQ =Q->p[i]; pQ < Q->p[i+1]; pQ++)
-        {
-            iQ=Q->i[pQ];
-            prev=Qj[iQ];
-
-            //check if column j of Q had a zero element in row iQ
-            if(prev==-1) continue;//simbolic zero
-            SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
-            if(sgn==0) continue;//numeric zero
-        
-            //history update
-            //"an update of Q(iQ,i)" has been skipped because R(j,i) is zero 
-            // or Q(iQ,i-1) is zero
-            if(j+1>h[pQ]+1)
-            {
-                SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
-            }
- 
-            // IPGE update
-            SPEX_CHECK(spex_ipge_update(Q,R,rhos,pQ,pR,j-1,j,prev,option));
-            
-            // Record changes in history vector
-            h[pQ]=j+1;
-            /*if(j+1<=5)
-            {
-                printf("iR %ld iQ %ld pQ %ld h[pQ] %ld\n",i,iQ,pQ,h[pQ]);
-            }*/
-        }
-    }
    /* end = clock();
     times=(double) (end - start) / CLOCKS_PER_SEC;
     printf(" timeQall %f\n",times);*/
     
     // Update the final and col vectors needed for the next iteration
-    for(i = Q->p[j]; i < Q->p[j+1]; i++)
+   /* for(i = Q->p[j]; i < Q->p[j+1]; i++)
     {
         Qj[Q->i[i]]=-1;
     }
     for(i = Q->p[j+1]; i < Q->p[j+2]; i++)
     {
         Qj[Q->i[i]]=final[Q->i[i]];
-    }
+    }*/
     //SPEX_matrix_check(Q, option); 
     //--------------------------------------------------------------------------
     // Free workspace

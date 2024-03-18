@@ -73,13 +73,23 @@ SPEX_info SPEX_qr_solve
 
 
     SPEX_matrix b_new = NULL, x=NULL;
-    int64_t k, p, i,j,qi;
+    int64_t k, p, i,j,qi,qj;
     int64_t rank=F->rank; //when matrix is full rank, rank=n
     //printf("bm %ld bn %ld \n",b->m,b->n);
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));
     
+    int64_t index;
+    int64_t *Qinv_perm;
+    int64_t n=F->Q->n;
+    Qinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
+    for (k = 0; k < n; k++)
+    {
+            index = F->Q_perm[k];
+            Qinv_perm[index] = k;
+    }
+
     //--------------------------------------------------------------------------
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
@@ -90,16 +100,18 @@ SPEX_info SPEX_qr_solve
         // Compute b[j,k]
         for(j=0;j<F->Q->n;j++)//for(j=0;j<F->rank;j++)
         {
-            for(p=F->Q->p[j]; p < F->Q->p[j+1]; p++)
+            qj =j;// Qinv_perm[j];
+            //printf("qj %ld\n",qj);
+            for(p=F->Q->p[qj]; p < F->Q->p[qj+1]; p++)
             {
                 i=F->Q->i[p];
                 //printf("j %ld , p %ld, i %ld\n",j,p,i);
-                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, j, k, mpz),F->Q->x.mpz[p],
+                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, qj, k, mpz),F->Q->x.mpz[p],
                                  SPEX_2D(b, i, k, mpz));
             }
             //F->rhos->x.mpz[F->R->n-1] is the determinant
-            SPEX_MPZ_MUL (SPEX_2D(b_new, j, k, mpz),SPEX_2D(b_new, j, k, mpz),
-                             F->rhos->x.mpz[F->R->n-1]);
+            SPEX_MPZ_MUL (SPEX_2D(b_new, qj, k, mpz),SPEX_2D(b_new, qj, k, mpz),
+                          F->rhos->x.mpz[F->rank-1]);
         }
     }
     //--------------------------------------------------------------------------
@@ -107,13 +119,12 @@ SPEX_info SPEX_qr_solve
     //--------------------------------------------------------------------------
     //Solves Rx=b_new (overwrites b_new into x)
     //SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new)); 
-    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank));
-    //SPEX_matrix_check(b_new, option);
+    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank, F->rhos,option));
     //--------------------------------------------------------------------------
     // x = Q*b_new/scale
     //--------------------------------------------------------------------------
     // set scale = b->scale * rhos[n-1] / A_scale
-    SPEX_MPQ_SET_Z(b_new->scale, F->rhos->x.mpz[F->R->n-1]);
+    SPEX_MPQ_SET_Z(b_new->scale, F->rhos->x.mpz[F->rank-1]);
     SPEX_MPQ_MUL(b_new->scale, b_new->scale, b->scale);
     SPEX_MPQ_DIV(b_new->scale, b_new->scale, F->scale_for_A);
 

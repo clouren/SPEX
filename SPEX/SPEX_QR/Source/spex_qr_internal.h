@@ -136,7 +136,9 @@ SPEX_info spex_qr_back_sub  // performs sparse REF backward substitution
 (
     SPEX_matrix bx,         // right hand side matrix
     const SPEX_matrix R,   // input upper triangular matrix
-    const int64_t rank     // rank of right triangular matrix
+    const int64_t rank,     // rank of right triangular matrix
+    const SPEX_matrix rhos,
+    const SPEX_options option
 );
 
 

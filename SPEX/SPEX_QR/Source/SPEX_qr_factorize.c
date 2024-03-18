@@ -112,8 +112,8 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Allocate and compute the nonzero structure of Q and R
     //--------------------------------------------------------------------------
-
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &Q, A, S, option));
+    //SPEX_matrix_check(Q, option);
  
     /*for (i = 0; i < n+1; ++i)
     {
@@ -150,22 +150,21 @@ SPEX_info SPEX_qr_factorize
         //then the kth row of R is all zeros too and you skip operations on k
         if(isZeros)
         {
-            //printf("%ld in isZeros\n",k);
             ldCols[k]=true;//kth pivot of R is zeros, kth column of Q is ld
 
             isZeros=true;
 
             // row k of R is zeros
-            for (pR =RT->p[k];pR <RT->p[k+1];pR++)
+            /*for (pR =RT->p[k];pR <RT->p[k+1];pR++)
             {
                 SPEX_MPZ_SET_UI(RT->x.mpz[pR],0); 
-            }
+            }*/ //I should not need to do this because R is init as zeros
             // Set the kth pivot to be equal to the k-1th pivot for computations
             SPEX_MPZ_SET(F->rhos->x.mpz[k],F->rhos->x.mpz[k-1]);
-            for(i=Q->p[k];i<Q->p[k+1];i++) //erase prev nonzeros
+            /*for(i=Q->p[k];i<Q->p[k+1];i++) //erase prev nonzeros
             {
                 Qk[Q->i[i]]=-1;
-            }
+            }*/
             // Finalize Q k+1 (it keeps its previous values)
             for (pQ =Q->p[k+1]; pQ < Q->p[k+2]; pQ++)
             {
@@ -175,7 +174,7 @@ SPEX_info SPEX_qr_factorize
                     SPEX_CHECK(spex_history_update(Q,F->rhos,pQ,k-1,h[pQ],
                                                     h[pQ]-1,0,option));
                 }
-                else
+                //else
                 {
                     h[pQ]=k+1;
                 }
@@ -199,11 +198,6 @@ SPEX_info SPEX_qr_factorize
             }
 
             rank--;
-
-            if(k==11){
-                //option->print_level = 3;
-                //SPEX_matrix_check(F->rhos, option);
-            }
         }
         else
         {
@@ -253,12 +247,17 @@ SPEX_info SPEX_qr_factorize
         
         SPEX_matrix RTPi=NULL;
         SPEX_matrix RPi=NULL;
+        SPEX_matrix rhosPi=NULL;
         
         F->rank=rank;
         
         Pi_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
         Piinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
         F->Q_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
+        
+        SPEX_CHECK (SPEX_matrix_allocate(&rhosPi, SPEX_DENSE, SPEX_MPZ, n, 1, n,
+        false, true, option));
+        
         if (!(F->Q_perm))
         {
             // out of memory: free everything and return
@@ -302,6 +301,14 @@ SPEX_info SPEX_qr_factorize
         SPEX_CHECK( spex_qr_permute_A2(&RTPi, RT, true, Pi_perm, Piinv_perm, option) );
         SPEX_CHECK(SPEX_transpose(&F->R,RTPi, true, option));
         F->R->nz=RT->p[n]-1;
+        
+        
+        for (k = 0; k < n; k++)
+        {
+           SPEX_MPZ_SET(rhosPi->x.mpz[k],F->rhos->x.mpz[Pi_perm[k]]);
+        }
+        
+        F->rhos=rhosPi;
         
         SPEX_matrix_free(&Q,option);
         SPEX_matrix_free(&RTPi,option);

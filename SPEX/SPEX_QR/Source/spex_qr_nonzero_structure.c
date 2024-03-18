@@ -120,7 +120,7 @@ SPEX_info spex_qr_nonzero_structure
     for (i = 0 ; i < m ; i++) leftmost [i] = -1 ;
     for (k = n-1 ; k >= 0 ; k--)
     {
-        col = S->Q_perm[k];
+        col = S->Q_perm[k]; 
         for (p = A->p [col] ; p < A->p [col+1] ; p++)
         {
             leftmost [A->i [p]] = k ;         /* leftmost[i] = min(find(A(i,:)))*/
@@ -136,7 +136,7 @@ SPEX_info spex_qr_nonzero_structure
         R->p [k] = rnz ;      
         w [k] = k ;  
         top = n ;
-        col = S->Q_perm[k];
+        col =  S->Q_perm[k]; //CHANGE
 
         for (p = A->p [col] ; p < A->p [col+1] ; p++)   /* find R(:,k) pattern */
         {
@@ -206,7 +206,7 @@ SPEX_info spex_qr_nonzero_structure
     QT->i = (int64_t*) SPEX_malloc(qnz* sizeof (int64_t));
     QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
     memcpy(QT->i, Qi, (qnz)*sizeof(int64_t));
-    memcpy(QT->p, Qp, (m+1)*sizeof(int64_t)); //TODO check m vs n es num cols, pero en matrix m es num cols :/
+    memcpy(QT->p, Qp, (m+1)*sizeof(int64_t)); 
     QT->p_shallow=false;
     QT->i_shallow=false;
 
@@ -221,14 +221,17 @@ SPEX_info spex_qr_nonzero_structure
     // Copy values of A into Q
     //--------------------------------------------------------------------------
     //first column is exactly the same
-    for(p=A->p[0];p<A->p[1];p++)
+    col = S->Q_perm[0];
+    q=0;
+    for(p=A->p[col];p<A->p[col+1];p++)
     {
-        SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[p]);
+        SPEX_MPZ_SET(Q->x.mpz[q],A->x.mpz[p]);
+        q++;
     }
     //For all other columns the logic is similar to that of the dot product
     for(k=1;k<n;k++) 
     {
-        col = S->Q_perm[k];
+        col = S->Q_perm[k]; 
         p=A->p[col];
         q=Q->p[k];
         while(p < A->p[col+1] && q < Q->p[k+1])

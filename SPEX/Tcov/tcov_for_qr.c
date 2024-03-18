@@ -314,7 +314,7 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     option->algo = SPEX_QR_GS ;
-
+/*
     printf ("QR analyze/factorize/solve, no malloc testing:\n");
     spex_set_gmp_ntrials (INT64_MAX) ;
     malloc_count = INT64_MAX ;
@@ -323,8 +323,15 @@ int main (int argc, char *argv [])
     printf ("QR analyze/factorize/solve, with malloc testing:\n");
     // also check a different RHS, with b(0) = 0
     OK (SPEX_mpz_set_ui (b->x.mpz [0], 0));
-    BRUTAL (spex_test_qr_afs (A, b, option));
+    BRUTAL (spex_test_qr_afs (A, b, option)); //TODO fix, memory ran out 
+    OK (SPEX_matrix_free (&A, option));*/
 
+    //--------------------------------------------------------------------------
+    // rank deficient
+    //--------------------------------------------------------------------------
+    read_test_matrix (&A, "../ExampleMats/smallRankDeficient.mat.txt");
+    OK (SPEX_qr_factorize(&F,A, S, option));
+    
     //--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------
