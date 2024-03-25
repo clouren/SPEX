@@ -2,6 +2,7 @@
 # Makefile for SPEX and its dependent packages (AMD, COLAMD, SuiteSparse_config)
 #-------------------------------------------------------------------------------
 
+# Copyright (c) 2023-2024, Timothy A. Davis, All Rights Reserved. FIXME
 # Just this particular file is under the Apache-2.0 license; each package has
 # its own license.
 # SPDX-License-Identifier: Apache-2.0
