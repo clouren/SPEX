@@ -3,8 +3,8 @@
 // SPEX_factorization data type.
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -29,7 +29,7 @@ SPEX_info SPEX_factorization_free
 
     if ((F_handle != NULL) && (*F_handle != NULL))
     {
-        SPEX_MPQ_CLEAR((*F_handle)->scale_for_A);
+        SPEX_mpq_clear ((*F_handle)->scale_for_A);
 
         SPEX_matrix_free(&((*F_handle)->L), option);
         SPEX_matrix_free(&((*F_handle)->U), option);

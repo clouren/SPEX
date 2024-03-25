@@ -1,15 +1,10 @@
-# Ignore all files:
-*
-
-# except these files ...
-!covall
-!cov.awk
-!cover
-!covs
-!gcovs
-!Mats4Tcov/
-!README.txt
-!simple_*.c
-!simple_*.h
-!tcov_*.c
-!tcov_*.h
+# Ignore these files:
+Makefile
+spex*.c
+SPEX*.c
+*.out
+spex_demo_lu_extended
+tcov_for_cholesky
+tcov_for_lu
+tcov_for_lu2
+tcov_for_other

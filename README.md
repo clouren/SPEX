@@ -83,42 +83,162 @@ is provided.  All it does is use cmake to build each of the packages.
                                 keeps compiled libraries and demoes, ./lib
                                 and ./include.
 
-You can set specific options for CMake with the command (for example):
-
-    CMAKE_OPTIONS="-DNSTATIC=1 -DCMAKE_BUILD_TYPE=Debug" make
-
-That command will compile all of SPEX and it dependencies.
-Debug mode will be used.  The static libraries will not be built
-(NSTATIC is true).
-
-    CMAKE_BUILD_TYPE:   Default: "Release", use "Debug" for debugging.
-
-    GLOBAL_INSTALL:     if true, "make install" will install
-                        into /usr/local/lib and /usr/local/include.
-                        Default: true
-
-    LOCAL_INSTALL:      if true, "make install" will install
-                        into SuiteSparse/lib and SuiteSparse/include.
-                        Default: false
-
-    NSTATIC:            if true, static libraries are not built.
-                        Default: false, except for GraphBLAS, which
-                        takes a long time to compile so the default for
-                        GraphBLAS is true.  For Mongoose, the NSTATIC setting
-                        is treated as if it always false, since the mongoose
-                        program is built with the static library.
-
-    NOPENMP             if true: OpenMP is not used.  Default: false.
-                        Only used by SuiteSparse_config.
-
-    DEMO                if true: build the demo programs for each package.
-                        Default: false.
-
 You can also use cmake or ccmake directly.  For example, try:
 
     cd AMD/build
     ccmake ..
     make
+
+-----------------------------------------------------------------------------
+How to cite the SPEX meta-package and its component packages:
+-----------------------------------------------------------------------------
+
+* for AMD:
+
+  P. Amestoy, T. A. Davis, and I. S. Duff, Algorithm 837: An approximate
+  minimum degree ordering algorithm, ACM Trans. on Mathematical Software,
+  30(3), 2004, pp. 381--388.
+  https://dl.acm.org/doi/abs/10.1145/1024074.1024081
+
+  P. Amestoy, T. A. Davis, and I. S. Duff, An approximate minimum degree
+  ordering algorithm, SIAM J. Matrix Analysis and Applications, 17(4), 1996,
+  pp. 886--905.  https://doi.org/10.1137/S0895479894278952
+
+* for COLAMD:
+
+  T. A. Davis, J. R. Gilbert, S. Larimore, E. Ng, Algorithm 836:  COLAMD, an
+  approximate column minimum degree ordering algorithm, ACM Trans. on
+  Mathematical Software, 30(3), 2004, pp. 377--380.
+  https://doi.org/10.1145/1024074.1024080
+
+  T. A. Davis, J. R. Gilbert, S. Larimore, E. Ng, A column approximate minimum
+  degree ordering algorithm, ACM Trans. on Mathematical Software, 30(3), 2004,
+  pp. 353--376.  https://doi.org/10.1145/1024074.1024079
+
+* for SPEX:
+
+  Christopher Lourenco, Jinhao Chen, Erick Moreno-Centeno, and T. A.  Davis.
+  2022. Algorithm 1021: SPEX Left LU, Exactly Solving Sparse Linear Systems via
+  a Sparse Left-Looking Integer-Preserving LU Factorization. ACM Trans. Math.
+  Softw. June 2022.  https://doi.org/10.1145/3519024
+
+-----------------------------------------------------------------------------
+Compilation options
+-----------------------------------------------------------------------------
+
+You can set specific options for CMake with the command (for example):
+```
+    cmake -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Debug ..
+```
+
+That command will compile SPEX, AMD, COLAMD, and `SuiteSparse_config`.
+Debug mode will be used (the build type).  The static libraries will not be
+built (since `-DBUILD_STATIC_LIBS=OFF` is set).
+
+* `SUITESPARSE_ENABLE_PROJECTS`:
+
+  Semicolon separated list of projects to be built or `all`.
+  Default: `all` in which case the following projects are built:
+
+  `suitesparse_config;amd;colamd;spex`
+
+* `CMAKE_BUILD_TYPE`:
+
+  Default: `Release`, use `Debug` for debugging.
+
+* `SUITESPARSE_USE_STRICT`:
+
+  SuiteSparse has many user-definable settings of the form `SUITESPARSE_USE_*`
+  or `(package)_USE_*` for some particular package.  In general, these settings
+  are not strict.  For example, if `SUITESPARSE_USE_OPENMP` is `ON` then OpenMP
+  is preferred, but SuiteSparse can be used without OpenMP so no error is
+  generated if OpenMP is not found.  However, if `SUITESPARSE_USE_STRICT` is
+  `ON` then all `*_USE_*` settings are treated strictly and an error occurs
+  if any are set to `ON` but the corresponding package or setting is not
+  available.  The `*_USE_SYSTEM_*` settings are always treated as strict.
+  Default: `OFF`.
+
+* `CMAKE_INSTALL_PREFIX`:
+
+  Defines the install location (default on Linux is `/usr/local`).  For example,
+  this command while in a folder `build` in the top level SuiteSparse folder
+  will set the install directory to `/stuff`, used by the subsequent
+  `sudo cmake --install .`:
+```
+    cmake -DCMAKE_INSTALL_PREFIX=/stuff ..
+    sudo cmake --install .
+```
+
+* `SUITESPARSE_PKGFILEDIR`:
+
+  Directory where CMake Config and pkg-config files will be installed.  By
+  default, CMake Config files will be installed in the subfolder `cmake` of the
+  directory where the (static) libraries will be installed (e.g., `lib`).  The
+  `.pc` files for pkg-config will be installed in the subfolder `pkgconfig` of
+  the directory where the (static) libraries will be installed.
+
+  This option allows to install them at a location different from the (static)
+  libraries.  This allows to install multiple configurations of the SuiteSparse
+  libraries at the same time (e.g., by also setting a different
+  `CMAKE_RELEASE_POSTFIX` and `CMAKE_INSTALL_LIBDIR` for each of them).  To pick
+  up the respective configuration in downstream projects, set, e.g.,
+  `CMAKE_PREFIX_PATH` (for CMake) or `PKG_CONFIG_PATH` (for build systems using
+  pkg-config) to the path containing the respective CMake Config files or
+  pkg-config files.
+
+* `SUITESPARSE_INCLUDEDIR_POSTFIX`:
+
+  Postfix for installation target of header from SuiteSparse. Default:
+  suitesparse, so the default include directory is:
+  `CMAKE_INSTALL_PREFIX/include/suitesparse`
+
+* `BUILD_SHARED_LIBS`:
+
+  If `ON`, shared libraries are built.
+  Default: `ON`.
+
+* `BUILD_STATIC_LIBS`:
+
+  If `ON`, static libraries are built.
+  Default: `ON`, except for GraphBLAS, which takes a long time to compile so
+  the default for GraphBLAS is `OFF` unless `BUILD_SHARED_LIBS` is `OFF`.
+
+* `SUITESPARSE_USE_OPENMP`:
+
+  If `ON`, OpenMP is used by default if it is available.  Default: `ON`.
+  SPEX relies on OpenMP for its thread safety.
+
+* `SUITESPARSE_CONFIG_USE_OPENMP`:
+
+  If `ON`, `SuiteSparse_config` uses OpenMP if it is available.
+  Default: `SUITESPARSE_USE_OPENMP`.
+  It is not essential and only used to let `SuiteSparse_time` call
+  `omp_get_wtime`.
+
+* `SPEX_USE_OPENMP`:
+
+  If `ON`, OpenMP is used in SPEX if it is available.
+  Default: `SUITESPARSE_USE_OPENMP`.
+
+* `SUITESPARSE_DEMOS`:
+
+  If `ON`, build the demo programs for each package.  Default: `OFF`.
+
+* `SUITESPARSE_USE_SYSTEM_AMD`:
+
+  If `ON`, use AMD libraries installed on the build system. If `OFF`,
+  automatically build AMD as dependency if needed. Default: `OFF`.
+
+* `SUITESPARSE_USE_SYSTEM_COLAMD`:
+
+  If `ON`, use COLAMD libraries installed on the build system. If `OFF`,
+  automatically build COLAMD as dependency if needed. Default: `OFF`.
+
+* `SUITESPARSE_USE_SYSTEM_SUITESPARSE_CONFIG`:
+
+  If `ON`, use `SuiteSparse_config` libraries installed on the build system. If
+  `OFF`, automatically build `SuiteSparse_config` as dependency if needed.
+  Default: `OFF`.
 
 -----------------------------------------------------------------------------
 Acknowledgements
@@ -133,9 +253,9 @@ to contact us if there's anything we can do to make your life easier.
 
 See also the various Acknowledgements within each package.
 
-Primary Author: Chris Lourenco
+Primary Author of SPEX: Chris Lourenco
 
-Coauthors (alphabetical order):
+SPEX Coauthors (alphabetical order):
 
     Jinhao Chen
     Timothy A Davis

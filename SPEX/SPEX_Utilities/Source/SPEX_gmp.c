@@ -2,8 +2,8 @@
 // SPEX_Utilities/SPEX_gmp.c: interface to the gmp library
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -66,7 +66,9 @@
 #include "spex_util_internal.h"
 
 // ignore warnings about unused parameters in this file
+#if defined (__GNUC__)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
 //------------------------------------------------------------------------------
 // thread-local-storage
@@ -118,6 +120,7 @@
 
     // SPEX will not be thread-safe.
     spex_gmp_t *spex_gmp = NULL ;
+    #warning "SPEX not compiled with OpenMP or thread keyword; SPEX will not be thread-safe!"
 
 #endif
 
@@ -128,10 +131,10 @@
 #define SPEX_GMP_WRAPPER_START_HELPER(z1,z2,q,fr)                       \
     /* spex_gmp_t *spex_gmp = spex_gmp_get ( ) ; */                     \
     if (spex_gmp == NULL) return (SPEX_OUT_OF_MEMORY);                  \
-    spex_gmp->mpz_archive  = (mpz_t  *) z1 ;                            \
-    spex_gmp->mpz_archive2 = (mpz_t  *) z2 ;                            \
-    spex_gmp->mpq_archive  = (mpq_t  *) q  ;                            \
-    spex_gmp->mpfr_archive = (mpfr_t *) fr ;                            \
+    spex_gmp->mpz_archive  = z1 ;                                       \
+    spex_gmp->mpz_archive2 = z2 ;                                       \
+    spex_gmp->mpq_archive  = q  ;                                       \
+    spex_gmp->mpfr_archive = fr ;                                       \
     /* setjmp returns 0 if called from here, or > 0 if from longjmp */  \
     int status = setjmp (spex_gmp->environment) ;                       \
     if (status != 0)                                                    \
@@ -368,38 +371,44 @@ void *spex_gmp_allocate
 // spex_gmp_safe_free:  free a block of memory and remove it from the archive
 //------------------------------------------------------------------------------
 
+// see mpfr-4.2.1/src/mpfr-impl.h, for MPFR_GET_REAL_PTR
+#define SPEX_MPFR_GET_REAL_PTR(x) ((x)->_mpfr_d - 1)
+
 static inline void spex_gmp_safe_free (void *p)
 {
     if (spex_gmp != NULL)
     {
         if (spex_gmp->mpz_archive != NULL)
         {
-            if (p == SPEX_MPZ_PTR(*(spex_gmp->mpz_archive)))
+            if (p == SPEX_MPZ_PTR((spex_gmp->mpz_archive)))
             {
-                SPEX_MPZ_PTR(*(spex_gmp->mpz_archive)) = NULL ;
+                SPEX_MPZ_PTR((spex_gmp->mpz_archive)) = NULL ;
             }
         }
         if (spex_gmp->mpz_archive2 != NULL)
         {
-            if (p == SPEX_MPZ_PTR(*(spex_gmp->mpz_archive2)))
+            if (p == SPEX_MPZ_PTR((spex_gmp->mpz_archive2)))
             {
-                SPEX_MPZ_PTR(*(spex_gmp->mpz_archive2)) = NULL ;
+                SPEX_MPZ_PTR((spex_gmp->mpz_archive2)) = NULL ;
             }
         }
         if (spex_gmp->mpq_archive != NULL)
         {
-            if (p == SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmp->mpq_archive)))
+            if (p == SPEX_MPZ_PTR(SPEX_MPQ_NUM(spex_gmp->mpq_archive)))
             {
-                SPEX_MPZ_PTR(SPEX_MPQ_NUM(*spex_gmp->mpq_archive)) = NULL ;
+                SPEX_MPZ_PTR(SPEX_MPQ_NUM(spex_gmp->mpq_archive)) = NULL ;
             }
-            if (p == SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmp->mpq_archive)))
+            if (p == SPEX_MPZ_PTR(SPEX_MPQ_DEN(spex_gmp->mpq_archive)))
             {
-                SPEX_MPZ_PTR(SPEX_MPQ_DEN(*spex_gmp->mpq_archive)) = NULL ;
+                SPEX_MPZ_PTR(SPEX_MPQ_DEN(spex_gmp->mpq_archive)) = NULL ;
             }
         }
         if (spex_gmp->mpfr_archive != NULL)
         {
-            if (p == SPEX_MPFR_REAL_PTR(*spex_gmp->mpfr_archive)) SPEX_MPFR_MANT(*spex_gmp->mpfr_archive) = NULL ;
+            if (p == SPEX_MPFR_GET_REAL_PTR(spex_gmp->mpfr_archive))
+            {
+                SPEX_MPFR_MANT(spex_gmp->mpfr_archive) = NULL ;
+            }
         }
     }
     SPEX_FREE (p) ;
@@ -1155,7 +1164,7 @@ SPEX_info SPEX_mpz_divexact
         return (SPEX_PANIC);
     }
 
-    #ifdef SPEX_DEBUG
+#ifdef SPEX_DEBUG
         mpq_t r ;
         mpq_init (r); // r = 0/1
         mpz_fdiv_r (SPEX_MPQ_NUM (r), y, z);
@@ -1169,7 +1178,7 @@ SPEX_info SPEX_mpz_divexact
             return (SPEX_PANIC);
         }
         mpq_clear (r);
-    #endif
+#endif
 
     mpz_divexact (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
@@ -1778,11 +1787,39 @@ SPEX_info SPEX_mpfr_init2
 )
 {
     // ensure the mpfr number is not too big
-    if (size > MPFR_PREC_MAX/2) return (SPEX_PANIC);
+    if (size > MPFR_PREC_MAX/2)
+    {
+        return (SPEX_PANIC);
+    }
 
     // initialize the mpfr number
     SPEX_GMPFR_WRAPPER_START (x);
     mpfr_init2 (x, (mpfr_prec_t) size);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpfr_set_prec
+//------------------------------------------------------------------------------
+
+/* Purpose: Set the precision of an mpfr_t number */
+
+SPEX_info SPEX_mpfr_set_prec
+(
+    mpfr_t x,       // Floating point number to revise
+    const uint64_t size    // # of bits in x
+)
+{
+    // ensure the mpfr number is not too big
+    if (size > MPFR_PREC_MAX/2)
+    {
+        return (SPEX_PANIC);
+    }
+
+    // set the precision of the mpfr number
+    SPEX_GMPFR_WRAPPER_START (x);
+    mpfr_set_prec (x, (mpfr_prec_t) size);
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK);
 }
@@ -2098,6 +2135,99 @@ SPEX_info SPEX_mpfr_free_cache ( void )
     SPEX_GMP_WRAPPER_START ;
     mpfr_free_cache ( );
     SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpz_set_null
+//------------------------------------------------------------------------------
+
+// Purpose: initialize the contents of an mpz_t value
+
+SPEX_info SPEX_mpz_set_null
+(
+    mpz_t x
+)
+{
+    SPEX_MPZ_SET_NULL (x) ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpq_set_null
+//------------------------------------------------------------------------------
+
+// Purpose: initialize the contents of an mpq_t value
+
+SPEX_info SPEX_mpq_set_null
+(
+    mpq_t x
+)
+{
+    SPEX_MPQ_SET_NULL (x) ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpfr_set_null
+//------------------------------------------------------------------------------
+
+// Purpose: initialize the contents of an mpfr_t value
+
+SPEX_info SPEX_mpfr_set_null
+(
+    mpfr_t x
+)
+{
+    SPEX_MPFR_SET_NULL (x) ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpz_clear
+//------------------------------------------------------------------------------
+
+// Purpose: safely clear an mpz_t value
+
+SPEX_info SPEX_mpz_clear
+(
+    mpz_t x
+)
+{
+    SPEX_MPZ_CLEAR (x) ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpq_clear
+//------------------------------------------------------------------------------
+
+// Purpose: safely clear an mpq_t value
+
+SPEX_info SPEX_mpq_clear
+(
+    mpq_t x
+)
+{
+    if (x != NULL)
+    {
+        SPEX_MPQ_CLEAR (x) ;
+    }
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpfr_clear
+//------------------------------------------------------------------------------
+
+// Purpose: safely clear an mpfr_t value
+
+SPEX_info SPEX_mpfr_clear
+(
+    mpfr_t x
+)
+{
+    SPEX_MPFR_CLEAR (x) ;
     return (SPEX_OK);
 }
 

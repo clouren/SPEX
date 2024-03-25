@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_expand_mpfr_array: convert mpfr aray to mpz
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -15,21 +15,13 @@
  * arrays to be used within SPEX.
  */
 
-#define SPEX_FREE_ALL               \
-    SPEX_MPZ_CLEAR(gcd);            \
-    SPEX_MPZ_CLEAR(one);            \
-    SPEX_MPQ_CLEAR(temp);           \
-    if (x_mpq)                      \
-    {                               \
-        for (i = 0; i < n; i++)     \
-        {                           \
-            if ( x_mpq[i] != NULL)  \
-            {                       \
-                SPEX_MPQ_CLEAR(x_mpq[i]);   \
-            }                       \
-        }                           \
-    }                               \
-    SPEX_FREE(x_mpq);
+#define SPEX_FREE_ALL                   \
+{                                       \
+    SPEX_mpz_clear (gcd);               \
+    SPEX_mpz_clear (one);               \
+    SPEX_mpq_clear (temp);              \
+    spex_free_mpq_array (&x_mpq, n) ;   \
+}
 
 #include "spex_util_internal.h"
 
@@ -59,9 +51,9 @@ SPEX_info spex_expand_mpfr_array
     bool nz_found = false;
     mpz_t gcd, one;
     mpq_t *x_mpq = NULL;
-    SPEX_MPZ_SET_NULL(gcd);
-    SPEX_MPZ_SET_NULL(one);
-    mpq_t temp; SPEX_MPQ_SET_NULL(temp);
+    SPEX_mpz_set_null (gcd);
+    SPEX_mpz_set_null (one);
+    mpq_t temp; SPEX_mpq_set_null (temp);
 
     SPEX_MPQ_INIT(temp);
     SPEX_MPZ_INIT(gcd);

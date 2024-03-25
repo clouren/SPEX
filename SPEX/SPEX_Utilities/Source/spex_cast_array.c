@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_cast_array: scale and typecast an array
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -35,11 +35,12 @@
 //      y_scale = 1.
 //
 
-#define SPEX_FREE_ALL \
-SPEX_MPQ_CLEAR(temp);       \
+#define SPEX_FREE_ALL SPEX_mpq_clear (temp) ;
 
 #include "spex_util_internal.h"
+#if defined (__GNUC__)
 #pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 SPEX_info spex_cast_array
 (
@@ -65,7 +66,7 @@ SPEX_info spex_cast_array
     }
     SPEX_info info ;
     int r;
-    mpq_t temp; SPEX_MPQ_SET_NULL(temp);
+    mpq_t temp; SPEX_mpq_set_null (temp);
 
     mpfr_rnd_t round = SPEX_OPTION_ROUND (option);
 

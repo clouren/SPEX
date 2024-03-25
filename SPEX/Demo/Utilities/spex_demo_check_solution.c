@@ -2,24 +2,22 @@
 // Demo/spex_check_solution: checks whether a given vector exactly solves Ax=b
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
-
 
 #include "spex_demos.h"
 
 #undef  FREE_WORKSPACE
 #define FREE_WORKSPACE                      \
 {                                           \
-    SPEX_MPQ_CLEAR(temp);                   \
-    SPEX_MPQ_CLEAR(scale);                  \
+    SPEX_mpq_clear (temp) ;                 \
+    SPEX_mpq_clear (scale) ;                \
     SPEX_matrix_free(&b2, NULL);            \
 }
-
 
 SPEX_info spex_demo_check_solution
 (
@@ -29,34 +27,30 @@ SPEX_info spex_demo_check_solution
     const SPEX_options option    // Command options
 )
 {
-    if (!SPEX_initialize ( )) return (SPEX_PANIC);
-
-    //--------------------------------------------------------------------------
-    // check inputs. Input are also checked by the two callers
-    //--------------------------------------------------------------------------
-
-    SPEX_info info ;
-    /*SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ);
-    SPEX_REQUIRE (x, SPEX_DENSE, SPEX_MPQ);
-    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ);*/
 
     //--------------------------------------------------------------------------
     // Declare vars
     //--------------------------------------------------------------------------
 
+    mpq_t temp;
+    mpq_t scale;
     int64_t p, j, i, nz;
     SPEX_matrix b2 = NULL;   // b2 stores the solution of A*x
-    mpq_t temp; SPEX_MPQ_SET_NULL(temp);
-    mpq_t scale; SPEX_MPQ_SET_NULL(scale);
-
-    SPEX_MPQ_INIT(temp);
-    SPEX_MPQ_INIT(scale);
-    SPEX_CHECK (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
-        b->nzmax, false, true, option));
-
+    int r;
+    SPEX_mpq_set_null (temp) ;
+    SPEX_mpq_set_null (scale) ;
 
     //--------------------------------------------------------------------------
-    // perform SPEX_mpq_addmul in loops to compute b2 = A'*x, where A' is the
+    // initialize
+    //--------------------------------------------------------------------------
+
+    SPEX_TRY (SPEX_mpq_init(temp));
+    SPEX_TRY (SPEX_mpq_init(scale));
+    SPEX_TRY (SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n,
+        b->nzmax, false, true, option));
+
+    //--------------------------------------------------------------------------
+    // perform SPEX_mpq_add,mul in loops to compute b2 = A'*x, where A' is the
     // scaled matrix with all entries in integer
     //--------------------------------------------------------------------------
 
@@ -68,15 +62,15 @@ SPEX_info spex_demo_check_solution
             {
                 // temp = A[p][i] (note this must be done seperately since A is
                 // mpz and temp is mpq)
-                SPEX_MPQ_SET_Z(temp, A->x.mpz[p]);
+                SPEX_TRY (SPEX_mpq_set_z(temp, A->x.mpz[p]));
 
                 // temp = temp*x[i]
-                SPEX_MPQ_MUL(temp, temp,
-                                        SPEX_2D(x, i, j, mpq));
+                SPEX_TRY (SPEX_mpq_mul(temp, temp,
+                                        SPEX_2D(x, i, j, mpq)));
 
                 // b2[p] = b2[p]-temp
-                SPEX_MPQ_ADD(SPEX_2D(b2, A->i[p], j, mpq),
-                                        SPEX_2D(b2, A->i[p], j, mpq),temp);
+                SPEX_TRY (SPEX_mpq_add(SPEX_2D(b2, A->i[p], j, mpq),
+                                        SPEX_2D(b2, A->i[p], j, mpq),temp));
             }
         }
     }
@@ -85,17 +79,16 @@ SPEX_info spex_demo_check_solution
     // Apply scales of A and b to b2 before comparing the b2 with scaled b'
     //--------------------------------------------------------------------------
 
-    SPEX_MPQ_DIV(scale, b->scale, A->scale);
+    SPEX_TRY (SPEX_mpq_div(scale, b->scale, A->scale));
 
     // Apply scaling factor, but ONLY if it is not 1
-    int r;
-    SPEX_MPQ_CMP_UI(&r, scale, 1, 1);
+    SPEX_TRY (SPEX_mpq_cmp_ui(&r, scale, 1, 1));
     if (r != 0)
     {
         nz = x->m * x->n;
         for (i = 0; i < nz; i++)
         {
-            SPEX_MPQ_MUL(b2->x.mpq[i], b2->x.mpq[i], scale);
+            SPEX_TRY (SPEX_mpq_mul(b2->x.mpq[i], b2->x.mpq[i], scale));
         }
     }
 
@@ -108,34 +101,18 @@ SPEX_info spex_demo_check_solution
         for (i = 0; i < b->m; i++)
         {
             // temp = b[i] (correct b)
-            SPEX_MPQ_SET_Z(temp, SPEX_2D(b, i, j, mpz));
+            SPEX_TRY (SPEX_mpq_set_z(temp, SPEX_2D(b, i, j, mpz)));
 
             // set check false if b!=b2
-            SPEX_MPQ_EQUAL(&r, temp, SPEX_2D(b2, i, j, mpq));
+            SPEX_TRY (SPEX_mpq_equal(&r, temp, SPEX_2D(b2, i, j, mpq)));
             if (r == 0)
             {
-                //printf("ERROR\n");
-                info = SPEX_PANIC;
-                j = b->n;
-                break;
+                // This can "never" happen.
+                fprintf (stderr, "ERROR! Solution is wrong. This is a bug;"
+                    "please contact the authors of SPEX.\n");
+                SPEX_TRY (SPEX_PANIC) ;
             }
         }
-    }
-
-    //--------------------------------------------------------------------------
-    // Print info
-    //--------------------------------------------------------------------------
-
-    int pr = SPEX_OPTION_PRINT_LEVEL (option);
-    if (info == SPEX_OK)
-    {
-        SPEX_PR1 ("Solution is verified to be exact.\n");
-    }
-    else if (info == SPEX_PANIC)
-    {
-        // This can never happen.
-        SPEX_PR1 ("ERROR! Solution is wrong. This is a bug; please "
-                  "contact the authors of SPEX.\n");
     }
 
     //--------------------------------------------------------------------------
@@ -143,5 +120,6 @@ SPEX_info spex_demo_check_solution
     //--------------------------------------------------------------------------
 
     FREE_WORKSPACE ;
-    return info;
+    return SPEX_OK ;
 }
+

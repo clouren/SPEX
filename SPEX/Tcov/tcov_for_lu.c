@@ -2,8 +2,8 @@
 // SPEX/Tcov/tcov_for_lu.c: test coverage for SPEX_LU
 // ----------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -262,11 +262,6 @@ int main ( int argc, char *argv[])
                 printf("[Ab_type malloc_count] = [%d %"PRId64"]\n",
                     Ab_type, malloc_count);
             }
-
-            /*mpz_t mpz1, mpz2, mpz3;
-            SPEX_MPZ_SET_NULL(mpz1);
-            SPEX_MPZ_SET_NULL(mpz2);
-            SPEX_MPZ_SET_NULL(mpz3);*/
 
             int64_t n=4, numRHS=1, j, nz=11;
 
