@@ -2,8 +2,8 @@
 // Demo/spex_demo_lu_simple2.c: example of simple SPEX_LU call for triplet format
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -15,17 +15,27 @@
 // mpq_t precision
 
 // usage:
-// SPEX_LU_demo2 mat_file rhs_file > out
+// spex_demo_lu_simple2 f mat_file rhs_file > out
 // mat_file is the Matrix Market file containing the A matrix
 // rhs_file is a list of entries for right hand side dense matrix
 // if input file names are not specified, they are defaulted to
 // ../ExampleMats/10teams.mat and ../ExampleMats/10teams.v, respectively.
-// out is file for output calculated result
+// out is the file for the output with the calculated result
 
 #include "spex_demos.h"
 
 #define FREE_WORKSPACE                          \
 {                                               \
+    if (mat_file != NULL)                       \
+    {                                           \
+        fclose(mat_file);                       \
+    }                                           \
+    mat_file = NULL ;                           \
+    if (rhs_file != NULL)                       \
+    {                                           \
+        fclose(rhs_file);                       \
+    }                                           \
+    rhs_file = NULL ;                           \
     SPEX_symbolic_analysis_free(&S, option);    \
     SPEX_matrix_free(&A, option);               \
     SPEX_FREE(option);                          \
@@ -36,37 +46,40 @@
 
 int main (int argc, char **argv)
 {
-    //--------------------------------------------------------------------------
-    // Prior to using SPEX Left LU, its environment must be initialized. This is
-    // done by calling the SPEX_initialize() function.
-    //--------------------------------------------------------------------------
-    SPEX_initialize();
 
-    //--------------------------------------------------------------------------
-    // Get matrix and right hand side file names
-    //--------------------------------------------------------------------------
-
-    char *mat_name = NULL, *rhs_name = NULL;
-    if (argc < 3)
-    { 
-        perror ("usage: spex_demo_lu_simple2 matfile rhsfile");
-        return 0 ;
-    }
-
-    mat_name = argv[1];
-    rhs_name = argv[2];
-
-
-    //--------------------------------------------------------------------------
-    // Declare our data structures
-    //--------------------------------------------------------------------------
-    SPEX_info ok;
     SPEX_matrix A = NULL ;                     // input matrix
     SPEX_matrix b = NULL ;                     // Right hand side vector
     SPEX_matrix x = NULL ;                     // Solution vectors
     SPEX_symbolic_analysis S = NULL ;                // Column permutation
     SPEX_options option = NULL;
-    DEMO_OK(SPEX_create_default_options(&option));
+    FILE *mat_file = NULL;
+    FILE *rhs_file = NULL;
+    char *mat_name = NULL, *rhs_name = NULL;
+
+    //--------------------------------------------------------------------------
+    // Prior to using SPEX Left LU, its environment must be initialized. This is
+    // done by calling the SPEX_initialize() function.
+    //--------------------------------------------------------------------------
+
+    SPEX_TRY (SPEX_initialize ( )) ;
+
+    //--------------------------------------------------------------------------
+    // Get matrix and right hand side file names
+    //--------------------------------------------------------------------------
+
+    if (argc < 3)
+    { 
+        perror ("usage: spex_demo_lu_simple2 matfile rhsfile");
+        return (1) ;
+    }
+    mat_name = argv[1];
+    rhs_name = argv[2];
+
+    //--------------------------------------------------------------------------
+    // Get default options
+    //--------------------------------------------------------------------------
+
+    SPEX_TRY (SPEX_create_default_options(&option));
 
     //--------------------------------------------------------------------------
     // Allocate memory, read in A and b
@@ -74,27 +87,29 @@ int main (int argc, char **argv)
 
     // Read in A. The output of this demo function is A in CSC format with
     // mpz_t entries.
-    FILE *mat_file = fopen(mat_name,"r");
+    mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
     {
         perror("Error while opening the file");
         FREE_WORKSPACE;
-        return 0;
+        return (1) ;
     }
-    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_MPZ, option));
+    SPEX_TRY (spex_demo_tripread(&A, mat_file, SPEX_MPZ, option));
     fclose(mat_file);
+    mat_file = NULL ;
 
     // Read in b. The output of this demo function is b in dense format with
     // mpz_t entries
-    FILE *rhs_file = fopen(rhs_name,"r");
+    rhs_file = fopen(rhs_name,"r");
     if( rhs_file == NULL )
     {
         perror("Error while opening the file");
         FREE_WORKSPACE;
-        return 0;
+        return (1) ;
     }
-    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
+    SPEX_TRY (spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
+    rhs_file = NULL ;
 
     // Check if the size of A matches b
     if (A->n != b->m)
@@ -102,25 +117,25 @@ int main (int argc, char **argv)
         printf("%"PRId64" %"PRId64" \n", A->m,b->m);
         fprintf (stderr, "Error! Size of A and b do not match!\n");
         FREE_WORKSPACE;
-        return 0;
+        return (1) ;
     }
 
     //--------------------------------------------------------------------------
     // solve
     //--------------------------------------------------------------------------
 
-    clock_t start_s = clock();
+    double start_s = SuiteSparse_time ();
 
     // SPEX Left LU has an optional check, to enable it, one can set the
     // following parameter to be true.
     // option->check = true;
 
     // Solve the system and give MPQ solution
-    DEMO_OK(SPEX_lu_backslash( &x, SPEX_MPQ, A, b, option));
+    SPEX_TRY (SPEX_lu_backslash( &x, SPEX_MPQ, A, b, option));
 
-    clock_t end_s = clock();
+    double end_s = SuiteSparse_time ();
 
-    double t_s = (double) (end_s - start_s) / CLOCKS_PER_SEC;
+    double t_s = (end_s - start_s) ;
 
     printf("\nSPEX Left LU Factor & Solve time: %lf\n", t_s);
 
@@ -129,8 +144,7 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
 
     FREE_WORKSPACE;
-
     printf ("\n%s: all tests passed\n\n", __FILE__);
-    return 0;
+    return (0) ;
 }
 

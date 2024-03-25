@@ -2,17 +2,19 @@
 // SPEX_Utilities/SPEX_matrix_check: check if a matrix is OK
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALL    \
-    SPEX_FREE (work);   \
-    SPEX_MPZ_CLEAR(q);   \
-    SPEX_MPZ_CLEAR(r);
+#define SPEX_FREE_ALL       \
+{                           \
+    SPEX_FREE (work);       \
+    SPEX_mpz_clear (q);     \
+    SPEX_mpz_clear (r);     \
+}
 
 #include "spex_util_internal.h"
 
@@ -21,7 +23,7 @@
     lines++ ;                               \
     if (pr == 2 && lines > 30)              \
     {                                       \
-        SPEX_PRINTF ("    ...\n");         \
+        SPEX_PRINTF ("    ...\n");          \
         pr = 1 ;                            \
     }
 
@@ -143,8 +145,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     // paranoia:  check prec here: cast to mprf_prec_t, and back, assert
     // equality, if not equal then return SPEX_PANIC
     mpz_t q, r;
-    SPEX_MPZ_SET_NULL(q);
-    SPEX_MPZ_SET_NULL(r);
+    SPEX_mpz_set_null (q);
+    SPEX_mpz_set_null (r);
 
     int64_t lines = 0 ;     // # of lines printed so far
 
@@ -418,7 +420,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             }
 
             // sort the (i,j) indices
-            qsort (work, nz, 2 * sizeof (int64_t), compar);
+            qsort (work, nz, 2 * sizeof (int64_t), compar) ;
 
             // check for duplicates
             for (p = 1 ; p < nz ; p++)

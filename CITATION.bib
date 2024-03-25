@@ -1,0 +1,91 @@
+
+@article{10.1145/1024074.1024081,
+author = {Amestoy, Patrick R. and Davis, Timothy A. and Duff, Iain S.},
+title = {Algorithm 837: AMD, an Approximate Minimum Degree Ordering Algorithm},
+year = {2004},
+issue_date = {September 2004},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {30},
+number = {3},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/1024074.1024081},
+doi = {10.1145/1024074.1024081},
+abstract = {AMD is a set of routines that implements the approximate minimum degree ordering algorithm to permute sparse matrices prior to numerical factorization. There are versions written in both C and Fortran 77. A MATLAB interface is included.},
+journal = {ACM Trans. Math. Softw.},
+month = {sep},
+pages = {381–388},
+numpages = {8},
+keywords = {sparse matrices, Linear equations, ordering methods, minimum degree}
+}
+
+@article{doi:10.1137/S0895479894278952,
+author = {Amestoy, Patrick R. and Davis, Timothy A. and Duff, Iain S.},
+title = {An Approximate Minimum Degree Ordering Algorithm},
+journal = {SIAM Journal on Matrix Analysis and Applications},
+volume = {17},
+number = {4},
+pages = {886-905},
+year = {1996},
+doi = {10.1137/S0895479894278952},
+URL = { https://doi.org/10.1137/S0895479894278952 },
+eprint = { https://doi.org/10.1137/S0895479894278952 } ,
+    abstract = { Abstract. An approximate minimum degree (AMD), ordering algorithm for preordering a symmetric sparse matrix prior to numerical factorization is presented. We use techniques based on the quotient graph for matrix factorization that allow us to obtain computationally cheap bounds for the minimum degree. We show that these bounds are often equal to the actual degree. The resulting algorithm is typically much faster than previous minimum degree ordering algorithms and produces results that are comparable in quality with the best orderings from other minimum degree algorithms. }
+}
+
+
+@article{10.1145/1024074.1024080,
+author = {Davis, Timothy A. and Gilbert, John R. and Larimore, Stefan I. and Ng, Esmond G.},
+title = {Algorithm 836: COLAMD, a Column Approximate Minimum Degree Ordering Algorithm},
+year = {2004},
+issue_date = {September 2004},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {30},
+number = {3},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/1024074.1024080},
+doi = {10.1145/1024074.1024080},
+abstract = {Two codes are discussed, COLAMD and SYMAMD, that compute approximate minimum degree orderings for sparse matrices in two contexts: (1) sparse partial pivoting, which requires a sparsity preserving column pre-ordering prior to numerical factorization, and (2) sparse Cholesky factorization, which requires a symmetric permutation of both the rows and columns of the matrix being factorized. These orderings are computed by COLAMD and SYMAMD, respectively. The ordering from COLAMD is also suitable for sparse QR factorization, and the factorization of matrices of the form ATA and AAT, such as those that arise in least-squares problems and interior point methods for linear programming problems. The two routines are available both in MATLAB and C-callable forms. They appear as built-in routines in MATLAB Version 6.0.},
+journal = {ACM Trans. Math. Softw.},
+month = {sep},
+pages = {377–380},
+numpages = {4},
+keywords = {sparse nonsymmetric matrices, ordering methods, Linear equations}
+}
+
+@article{10.1145/1024074.1024079,
+author = {Davis, Timothy A. and Gilbert, John R. and Larimore, Stefan I. and Ng, Esmond G.},
+title = {A Column Approximate Minimum Degree Ordering Algorithm},
+year = {2004},
+issue_date = {September 2004},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {30},
+number = {3},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/1024074.1024079},
+doi = {10.1145/1024074.1024079},
+abstract = {Sparse Gaussian elimination with partial pivoting computes the factorization PAQ = LU of a sparse matrix A, where the row ordering P is selected during factorization using standard partial pivoting with row interchanges. The goal is to select a column preordering, Q, based solely on the nonzero pattern of A, that limits the worst-case number of nonzeros in the factorization. The fill-in also depends on P, but Q is selected to reduce an upper bound on the fill-in for any subsequent choice of P. The choice of Q can have a dramatic impact on the number of nonzeros in L and U. One scheme for determining a good column ordering for A is to compute a symmetric ordering that reduces fill-in in the Cholesky factorization of ATA. A conventional minimum degree ordering algorithm would require the sparsity structure of ATA to be computed, which can be expensive both in terms of space and time since ATA may be much denser than A. An alternative is to compute Q directly from the sparsity structure of A; this strategy is used by MATLAB's COLMMD preordering algorithm. A new ordering algorithm, COLAMD, is presented. It is based on the same strategy but uses a better ordering heuristic. COLAMD is faster and computes better orderings, with fewer nonzeros in the factors of the matrix.},
+journal = {ACM Trans. Math. Softw.},
+month = {sep},
+pages = {353–376},
+numpages = {24},
+keywords = {linear equations, Sparse nonsymmetric matrices, ordering methods}
+}
+
+@article{10.1145/3519024,
+author = {Lourenco, Christopher and Chen, Jinhao and Moreno-Centeno, Erick and Davis, Timothy A.},
+title = {Algorithm 1021: SPEX Left LU, Exactly Solving Sparse Linear Systems via a Sparse Left-Looking Integer-Preserving LU Factorization},
+year = {2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/3519024},
+doi = {10.1145/3519024},
+abstract = {SPEX Left LU is a software package for exactly solving unsymmetric sparse linear systems. As a component of the sparse exact (SPEX) software package, SPEX Left LU can be applied to any input matrix, A, whose entries are integral, rational, or decimal, and provides a solution to the system Ax = b which is either exact or accurate to user-specified precision. SPEX Left LU preorders the matrix A with a user-specified fill-reducing ordering and computes a left-looking LU factorization with the special property that each operation used to compute the L and U matrices is integral. Notable additional applications of this package include benchmarking the stability and accuracy of state-of-the-art linear solvers, and determining whether singular-to-double-precision matrices are indeed singular. Computationally, this paper evaluates the impact of several novel pivoting schemes in exact arithmetic, benchmarks the exact iterative solvers within Linbox, and benchmarks the accuracy of MATLAB sparse backslash. Most importantly, it is shown that SPEX Left LU outperforms the exact iterative solvers in run time on easy instances and in stability as the iterative solver fails on a sizeable subset of the tested (both easy and hard) instances. The SPEX Left LU package is written in ANSI C, comes with a MATLAB interface, and is distributed via GitHub, as a component of the SPEX software package, and as a component of SuiteSparse.},
+journal = {ACM Trans. Math. Softw.},
+month = {jun},
+keywords = {exact matrix factorization, sparse linear systems, sparse matrix algorithms, exactly solving linear systems, roundoff errors}
+}
+

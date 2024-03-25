@@ -2,8 +2,8 @@
 // SPEX/Tcov/tcov_utilities.c: utility functions for tcov tests
 // ----------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -109,13 +109,13 @@ int spex_gmp_realloc_test
 /* Purpose: Given a solution vector x, check the solution of the linear system
  * Ax = b. This is done by computing a rational-arthmetic A*x == b. This
  * function is provided here only used for debugging purposes, as the routines
- * within SPEX are gauranteed to be exact.
+ * within SPEX are guaranteed to be exact.
  */
 
 #undef  SPEX_FREE_ALL
-#define SPEX_FREE_ALL                       \
-    SPEX_MPQ_CLEAR(temp);                   \
-    SPEX_MPQ_CLEAR(scale);                  \
+#define SPEX_FREE_ALL               \
+    SPEX_mpq_clear (temp);          \
+    SPEX_mpq_clear (scale);         \
     SPEX_matrix_free(&b2, NULL);
 
 SPEX_info spex_check_solution
@@ -146,8 +146,8 @@ SPEX_info spex_check_solution
 
     int64_t p, j, i ;
     SPEX_matrix b2 = NULL;   // b2 stores the solution of A*x
-    mpq_t temp; SPEX_MPQ_SET_NULL(temp);
-    mpq_t scale; SPEX_MPQ_SET_NULL(scale);
+    mpq_t temp; SPEX_mpq_set_null (temp);
+    mpq_t scale; SPEX_mpq_set_null (scale);
 
     SPEX_MPQ_INIT(temp);
     SPEX_MPQ_INIT(scale);
