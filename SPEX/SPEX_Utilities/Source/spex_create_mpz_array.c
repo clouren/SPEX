@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_create_mpz_array: create a dense mpz array
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
+// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -44,10 +44,17 @@ mpz_t *spex_create_mpz_array
             // out of memory.  NOTE: This can be triggered only when using GMP
             // v6.1.2 or earlier versions. For GMP v6.2.0 or later versions,
             // there is no memory allocation, and thus such failure will never
-            // occur.  As a result, this code cannot be tested by the tests
+            // occur.  As a result, this code cannot be untested by the tests
             // in SPEX/Tcov, when using GMP v6.2.0 or later.
-            SPEX_mpz_set_null (x[i]);
-            spex_free_mpz_array (&x, n) ;
+            SPEX_MPZ_SET_NULL(x[i]);
+            for (int64_t j = 0; j < i; j++)
+            {
+                if ( x[j] != NULL)
+                {
+                    SPEX_MPZ_CLEAR( x[j]);
+                }
+            }
+            SPEX_FREE(x);
             return NULL;
         }
         #endif

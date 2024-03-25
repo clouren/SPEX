@@ -4,7 +4,7 @@
 
 # The following copyright and license applies to just this file only, not to
 # the library itself:
-# FindMPFR.cmake, Copyright (c) 2022-2024, Timothy A. Davis. All Rights Reserved.
+# FindMPFR.cmake, Copyright (c) 2022-2023, Timothy A. Davis. All Rights Reserved.
 # SPDX-License-Identifier: BSD-3-clause
 
 #-------------------------------------------------------------------------------
@@ -27,7 +27,7 @@
 
 if ( DEFINED ENV{CMAKE_PREFIX_PATH} )
     # import CMAKE_PREFIX_PATH, typically created by spack
-    list ( APPEND CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH} )
+    set ( CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH} )
 endif ( )
 
 # include files for mpfr

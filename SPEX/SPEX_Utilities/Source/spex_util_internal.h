@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_util_internal: include file for internal use in SPEX_Utility functions
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
+// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -15,10 +15,8 @@
 #ifndef SPEX_UTIL_INTERNAL_H
 #define SPEX_UTIL_INTERNAL_H
 
-#if defined (__GNUC__)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-value"
-#endif
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -27,22 +25,16 @@
 //------------------------------------------------------------------------------
 
 // Standard C libraries
-#include <setjmp.h>
-#include <math.h>
 #include <stdarg.h>
-#include <stdint.h>
-#include <inttypes.h>
+
+// SuiteSparse headers
+#include "SuiteSparse_config.h"
 
 // user-callable functions
 #include "SPEX.h"
 
 // SPEX interface to GMP and MPFR
 #include "spex_gmp.h"
-
-// SuiteSparse headers
-#include "SuiteSparse_config.h"
-#include "colamd.h"
-#include "amd.h"
 
 //------------------------------------------------------------------------------
 // debugging
@@ -151,34 +143,31 @@
 // Local variables (only declared, allocated and freed inside an if, for
 // example) do not go inside the workspace.
 
+#ifdef SPEX_DEBUG
 
-// SPEX_CHECK: similar to SPEX_TRY (which is user-accessible).  The SPEX_CHECK
-// macro is used internally.
+    #define SPEX_CHECK(method)      \
+    {                               \
+        info = (method);            \
+        if (info != SPEX_OK)        \
+        {                           \
+            printf("file %s line %d\n",__FILE__,__LINE__);\
+            SPEX_FREE_ALL;          \
+            return (info);          \
+        }                           \
+    }
 
-#define SPEX_CHECK(method)      \
-{                               \
-    info = (method);            \
-    if (info != SPEX_OK)        \
-    {                           \
-        SPEX_FREE_ALL;          \
-        return (info);          \
-    }                           \
-}
+#else
 
-//------------------------------------------------------------------------------
-// check versions of SuiteSparse packages
-//------------------------------------------------------------------------------
+    #define SPEX_CHECK(method)      \
+    {                               \
+        info = (method);            \
+        if (info != SPEX_OK)        \
+        {                           \
+            SPEX_FREE_ALL;          \
+            return (info);          \
+        }                           \
+    }
 
-#if !defined (SUITESPARSE__VERSION) || SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,7,0)
-#error "SPEX requires SuiteSparse_config 7.7.0 or later"
-#endif
-
-#if !defined (AMD__VERSION) || AMD__VERSION < SUITESPARSE__VERCODE(3,3,2)
-#error "SPEX requires AMD 3.3.2 or later"
-#endif
-
-#if !defined (COLAMD__VERSION) || COLAMD__VERSION < SUITESPARSE__VERCODE(3,3,3)
-#error "SPEX requires COLAMD 3.3.3 or later"
 #endif
 
 //------------------------------------------------------------------------------
@@ -203,8 +192,12 @@
 #define SPEX_PR2(...) { if (pr >= 2) SPEX_PRINTF (__VA_ARGS__) }
 #define SPEX_PR3(...) { if (pr >= 3) SPEX_PRINTF (__VA_ARGS__) }
 
+
+
 //------------------------------------------------------------------------------
-// Default parameter values
+//------------------------------------------------------------------------------
+//-----------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 // Tolerance used in the pivoting schemes. This number can be anything in
@@ -291,88 +284,7 @@
 #define SPEX_OPTION_ALGORITHM(option) \
     SPEX_OPTION (option, algo, SPEX_DEFAULT_ALGORITHM)
 
-//------------------------------------------------------------------------------
-// Field access macros for MPZ/MPQ/MPFR struct
-//------------------------------------------------------------------------------
 
-// Thse macros rely on GMP and MPFR definitions in gmp.h, but which are not
-// necessarily meant to be accessed by the application (SPEX) that is using
-// GMP.  They provide access to the internal structure for the MPZ, MPQ, and
-// MPFR data types.
-
-#define SPEX_MPZ_SIZ(x)   ((x)->_mp_size)
-#define SPEX_MPZ_PTR(x)   ((x)->_mp_d)
-#define SPEX_MPZ_ALLOC(x) ((x)->_mp_alloc)
-#define SPEX_MPQ_NUM(x)   mpq_numref(x)
-#define SPEX_MPQ_DEN(x)   mpq_denref(x)
-#define SPEX_MPFR_MANT(x) ((x)->_mpfr_d)
-#define SPEX_MPFR_EXP(x)  ((x)->_mpfr_exp)
-#define SPEX_MPFR_PREC(x) ((x)->_mpfr_prec)
-#define SPEX_MPFR_SIGN(x) ((x)->_mpfr_sign)
-
-// Invalid exponent value (to track bugs...)
-#define SPEX_MPFR_EXP_INVALID \
- ((mpfr_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mpfr_exp_t)/sizeof(mp_limb_t)-2))
-
-/* Macros to set the pointer in mpz_t/mpq_t/mpfr_t variable to NULL. It is best
- * practice to call these macros immediately after mpz_t/mpq_t/mpfr_t variable
- * is declared, and before the mp*_init function is called. It would help to
- * prevent error when SPEX_MP*_CLEAR is called before the variable is
- * successfully initialized.
- */
-
-#define SPEX_MPZ_SET_NULL(x)                     \
-{                                                \
-    SPEX_MPZ_PTR(x) = NULL;                      \
-    SPEX_MPZ_SIZ(x) = 0;                         \
-    SPEX_MPZ_ALLOC(x) = 0;                       \
-}
-
-#define SPEX_MPQ_SET_NULL(x)                     \
-{                                                \
-    SPEX_MPZ_SET_NULL (SPEX_MPQ_NUM (x)) ;       \
-    SPEX_MPZ_SET_NULL (SPEX_MPQ_DEN (x)) ;       \
-}
-
-#define SPEX_MPFR_SET_NULL(x)                    \
-{                                                \
-    SPEX_MPFR_MANT(x) = NULL;                    \
-    SPEX_MPFR_PREC(x) = 0;                       \
-    SPEX_MPFR_SIGN(x) = 1;                       \
-    SPEX_MPFR_EXP(x) = SPEX_MPFR_EXP_INVALID;    \
-}
-
-/* GMP does not give a mechanism to tell a user when an mpz, mpq, or mpfr
- * item has been cleared; thus, if mp*_clear is called on an object that
- * has already been cleared, gmp will crash. It is also not possible to
- * set a mp*_t = NULL. Thus, this mechanism modifies the internal GMP
- * size of entries to avoid crashing in the case that a mp*_t is cleared
- * multiple times.
- */
-
-#define SPEX_MPZ_CLEAR(x)                        \
-{                                                \
-    if ((x) != NULL && SPEX_MPZ_PTR(x) != NULL)  \
-    {                                            \
-        mpz_clear(x);                            \
-        SPEX_MPZ_SET_NULL(x);                    \
-    }                                            \
-}
-
-#define SPEX_MPQ_CLEAR(x)                        \
-{                                                \
-    SPEX_MPZ_CLEAR(SPEX_MPQ_NUM(x));             \
-    SPEX_MPZ_CLEAR(SPEX_MPQ_DEN(x));             \
-}
-
-#define SPEX_MPFR_CLEAR(x)                       \
-{                                                \
-    if ((x) != NULL && SPEX_MPFR_MANT(x) != NULL)\
-    {                                            \
-        mpfr_clear(x);                           \
-        SPEX_MPFR_SET_NULL(x);                   \
-    }                                            \
-}
 
 // ============================================================================
 //                           Internal Functions
@@ -398,18 +310,6 @@ mpfr_t *spex_create_mpfr_array
 ) ;
 
 //------------------------------------------------------------------------------
-// spex_free_mpfr_array: free a 1D mpfr_t array
-//------------------------------------------------------------------------------
-
-// Purpose: frees the array created by spex_create_mpfr_array.
-
-void spex_free_mpfr_array
-(
-    mpfr_t **x_handle,          // mpfr_t array of size n
-    int64_t n
-) ;
-
-//------------------------------------------------------------------------------
 // spex_create_mpq_array: Creates a 1D array, whose entries are all mpq_t type.
 //------------------------------------------------------------------------------
 
@@ -424,16 +324,11 @@ mpq_t *spex_create_mpq_array
     int64_t n              // size of the array
 ) ;
 
-//------------------------------------------------------------------------------
-// spex_free_mpq_array: delete a 1D mpq_t array
-//------------------------------------------------------------------------------
+// Create and initialize a single mpq_t variable
 
-// Purpose:  frees the array created by spex_create_mpq_array.
-
-void spex_free_mpq_array
+SPEX_info spex_create_mpq
 (
-    mpq_t **x_handle,       // mpq_t array of size n
-    int64_t n
+    mpq_t x                  // mpq_t entry to be initialized
 ) ;
 
 //------------------------------------------------------------------------------
@@ -448,24 +343,23 @@ void spex_free_mpq_array
 
 mpz_t *spex_create_mpz_array
 (
-    int64_t n               // size of the array
+    int64_t n            // size of the array
 ) ;
 
 //------------------------------------------------------------------------------
-// spex_free_mpz_array: delete a 1D mpz_t array
+// spex_delete_mpz_array: delete a 1D mpz_t array
 //------------------------------------------------------------------------------
 
-// Purpose:  frees the array created by spex_create_mpz_array.
+// Delete a simple 1D array, where A[i] is an entry of type mpz_t.
 
-void spex_free_mpz_array
+/* Purpose: This function deletes a mpz array of size n
+ */
+
+void spex_delete_mpz_array
 (
-    mpz_t **x_handle,       // mpz_t array of size n
-    int64_t n
+    mpz_t **x,      // mpz array to be deleted
+    int64_t n       // Size of x
 ) ;
-
-//------------------------------------------------------------------------------
-// spex_expand_double_array
-//------------------------------------------------------------------------------
 
 /* Purpose: This function converts a double array of size n to an appropriate
  * mpz array of size n. To do this, the number is multiplied by 10^17 then, the
@@ -669,6 +563,20 @@ SPEX_info spex_amd
 #define ASSERT_MATRIX(A,required_kind,required_type)    \
     ASSERT_KIND (A,required_kind) ;                     \
     ASSERT_TYPE (A,required_type) ;
+
+//------------------------------------------------------------------------------
+// SPEX_matrix macros
+//------------------------------------------------------------------------------
+
+// These macros simplify the access to entries in a SPEX_matrix.
+// The type parameter is one of: mpq, mpz, mpfr, int64, or fp64.
+
+// To access the kth entry in a SPEX_matrix using 1D linear addressing,
+// in any matrix kind (CSC, triplet, or dense), in any type:
+#define SPEX_1D(A,k,type) ((A)->x.type [k])
+
+// To access the (i,j)th entry in a 2D SPEX_matrix, in any type:
+#define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 #endif
 

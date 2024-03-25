@@ -62,7 +62,7 @@
     \textbf{User Guide for the SPEX Software Package} \\
     \vspace{5mm}
     
-    Version 3.1, March, 2024 % VERSION
+    Version 3.0, July 2023 % VERSION
     \vspace{20mm}
     
     Jinhao Chen, Timothy A. Davis, Christopher Lourenco, Lorena Mejia-Domenzain, Erick Moreno-Centeno \\
@@ -1515,18 +1515,9 @@ function. Each function is declared in \verb|SPEX.h| and defined in
 \verb|mpfr_free_str(buff)|
     & \verb|SPEX_mpfr_free_str(buff)|
     & Free string allocated by MPFR \\ \hline
-\verb|mpfr_init2(x, s)|
-    & \verb|SPEX_mpfr_init2(x, s)|
-    & Initialize x with \verb's' bits \\ \hline
-\verb|mpfr_set_prec(x, s)|
-    & \verb|SPEX_mpfr_set_prec(x, s)|
-    & Set x to contain \verb's' bits \\ \hline
-\verb|mpfr_clear(x)|
-    & \verb|SPEX_mpfr_clear(x)|
-    & Safely free \verb|mpfr_t| value \\ \hline 
-\verb|mpfr_set_null(x)| 
-    & \verb|SPEX_mpfr_set_null(x)| 
-    & Initialize the (pointer) contents of a \verb|mpfr_t| value \\ \hline
+\verb|mpfr_init2(x, size)|
+    & \verb|SPEX_mpfr_init2(x, size)|
+    & Initialize x with size bits \\ \hline
 \verb|mpfr_set(x, y, rnd)|
     & \verb|SPEX_mpfr_set(x, y, rnd)|
     & $x = y$ \\ \hline
@@ -1588,15 +1579,9 @@ function. Each function is declared in \verb|SPEX.h| and defined in
 \verb|mpz_init2(x, size)|
     & \verb|SPEX_mpz_init2(x, size)|
     & Initialize x to size bits \\ \hline
-\verb|mpz_clear(x)|
-    & \verb|SPEX_mpz_clear(x)|
-    & Safely free \verb|mpz_t| value \\ \hline
 \verb|mpz_set(x, y)|
     & \verb|SPEX_mpz_set(x, y)| 
     & $x = y$ (\verb|mpz_t|) \\ \hline
-\verb|mpz_set_null(x)| 
-    & \verb|SPEX_mpz_set_null(x)| 
-    & Initialize the (pointer) contents of a \verb|mpz_t| value \\ \hline
 \verb|mpz_set_ui(x, y)|
     & \verb|SPEX_mpz_set_ui(x, y)|
     & $x = y$ (\verb|uint64_t|) \\ \hline
@@ -1681,12 +1666,6 @@ function. Each function is declared in \verb|SPEX.h| and defined in
 \verb|mpq_init(x)|
     & \verb|SPEX_mpq_init(x)|
     & Initialize x \\ \hline
-\verb|mpq_set_null(x)| 
-    & \verb|SPEX_mpq_set_null(x)| 
-    & Initialize the (pointer) contents of a \verb|mpq_t| value \\ \hline
-\verb|mpq_clear(x)|
-    & \verb|SPEX_mpq_clear(x)|
-    & Safely free \verb|mpq_t| value \\ \hline
 \verb|mpq_set(x, y)|
     & \verb|SPEX_mpq_set(x, y)|
     & $x = y$ \\ \hline
@@ -1828,67 +1807,6 @@ function can be constructed as follows:
 \end{verbatim}
 } \end{mdframed}
 
-\section{SPEX Helper Macros} \label{ss:SPEX_helper_macros}
-
-In addition to the functionality described in this section; SPEX offers several helper macros to increase ease for the end user application. The first two macros are a simple try/catch mechanism which can be used to wrap functions for error handling. The next two give an easy interface to access entries $(i,j)$ in a matrix.
-
-\subsection{\texttt{SPEX\_TRY} and 
-\texttt{SPEX\_CATCH}}
-
-In a robust application, the return values from SPEX should be checked and properly handled in the case an error occurs. SPEX is written in C and thus it cannot rely on the try/catch mechanism of C++. Thus, \verb|SPEX_TRY| and \verb|SPEX_CHECK| aim to achieve this goal. We provide \verb|SPEX_TRY| and leave \verb|SPEX_CATCH| to the user to define.
-
-\begin{mdframed}[userdefinedwidth=\textwidth]
-{\footnotesize
-\begin{verbatim}
-    #define SPEX_TRY(method)            \
-    {                                   \
-        SPEX_info info = (method) ;     \
-        if (info != SPEX_OK)            \
-        {                               \
-            SPEX_CATCH (info) ;         \
-        }                               \
-    }
-\end{verbatim}
-} \end{mdframed}
-
-An example definition of a \verb|SPEX_CATCH| is below. This example assumes that the user needs to free a matrix and return an error code.
-\begin{mdframed}[userdefinedwidth=\textwidth]
-{\footnotesize
-\begin{verbatim}
-    #define SPEX_CATCH(info)                        \
-    {                                               \
-        SPEX_matrix_free (&A, NULL) ;               \
-        fprintf (stderr, "SPEX failed: info %d,     \
-        line %d, file %s\n",                        \
-        info, __LINE__, __FILE__) ;                 \
-        return (info) ;                             \
-        } 
-\end{verbatim}
-} \end{mdframed}
-
-With this mechanism, the user can safely wrap any SPEX function which returns \verb|SPEX_info| with \verb|SPEX_TRY|. For example, one can wrap.
-
-\subsection{\texttt{SPEX\_1D}: Access matrix entries with 1D linear indexing.}
-
-\begin{mdframed}[userdefinedwidth=\textwidth]
-{\footnotesize
-\begin{verbatim}
-    #define SPEX_1D(A,k,type) ((A)->x.type [k])
-\end{verbatim}
-} \end{mdframed}
-
-This allows the $k$th entry of a matrix stored in any kind (CSC, triplet, dense) of any type (mpq, mpz, int64, double, int) to be returned. For example, to return the $n$th entry of a CSC matrix with \verb|mpz_t| data types, one would use \verb|SPEX_1D(A, n, mpz)|.
-
-\subsection{\texttt{SPEX\_2D}: Access dense matrix with 2D indexing.}
-
-\begin{mdframed}[userdefinedwidth=\textwidth]
-{\footnotesize
-\begin{verbatim}
-    #define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
-\end{verbatim}
-} \end{mdframed}
-
-This allows the $(i,j)$ entry of a dense matrix of any type (mpq, mpz, int64, double, int). For example to return the $(m,n)$ entry of a dense matrix with \verb|mpq_t| data types, one would use \verb|SPEX_2D(A, m, n, mpq)|.
 
 %-------------------------------------------------------------------------------
 \chapter{SPEX LU}\vspace{-0.75in} \label{ch:LeftLU}
@@ -1918,7 +1836,7 @@ Lourenco, C., Chen, J., Moreno-Centeno, E., \& Davis, T. A. (2022). Algorithm 10
 %-------------------------------------------------------------------------------
 \section{Licensing} \label{s:LeftLU:licensing}
 %-------------------------------------------------------------------------------
-\textbf{Copyright:} The copyright of this software is held by Christopher Lourenco, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis.\\
+\textbf{Copyright:} The copyright of this software is held by  Christopher Lourenco, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis.\\
 
 \noindent \textbf{Contact Info:} Contact Chris Lourenco,
 \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
@@ -2373,7 +2291,7 @@ Note that, in order to solve a linear system, the matrix $D$ is never explicitly
 %-------------------------------------------------------------------------------
 \section{Licensing} \label{s:Chol:licensing}
 %-------------------------------------------------------------------------------
-\textbf{Copyright:} The copyright of this software is held by Christopher Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis.\\
+\textbf{Copyright:} The copyright of this software is held by  Christopher Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis.\\
 
 \noindent \textbf{Contact Info:} Contact Chris Lourenco,
 \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
@@ -2535,7 +2453,7 @@ SPEX Backslash is written in ANSI C and is accompanied by MATLAB and Python inte
 %-------------------------------------------------------------------------------
 \section{Licensing} \label{s:Backslash:licensing}
 %-------------------------------------------------------------------------------
-\textbf{Copyright:} The copyright of this software is held by Christopher Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis.\\
+\textbf{Copyright:} The copyright of this software is held by  Christopher Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis.\\
 
 \noindent \textbf{Contact Info:} Contact Chris Lourenco,
 \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,

@@ -1,19 +1,3 @@
-Mar 22, 2024: version 3.1.0
-
-    * major update to build system
-    * Added new methods to SPEX.h, available to the end user:
-        SPEX_TRY
-        SPEX_CATCH
-        SPEX_1D
-        SPEX_2D
-        SPEX_mpz_set_null
-        SPEX_mpq_set_null
-        SPEX_mpfr_set_null
-        SPEX_mpz_clear
-        SPEX_mpq_clear
-        SPEX_mpfr_clear
-        SPEX_mpfr_set_proc
-
 Jul 26, 2023: version 3.0.0
 
     * major change to the API: new SPEX_factorization and SPEX_symbolic_analysis

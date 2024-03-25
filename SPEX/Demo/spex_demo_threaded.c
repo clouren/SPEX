@@ -2,30 +2,21 @@
 // Demo/spex_demo_threaded: example of SPEX_backslash with multiple threads
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2021-2024, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
+// SPEX: (c) 2021-2023, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-// A demo of SPEX_backslash in C: solving the same system with many different
-// user threads, just to test user multithreading.
+/* A demo of SPEX_backslash in C: solving the same system with many different
+ * user threads, just to test user multithreading.
+ */
 
 # include "spex_demos.h"
 
 #define FREE_WORKSPACE                  \
 {                                       \
-    if (mat_file != NULL)               \
-    {                                   \
-        fclose(mat_file);               \
-    }                                   \
-    mat_file = NULL ;                   \
-    if (rhs_file != NULL)               \
-    {                                   \
-        fclose(rhs_file);               \
-    }                                   \
-    rhs_file = NULL ;                   \
     SPEX_matrix_free(&A,NULL);          \
     SPEX_matrix_free(&b,NULL);          \
     SPEX_FREE(option);                  \
@@ -39,37 +30,29 @@
 int main( int argc, char *argv[] )
 {
 
-    int64_t n = 0 ;
-    SPEX_matrix A = NULL;
-    SPEX_matrix b = NULL;
-    SPEX_options option = NULL;
-    FILE *mat_file = NULL ;
-    FILE *rhs_file = NULL;
-    char *mat_name = NULL, *rhs_name = NULL;
-    int64_t rat = 1;
-
     //--------------------------------------------------------------------------
     // Prior to using SPEX, its environment must be initialized. This is done
     // by calling the SPEX_initialize() function.
     //--------------------------------------------------------------------------
-
-    #ifdef _OPENMP
-    printf ("spex_demo_threaded: with OpenMP\n") ;
-    #else
-    printf ("spex_demo_threaded: without OpenMP\n") ;
-    #endif
-
-    SPEX_TRY (SPEX_initialize ( )) ;
+    SPEX_initialize();
 
     //--------------------------------------------------------------------------
     // Declare memory & Process Command Line
     //--------------------------------------------------------------------------
+    int64_t n = 0, ok ;
+
+    SPEX_matrix A = NULL;
+    SPEX_matrix b = NULL;
 
     // Set default options
-    SPEX_TRY (SPEX_create_default_options(&option));
+    SPEX_options option = NULL;
+    DEMO_OK(SPEX_create_default_options(&option));
+
+    char *mat_name = NULL, *rhs_name = NULL;
+    int64_t rat = 1;
 
     // Process the command line
-    SPEX_TRY (spex_demo_process_command_line(argc, argv, option,
+    DEMO_OK(spex_demo_process_command_line(argc, argv, option,
         &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
@@ -77,34 +60,31 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
 
     // Read in A
-    mat_file = fopen(mat_name,"r");
+    FILE *mat_file = fopen(mat_name,"r");
     if( mat_file == NULL )
     {
         perror("Error while opening the file");
         FREE_WORKSPACE;
-        return (1) ;
+        return 0;
     }
 
     // Note, there are a few matrices in BasisLIB that dont fit in double
     // Need to use the other tripread for those.
-    SPEX_TRY (spex_demo_tripread(&A, mat_file, SPEX_MPZ, option));
+    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_MPZ, option));
     fclose(mat_file);
-    mat_file = NULL ;
-
     n = A->n;
 
     // Read in b. The output of this demo function is b in dense format with
     // mpz_t entries
-    rhs_file = fopen(rhs_name,"r");
+    FILE *rhs_file = fopen(rhs_name,"r");
     if( rhs_file == NULL )
     {
         perror("Error while opening the file");
         FREE_WORKSPACE;
-        return (1) ;
+        return 0;
     }
-    SPEX_TRY (spex_demo_read_dense(&b, rhs_file, option));
+    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
-    rhs_file = NULL ;
 
     //--------------------------------------------------------------------------
     // Solve Ax = b
@@ -133,10 +113,9 @@ int main( int argc, char *argv[] )
 
     bool test_pass = true ;
 
-    int id ;
     #pragma omp parallel for num_threads(nthreads) schedule(static,1) \
         reduction(&&:test_pass)
-    for (id = 0 ; id < nthreads ; id++)
+    for (int id = 0 ; id < nthreads ; id++)
     {
         SPEX_info info = SPEX_thread_initialize ( ) ;
         if (info != SPEX_OK)
@@ -200,6 +179,5 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
 
     FREE_WORKSPACE;
-    return (test_pass ? 0 : 1) ;
 }
 

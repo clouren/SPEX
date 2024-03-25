@@ -2,8 +2,8 @@
 # SPEX/Tcov/Makefile: compile and run SPEX test coverage
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2019-2024, Chris Lourenco, Jinhao Chen,
-# Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
+# SPEX: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
+# Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
 # All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -16,11 +16,8 @@ SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 ################################################################################
 
 # configured by CMake:
-INC = @SPEX_INCS@
-LIBS = ../../SuiteSparse_config/build/libsuitesparseconfig.so \
-    ../../AMD/build/libamd.so \
-    ../../COLAMD/build/libcolamd.so \
-    @SPEX_LIBS@
+INC = @SPEX_INC@
+LIBS = @SPEX_LIBRARIES@
 
 SUITESPARSE_CONFIG_PATH = @SUITESPARSE_CONFIG_PATH@
 COLAMD_PATH = @COLAMD_PATH@
@@ -45,13 +42,10 @@ MPFR_PATH = @MPFR_PATH@
 
 ################################################################################
 
-# select the thread-safety mechanism to test: none, openmp, etc
-# none:
+# select the thread-safety mechanism to test: none, openmp, or pthreads.
 # THREADS =
-# opemp:
 # THREADS = -fopenmp
-# __thread keyword (gcc and many compilers):
-  THREADS = -DHAVE_KEYWORD__THREAD
+  THREADS = -DSPEX_USE_PTHREADS -pthread
 
 # Linux test coverage (gcc is required for test coverage)
 CC = gcc
@@ -66,8 +60,7 @@ CFLAGS = -g -fprofile-arcs -ftest-coverage \
 cov: runtests
 	./covall
 
-all: tcov_for_lu spex_demo_lu_extended tcov_for_cholesky tcov_for_lu2 \
-    tcov_for_other
+all: tcov_for_lu spex_demo_lu_extended tcov_for_cholesky tcov_for_lu2
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
@@ -88,9 +81,6 @@ OBJ_Util = \
     spex_create_mpfr_array.o \
     spex_create_mpq_array.o \
     spex_create_mpz_array.o \
-    spex_free_mpfr_array.o \
-    spex_free_mpq_array.o \
-    spex_free_mpz_array.o \
     spex_cumsum.o \
     spex_expand_double_array.o \
     spex_expand_mpfr_array.o \
@@ -116,7 +106,8 @@ OBJ_Util = \
     SPEX_determine_symmetry.o \
     SPEX_transpose.o \
     spex_amd.o \
-    spex_colamd.o
+    spex_colamd.o \
+    spex_create_mpq.o
 
 $(OBJ_Util): ../Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
 
@@ -220,9 +211,6 @@ spex_demo_lu_extended: $(OBJ_Util) $(OBJ_LU)  ../Demo/spex_demo_lu_extended.c $(
 tcov_for_cholesky: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) tcov_for_cholesky.c simple_rand.c simple_rand.h $(DEMO_SRC)
 	$(CC) $(LDFLAGS) $(CFLAGS) tcov_for_cholesky.c simple_rand.c $(DEMO_SRC) -o tcov_for_cholesky $(OBJ_Tcov) $(OBJ_Util) $(OBJ_Cholesky) $(LIBS)
 
-tcov_for_other: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU)  tcov_for_other.c
-	$(CC) $(LDFLAGS) tcov_for_other.c $(CFLAGS) -o tcov_for_other $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU)  $(LIBS)
-
 #-------------------------------------------------------------------------------
 
 # run all statement coverage tests
@@ -230,19 +218,18 @@ runtests: runtests4llu runtests4chol
 
 # only run test for SPEX_LU
 runtests4llu: all
-	./tcov_for_other
-	./spex_demo_lu_extended q 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu1.out
-	./spex_demo_lu_extended q 2 o 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu2.out
-	./spex_demo_lu_extended q 3 o 1 f ../ExampleMats/test.mat.txt ../ExampleMats/test.rhs.txt > lu3.out
-	./spex_demo_lu_extended f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
-	./tcov_for_lu > test_for_lu.out
-	./tcov_for_lu 0 1 1 > lu5.out
-	./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
+	- ./spex_demo_lu_extended p 2 q 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu1.out
+	- ./spex_demo_lu_extended p 3 q 2 o 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu2.out
+	- ./spex_demo_lu_extended p 4 q 3 o 1 f ../ExampleMats/test.mat.txt ../ExampleMats/test.rhs.txt > lu3.out
+	- ./spex_demo_lu_extended p 5 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
+	- ./tcov_for_lu > test_for_lu.out
+	- ./tcov_for_lu 0 1 1 > lu5.out
+	- ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
 
 
 # only run test for SPEX_Cholesky
 runtests4chol: all
-	./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
+	- ./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
 
 #-------------------------------------------------------------------------------
 
@@ -255,28 +242,24 @@ vtests: vtests4llu vtests4chol
 
 # run test for SPEX_LU with valgrind
 vtests4llu: all
-	$(V) ./tcov_for_other
-	$(V) ./spex_demo_lu_extended q 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu1.out
-	$(V) ./spex_demo_lu_extended q 2 o 1 f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu2.out
-	$(V) ./spex_demo_lu_extended q 3 o 1 f ../ExampleMats/test.mat.txt ../ExampleMats/test.rhs.txt > lu3.out
-	$(V) ./spex_demo_lu_extended f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
-	$(V) ./tcov_for_lu > test_for_lu.out
-	$(V) ./tcov_for_lu 0 1 1 > lu5.out
-	$(V) ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
+	- $(V) ./spex_demo_lu_extended p 2 q 0 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu1.out
+	- $(V) ./spex_demo_lu_extended p 3 q 1 o 1 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu2.out
+	- $(V) ./spex_demo_lu_extended p 4 q 2 o 1 f ../ExampleMats/test_mat.txt ../ExampleMats/test_rhs.txt > lu3.out
+	- $(V) ./spex_demo_lu_extended p 5 f ../ExampleMats/10teams_mat.txt ../ExampleMats/10teams_v.txt > lu4.out
+	- $(V) ./tcov_for_lu > test_for_lu.out
+	- $(V) ./tcov_for_lu 0 1 1 > lu5.out
 
-vtest2: all
-	$(V) ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
 
 # run test for SPEX_Cholesky with valgrind
 vtests4chol: all
-	$(V) ./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
+	- $(V) ./tcov_for_cholesky ../ExampleMats/872.mat.txt > test_for_cholesky.out
 
 #-------------------------------------------------------------------------------
 
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_for_lu  spex_demo_lu_extended *.out *.a out tcov_for_lu2 tcov_for_other
+	- $(RM) tcov_for_lu  spex_demo_lu_extended *.out *.a out  tcov_for_lu2
 	- $(RM) -r SPEX_*.c spex_*.c *.dSYM
 	- $(RM) -r tcov_for_cholesky 
 

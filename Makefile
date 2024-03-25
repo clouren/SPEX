@@ -2,10 +2,6 @@
 # Makefile for SPEX and its dependent packages (AMD, COLAMD, SuiteSparse_config)
 #-------------------------------------------------------------------------------
 
-# Just this particular file is under the Apache-2.0 license; each package has
-# its own license.
-# SPDX-License-Identifier: Apache-2.0
-
 # edit this variable to pass options to cmake:
 export CMAKE_OPTIONS ?=
 
@@ -19,7 +15,8 @@ export SUITESPARSE = $(CURDIR)
 
 # Compile the default rules for each package.
 
-# default: compile and install in SPEX/lib and SPEX/include
+# default: "make install" will install all libraries in /usr/local/lib
+# and include files in /usr/local/include.  Not installed in SuiteSparse/lib.
 default: local install
 
 # compile; "sudo make install" will install only in /usr/local
@@ -30,7 +27,7 @@ library:
 	( cd COLAMD && $(MAKE) )
 	( cd SPEX && $(MAKE) )
 
-# compile; "make install" only in SPEX/lib and SPEX/include
+# compile; "make install" only in  SuiteSparse/lib and SuiteSparse/include
 local:
 	( cd SuiteSparse_config && $(MAKE) local )
 	( cd AMD && $(MAKE) local )
@@ -67,8 +64,8 @@ purge:
 	- ( cd SuiteSparse_config && $(MAKE) purge )
 	- ( cd AMD && $(MAKE) purge )
 	- ( cd COLAMD && $(MAKE) purge )
-	- ( cd SPEX && $(MAKE) purge )
 	- $(RM) -r include/* bin/* lib/*
+	- ( cd SPEX && $(MAKE) purge )
 
 clean: purge
 
@@ -87,10 +84,4 @@ docs:
 # statement coverage (Linux only); this requires a lot of time.
 cov: local install
 	( cd SPEX && $(MAKE) cov )
-
-debug:
-	( cd SuiteSparse_config && $(MAKE) debug )
-	( cd AMD && $(MAKE) debug )
-	( cd COLAMD && $(MAKE) debug )
-	( cd SPEX && $(MAKE) debug )
 
