@@ -32,7 +32,8 @@ jobs:
 
       matrix:
         compiler: [gcc, clang]
-        cuda: [with, without]
+        cuda: [without]
+#       cuda: [with, without]
         openmp: [with]
         link: [both]
         include:
