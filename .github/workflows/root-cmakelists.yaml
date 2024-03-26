@@ -48,6 +48,7 @@ jobs:
             ccache-max: 600M
           - compiler: clang
             ccache-max: 500M
+          - cuda: without
 #         - cuda: with
 #           cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
 #           cuda-cmake-flags:
@@ -60,6 +61,7 @@ jobs:
             cc: "gcc"
             cxx: "g++"
             ccache-max: 600M
+            cuda: without
 #           cuda: with
 #           cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
 #           cuda-cmake-flags:
