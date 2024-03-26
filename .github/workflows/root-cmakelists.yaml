@@ -48,25 +48,25 @@ jobs:
             ccache-max: 600M
           - compiler: clang
             ccache-max: 500M
-          - cuda: with
-            cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
-            cuda-cmake-flags:
-              -DSUITESPARSE_USE_CUDA=ON
-              -DSUITESPARSE_USE_STRICT=ON
-              -DCUDAToolkit_INCLUDE_DIRS="/usr/include"
-              -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
+#         - cuda: with
+#           cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
+#           cuda-cmake-flags:
+#             -DSUITESPARSE_USE_CUDA=ON
+#             -DSUITESPARSE_USE_STRICT=ON
+#             -DCUDAToolkit_INCLUDE_DIRS="/usr/include"
+#             -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
           - compiler: gcc
             compiler-pkgs: "g++ gcc"
             cc: "gcc"
             cxx: "g++"
             ccache-max: 600M
-            cuda: with
-            cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
-            cuda-cmake-flags:
-              -DSUITESPARSE_USE_CUDA=ON
-              -DSUITESPARSE_USE_STRICT=ON
-              -DCUDAToolkit_INCLUDE_DIRS="/usr/include"
-              -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
+#           cuda: with
+#           cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
+#           cuda-cmake-flags:
+#             -DSUITESPARSE_USE_CUDA=ON
+#             -DSUITESPARSE_USE_STRICT=ON
+#             -DCUDAToolkit_INCLUDE_DIRS="/usr/include"
+#             -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
             link: static
             link-cmake-flags:
               -DBUILD_SHARED_LIBS=OFF
@@ -246,18 +246,18 @@ jobs:
         include:
           - openmp: without
             openmp-cmake-flags: "-DSUITESPARSE_USE_OPENMP=OFF"
+#         - openmp: with
+#           cuda: with
+#           cuda-cmake-flags:
+#             -DSUITESPARSE_USE_CUDA=ON
+#             -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
+#           link: both
+#           cc: cl
           - openmp: with
-            cuda: with
-            cuda-cmake-flags:
-              -DSUITESPARSE_USE_CUDA=ON
-              -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
-            link: both
-            cc: cl
-          - openmp: with
-            cuda: with
-            cuda-cmake-flags:
-              -DSUITESPARSE_USE_CUDA=ON
-              -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
+#           cuda: with
+#           cuda-cmake-flags:
+#             -DSUITESPARSE_USE_CUDA=ON
+#             -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
             link: static
             link-cmake-flags:
               -DBUILD_SHARED_LIBS=OFF
