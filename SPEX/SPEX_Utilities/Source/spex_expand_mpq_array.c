@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_expand_mpq_array: convert mpq array to mpz
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -15,7 +15,7 @@
  */
 
 #define SPEX_FREE_ALL               \
-    SPEX_MPZ_CLEAR(temp);
+    SPEX_mpz_clear (temp);
 
 #include "spex_util_internal.h"
 
@@ -33,7 +33,7 @@ SPEX_info spex_expand_mpq_array
     ASSERT(n >= 0);
     SPEX_info info ;
     mpz_t temp;
-    SPEX_MPZ_SET_NULL(temp);
+    SPEX_mpz_set_null (temp);
     SPEX_MPZ_INIT(temp);
 
     // Find LCM of denominators of x

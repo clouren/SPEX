@@ -1,16 +1,16 @@
 //------------------------------------------------------------------------------
-// Demo/example.c: example of simple SPEX_LU call using as input a random matrix
+// Demo/spex_demo_lu_simple1.c: simple SPEX_LU example with a random matrix
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-/* This example shows how to use SPEX Left LU with a given input matrix and a
- * double output. The input is a randomly generate dense matrix */
+// This example shows how to use SPEX Left LU with a given input matrix and a
+// double output. The input is a randomly generate dense matrix.
 
 // usage:
 // example > out
@@ -18,30 +18,19 @@
 
 #include "spex_demos.h"
 
-#define FREE_WORKSPACE                       \
-{                                            \
-    SPEX_matrix_free(&A,option);             \
-    SPEX_matrix_free(&x,option);             \
-    SPEX_matrix_free(&b,option);             \
-    SPEX_matrix_free(&Rb,option);            \
-    SPEX_matrix_free(&R,option);             \
-    SPEX_FREE(option);                       \
-    SPEX_finalize();                         \
+#define FREE_WORKSPACE                  \
+{                                       \
+    SPEX_matrix_free(&A,option);        \
+    SPEX_matrix_free(&x,option);        \
+    SPEX_matrix_free(&b,option);        \
+    SPEX_matrix_free(&Rb,option);       \
+    SPEX_matrix_free(&R,option);        \
+    SPEX_FREE(option);                  \
+    SPEX_finalize();                    \
 }
 
 int main (void)
 {
-
-    //--------------------------------------------------------------------------
-    // Prior to using SPEX Left LU, its environment must be initialized. This
-    // is done by calling the SPEX_initialize() function.
-    //--------------------------------------------------------------------------
-
-    SPEX_info ok = SPEX_initialize();
-
-    //--------------------------------------------------------------------------
-    // Declare and initialize essential variables
-    //--------------------------------------------------------------------------
 
     int64_t n = 50, nz = 2500, num=0;
     SPEX_matrix A = NULL ;                     // input matrix
@@ -50,7 +39,19 @@ int main (void)
     SPEX_matrix b = NULL ;                     // Right hand side vector
     SPEX_matrix x = NULL ;                     // Solution vectors
     SPEX_options option = NULL;
-    DEMO_OK(SPEX_create_default_options(&option));
+
+    //--------------------------------------------------------------------------
+    // Prior to using SPEX Left LU, its environment must be initialized. This
+    // is done by calling the SPEX_initialize() function.
+    //--------------------------------------------------------------------------
+
+    SPEX_TRY (SPEX_initialize ( )) ;
+
+    //--------------------------------------------------------------------------
+    // Declare and initialize essential variables
+    //--------------------------------------------------------------------------
+
+    SPEX_TRY (SPEX_create_default_options(&option));
 
     //--------------------------------------------------------------------------
     // Generate a random dense 50*50 matrix
@@ -61,12 +62,12 @@ int main (void)
     // A->j, and A->x are calloc'd. The second boolean parameter is meaningless
     // for FP64 matrices, but it tells SPEX Left LU to allocate the values of
     // A->x for the mpz_t, mpq_t, and mpfr_t entries
-    SPEX_matrix_allocate(&R, SPEX_TRIPLET, SPEX_FP64, n, n, nz,
-        false, true, option);
+    SPEX_TRY (SPEX_matrix_allocate(&R, SPEX_TRIPLET, SPEX_FP64, n, n, nz,
+        false, true, option)) ;
 
     // Rb is a n*1 dense matrix whose entries are FP64
-    SPEX_matrix_allocate(&Rb, SPEX_DENSE, SPEX_FP64, n, 1, n,
-        false, true, option);
+    SPEX_TRY (SPEX_matrix_allocate(&Rb, SPEX_DENSE, SPEX_FP64, n, 1, n,
+        false, true, option));
 
     // Randomly generate the input
     unsigned int seed = 10;
@@ -90,22 +91,22 @@ int main (void)
     //--------------------------------------------------------------------------
 
     // A is a copy of the R matrix. A is a CSC matrix with mpz_t entries
-    DEMO_OK ( SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, R, option));
+    SPEX_TRY ( SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, R, option));
     // b is a copy of the Rb matrix. b is dense with mpz_t entries.
-    DEMO_OK ( SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, Rb, option));
+    SPEX_TRY ( SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, Rb, option));
 
     //--------------------------------------------------------------------------
     // Solve
     //--------------------------------------------------------------------------
 
-    clock_t start_s = clock();
+    double start_s = SuiteSparse_time ();
 
     // Solve the system and give double solution
-    DEMO_OK(SPEX_lu_backslash( &x, SPEX_FP64, A, b, option));
+    SPEX_TRY (SPEX_lu_backslash( &x, SPEX_FP64, A, b, option));
 
-    clock_t end_s = clock();
+    double end_s = SuiteSparse_time ();
 
-    double t_s = (double) (end_s - start_s) / CLOCKS_PER_SEC;
+    double t_s = (end_s - start_s) ;
 
     printf("\nSPEX Left LU Factor & Solve time: %lf\n", t_s);
 
@@ -115,6 +116,6 @@ int main (void)
 
     FREE_WORKSPACE;
     printf ("\n%s: all tests passed\n\n", __FILE__);
-    return 0;
+    return (0) ;
 }
 

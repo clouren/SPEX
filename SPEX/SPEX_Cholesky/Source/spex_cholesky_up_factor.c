@@ -2,8 +2,8 @@
 // SPEX_Cholesky/spex_cholesky_up_factor: Up-looking REF Cholesky factorization
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -92,7 +92,8 @@ SPEX_info spex_cholesky_up_factor
     int64_t *c = NULL;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, jnew, k;
+    int64_t n = A->n, i, j, jnew, k;
+    int64_t top = n ;
     int sgn, prev_sgn;
     size_t size;
 
@@ -181,7 +182,6 @@ SPEX_info spex_cholesky_up_factor
     {
         L->p[k] = c[k] = S->cp[k];
     }
-
 
     //--------------------------------------------------------------------------
     // Perform the up-looking factorization

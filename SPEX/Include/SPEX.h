@@ -2,8 +2,8 @@
 // SPEX/Include/SPEX.h: Include file for SPEX Library
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -27,7 +27,7 @@
 //------------------------------------------------------------------------------
 // Unless otherwise noted all functions are authored by:
 //
-//    Christopher Lourenco, Jinhao Chen, 
+//    Christopher Lourenco, Jinhao Chen,
 //    Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis
 //
 
@@ -66,8 +66,8 @@
 //
 //    See license.txt for license info.
 //
-// This software is copyright by Christopher Lourenco, Jinhao Chen, 
-// Lorena Mejia Domenzain, Erick Moreno-Centeno and Timothy A. Davis.
+// This software is copyright by Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 //
 
@@ -95,13 +95,40 @@
 #include <string.h>
 #include <gmp.h>
 #include <mpfr.h>
-#include <math.h>
-#include <time.h>
-#include <inttypes.h>
-#include <assert.h>
+// #include <math.h>
+// #include <time.h>
+// #include <inttypes.h>
+// #include <assert.h>
 #include "SuiteSparse_config.h"
-#include "amd.h"
-#include "colamd.h"
+
+//------------------------------------------------------------------------------
+// SPEX Version
+//------------------------------------------------------------------------------
+
+// Current version of the code
+#define SPEX_DATE "Mar 22, 2024"
+#define SPEX_VERSION_STRING "3.1.0"
+#define SPEX_VERSION_MAJOR 3
+#define SPEX_VERSION_MINOR 1
+#define SPEX_VERSION_SUB   0
+
+#define SPEX_VERSION_NUMBER(major,minor,sub) \
+    (((major)*1000ULL + (minor))*1000ULL + (sub))
+#define SPEX_VERSION \
+    SPEX_VERSION_NUMBER (SPEX_VERSION_MAJOR, \
+                         SPEX_VERSION_MINOR, \
+                         SPEX_VERSION_SUB)
+
+#define SPEX__VERSION SUITESPARSE__VERCODE(3,1,0)
+#if !defined (SUITESPARSE__VERSION) || \
+    (SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,7,0))
+#error "SPEX 3.1.0 requires SuiteSparse_config 7.7.0 or later"
+#endif
+
+#if defined ( __cplusplus )
+extern "C"
+{
+#endif
 
 //------------------------------------------------------------------------------
 // Error codes
@@ -128,7 +155,7 @@ typedef enum
 SPEX_info ;
 
 //------------------------------------------------------------------------------
-// SPEX Version
+// SPEX Version, continued
 //------------------------------------------------------------------------------
 
 // Current version of the code
@@ -165,6 +192,42 @@ SPEX_info SPEX_version
 #if MPFR_VERSION < MPFR_VERSION_NUM(4,0,2)
 #error "MPFR v4.0.2 or later is required."
 #endif
+
+//------------------------------------------------------------------------------
+// SPEX_TRY: try a SPEX method and check for errors
+//------------------------------------------------------------------------------
+
+// In a robust application, the return values from each call to SPEX should be
+// checked, and corrective action should be taken if an error occurs.  The
+// SPEX_TRY macros assist in this effort.
+//
+// SPEX is written in C, and so it cannot rely on the try/catch mechanism of
+// C++.  To accomplish a similar goal, we provide our mechanism.  The SPEX_TRY
+// macro calls a single SPEX method and then takes corrected action based on a
+// user-defined macro SPEX_CATCH.
+
+#define SPEX_TRY(method)            \
+{                                   \
+    SPEX_info info = (method) ;     \
+    if (info != SPEX_OK)            \
+    {                               \
+        SPEX_CATCH (info) ;         \
+    }                               \
+}
+
+// A typical example user application might #define SPEX_CATCH as follows.
+// Suppose the user function needs to free some workspace and return to the
+// caller if an error occurs:
+
+/*
+        #define SPEX_CATCH(info)                                            \
+        {                                                                   \
+            SPEX_matrix_free (&A, NULL) ;                                   \
+            fprintf (stderr, "SPEX failed: info %d, line %d, file %s\n",    \
+                info, __LINE__, __FILE__) ;                                 \
+            return (info) ;                                                 \
+        }                                                                   \
+*/
 
 //------------------------------------------------------------------------------
 // Pivot scheme codes
@@ -339,7 +402,7 @@ SPEX_type ;
 // A->x.  For example, if A->p_shallow is true, then a non-NULL A->p is a
 // pointer to a read-only array, and the A->p array is not freed by
 // SPEX_matrix_free.  If A->p is NULL (for a triplet or dense matrix), then
-// A->p_shallow has no effect.  
+// A->p_shallow has no effect.
 
 typedef struct
 {
@@ -404,6 +467,20 @@ typedef struct
 
 // A SPEX_matrix is a pointer to a SPEX_matrix_struct
 typedef SPEX_matrix_struct *SPEX_matrix ;
+
+//------------------------------------------------------------------------------
+// SPEX_matrix macros
+//------------------------------------------------------------------------------
+
+// These macros simplify the access to entries in a SPEX_matrix.
+// The type parameter is one of: mpq, mpz, mpfr, int64, or fp64.
+
+// To access the kth entry in a SPEX_matrix using 1D linear addressing,
+// in any matrix kind (CSC, triplet, or dense), in any type:
+#define SPEX_1D(A,k,type) ((A)->x.type [k])
+
+// To access the (i,j)th entry in a 2D dense SPEX_matrix, in any type:
+#define SPEX_2D(A,i,j,type) SPEX_1D (A, (i)+(j)*((A)->m), type)
 
 //------------------------------------------------------------------------------
 // SPEX_matrix_allocate: allocate an m-by-n SPEX_matrix
@@ -487,7 +564,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 // SPEX_matrix_copy: make a copy of a SPEX_matrix, into another kind and type.
 
 // SPEX supports 16 matrix formats:  15 of them are all combinations of
-// (CSC, triplet, dense) x (mpz, mpq, mpfr, int64, double).  
+// (CSC, triplet, dense) x (mpz, mpq, mpfr, int64, double).
 
 SPEX_info SPEX_matrix_copy
 (
@@ -792,8 +869,6 @@ SPEX_info SPEX_determine_symmetry
     const SPEX_options option   // Command options
 ) ;
 
-// ended HERE on Apr 10.
-
 //------------------------------------------------------------------------------
 //---------------------------SPEX GMP/MPFR Functions----------------------------
 //------------------------------------------------------------------------------
@@ -915,6 +990,8 @@ SPEX_info SPEX_mpq_equal (int *r, const mpq_t x, const mpq_t y) ;
 
 SPEX_info SPEX_mpfr_init2(mpfr_t x, const uint64_t size) ;
 
+SPEX_info SPEX_mpfr_set_prec(mpfr_t x, const uint64_t size) ;
+
 SPEX_info SPEX_mpfr_set (mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 
 SPEX_info SPEX_mpfr_set_d (mpfr_t x, const double y, const mpfr_rnd_t rnd) ;
@@ -951,6 +1028,13 @@ SPEX_info SPEX_mpfr_free_cache (void) ;
 
 SPEX_info SPEX_mpfr_free_str (char *str) ;
 
+SPEX_info SPEX_mpz_set_null (mpz_t x) ;
+SPEX_info SPEX_mpq_set_null (mpq_t x) ;
+SPEX_info SPEX_mpfr_set_null (mpfr_t x) ;
+SPEX_info SPEX_mpz_clear (mpz_t x) ;
+SPEX_info SPEX_mpq_clear (mpq_t x) ;
+SPEX_info SPEX_mpfr_clear (mpfr_t x) ;
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -964,7 +1048,7 @@ SPEX_info SPEX_mpfr_free_str (char *str) ;
 
 //    "Algorithm 1021: SPEX Left LU, Exactly Solving Sparse Linear Systems via
 //    a Sparse Left-looking Integer-preserving LU Factorization",
-//    C. Lourenco, J. Chen, E. Moreno-Centeno, T. Davis, 
+//    C. Lourenco, J. Chen, E. Moreno-Centeno, T. Davis,
 //    ACM Trans. Mathematical Software. pp 1-23, vol 48, no 2, 2022.
 
 //    The theory associated with this software can be found in the paper
@@ -990,7 +1074,7 @@ SPEX_info SPEX_mpfr_free_str (char *str) ;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// Christopher Lourenco, Jinhao Chen, Timothy A. Davis, and Erick Moreno-Centeno
+// Christopher Lourenco, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis
 
 
 //------------------------------------------------------------------------------
@@ -1141,7 +1225,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //------------------------------------------------------------------------------
 
 //    Christopher Lourenco, Jinhao Chen,
-//    Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+//    Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 
 
 //------------------------------------------------------------------------------
@@ -1298,6 +1382,10 @@ SPEX_info SPEX_backslash
     const SPEX_matrix b,        // Right hand side vector(s)
     SPEX_options option         // Command options (NULL: means use defaults)
 ) ;
+
+#if defined ( __cplusplus )
+}
+#endif
 
 #endif
 

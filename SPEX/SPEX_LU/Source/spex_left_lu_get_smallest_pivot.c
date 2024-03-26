@@ -2,8 +2,8 @@
 // SPEX_LU/spex_left_lu_get_smallest_pivot: find the smallest entry in a column
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX_LU: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,,
+// Erick Moreno-Centeno, and Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -16,7 +16,7 @@
  */
 
 #define SPEX_FREE_ALL           \
-    SPEX_MPZ_CLEAR(small);
+    SPEX_mpz_clear (small);
 
 #include "spex_lu_internal.h"
 
@@ -49,7 +49,7 @@ SPEX_info spex_left_lu_get_smallest_pivot
     (*pivot) = -1;
     j = n;
     flag = top;
-    mpz_t small; SPEX_MPZ_SET_NULL(small);
+    mpz_t small; SPEX_mpz_set_null (small);
     SPEX_MPZ_INIT(small);
 
     //--------------------------------------------------------------------------

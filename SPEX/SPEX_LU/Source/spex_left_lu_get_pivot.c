@@ -2,8 +2,8 @@
 // SPEX_LU/spex_left_lu_get_pivot: find a pivot entry in a column
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX_LU: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,,
+// Erick Moreno-Centeno, and Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -25,8 +25,8 @@
  */
 
 #define SPEX_FREE_ALL           \
-    SPEX_MPQ_CLEAR (tol);      \
-    SPEX_MPQ_CLEAR (ratio);
+    SPEX_mpq_clear (tol);       \
+    SPEX_mpq_clear (ratio);
 
 #include "spex_lu_internal.h"
 
@@ -67,8 +67,8 @@ SPEX_info spex_left_lu_get_pivot
 
     int sgn, r;
     mpq_t tol, ratio;
-    SPEX_MPQ_SET_NULL(tol);
-    SPEX_MPQ_SET_NULL(ratio);
+    SPEX_mpq_set_null (tol);
+    SPEX_mpq_set_null (ratio);
 
     if (order == SPEX_SMALLEST)
     {

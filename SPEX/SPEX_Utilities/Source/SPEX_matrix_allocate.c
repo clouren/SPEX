@@ -2,8 +2,8 @@
 // SPEX_Utilities/SPEX_matrix_allocate: allocate a SPEX_matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -24,10 +24,19 @@
 
 #define SPEX_FREE_ALL                       \
 {                                           \
-    SPEX_matrix_free (&A, option);         \
+    SPEX_matrix_free (&A, option);          \
 }
 
 #include "spex_util_internal.h"
+
+#if defined (__GNUC__)
+    #if ( __GNUC__ == 11)
+        // gcc 11 has a bug that triggers a spurious warning for the call
+        // to SPEX_MPQ_INIT (A->scale), from -Wstringop-overflow.  see
+        // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101854
+        #pragma GCC diagnostic ignored "-Wstringop-overflow"
+    #endif
+#endif
 
 SPEX_info SPEX_matrix_allocate
 (
@@ -101,7 +110,7 @@ SPEX_info SPEX_matrix_allocate
     A->x_shallow = false ;
 
     // A->scale = 1
-    SPEX_CHECK (spex_create_mpq (A->scale));
+    SPEX_MPQ_INIT (A->scale) ;
     SPEX_MPQ_SET_UI (A->scale, 1, 1);
 
     //--------------------------------------------------------------------------
