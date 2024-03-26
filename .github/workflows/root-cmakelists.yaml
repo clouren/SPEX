@@ -247,6 +247,7 @@ jobs:
           - openmp: without
             openmp-cmake-flags: "-DSUITESPARSE_USE_OPENMP=OFF"
 #         - openmp: with
+            cuda: without
 #           cuda: with
 #           cuda-cmake-flags:
 #             -DSUITESPARSE_USE_CUDA=ON
@@ -254,6 +255,7 @@ jobs:
 #           link: both
 #           cc: cl
           - openmp: with
+            cuda: without
 #           cuda: with
 #           cuda-cmake-flags:
 #             -DSUITESPARSE_USE_CUDA=ON

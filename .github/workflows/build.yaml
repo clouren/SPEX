@@ -49,6 +49,7 @@ jobs:
             ccache-max: 600M
           - compiler: clang
             ccache-max: 500M
+          - cuda: without
 #         - cuda: with
 #           cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
 #           cuda-cmake-flags:
@@ -64,11 +65,12 @@ jobs:
             cuda: without
             openmp: without
             openmp-cmake-flags: "-DSUITESPARSE_USE_OPENMP=OFF"
-#         - compiler: gcc
-#           compiler-pkgs: "g++ gcc"
-#           cc: "gcc"
-#           cxx: "g++"
-#           ccache-max: 600M
+          - compiler: gcc
+            compiler-pkgs: "g++ gcc"
+            cc: "gcc"
+            cxx: "g++"
+            ccache-max: 600M
+            cuda: without
 #           cuda: with
 #           cuda-pkgs: "nvidia-cuda-dev nvidia-cuda-toolkit"
 #           cuda-cmake-flags:
@@ -76,13 +78,13 @@ jobs:
 #             -DSUITESPARSE_USE_STRICT=ON
 #             -DCUDAToolkit_INCLUDE_DIRS="/usr/include"
 #             -DCMAKE_CUDA_COMPILER_LAUNCHER="ccache"
-#           openmp: with
-#           link: static
-#           # "Fake" a cross-compilation to exercise that build system path
-#           link-cmake-flags:
-#             -DBUILD_SHARED_LIBS=OFF
-#             -DBUILD_STATIC_LIBS=ON
-#             -DCMAKE_SYSTEM_NAME="Linux"
+            openmp: with
+            link: static
+            # "Fake" a cross-compilation to exercise that build system path
+            link-cmake-flags:
+              -DBUILD_SHARED_LIBS=OFF
+              -DBUILD_STATIC_LIBS=ON
+              -DCMAKE_SYSTEM_NAME="Linux"
 
     env:
       CC: ${{ matrix.cc }}
