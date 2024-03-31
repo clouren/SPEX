@@ -124,12 +124,14 @@ int main( int argc, char *argv[] )
     //option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
     clock_t end_col = clock();
+    
 
     //--------------------------------------------------------------------------
     // Factorize AQ
     //--------------------------------------------------------------------------
     clock_t start_factor = clock();
     option->print_level = 3;
+    option->algo = SPEX_QR_GS ;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
     clock_t end_factor = clock();
     //SPEX_matrix_check(F->Q, option);

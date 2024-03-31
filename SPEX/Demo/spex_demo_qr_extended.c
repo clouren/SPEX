@@ -100,8 +100,7 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
     printf("Factorization:\n");
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    //SPEX_matrix_check(F->Q, option);
-    //SPEX_matrix_check(F->R, option);
+
 
     //--------------------------------------------------------------------------
     // Solve linear system

@@ -223,7 +223,8 @@ SPEX_info spex_qr_nonzero_structure
     //first column is exactly the same
     for(p=A->p[0];p<A->p[1];p++)
     {
-        SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[p]);
+        col = S->Q_perm[p];
+        SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[col]);
     }
     //For all other columns the logic is similar to that of the dot product
     for(k=1;k<n;k++) 

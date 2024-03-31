@@ -58,7 +58,6 @@ SPEX_info SPEX_qr_factorize
 )
 {
     SPEX_info info;
-
     if (!spex_initialized())
     {
         return SPEX_PANIC;
@@ -78,11 +77,10 @@ SPEX_info SPEX_qr_factorize
     }
 
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if(algo!=SPEX_QR_GS)
+    if(algo!=SPEX_QR_GS) //TODO add default
     {
         return SPEX_INCORRECT_ALGORITHM;
     }
-
     // Declare variables
     int64_t n=A->n, m=A->m, k, i, pQ, p, iQ, pR;
     SPEX_factorization F = NULL ;
@@ -91,7 +89,7 @@ SPEX_info SPEX_qr_factorize
     // Varibles needed to compute the rank of a matrix.
     // assume matrix is full rank. isZeros is true if a column is linearly 
     // dependent, ldCols keeps track of linearly dependent columns
-    bool isZeros=false, *ldCols;
+    bool isZeros=true, *ldCols;
     int64_t rank=n;
     int sgn;
     
@@ -112,9 +110,8 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Allocate and compute the nonzero structure of Q and R
     //--------------------------------------------------------------------------
-
     SPEX_CHECK(spex_qr_nonzero_structure(&RT, &Q, A, S, option));
- 
+    
     /*for (i = 0; i < n+1; ++i)
     {
         printf("i %ld Q %ld R %ld\n",i,Q->p[i],RT->p[i]);
@@ -144,8 +141,22 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Perform IPGS to get Q and R
     //--------------------------------------------------------------------------
+    for (pQ =Q->p[0]; pQ < Q->p[1]; pQ++)
+            {
+               
+                SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
+                if(sgn!=0)
+                {
+                    //printf("k %ld\n",k);
+                    isZeros=false;
+                }
+            }
     for (k=0;k<n-1;k++)
     {
+        if (k>=21)
+        {
+            //SPEX_matrix_check(F->rhos, option);
+        }
         //when the kth column of Q is all zeros (it is linearly dependent)
         //then the kth row of R is all zeros too and you skip operations on k
         if(isZeros)
@@ -153,7 +164,7 @@ SPEX_info SPEX_qr_factorize
             //printf("%ld in isZeros\n",k);
             ldCols[k]=true;//kth pivot of R is zeros, kth column of Q is ld
 
-            isZeros=true;
+            //isZeros=true;
 
             // row k of R is zeros
             for (pR =RT->p[k];pR <RT->p[k+1];pR++)
@@ -161,7 +172,13 @@ SPEX_info SPEX_qr_factorize
                 SPEX_MPZ_SET_UI(RT->x.mpz[pR],0); 
             }
             // Set the kth pivot to be equal to the k-1th pivot for computations
-            SPEX_MPZ_SET(F->rhos->x.mpz[k],F->rhos->x.mpz[k-1]);
+            if(k==0)
+            {
+                SPEX_MPZ_SET_UI(F->rhos->x.mpz[k],1); 
+
+            }else{
+                SPEX_MPZ_SET(F->rhos->x.mpz[k],F->rhos->x.mpz[k-1]);
+            }
             for(i=Q->p[k];i<Q->p[k+1];i++) //erase prev nonzeros
             {
                 Qk[Q->i[i]]=-1;

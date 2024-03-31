@@ -319,7 +319,7 @@ runtests4chol: all
 	
 # only run test for SPEX_QR
 runtests4qr: all
-	- ./tcov_for_qr ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_qr.out
+	- ./tcov_for_qr ../ExampleMats/LF10.mat.txt ../ExampleMats/LF10.rhs.txt > test_for_qr.out
 
 #-------------------------------------------------------------------------------
 
