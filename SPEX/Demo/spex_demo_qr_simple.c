@@ -115,7 +115,7 @@ int main (int argc, char **argv)
     // solve
     //--------------------------------------------------------------------------
     clock_t start_s = clock();
-    option->algo=SPEX_CHOL_LEFT;
+    option->algo=SPEX_QR_GS;
 
     DEMO_OK(SPEX_qr_backslash( &x, SPEX_FP64, A, b, option));
 

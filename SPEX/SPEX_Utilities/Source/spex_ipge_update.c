@@ -53,10 +53,6 @@ SPEX_info spex_ipge_update
         if(j>=1)
         {
             SPEX_MPZ_SGN(&sgn, rhos->x.mpz[i]);
-            if(sgn==0)
-            {
-                printf("rhos==0 %ld\n",i);
-            }
             SPEX_MPZ_DIVEXACT(A->x.mpz[a], A->x.mpz[a], rhos->x.mpz[i]);
         }
     }
@@ -71,7 +67,6 @@ SPEX_info spex_ipge_update
         }
     }
     
-    countIPGE++;
     
     return SPEX_OK;
 }

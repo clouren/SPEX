@@ -76,8 +76,6 @@ SPEX_info spex_qr_ipgs
     SPEX_info info;
     int64_t m = A->m, n = A->n;
     ASSERT( m >= n); // A should be transposed if not true
-    if (m < n)
-        return SPEX_PANIC;
     ASSERT( A != NULL);
     ASSERT( A->type == SPEX_MPZ);
     ASSERT( A->kind == SPEX_CSC);

@@ -141,10 +141,35 @@ SPEX_info SPEX_backslash
                 SPEX_FREE(backslash_options);
                 return SPEX_OK;
             }
-            else
+            else if (info == SPEX_SINGULAR)
             {
                 // Both Cholesky and LU have failed, info contains
                 // the problem, most likely that A is singular
+                // Attempt a QR factorization of A.
+                backslash_options->order = SPEX_COLAMD;
+
+                info = SPEX_qr_backslash(&x, type, A, b, backslash_options);
+                if (info == SPEX_OK)
+                {
+                    // QR was successful. Set x_handle = x
+                    (*x_handle) = x;
+
+                    // x_handle contains the exact solution of Ax = b and is
+                    // stored in the user desired type. Now, we exit and return ok
+                    SPEX_FREE(backslash_options);
+                    return SPEX_OK;
+                }
+                else
+                {
+                    // QR failed
+                    // Note that since QR failed, x_handle is still NULL
+                    // so there is no potential for a memory leak here
+                    SPEX_FREE(backslash_options);
+                    return info;
+                }
+            }
+            else
+            {
                 // Note that, because LU failed, x_handle is still
                 // NULL so there is no potential for a memory leak here
                 SPEX_FREE(backslash_options);

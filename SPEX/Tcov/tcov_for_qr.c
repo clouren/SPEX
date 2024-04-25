@@ -36,7 +36,7 @@
 
 // The method must return a bool (true if successful, false if failure).
 
-#define NTRIAL_MAX 1//10000
+#define NTRIAL_MAX 10000
 
 #define BRUTAL(method)                                                      \
 {                                                                           \
@@ -308,6 +308,8 @@ int main (int argc, char *argv [])
     //NOTE: mpfr solution can't be checked because mpfr->mpz isn't guaranteed
     //      to be exact
     OK (SPEX_matrix_free (&x, option));
+    OK (SPEX_matrix_free (&A, option));
+    OK (SPEX_matrix_free (&b, option));
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
@@ -325,11 +327,12 @@ int main (int argc, char *argv [])
     OK (SPEX_mpz_set_ui (b->x.mpz [0], 0));
     BRUTAL (spex_test_qr_afs (A, b, option)); //TODO fix, memory ran out 
     OK (SPEX_matrix_free (&A, option));*/
-
+    
     //--------------------------------------------------------------------------
     // rank deficient
     //--------------------------------------------------------------------------
     read_test_matrix (&A, "../ExampleMats/smallRankDeficient.mat.txt");
+    OK (SPEX_qr_analyze (&S, A, option));
     OK (SPEX_qr_factorize(&F,A, S, option));
     
     //--------------------------------------------------------------------------

@@ -43,7 +43,7 @@ print(x)
 
 
 ##--------------------------------------------------------------------------
-## Left LU
+## LU
 ##--------------------------------------------------------------------------
 
 # Generate a random sparse matrix A and populate b
@@ -59,6 +59,26 @@ b=np.ones(n,dtype=np.float64)
 options=Options("string")
 x=SPEX.lu_backslash(A,b,options)
 print(x)
+
+##--------------------------------------------------------------------------
+## QR
+##--------------------------------------------------------------------------
+
+# Generate a random sparse matrix A and populate b
+n=7
+m=10
+rng = default_rng()
+rvs = stats.poisson(25, loc=10).rvs
+S = random(m, n, density=0.7, random_state=rng, data_rvs=rvs)
+S2=S+np.eye(n)
+A=csc_matrix(S2)
+b=np.ones(n,dtype=np.float64)
+
+# Solve
+options=Options("string")
+x=SPEX.qr_backslash(A,b,options)
+print(x)
+
 
 ##--------------------------------------------------------------------------
 ## Backslash

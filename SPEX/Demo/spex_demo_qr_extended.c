@@ -52,6 +52,7 @@ int main( int argc, char *argv[] )
     // Default options.
     SPEX_options option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
+    option->algo = SPEX_QR_GS ;
 
     // Process the command line
     DEMO_OK(spex_demo_process_command_line(argc, argv, option,
@@ -108,9 +109,9 @@ int main( int argc, char *argv[] )
     option->algo = SPEX_QR_GS ;
     option->print_level=3;
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    SPEX_matrix_check(F->Q, option);
-     SPEX_matrix_check(F->R, option);
-    
+    //SPEX_matrix_check(F->Q, option);
+    //SPEX_matrix_check(F->R, option);
+
     //--------------------------------------------------------------------------
     // Solve linear system
     //--------------------------------------------------------------------------

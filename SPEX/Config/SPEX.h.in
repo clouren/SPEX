@@ -110,7 +110,6 @@
 // Most SPEX functions return a code that indicates if it was successful
 // or not. Otherwise the code returns a pointer to the object that was created
 // or it returns void (in the case that an object was deleted)
-int countIPGE; //TODO remove
 
 typedef enum
 {
@@ -123,8 +122,7 @@ typedef enum
                                   // definite (for a Cholesky factorization)
     SPEX_INCORRECT_ALGORITHM = -5,// The algorithm is not compatible with
                                   // the factorization
-    SPEX_RANK_DEFICIENT = -6,     // Input matrix is rank deficient
-    SPEX_PANIC = -7               // SPEX used without proper initialization,
+    SPEX_PANIC = -6               // SPEX used without proper initialization,
                                   // or other unrecoverable error
 }
 SPEX_info ;

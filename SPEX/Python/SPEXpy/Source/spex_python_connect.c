@@ -144,7 +144,7 @@ SPEX_info spex_python
             }
             //check string size
             int sizeStr;
-            sizeStr=strlen(s);
+            sizeStr=strlen(s)+1;
             //allocate sol_char[i]
             sol_void[i] = (void*) malloc (sizeStr*sizeof(char));
             //copy s into sol_char[i]

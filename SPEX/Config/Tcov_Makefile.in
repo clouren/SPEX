@@ -259,8 +259,7 @@ OBJ_QR = \
     spex_qr_permute_A.o \
     spex_qr_permute_A2.o \
     spex_qr_preorder.o \
-    SPEX_qr_solve.o \
-    spex_qr_transpose.o
+    SPEX_qr_solve.o 
     
 $(OBJ_QR): ../Include/SPEX.h ../SPEX_QR/Source/spex_qr_internal.h
 
@@ -319,7 +318,7 @@ runtests4chol: all
 	
 # only run test for SPEX_QR
 runtests4qr: all
-	- ./tcov_for_qr ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_qr.out
+	- ./tcov_for_qr ../ExampleMats/LF10.mat.txt ../ExampleMats/LF10.rhs.txt > test_for_qr.out
 
 #-------------------------------------------------------------------------------
 
