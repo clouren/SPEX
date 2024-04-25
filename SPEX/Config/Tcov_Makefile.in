@@ -259,8 +259,7 @@ OBJ_QR = \
     spex_qr_permute_A.o \
     spex_qr_permute_A2.o \
     spex_qr_preorder.o \
-    SPEX_qr_solve.o \
-    spex_qr_transpose.o
+    SPEX_qr_solve.o 
     
 $(OBJ_QR): ../Include/SPEX.h ../SPEX_QR/Source/spex_qr_internal.h
 

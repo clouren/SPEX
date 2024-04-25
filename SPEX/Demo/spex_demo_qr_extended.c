@@ -52,6 +52,7 @@ int main( int argc, char *argv[] )
     // Default options.
     SPEX_options option = NULL;
     DEMO_OK(SPEX_create_default_options(&option));
+    option->algo = SPEX_QR_GS ;
 
     // Process the command line
     DEMO_OK(spex_demo_process_command_line(argc, argv, option,
