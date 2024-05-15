@@ -79,7 +79,7 @@ SPEX_info SPEX_cholesky_analyze
     if (!is_symmetric)
     {
         SPEX_FREE_WORKSPACE ;
-        return SPEX_NOTSPD ;
+        return SPEX_UNSYMMETRIC ;
     }
 
     //--------------------------------------------------------------------------

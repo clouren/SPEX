@@ -48,6 +48,9 @@
  *              the number of nonzeros in L.
  *
  * A:           The user's permuted input matrix
+ * 
+ * chol:        True if we are performing a cholesky factorization
+ *              and false if we are performing an LDL factorization
  *
  * option:      Command options
  *
@@ -63,6 +66,10 @@ SPEX_info spex_cholesky_up_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,       // Matrix to be factored
+    bool chol,                 // If true we are attempting a cholesky factorization
+                               // only and thus the pivot elements must be >0
+                               // If false, we try a general LDL factorization with 
+                               // the pivot element strictly != 0
     const SPEX_options option  // command options
 )
 {
@@ -198,20 +205,42 @@ SPEX_info spex_cholesky_up_factor
         SPEX_CHECK(spex_cholesky_up_triangular_solve(&top, xi, x, L, A, k,
             S->parent, c, rhos, h));
 
-        // If x[k] is nonzero choose it as pivot. Otherwise, the matrix is
-        // not SPD (indeed, it may even be singular).
+        // Check if the diagonal is nonzero. If it is nonzero and > 0
+        // we can proceed with cholesky factorization. If it is nonzero
+        // we can proceed with an LDL factorization. If it is zero 
+        // we must stop
         SPEX_MPZ_SGN(&sgn, x->x.mpz[k]);
-        if (sgn != 0)
+        // If we're attempting a cholesky factorization the diagonal must be 
+        // > 0
+        if (chol)
         {
-            SPEX_MPZ_SET(rhos->x.mpz[k], x->x.mpz[k]);
+            if (sgn > 0)
+            {
+                SPEX_MPZ_SET(rhos->x.mpz[k], x->x.mpz[k]);
+            }
+            else
+            {
+                // A is not symmetric positive definite
+                SPEX_FREE_ALL;
+                return SPEX_NOTSPD;
+            }
         }
+        // If we're attempting an LDL factorization the diagonal must be 
+        // != 0
         else
         {
-            // A is not symmetric positive definite
-            SPEX_FREE_ALL;
-            return SPEX_NOTSPD;
+            if (sgn != 0)
+            {
+                SPEX_MPZ_SET(rhos->x.mpz[k], x->x.mpz[k]);
+            }
+            else
+            {
+                // A has a zero along the diagonal
+                SPEX_FREE_ALL;
+                return SPEX_ZERODIAG;
+            }
         }
-
+        
         //----------------------------------------------------------------------
         // Add the nonzeros (i.e. x) to L
         //----------------------------------------------------------------------

@@ -18,6 +18,12 @@
 // Definition of SPEX macros, SPEX data structures, etc
 #include "spex_util_internal.h"
 
+// Other TODO prior to resubmission
+// TODO make LDL demo
+// TODO make LDL matlab interface
+// TODO make LDL python interface
+// TODO update cholesky/ldl test coverage
+
 // ============================================================================
 //                           Internal Functions
 // ============================================================================
@@ -151,6 +157,10 @@ SPEX_info spex_cholesky_up_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,       // Matrix to be factored
+    bool chol,                 // If true we are attempting a cholesky factorization
+                               // only and thus the pivot elements must be >0
+                               // If false, we try a general LDL factorization with 
+                               // the pivot element strictly != 0
     const SPEX_options option  // command options
 ) ;
 
@@ -166,6 +176,10 @@ SPEX_info spex_cholesky_left_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,       // Matrix to be factored
+    bool chol,                 // If true we are attempting a cholesky factorization
+                               // only and thus the pivot elements must be >0
+                               // If false, we try a general LDL factorization with 
+                               // the pivot element strictly != 0
     const SPEX_options option  // command options
 ) ;
 
@@ -328,6 +342,7 @@ SPEX_info spex_cholesky_symbolic_analysis
     const SPEX_options option  // Command options
 ) ;
 
+// TODO update comment
 /* Purpose: Compute the REF Cholesky factorization A = LDL'
  * only appropriate if A is SPD.
  * On input A contains the user's matrix, option->algo indicates which
@@ -338,7 +353,7 @@ SPEX_info spex_cholesky_symbolic_analysis
  * used in the factorization
  */
 
-SPEX_info spex_cholesky_factor
+SPEX_info spex_cholesky_symmetricfactor
 (
     // Output
     SPEX_factorization *F_handle,   // Cholesky factorization
@@ -347,9 +362,50 @@ SPEX_info spex_cholesky_factor
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,       // Matrix to be factored
+    bool chol,                 // If true we are attempting a cholesky factorization
+                               // only and thus the pivot elements must be >0
+                               // If false, we try a general LDL factorization with 
+                               // the pivot element strictly != 0
     const SPEX_options option  // Command options
                                // Notably, option->chol_type indicates whether
                                // CHOL_UP (default) or CHOL_LEFT is used.
+) ;
+
+// TODO update comment
+/* Purpose: solve the system A x = b using the Cholesky or LDL factorization
+ */
+SPEX_info spex_cholesky_symmetricsolve
+(
+    // Output
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: Rational solution (SPEX_MPQ)
+                                // to the system.
+    // input/output:
+    SPEX_factorization F,       // The non-updatable Cholesky factorization.
+                                // Mathematically, F is unchanged.  However, if
+                                // F is updatable on input, it is converted to
+                                // non-updatable.  If F is already
+                                // non-updatable, it is not modified.
+    // input:
+    const SPEX_matrix b,        // Right hand side vector
+    bool chol,                  // true if chol, false if ldl
+    const SPEX_options option   // command options
+) ;
+
+SPEX_info spex_cholesky_symmetricbackslash
+(
+    // Output
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: solution vector(s)
+    // Input
+    SPEX_type type,             // Type of output desired
+                                // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix b,        // Right hand side vector(s). Must be
+                                // SPEX_MPZ and SPEX_DENSE
+    bool chol,                  // True if we are doing a cholesky and
+                                // false if we are doing an ldl
+    const SPEX_options option   // Command options (Default if NULL)
 ) ;
 
 #endif

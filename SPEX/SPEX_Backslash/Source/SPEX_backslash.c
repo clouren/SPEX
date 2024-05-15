@@ -2,6 +2,8 @@
 // SPEX_Backslash/SPEX_backslash.c: Solve a system Ax=b
 //------------------------------------------------------------------------------
 
+// TODO Update with SPEX_LDL
+
 // SPEX_Backslash: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
@@ -114,7 +116,7 @@ SPEX_info SPEX_backslash
         SPEX_FREE(backslash_options);
         return SPEX_OK;
     }
-    else if (info == SPEX_NOTSPD)
+    else if (info == SPEX_NOTSPD || info == SPEX_UNSYMMETRIC)
     {
         // Cholesky factorization failed. Must try
         // LU factorization now

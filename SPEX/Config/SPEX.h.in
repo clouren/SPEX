@@ -149,8 +149,11 @@ typedef enum
                                   // definite (for a Cholesky factorization)
     SPEX_INCORRECT_ALGORITHM = -5,// The algorithm is not compatible with
                                   // the factorization
-    SPEX_PANIC = -6               // SPEX used without proper initialization,
+    SPEX_PANIC = -6,              // SPEX used without proper initialization,
                                   // or other unrecoverable error
+    SPEX_ZERODIAG = -7,           // The diagonal element is zero meaning that
+                                  // an LDL factorization is not possible
+    SPEX_UNSYMMETRIC = -8         // Matrix is not symmetric
 }
 SPEX_info ;
 
@@ -260,6 +263,7 @@ SPEX_preorder ;
 //------------------------------------------------------------------------------
 
 // A code in SPEX_options to tell SPEX which factorization algorithm to use
+// TODO Should we add LDL_LEFT and LDL_UP?
 
 typedef enum
 {
@@ -567,11 +571,13 @@ SPEX_info SPEX_matrix_copy
 // SPEX symbolic analysis and factorization
 //------------------------------------------------------------------------------
 
+// TODO Should we change LDL to 2 and QR to 3?
 typedef enum
 {
     SPEX_LU_FACTORIZATION = 0,            // LU factorization
     SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
-    SPEX_QR_FACTORIZATION = 2             // QR factorization (FUTURE)
+    SPEX_QR_FACTORIZATION = 2,            // QR factorization (FUTURE)
+    SPEX_LDL_FACTORIZATION = 3            // LDL factorization 
 }
 SPEX_factorization_kind ;
 
@@ -590,7 +596,7 @@ SPEX_factorization_kind ;
 
 typedef struct
 {
-    SPEX_factorization_kind kind;    // LU, Cholesky (or QR in the FUTURE)
+    SPEX_factorization_kind kind;    // LU, Cholesky, LDL (or QR in the FUTURE)
 
     //--------------------------------------------------------------------------
     // The permutations of the matrix that are found during the symbolic
@@ -664,7 +670,7 @@ SPEX_info SPEX_symbolic_analysis_free
 
 typedef struct
 {
-    SPEX_factorization_kind kind;         // LU, Cholesky, QR factorization
+    SPEX_factorization_kind kind;         // LU, Cholesky, LDL, QR factorization
 
     bool updatable;                       // flag to denote if the factorization
                                           // is in the updatable format
@@ -673,7 +679,7 @@ typedef struct
     mpq_t scale_for_A;                    // the scale of the target matrix
 
     //--------------------------------------------------------------------------
-    // These are used for LU or Cholesky factorization, but ignored for QR
+    // These are used for LU, Cholesky or LDL factorization, but ignored for QR
     // factorization.
     //--------------------------------------------------------------------------
 
@@ -688,12 +694,12 @@ typedef struct
 
     //--------------------------------------------------------------------------
     // The permutations of the matrix that are used during the factorization.
-    // These are currently used only for LU or Cholesky factorization.
+    // These are currently used only for LU, Cholesky or LDL factorization.
     // One or more of these permutations could be NULL for some
     // SPEX_factorization_kind. Specifically,
     // For kind == SPEX_LU_FACTORIZATION, Qinv_perm can be NULL
-    // For kind == SPEX_CHOLESKY_FACTORIZATION, both Q_perm and Qinv_perm are
-    // NULL.
+    // For kind == SPEX_CHOLESKY_FACTORIZATION, and SPEX_LDL_FACTORIZATION
+    // both Q_perm and Qinv_perm are NULL.
     //--------------------------------------------------------------------------
 
     int64_t *P_perm;                     // row permutation
@@ -1165,6 +1171,8 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     const SPEX_options option // Command options
 ) ;
 
+// TODO: Double check all comments
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //-------------------------SPEX Cholesky----------------------------------------
@@ -1328,6 +1336,75 @@ SPEX_info SPEX_cholesky_solve
     const SPEX_options option   // command options
 ) ;
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//-----------------------Primary SPEX LDL routines-------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+// TODO add comments
+// TODO backslash, solve
+
+// Perform symbolic analysis
+SPEX_info SPEX_ldl_analyze
+(
+    // Output
+    SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
+    // Input
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_options option   // Command options (Default if NULL)
+) ;
+
+
+// Factorize a given matrix
+SPEX_info SPEX_ldl_factorize
+(
+    // Output
+    SPEX_factorization *F_handle,   // Cholesky factorization struct
+    //Input
+    const SPEX_matrix A,            // Matrix to be factored. Must be SPEX_MPZ
+                                    // and SPEX_CSC
+    const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
+                                    // elimination tree of A, the column
+                                    // pointers of L, and the exact number of
+                                    // nonzeros of L.
+    const SPEX_options option       // command options.
+                                    // Notably, option->chol_type indicates
+                                    // whether CHOL_UP (default) or CHOL_LEFT
+                                    // is used.
+);
+
+// Solve the system
+SPEX_info SPEX_ldl_solve
+(
+    // Output
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: Rational solution (SPEX_MPQ)
+                                // to the system.
+    // input/output:
+    SPEX_factorization F,       // The non-updatable Cholesky factorization.
+                                // Mathematically, F is unchanged.  However, if
+                                // F is updatable on input, it is converted to
+                                // non-updatable.  If F is already
+                                // non-updatable, it is not modified.
+    // input:
+    const SPEX_matrix b,        // Right hand side vector
+    const SPEX_options option   // command options
+) ;
+
+SPEX_info SPEX_ldl_backslash
+(
+    // Output
+    SPEX_matrix *x_handle,      // On input: undefined.
+                                // On output: solution vector(s)
+    // Input
+    SPEX_type type,             // Type of output desired
+                                // Must be SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
+    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_matrix b,        // Right hand side vector(s). Must be
+                                // SPEX_MPZ and SPEX_DENSE
+    const SPEX_options option   // Command options (Default if NULL)
+);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
