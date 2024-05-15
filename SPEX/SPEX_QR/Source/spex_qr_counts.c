@@ -136,7 +136,7 @@ SPEX_info spex_qr_counts
                 }
                 if (jleaf == 2)
                 {
-                    delta[q]-- ;   /* account for overlap in q */
+                    delta[q]-- ;   /* account for overlap in q */ //TODO tcov, when does this happen??
                 }
             }
         }

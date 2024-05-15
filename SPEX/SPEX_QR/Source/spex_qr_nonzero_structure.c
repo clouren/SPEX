@@ -65,14 +65,14 @@ SPEX_info spex_qr_nonzero_structure
     // Output
     SPEX_matrix *R_handle,        // On output: partial R matrix
                                   // On input: undefined
-    SPEX_matrix *Q_handle,        // On output: partial R matrix
+    SPEX_matrix *Q_handle,        // On output: partial Q matrix
                                   // On input: undefined
     // Input
     const SPEX_matrix A,          // Input Matrix
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
-                                  // number of nonzeros in L, the elimination
-                                  // tree, the row/coluimn permutation and its
-                                  // inverse
+                                  // number of nonzeros in R, the column
+                                  // elimination tree, the row/coluimn permutation
+                                  // and its inverse
     const SPEX_options option
 )
 {
@@ -225,8 +225,8 @@ SPEX_info spex_qr_nonzero_structure
     q=0;
     for(p=A->p[col];p<A->p[col+1];p++)
     {
-        col = S->Q_perm[p];
-        SPEX_MPZ_SET(Q->x.mpz[p],A->x.mpz[col]);
+        SPEX_MPZ_SET(Q->x.mpz[q],A->x.mpz[p]);
+        q++;
     }
     //For all other columns the logic is similar to that of the dot product
     for(k=1;k<n;k++) 

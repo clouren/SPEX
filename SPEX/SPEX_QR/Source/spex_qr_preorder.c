@@ -148,7 +148,7 @@ SPEX_info spex_qr_preorder
     if (S->unz > (double) n*n)
     {
         int64_t nnz = ceil(0.5*n*n);
-        S->unz =  nnz;
+        S->unz =  nnz; //TODO unz??
     }
     // If estimate < n, it is possible that the first iteration of triangular
     // solve may fail, so we make sure that the estimate is at least n

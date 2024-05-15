@@ -65,8 +65,7 @@ SPEX_info spex_qr_permute_A
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-/* Purpose: Compute the column elimination tree of A */
-
+/* Purpose: Compute the column elimination tree of ATA */
 SPEX_info spex_qr_etree
 (
     // Output
@@ -113,7 +112,8 @@ SPEX_info spex_qr_nonzero_structure
 );
 
 /* Purpose: Perfmorm one interation of IPGS-QR.
- * Computes one row of R and updates n-j columns of Q (finalizing the j+1th column)*/
+ * Computes one row of R and updates n-j columns of Q (finalizing the j+1th 
+ * column)*/
 SPEX_info spex_qr_ipgs
 (
     //Input/Output
@@ -132,36 +132,16 @@ SPEX_info spex_qr_ipgs
 );
 
 
-SPEX_info spex_qr_back_sub  // performs sparse REF backward substitution
+/* Purpose: Perform sparse REF backward substitution for potenitally rank 
+ * deficient matrices
+ * */
+SPEX_info spex_qr_back_sub
 (
     SPEX_matrix bx,         // right hand side matrix
-    const SPEX_matrix R,   // input upper triangular matrix
+    const SPEX_matrix R,    // input upper triangular matrix
     const int64_t rank,     // rank of right triangular matrix
-    const SPEX_matrix rhos,
-    const SPEX_options option
-);
-
-
-
-//future TODO merge qr transpose and normal utilities transpose
-SPEX_info spex_qr_transpose
-(
-    SPEX_matrix *C_handle,      // C = A'
-    SPEX_matrix A,              // Matrix to be transposed
-    const SPEX_options option   // Command options
-);
-SPEX_info spex_qr_permute_A2
-(
-    //Output
-    SPEX_matrix* PAQ_handle,   // On input: undefined
-                               // On output: contains the permuted matrix
-    //Input
-    const SPEX_matrix A,       // Input matrix
-    const bool numeric,        // True if user wants to permute pattern and
-                               // numbers, false if only pattern
-    const int64_t *Q_perm,     // column permutation
-    const int64_t *P_perm,     // row permutation
-    const SPEX_options option  // Command options (Default if NULL)
+    const SPEX_matrix rhos, // sequence of pivots
+    const SPEX_options option // Command options
 );
 
 #endif

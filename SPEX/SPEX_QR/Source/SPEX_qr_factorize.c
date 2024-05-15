@@ -141,22 +141,19 @@ SPEX_info SPEX_qr_factorize
     //--------------------------------------------------------------------------
     // Perform IPGS to get Q and R
     //--------------------------------------------------------------------------
+    //If the first column is full of numerical zeros
     for (pQ =Q->p[0]; pQ < Q->p[1]; pQ++)
-            {
-               
-                SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
-                if(sgn!=0)
-                {
-                    //printf("k %ld\n",k);
-                    isZeros=false;
-                }
-            }
+    {
+            
+        SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
+        if(sgn!=0)
+        {
+            isZeros=false;
+        }
+    }
+    
     for (k=0;k<n-1;k++)
     {
-        if (k>=21)
-        {
-            //SPEX_matrix_check(F->rhos, option);
-        }
         //when the kth column of Q is all zeros (it is linearly dependent)
         //then the kth row of R is all zeros too and you skip operations on k
         if(isZeros)
@@ -165,44 +162,40 @@ SPEX_info SPEX_qr_factorize
 
             //isZeros=true;
 
-            // row k of R is zeros
+            // row k of R is zeros: the for is not needed because R is init as 0
             /*for (pR =RT->p[k];pR <RT->p[k+1];pR++)
             {
                 SPEX_MPZ_SET_UI(RT->x.mpz[pR],0); 
-            }*/ //I should not need to do this because R is init as zeros
+            }*/
+            
             // Set the kth pivot to be equal to the k-1th pivot for computations
-
-            if(k==0)
+            if(k==0)//TODO why not just set rho[0]=1??
             {
-                SPEX_MPZ_SET_UI(F->rhos->x.mpz[k],1); 
+                SPEX_MPZ_SET_UI(F->rhos->x.mpz[k],1); //rho[0]=1
 
             }else{
                 SPEX_MPZ_SET(F->rhos->x.mpz[k],F->rhos->x.mpz[k-1]);
             }
-            for(i=Q->p[k];i<Q->p[k+1];i++) //erase prev nonzeros
-            {
-                Qk[Q->i[i]]=-1;
-            }
+
             // Finalize Q k+1 (it keeps its previous values)
             for (pQ =Q->p[k+1]; pQ < Q->p[k+2]; pQ++)
             {
                 //History update
-                if(h[pQ]<k)
+                if(h[pQ]<k+1) //TODO +1?? check
                 {
                     SPEX_CHECK(spex_history_update(Q,F->rhos,pQ,k-1,h[pQ],
                                                     h[pQ]-1,0,option));
                 }
-                //else
-                {
-                    h[pQ]=k+1;
-                }
+                
+                h[pQ]=k+1;
+                
                 iQ=Q->i[pQ];
                 Qk[iQ]=pQ;
-
+                
+                //Check for linear dependency
                 SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
                 if(sgn!=0)
                 {
-                    //printf("k %ld\n",k);
                     isZeros=false;
                 }
             }
@@ -222,9 +215,6 @@ SPEX_info SPEX_qr_factorize
             // Integer-preserving Gram-Schmidt
             SPEX_CHECK(spex_qr_ipgs(RT, Q, F->rhos, Qk, h, &isZeros, k, A,
                                      S->Q_perm, option));
-            //option->print_level = 3;
-            //SPEX_matrix_check(Q, option);
-            //SPEX_matrix_check(RT, option);
         }
 
     }
@@ -233,7 +223,6 @@ SPEX_info SPEX_qr_factorize
     // Finalize R (get the last element/pivot)
     if(isZeros)
     {
-        //printf("last isZeros\n");
         ldCols[k]=true;
         rank--;
         SPEX_MPZ_SET_UI(RT->x.mpz[RT->p[n]-1],0); 

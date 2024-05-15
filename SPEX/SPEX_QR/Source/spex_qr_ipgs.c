@@ -98,18 +98,13 @@ SPEX_info spex_qr_ipgs
     //--------------------------------------------------------------------------
     // Compute row j of R, store as column
     //--------------------------------------------------------------------------
-    //start = clock();
     for (pR =R->p[j];pR <R->p[j+1];pR++)
     {
         // Obtain the index of the current nonzero
         i = R->i[pR];//column number where j is row number
         // R(j,i) = Q(:,j) dot AQ(:,i)
         SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, Q_perm[i], option)); 
-        //SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, i, option)); 
     }
-   /* end = clock();
-    times=(double) (end - start) / CLOCKS_PER_SEC;
-    printf("k  %ld timeR %f",j, times);*/
     //rhos stores the diagonal of R (pivots)
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]);
     
@@ -149,10 +144,6 @@ SPEX_info spex_qr_ipgs
             
             // Record changes in history vector
             h[pQ]=j+1;
-            /*if(j+1<=5)
-            {
-                printf("iR %ld iQ %ld pQ %ld h[pQ] %ld\n",i,iQ,pQ,h[pQ]);
-            }*/
         }
     }
      //--------------------------------------------------------------------------
@@ -212,31 +203,8 @@ SPEX_info spex_qr_ipgs
         {
             *isZeros=false;
         }
-
-        //size = mpz_sizeinbase(Q->x.mpz[pQ],10);
-        //printf("%zu, ",size);
     }
 
-    //printf("\n");
-    /*end = clock();
-    times=(double) (end - start) / CLOCKS_PER_SEC;
-    printf(" timeQj+1 %f",times);
-
-    start=clock();*/
-   /* end = clock();
-    times=(double) (end - start) / CLOCKS_PER_SEC;
-    printf(" timeQall %f\n",times);*/
-    
-    // Update the final and col vectors needed for the next iteration
-   /* for(i = Q->p[j]; i < Q->p[j+1]; i++)
-    {
-        Qj[Q->i[i]]=-1;
-    }
-    for(i = Q->p[j+1]; i < Q->p[j+2]; i++)
-    {
-        Qj[Q->i[i]]=final[Q->i[i]];
-    }*/
-    //SPEX_matrix_check(Q, option); 
     //--------------------------------------------------------------------------
     // Free workspace
     //--------------------------------------------------------------------------

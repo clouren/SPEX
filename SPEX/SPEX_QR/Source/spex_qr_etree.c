@@ -28,10 +28,11 @@
 SPEX_info spex_qr_etree
 (
     // Output
-    int64_t **tree_handle,      // On output: contains the elimination tree of A
+    int64_t **tree_handle,      // On output: contains the column elimination 
+                                // tree of A
                                 // On input: undefined.
     // Input
-    const SPEX_matrix A         // Input matrix (must be SPD).
+    const SPEX_matrix A         // Input matrix.
 )
 {
 
@@ -40,7 +41,7 @@ SPEX_info spex_qr_etree
     ASSERT (A != NULL);
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
-    ASSERT(A->n == A->m);
+    ASSERT(A->n <= A->m);
     ASSERT (tree_handle != NULL);
     (*tree_handle) = NULL ;
 

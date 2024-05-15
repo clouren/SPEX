@@ -65,17 +65,10 @@ SPEX_info SPEX_qr_solve
     {
         return SPEX_INCORRECT_INPUT;
     }
-    /*if(F->rank!=b->n) //A is rank deficient
-    {
-        return SPEX_RANK_DEFICIENT;
-    }*/
-    //TODO decide on what the philosophy is
-
 
     SPEX_matrix b_new = NULL, x=NULL;
     int64_t k, p, i,j,qi,qj;
     int64_t rank=F->rank; //when matrix is full rank, rank=n
-    //printf("bm %ld bn %ld \n",b->m,b->n);
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));
@@ -98,14 +91,12 @@ SPEX_info SPEX_qr_solve
     for (k = 0; k < b->n; k++) //if b is a vector this will only be once
     {
         // Compute b[j,k]
-        for(j=0;j<F->Q->n;j++)//for(j=0;j<F->rank;j++)
+        for(j=0;j<F->Q->n;j++)
         {
-            qj =j;// Qinv_perm[j];
-            //printf("qj %ld\n",qj);
+            qj =j;
             for(p=F->Q->p[qj]; p < F->Q->p[qj+1]; p++)
             {
                 i=F->Q->i[p];
-                //printf("j %ld , p %ld, i %ld\n",j,p,i);
                 SPEX_MPZ_ADDMUL(SPEX_2D(b_new, qj, k, mpz),F->Q->x.mpz[p],
                                  SPEX_2D(b, i, k, mpz));
             }
@@ -118,7 +109,6 @@ SPEX_info SPEX_qr_solve
     // backwards substitution
     //--------------------------------------------------------------------------
     //Solves Rx=b_new (overwrites b_new into x)
-    //SPEX_CHECK (spex_left_lu_back_sub(F->R,b_new)); 
     SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank, F->rhos,option));
     //--------------------------------------------------------------------------
     // x = Q*b_new/scale
@@ -149,7 +139,7 @@ SPEX_info SPEX_qr_solve
     //--------------------------------------------------------------------------
     // Return result and free workspace
     //--------------------------------------------------------------------------
-    (*x_handle)=x;//b_new;
+    (*x_handle)=x;
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;
