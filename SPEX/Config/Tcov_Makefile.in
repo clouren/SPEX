@@ -16,17 +16,17 @@ SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 ################################################################################
 
 # configured by CMake:
-INC = @SPEX_INCS@
+INC =   -I/home/clouren/Downloads/SPEX/SPEX/SPEX/Include  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_Backslash/Source  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_Cholesky/Source  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_LU/Source  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_Utilities/Source  -I/home/clouren/Downloads/SPEX/SPEX/SuiteSparse_config  -I/usr/local/include  -I/usr/local/include  -I/home/clouren/Downloads/SPEX/SPEX/AMD/Include  -I/home/clouren/Downloads/SPEX/SPEX/COLAMD/Include  -I/usr/local/include  -I/usr/local/include  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/Demo
 LIBS = ../../SuiteSparse_config/build/libsuitesparseconfig.so \
     ../../AMD/build/libamd.so \
     ../../COLAMD/build/libcolamd.so \
-    @SPEX_LIBS@
+     /usr/local/lib/libmpfr.so.6.1.0 /usr/local/lib/libgmp.so.10.4.1 -lm
 
-SUITESPARSE_CONFIG_PATH = @SUITESPARSE_CONFIG_PATH@
-COLAMD_PATH = @COLAMD_PATH@
-AMD_PATH = @AMD_PATH@
-GMP_PATH = @GMP_PATH@
-MPFR_PATH = @MPFR_PATH@
+SUITESPARSE_CONFIG_PATH = /home/clouren/Downloads/SPEX/SPEX/SuiteSparse_config/build
+COLAMD_PATH = /home/clouren/Downloads/SPEX/SPEX/COLAMD/build
+AMD_PATH = /home/clouren/Downloads/SPEX/SPEX/AMD/build
+GMP_PATH = /usr/local/lib
+MPFR_PATH = /usr/local/lib
 
 ################################################################################
 
@@ -177,7 +177,6 @@ OBJ_Cholesky = \
     spex_cholesky_counts.o \
     spex_cholesky_ereach.o \
     spex_cholesky_etree.o \
-    spex_cholesky_factor.o \
     SPEX_cholesky_factorize.o \
     spex_cholesky_forward_sub.o \
     spex_cholesky_leaf.o \
@@ -189,18 +188,27 @@ OBJ_Cholesky = \
     spex_cholesky_preorder.o \
     SPEX_cholesky_solve.o \
     spex_cholesky_symbolic_analysis.o \
+    spex_cholesky_symmetricbackslash.o \
+    spex_cholesky_symmetricfactor.o \
+    spex_cholesky_symmetricsolve.o \
     spex_cholesky_tdfs.o \
     spex_cholesky_up_factor.o \
-    spex_cholesky_up_triangular_solve.o
+    spex_cholesky_up_triangular_solve.o \
+    SPEX_ldl_analyze.o \
+    SPEX_ldl_factorize.o \
+    SPEX_ldl_solve.o \
 
 $(OBJ_Cholesky): ../Include/SPEX.h
 
-.PRECIOUS: SPEX_cholesky_%.c spex_cholesky_%.c
+.PRECIOUS: SPEX_cholesky_%.c spex_cholesky_%.c SPEX_ldl_%.c
 
 SPEX_cholesky_%.c:
 	- ln -s ../SPEX_Cholesky/Source/$@
 
 spex_cholesky_%.c:
+	- ln -s ../SPEX_Cholesky/Source/$@
+
+SPEX_ldl_%.c:
 	- ln -s ../SPEX_Cholesky/Source/$@
 
 #chol_demos.c:
