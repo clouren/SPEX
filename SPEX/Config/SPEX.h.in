@@ -1171,7 +1171,6 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     const SPEX_options option // Command options
 ) ;
 
-// TODO: Double check all comments
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1184,9 +1183,10 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 // Preserving Cholesky factorizations. This code accompanies the paper (to be
 // submitted to ACM TOMs)
 
-//    "Algorithm 1xxx: Exactly Solving Sparse Symmetric Positive Definite
-//    Linear Systems via SPEX Cholesky factorization," C. Lourenco, L. Mejia
-//    Domenzain, E. Moreno-Centeno, T. Davis, to be submitted ACM TOMS.
+//    "Algorithm 1xxx: SPEX Cholesky and SPEX Backslash for Exactly Solving
+//     Sparse Linear Systems," L. Mejia Domenzain, J. Chen, C. Lourenco, 
+//     E. Moreno-Centeno, T. Davis, submitted to ACM TOMS
+
 
 //     The theory associated with this paper is found at:
 
@@ -1342,10 +1342,39 @@ SPEX_info SPEX_cholesky_solve
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// TODO add comments
-// TODO backslash, solve
+//    This portion of the SPEX library exactly solves a sparse symmetric 
+//    indefinite or negative definite system with nonzero leading principle minors
+//    via an LDL factorization. The approach is very similar to the one for SPEX 
+//    Cholesky and is also described in the paper:
 
-// Perform symbolic analysis
+//    "Algorithm 1xxx: SPEX Cholesky and SPEX Backslash for Exactly Solving
+//     Sparse Linear Systems," L. Mejia Domenzain, J. Chen, C. Lourenco, 
+//     E. Moreno-Centeno, T. Davis, submitted to ACM TOMS
+
+//     The theory associated with this paper is found at:
+
+//    "Exactly Solving Sparse Rational Linear Systems via Roundoff-Error-Free
+//    Cholesky Factorizations", C. Lourenco, E. Moreno-Centeno,
+//    SIAM J. Matrix Analysis and Applications.
+//     pp 609-638, vol 43, no 1, 2022.
+
+//    To use this code you must first download and install the GMP,
+//    MPFR, AMD, and COLAMD libraries. GMP and MPFR can be found at:
+//              https://gmplib.org/
+//              http://www.mpfr.org/
+//
+//   SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Cholesky.
+//   The easiest way ensure these dependencies are met is to only access this
+//   package through the SPEX repository.
+//
+//   All of these codes are components of the SPEX software library. This code
+//   may be found at:
+//              https://github.com/clouren/spex
+//              www.suitesparse.com
+//
+//
+
+// Perform symbolic analysis prior to factorization
 SPEX_info SPEX_ldl_analyze
 (
     // Output
@@ -1356,7 +1385,8 @@ SPEX_info SPEX_ldl_analyze
 ) ;
 
 
-// Factorize a given matrix
+// Factorize a given matrix with SPEX LDL. A must be symmetric
+// with nonzero leading principle minors
 SPEX_info SPEX_ldl_factorize
 (
     // Output
@@ -1374,7 +1404,7 @@ SPEX_info SPEX_ldl_factorize
                                     // is used.
 );
 
-// Solve the system
+// Solve the system after factorization
 SPEX_info SPEX_ldl_solve
 (
     // Output
@@ -1392,6 +1422,7 @@ SPEX_info SPEX_ldl_solve
     const SPEX_options option   // command options
 ) ;
 
+// Solve the system Ax = b via LDL factorization
 SPEX_info SPEX_ldl_backslash
 (
     // Output
@@ -1424,9 +1455,9 @@ SPEX_info SPEX_ldl_backslash
 // may be returned in either this rational form, or in double precision or in
 // arbitrary precision floating point.
 //
-// A must be square. If A is SPD, an exact up-looking Cholesky factorization is
-// applied.  Otherwise, an exact left-looking LU functionality is applied.
-// x and b be can be single vectors, or matrices.
+// A must be square. If A is symmetric with a nonzero diagonal, an exact up-looking
+// LDL factorization is applied.  Otherwise, an exact left-looking LU factorization
+// is applied. x and b be can be single vectors, or matrices.
 
 //------------------------------------------------------------------------------
 // Purpose: Solve Ax = b by analyzing the input matrix and applying the

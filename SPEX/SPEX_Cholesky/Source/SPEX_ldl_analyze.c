@@ -18,7 +18,7 @@
  *
  * Input arguments of the function:
  *
- * S:           Symbolic analysis struct for Cholesky factorization.
+ * S:           Symbolic analysis struct for ldl factorization.
  *              On input it's NULL
  *              On output it contains the row/column permutation, the elimination
  *              tree, and the number of nonzeros in L.
@@ -45,6 +45,7 @@ SPEX_info SPEX_ldl_analyze
     // SPEX_ldl_analyze is identical to SPEX_chol_analyze
     // For simplicity, we just call the chol function
     info = SPEX_cholesky_analyze( S_handle, A, option);
+    (*S_handle)->kind = SPEX_LDL_FACTORIZATION;
     return info;
 }
 

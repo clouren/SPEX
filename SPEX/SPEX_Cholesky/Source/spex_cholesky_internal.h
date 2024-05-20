@@ -19,10 +19,9 @@
 #include "spex_util_internal.h"
 
 // Other TODO prior to resubmission
-// TODO make LDL demo
-// TODO make LDL matlab interface
 // TODO make LDL python interface
 // TODO update cholesky/ldl test coverage
+// TODO double check all comments throughout code in regards to chol vs ldl
 
 // ============================================================================
 //                           Internal Functions
@@ -327,6 +326,14 @@ SPEX_info spex_cholesky_permute_A
                                 // row/column permutations
 ) ;
 
+/* The following four functions are general symmetric analyze, factorize,
+ * solve, and backslash functions for cholesky and ldl. Since the two factorizations
+ * are so similar, differing only by the signs of the pivot elements, 
+ * the internal code is essentially the same for both; thus the guts of the 
+ * arithmetic needed for each factorization is encapsulated in these functions
+ * with a boolean indicating whether a cholesky or ldl factorization is
+ * being performed.
+
 /* Purpose: perform the symbolic analysis for the SPEX Cholesky factorization,
  * that is, computing and postordering the elimination tree, getting the column
  * counts of the SPD matrix A, setting the column pointers and exact number of
@@ -342,13 +349,16 @@ SPEX_info spex_cholesky_symbolic_analysis
     const SPEX_options option  // Command options
 ) ;
 
-// TODO update comment
-/* Purpose: Compute the REF Cholesky factorization A = LDL'
- * only appropriate if A is SPD.
+/* Purpose: Compute a symmetric factorization A = LDL'
+ * Only appropriate if A is symmetric with a nonzero diagonal
+ * F->kind must be SPEX_CHOLESKY_FACTORIZATION or
+ * SPEX_LDL_FACTORIZATION
+ * If F->kind is SPEX_CHOLESKY, A must be SPD, otherwise
+ * an error code is returned.
  * On input A contains the user's matrix, option->algo indicates which
  * factorization algorithm is used; up-looking (default) or left-looking
- * On output, L contains the REF Cholesky factor of A, rhos contains
- * the REF Cholesky pivot elements and S contains the elimination tree
+ * On output, L contains the L factor of A, rhos contains
+ * the pivot elements and S contains the elimination tree
  * lower triangular matrix and rhos contains the pivots' values
  * used in the factorization
  */
@@ -356,7 +366,7 @@ SPEX_info spex_cholesky_symbolic_analysis
 SPEX_info spex_cholesky_symmetricfactor
 (
     // Output
-    SPEX_factorization *F_handle,   // Cholesky factorization
+    SPEX_factorization *F_handle,   // Factorization struct
     //Input
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
@@ -371,7 +381,6 @@ SPEX_info spex_cholesky_symmetricfactor
                                // CHOL_UP (default) or CHOL_LEFT is used.
 ) ;
 
-// TODO update comment
 /* Purpose: solve the system A x = b using the Cholesky or LDL factorization
  */
 SPEX_info spex_cholesky_symmetricsolve
@@ -381,17 +390,16 @@ SPEX_info spex_cholesky_symmetricsolve
                                 // On output: Rational solution (SPEX_MPQ)
                                 // to the system.
     // input/output:
-    SPEX_factorization F,       // The non-updatable Cholesky factorization.
-                                // Mathematically, F is unchanged.  However, if
-                                // F is updatable on input, it is converted to
-                                // non-updatable.  If F is already
-                                // non-updatable, it is not modified.
+    SPEX_factorization F,       // The Cholesky or LDL factorization of A
     // input:
     const SPEX_matrix b,        // Right hand side vector
     bool chol,                  // true if chol, false if ldl
     const SPEX_options option   // command options
 ) ;
 
+/* Purpose: wrapper for the backslash functions, solve Ax = b using
+ * either Cholesky or LDL factorization
+ */
 SPEX_info spex_cholesky_symmetricbackslash
 (
     // Output

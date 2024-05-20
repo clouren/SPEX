@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX/MATLAB/spex_cholesky_mex_soln: Use SPEX Chol within MATLAB
+// SPEX/MATLAB/spex_ldl_mex_soln: Use SPEX ldl within MATLAB
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
@@ -9,8 +9,8 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: The .c file defining the SPEX Chol MATLAB interfacee
- * This function defines: x = spex_cholesky_mex_soln (A, b, option)
+/* Purpose: The .c file defining the SPEX ldl MATLAB interfacee
+ * This function defines: x = spex_ldl_mex_soln (A, b, option)
  */
 
 
@@ -40,7 +40,7 @@ void mexFunction
 
     if (nargout > 1 || nargin < 2 || nargin > 3)
     {
-        spex_mex_error (1, "Usage: x = SPEX_chol_soln (A,b,option)");
+        spex_mex_error (1, "Usage: x = SPEX_ldl_soln (A,b,option)");
     }
 
     //--------------------------------------------------------------------------
@@ -97,16 +97,11 @@ void mexFunction
     }
 
     //--------------------------------------------------------------------------
-    // x = A\b via SPEX_Chol, returning result as SPEX_MPQ
+    // x = A\b via SPEX_ldl, returning result as SPEX_MPQ
     //--------------------------------------------------------------------------
 
     SPEX_matrix x = NULL ;
-    // TODO How do we print out that the matrix is not SPD if this fails in the
-    // matlab interface??
-    // we can always do info = SPEX_chol ...
-    // and then if (info != SPEX_OK), but is there a more elegant way with 
-    // SPEX_MEX_OK?
-    SPEX_MEX_OK (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option));
+    SPEX_MEX_OK (SPEX_ldl_backslash (&x, SPEX_MPQ, A, b, option));
 
     //--------------------------------------------------------------------------
     // print the result, if requested
