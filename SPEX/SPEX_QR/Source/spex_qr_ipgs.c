@@ -102,12 +102,20 @@ SPEX_info spex_qr_ipgs
     {
         // Obtain the index of the current nonzero
         i = R->i[pR];//column number where j is row number
+        if(j==26){
+            printf("%ld\n",i);
+        }
         // R(j,i) = Q(:,j) dot AQ(:,i)
         SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, Q_perm[i], option)); 
     }
     //rhos stores the diagonal of R (pivots)
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]);
-    
+    option->print_level=3;
+    printf("%ld not zero",j);
+    SPEX_matrix_check(rhos, option);
+        if(j==26){
+        SPEX_matrix_check(A, option);
+    }
    
     //--------------------------------------------------------------------------
     // Update columns j+2 to n of Q
@@ -152,7 +160,7 @@ SPEX_info spex_qr_ipgs
     k=j+1;
     if(Q->p[k]== Q->p[k+1])
     {
-
+        printf("missingCol\n");
     }
     //start=clock();
     // Find the necessary element of R
@@ -187,6 +195,7 @@ SPEX_info spex_qr_ipgs
                 SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
             }
             
+            printf("%ld\n",j);
             //IPGE update
             SPEX_CHECK(spex_ipge_update(Q,R,rhos,pQ,pR,j-1,j,prev,option));
         }

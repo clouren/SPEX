@@ -158,6 +158,7 @@ SPEX_info SPEX_qr_factorize
         //then the kth row of R is all zeros too and you skip operations on k
         if(isZeros)
         {
+            printf("ere %ld\n",k);
             ldCols[k]=true;//kth pivot of R is zeros, kth column of Q is ld
 
             //isZeros=true;
@@ -196,17 +197,21 @@ SPEX_info SPEX_qr_factorize
                 SPEX_MPZ_SGN(&sgn, Q->x.mpz[pQ]);
                 if(sgn!=0)
                 {
+                    if(k==25)
+                    {
+                        printf("25not ld pQ %ld iQ %ld\n",pQ,iQ);
+                    }
                     isZeros=false;
                 }
             }
             // Update the history vector
-            for(i = pQ; i < Q->nz; i++)
+            /*for(i = pQ; i < Q->nz; i++)
             {
                 if(h[i]==k)
                 {
                     h[i]=k+1;
                 }
-            }
+            }*/
 
             rank--;
         }
