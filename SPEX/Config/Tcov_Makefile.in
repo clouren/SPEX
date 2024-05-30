@@ -200,14 +200,14 @@ OBJ_Cholesky = \
     SPEX_ldl_factorize.o \
     SPEX_ldl_solve.o \
 
-$(OBJ_Cholesky): ../Include/SPEX.h
+$(OBJ_Cholesky): ../Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
 
 .PRECIOUS: SPEX_cholesky_%.c spex_symmetric_%.c SPEX_ldl_%.c
 
 SPEX_cholesky_%.c:
 	- ln -s ../SPEX_Cholesky/Source/$@
 
-spex_cholesky_%.c:
+spex_symmetric_%.c:
 	- ln -s ../SPEX_Cholesky/Source/$@
 
 SPEX_ldl_%.c:
