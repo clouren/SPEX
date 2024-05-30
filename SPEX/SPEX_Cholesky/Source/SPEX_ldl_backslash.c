@@ -48,11 +48,11 @@ SPEX_info SPEX_ldl_backslash
     const SPEX_options option   // Command options (Default if NULL)
 )
 {
-    // The work is done in the spex_cholesky_symmetricbackslash code
+    // The work is done in the spex_symmetric_backslash code
     // All we have to do is wrap it with chol = false
     SPEX_info info;
     
-    info = spex_cholesky_symmetricbackslash(x_handle, type, A, b, false, option);
+    info = spex_symmetric_backslash(x_handle, type, A, b, false, option);
     
     return info;
 }

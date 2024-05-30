@@ -48,7 +48,7 @@ SPEX_info SPEX_ldl_solve
     // Just need to call the symmetric solve with chol = false
     SPEX_info info;
     
-    info = spex_cholesky_symmetricsolve(x_handle, F, b, false, option);
+    info = spex_symmetric_solve(x_handle, F, b, false, option);
     
     return info;
 }

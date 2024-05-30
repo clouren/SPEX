@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_symmetricbackslash: solve Ax=b
+// SPEX_Cholesky/spex_symmetric_backslash: solve Ax=b
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -47,7 +47,7 @@
 
 #include "spex_cholesky_internal.h"
 
-SPEX_info spex_cholesky_symmetricbackslash
+SPEX_info spex_symmetric_backslash
 (
     // Output
     SPEX_matrix *x_handle,      // On input: undefined.
@@ -123,20 +123,20 @@ SPEX_info spex_cholesky_symmetricbackslash
     // Preorder: obtain the row/column ordering of A (Default is AMD)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_cholesky_preorder(&S, A, option) );
+    SPEX_CHECK( spex_symmetric_preorder(&S, A, option) );
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the row/column ordering from the
     // symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_cholesky_permute_A(&PAP, A, true, S) );
+    SPEX_CHECK( spex_symmetric_permute_A(&PAP, A, true, S) );
 
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the elimination tree of PAP
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_cholesky_symbolic_analysis(S, PAP, option) );
+    SPEX_CHECK( spex_symmetric_symbolic_analysis(S, PAP, option) );
 
     //--------------------------------------------------------------------------
     // Factorization: Perform the factorization of PAP.
@@ -144,7 +144,7 @@ SPEX_info spex_cholesky_symmetricbackslash
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_cholesky_symmetricfactor(&F, S, PAP, chol, option) );
+    SPEX_CHECK( spex_symmetric_factor(&F, S, PAP, chol, option) );
 
     //--------------------------------------------------------------------------
     // Solve: Solve Ax = b using the factorization. That is,
@@ -153,7 +153,7 @@ SPEX_info spex_cholesky_symmetricbackslash
     // Ax = b stored as a set of numerators and denominators (mpq_t)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_cholesky_symmetricsolve(&x, F, b, chol, option) );
+    SPEX_CHECK( spex_symmetric_solve(&x, F, b, chol, option) );
 
     //--------------------------------------------------------------------------
     // At this point x is stored as mpq_t. If the user desires the output

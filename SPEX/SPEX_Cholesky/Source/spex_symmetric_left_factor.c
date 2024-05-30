@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_up_factor: Up-looking REF Cholesky factorization
+// SPEX_Cholesky/spex_symmetric_left_factor: Left-looking REF Chol. factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -26,10 +26,10 @@
 
 #include "spex_cholesky_internal.h"
 
-/* Purpose: This function performs the up-looking REF Cholesky factorization.
+/* Purpose: This function performs the left-looking REF Cholesky factorization.
  * In order to compute the L matrix, it performs n iterations of a sparse REF
  * symmetric triangular solve function which, at each iteration, computes the
- * kth row of L.
+ * kth column of L.
  *
  * Importantly, this function assumes that A has already been permuted.
  *
@@ -49,18 +49,18 @@
  *
  * A:           The user's permuted input matrix
  * 
- * chol:        True if we are performing a cholesky factorization
- *              and false if we are performing an LDL factorization
+ * chol:        True if we are performing a cholesky factorization and
+ *              false if we are performing an LDL factorization
  *
  * option:      Command options
  *
  */
 
-SPEX_info spex_cholesky_up_factor
+SPEX_info spex_symmetric_left_factor
 (
     // Output
-    SPEX_matrix* L_handle,     // Lower triangular matrix. NULL on input.
-    SPEX_matrix* rhos_handle,  // Sequence of pivots. NULL on input.
+    SPEX_matrix *L_handle,    // Lower triangular matrix. NULL on input.
+    SPEX_matrix *rhos_handle, // Sequence of pivots. NULL on input.
     // Input
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
@@ -75,7 +75,7 @@ SPEX_info spex_cholesky_up_factor
 {
 
     //--------------------------------------------------------------------------
-    // check inputs
+    // Check inputs
     //--------------------------------------------------------------------------
 
     SPEX_info info;
@@ -95,34 +95,32 @@ SPEX_info spex_cholesky_up_factor
     SPEX_matrix rhos = NULL ;
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
+    int64_t *c;
     SPEX_matrix x = NULL ;
-    int64_t *c = NULL;
 
     // Declare variables
-    int64_t n = A->n, i, j, jnew, k;
-    int64_t top = n ;
-    int sgn, prev_sgn;
+    int64_t n = A->n, top, i, j, lnz = 0, jnew, k;
+    int sgn;
     size_t size;
 
-    c = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
+    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
 
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
     // vector which is repeatedly passed into the triangular
     // solve algorithm
-    h = (int64_t*) SPEX_malloc(n*sizeof(int64_t));
+    h = (int64_t*) SPEX_malloc(n* sizeof(int64_t));
 
     // xi serves as a global nonzero pattern vector. It stores
     // the pattern of nonzeros of the kth column of L
     // for the triangular solve.
-    xi = (int64_t*) SPEX_malloc(2*n*sizeof(int64_t));
+    xi = (int64_t*) SPEX_malloc(2*n* sizeof(int64_t));
 
     if (!h || !xi || !c)
     {
         SPEX_FREE_WORKSPACE;
         return SPEX_OUT_OF_MEMORY;
     }
-
     // initialize workspace history array
     for (i = 0; i < n; i++)
     {
@@ -154,20 +152,21 @@ SPEX_info spex_cholesky_up_factor
     // used as workspace re-used at each iteration). The second boolean
     // parameter is set to false, indicating that the size of each mpz entry
     // will be initialized afterwards (and should not be initialized with the
-    // default size)
+    // default size).
     SPEX_CHECK (SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, /* do not initialize the entries of x: */ false, option));
 
     // Create rhos, a "global" dense mpz_t matrix of dimension n*1.
-    // As indicated with the second boolean parameter true, the mpz entries in
+    // As inidicated with the second boolean parameter true, the mpz entries in
     // rhos are initialized to the default size (unlike x).
+
     SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
         false, true, option));
 
     // initialize the entries of x
     for (i = 0; i < n; i++)
     {
-        // Allocate memory for entries of x to be estimate bits
+        // Allocate memory for entries of x
         SPEX_MPZ_INIT2(x->x.mpz[i], estimate);
     }
 
@@ -175,40 +174,36 @@ SPEX_info spex_cholesky_up_factor
     // Declare memory for L
     //--------------------------------------------------------------------------
 
-    // Since we are performing an up-looking factorization, we allocate
-    // L without initializing each entry.
-    // Note that, the inidividual (x) values of L are not allocated. Instead,
+    // Since we are performing a left-looking factorization, we pre-allocate L
+    // by performing a symbolic version of the factorization and obtaining the
+    // exact nonzero pattern of L.
+    // That said, the individual (x) values of L are not allocated. Instead,
     // a more efficient method to allocate these values is done inside the
     // factorization to reduce memory usage.
 
-    SPEX_CHECK(SPEX_matrix_allocate(&(L), SPEX_CSC, SPEX_MPZ, n, n, S->lnz,
-                                    false, false, option));
+    SPEX_CHECK(spex_symmetric_pre_left_factor(&(L), xi, A, S));
 
     // Set the column pointers of L
     for (k = 0; k < n; k++)
     {
-        L->p[k] = c[k] = S->cp[k];
+        L->p[k] = c[k] = (S->cp)[k];
     }
 
     //--------------------------------------------------------------------------
-    // Perform the up-looking factorization
+    // Perform the factorization
     //--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
     // Iterations 0:n-1 (1:n in standard)
     //--------------------------------------------------------------------------
-    SPEX_MPZ_SGN(&prev_sgn, x->x.mpz[0]);
-
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_cholesky_up_triangular_solve(&top, xi, x, L, A, k,
-            S->parent, c, rhos, h));
+        SPEX_CHECK(spex_symmetric_left_triangular_solve(&top, x, xi, L, A, k,
+            rhos, h, S->parent, c));
 
-        // Check if the diagonal is nonzero. If it is nonzero and > 0
-        // we can proceed with cholesky factorization. If it is nonzero
-        // we can proceed with an LDL factorization. If it is zero 
-        // we must stop
+        // Set the pivot element If this element is less than or equal to zero, 
+        // either no pivot element exists or the matrix is not SPD.
         SPEX_MPZ_SGN(&sgn, x->x.mpz[k]);
         // If we're attempting a cholesky factorization the diagonal must be 
         // > 0
@@ -240,47 +235,35 @@ SPEX_info spex_cholesky_up_factor
                 return SPEX_ZERODIAG;
             }
         }
-        
         //----------------------------------------------------------------------
-        // Add the nonzeros (i.e. x) to L
+        // Add the nonzeros to the L matrix
         //----------------------------------------------------------------------
-        int64_t p = 0;
         for (j = top; j < n; j++)
         {
-            // Obtain the row index of x[j]
+            // Index of x[i]
             jnew = xi[j];
-            if (jnew == k) continue;
+            if (jnew >= k)
+            {
+                // Find the size of x[j]
+                size = mpz_sizeinbase(x->x.mpz[jnew],2);
 
-            // Determine the column where x[j] belongs to
-            p = c[jnew]++;
+                // GMP manual: Allocated size should be size+2
+                SPEX_MPZ_INIT2(L->x.mpz[lnz], size+2);
 
-            // Place the i index of this nonzero. Should always be k because at
-            // iteration k, the up-looking algorithm computes row k of L
-            L->i[p] = k;
+                // Place the x value of this nonzero in row jnew of L
+                SPEX_MPZ_SET(L->x.mpz[lnz],x->x.mpz[jnew]);
 
-            // Find the number of bits of x[j]
-            size = mpz_sizeinbase(x->x.mpz[jnew],2);
-
-            // GMP manual: Allocated size should be size+2
-            SPEX_MPZ_INIT2(L->x.mpz[p], size+2);
-
-            // Place the x value of this nonzero
-            SPEX_MPZ_SET(L->x.mpz[p],x->x.mpz[jnew]);
+                // Increment lnz
+                lnz += 1;
+            }
         }
-        // Now, place L(k,k)
-        p = c[k]++;
-        L->i[p] = k;
-        size = mpz_sizeinbase(x->x.mpz[k], 2);
-        SPEX_MPZ_INIT2(L->x.mpz[p], size+2);
-        SPEX_MPZ_SET(L->x.mpz[p], x->x.mpz[k]);
     }
     // Finalize L->p
     L->p[n] = S->lnz;
 
     //--------------------------------------------------------------------------
-    // Free memory and set output
+    // Free memory
     //--------------------------------------------------------------------------
-
     (*L_handle) = L;
     (*rhos_handle) = rhos;
     SPEX_FREE_WORKSPACE;

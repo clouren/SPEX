@@ -92,7 +92,7 @@ SPEX_info SPEX_cholesky_factorize
     // the symbolic analysis step to get the permuted matrix PAP.
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_cholesky_permute_A(&PAP, A, true, S));
+    SPEX_CHECK(spex_symmetric_permute_A(&PAP, A, true, S));
 
     //--------------------------------------------------------------------------
     // Factorization: Perform the REF Cholesky factorization of
@@ -100,7 +100,7 @@ SPEX_info SPEX_cholesky_factorize
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_cholesky_symmetricfactor(&F, S, PAP, true, option));
+    SPEX_CHECK(spex_symmetric_factor(&F, S, PAP, true, option));
 
     //--------------------------------------------------------------------------
     // Set F_handle = F, free all workspace and return success

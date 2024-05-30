@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_symmetricsolve: Solve the system after factorization
+// SPEX_Cholesky/spex_symmetric_solve: Solve the system after factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -41,7 +41,7 @@
  * option:          Command options *
  */
 
-SPEX_info spex_cholesky_symmetricsolve
+SPEX_info spex_symmetric_solve
 (
     // Output
     SPEX_matrix *x_handle,      // On input: undefined.
@@ -106,7 +106,7 @@ SPEX_info spex_cholesky_symmetricsolve
     // Forward substitution, b2 = L \ b2. Note that b2 is overwritten
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_cholesky_forward_sub(b2, F->L, F->rhos));
+    SPEX_CHECK(spex_symmetric_forward_sub(b2, F->L, F->rhos));
 
     //--------------------------------------------------------------------------
     // Apply the determinant to b2, b2 = det*b2
@@ -123,7 +123,7 @@ SPEX_info spex_cholesky_symmetricsolve
     // Backsolve, b2 = L' \ b2. Note that, again, b2 is overwritten
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK(spex_cholesky_backward_sub(b2, F->L));
+    SPEX_CHECK(spex_symmetric_backward_sub(b2, F->L));
 
     //--------------------------------------------------------------------------
     // get real solution x by applying both permutation and scale

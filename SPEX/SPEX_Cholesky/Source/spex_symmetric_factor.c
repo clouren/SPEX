@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_symmetricfactor: Wrapper for Cholesky/LDL factorization
+// SPEX_Cholesky/spex_symmetric_factor: Wrapper for Cholesky/LDL factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -49,7 +49,7 @@
  *              factorization (SPEX_CHOL_UP) (default)
  */
 
-SPEX_info spex_cholesky_symmetricfactor
+SPEX_info spex_symmetric_factor
 (
     // Output
     SPEX_factorization *F_handle,   // Cholesky factorization
@@ -133,11 +133,11 @@ SPEX_info spex_cholesky_symmetricfactor
         case SPEX_ALGORITHM_DEFAULT:
             // fall through to up-looking Cholesky (the default)
         case SPEX_CHOL_UP:
-            SPEX_CHECK( spex_cholesky_up_factor(&(F->L), &(F->rhos), S, A, chol,
+            SPEX_CHECK( spex_symmetric_up_factor(&(F->L), &(F->rhos), S, A, chol,
                 option));
             break;
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK( spex_cholesky_left_factor(&(F->L), &(F->rhos), S, A, chol,
+            SPEX_CHECK( spex_symmetric_left_factor(&(F->L), &(F->rhos), S, A, chol,
                 option) );
             break;
         default:
