@@ -13,22 +13,24 @@ default: cov
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 
+
 ################################################################################
 
 # configured by CMake:
-INC =   -I/home/clouren/Downloads/SPEX/SPEX/SPEX/Include  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_Backslash/Source  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_Cholesky/Source  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_LU/Source  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/SPEX_Utilities/Source  -I/home/clouren/Downloads/SPEX/SPEX/SuiteSparse_config  -I/usr/local/include  -I/usr/local/include  -I/home/clouren/Downloads/SPEX/SPEX/AMD/Include  -I/home/clouren/Downloads/SPEX/SPEX/COLAMD/Include  -I/usr/local/include  -I/usr/local/include  -I/home/clouren/Downloads/SPEX/SPEX/SPEX/Demo
+INC = @SPEX_INCS@
 LIBS = ../../SuiteSparse_config/build/libsuitesparseconfig.so \
     ../../AMD/build/libamd.so \
     ../../COLAMD/build/libcolamd.so \
-     /usr/local/lib/libmpfr.so.6.1.0 /usr/local/lib/libgmp.so.10.4.1 -lm
+    @SPEX_LIBS@
 
-SUITESPARSE_CONFIG_PATH = /home/clouren/Downloads/SPEX/SPEX/SuiteSparse_config/build
-COLAMD_PATH = /home/clouren/Downloads/SPEX/SPEX/COLAMD/build
-AMD_PATH = /home/clouren/Downloads/SPEX/SPEX/AMD/build
-GMP_PATH = /usr/local/lib
-MPFR_PATH = /usr/local/lib
+SUITESPARSE_CONFIG_PATH = @SUITESPARSE_CONFIG_PATH@
+COLAMD_PATH = @COLAMD_PATH@
+AMD_PATH = @AMD_PATH@
+GMP_PATH = @GMP_PATH@
+MPFR_PATH = @MPFR_PATH@
 
 ################################################################################
+
 
     # use 8 jobs by default
     JOBS ?= 8
