@@ -199,6 +199,7 @@ OBJ_Cholesky = \
     SPEX_ldl_analyze.o \
     SPEX_ldl_factorize.o \
     SPEX_ldl_solve.o \
+    SPEX_ldl_backslash.o \
 
 $(OBJ_Cholesky): ../Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
 

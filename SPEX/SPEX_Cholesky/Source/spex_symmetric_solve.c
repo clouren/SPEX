@@ -62,27 +62,7 @@ SPEX_info spex_symmetric_solve
 
     SPEX_info info;
 
-    // Ensure SPEX is initialized
-    if (!spex_initialized())
-    {
-        return SPEX_PANIC;
-    }
-
-    // Check the inputs
-    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-    
-    if (chol && F->kind != SPEX_CHOLESKY_FACTORIZATION)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-    
-    if (!chol && F->kind != SPEX_LDL_FACTORIZATION)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
+    SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);
 
     // det is the determinant of the PAP matrix. It is obtained for free
     // from the SPEX Cholesky factorization det = rhos[n-1] = L[n,n]

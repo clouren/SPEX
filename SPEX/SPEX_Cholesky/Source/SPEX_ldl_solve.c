@@ -48,6 +48,23 @@ SPEX_info SPEX_ldl_solve
     // Just need to call the symmetric solve with chol = false
     SPEX_info info;
     
+        // Ensure SPEX is initialized
+    if (!spex_initialized())
+    {
+        return SPEX_PANIC;
+    }
+
+    // Check the inputs
+    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+
+    if (F->kind != SPEX_LDL_FACTORIZATION)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+
     info = spex_symmetric_solve(x_handle, F, b, false, option);
     
     return info;
