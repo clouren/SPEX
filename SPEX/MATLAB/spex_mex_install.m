@@ -4,8 +4,9 @@ function spex_mex_install(run_demo)
 % Usage: spex_mex_install
 %
 % Required Libraries: GMP, MPFR, AMD, COLAMD, SuiteSparse_config, SPEX.  If
-% -lamd, -lcolamd, and -lsuitesparseconfig are not available, install them with
-% 'make install' first, in the top-level SuiteSparse folder.
+% -lamd, -lcolamd, and -lsuitesparseconfig are not available, install them
+% first, with cmake, or 'make install', in the top-level SuiteSparse folder.
+% Use 'make local ; make install' if you do not have system admin privileges.
 %
 % You may need to add the top-level lib folder (SPEX/lib, or SuiteSparse/lib
 % if SPEX is inside SuiteSparse) to your LD_LIBRARY_PATH (DYLD_LIBRARY_PATH
@@ -81,14 +82,6 @@ end
 if (ismac)
     flags = [flags ' -DCLANG_NEEDS_MAIN'] ;
 end
-
-% libraries:
-if (isempty (suitesparse_libdir))
-    suitesparse_libdir = ' ' ;
-else
-    suitesparse_libdir = [' -L' suitesparse_libdir ' '] ;
-end
-libs = [suitesparse_libdir ' -lamd -lcolamd -lsuitesparseconfig ' gmp_lib ' ' mpfr_lib ' -lm'] ;
 
 % libraries:
 if (isempty (suitesparse_libdir))
