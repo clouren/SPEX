@@ -263,7 +263,6 @@ SPEX_preorder ;
 //------------------------------------------------------------------------------
 
 // A code in SPEX_options to tell SPEX which factorization algorithm to use
-// TODO Should we add LDL_LEFT and LDL_UP?
 
 typedef enum
 {
@@ -271,7 +270,9 @@ typedef enum
                          // Up for Chol
     SPEX_LU_LEFT = 1,    // Left looking LU factorization
     SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
-    SPEX_CHOL_UP = 3     // Up looking Cholesky factorization
+    SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
+    SPEX_LDL_LEFT = 4,   // Left looking LDL factorization
+    SPEX_LDL_UP = 5      // Up looking LDL factorization
 }
 SPEX_factorization_algorithm ;
 
@@ -571,13 +572,12 @@ SPEX_info SPEX_matrix_copy
 // SPEX symbolic analysis and factorization
 //------------------------------------------------------------------------------
 
-// TODO Should we change LDL to 2 and QR to 3?
 typedef enum
 {
     SPEX_LU_FACTORIZATION = 0,            // LU factorization
     SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
-    SPEX_QR_FACTORIZATION = 2,            // QR factorization (FUTURE)
-    SPEX_LDL_FACTORIZATION = 3            // LDL factorization 
+    SPEX_LDL_FACTORIZATION = 2,           // LDL factorization 
+    SPEX_QR_FACTORIZATION = 3             // QR factorization (FUTURE)    
 }
 SPEX_factorization_kind ;
 

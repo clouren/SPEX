@@ -311,9 +311,9 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for symmetric matrix with zero in diagonal\n");
     read_test_matrix (&A, "../ExampleMats/test4.mat.txt");
     create_test_rhs (&b, A->n);
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_LDL_UP ;
     ERR (SPEX_ldl_backslash (&x, SPEX_MPQ, A, b, option), SPEX_ZERODIAG);
-    option->algo = SPEX_CHOL_LEFT ;
+    option->algo = SPEX_LDL_LEFT ;
     ERR (SPEX_ldl_backslash (&x, SPEX_MPQ, A, b, option), SPEX_ZERODIAG);
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
@@ -640,14 +640,14 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     option->order = SPEX_AMD ;
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_LDL_UP ;
     option->print_level = 3 ;
     printf ("LDL backslash, up-looking, no malloc testing:\n");
     OK (spex_test_ldl_backslash (A, b, option));
     option->print_level = 0 ;
 
     printf ("LDL backslash, left-looking with malloc testing:\n");
-    option->algo = SPEX_CHOL_LEFT ;
+    option->algo = SPEX_LDL_LEFT ;
     BRUTAL (spex_test_ldl_backslash (A, b, option));
 
     //--------------------------------------------------------------------------

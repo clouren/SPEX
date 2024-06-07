@@ -140,8 +140,9 @@ SPEX_info spex_symmetric_backslash
 
     //--------------------------------------------------------------------------
     // Factorization: Perform the factorization of PAP.
-    // By default, up-looking Cholesky factorization is done; however,
+    // By default, up-looking Cholesky/LDL factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
+    // or SPEX_LDL_LEFT
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_symmetric_factor(&F, S, PAP, chol, option) );

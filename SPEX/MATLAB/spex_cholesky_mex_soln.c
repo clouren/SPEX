@@ -101,11 +101,6 @@ void mexFunction
     //--------------------------------------------------------------------------
 
     SPEX_matrix x = NULL ;
-    // TODO How do we print out that the matrix is not SPD if this fails in the
-    // matlab interface??
-    // we can always do info = SPEX_chol ...
-    // and then if (info != SPEX_OK), but is there a more elegant way with 
-    // SPEX_MEX_OK?
     SPEX_MEX_OK (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option));
 
     //--------------------------------------------------------------------------

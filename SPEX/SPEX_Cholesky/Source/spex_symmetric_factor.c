@@ -63,8 +63,9 @@ SPEX_info spex_symmetric_factor
                                // If false, we try a general LDL factorization with 
                                // the pivot element strictly != 0
     const SPEX_options option  // Command options
-                               // Notably, option->chol_type indicates whether
-                               // CHOL_UP (default) or CHOL_LEFT is used.
+                               // Notably, option->algo indicates whether
+                               // CHOL_UP (default), CHOL_LEFT is used,
+                               // LDL_UP, or LDL_LEFT is used
 )
 {
 
@@ -139,6 +140,14 @@ SPEX_info spex_symmetric_factor
         case SPEX_CHOL_LEFT:
             SPEX_CHECK( spex_symmetric_left_factor(&(F->L), &(F->rhos), S, A, chol,
                 option) );
+            break;
+        case SPEX_LDL_UP:
+            SPEX_CHECK( spex_symmetric_up_factor(&(F->L), &(F->rhos), S, A, chol,
+                option));
+            break;
+        case SPEX_LDL_LEFT:
+            SPEX_CHECK( spex_symmetric_left_factor(&(F->L), &(F->rhos), S, A, chol,
+                option));
             break;
         default:
             SPEX_FREE_ALL;

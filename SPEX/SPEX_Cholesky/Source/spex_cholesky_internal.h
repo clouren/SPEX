@@ -19,8 +19,6 @@
 #include "spex_util_internal.h"
 
 // Other TODO prior to resubmission
-// TODO make LDL python interface
-// TODO update cholesky/ldl test coverage
 // TODO double check all comments throughout code in regards to chol vs ldl
 
 // ============================================================================
@@ -333,6 +331,7 @@ SPEX_info spex_symmetric_permute_A
  * arithmetic needed for each factorization is encapsulated in these functions
  * with a boolean indicating whether a cholesky or ldl factorization is
  * being performed.
+ */
 
 /* Purpose: perform the symbolic analysis for the SPEX Cholesky factorization,
  * that is, computing and postordering the elimination tree, getting the column
@@ -363,7 +362,7 @@ SPEX_info spex_symmetric_symbolic_analysis
  * used in the factorization
  */
 
-SPEX_info spex_symmetric_symmetricfactor
+SPEX_info spex_symmetric_factor
 (
     // Output
     SPEX_factorization *F_handle,   // Factorization struct
@@ -383,7 +382,7 @@ SPEX_info spex_symmetric_symmetricfactor
 
 /* Purpose: solve the system A x = b using the Cholesky or LDL factorization
  */
-SPEX_info spex_symmetric_symmetricsolve
+SPEX_info spex_symmetric_solve
 (
     // Output
     SPEX_matrix *x_handle,      // On input: undefined.
@@ -400,7 +399,7 @@ SPEX_info spex_symmetric_symmetricsolve
 /* Purpose: wrapper for the backslash functions, solve Ax = b using
  * either Cholesky or LDL factorization
  */
-SPEX_info spex_symmetric_symmetricbackslash
+SPEX_info spex_symmetric_backslash
 (
     // Output
     SPEX_matrix *x_handle,      // On input: undefined.

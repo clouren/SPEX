@@ -30,8 +30,8 @@
  *
  * option:      Command options. Default if NULL. Notably, option->chol_type
  *              indicates whether it is performing the default up-looking
- *              factorization (SPEX_CHOL_UP) or the left-looking factorization
- *              (SPEX_CHOL_LEFT).
+ *              factorization (SPEX_LDL_UP) or the left-looking factorization
+ *              (SPEX_LDL_LEFT).
  */
 
 #define SPEX_FREE_WORKSPACE             \
@@ -94,7 +94,7 @@ SPEX_info SPEX_ldl_factorize
     //--------------------------------------------------------------------------
     // Factorization: Perform the REF LDL factorization of
     // A. By default, up-looking factorization is done; however,
-    // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
+    // the left looking factorization is done if option->algo=SPEX_LDL_LEFT
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_symmetric_factor(&F, S, PAP, false, option));
