@@ -106,10 +106,10 @@
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_DATE "Mar 22, 2024"
-#define SPEX_VERSION_STRING "3.1.0"
+#define SPEX_DATE "June XX, 2024"
+#define SPEX_VERSION_STRING "3.2.0"
 #define SPEX_VERSION_MAJOR 3
-#define SPEX_VERSION_MINOR 1
+#define SPEX_VERSION_MINOR 2
 #define SPEX_VERSION_SUB   0
 
 #define SPEX_VERSION_NUMBER(major,minor,sub) \
@@ -119,10 +119,10 @@
                          SPEX_VERSION_MINOR, \
                          SPEX_VERSION_SUB)
 
-#define SPEX__VERSION SUITESPARSE__VERCODE(3,1,0)
+#define SPEX__VERSION SUITESPARSE__VERCODE(3,2,0)
 #if !defined (SUITESPARSE__VERSION) || \
-    (SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,7,0))
-#error "SPEX 3.1.0 requires SuiteSparse_config 7.7.0 or later"
+    (SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,8,0))
+#error "SPEX 3.2.0 requires SuiteSparse_config 7.8.0 or later"
 #endif
 
 #if defined ( __cplusplus )

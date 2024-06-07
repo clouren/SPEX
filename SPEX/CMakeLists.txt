@@ -13,9 +13,9 @@
 
 cmake_minimum_required ( VERSION 3.22 )
 
-set ( SPEX_DATE "Mar 22, 2024" )
+set ( SPEX_DATE "June XX, 2024" )    # FIXME NOW
 set ( SPEX_VERSION_MAJOR 3 CACHE STRING "" FORCE )
-set ( SPEX_VERSION_MINOR 1 CACHE STRING "" FORCE )
+set ( SPEX_VERSION_MINOR 2 CACHE STRING "" FORCE )
 set ( SPEX_VERSION_SUB   0 CACHE STRING "" FORCE )
 
 message ( STATUS "Building SPEX version: v"
@@ -408,10 +408,34 @@ if ( NOT MSVC )
 endif ( )
 
 #-------------------------------------------------------------------------------
-# python interface
+# Python interface
 #-------------------------------------------------------------------------------
 
+# The Python interface is built by default.  It can be disabled with
+# SPEX_USE_PYTHON (for just SPEX) or SUITESPARSE_USE_PYTHON (for all of
+# SuiteSparse).  Currently, only SPEX has a Python interface in SuiteSparse.
+
 if ( BUILD_SHARED_LIBS )
+    set ( _spex_use_python_default ${SUITESPARSE_USE_PYTHON} )
+else ( )
+    set ( _spex_use_python_default OFF )
+endif ( )
+
+option ( SPEX_USE_PYTHON "ON (default if building shared libraries): build Python interface for SPEX.  OFF (default if not building shared libraries): do not build Python interface for SPEX" ${_spex_use_python_default} )
+
+if ( SPEX_USE_PYTHON AND BUILD_SHARED_LIBS )
+    set ( SPEX_HAS_PYTHON ON )
+else ( )
+    set ( SPEX_HAS_PYTHON OFF )
+endif ( )
+message ( STATUS "SPEX with Python interface: ${SPEX_HAS_PYTHON}" )
+
+# check for strict usage
+if ( SUITESPARSE_USE_STRICT AND SPEX_USE_PYTHON AND NOT SPEX_HAS_PYTHON )
+    message ( FATAL_ERROR "Python interface for SPEX requires building shared libraries" )
+endif ( )
+
+if ( SPEX_HAS_PYTHON )
 
     file ( GLOB SPEX_PYTHON_SOURCES "Python/SPEXpy/Source/*.c" )
     add_library ( spexpython SHARED ${SPEX_PYTHON_SOURCES} )
@@ -421,7 +445,8 @@ if ( BUILD_SHARED_LIBS )
         C_STANDARD 11
         C_STANDARD_REQUIRED ON
         SOVERSION ${SPEX_VERSION_MAJOR}
-        PUBLIC_HEADER "Python/SPEXpy/Source/spex_python_connect.h" )
+        PUBLIC_HEADER "Python/SPEXpy/Source/spex_python_connect.h"
+        WINDOWS_EXPORT_ALL_SYMBOLS ON )
 
     # MPFR:
     target_link_libraries ( spexpython PRIVATE ${MPFR_LIBRARIES} )
@@ -439,6 +464,7 @@ if ( BUILD_SHARED_LIBS )
         ARCHIVE DESTINATION ${SUITESPARSE_LIBDIR}
         RUNTIME DESTINATION ${SUITESPARSE_BINDIR}
         PUBLIC_HEADER DESTINATION ${SUITESPARSE_INCLUDEDIR} )
+
 endif ( )
 
 #-------------------------------------------------------------------------------
@@ -496,7 +522,7 @@ if ( SUITESPARSE_DEMOS )
         target_link_libraries ( spex_demo_threaded          PUBLIC SPEX_static SuiteSparse::AMD_static SuiteSparse::COLAMD_static )
     endif ( )
 
-    if ( SPEX_USE_OPENMP )
+    if ( SPEX_HAS_OPENMP )
         if ( BUILD_SHARED_LIBS )
             target_link_libraries ( spex_demo_threaded PUBLIC OpenMP::OpenMP_C )
         endif ( )
