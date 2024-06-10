@@ -95,6 +95,8 @@ SPEX_info SPEX_ldl_factorize
     // Factorization: Perform the REF LDL factorization of
     // A. By default, up-looking factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_LDL_LEFT
+    // FIXME: this comment is wrong; it will also do LDL left-looking if
+    // option->algo is SPEX_CHOL_LEFT.
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_symmetric_factor(&F, S, PAP, false, option));

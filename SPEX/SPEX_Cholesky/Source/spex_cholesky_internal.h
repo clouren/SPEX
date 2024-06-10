@@ -19,7 +19,7 @@
 #include "spex_util_internal.h"
 
 // Other TODO prior to resubmission
-// TODO double check all comments throughout code in regards to chol vs ldl
+// FIXME double check all comments throughout code in regards to chol vs ldl
 
 // ============================================================================
 //                           Internal Functions

@@ -130,7 +130,7 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
 
     double start_s = SuiteSparse_time ();
-    option->algo=SPEX_LDL_LEFT;
+    option->algo=SPEX_LDL_LEFT;     // FIXME: confusing
 
     SPEX_TRY (SPEX_ldl_backslash( &x, SPEX_MPQ, A, b, option));
 

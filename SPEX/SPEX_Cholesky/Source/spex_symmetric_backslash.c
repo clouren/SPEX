@@ -143,6 +143,7 @@ SPEX_info spex_symmetric_backslash
     // By default, up-looking Cholesky/LDL factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
     // or SPEX_LDL_LEFT
+    // FIXME: confusing
     //--------------------------------------------------------------------------
 
     SPEX_CHECK( spex_symmetric_factor(&F, S, PAP, chol, option) );

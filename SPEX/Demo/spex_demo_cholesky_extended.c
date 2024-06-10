@@ -113,7 +113,6 @@ int main( int argc, char *argv[] )
     // Factorize PAP
     //--------------------------------------------------------------------------
 
-    //option->algo=SPEX_CHOL_LEFT;
     double start_factor = SuiteSparse_time ();
 
     SPEX_TRY ( SPEX_cholesky_factorize(&F, A, S, option));

@@ -237,6 +237,7 @@
 #define SPEX_DEFAULT_PRECISION 128
 
 // Defines the algorithm used
+// FIXME: this list is out of date.
 // SPEX_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Gram for QR looking
 //                      LU factorization
 // SPEX_LU_LEFT = 1,              Left looking LU factorization

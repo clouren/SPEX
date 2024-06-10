@@ -264,6 +264,12 @@ SPEX_preorder ;
 
 // A code in SPEX_options to tell SPEX which factorization algorithm to use
 
+// FIXME: this is confusing.  SPEX_CHOL_LEFT and SPEX_LDL_LEFT are identical
+// in how they work in SPEX.  Calling SPEX_backslash with option->algo
+// set to SPEX_CHOL_LEFT will not use Cholesky, but LDL-left-looking.
+// Calling SPEX_backslash with option->algo=SPEX_LU_LEFT also ignores that 
+// setting and uses LDL if A is symmetric.
+
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
@@ -1467,8 +1473,16 @@ SPEX_info SPEX_ldl_backslash
 // arbitrary precision floating point.
 //
 // A must be square. If A is symmetric with a nonzero diagonal, an exact up-looking
-// LDL factorization is applied.  Otherwise, an exact left-looking LU factorization
-// is applied. x and b be can be single vectors, or matrices.
+// LDL factorization is applied (FIXME: see option->algo instead).  Otherwise,
+// an exact left-looking LU factorization is applied. x and b be can be single
+// vectors, or matrices.
+
+// FIXME:  SPEX_backslash should do the following:
+//  if option->algo is set to DEFAULT:
+//      use LDL uplooking if possible; else use LU left
+//  otherwise:
+//      use the exact algorithm requested with no substitutions.
+//      Fail if option->algo is CHOL or LDL and the matrix is unsymmetric.
 
 //------------------------------------------------------------------------------
 // Purpose: Solve Ax = b by analyzing the input matrix and applying the

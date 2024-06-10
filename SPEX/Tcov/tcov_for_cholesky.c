@@ -299,11 +299,11 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for symmetric indefinite matrix (4)\n");
     read_test_matrix (&A, "../ExampleMats/test4.mat.txt");
     create_test_rhs (&b, A->n);
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_CHOL_UP ;   // FIXME: confusing
     ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option), SPEX_NOTSPD);
-    option->algo = SPEX_CHOL_LEFT ;
+    option->algo = SPEX_CHOL_LEFT ; // FIXME: confusing
     ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option), SPEX_NOTSPD);
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_CHOL_UP ;   // FIXME: confusing
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
     
@@ -311,9 +311,9 @@ int main (int argc, char *argv [])
     printf ("Cholesky: error handling for symmetric matrix with zero in diagonal\n");
     read_test_matrix (&A, "../ExampleMats/test4.mat.txt");
     create_test_rhs (&b, A->n);
-    option->algo = SPEX_LDL_UP ;
+    option->algo = SPEX_LDL_UP ;    // FIXME: confusing
     ERR (SPEX_ldl_backslash (&x, SPEX_MPQ, A, b, option), SPEX_ZERODIAG);
-    option->algo = SPEX_LDL_LEFT ;
+    option->algo = SPEX_LDL_LEFT ;  // FIXME: confusing
     ERR (SPEX_ldl_backslash (&x, SPEX_MPQ, A, b, option), SPEX_ZERODIAG);
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_matrix_free (&b, option));
@@ -544,8 +544,7 @@ int main (int argc, char *argv [])
     option->algo = 99 ;
     ERR (SPEX_cholesky_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_ALGORITHM);
-    option->algo = SPEX_CHOL_UP ;
-
+    option->algo = SPEX_CHOL_UP ;   // FIXME: confusing
 
     ERR (SPEX_ldl_factorize (NULL, NULL, NULL, NULL),
         SPEX_INCORRECT_INPUT);
@@ -578,7 +577,7 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     option->order = SPEX_AMD ;
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_CHOL_UP ;   // FIXME: confusing
     option->print_level = 3 ;
     printf ("Cholesky backslash, up-looking, no malloc testing:\n");
     OK (spex_test_chol_backslash (A, b, option));
@@ -615,14 +614,14 @@ int main (int argc, char *argv [])
     BRUTAL (spex_test_chol_backslash (A, b, option));
 
     printf ("Cholesky backslash, left-looking with malloc testing:\n");
-    option->algo = SPEX_CHOL_LEFT ;
+    option->algo = SPEX_CHOL_LEFT ; // FIXME: confusing
     BRUTAL (spex_test_chol_backslash (A, b, option));
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_cholesky_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
 
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_CHOL_UP ;   // FIXME: confusing
 
     printf ("Cholesky analyze/factorize/solve, no malloc testing:\n");
     spex_set_gmp_ntrials (INT64_MAX) ;
@@ -640,21 +639,21 @@ int main (int argc, char *argv [])
     //--------------------------------------------------------------------------
 
     option->order = SPEX_AMD ;
-    option->algo = SPEX_LDL_UP ;
+    option->algo = SPEX_LDL_UP ;    // FIXME: confusing
     option->print_level = 3 ;
     printf ("LDL backslash, up-looking, no malloc testing:\n");
     OK (spex_test_ldl_backslash (A, b, option));
     option->print_level = 0 ;
 
     printf ("LDL backslash, left-looking with malloc testing:\n");
-    option->algo = SPEX_LDL_LEFT ;
+    option->algo = SPEX_LDL_LEFT ;  // FIXME: confusing
     BRUTAL (spex_test_ldl_backslash (A, b, option));
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_cholesky_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
 
-    option->algo = SPEX_CHOL_UP ;
+    option->algo = SPEX_CHOL_UP ;   // FIXME: confusing
 
     printf ("LDL analyze/factorize/solve, no malloc testing:\n");
     spex_set_gmp_ntrials (INT64_MAX) ;

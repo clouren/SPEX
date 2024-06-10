@@ -128,27 +128,45 @@ SPEX_info spex_symmetric_factor
     // factorization: up-looking or left-looking
     //--------------------------------------------------------------------------
 
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+
     switch(algo)
     {
+        // FIXME NOW: this is very confusing.  For this code below,
+        // SPEX_ALGORITHM_DEFAULT will select LDL uplooking is chol is false,
+        // or Chol up looking if chol is true.  Also: SPEX_CHOL_UP and
+        // SPEX_LDL_UP are identical.  Likewise, SPEX_CHOL_LEFT and
+        // SPEX_LDL_LEFT are identical.  The CHOL vs LDL choice is made by the
+        // chol parameter, not by the algo option.  The problem with this
+        // confusion is that we expose the end-user to these algorithm choices
+        // but we mostly ignore them.
+
         case SPEX_ALGORITHM_DEFAULT:
             // fall through to up-looking Cholesky (the default)
+            // (FIXME: the above statement is wrong; if chol is false this
+            // will be up-looking LDL, not Cholesky.
+
         case SPEX_CHOL_UP:
             SPEX_CHECK( spex_symmetric_up_factor(&(F->L), &(F->rhos), S, A, chol,
                 option));
             break;
+
         case SPEX_CHOL_LEFT:
             SPEX_CHECK( spex_symmetric_left_factor(&(F->L), &(F->rhos), S, A, chol,
                 option) );
             break;
+
         case SPEX_LDL_UP:
             SPEX_CHECK( spex_symmetric_up_factor(&(F->L), &(F->rhos), S, A, chol,
                 option));
             break;
+
         case SPEX_LDL_LEFT:
             SPEX_CHECK( spex_symmetric_left_factor(&(F->L), &(F->rhos), S, A, chol,
                 option));
             break;
+
         default:
             SPEX_FREE_ALL;
             return SPEX_INCORRECT_ALGORITHM;

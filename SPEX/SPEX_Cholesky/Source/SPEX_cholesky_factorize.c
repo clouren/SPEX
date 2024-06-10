@@ -98,6 +98,8 @@ SPEX_info SPEX_cholesky_factorize
     // Factorization: Perform the REF Cholesky factorization of
     // A. By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
+    // FIXME: this comment is wrong; it will also do left-looking Cholesky if
+    // option->algo is SPEX_LDL_LEFT, which is very confusing.
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_symmetric_factor(&F, S, PAP, true, option));
