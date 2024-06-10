@@ -102,6 +102,7 @@ int main (void)
     double start_s = SuiteSparse_time ();
 
     // Solve the system and give double solution
+    // It will utilize the default COLAMD and smallest pivoting
     SPEX_TRY (SPEX_lu_backslash( &x, SPEX_FP64, A, b, option));
 
     double end_s = SuiteSparse_time ();

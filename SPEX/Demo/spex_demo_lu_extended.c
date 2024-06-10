@@ -39,9 +39,8 @@
 // indicates SPEX_LU will use COLAMD for column ordering. Other available
 // options are:
 //
-//        0: Default: COLAMD
 //        1: None: Not recommended for sparse matrices
-//        2: COLAMD
+//        2: Default: COLAMD
 //        3: AMD
 //
 // t (or tol) tolerance_param. e.g., spex_demo_lu_extended t 1e-10, which
@@ -61,7 +60,7 @@
 // If none of the above args is given, they are set to the following default:
 //
 //  p = 0, i.e., using smallest pivot
-//  q = 1, i.e., using COLAMD
+//  q = 2, i.e., using COLAMD
 //  t = 0.1, not being using since p != 3 or 4
 
 #include "spex_demos.h"
@@ -234,21 +233,6 @@ int main (int argc, char *argv[])
     //--------------------------------------------------------------------------
 
     double start_solve = SuiteSparse_time ();
-
-    // SPEX Left LU has an optional check step which can verify that the
-    // solution vector x satisfies Ax=b in perfect precision intended for
-    // debugging.
-    //
-    // Note that this is entirely optional and not necessary. The solution
-    // returned is guaranteed to be exact.   It appears here just as a
-    // verification that SPEX Left LU is computing its expected result.  This
-    // test can fail only if it runs out of memory, or if there is a bug in the
-    // code.  Also, note that this function can be quite time consuming; thus
-    // it is not recommended to be used in general.
-    //
-    // To enable said check, the following bool is set to true
-
-    //option->check = true;
 
     // Solve LDU x = b
     SPEX_TRY (SPEX_lu_solve(&x, F, b, option));

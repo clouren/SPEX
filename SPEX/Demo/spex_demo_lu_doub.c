@@ -31,9 +31,9 @@
 //        5: Largest pivot
 //
 // q (or col) Column_order_param. e.g., spex_lu_demo_doub q 1, which indicates
-// SPEX_LU will use COLAMD for column ordering. Other available options are:
+// SPEX_LU will use no column ordering. Other available options are:
 //
-//        0: None: Not recommended for sparse matrices 1: COLAMD: Default 2:
+//        1: None: Not recommended for sparse matrices 2: COLAMD: Default 3:
 //        AMD
 //
 // t (or tol) tolerance_param. e.g., spex_lu_demo_doub t 1e-10, which indicates

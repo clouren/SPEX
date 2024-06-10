@@ -119,9 +119,6 @@ int main( int argc, char *argv[] )
 
     double end_factor = SuiteSparse_time ();
 
-    option->print_level=3;
-    //SPEX_TRY (SPEX_matrix_check(F->L,option));
-
     //--------------------------------------------------------------------------
     // Solve linear system
     //--------------------------------------------------------------------------
@@ -148,7 +145,7 @@ int main( int argc, char *argv[] )
 
     // Check solution
     option->print_level=1;
-    // SPEX_TRY ( SPEX_check_solution(A,x,b,option));
+    SPEX_TRY ( spex_demo_check_solution(A,x,b,option));
 
     //--------------------------------------------------------------------------
     // Free Memory

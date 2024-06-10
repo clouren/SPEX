@@ -119,8 +119,6 @@ int main( int argc, char *argv[] )
 
     double end_factor = SuiteSparse_time ();
 
-    option->print_level=3;
-    //SPEX_TRY (SPEX_matrix_check(F->L,option));
 
     //--------------------------------------------------------------------------
     // Solve linear system
@@ -143,12 +141,12 @@ int main( int argc, char *argv[] )
     printf("\nNumber of L nonzeros: \t\t\t%g",
         (double) (F->L->p[F->L->n]) );
     printf("\nSymbolic Analysis Check time: \t\t%lf", t_col);
-    printf("\nIP Chol Factorization time: \t\t%lf", t_factor);
+    printf("\nSPEX Chol Factorization time: \t\t%lf", t_factor);
     printf("\nFB Substitution time: \t\t\t%lf\n\n", t_solve);
 
     // Check solution
     option->print_level=1;
-    // SPEX_TRY ( SPEX_check_solution(A,x,b,option));
+    SPEX_TRY ( spex_demo_check_solution(A,x,b,option));
 
     //--------------------------------------------------------------------------
     // Free Memory

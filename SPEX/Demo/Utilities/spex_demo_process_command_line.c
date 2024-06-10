@@ -122,6 +122,18 @@ SPEX_info spex_demo_process_command_line //processes the command line
             }
             *rhs_name = argv[i];
         }
+        else if ( strcmp(arg, "p") == 0 || strcmp(arg, "pivot") == 0)
+        {
+            if (!argv[++i])
+            {
+                printf("\n****ERROR! Pivoting scheme must be entered\n");
+                printf("Options are: 0: Smallest, 1: Diagonal, 2: First nonzero,\n");
+                printf("3: smallest with tolerance, 4: largest with tolerance, 5: largest");
+                printf("\nDefaulting to smallest");
+                option->pivot = SPEX_SMALLEST;
+            }
+            option->order = atoi(argv[i]);
+        }
         else
         {
             printf("\n\n**ERROR! Unknown command line parameter: %s"
