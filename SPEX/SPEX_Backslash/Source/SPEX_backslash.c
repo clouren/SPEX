@@ -58,6 +58,8 @@ SPEX_info SPEX_backslash
         return SPEX_INCORRECT_INPUT;
     }
 
+    (*x_handle) = NULL ;
+
     // Check for data types and dimension of A and b
     if (A->m != A->n || A->type != SPEX_MPZ || A->kind != SPEX_CSC
         || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
@@ -71,94 +73,56 @@ SPEX_info SPEX_backslash
         return SPEX_INCORRECT_INPUT;
     }
 
-
-    SPEX_options backslash_options = NULL;
-    info = SPEX_create_default_options(&backslash_options);
-    if (info != SPEX_OK)
-    {
-        return SPEX_OUT_OF_MEMORY;
-    }
-
-    if (option != NULL)
-    {
-        // IF the options are not NULL, copy the important parts.
-        // Otherwise do nothing
-        backslash_options->print_level = option->print_level; // print level
-        backslash_options->prec = option->prec;               // MPFR precision
-        backslash_options->round = option->round;             // MPFR rounding
-    }
-
     // Declare output
     SPEX_matrix x = NULL;
 
-    // Attempt an LDL factorization of A
-    // In this case, we update the option
-    // struct to do AMD and diagonal pivoting
-    backslash_options->order = SPEX_AMD;
-    backslash_options->pivot = SPEX_DIAGONAL;
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
 
-    // Try SPEX ldl. The output for this function
-    // is either:
-    // SPEX_OK:          LDL success, x is the exact solution
-    // SPEX_UNSYMMETRIC: Matrix is unsymmetric and not a canddiate for LDL
-    // SPEX_ZERODIAG:    A is symmetric but does not have a nonzero diagonal.
-    //                   not a candidate for LDL.
-    // Other error code: Some error. Return the error code and exit
-    info = SPEX_ldl_backslash(&x, type, A, b, backslash_options);
-    if (info == SPEX_OK)
+    switch (algo)
     {
-        // ldl was successful. Set x_handle = x
-        (*x_handle) = x;
 
-        // x_handle contains the exact solution of Ax = b and is
-        // stored in the user desired type. Now, we exit and return ok
-        SPEX_FREE(backslash_options);
-        return SPEX_OK;
-    }
-    else if (info == SPEX_ZERODIAG || info == SPEX_UNSYMMETRIC)
-    {
-        // ldl factorization failed. Must try
-        // LU factorization now
+        case LU:
+            info = SPEX_lu_backslash ( ... )
+            break ;
 
-        // Since LU is occuring, we update the option
-        // struct to do COLAMD and small pivoting
-        backslash_options->order = SPEX_COLAMD;
-        backslash_options->pivot = SPEX_SMALLEST;
+        case CHOL_UP:
+        case CHOL_LEFT:
+            info = SPEX_choleskY_backslash ( ... )
+            break ;
 
-        // The LU factorization can return either:
-        // SPEX_OK: LU success, x is the exact solution
-        // Other error code: Some error. Return the error
-        //                   code and exit
-        info = SPEX_lu_backslash(&x, type, A, b, backslash_options);
-        if (info == SPEX_OK)
-        {
-            // LU success, set x_handle = x
-            (*x_handle) = x;
+        case LDL_UP:
+        case LDL_LEFT:
+            info = SPEX_ldl_backslash ( ... )
+            break ;
 
-            // x_handle contains the exact solution of Ax = b and is
-            // stored in the user desired type. Now, we exit and return ok
-            SPEX_FREE(backslash_options);
-            return SPEX_OK;
-        }
-        else
-        {
-            // Both ldl and LU have failed, info contains
-            // the problem, most likely that A is singular
-            // Note that, because LU failed, x_handle is still
-            // NULL so there is no potential for a memory leak here
-            SPEX_FREE(backslash_options);
-            return info;
-        }
-    }
-    else
-    {
-        // ldl failed, but not due to an algorithmic issue
-        // error code. Most likely invalid input or out of
-        // memory condition.
-        // Note that since ldl failed, x_handle is still NULL
-        // so there is no potential for a memory leak here
-        SPEX_FREE(backslash_options);
-        return info;
+        default:
+        case SPEX_DEFAULT:
+        case SPEX_ALGORITHM_DEFAULT:
+
+            // Try SPEX ldl. The output for this function
+            // is either:
+            // SPEX_OK:          LDL success, x is the exact solution
+            // SPEX_UNSYMMETRIC: Matrix is unsymmetric and not a canddiate for LDL
+            // SPEX_ZERODIAG:    A is symmetric but does not have a nonzero diagonal.
+            //                   not a candidate for LDL.
+            // Other error code: Some error. Return the error code and exit
+
+            info = SPEX_ldl_backslash(&x, type, A, b, option);
+
+            if (info == SPEX_ZERODIAG || info == SPEX_UNSYMMETRIC)
+            {
+                // ldl factorization failed. Must try
+                // LU factorization now
+
+                // The LU factorization can return either:
+                // SPEX_OK: LU success, x is the exact solution
+                // Other error code: Some error. Return the error
+                //                   code and exit
+                info = SPEX_lu_backslash(&x, type, A, b, option);
+            }
     }
 
+    (*x_handle) = x;
+    return info;
 }
