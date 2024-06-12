@@ -899,8 +899,7 @@ SPEX_info SPEX_mpz_set_ui (mpz_t x, const uint64_t y) ;
 
 SPEX_info SPEX_mpz_set_si (mpz_t x, const int64_t y) ;
 
-// FIXME NOW: SPEX_mpz_swap not in user guide; it was commented out; why?
-SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
+
 
 SPEX_info SPEX_mpz_get_d (double *x, const mpz_t y) ;
 
@@ -910,21 +909,9 @@ SPEX_info SPEX_mpz_mul (mpz_t a, const mpz_t b, const mpz_t c) ;
 
 SPEX_info SPEX_mpz_mul_si (mpz_t a, const mpz_t b, const int64_t c) ;
 
-// FIXME NOW: SPEX_mpz_add not in user guide; it was commented out; why?
-SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
-
-// FIXME NOW: SPEX_mpz_addmul not in user guide; it was commented out; why?
-SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
-
 SPEX_info SPEX_mpz_sub (mpz_t a, const mpz_t b, const mpz_t c) ;
 
 SPEX_info SPEX_mpz_submul (mpz_t x, const mpz_t y, const mpz_t z) ;
-
-// FIXME NOW: SPEX_mpz_fdiv_q not in user guide; it was commented out; why?
-SPEX_info SPEX_mpz_fdiv_q (mpz_t q, const mpz_t n, const mpz_t d) ;
-
-// FIXME NOW: SPEX_mpz_cdiv_q not in user guide; it was commented out; why?
-SPEX_info SPEX_mpz_cdiv_q (mpz_t q, const mpz_t n, const mpz_t d) ;
 
 SPEX_info SPEX_mpz_cdiv_qr (mpz_t q, mpz_t r, const mpz_t n, const mpz_t d) ;
 
@@ -939,9 +926,6 @@ SPEX_info SPEX_mpz_neg (mpz_t x, const mpz_t y) ;
 SPEX_info SPEX_mpz_abs (mpz_t x, const mpz_t y) ;
 
 SPEX_info SPEX_mpz_cmp (int *r, const mpz_t x, const mpz_t y) ;
-
-// FIXME NOW: SPEX_mpz_cmpabs not in user guide; it was commented out; why?
-SPEX_info SPEX_mpz_cmpabs (int *r, const mpz_t x, const mpz_t y) ;
 
 SPEX_info SPEX_mpz_cmp_ui (int *r, const mpz_t x, const uint64_t y) ;
 
@@ -1043,6 +1027,19 @@ SPEX_info SPEX_mpfr_free_str (char *str) ;
 SPEX_info SPEX_mpfr_set_null (mpfr_t x) ;
 
 SPEX_info SPEX_mpfr_clear (mpfr_t x) ;
+
+// FIXME: Leaving this here to discuss: I suggest we remove these functions
+// they are not used in the current version. I see spex_mpz_addmul
+// used in the developmental branch SPEX_Update/Test. The others
+// do not appear in SPEX-Developmental and are only in Tcov
+
+SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
+SPEX_info SPEX_mpz_add (mpz_t a, const mpz_t b, const mpz_t c) ;
+SPEX_info SPEX_mpz_addmul (mpz_t x, const mpz_t y, const mpz_t z) ;
+SPEX_info SPEX_mpz_fdiv_q (mpz_t q, const mpz_t n, const mpz_t d) ;
+SPEX_info SPEX_mpz_cdiv_q (mpz_t q, const mpz_t n, const mpz_t d) ;
+SPEX_info SPEX_mpz_cmpabs (int *r, const mpz_t x, const mpz_t y) ;
+
 
 
 //------------------------------------------------------------------------------
