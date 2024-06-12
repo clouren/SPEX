@@ -388,8 +388,18 @@ int SuiteSparse_divcomplex
         #define SUITESPARSE_TIME (0)
     #endif
 #else
-    // The timer is explictly disabled
-    #define SUITESPARSE_TIME (0)
+    // The SuiteSparse_config timer is explictly disabled;
+    // use the OpenMP timer omp_get_wtime if available.
+    #undef SUITESPARSE_TIMER_ENABLED
+    #undef SUITESPARSE_HAVE_CLOCK_GETTIME
+    #undef SUITESPARSE_CONFIG_TIMER
+    #if defined ( _OPENMP )
+        #define SUITESPARSE_CONFIG_TIMER omp_get_wtime
+        #define SUITESPARSE_TIME (omp_get_wtime ( ))
+    #else
+        #define SUITESPARSE_CONFIG_TIMER none
+        #define SUITESPARSE_TIME (0)
+    #endif
 #endif
 
 // SuiteSparse printf macro
