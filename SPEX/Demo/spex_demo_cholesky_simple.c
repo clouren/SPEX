@@ -130,7 +130,7 @@ int main (int argc, char **argv)
     //--------------------------------------------------------------------------
 
     double start_s = SUITESPARSE_TIME;
-    option->algo=SPEX_CHOL_LEFT;    // FIXME: confusing
+    option->algo=SPEX_CHOL_LEFT;
 
     SPEX_TRY (SPEX_cholesky_backslash( &x, SPEX_MPQ, A, b, option));
 

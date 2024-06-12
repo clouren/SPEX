@@ -133,7 +133,7 @@ int main (int argc, char **argv)
     // The LDL backslash function can utilize either a left-looking or up-looking
     // ldl factorization. By default, it utilizes up-looking. This can be changed by
     // setting option->algo = SPEX_LDL_LEFT
-    option->algo=SPEX_LDL_LEFT;     // FIXME: confusing
+    option->algo=SPEX_LDL_LEFT;
 
     SPEX_TRY (SPEX_ldl_backslash( &x, SPEX_MPQ, A, b, option));
 
