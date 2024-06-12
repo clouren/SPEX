@@ -41,11 +41,17 @@ SPEX_info SPEX_ldl_analyze
     const SPEX_options option   // Command options (Default if NULL)
 )
 {
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LDL_LEFT 
+        && algo != SPEX_LDL_UP)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
     SPEX_info info;
-    // SPEX_ldl_analyze is identical to SPEX_chol_analyze
-    // For simplicity, we just call the chol function
-    info = SPEX_cholesky_analyze( S_handle, A, option);
-    (*S_handle)->kind = SPEX_LDL_FACTORIZATION;
+    // SPEX LDL analyze just calls symmetric analyze
+    info = spex_symmetric_analyze( S_handle, A, option);
+    if (info == SPEX_OK) (*S_handle)->kind = SPEX_LDL_FACTORIZATION;
     return info;
 }
 

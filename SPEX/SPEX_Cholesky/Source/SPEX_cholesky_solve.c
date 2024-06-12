@@ -52,6 +52,14 @@ SPEX_info SPEX_cholesky_solve
     {
         return SPEX_PANIC;
     }
+    
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_CHOL_LEFT 
+        && algo != SPEX_CHOL_UP)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
 
     // Check the inputs
     if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)

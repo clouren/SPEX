@@ -78,42 +78,48 @@ SPEX_info SPEX_backslash
 
     // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-
     switch (algo)
     {
-
-        case LU:
-            info = SPEX_lu_backslash ( ... )
+        // Left-looking LU factorization is desired. Call lu backslash
+        // with user-specified options
+        case SPEX_LU_LEFT:
+            info = SPEX_lu_backslash (&x, type, A, b, option);
             break ;
 
-        case CHOL_UP:
-        case CHOL_LEFT:
-            info = SPEX_choleskY_backslash ( ... )
+        // Some type of Cholesky factorization is desired. Call
+        // Cholesky backslash with user-specified options
+        case SPEX_CHOL_UP:
+        case SPEX_CHOL_LEFT:
+            info = SPEX_cholesky_backslash (&x, type, A, b, option);
             break ;
 
-        case LDL_UP:
-        case LDL_LEFT:
-            info = SPEX_ldl_backslash ( ... )
+        // Some type of LDL factorization is desired. Call
+        // LDL backslash with user-specified options
+        case SPEX_LDL_UP:
+        case SPEX_LDL_LEFT:
+            info = SPEX_ldl_backslash (&x, type, A, b, option);
             break ;
 
+        // Default algorithm is utilized. In this case, SPEX Backslash
+        // attempts to find the appropriate algorithm. First, up-looking
+        // LDL factorization is attempted. If LDL is successful, return x
+        // and exit. If LDL fails, LU factorization is attempted.
         default:
-        case SPEX_DEFAULT:
         case SPEX_ALGORITHM_DEFAULT:
 
             // Try SPEX ldl. The output for this function
             // is either:
             // SPEX_OK:          LDL success, x is the exact solution
-            // SPEX_UNSYMMETRIC: Matrix is unsymmetric and not a canddiate for LDL
+            // SPEX_UNSYMMETRIC: Matrix is unsymmetric and not a candidate for LDL
             // SPEX_ZERODIAG:    A is symmetric but does not have a nonzero diagonal.
             //                   not a candidate for LDL.
             // Other error code: Some error. Return the error code and exit
-
             info = SPEX_ldl_backslash(&x, type, A, b, option);
 
             if (info == SPEX_ZERODIAG || info == SPEX_UNSYMMETRIC)
             {
-                // ldl factorization failed. Must try
-                // LU factorization now
+                // ldl factorization failed but matrix is a candidate 
+                // for LU factorization.
 
                 // The LU factorization can return either:
                 // SPEX_OK: LU success, x is the exact solution
@@ -122,7 +128,8 @@ SPEX_info SPEX_backslash
                 info = SPEX_lu_backslash(&x, type, A, b, option);
             }
     }
-
+    // x contains either the exact solution of the system or is NULL
     (*x_handle) = x;
+    // returns SPEX_OK if the algorithm is successful or the appropriate error.
     return info;
 }

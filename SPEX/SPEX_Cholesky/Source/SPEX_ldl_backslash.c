@@ -48,6 +48,13 @@ SPEX_info SPEX_ldl_backslash
     const SPEX_options option   // Command options (Default if NULL)
 )
 {
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LDL_LEFT 
+        && algo != SPEX_LDL_UP)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
     // The work is done in the spex_symmetric_backslash code
     // All we have to do is wrap it with chol = false
     SPEX_info info;

@@ -67,6 +67,14 @@ SPEX_info SPEX_ldl_factorize
     {
         return SPEX_PANIC;
     }
+    
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LDL_LEFT 
+        && algo != SPEX_LDL_UP)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
 
     // Check inputs for NULL
     if (!F_handle || !A || !S)
@@ -95,8 +103,6 @@ SPEX_info SPEX_ldl_factorize
     // Factorization: Perform the REF LDL factorization of
     // A. By default, up-looking factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_LDL_LEFT
-    // FIXME: this comment is wrong; it will also do LDL left-looking if
-    // option->algo is SPEX_CHOL_LEFT.
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_symmetric_factor(&F, S, PAP, false, option));

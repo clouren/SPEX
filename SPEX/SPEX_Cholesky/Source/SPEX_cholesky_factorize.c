@@ -70,6 +70,14 @@ SPEX_info SPEX_cholesky_factorize
     {
         return SPEX_PANIC;
     }
+    
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_CHOL_LEFT
+        && algo != SPEX_CHOL_UP)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
 
     // Check inputs for NULL
     if (!F_handle || !A || !S)
@@ -98,8 +106,6 @@ SPEX_info SPEX_cholesky_factorize
     // Factorization: Perform the REF Cholesky factorization of
     // A. By default, up-looking Cholesky factorization is done; however,
     // the left looking factorization is done if option->algo=SPEX_CHOL_LEFT
-    // FIXME: this comment is wrong; it will also do left-looking Cholesky if
-    // option->algo is SPEX_LDL_LEFT, which is very confusing.
     //--------------------------------------------------------------------------
 
     SPEX_CHECK(spex_symmetric_factor(&F, S, PAP, true, option));

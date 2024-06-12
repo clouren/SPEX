@@ -67,6 +67,13 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     {
         return SPEX_INCORRECT_INPUT;
     }
+    
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LU_LEFT)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
 
     // check components of F in debug mode
     ASSERT_MATRIX (F->L,    SPEX_CSC,   SPEX_MPZ);
