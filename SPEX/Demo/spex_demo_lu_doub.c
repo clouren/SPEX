@@ -115,12 +115,12 @@ int main (int argc, char *argv[])
     // and an estimate of the number of nonzeros in L and U.
     //--------------------------------------------------------------------------
 
-    double start_col = SuiteSparse_time ();
+    double start_col = SUITSPARSE_TIME;
 
     // Column ordering using either AMD, COLAMD or nothing
     SPEX_TRY (SPEX_lu_analyze(&S, A, option));
 
-    double end_col = SuiteSparse_time ();
+    double end_col = SUITSPARSE_TIME;
 
     //--------------------------------------------------------------------------
     // Now we perform the SPEX Left LU factorization to obtain matrices L and U
@@ -128,11 +128,11 @@ int main (int argc, char *argv[])
     // never explicitly constructed or used.
     //--------------------------------------------------------------------------
 
-    double start_factor = SuiteSparse_time ();
+    double start_factor = SUITSPARSE_TIME;
 
     SPEX_TRY (SPEX_lu_factorize(&F, A, S, option));
 
-    double end_factor = SuiteSparse_time ();
+    double end_factor = SUITSPARSE_TIME;
 
     //--------------------------------------------------------------------------
     // print results

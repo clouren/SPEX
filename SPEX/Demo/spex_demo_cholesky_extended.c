@@ -99,7 +99,7 @@ int main( int argc, char *argv[] )
     // Perform Analysis of A
     //--------------------------------------------------------------------------
 
-    double start_col = SuiteSparse_time ();
+    double start_col = SUITSPARSE_TIME;
 
     // Symmetric ordering of A. Uncomment the desired one, AMD is recommended
     //option->order = SPEX_NO_ORDERING;  // No ordering
@@ -107,28 +107,28 @@ int main( int argc, char *argv[] )
     //option->order = SPEX_COLAMD; // COLAMD
     SPEX_TRY (SPEX_cholesky_analyze(&S, A, option));
 
-    double end_col = SuiteSparse_time ();
+    double end_col = SUITSPARSE_TIME;
 
     //--------------------------------------------------------------------------
     // Factorize PAP
     //--------------------------------------------------------------------------
 
-    double start_factor = SuiteSparse_time ();
+    double start_factor = SUITSPARSE_TIME;
 
     SPEX_TRY ( SPEX_cholesky_factorize(&F, A, S, option));
 
-    double end_factor = SuiteSparse_time ();
+    double end_factor = SUITSPARSE_TIME;
 
 
     //--------------------------------------------------------------------------
     // Solve linear system
     //--------------------------------------------------------------------------
 
-    double start_solve = SuiteSparse_time ();
+    double start_solve = SUITSPARSE_TIME;
 
     SPEX_TRY ( SPEX_cholesky_solve(&x, F, b, option));
 
-    double end_solve = SuiteSparse_time ();
+    double end_solve = SUITSPARSE_TIME;
 
     //--------------------------------------------------------------------------
     // Output & Timing Stats

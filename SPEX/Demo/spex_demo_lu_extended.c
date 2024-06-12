@@ -209,12 +209,12 @@ int main (int argc, char *argv[])
     // function.
     //--------------------------------------------------------------------------
 
-    double start_col = SuiteSparse_time ();
+    double start_col = SUITSPARSE_TIME;
 
     // Column ordering using either AMD, COLAMD or nothing
     SPEX_TRY (SPEX_lu_analyze(&S, A, option));
 
-    double end_col = SuiteSparse_time ();
+    double end_col = SUITSPARSE_TIME;
 
     //--------------------------------------------------------------------------
     // Now we perform the SPEX Left LU factorization to obtain matrices L and U
@@ -222,22 +222,22 @@ int main (int argc, char *argv[])
     // never explicitly constructed or used.
     //--------------------------------------------------------------------------
 
-    double start_factor = SuiteSparse_time ();
+    double start_factor = SUITSPARSE_TIME;
 
     SPEX_TRY (SPEX_lu_factorize(&F, A, S, option));
 
-    double end_factor = SuiteSparse_time ();
+    double end_factor = SUITSPARSE_TIME;
 
     //--------------------------------------------------------------------------
     // We now solve the system Ax=b using the L and U factors computed above.
     //--------------------------------------------------------------------------
 
-    double start_solve = SuiteSparse_time ();
+    double start_solve = SUITSPARSE_TIME;
 
     // Solve LDU x = b
     SPEX_TRY (SPEX_lu_solve(&x, F, b, option));
 
-    double end_solve = SuiteSparse_time ();
+    double end_solve = SUITSPARSE_TIME;
 
     // Done, x now contains the exact solution of the linear system Ax=b in
     // dense rational form. There is an optional final step here where the user

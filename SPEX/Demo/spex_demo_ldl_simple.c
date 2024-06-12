@@ -129,7 +129,7 @@ int main (int argc, char **argv)
     // solve
     //--------------------------------------------------------------------------
 
-    double start_s = SuiteSparse_time ();
+    double start_s = SUITSPARSE_TIME;
     // The LDL backslash function can utilize either a left-looking or up-looking
     // ldl factorization. By default, it utilizes up-looking. This can be changed by
     // setting option->algo = SPEX_LDL_LEFT
@@ -137,7 +137,7 @@ int main (int argc, char **argv)
 
     SPEX_TRY (SPEX_ldl_backslash( &x, SPEX_MPQ, A, b, option));
 
-    double end_s = SuiteSparse_time ();
+    double end_s = SUITSPARSE_TIME;
 
     double t_s = (end_s - start_s) ;
 
