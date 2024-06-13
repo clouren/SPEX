@@ -9,9 +9,13 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs the symbolic ordering for SPEX Cholesky.
- * Currently, there are three options: user-defined order, COLAMD, or AMD.
- * It is *highly* recommended that AMD is used for Cholesky factorization.
+/* Purpose: Matrix preordering for integer-preserving Cholesky or LDL
+ * factorization.  On input, S is undefined.  On output, S contains the
+ * row/column permutation of A.
+ *
+ * This function performs the symbolic ordering for SPEX Cholesky.  Currently,
+ * there are three options: user-defined order, COLAMD, or AMD.  It is *highly*
+ * recommended that AMD is used for symmetric (Cholesky or LDL) factorization.
  *
  * Input/output arguments:
  *
@@ -23,7 +27,6 @@
  *
  * option:  option->order tells the function which ordering scheme to use
  */
-
 
 #define SPEX_FREE_ALL                           \
 {                                               \

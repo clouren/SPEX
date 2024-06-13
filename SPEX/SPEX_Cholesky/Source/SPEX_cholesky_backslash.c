@@ -58,8 +58,8 @@ SPEX_info SPEX_cholesky_backslash
     // The work is done in the spex_symmetric_backslash code
     // All we have to do is wrap it with chol = true
     SPEX_info info;
-    
+
     info = spex_symmetric_backslash(x_handle, type, A, b, true, option);
-    
+
     return info;
 }

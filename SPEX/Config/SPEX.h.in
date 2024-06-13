@@ -1321,8 +1321,8 @@ SPEX_info SPEX_cholesky_factorize
                                     // pointers of L, and the exact number of
                                     // nonzeros of L.
     const SPEX_options option       // command options.
-                                    // Notably, option->chol_type indicates
-                                    // whether CHOL_UP (default) or CHOL_LEFT
+                                    // Notably, option->algo indicates whether
+                                    // SPEX_CHOL_UP (default) or SPEX_CHOL_LEFT
                                     // is used.
 ) ;
 
@@ -1414,8 +1414,8 @@ SPEX_info SPEX_ldl_factorize
                                     // pointers of L, and the exact number of
                                     // nonzeros of L.
     const SPEX_options option       // command options.
-                                    // Notably, option->chol_type indicates
-                                    // whether CHOL_UP (default) or CHOL_LEFT
+                                    // Notably, option->algo indicates whether
+                                    // SPEX_LDL_UP (default) or SPEX_LDL_LEFT
                                     // is used.
 );
 

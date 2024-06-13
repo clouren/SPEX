@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This code utilizes the SPEX ldl factorization to exactly solve
+/* Purpose: This code utilizes the SPEX LDL factorization to exactly solve
  *          the linear system Ax = b.
  *
  * Input/Output arguments:
@@ -50,7 +50,7 @@ SPEX_info SPEX_ldl_backslash
 {
     // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LDL_LEFT 
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LDL_LEFT
         && algo != SPEX_LDL_UP)
     {
         return SPEX_INCORRECT_ALGORITHM;
@@ -58,8 +58,8 @@ SPEX_info SPEX_ldl_backslash
     // The work is done in the spex_symmetric_backslash code
     // All we have to do is wrap it with chol = false
     SPEX_info info;
-    
+
     info = spex_symmetric_backslash(x_handle, type, A, b, false, option);
-    
+
     return info;
 }

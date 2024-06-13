@@ -20,7 +20,7 @@
  *                  on output x_handle contains a pointer to the solution
  *                  vector(s)
  *
- * F:               The factorization struct containing the REF cholesky
+ * F:               The factorization struct containing the REF Cholesky
  *                  factorization of A, permutation, etc
  *
  * b:               Right hand side vector(s)
@@ -52,10 +52,11 @@ SPEX_info SPEX_cholesky_solve
     {
         return SPEX_PANIC;
     }
-    
+
+    // FIXME: do we care about option->algo here?
     // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_CHOL_LEFT 
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_CHOL_LEFT
         && algo != SPEX_CHOL_UP)
     {
         return SPEX_INCORRECT_ALGORITHM;
@@ -66,13 +67,13 @@ SPEX_info SPEX_cholesky_solve
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     if (F->kind != SPEX_CHOLESKY_FACTORIZATION)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
     info = spex_symmetric_solve(x_handle, F, b, true, option);
-    
+
     return info;
 }

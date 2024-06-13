@@ -16,9 +16,9 @@
  * Input arguments of the function:
  *
  * S:           Symbolic analysis struct for Cholesky factorization.
- *              On input it's NULL
- *              On output it contains the row/column permutation, the elimination
- *              tree, and the number of nonzeros in L.
+ *              On input it's NULL.  On output it contains the row/column
+ *              permutation, the elimination tree, and the number of nonzeros
+ *              in L.
  *
  * A:           User's input matrix (Must be SPEX_MPZ and SPEX_CSC)
  *
@@ -34,7 +34,7 @@
 #define SPEX_FREE_ALL                               \
 {                                                   \
     SPEX_FREE_WORKSPACE ;                           \
-    SPEX_symbolic_analysis_free (&S, option);      \
+    SPEX_symbolic_analysis_free (&S, option);       \
 }
 
 #include "spex_cholesky_internal.h"
@@ -50,7 +50,7 @@ SPEX_info SPEX_cholesky_analyze
 {
     // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_CHOL_LEFT 
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_CHOL_LEFT
         && algo != SPEX_CHOL_UP)
     {
         return SPEX_INCORRECT_ALGORITHM;

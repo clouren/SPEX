@@ -9,20 +9,21 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: perform the symbolic analysis of A for the Cholesky/LDL factorization,
- * that is, preordering A, computing the elimination tree, getting the column
- * counts of A, setting the column pointers and exact number of non zeros of L.
+/* Purpose: perform symmetric analysis to obtain row/column permutation for
+ * Cholesky and LDL.  That is, preordering A, computing the elimination tree,
+ * getting the column counts of A, setting the column pointers and exact number
+ * of non zeros of L.
  *
  * Input arguments of the function:
  *
- * S:           Symbolic analysis struct
- *              On input it's NULL
- *              On output it contains the row/column permutation, the elimination
- *              tree, and the number of nonzeros in L.
+ * S:      Symbolic analysis struct
+ *         On input it's NULL
+ *         On output it contains the row/column permutation, the elimination
+ *         tree, and the number of nonzeros in L.
  *
- * A:           User's input matrix (Must be SPEX_MPZ and SPEX_CSC)
+ * A:      User's input matrix (Must be SPEX_MPZ and SPEX_CSC)
  *
- * option:      Command options (Default if NULL)
+ * option: Command options (Default if NULL)
  *
  */
 
@@ -61,7 +62,7 @@ SPEX_info spex_symmetric_analyze
     {
         return SPEX_INCORRECT_INPUT;
     }
-    
+
     // SPEX must be CSC
     SPEX_REQUIRE_KIND(A, SPEX_CSC);
 
