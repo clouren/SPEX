@@ -194,16 +194,6 @@ int main (int argc, char *argv [])
     option->algo = 99;
     ERR( SPEX_lu_factorize( &F, A, S, option), SPEX_INCORRECT_ALGORITHM);
     OK (SPEX_symbolic_analysis_free (&S, option));
-    
-    // Give an incorrect algorithm to spex lu solve
-    option->algo = SPEX_ALGORITHM_DEFAULT;
-    OK (SPEX_lu_analyze (&S, A, option));
-    OK (SPEX_lu_factorize (&F, A, S, option));
-    option->algo = 99;
-    ERR (SPEX_lu_solve (&x, F, b, option),
-        SPEX_INCORRECT_ALGORITHM);
-    OK (SPEX_symbolic_analysis_free (&S, option));
-    OK (SPEX_factorization_free (&F, option));
 
     SPEX_FREE_ALL;
     OK (SPEX_finalize ( )) ;

@@ -25,7 +25,7 @@
  *
  * b:               Right hand side vector(s)
  *
- * option:          Command options *
+ * option:          Command options
  */
 
 SPEX_info SPEX_cholesky_solve
@@ -45,21 +45,13 @@ SPEX_info SPEX_cholesky_solve
     const SPEX_options option   // command options
 )
 {
-    // Just need to call the symmetric solve with chol = true
+    // Just need to call the symmetric solve
     SPEX_info info;
-        // Ensure SPEX is initialized
+
+    // Ensure SPEX is initialized
     if (!spex_initialized())
     {
         return SPEX_PANIC;
-    }
-
-    // FIXME: do we care about option->algo here?
-    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
-    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_CHOL_LEFT
-        && algo != SPEX_CHOL_UP)
-    {
-        return SPEX_INCORRECT_ALGORITHM;
     }
 
     // Check the inputs
@@ -73,7 +65,7 @@ SPEX_info SPEX_cholesky_solve
         return SPEX_INCORRECT_INPUT;
     }
 
-    info = spex_symmetric_solve(x_handle, F, b, true, option);
+    info = spex_symmetric_solve(x_handle, F, b, option);
 
     return info;
 }

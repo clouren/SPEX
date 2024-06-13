@@ -45,22 +45,13 @@ SPEX_info SPEX_ldl_solve
     const SPEX_options option   // command options
 )
 {
-    // Just need to call the symmetric solve with chol = false
+    // Just need to call the symmetric solve
     SPEX_info info;
 
     // Ensure SPEX is initialized
     if (!spex_initialized())
     {
         return SPEX_PANIC;
-    }
-
-    // FIXME: do we care about option->algo here?
-    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
-    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LDL_LEFT
-        && algo != SPEX_LDL_UP)
-    {
-        return SPEX_INCORRECT_ALGORITHM;
     }
 
     // Check the inputs
@@ -74,7 +65,7 @@ SPEX_info SPEX_ldl_solve
         return SPEX_INCORRECT_INPUT;
     }
 
-    info = spex_symmetric_solve(x_handle, F, b, false, option);
+    info = spex_symmetric_solve(x_handle, F, b, option);
 
     return info;
 }

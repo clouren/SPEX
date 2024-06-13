@@ -405,7 +405,6 @@ SPEX_info spex_symmetric_solve
     SPEX_factorization F,       // The Cholesky or LDL factorization of A
     // input:
     const SPEX_matrix b,        // Right hand side vector
-    bool chol,                  // true if chol, false if ldl // FIXME: remove?
     const SPEX_options option   // command options
 ) ;
 

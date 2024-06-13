@@ -157,7 +157,7 @@ SPEX_info spex_symmetric_backslash
     // Ax = b stored as a set of numerators and denominators (mpq_t)
     //--------------------------------------------------------------------------
 
-    SPEX_CHECK( spex_symmetric_solve(&x, F, b, chol, option) );
+    SPEX_CHECK( spex_symmetric_solve(&x, F, b, option) );
 
     //--------------------------------------------------------------------------
     // At this point x is stored as mpq_t. If the user desires the output

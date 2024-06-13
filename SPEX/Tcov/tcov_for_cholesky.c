@@ -548,47 +548,28 @@ int main (int argc, char *argv [])
         SPEX_INCORRECT_ALGORITHM);
     ERR (SPEX_ldl_backslash (&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_ALGORITHM);
-    
+
     // invalid algorithm for Chol/ldl analyze
-    ERR (SPEX_cholesky_analyze( &S, A, option), 
+    ERR (SPEX_cholesky_analyze( &S, A, option),
          SPEX_INCORRECT_ALGORITHM);
-    ERR (SPEX_ldl_analyze( &S, A, option), 
+    ERR (SPEX_ldl_analyze( &S, A, option),
          SPEX_INCORRECT_ALGORITHM);
-    
+
     // invalid algorithm for Chol/ldl factorize
     option->algo = SPEX_ALGORITHM_DEFAULT;
     OK (SPEX_cholesky_analyze (&S, A, option));
     option->algo = 99;
-    ERR (SPEX_cholesky_factorize( &F, A, S, option), 
+    ERR (SPEX_cholesky_factorize( &F, A, S, option),
          SPEX_INCORRECT_ALGORITHM);
     OK (SPEX_symbolic_analysis_free (&S, option));
-    
+
     option->algo = SPEX_ALGORITHM_DEFAULT;
     OK (SPEX_ldl_analyze (&S, A, option));
     option->algo = 99;
-    ERR (SPEX_ldl_factorize( &F, A, S, option), 
+    ERR (SPEX_ldl_factorize( &F, A, S, option),
          SPEX_INCORRECT_ALGORITHM);
     OK (SPEX_symbolic_analysis_free (&S, option));
-    
-    // invalid algorithm for Chol/ldl solve
-    option->algo = SPEX_ALGORITHM_DEFAULT;
-    OK (SPEX_cholesky_analyze (&S, A, option));
-    OK (SPEX_cholesky_factorize (&F, A, S, option));
-    option->algo = 99;
-    ERR (SPEX_cholesky_solve( &x, F, b, option), 
-         SPEX_INCORRECT_ALGORITHM);
-    OK (SPEX_symbolic_analysis_free (&S, option));
-    OK (SPEX_factorization_free (&F, option));
-    
-    option->algo = SPEX_ALGORITHM_DEFAULT ;
-    OK (SPEX_ldl_analyze (&S, A, option));
-    OK (SPEX_ldl_factorize (&F, A, S, option));
-    option->algo = 99;
-    ERR (SPEX_ldl_solve( &x, F, b, option), 
-         SPEX_INCORRECT_ALGORITHM);
-    OK (SPEX_symbolic_analysis_free (&S, option));
-    OK (SPEX_factorization_free (&F, option));
-    
+
     ERR (SPEX_ldl_factorize (NULL, NULL, NULL, NULL),
         SPEX_INCORRECT_INPUT);
 
@@ -614,7 +595,6 @@ int main (int argc, char *argv [])
     F->kind = SPEX_LDL_FACTORIZATION;
     OK (SPEX_symbolic_analysis_free (&S, option));
     OK (SPEX_factorization_free (&F, option));
-
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_cholesky_backslash and check the solution
