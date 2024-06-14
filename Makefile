@@ -71,7 +71,7 @@ purge:
 	- ( cd AMD && $(MAKE) purge )
 	- ( cd COLAMD && $(MAKE) purge )
 	- ( cd SPEX && $(MAKE) purge )
-	- $(RM) -r include/* bin/* lib/*
+	- $(RM) -r include/* bin/* lib/* build/*
 
 clean: purge
 
