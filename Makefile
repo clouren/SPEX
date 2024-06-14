@@ -23,7 +23,7 @@ export SUITESPARSE = $(CURDIR)
 # Compile the default rules for each package.
 
 # default: compile and install in SPEX/lib and SPEX/include
-default: local install
+default: global
 
 # compile; "sudo make install" will install only in /usr/local
 # (or whatever your CMAKE_INSTALL_PREFIX is)
