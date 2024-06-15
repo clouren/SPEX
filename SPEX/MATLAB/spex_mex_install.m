@@ -1,5 +1,6 @@
 function spex_mex_install(run_demo)
-% spex_mex_install: install and test the MATLAB interface to SPEX MATLAB functions.
+% SPEX_MEX_INSTALL: install and test the MATLAB interface to SPEX MATLAB
+% functions.
 %
 % Usage: spex_mex_install
 %
@@ -82,6 +83,9 @@ end
 if (ismac)
     flags = [flags ' -DCLANG_NEEDS_MAIN'] ;
 end
+
+% flags = [' -O ' flags ] ;
+  flags = [' -g ' flags ] ;
 
 % libraries:
 if (isempty (suitesparse_libdir))

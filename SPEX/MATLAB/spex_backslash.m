@@ -1,18 +1,20 @@
 function x = spex_backslash(A, b, option)
 % SPEX_BACKSLASH: solve Ax=b via sparse integer-preserving factorization.
-% spex_backslash: computes the exact solution to the sparse linear system Ax = b
-% where A and b are stored as doubles. A must be stored as a sparse matrix. b
-% must be stored as a set of dense right hand side vectors (b can be either 1
-% or multiple vector(s)).  SPEX compues the result, x, exactly in
+% spex_backslash computes the exact solution to the sparse linear system
+% Ax = b where A and b are stored as doubles. A must be stored as a sparse
+% matrix. b must be stored as a set of dense right hand side vectors (b can be
+% either 1 or multiple vector(s)).  SPEX compues the result, x, exactly in
 % arbitrary-precision rational numbers. The solution x can be returned in the
 % following types:
-% (a) [floating-poing double] - This final rational-to-double conversion means that x may no
-% longer exactly solve Ax = b.
-% (b) [vpa matrix] - This is the arbitrary precision type in MATLAB.
-% (c) [cell array of strings] - x{i} = 'numerator/denominator', where the numerator
-% and denominator are strings of decimal digits of arbitrary length.
 %
-% If A is SPD, an exact up-looking Cholesky factorization is applied. Otherwise,
+% (a) [floating-poing double] - This final rational-to-double conversion means
+%   that x may no longer exactly solve Ax = b.
+% (b) [vpa matrix] - This is the arbitrary precision type in MATLAB.
+% (c) [cell array of strings] - x{i} = 'numerator/denominator', where the
+%   numerator and denominator are strings of decimal digits of arbitrary
+%   length.
+%
+% If A is SPD, an exact up-looking LDL factorization is applied. Otherwise,
 % an exact left-looking LU factorization is applied.
 %
 % Usage:
@@ -22,6 +24,24 @@ function x = spex_backslash(A, b, option)
 % x = spex_backslash(A, b, options) returns the solution to Ax = b with user
 %   defined settings in an options struct.  Entries not present are treated as
 %   defaults.
+%
+%   option.order: Column ordering used.
+%       'default' (or if not present): use COLAMD for LU, or use AMD for
+%           Cholesky or LDL.
+%       'none': no column ordering; factorize the matrix A as-is
+%       'colamd': COLAMD
+%       'amd': AMD
+%
+%   option.pivot: Row pivoting scheme used if LU factorization is used.
+%       'smallest': Smallest pivot (default)
+%       'diagonal': Diagonal pivoting
+%       'first': First nonzero per column chosen as pivot
+%       'tol smallest': Diagonal pivoting with tol for smallest pivot
+%       'tol largest': Diagonal pivoting with tol for largest pivot
+%       'largest': Largest pivot
+%
+%   option.tol: tolerance (0,1] for 'tol smallest' or 'tol largest' pivoting.
+%       default is 1.  Only applicable if LU factorization is used.
 %
 %   option.print: display the inputs and outputs
 %       0: nothing (default), 1: just errors, 2: terse, 3: all
@@ -81,7 +101,8 @@ function x = spex_backslash(A, b, option)
 %   err = norm (x-xtrue)
 %   resid = norm (A*x-b)
 %
-% See also vpa, spex_mex_install, spex_mex_test, spex_mex_demo.
+% See also vpa, spex_lu_backslash, spex_cholesky_backslash, spex_ldl_backslash,
+% spex_mex_install, spex_mex_test, spex_mex_demo.
 
 % spex_backslash is a wrapper for the exact routines contained within the SPEX
 % software package.  In order to use spex_backslash you must install the MATLAB

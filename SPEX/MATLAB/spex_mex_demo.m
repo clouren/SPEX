@@ -3,7 +3,8 @@
 % with a roundoff-free integer-preserving method.  The result is
 % always exact, unless the matrix A is perfectly singular.
 %
-% See also vpa, spex_mex_install, spex_mex_test.
+% See also vpa, spex_backslash, spex_lu_backslash, spex_cholesky_backslash,
+%   spex_ldl_backslash, spex_mex_install, spex_mex_test.
 
 % SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
 % Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
@@ -125,7 +126,7 @@ relerr = double (err (2:3) ./ xvpa (2:3))
 % If one wishes to obtain FULL floating-point precision and/or support
 % for floating point values smaller than 1e-16 there are two options:
 %
-%   1) Within MATLAB the user scaes the matrix themselves. If SPEX is
+%   1) Within MATLAB the user scales the matrix themselves. If SPEX is
 %      given an integer matrix it is preserved exactly
 %
 %   2) Within C convert the matrix to a SPEX_MPFR. MPFR numbers
