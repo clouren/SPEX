@@ -43,7 +43,7 @@ if (exist ('ssget') ~= 0)
     fprintf ('.') ;
 end
 
-orderings = { 'none', 'colamd', 'amd' } ;
+orderings = { 'default', 'none', 'colamd', 'amd' } ;
 pivotings = { 'smallest', 'diagonal', 'first', ...
     'tol smallest', 'tol largest', 'largest' } ;
 
