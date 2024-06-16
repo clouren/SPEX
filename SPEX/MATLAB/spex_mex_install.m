@@ -3,14 +3,14 @@ function spex_mex_install(run_demo)
 % functions.
 %
 % Usage:
-%   spex_mex_install            % compile the mexFunctions and run demos
-%   spex_mex_install (0)        % do not run the demos after installation
+%   spex_mex_install            % compile the mexFunctions and run the tests
+%   spex_mex_install (0)        % do not run the the tests after installation
 %
 % Required Libraries: GMP and MPFR.  You must run cmake in the top-level SPEX
-% folder first, to configure the spex_dep.m file so that this installation
+% folder first, to configure the spex_deps.m file so that this installation
 % script can find the GMP and MPRF libraries.
 %
-% See also spex_deps.
+% See also spex_deps, spex_demo.
 
 % SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
 % Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
@@ -155,5 +155,5 @@ fprintf ('line to your startup.m file:\n') ;
 fprintf ('   addpath (''%s'') ;\n', pwd) ;
 fprintf ('Type ''doc startup'' for more info on how to use startup.m\n') ;
 fprintf ('To run a demo, type:\n') ;
-fprintf ('   echodemo spex_mex_demo ;\n') ;
+fprintf ('   spex_demo\n') ;
 
