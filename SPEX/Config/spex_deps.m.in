@@ -1,9 +1,9 @@
 function [gmp_lib, gmp_include, mpfr_lib, mpfr_include] = spex_deps
-%SPEX_DEPS: return location of GMP and MPFR libraries and include files
+%SPEX_DEPS return location of GMP and MPFR libraries and include files
 % The SPEX/MATLAB/spex_deps.m function is configured by cmake, from the
 % source file SPEX/Config/spex_deps.m.in.
 
-% SPEX: (c) 2022-2024, Chris Lourenco, Jinhao Chen,
+% Copyright (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
 % Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 % All Rights Reserved.
 % SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
