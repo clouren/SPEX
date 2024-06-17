@@ -1,4 +1,4 @@
-function x = SPEX_lu_backslash (A,b,option)
+function x = spex_lu_backslash (A,b,option)
 % SPEX_LU_BACKSLASH: solve Ax=b via sparse left-looking integer-preserving LU
 % spex_lu_backslash computes the exact solution to the sparse linear system
 % Ax = b where A and b are stored as doubles. A must be stored as a sparse

@@ -17,6 +17,8 @@ function spex_mex_install(run_demo)
 % All Rights Reserved.
 % SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
+%#ok<*AGROW>
+
 if (nargin < 1)
     run_demo = true ;
 end
@@ -27,14 +29,14 @@ fprintf ('Compiling the SPEX for use in MATLAB:\n') ;
 src = '';
 path = './Source/';
 files = dir('./Source/*.c');
-[m n] = size(files);
+m = length(files);
 for k = 1:m
     tmp = [' ', path, files(k).name];
     src = [src, tmp];
 end
 path = '../SPEX_Utilities/Source/';
 files = dir('../SPEX_Utilities/Source/*.c');
-[m n] = size(files);
+m = length(files);
 for k = 1:m
     tmp = [' ', path, files(k).name];
     src = [src, tmp];
@@ -42,7 +44,7 @@ end
 
 path = '../SPEX_LU/Source/';
 files = dir('../SPEX_LU/Source/*.c');
-[m n] = size(files);
+m = length(files);
 for k = 1:m
     tmp = [' ', path, files(k).name];
     src = [src, tmp];
@@ -50,7 +52,7 @@ end
 
 path = '../SPEX_Cholesky/Source/';
 files = dir('../SPEX_Cholesky/Source/*.c');
-[m n] = size(files);
+m = length(files);
 for k = 1:m
     tmp = [' ', path, files(k).name];
     src = [src, tmp];
@@ -58,7 +60,7 @@ end
 
 path = '../SPEX_Backslash/Source/';
 files = dir('../SPEX_Backslash/Source/*.c');
-[m n] = size(files);
+m = length(files);
 for k = 1:m
     tmp = [' ', path, files(k).name];
     src = [src, tmp];
@@ -66,7 +68,7 @@ end
 
 path = '../../AMD/Source/';
 files = dir('../../AMD/Source/amd_l*.c');
-[m n] = size(files);
+m = length(files);
 for k = 1:m
     tmp = [' ', path, files(k).name];
     src = [src, tmp];
@@ -81,10 +83,10 @@ src = [src ' ../../SuiteSparse_config/SuiteSparse_config.c' ] ;
 
 % Compiler flags
 if (ismac)
-    flags = sprintf ('CFLAGS=''-std=c11 -DCLANG_NEEDS_MAIN=1 -fPIC ''') ;
+    flags = 'CFLAGS=''-std=c11 -DCLANG_NEEDS_MAIN=1 -fPIC ''' ;
     flags = [flags ' -DCLANG_NEEDS_MAIN'] ;
 else
-    flags = sprintf ('CFLAGS=''-std=c11 -fPIC ''') ;
+    flags = 'CFLAGS=''-std=c11 -fPIC ''' ;
 end
 
 flags = [' -O ' flags ] ;
@@ -104,7 +106,7 @@ else
     mpfr_include = [' -I' mpfr_include ' '] ;
 end
 
-includes = [ ' -ISource/ -I../Include/ -I../SPEX_Utilities/Source ' ] ;
+includes = ' -ISource/ -I../Include/ -I../SPEX_Utilities/Source ' ;
 includes = [includes gmp_include  mpfr_include ] ;
 includes = [includes ' -I../../AMD/Source  -I../../AMD/Include  '] ;
 includes = [includes ' -I../../COLAMD/Source  -I../../COLAMD/Include  '] ;

@@ -123,7 +123,7 @@ if (~isnumeric(A) || ~isnumeric(b))
 end
 
 % SPEX Backslash expects sparse input.
-% So, if A is not sprase it is sprasified.
+% So, if A is not sparse it is sprasified.
 if (~issparse(A))
     A = sparse(A);
 end
