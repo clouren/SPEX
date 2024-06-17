@@ -1,5 +1,5 @@
 function spex_mex_test
-% SPEX_MEX_TEST: run a set of tests for SPEX matlab interface
+%SPEX_MEX_TEST run a set of tests for SPEX matlab interface
 %
 % Usage:  spex_mex_test
 %
@@ -46,7 +46,7 @@ fprintf ('Testing SPEX Left LU: ') ;
 fprintf ('. (please wait) ') ;
 A = gr_30_30 ;
 
-[m n] = size(A);
+m = size(A,1);
 b = rand(m, 1);
 fprintf ('.') ;
 x = spex_lu_backslash(A,b);
@@ -124,7 +124,7 @@ fprintf ('Testing SPEX Cholesky and LDL: ') ;
 
 % Test with the HB/494_bus matrix:
 A = HB_494_bus ;
-[m n] = size(A);
+m = size(A,1);
 b = rand(m, 1);
 fprintf ('.') ;
 x = spex_cholesky_backslash(A,b);
@@ -266,3 +266,4 @@ else
 end
 
 fprintf("\nAll testing complete, ready to go!\n");
+

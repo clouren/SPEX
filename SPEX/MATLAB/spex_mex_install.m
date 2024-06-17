@@ -1,5 +1,5 @@
 function spex_mex_install(run_demo)
-% SPEX_MEX_INSTALL: install and test the MATLAB interface to SPEX MATLAB
+%SPEX_MEX_INSTALL install and test the MATLAB interface to SPEX MATLAB
 % functions.
 %
 % Usage:
@@ -158,4 +158,5 @@ fprintf ('   addpath (''%s'') ;\n', pwd) ;
 fprintf ('Type ''doc startup'' for more info on how to use startup.m\n') ;
 fprintf ('To run a demo, type:\n') ;
 fprintf ('   spex_demo\n') ;
+
 

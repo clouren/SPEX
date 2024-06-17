@@ -1,5 +1,5 @@
 function x = spex_backslash(A, b, option)
-% SPEX_BACKSLASH: solve Ax=b via sparse integer-preserving factorization.
+%SPEX_BACKSLASH solve Ax=b via sparse integer-preserving factorization.
 % spex_backslash computes the exact solution to the sparse linear system
 % Ax = b where A and b are stored as doubles. A must be stored as a sparse
 % matrix. b must be stored as a set of dense right hand side vectors (b can be
@@ -52,7 +52,7 @@ function x = spex_backslash(A, b, option)
 %       'vpa':  x is returned as a vpa array with option.digits digits (default
 %           is given by the MATLAB digits function).  The result may be
 %           inexact, if an entry in x cannot be exactly represented in the
-%           specified number of digits. Note: the conversion from the SPEX
+%           specified number of digits.  The conversion from the SPEX
 %           exact solution (stored as a rational vector) to an arbitrary
 %           precision vpa number is very slow (it can be much slower than
 %           exactly solving the system Ax = b).
@@ -70,8 +70,8 @@ function x = spex_backslash(A, b, option)
 % Example:
 %
 %   % In this first example, x = spex_backslash(A, b) returns an approximate
-%   % solution. Note that, since SPEX computes the solution exactly, the
-%   % only source of round-of-errors is the final rationa-to-double conversion.
+%   % solution. Since SPEX computes the solution exactly, the only source of
+%   % round-of-errors is the final rational-to-double conversion.
 %
 %   load west0479
 %   A = west0479 ;
@@ -151,3 +151,4 @@ if (isfield(option, 'solution') && isequal(option.solution, 'vpa'))
         x = vpa(x);
     end
 end
+

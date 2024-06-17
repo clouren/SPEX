@@ -1,5 +1,5 @@
 function x = spex_cholesky_backslash (A,b,option)
-% SPEX_CHOLESKY_BACKSLASH: solve Ax=b via sparse integer-preserving Cholesky
+%SPEX_CHOLESKY_BACKSLASH solve Ax=b via sparse integer-preserving Cholesky
 % spex_cholesky_backslash computes the exact solution to the sparse linear
 % system Ax = b where A and b are stored as doubles. A must be stored as a
 % sparse matrix and be SPD. b must be stored as a dense set of right hand side
@@ -131,4 +131,5 @@ if (isfield (option, 'solution') && isequal (option.solution, 'vpa'))
         x = vpa (x) ;
     end
 end
+
 

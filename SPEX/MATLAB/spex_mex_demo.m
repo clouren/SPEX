@@ -1,4 +1,4 @@
-%% spex_mex_demo a demo of the SPEX MATLAB interface
+%% a demo of the SPEX MATLAB interface
 % SPEX is a package for solving sparse linear systems of
 % equations with a roundoff-free integer-preserving method.
 % The result is always exact, unless the matrix A is perfectly
@@ -108,12 +108,12 @@ relerr = double (err (2:3) ./ xvpa (2:3))
 % and b are converted into a scaled integer matrix before solving
 % A*x=b with SPEX Left LU.
 %
-% Note that, importantly, SPEX obtains an integer matrix by
-% scaling the input. SPEX scales all input by 1e16. This is
-% because consider the number A(1,2). The value A(1,2)=0.9 is a
-% floating point number and cannot be represented exactly in IEEE
-% floating-point. Specifically, the rational represenation of it
-% is fl(0.9) = 45000000000000001 / 50000000000000000.
+% SPEX obtains an integer matrix by scaling the input. SPEX
+% scales all input by 1e16. This is because consider the number
+% A(1,2). The value A(1,2)=0.9 is a floating point number and
+% cannot be represented exactly in IEEE floating-point.
+% Specifically, the rational represenation of it is fl(0.9) =
+% 45000000000000001 / 50000000000000000.
 %
 % SPEX assumes the user wants what they typed in. Scaling this
 % matrix exactly gives the above rational. Conversely scaling
@@ -155,4 +155,9 @@ xvpa_as_double = double (xvpa)
 % Both vpa(A)\b and spex_backslash(A,b) compute the same result
 % in the end, when their results are converted to double.
 err = xvpa_as_double - xspex_as_double
+
+
+
+
+
 
