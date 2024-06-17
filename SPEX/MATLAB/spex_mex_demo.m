@@ -62,7 +62,7 @@ err_matlab = norm (x-xtrue)
 % singular.  The MATLAB numerical Cholesky factorization fails to
 % do so, returning a useless solution.
 
-A = sparse ([ % matrix JGD_Homology/ch3-3-b1:
+A = sparse ([ % T = JGD_Homology/ch3-3-b1 matrix ; A=T'*T:
       4    -1    -1     0    -1     0     0    -1     0
      -1     4     0    -1     0    -1     0    -1     0
      -1     0     4    -1    -1     0    -1     0     0
