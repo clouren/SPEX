@@ -907,7 +907,6 @@ SPEX_info SPEX_mpfr_mul_d (mpfr_t x, const mpfr_t y, const double z,
 SPEX_info SPEX_mpfr_set (mpfr_t x, const mpfr_t y, const mpfr_rnd_t rnd) ;
 SPEX_info SPEX_mpfr_set_d (mpfr_t x, const double y, const mpfr_rnd_t rnd) ;
 SPEX_info SPEX_mpfr_set_null (mpfr_t x) ;
-// FIXME: SPEX_mpfr_set_prec is missing from user guide:
 SPEX_info SPEX_mpfr_set_prec(mpfr_t x, const uint64_t size) ;
 SPEX_info SPEX_mpfr_set_q (mpfr_t x, const mpq_t y, const mpfr_rnd_t rnd) ;
 SPEX_info SPEX_mpfr_set_si (mpfr_t x, int64_t y, const mpfr_rnd_t rnd) ;
@@ -920,7 +919,6 @@ SPEX_info SPEX_gmp_fscanf (FILE *fp, const char *format, ... ) ;
 
 SPEX_info SPEX_mpq_abs (mpq_t x, const mpq_t y) ;
 SPEX_info SPEX_mpq_add (mpq_t x, const mpq_t y, const mpq_t z) ;
-// FIXME: SPEX_mpq_canonicalize missing from user guide:
 SPEX_info SPEX_mpq_canonicalize (mpq_t x);
 SPEX_info SPEX_mpq_clear (mpq_t x) ;
 SPEX_info SPEX_mpq_cmp (int *r, const mpq_t x, const mpq_t y) ;
