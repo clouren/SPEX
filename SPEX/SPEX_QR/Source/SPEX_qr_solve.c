@@ -27,12 +27,13 @@
 #define SPEX_FREE_WORKSPACE        \
 {                                  \
     SPEX_matrix_free(&b_new, option); \
+    SPEX_free(Qinv_perm);         \
 }
 
 # define SPEX_FREE_ALL             \
 {                                  \
     SPEX_FREE_WORKSPACE            \
-    SPEX_matrix_free(&b_new, option); \
+    SPEX_matrix_free(&x, option); \
 }
 
 # include "spex_qr_internal.h"
@@ -69,14 +70,20 @@ SPEX_info SPEX_qr_solve
     SPEX_matrix b_new = NULL, x=NULL;
     int64_t k, p, i,j,qi,qj;
     int64_t rank=F->rank; //when matrix is full rank, rank=n
+    int64_t index;
+    int64_t *Qinv_perm=NULL;
+    int64_t n=F->Q->n;
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));
     
-    int64_t index;
-    int64_t *Qinv_perm;
-    int64_t n=F->Q->n;
+    
     Qinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
+    if (!Qinv_perm)
+    {
+        SPEX_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
+    }
     for (k = 0; k < n; k++)
     {
             index = F->Q_perm[k];

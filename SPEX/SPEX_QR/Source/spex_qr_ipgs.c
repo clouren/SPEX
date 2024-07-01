@@ -50,11 +50,7 @@
 # define SPEX_FREE_ALL               \
 {                                    \
     SPEX_FREE_WORKSPACE              \
-    SPEX_matrix_free(&R, NULL);      \
-    SPEX_matrix_free(&Q, NULL);      \
-    SPEX_matrix_free(&rhos, NULL);      \
 }
-
 
 SPEX_info spex_qr_ipgs
 (
@@ -85,7 +81,7 @@ SPEX_info spex_qr_ipgs
     // Declare variables
     int64_t p, pQ, pR, iR, top, x,l, prev, iQ, k, i;
     int sgn;
-    int64_t *final;
+    int64_t *final=NULL;
 
     clock_t start, end;
     double times;
@@ -94,6 +90,11 @@ SPEX_info spex_qr_ipgs
     *isZeros=true; //start by assuming column of Q is linearly dependent
    
     final = (int64_t*) SPEX_malloc((m)*sizeof(int64_t));
+    if (!final)
+    {
+        SPEX_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
+    }
 
     //--------------------------------------------------------------------------
     // Compute row j of R, store as column
@@ -102,20 +103,11 @@ SPEX_info spex_qr_ipgs
     {
         // Obtain the index of the current nonzero
         i = R->i[pR];//column number where j is row number
-        if(j==26){
-            printf("%ld\n",i);
-        }
         // R(j,i) = Q(:,j) dot AQ(:,i)
         SPEX_CHECK(spex_dot_product(R->x.mpz[pR], Q, j, A, Q_perm[i], option)); 
     }
     //rhos stores the diagonal of R (pivots)
     SPEX_MPZ_SET(rhos->x.mpz[j],R->x.mpz[R->p[j]]);
-    option->print_level=3;
-    printf("%ld not zero",j);
-    SPEX_matrix_check(rhos, option);
-        if(j==26){
-        SPEX_matrix_check(A, option);
-    }
    
     //--------------------------------------------------------------------------
     // Update columns j+2 to n of Q
@@ -132,7 +124,7 @@ SPEX_info spex_qr_ipgs
             prev=Qj[iQ];
 
             //check if column j of Q had a zero element in row iQ
-            if((k>0 && prev<Q->p[k-1]) || (k==0 && prev==-1)) 
+            if((j>0 && prev<Q->p[j-1]) || (j==0 && prev==-1)) 
             {
                 continue;
             }//simbolic zero
@@ -158,13 +150,9 @@ SPEX_info spex_qr_ipgs
     // IPGE and finalize column j+1 of Q
     //--------------------------------------------------------------------------
     k=j+1;
-    if(Q->p[k]== Q->p[k+1])
-    {
-        printf("missingCol\n");
-    }
+
     //start=clock();
     // Find the necessary element of R
-    //printf("k: %ld\n",k);
     for(pR = R->p[j]; pR < R->p[j+1]; pR++)
     {
         i=R->i[pR];
@@ -195,7 +183,6 @@ SPEX_info spex_qr_ipgs
                 SPEX_CHECK(spex_history_update(Q,rhos,pQ,j-1,h[pQ],h[pQ]-1,0,option));
             }
             
-            printf("%ld\n",j);
             //IPGE update
             SPEX_CHECK(spex_ipge_update(Q,R,rhos,pQ,pR,j-1,j,prev,option));
         }

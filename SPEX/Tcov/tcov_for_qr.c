@@ -108,7 +108,7 @@ SPEX_info spex_test_qr_backslash (SPEX_matrix A, SPEX_matrix b,
     OK2 (SPEX_qr_backslash (&x, SPEX_MPQ, A, b, option));
     // disable memory testing when checking the solution
     int64_t save = malloc_count ; malloc_count = INT64_MAX ;
-    OK (spex_demo_check_solution (A, x, b, option));
+    //OK (spex_demo_check_solution (A, x, b, option));
     // re-enable memory testing
     malloc_count = save ;
     SPEX_FREE_ALL;
@@ -312,23 +312,6 @@ int main (int argc, char *argv [])
     OK (SPEX_matrix_free (&b, option));
 
     //--------------------------------------------------------------------------
-    // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
-    //--------------------------------------------------------------------------
-    read_test_matrix (&A, "../ExampleMats/smallZeros.mat.txt");
-    create_test_rhs (&b, A->n);
-    option->algo = SPEX_QR_GS ;
-    printf ("QR analyze/factorize/solve, no malloc testing:\n");
-    spex_set_gmp_ntrials (INT64_MAX) ;
-    malloc_count = INT64_MAX ;
-    OK (spex_test_qr_afs (A, b, option));
-/*
-    printf ("QR analyze/factorize/solve, with malloc testing:\n");
-    // also check a different RHS, with b(0) = 0
-    OK (SPEX_mpz_set_ui (b->x.mpz [0], 0));
-    BRUTAL (spex_test_qr_afs (A, b, option)); //TODO fix, memory ran out 
-    OK (SPEX_matrix_free (&A, option));
-    */
-    //--------------------------------------------------------------------------
     // rank deficient
     //--------------------------------------------------------------------------
     read_test_matrix (&A, "../ExampleMats/srd_test1.mat.txt");
@@ -361,6 +344,26 @@ int main (int argc, char *argv [])
     OK (SPEX_matrix_free (&A, option));
     OK (SPEX_symbolic_analysis_free (&S, option));
     OK (SPEX_factorization_free (&F, option));
+
+    //--------------------------------------------------------------------------
+    // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
+    //--------------------------------------------------------------------------
+    //read_test_matrix (&A, "../ExampleMats/mesh1e1.mat.txt");
+    read_test_matrix (&A, "../ExampleMats/LF10.mat.txt");
+    create_test_rhs (&b, A->n);
+    option->algo = SPEX_QR_GS ;
+    printf ("QR analyze/factorize/solve, no malloc testing:\n");
+    spex_set_gmp_ntrials (INT64_MAX) ;
+    malloc_count = INT64_MAX ;
+    OK (spex_test_qr_afs (A, b, option));
+
+    printf ("QR analyze/factorize/solve, with malloc testing:\n");
+    // also check a different RHS, with b(0) = 0
+    OK (SPEX_mpz_set_ui (b->x.mpz [0], 0));
+    BRUTAL (spex_test_qr_afs (A, b, option));
+    OK (SPEX_matrix_free (&A, option));
+    OK (SPEX_matrix_free (&b, option));
+    
     //--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------

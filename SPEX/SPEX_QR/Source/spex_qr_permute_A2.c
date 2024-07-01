@@ -97,7 +97,7 @@ SPEX_info spex_qr_permute_A2
             }
         }
     }
-    else
+    /*else
     {
 
         //----------------------------------------------------------------------
@@ -125,7 +125,7 @@ SPEX_info spex_qr_permute_A2
                 nz++;
             }
         }
-    }
+    }*/ //TODO fix permutes :D
 
     // Finalize the last column of PAQ
     PAQ->p[n] = nz;

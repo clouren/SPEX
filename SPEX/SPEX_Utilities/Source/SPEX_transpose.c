@@ -55,7 +55,7 @@ SPEX_info SPEX_transpose
 
     // Declare workspace
     w = (int64_t*) SPEX_calloc(m, sizeof(int64_t));
-    if (!w)
+    if (!w | !C)
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;

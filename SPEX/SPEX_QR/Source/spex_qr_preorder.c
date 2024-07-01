@@ -100,7 +100,7 @@ SPEX_info spex_qr_preorder
         // --- COLAMD ordering is used (DEFAULT)
         // S->q is set as COLAMD's column ordering.
         {
-            SPEX_CHECK( spex_colamd(&(S->Q_perm),&(S->unz),A,option));
+            SPEX_CHECK( spex_colamd(&(S->Q_perm),&(S->rnz),A,option));
         }
         break;
 
@@ -110,7 +110,7 @@ SPEX_info spex_qr_preorder
         // The number of nonzeros in R is given as AMD's computed
         // number of nonzeros in the Cholesky factor L of ATA 
         {
-            SPEX_CHECK( spex_amd(&(S->Q_perm),&(S->unz),A,option));
+            SPEX_CHECK( spex_amd(&(S->Q_perm),&(S->rnz),A,option));
         }
         break;
 
@@ -132,7 +132,7 @@ SPEX_info spex_qr_preorder
                 S->Q_perm[i] = i;
             }
             // Very crude estimate for number of R nonzeros
-            S->unz = 10*anz;
+            S->rnz = 10*anz;
         }
         break;
     }
@@ -145,17 +145,14 @@ SPEX_info spex_qr_preorder
     //--------------------------------------------------------------------------
     
     // estimate exceeds max number of nnz in A
-    if (S->unz > (double) n*n)
+    if (S->rnz > (double) n*n)
     {
         int64_t nnz = ceil(0.5*n*n);
-        S->unz =  nnz; //TODO unz??
+        S->rnz =  nnz;
     }
     // If estimate < n, it is possible that the first iteration of triangular
     // solve may fail, so we make sure that the estimate is at least n
-    if (S->unz < n)
-    {
-        S->unz += n;
-    }
+    if (S->rnz < n) S->rnz += n;
 
     // Allocate pinv
     S->Pinv_perm = (int64_t*)SPEX_calloc(n, sizeof(int64_t));

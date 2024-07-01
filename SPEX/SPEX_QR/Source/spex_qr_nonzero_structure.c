@@ -83,8 +83,8 @@ SPEX_info spex_qr_nonzero_structure
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
 
-    int64_t *w, *s, *leftmost;
-    int64_t *Qi, *Qp;
+    int64_t *w=NULL, *s=NULL, *leftmost=NULL;
+    int64_t *Qi=NULL, *Qp=NULL;
     int64_t top, k, len, i, p, n = A->n, m=A->m, m2=m, rnz, qnz, j,h,len2, col,q;
     SPEX_matrix R = NULL, Q=NULL;
     SPEX_matrix QT= NULL, RT=NULL;
@@ -96,7 +96,12 @@ SPEX_info spex_qr_nonzero_structure
 
     // Allocate R
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->rnz,
-        false, false, NULL));
+        false, true, NULL));
+    if (!R)
+    {
+        SPEX_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
+    }
 
     Qi = (int64_t*) SPEX_malloc((n*m)* sizeof (int64_t));
     Qp = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
@@ -104,7 +109,7 @@ SPEX_info spex_qr_nonzero_structure
     w = (int64_t*) SPEX_malloc((n+m2)* sizeof (int64_t));
     leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
     s = w + n ;
-    if (!w)
+    if (!w | !leftmost | !Qi | !Qp)
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
@@ -164,10 +169,10 @@ SPEX_info spex_qr_nonzero_structure
     }
     // Finalize R->p
     R->p[n] = rnz;
-    SPEX_CHECK(SPEX_transpose(&RT,R,false,NULL));
-    //SPEX_CHECK(spex_qr_transpose(&RT,R,NULL));
-    //SPEX_matrix_check(R, option);
 
+    R->i = (int64_t *) SPEX_realloc (rnz, S->rnz, sizeof (int64_t), R->i, &info);
+
+    SPEX_CHECK(SPEX_transpose(&RT,R,true,NULL));
     
     
     //--------------------------------------------------------------------------
@@ -200,23 +205,25 @@ SPEX_info spex_qr_nonzero_structure
     }
     // Finalize Q->p
     Qp[m] =  qnz;
-    SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz,
-        true, false, NULL));
-    
-    QT->i = (int64_t*) SPEX_malloc(qnz* sizeof (int64_t));
-    QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
-    memcpy(QT->i, Qi, (qnz)*sizeof(int64_t));
+    SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz+1,
+        false, false, NULL));
+    if (!QT)
+    {
+        SPEX_FREE_ALL;
+        return SPEX_OUT_OF_MEMORY;
+    }
+    //QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
+    //QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
+    Qi = (int64_t *) SPEX_realloc (qnz, (n*m), sizeof (int64_t), Qi, &info);
     memcpy(QT->p, Qp, (m+1)*sizeof(int64_t)); 
-    QT->p_shallow=false;
-    QT->i_shallow=false;
+    memcpy(QT->i, Qi, (qnz)*sizeof(int64_t));
+
+    //QT->p_shallow=false;
+    //QT->i_shallow=false;
 
     // Transpose to obtain the nonzero pattern of Q
     SPEX_CHECK(SPEX_transpose(&Q, QT, false, NULL));
-    Q->nz=qnz; //TODO change
-    //printf("n %ld m %ld %ld qnz\n",n,m,qnz );
-    //option->print_level = 3;
-    //SPEX_matrix_check(Q, option);
-    //SPEX_matrix_check(QT, option);
+    Q->nz=qnz; 
     //--------------------------------------------------------------------------
     // Copy values of A into Q
     //--------------------------------------------------------------------------
@@ -238,7 +245,7 @@ SPEX_info spex_qr_nonzero_structure
         {
             if(A->i[p] < Q->i[q])
             {
-                p++;
+                p++; //TODO tcov when does this happen??
             }
             else if(A->i[p] > Q->i[q])
             {
@@ -260,6 +267,12 @@ SPEX_info spex_qr_nonzero_structure
     (*R_handle) = RT; //Return R transpose because of how we store R in factorization
 
 
-    SPEX_FREE_WORKSPACE;
+    //SPEX_FREE_WORKSPACE;
+    SPEX_FREE(w);                   
+    SPEX_FREE(leftmost);            
+    SPEX_matrix_free(&QT,NULL);     
+    SPEX_matrix_free(&R, NULL);      
+    SPEX_FREE(Qi);                   
+    SPEX_FREE(Qp);                   
     return SPEX_OK;
 }

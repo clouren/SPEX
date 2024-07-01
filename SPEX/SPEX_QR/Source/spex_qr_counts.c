@@ -72,7 +72,7 @@ SPEX_info spex_qr_counts
     int64_t i, j, k, n, m, J, s, p, q, jleaf, nz;
     int64_t *colcount = NULL, *w = NULL;
     int64_t *head=NULL, *next=NULL;
-    SPEX_matrix AT;
+    SPEX_matrix AT=NULL;
     // Auxiliary variables
     int64_t  *maxfirst, *prevleaf, *ancestor, *first, *delta ;
     n = A->n ; m = A->m;
@@ -86,6 +86,7 @@ SPEX_info spex_qr_counts
     w = (int64_t*) SPEX_malloc (s* sizeof (int64_t));
     // Transpose matrix A
     SPEX_CHECK(SPEX_transpose(&AT, A, false, NULL));
+    
     if (colcount == NULL || w == NULL)
     {
         SPEX_FREE_ALL;
