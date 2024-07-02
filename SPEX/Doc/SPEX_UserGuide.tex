@@ -38,6 +38,9 @@
 \newboolean{update}   
 \setboolean{update}{false}
 \newcommand{\update}[1]{\ifthenelse{\boolean{update}}{\protect #1}{}}
+\newboolean{qr}   
+\setboolean{qr}{false}
+\newcommand{\qr}[1]{\ifthenelse{\boolean{qr}}{\protect #1}{}}
 
 \usepackage[Glenn]{fncychap} %Fancy Chapter Headers
 
@@ -60,7 +63,7 @@
 
 \thispagestyle{empty}
 \begin{center}\begin{large}
-    \phantom{.}\\[1in]
+    \vspace{1in}
     \textbf{User Guide for the SPEX Software Package} \\
     \vspace{5mm}
     
@@ -82,8 +85,7 @@
 
 %-------------------------------------------------------------------------------
 \newpage
-\tableofcontents
-%-------------------------------------------------------------------------------
+\makeatletter\@starttoc{toc}\makeatother%-------------------------------------------------------------------------------
 
 
 %-------------------------------------------------------------------------------
@@ -104,6 +106,8 @@ linear algebra routines. It currently consists of the following:
     \update{
     \item[SPEX Update] Sparse exact factorization update. Currently consists of LU and Cholesky column replacement updates and Cholesky rank 1 update. Please refer to Chapter \ref{ch:Update} for further details.}
 
+    \qr{
+    \item[SPEX QR] Sparse exact QR factorization to solve the linear system $A \mathbf{x} = \mathbf{b}$. Please refer to Chapter \ref{ch:QR} for further details.}
 \end{description}
 
 \noindent \textbf{Location:} \url{https://github.com/clouren/SPEX} and
@@ -795,6 +799,7 @@ A symbolic analysis \verb|SPEX_symbolic_analysis S| has the following components
 
 \item \verb|S->unz|: Approximate number of nonzeros in $U$. In LU factorization, this is a crude estimate based on either AMD or COLAMD. In Cholesky/LDL factorization this is not used. Data type: \verb|int64_t|
 
+
 \item \verb|S->parent|: This is the elimination tree of the input matrix for Cholesky or LDL factorization. This is always \verb|NULL| for LU factorization. Data type: \verb|int64_t*|
 
 \item \verb|S->cp|: Column pointers of L for Cholesky or LDL factorization. This is always \verb|NULL| for LU factorization. Data type: \verb|int64_t*|
@@ -838,6 +843,8 @@ The components of a \verb|SPEX_factorization F| are as follows:
 
 \item \verb|F->Qinv_perm|: Inverse column permutation of the LU factors. This is \verb|NULL| and ignored for Cholesky/LDL factorization. Data type: \verb|int64_t*|
 
+% Causing overleaf errors
+%\qr{\item \verb|F->rank|: rank of matrix $A$. Computed when using the QR facotrization.}
 \end{itemize}
 
 \update{
@@ -2697,6 +2704,148 @@ Upon successful completion, the function returns \verb|SPEX_OK|, and
 
 
 
+%\qr{ %OPENQR
+\begin{comment}
+\chapter{SPEX QR}\vspace{-0.75in} \label{ch:QR}
+\section{Overview} \label{s:QR:intro}
+
+\section{Licencing}
+\textbf{Copyright:} The copyright of this software is held by  Christopher Lourenco, Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.\\
+\noindent \textbf{Contact Info:} Contact Chris Lourenco,
+\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
+\href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
+\href{mailto:davis@tamu.edu}{davis@tamu.edu}, or
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}\\
+
+\noindent \textbf{License:} This software package is dual licensed under the GNU General Public License version 2 or the GNU Lesser General Public License version 3. Details of this license are in 
+%\verb|SPEX/License/license.txt|. 
+For alternative licenses, please contact the authors.
+
+\section{Factorization and Solve Routines}
+
+To factorize and solve a linear system $A \mathbf{x} = \mathbf{b}$ via the SPEX QR factorization, a user must call analyze, factorize, and solve. The functions are explained below:
+%-------------------------------------------------------------------------------
+\subsection{\texttt{SPEX\_qr\_analyze}: symbolic analysis for QR factorization} \label{ss:spex_qr_analyze}
+%-------------------------------------------------------------------------------
+\begin{mdframed}[userdefinedwidth=\textwidth]
+{\footnotesize
+\begin{verbatim}
+    SPEX_info SPEX_qr_analyze
+    (
+        // Output
+        SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure 
+        // Input
+        const SPEX_matrix A,          // Input matrix of SPEX_CSC
+        const SPEX_options option     // Command options (Default if NULL)
+    );
+    \end{verbatim}
+} \end{mdframed}
+
+\verb|SPEX_qr_analyze| performs symbolic analysis for the REF QR factorization. On input, the \verb|SPEX_symbolic_analysis S| that  \verb|S_handle| points to is undefined;  \verb|A| must be a matrix of \verb|SPEX_CSC| kind;  and \verb|option| contains any command parameters  (default settings are used if
+\verb|option| is input as \verb|NULL|). On output, \verb|S| contains the row and column ordering of \verb|A|, the exact number of nonzeros in $R$, the elimination tree of \verb|A|, and the column pointers of $R$. The type of ordering can be chosen with \verb|option->order|. It is suggested that COLAMD is used.
+
+
+
+%-------------------------------------------------------------------------------
+%\cprotect\subsection{\verb|SPEX_Chol_factorize|: Compute the QR factorization of A} \label{ss:spex_qr_factorize}
+\subsection{\texttt{SPEX\_qr\_factorize}: Compute the QR factorization of A} \label{ss:spex_qr_factorize}
+%-------------------------------------------------------------------------------
+\begin{mdframed}[userdefinedwidth=\textwidth]
+{\footnotesize
+\begin{verbatim}
+    SPEX_info SPEX_qr_factorize
+    (
+        // Output
+        SPEX_factorization *F_handle,  // QR factorization struct
+        //Input
+        const SPEX_matrix A,       // CSC MPZ Matrix to be factored   
+        const SPEX_symbolic_analysis S,// Symbolic analysis struct from
+                                   // SPEX_QR_analyze.
+        const SPEX_options option  // command options, option->qr_type can be
+                                   // QR_GS
+    );
+\end{verbatim}
+} \end{mdframed}
+
+\verb|SPEX_qr_factorize| performs the REF QR factorization. On input, the \verb|SPEX_factorization| \verb|F| that \verb|F_handle| points to is undefined; \verb|A| must be a matrix of \verb|SPEX_CSC SPEX_MPZ| format; \verb|S| is obtained from \verb|SPEX_qr_analyze| that contains the column/row ordering of \verb|A|; and \verb|option| contains any command parameters   (default settings are used if
+\verb|option| is input as \verb|NULL|). On output, \verb|A|, \verb|S|, and \verb|option| are unmodified and \verb|F| contains the REF QR factorization of \verb|A|.
+
+%Returns \verb|SPEX_PANIC| if SPEX has not been initialized.  Otherwise, if another
+If error occurs, \verb|F| is returned as \verb|NULL|, and an appropriate error code is returned.
+
+%-------------------------------------------------------------------------------
+%\cprotect\subsection{\verb|SPEX_Chol_solve|: solve the linear system $Ax=b$}
+%\newpage
+\subsection{\texttt{SPEX\_qr\_solve}: solve the linear system} \label{ss:SPEX_QR_solve}
+%-------------------------------------------------------------------------------
+\begin{mdframed}[userdefinedwidth=\textwidth]
+{\footnotesize
+\begin{verbatim}
+    SPEX_info SPEX_qr_solve   // solves the linear system LD^(-1)L^T x = b
+    (
+        // Output
+        SPEX_matrix *x_handle,  // rational solution to the system. 
+        // input/output:
+        SPEX_factorization F,   // The non-updatable QR factorization.
+        // input:
+        const SPEX_matrix b,    // Right hand side vector
+        const SPEX_options option // command options
+    );
+\end{verbatim}
+} \end{mdframed}
+
+\verb|SPEX_qr_solve| obtains the solution of \verb|mpq_t| type to the
+linear system $Ax=b$ upon a successful factorization.  This function may be
+called after a successful return from \newline \verb|SPEX_qr_factorize|.
+
+On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined; \verb|F| must be a valid QR factorization and \verb|b| must be dense \verb|mpz_t| with same number of rows as \verb|F->R|. Default settings are used if
+\verb|option| is input as \verb|NULL|. Upon successful completion, the function returns \verb|SPEX_OK|, and \verb|x|
+contains the solution of \verb|mpq_t| type with dense format to the linear
+system $Ax=b$. 
+In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is returned.
+
+
+%-------------------------------------------------------------------------------
+%\cprotect\subsection{\verb|SPEX_qr_backslash|: solve $Ax=b$}
+\subsection{\texttt{SPEX\_qr\_backslash}: solve a linear system}
+\label{ss:SPEX_qr_backslash}
+%-------------------------------------------------------------------------------
+\begin{mdframed}[userdefinedwidth=\textwidth]
+{\footnotesize
+\begin{verbatim}
+    SPEX_info SPEX_qr_backslash
+    (
+        // Output
+        SPEX_matrix *x_handle,       // Final solution vector(s)
+        // Input
+        SPEX_type type,               // Type of output desired. Must be
+                                      // SPEX_FP64, SPEX_MPFR, or SPEX_MPQ
+        const SPEX_matrix A,          // Input matrix of SPEX_CSC SPEX_MPZ
+        const SPEX_matrix b,          // Right hand side vector(s). Must be
+                                      // SPEX_DENSE SPEX_MPZ 
+        const SPEX_options option     // Command options (Default if NULL)
+    );
+\end{verbatim}
+} \end{mdframed}
+
+\verb|SPEX_qr_backslash| solves the linear system $Ax=b$ and returns the solution
+as a dense matrix of \verb|mpq_t|, \verb|mpfr_t| or \verb|double| entries. This
+function performs symbolic analysis, factorization, and solving all in one line. 
+It can be thought of as an exact version of MATLAB sparse backslash for SPD matrices.
+
+On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined. \verb|type| must be one of:
+\verb|SPEX_MPQ|, \verb|SPEX_MPFR| or \verb|SPEX_FP64| to specify the data type
+of the solution entries. \verb|A| should be a CSC \verb|mpz_t| matrix
+while \verb|b| should be a dense \verb|mpz_t| matrix. In addition, \verb|A->m|
+should be equal to \verb|b->m|.  Default settings are used if
+\verb|option| is input as \verb|NULL|.
+
+Upon successful completion, the function returns \verb|SPEX_OK|, and
+\verb|x| contains the solution of data type specified by
+\verb|type| to the linear system $Ax=b$. In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is returned.
+
+%} %CLOSEQR
+\end{comment}
 %-------------------------------------------------------------------------------
 \chapter{SPEX Backslash}\vspace{-0.75in} \label{ch:Backslash}
 %-------------------------------------------------------------------------------
@@ -3240,7 +3389,7 @@ The SPEX Python interface includes an object as an optional input parameter that
 %-------------------------------------------------------------------------------
 \subsection{\texttt{lu\_backslash}}
 %-------------------------------------------------------------------------------
-The \verb|lu_backslash| function solves the linear system $A\x=\b$ where$A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times 1}$ and $\b \in \mathtt{R}^{n \times 1}$. The final solution vector(s) obtained via this function are exact prior to their conversion to double precision. 
+The \verb|lu_backslash| function solves the linear system $A\x=\b$ where $A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times 1}$ and $\b \in \mathtt{R}^{n \times 1}$. The final solution vector(s) obtained via this function are exact prior to their conversion to double precision. 
 
 The LU function expects as input a \verb|scipy| sparse matrix $A$ and a right hand side vector $\b$. Optionally, \verb|option| object can be passed in.
 Currently, there are 2 ways to use this function outlined below:
@@ -3258,7 +3407,7 @@ The solution \verb|x| may also be returned as a list of strings; See Section \re
 %-------------------------------------------------------------------------------
 \subsection{\texttt{cholesky\_backslash}}
 %-------------------------------------------------------------------------------
-The \verb|cholesky_backslash| function solves the linear system $A\x=\b$ where$A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times 1}$ and $\b \in \mathtt{R}^{n \times 1}$. The final solution vector(s) obtained via this function are exact prior to their conversion to double precision. Note that $A$ must be symmetric positive definite.
+The \verb|cholesky_backslash| function solves the linear system $A\x=\b$ where $A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times 1}$ and $\b \in \mathtt{R}^{n \times 1}$. The final solution vector(s) obtained via this function are exact prior to their conversion to double precision. Note that $A$ must be symmetric positive definite.
 
 The Cholesky function expects as input a \verb|scipy| sparse matrix $A$ and a right hand side vector $\b$. Optionally, \verb|option| object can be passed in.
 Currently, there are 2 ways to use this function outlined below:
@@ -3276,7 +3425,7 @@ The solution \verb|x| may also be returned as a list of strings; See Section \re
 %-------------------------------------------------------------------------------
 \subsection{\texttt{backslash}}
 %-------------------------------------------------------------------------------
-The \verb|backslash| function solves the linear system $A\x=\b$ where$A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times 1}$ and $\b \in \mathtt{R}^{n \times 1}$. The final solution vector(s) obtained via this function are exact prior to their conversion to double precision. Note that $A$ must be symmetric positive definite.
+The \verb|backslash| function solves the linear system $A\x=\b$ where $A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times 1}$ and $\b \in \mathtt{R}^{n \times 1}$. The final solution vector(s) obtained via this function are exact prior to their conversion to double precision. Note that $A$ must be symmetric positive definite.
 
 The Backslash function expects as input a \verb|scipy| sparse matrix $A$ and a right hand side vector $\b$. Optionally, \verb|option| object can be passed in. If A is numerically symmetric, it attempts a Cholesky factorization. If the Cholesky fails or if the matrix is not numerically symmetric it performs an LU factorization.
 Currently, there are 2 ways to use this function outlined below:
