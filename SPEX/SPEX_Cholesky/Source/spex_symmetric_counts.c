@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_counts: Column counts for Cholesky factorization
+// SPEX_Cholesky/spex_symmetric_counts: Column counts for Cholesky factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -26,11 +26,11 @@
 #define NEXT(J)   (-1)
 
 /* Purpose: Obtain the column counts of an SPD matrix for Cholesky
- * factorization. This is a modified version of Csparse's cs_chol_counts
- * function
+ * factorization or a symmetrix matrix for LDL factorization.  This is a
+ * modified version of Csparse's cs_chol_counts function.
  */
 
-SPEX_info spex_cholesky_counts
+SPEX_info spex_symmetric_counts
 (
     // Output
     int64_t **c_handle,     // On ouptut: column counts
@@ -94,7 +94,7 @@ SPEX_info spex_cholesky_counts
             for (p = A->p[J] ; p < A->p[J+1] ; p++)
             {
                 i = A->i[p] ;
-                SPEX_CHECK(spex_cholesky_leaf(&q, i, j, first, maxfirst,
+                SPEX_CHECK(spex_symmetric_leaf(&q, i, j, first, maxfirst,
                     prevleaf, ancestor, &jleaf));
                 if (jleaf >= 1)
                 {

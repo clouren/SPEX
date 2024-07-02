@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_forward_sub: Solve the system LDx = b
+// SPEX_Cholesky/spex_symmetric_forward_sub: Solve the system LDx = b
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -9,12 +9,17 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs sparse REF forward substitution This is
- * essentially the same as the sparse REF triangular solve applied to each
- * column of the right hand side vectors. Like the normal one, this
- * function expects that the vector x is dense. As a result,the nonzero
- * pattern is not computed and each nonzero in x is iterated across.
- * The system to solve is LDx = x
+/* Purpose: This function performs sparse REF forward substitution for Cholesky
+ * or LDL factorization.  On input, x contains the right hand side vectors, L
+ * is the Cholesky or LDL factor of A and rhos is the sequence of pivots used
+ * during factorization.  On output, x contains the solution to LD x = x Note
+ * that this function assumes that x is stored as a dense matrix.
+ *
+ * This is essentially the same as the sparse REF triangular solve applied to
+ * each column of the right hand side vectors. Like the normal one, this
+ * function expects that the vector x is dense. As a result,the nonzero pattern
+ * is not computed and each nonzero in x is iterated across.  The system to
+ * solve is LDx = x.
  *
  * On output, the matrix x structure is modified
  *
@@ -32,14 +37,15 @@
 
 #include "spex_cholesky_internal.h"
 
-SPEX_info spex_cholesky_forward_sub
+SPEX_info spex_symmetric_forward_sub
 (
     // Input/Output
     SPEX_matrix x,               // Right hand side matrix.
                                  // On input: contains b
                                  // On output: contains the solution of LD x = x
     // Input
-    const SPEX_matrix L,         // REF Cholesky factor of A (lower triangular)
+    const SPEX_matrix L,         // REF Cholesky or LDL factor of A
+                                 // (lower triangular)
     const SPEX_matrix rhos       // Sequence of pivots used in factorization
 )
 {

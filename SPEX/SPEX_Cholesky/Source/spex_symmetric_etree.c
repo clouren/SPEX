@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_etree: Compute the elimination tree of a matrix A
+// SPEX_Cholesky/spex_symmetric_etree: Compute the elimination tree of a matrix A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -25,13 +25,14 @@
 
 /* Purpose: Compute the elimination tree of A */
 
-SPEX_info spex_cholesky_etree
+SPEX_info spex_symmetric_etree
 (
     // Output
     int64_t **tree_handle,      // On output: contains the elimination tree of A
                                 // On input: undefined.
     // Input
-    const SPEX_matrix A         // Input matrix (must be SPD).
+    const SPEX_matrix A         // Input matrix (must be symmetric with
+                                // nonzero diagonal).
 )
 {
 

@@ -45,12 +45,12 @@ found in the lists below.
 
 ==> AMD/Doc/License.txt <==
 
-    AMD, Copyright (c), 1996-2015, Timothy A. Davis,
+    AMD, Copyright (c), 1996-2023, Timothy A. Davis,
     Patrick R. Amestoy, and Iain S. Duff.  All Rights Reserved.
 
     Availability:
 
-        http://www.suitesparse.com
+        http://suitesparse.com
 
     -------------------------------------------------------------------------------
     AMD License: BSD 3-clause:
@@ -81,9 +81,8 @@ found in the lists below.
         DAMAGE.
 
 ==> COLAMD/Doc/License.txt <==
-
-    COLAMD, Copyright 1998-2016, Timothy A. Davis.  http://www.suitesparse.com
-    http://www.suitesparse.com
+    COLAMD, Copyright 1998-2023, Timothy A. Davis.  http://suitesparse.com
+    http://suitesparse.com
 
     COLAMD License: BSD 3-clause
 

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_ereach: Compute reach of an elimination tree
+// SPEX_Cholesky/spex_symmetric_ereach: Compute reach of an elimination tree
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -11,11 +11,14 @@
 
 #include "spex_cholesky_internal.h"
 
-/* Purpose: This function computes the reach of the kth row of A onto the graph
- * of L using the elimination tree. It finds the nonzero pattern of row k of L
- * and uses the upper triangular part of A(:,k) */
+/* Purpose: This function computes the reach of the kth row of A on the
+ * elimination tree of A.  On input, k is the iteration of the algorithm,
+ * parent contains the elimination tree and w is workspace.  On output,
+ * xi[top_handle..n-1] contains the nonzero pattern of the kth row of L (or the
+ * kth column of L').
+ */
 
-SPEX_info spex_cholesky_ereach
+SPEX_info spex_symmetric_ereach
 (
     // Output
     int64_t *top_handle,    // On output: starting point of nonzero pattern

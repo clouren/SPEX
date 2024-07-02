@@ -2,7 +2,9 @@
 # SPEX/CMakeLists.txt:  root CMake build rules
 #-------------------------------------------------------------------------------
 
-# Copyright (c) 2023-2024, Timothy A. Davis, All Rights Reserved. FIXME
+# SPEX: (c) 2019-2024, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis, Texas A&M.
+# All Rights Reserved.
 # Just this particular file is under the Apache-2.0 license; each package has
 # its own license.
 # SPDX-License-Identifier: Apache-2.0
@@ -102,7 +104,7 @@ endif ( )
 
 if ( SUITESPARSE_USE_SYSTEM_SUITESPARSE_CONFIG )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "suitesparse_config" )
-    find_package ( SuiteSparse_config 7.7.0 REQUIRED )
+    find_package ( SuiteSparse_config 7.8.0 REQUIRED )
 else ( )
     if ( NOT "suitesparse_config" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
         message ( STATUS "Adding \"suitesparse_config\" to the list of built targets." )

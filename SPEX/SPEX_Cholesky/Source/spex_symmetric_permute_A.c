@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_permute_A: Symmetric permutation of matrix A
+// SPEX_Cholesky/spex_symmetric_permute_A: Symmetric permutation of matrix A
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -14,19 +14,21 @@
 #undef  SPEX_FREE_ALL
 #define SPEX_FREE_ALL { SPEX_matrix_free (&PAP, NULL); }
 
-/* Purpose: Given the row/column permutation P stored in S, permute the matrix
- * A and return PAP'
+/* Purpose: Permute the matrix A and return PAP = P*A*P'.  On input PAP is
+ * undefined and A contains the input matrix.  On output PAP contains the
+ * permuted matrix (P*A*P').
+ *
  * Input arguments:
  *
  * PAP_handle:   The user's permuted input matrix.
  *
  * A:            The user's input matrix
  *
- * S:            Symbolic analysis struct for Cholesky factorization.
+ * S:            Symbolic analysis struct for Cholesky or LDL factorization.
  *               Contains row/column permutation of A
  */
 
-SPEX_info spex_cholesky_permute_A
+SPEX_info spex_symmetric_permute_A
 (
     //Output
     SPEX_matrix* PAP_handle,   // On input: undefined

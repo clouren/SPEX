@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_up_triangular_solve: Sparse sym REF tri. solve
+// SPEX_Cholesky/spex_symmetric_up_triangular_solve: Sparse sym REF tri. solve
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -13,10 +13,12 @@
 
 #include "spex_cholesky_internal.h"
 
-/* Purpose: This function performs the symmetric sparse REF triangular solve
- * for the up-looking Cholesky factorization. i,e, LD x = A(1:k-1, k). At the
- * end of this function, the vector x contains the values of the kth row of the
- * integer- preserving matrix L.
+/* Purpose: This function performs the symmetric sparse REF triangular solve.
+ * for uplooking Cholesky or LDL factorization. i.e., (LD) x = A(1:k-1,k).
+ * At the given iteration k it computes the k-th column of L' (k-th row of L).
+ *
+ * At the end of this function, the vector x contains the values of the kth row
+ * of the integer-preserving matrix L.
  *
  * Input arguments of the function:
  *
@@ -60,7 +62,7 @@ static inline int compar (const void * a, const void * b)
     return (x < y ? -1 : ((x == y) ? 0 : 1)) ;
 }
 
-SPEX_info spex_cholesky_up_triangular_solve
+SPEX_info spex_symmetric_up_triangular_solve
 (
     //Output
     int64_t *top_output,            // On input NULL. On output contains the
@@ -112,7 +114,7 @@ SPEX_info spex_cholesky_up_triangular_solve
     // Obtain the nonzero pattern of the kth row of L by analyzing the
     // elimination tree of A. The indices of these nonzeros are stored in
     // xi[top..n-1]
-    SPEX_CHECK(spex_cholesky_ereach(&top, xi, A, k, parent, c));
+    SPEX_CHECK(spex_symmetric_ereach(&top, xi, A, k, parent, c));
 
     ASSERT (top >= 0 && top <= n) ;
 

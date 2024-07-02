@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_factor: Integer preserving Cholesky factorization
+// SPEX_Cholesky/spex_symmetric_factor: Wrapper for Cholesky/LDL factorization
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -17,11 +17,23 @@
 
 #include "spex_cholesky_internal.h"
 
-/* Purpose: This function performs the integer preserving Cholesky
- * factorization.  It allows either the left-looking or up-looking
- * integer-preserving Cholesky factorization. In order to compute the L matrix,
- * it performs n iterations of a sparse REF symmetric triangular solve
- * function. The overall factorization is PAP' = LDL'
+/* Purpose: Compute a symmetric factorization A = LDL'.
+ * Only appropriate if A is symmetric with a nonzero diagonal F->kind must be
+ * SPEX_CHOLESKY_FACTORIZATION or SPEX_LDL_FACTORIZATION If F->kind is
+ * SPEX_CHOLESKY, A must be SPD, otherwise an error code is returned.  On input
+ * A contains the user's matrix, option->algo indicates which factorization
+ * algorithm is used; up-looking (default) or left-looking On output, L
+ * contains the L factor of A, rhos contains the pivot elements and S contains
+ * the elimination tree lower triangular matrix and rhos contains the pivots'
+ * values used in the factorization.
+ *
+ * This function performs the either the integer preserving Cholesky or integer
+ * preserving LDL factorization.  It allows either the left-looking or
+ * up-looking factorization. In order to compute the L matrix, it performs n
+ * iterations of a sparse REF symmetric triangular solve function. The overall
+ * factorization is PAP' = LDL' The algorithms only differ by if its a Cholesky
+ * or LDL factorization.  If it's Cholesky, diagonal elements must be >0. If
+ * it's LDL they can be any nonzero.
  *
  * Importantly, this function assumes that A has already been permuted,
  *              and symbolically analyzed.
@@ -32,29 +44,39 @@
  *              On output, contains a pointer to the factorization (this
  *              includes matrix L)
  *
- * S:           Symbolic analysis struct for Cholesky factorization.
+ * S:           Symbolic analysis struct for Cholesky or LDL factorization.
  *              On input it contains the elimination tree and
  *              the number of nonzeros in L.
  *
  * A:           The user's permuted input matrix
  *
- * option:      Command options. Notably, option->chol_type indicates whether
- *              it is performing a left-looking (SPEX_CHOL_LEFT) or up-looking
- *              factorization (SPEX_CHOL_UP) (default)
+ * chol:        True if we are performing a Cholesky factorization
+ *              and false if we are performing LDL
+ *
+ * option:      Command options. Notably, option->algo indicates whether
+ *              it is performing a left-looking (SPEX_CHOL_LEFT or
+ *              SPEX_LDL_LEFT), or up-looking factorization (SPEX_CHOL_UP or
+ *              SPEX_LDL_UP).
  */
 
-SPEX_info spex_cholesky_factor
+SPEX_info spex_symmetric_factor
 (
     // Output
-    SPEX_factorization *F_handle,   // Cholesky factorization
+    SPEX_factorization *F_handle,   // Factorization struct
     //Input
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
                                // elimination tree of A, the column pointers of
                                // L, and the exact number of nonzeros of L.
     const SPEX_matrix A,       // Matrix to be factored
+    bool chol,                 // If true we are attempting a Cholesky
+                               // factorization only and thus the pivot
+                               // elements must be >0 If false, we try a
+                               // general LDL factorization with the pivot
+                               // element strictly != 0.
     const SPEX_options option  // Command options
-                               // Notably, option->chol_type indicates whether
-                               // CHOL_UP (default) or CHOL_LEFT is used.
+                               // Notably, option->algo indicates whether
+                               // SPEX_CHOL_UP, SPEX_CHOL_LEFT, SPEX_LDL_UP, or
+                               // SPEX_LDL_LEFT is used.
 )
 {
 
@@ -89,7 +111,10 @@ SPEX_info spex_cholesky_factor
     if (F == NULL) return SPEX_OUT_OF_MEMORY;
 
     // set factorization kind
-    F->kind = SPEX_CHOLESKY_FACTORIZATION;
+    if (chol)
+        F->kind = SPEX_CHOLESKY_FACTORIZATION;
+    else
+        F->kind = SPEX_LDL_FACTORIZATION;
 
     // Allocate and set scale_for_A
     SPEX_MPQ_INIT(F->scale_for_A);
@@ -114,22 +139,24 @@ SPEX_info spex_cholesky_factor
     // factorization: up-looking or left-looking
     //--------------------------------------------------------------------------
 
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+
     switch(algo)
     {
+        default:
         case SPEX_ALGORITHM_DEFAULT:
-            // fall through to up-looking Cholesky (the default)
         case SPEX_CHOL_UP:
-            SPEX_CHECK( spex_cholesky_up_factor(&(F->L), &(F->rhos), S, A,
+        case SPEX_LDL_UP:
+            SPEX_CHECK( spex_symmetric_up_factor(&(F->L), &(F->rhos), S, A, chol,
                 option));
             break;
+
         case SPEX_CHOL_LEFT:
-            SPEX_CHECK( spex_cholesky_left_factor(&(F->L), &(F->rhos), S, A,
+        case SPEX_LDL_LEFT:
+            SPEX_CHECK( spex_symmetric_left_factor(&(F->L), &(F->rhos), S, A, chol,
                 option) );
             break;
-        default:
-            SPEX_FREE_ALL;
-            return SPEX_INCORRECT_ALGORITHM;
     }
 
     //--------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Cholesky/spex_cholesky_backward_sub: Solve L' x = b for Cholesky
+// SPEX_Cholesky/spex_symmetric_backward_sub: Solve L' x = b for Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
@@ -13,15 +13,13 @@
 
 #include "spex_cholesky_internal.h"
 
-
-/* Purpose: This function solves the linear system L' x = x for Cholesky
- * factorization. On input, x contains the forward substitution solution vector
- * (that is the solution of L D x = b. On output, x contains the exact solution
- * of the system Ax = (det A)*b L is the lower triangular REF Cholesky factor of
- * A. It is not modified on input/output
+/* Purpose: This solves the system L'x = b for Cholesky or LDL factorization.
+ * On input, x contains the scaled solution of L D x = b and L is the REF
+ * Cholesky or LDL factor of A.  On output, x is the solution to the linear
+ * system Ax = (det A)b.
  */
- 
-SPEX_info spex_cholesky_backward_sub
+
+SPEX_info spex_symmetric_backward_sub
 (
     // Output
     SPEX_matrix x,          // Solution vector to A x = det(A) * b
