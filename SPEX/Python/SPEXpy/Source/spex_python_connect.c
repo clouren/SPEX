@@ -146,7 +146,7 @@ SPEX_info spex_python
             int sizeStr;
             sizeStr=strlen(s);
             //allocate sol_char[i]
-             sol_void[i] = malloc (sizeStr + 1);  // +1 for NULL terminator
+            sol_void[i] = (void*) malloc (sizeStr*sizeof(char));
             //copy s into sol_char[i]
             strcpy(sol_void[i],s);
         }
