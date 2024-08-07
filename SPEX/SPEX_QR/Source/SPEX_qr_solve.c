@@ -73,6 +73,7 @@ SPEX_info SPEX_qr_solve
     int64_t index;
     int64_t *Qinv_perm=NULL;
     int64_t n=F->Q->n;
+    int sgn;
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
         false, true, NULL));
@@ -89,6 +90,7 @@ SPEX_info SPEX_qr_solve
             index = F->Q_perm[k];
             Qinv_perm[index] = k;
     }
+
 
     //--------------------------------------------------------------------------
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
@@ -112,6 +114,19 @@ SPEX_info SPEX_qr_solve
                           F->rhos->x.mpz[F->rank-1]);
         }
     }
+
+    // Check for inconsistent system
+    for(k=b->n; k>rank; k--)
+    {
+        //n-rank elements at the end of b_new should be 0 for system to be consistent
+        SPEX_MPZ_SGN(&sgn, b_new->x.mpz[k]);
+        if(sgn!=0)
+        {
+            SPEX_FREE_ALL;
+            return SPEX_INCONSISTENT;
+        }
+    }
+
     //--------------------------------------------------------------------------
     // backwards substitution
     //--------------------------------------------------------------------------

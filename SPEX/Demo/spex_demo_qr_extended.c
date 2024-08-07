@@ -94,8 +94,9 @@ int main( int argc, char *argv[] )
     // Perform Analysis of A
     //--------------------------------------------------------------------------
     printf("Analysis:\n");
+    //option->print_level=3;
     //option->order = SPEX_AMD ;
-    option->order = SPEX_NO_ORDERING ;
+    //option->order = SPEX_NO_ORDERING ;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
     /*for(int i; i<n;i++)
     {
@@ -117,7 +118,7 @@ int main( int argc, char *argv[] )
     //--------------------------------------------------------------------------
     printf("Solve:\n");
     DEMO_OK (SPEX_qr_solve(&x, F, b, option));
-    SPEX_matrix_check(x, option);
+    //SPEX_matrix_check(x, option);
      
     printf("Success!!\n");
     printf("Rank of matrix: %ld, n-rank=%ld\n",F->rank,(F->R->n)-(F->rank));
