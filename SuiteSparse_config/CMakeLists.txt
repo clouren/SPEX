@@ -15,10 +15,10 @@
 cmake_minimum_required ( VERSION 3.22 )
 
 # version of both SuiteSparse and SuiteSparse_config
-set ( SUITESPARSE_DATE "June 20, 2024" )
+set ( SUITESPARSE_DATE "Aug 20, 2024" )
 set ( SUITESPARSE_VERSION_MAJOR 7 )
 set ( SUITESPARSE_VERSION_MINOR 8 )
-set ( SUITESPARSE_VERSION_SUB   0 )
+set ( SUITESPARSE_VERSION_SUB   2 )
 set ( SUITESPARSE_CONFIG_VERSION_MAJOR ${SUITESPARSE_VERSION_MAJOR} CACHE STRING "" FORCE )
 set ( SUITESPARSE_CONFIG_VERSION_MINOR ${SUITESPARSE_VERSION_MINOR} CACHE STRING "" FORCE )
 set ( SUITESPARSE_CONFIG_VERSION_PATCH ${SUITESPARSE_VERSION_SUB} CACHE STRING "" FORCE )
@@ -137,9 +137,9 @@ configure_file ( "Config/SuiteSparse_config.h.in"
     "${PROJECT_SOURCE_DIR}/SuiteSparse_config.h"
     NEWLINE_STYLE LF )
 
-# configure_file ( "Config/README.md.in"
-#     "${PROJECT_SOURCE_DIR}/../README.md"
-#     NEWLINE_STYLE LF )
+configure_file ( "Config/README.md.in"
+    "${PROJECT_SOURCE_DIR}/../README.md"
+    NEWLINE_STYLE LF )
 
 #-------------------------------------------------------------------------------
 # dynamic SuiteSparseConfig library properties
