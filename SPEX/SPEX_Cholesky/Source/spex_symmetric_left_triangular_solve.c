@@ -44,7 +44,7 @@
  *
  * parent:          Elimination tree
  *
- * c:               Column pointers of L but they don't point to the top
+ * cp:              Column pointers of L but they don't point to the top
  *                  position of each column of L. Instead they point to the
  *                  position on each column where the next value of L will be
  *                  grabbed, since at iteration k we need to grab the kth of L
@@ -54,7 +54,7 @@
 // Comparison function used for the quicksort in the factorization
 // Each iteration of the triangular solve requires that the nonzero pattern
 // is sorted prior to numeric operations. This is the helper function for
-// c's default qsort
+// the C qsort function.
 static inline int compar (const void * a, const void * b)
 {
     int64_t x = (* ((int64_t *) a)) ;
@@ -66,8 +66,8 @@ SPEX_info spex_symmetric_left_triangular_solve
 (
     // Output
     int64_t *top_output,     // On output: the beginning of nonzero pattern of
-                             // L(:,k). The nonzero pattern is contained in
-                             // xi[top_output...n-1]
+                             // kth column of L+L'.  The nonzero pattern is
+                             // contained in xi[top_output...n-1]
                              // On input: undefined
     SPEX_matrix x,           // On output: Solution of LD x = A(:,k) ==> kth row
                              // of L but really, the ONLY valid values of x are
@@ -81,7 +81,7 @@ SPEX_info spex_symmetric_left_triangular_solve
     const SPEX_matrix rhos,  // Partial sequence of pivots
     int64_t *h,              // History vector
     const int64_t *parent,   // Elimination tree
-    int64_t *c               // Column pointers of L but they don't point to the
+    int64_t *cp              // Column pointers of L but they don't point to the
                              // top position of each column of L. Instead they
                              // point to the position on each column where the
                              // next value of L will be grabbed, since at
@@ -102,7 +102,7 @@ SPEX_info spex_symmetric_left_triangular_solve
     ASSERT (rhos != NULL);
     ASSERT (h != NULL);
     ASSERT (parent != NULL);
-    ASSERT (c != NULL);
+    ASSERT (cp != NULL);
     ASSERT(L->type == SPEX_MPZ);
     ASSERT(L->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
@@ -117,16 +117,15 @@ SPEX_info spex_symmetric_left_triangular_solve
 
     // row_top is the start of the nonzero pattern obtained after analyzing the
     // elimination tree xi[row_top..n-1] contains the nonzero pattern of the kth
-    // row of L which is the first k-1 entries of the kth column of L
+    // row of L which is the first k-1 entries of the kth column of L+L'
     int64_t row_top;
 
     //----------------------------------------------------------------
     // Initialize REF Triangular Solve by getting nonzero patern of x
     // This is done in two steps:
-    // 1) Obtain the nonzero pattern of L[1:k-1,k]
-    //    We could get this from L[k,1:k], but it is cheaper to do it with
-    //    ereach.
-    // 2) Obtain the nonzero pattern of L[k:n,k]
+    // 1) Obtain the nonzero pattern of L(k,0:k-1), the kth row of L
+    //      using ereach (equivalent to the kth column of L').
+    // 2) Obtain the nonzero pattern of L(k:n,k), the kth column of L
     //    This is obtained from the preallocation of L
     //----------------------------------------------------------------
 
@@ -136,27 +135,28 @@ SPEX_info spex_symmetric_left_triangular_solve
     ASSERT(n >= 0);
 
     //----------------------------------------------------------------
-    // 1) Obtain the nonzero pattern of L[1:k-1,k]
+    // 1) Obtain the nonzero pattern of L[k,0:k-1]
     //----------------------------------------------------------------
 
     // Obtain the nonzero pattern of the kth row of L which is entries
-    // L(1:k-1,k) Note that the left-looking Cholesky factorization performs
+    // L(k,0:k-1). Note that the left-looking Cholesky factorization performs
     // two elimination tree analyses. The first is done prior to here in the
     // preallocation of the L matrix. The second, performed here, gets the
     // nonzero pattern of L(k,:) (To compute L(:,k) you need the prealocation
     // first).
 
-    SPEX_CHECK(spex_symmetric_ereach(&row_top, xi, A, k, parent, c));
+    SPEX_CHECK(spex_symmetric_ereach(&row_top, xi, A, k, parent, cp));
 
     // After eReach, xi[rowtop..n-1] stores the location of the nonzeros
-    // located in rows 1:k-1.  Note that the values of these nonzeros have
+    // of L(k,0:k-1).   Note that the values of these nonzeros have
     // already been computed by the left-looking algorithm as they lie in row k
     // of columns 1:k-1 of L, so we do not need to compute these values from
     // scratch however we need to obtain their values.
 
     //----------------------------------------------------------------
-    // 2) Obtain the nonzero pattern of L[1:k-1,k]
+    // 2) Obtain the nonzero pattern of L[k:n,k]
     //----------------------------------------------------------------
+
     // Now we populate the remainder of the nonzero pattern
     // (i.e., the indices of the nonzeros on rows k:n of L).
     // Note that these indices are known
@@ -172,12 +172,15 @@ SPEX_info spex_symmetric_left_triangular_solve
         top -= 1;           // One more nonzero in column k
         xi[top] = L->i[i];  // Index of the new nonzero
     }
-    // At this point xi[top..n-1] contains the FULL nonzero pattern of column k.
-    // Any entry lying in rows 1:k-1 of L already have their correct final value
-    // currently stored in L. Any entry lying in rows k:n should take their
-    // default value in A prior to the left-looking solve. We need the entries
-    // in rows 1:k-1 of L in order to perform the IPGE_Updates & History_Updates
-    // that are needed to compute the values of the entries in rows k:n of L.
+    // At this point xi[top..n-1] contains the FULL nonzero pattern of column k
+    // of L+L'.
+
+    // Any entry lying in rows 1:k-1 of L' already have their correct final
+    // value currently stored in L. Any entry lying in rows k:n should take
+    // their default value in A prior to the left-looking solve. We need the
+    // entries in rows 1:k-1 of L' in order to perform the IPGE_Updates &
+    // History_Updates that are needed to compute the values of the entries in
+    // rows k:n of L.
 
     //----------------------------------------------------------------
     // Initialize x (only the positions of its nonzeros)
@@ -202,16 +205,17 @@ SPEX_info spex_symmetric_left_triangular_solve
     for (i = row_top; i < n; i++)
     {
         m = xi[i];   // m is the row index of the current nonzero.
-        p = ++c[m];  // this increases the column pointer of the mth column by
-                     // one; because c[m] needs to be pointing to the next place
-                     // on column m where a value will be taken from (when we
-                     // grab another row of L)
+        p = ++cp[m]; // this increases the column pointer of the mth column by
+                     // one; because cp[m] needs to be pointing to the next
+                     // place on column m where a value will be taken from
+                     // (when we grab another row of L)
         mpz_set(x->x.mpz[m], L->x.mpz[p]);
     }
 
     //--------------------------------------------------------------------------
-    // Obtain A(:,k) to finish populating L(k+1:n,k) with its starting values.
+    // Obtain A(:,k) to finish populating L(k:n,k) with its starting values.
     //--------------------------------------------------------------------------
+
     for (i = A->p[k]; i < A->p[k+1]; i++)
     {
         if ( A->i[i] >= k)
@@ -219,6 +223,7 @@ SPEX_info spex_symmetric_left_triangular_solve
             SPEX_MPZ_SET(x->x.mpz[A->i[i]], A->x.mpz[i]);
         }
     }
+
     // Sort the nonzero pattern xi using quicksort
     qsort (&xi[top], n-top, sizeof (int64_t), compar) ;
 
@@ -231,6 +236,15 @@ SPEX_info spex_symmetric_left_triangular_solve
     //--------------------------------------------------------------------------
     // Iterate accross nonzeros in x
     //--------------------------------------------------------------------------
+
+    // FIXME: this is confusing; split it into two loops.  The first does
+    // for (px = row_top ; px < n ; px++) { j = xi[px] and asserts that j < k ;
+    // and then computes x(k:n) -= L(k:n,j) * L(k,j) with rhos history updates.
+
+    // The second does
+    // for (px = top ; px < row_top ; px++) { i = xi [px] and asserts
+    // that i >= k, and then applies the history update }
+
     for ( p = top; p < n; p++)
     {
         /* Finalize x[j] */
@@ -245,6 +259,8 @@ SPEX_info spex_symmetric_left_triangular_solve
             // IPGE updates
             //------------------------------------------------------------------
             // ----------- Iterate accross nonzeros in Lij ---------------------
+
+            // FIXME: start at position cp[j], not L->p[j]
             for (m = L->p[j]; m < L->p[j+1]; m++)
             {
                 i = L->i[m];            // i value of Lij
@@ -341,6 +357,22 @@ SPEX_info spex_symmetric_left_triangular_solve
             }
         }
     }
+
+#if 0
+    // Reset the history vector h for the next use of this function
+    for (i = top; i < n; i++)
+    {
+        h[xi[i]] = -1;
+    }
+    // history vector has been reset
+    #ifdef SPEX_DEBUG
+    for (i = 0; i < n; i++)
+    {
+        ASSERT (h [i] == -1) ;
+    }
+    #endif
+#endif
+
     // Output the beginning of nonzero pattern
     (*top_output) = top;
     return SPEX_OK;
