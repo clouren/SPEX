@@ -50,7 +50,8 @@
 
 #undef SPEX_DEBUG
 // uncomment this line to enable debugging
-// #define SPEX_DEBUG
+// FIXME: debug is on
+#define SPEX_DEBUG
 
 #ifdef SPEX_DEBUG
 
@@ -67,6 +68,7 @@
         }
     #else
         // debuging enabled for C library
+        #undef NDEBUG
         #include <assert.h>
         #define ASSERT(x) assert (x)
     #endif

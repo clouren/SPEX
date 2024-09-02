@@ -14,7 +14,7 @@
     SPEX_matrix_free(&x, NULL);     \
     SPEX_FREE(xi);                  \
     SPEX_FREE(h);                   \
-    SPEX_FREE(c);                   \
+    SPEX_FREE(cp);                   \
 }
 
 #define SPEX_FREE_ALL               \
@@ -97,15 +97,15 @@ SPEX_info spex_symmetric_left_factor
     SPEX_matrix rhos = NULL ;
     int64_t *xi = NULL ;
     int64_t *h = NULL ;
-    int64_t *c;
+    int64_t *cp = NULL ;
     SPEX_matrix x = NULL ;
 
     // Declare variables
-    int64_t n = A->n, top, i, j, lnz = 0, jnew, k;
+    int64_t n = A->n, top, i, lnz = 0, jnew, k;
     int sgn;
     size_t size;
 
-    c = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
+    cp = (int64_t*) SPEX_malloc(n* sizeof (int64_t));
 
     // h is the history vector utilized for the sparse REF
     // triangular solve algorithm. h serves as a global
@@ -118,7 +118,7 @@ SPEX_info spex_symmetric_left_factor
     // for the triangular solve.
     xi = (int64_t*) SPEX_malloc(2*n* sizeof(int64_t));
 
-    if (!h || !xi || !c)
+    if (!h || !xi || !cp)
     {
         SPEX_FREE_WORKSPACE;
         return SPEX_OUT_OF_MEMORY;
@@ -159,7 +159,7 @@ SPEX_info spex_symmetric_left_factor
         false, /* do not initialize the entries of x: */ false, option));
 
     // Create rhos, a "global" dense mpz_t matrix of dimension n*1.
-    // As inidicated with the second boolean parameter true, the mpz entries in
+    // As indicated with the second boolean parameter true, the mpz entries in
     // rhos are initialized to the default size (unlike x).
 
     SPEX_CHECK (SPEX_matrix_allocate(&(rhos), SPEX_DENSE, SPEX_MPZ, n, 1, n,
@@ -186,9 +186,9 @@ SPEX_info spex_symmetric_left_factor
     SPEX_CHECK(spex_symmetric_pre_left_factor(&(L), xi, A, S));
 
     // Set the column pointers of L
-    for (k = 0; k < n; k++)
+    for (int64_t j = 0; j < n; j++)
     {
-        L->p[k] = c[k] = (S->cp)[k];
+        L->p[j] = cp[j] = (S->cp)[j];
     }
 
     //--------------------------------------------------------------------------
@@ -202,7 +202,7 @@ SPEX_info spex_symmetric_left_factor
     {
         // LDx = A(:,k)
         SPEX_CHECK(spex_symmetric_left_triangular_solve(&top, x, xi, L, A, k,
-            rhos, h, S->parent, c));
+            rhos, h, S->parent, cp));
 
         // Set the pivot element If this element is less than or equal to zero,
         // either no pivot element exists or the matrix is not SPD.
@@ -239,13 +239,15 @@ SPEX_info spex_symmetric_left_factor
         //----------------------------------------------------------------------
         // Add the nonzeros to the L matrix
         //----------------------------------------------------------------------
-        for (j = top; j < n; j++)
+
+        // FIXME: iterate until px < row_top and assert jnew >= k
+        for (int64_t px = top; px < n; px++)
         {
             // Index of x[i]
-            jnew = xi[j];
+            jnew = xi[px];
             if (jnew >= k)
             {
-                // Find the size of x[j]
+                // Find the size of x[px]
                 size = mpz_sizeinbase(x->x.mpz[jnew],2);
 
                 // GMP manual: Allocated size should be size+2
