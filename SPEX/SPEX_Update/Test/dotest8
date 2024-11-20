@@ -1,0 +1,18 @@
+#!/bin/sh
+
+./ptest lpi_bgprtr > Outputs/lpi_bgprtr_chol.out
+./ptest lpi_box1 > Outputs/lpi_box1_chol.out
+./ptest lpi_ceria3d > Outputs/lpi_ceria3d_chol.out
+./ptest lpi_chemcom > Outputs/lpi_chemcom_chol.out
+./ptest lpi_cplex1 > Outputs/lpi_cplex1_chol.out
+./ptest lpi_cplex2 > Outputs/lpi_cplex2_chol.out
+./ptest lpi_ex72a > Outputs/lpi_ex72a_chol.out
+./ptest lpi_ex73a > Outputs/lpi_ex73a_chol.out
+./ptest lpi_forest6 > Outputs/lpi_forest6_chol.out
+./ptest lpi_galenet > Outputs/lpi_galenet_chol.out
+./ptest lpi_gosh > Outputs/lpi_gosh_chol.out
+./ptest lpi_gran > Outputs/lpi_gran_chol.out
+./ptest lpi_greenbea > Outputs/lpi_greenbea_chol.out
+./ptest lpi_itest2 > Outputs/lpi_itest2_chol.out
+./ptest lpi_itest6 > Outputs/lpi_itest6_chol.out
+./ptest lpi_klein1 > Outputs/lpi_klein1_chol.out

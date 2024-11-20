@@ -77,7 +77,6 @@ SPEX_info spex_colamd
         (double *) NULL, stats);
     if (!colamd_result)
     {
-        printf("fail\n");
         // COLAMD failed: matrix is invalid
         SPEX_FREE_ALL;
         return (SPEX_INCORRECT_INPUT);

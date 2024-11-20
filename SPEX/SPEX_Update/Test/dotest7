@@ -1,0 +1,18 @@
+#!/bin/sh
+
+./ptest lp_sierra > Outputs/lp_sierra_chol.out
+./ptest lp_stair > Outputs/lp_stair_chol.out
+./ptest lp_standata > Outputs/lp_standata_chol.out
+./ptest lp_standgub > Outputs/lp_standgub_chol.out
+./ptest lp_standmps > Outputs/lp_standmps_chol.out
+./ptest lp_stocfor1 > Outputs/lp_stocfor1_chol.out
+./ptest lp_stocfor2 > Outputs/lp_stocfor2_chol.out
+./ptest lp_stocfor3 > Outputs/lp_stocfor3_chol.out
+./ptest lp_truss > Outputs/lp_truss_chol.out
+./ptest lp_tuff > Outputs/lp_tuff_chol.out
+./ptest lp_vtp_base > Outputs/lp_vtp_base_chol.out
+./ptest lp_wood1p > Outputs/lp_wood1p_chol.out
+./ptest lp_woodw > Outputs/lp_woodw_chol.out
+#./ptest lpi_bgdbg1 > Outputs/lpi_bgdbg1_chol.out
+#./ptest lpi_bgetam > Outputs/lpi_bgetam_chol.out
+#./ptest lpi_bgindy > Outputs/lpi_bgindy_chol.out
