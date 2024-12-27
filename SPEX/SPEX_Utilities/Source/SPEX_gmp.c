@@ -1199,6 +1199,37 @@ SPEX_info SPEX_mpz_fdiv_q
     return (SPEX_OK);
 }
 
+#ifdef SPEX_DEBUG
+//------------------------------------------------------------------------------
+// SPEX_mpz_fdiv_qr
+//------------------------------------------------------------------------------
+
+/* Purpose: Safe version of dividing n by d, forming a quotient q and/or
+ * remainder r.
+ * fdiv rounds q down towards -infinity, and r will have the same sign as d.
+ * The f stands for “floor”. That is, q = floor(n/d)
+ */
+
+SPEX_info SPEX_mpz_fdiv_qr
+(
+    mpz_t q,
+    mpz_t r,
+    const mpz_t n,
+    const mpz_t d
+)
+{
+    SPEX_GMPZ_WRAPPER_START2 (q, r);
+    if (mpz_sgn (d) == 0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return (SPEX_PANIC);
+    }
+    mpz_fdiv_qr (q, r, n, d);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+#endif
+
 //------------------------------------------------------------------------------
 // SPEX_mpz_cdiv_q
 //------------------------------------------------------------------------------

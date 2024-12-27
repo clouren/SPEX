@@ -91,6 +91,10 @@ SPEX_info spex_gmp_failure (int status) ;
 // is use to prevent segmentation faults in case gmp runs out of memory inside
 // a gmp call.
 //------------------------------------------------------------------------------
+//#ifdef SPEX_DEBUG
+SPEX_info SPEX_mpz_fdiv_qr (mpz_t q, mpz_t r, const mpz_t n, const mpz_t d) ;
+#define SPEX_MPZ_FDIV_QR(q,r,n,d)        SPEX_CHECK( SPEX_mpz_fdiv_qr      (q,r,n,d)        )
+//#endif
 
 #define SPEX_MPZ_INIT(x)                 SPEX_CHECK( SPEX_mpz_init         (x)            )
 #define SPEX_MPZ_INIT2(x,size)           SPEX_CHECK( SPEX_mpz_init2        (x,size)       )

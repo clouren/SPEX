@@ -255,28 +255,34 @@ SPEX_info SPEX_update_cholesky_rank1
 //#if 0
 #ifdef SPEX_DEBUG
                     // tmpz /= sd_old[j-1]
-                    mpq_t r1, r2; mpq_init(r1); mpq_init(r2);
-                    mpz_fdiv_qr(tmpz, SPEX_MPQ_NUM(r1),
+                    mpq_t r1, r2;
+                    SPEX_mpq_set_null(r1);
+                    SPEX_MPQ_INIT(r1);
+                    SPEX_mpq_set_null(r2);
+                    SPEX_MPQ_INIT(r2);
+                    SPEX_MPZ_FDIV_QR(tmpz, SPEX_MPQ_NUM(r1),
                                 tmpz, sd0_old);
-                    mpq_set_den(r1, sd0_old);
-                    mpq_canonicalize(r1);
+                    SPEX_MPQ_SET_DEN(r1, sd0_old);
+                    SPEX_MPQ_CANONICALIZE(r1);
 
                     SPEX_MPZ_MUL(L->v[j]->x[p],
                                             L->v[j]->x[p],
                                             SPEX_MPQ_NUM(pending_scale));
-                    mpz_cdiv_qr(L->v[j]->x[p], SPEX_MPQ_NUM(r2),
+                    SPEX_MPZ_CDIV_QR(L->v[j]->x[p], SPEX_MPQ_NUM(r2),
                                 L->v[j]->x[p], SPEX_MPQ_DEN(pending_scale));
-                    mpq_set_den(r2, SPEX_MPQ_DEN(pending_scale));
-                    mpq_canonicalize(r2);
-                    mpq_neg(r2, r2);
-                    if (mpq_cmp(r1, r2) != 0)
+                    SPEX_MPQ_SET_DEN(r2, SPEX_MPQ_DEN(pending_scale));
+                    SPEX_MPQ_CANONICALIZE(r2);
+                    SPEX_MPQ_NEG(r2, r2);
+                    int result = 0;
+                    SPEX_MPQ_CMP(&result, r1, r2);
+                    if (result != 0)
                     {
-                        mpq_clear(r1);
-                        mpq_clear(r2);
+                        SPEX_mpq_clear(r1);
+                        SPEX_mpq_clear(r2);
                         SPEX_CHECK(SPEX_PANIC);
                     }
-                    mpq_clear(r1);
-                    mpq_clear(r2);
+                    SPEX_mpq_clear(r1);
+                    SPEX_mpq_clear(r2);
 #else
                     // tmpz /= sd_old[j-1]
                     SPEX_MPZ_FDIV_Q(tmpz, tmpz, sd0_old);

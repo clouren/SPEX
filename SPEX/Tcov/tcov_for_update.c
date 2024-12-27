@@ -308,6 +308,53 @@ int main ( int argc, char *argv[])
                         }
                     }
                     if (pretend_to_fail) {continue;}
+#if 0
+                    // print L and U for debug if needed
+                    MY_PR("l0=[\n");
+                    for (j = 0; j < An && !pretend_to_fail; j++)
+                    {
+                        p = 0;
+                        for (i = 0; i < An; i++)
+                        {
+                            if (L->v[j]->i[p] == i)
+                            {
+                                TEST_CHECK(SPEX_mpz_sgn(&sgn, L->v[j]->x[p]));
+                                if (pretend_to_fail) {break;}
+                                MY_PR("%s ", (sgn==0)?"0":"1");
+                                p++;
+                            }
+                            else
+                            {
+                                MY_PR("0 ");
+                            }
+                        }
+                        MY_PR("%s;%%   --> %ld(%ld) \n",j==An-1?"]'":"",j,p);
+                    }
+                    MY_PR("\nu0=[\n");
+                    for (j = 0; j < An && !pretend_to_fail; j++)
+                    {
+                        p = 0;
+                        for (i = 0; i < An; i++)
+                        {
+                            if (U->v[j]->i[p] == i)
+                            {
+                                TEST_CHECK(SPEX_mpz_sgn(&sgn, U->v[j]->x[p]));
+                                if (pretend_to_fail) {break;}
+                                MY_PR("%s ", (sgn==0)?"0":"1");
+                                p++;
+                            }
+                            else
+                            {
+                                MY_PR("0 ");
+                            }
+                        }
+                        MY_PR("%s;%%   --> %ld(%ld) \n",j==An-1?"]":"",j,p);
+                    }
+                TEST_CHECK(SPEX_matrix_check(L, option));
+                if (pretend_to_fail) {continue;}
+                TEST_CHECK(SPEX_matrix_check(U, option));
+                if (pretend_to_fail) {continue;}
+#endif
 
                     for (j = 0; j < vk_nz && !pretend_to_fail; j++)
                     {
@@ -604,6 +651,33 @@ int main ( int argc, char *argv[])
                         F->Q_perm = Q;
                         F->Qinv_perm = Q_inv;
 
+                        if (read_matrix)
+                        {
+#if 1
+                            printf ("Hack F to make it Cholesky\n") ;
+                            F->kind = SPEX_CHOLESKY_FACTORIZATION;
+                            TEST_CHECK(SPEX_update_solve(&b_sol, F, b, option));
+                            if (pretend_to_fail) {continue;}
+                            printf ("\n================= did chol solve:\n") ;
+                            printf ("------------------- b_sol:\n") ;
+                            TEST_OK(SPEX_matrix_free(&b_sol, option));
+                            if (pretend_to_fail) {continue;}
+#endif
+
+                            printf ("Hack F to make it LDL\n") ;
+                            F->kind = SPEX_LDL_FACTORIZATION;
+                            TEST_CHECK(SPEX_update_solve(&b_sol, F, b, option));
+                            if (pretend_to_fail) {continue;}
+                            printf ("\n================= did ldl solve:\n") ;
+                            printf ("------------------- b_sol:\n") ;
+                            TEST_OK(SPEX_matrix_free(&b_sol, option));
+                            if (pretend_to_fail) {continue;}
+
+                            printf ("Restore F to make it LU\n") ;
+                            F->kind = SPEX_LU_FACTORIZATION;
+                            TEST_CHECK(SPEX_factorization_check(F, option));
+                        }
+
                         // get non-updatable F
                         TEST_CHECK(SPEX_factorization_convert(F, false,
                             option));
@@ -854,18 +928,6 @@ int main ( int argc, char *argv[])
                     TEST_OK(SPEX_matrix_free(&b_sol, option));
                     if (pretend_to_fail) {continue;}
 
-#if 0
-// FIXME: this fails on mat2.txt with inexact division
-                    printf ("Hack F to make it Cholesky\n") ;
-                    F->kind = SPEX_CHOLESKY_FACTORIZATION;
-                    TEST_CHECK(SPEX_update_solve(&b_sol, F, b, option));
-                    if (pretend_to_fail) {continue;}
-                    printf ("\n================= did chol solve:\n") ;
-                    printf ("------------------- b_sol:\n") ;
-                    TEST_OK(SPEX_matrix_free(&b_sol, option));
-                    if (pretend_to_fail) {continue;}
-                    F->kind = SPEX_LU_FACTORIZATION;
-#endif
 
                     //----------------------------------------------------------
                     // failure cases
