@@ -35,15 +35,15 @@ example.mat.txt         example.rhs.txt         Integer matrix
 NSR8K.mat.txt           NSR8K.rhs.txt           Matrix from a real-world
                                                 mixed integer program
                                                 (collected from MIPLIB)
-test1.mat.txt           test1.rhs.txt           Unsymmetric double matrix
+test1.mat.txt                                   Unsymmetric double matrix
                                                 created to test SPEX Cholesky
-test2.mat.txt           test2.rhs.txt           Unsymmetric integer matrix
+test2.mat.txt                                   Unsymmetric integer matrix
                                                 created to test SPEX Cholesky
-test3.mat.txt           test3.rhs.txt           Unsymmetric matrix created
+test3.mat.txt                                   Unsymmetric matrix created
                                                 to test SPEX Cholesky
-test4.mat.txt           test4.rhs.txt           Symmetric indefinite matrix
+test4.mat.txt                                   Symmetric indefinite matrix
                                                 created to test SPEX Cholesky
-test5.mat.txt           test5.rhs.txt           Small rectangular matrix
+test5.mat.txt                                   Small rectangular matrix
                                                 created to test SPEX
 test.mat.txt            test.rhs.txt            Integer matrix to test SPEX LU
 
