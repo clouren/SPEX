@@ -71,13 +71,6 @@ if ( NOT MPFR_FOUND )
         PATH_SUFFIXES lib build
     )
 
-    # check if found
-    if ( MPFR_LIBRARY MATCHES ".*NOTFOUND" OR MPFR_INCLUDE_DIR MATCHES ".*NOTFOUND" )
-        set ( FOUND_IT false )
-    else ( )
-        set ( FOUND_IT true )
-    endif ( )
-
     # static mpfr library
     if ( NOT MSVC )
         set ( save_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES} )
@@ -105,7 +98,8 @@ if ( NOT MPFR_FOUND )
     # look in the middle for 4.1.0 (/spackstuff/mpfr-4.1.0-morestuff/libmpfr.10.4.1)
     string ( REGEX MATCH "mpfr-[0-9]+.[0-9]+.[0-9]+" MPFR_VERSION1 ${MPFR_LIBRARY} )
 
-    if ( NOT FOUND_IT )
+    if ( (MPFR_LIBRARY MATCHES ".*NOTFOUND" AND MPFR_STATIC MATCHES ".*NOTFOUND")
+         OR MPFR_INCLUDE_DIR MATCHES ".*NOTFOUND" )
         # mpfr has not been found
         set ( MPFR_VERSION 0.0.0 )
         message ( WARNING "MPFR not found")
