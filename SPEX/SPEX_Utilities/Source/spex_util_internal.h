@@ -67,7 +67,6 @@
         }
     #else
         // debuging enabled for C library
-        #undef NDEBUG
         #include <assert.h>
         #define ASSERT(x) assert (x)
     #endif
@@ -239,7 +238,7 @@
 #define SPEX_DEFAULT_PRECISION 128
 
 // Defines the algorithm used
-// SPEX_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Up for LDL
+// SPEX_DEFAULT = 0,    Defaults: Left for LU, Up for Chol, Up for LDL 
 //                      Gram for QR looking factorization
 // SPEX_LU_LEFT = 1,              Left looking LU factorization
 // SPEX_CHOL_LEFT = 2,            Left looking Cholesky factorization
@@ -572,23 +571,6 @@ SPEX_info spex_cast_matrix
     const SPEX_options option   // Command options, if NULL defaults are used
 ) ;
 
-SPEX_info spex_CSC_mpz_to_dynamic
-(
-    SPEX_matrix *A_handle,          // converted SPEX_matrix of dynamic_CSC
-    // input:
-    const SPEX_matrix B,            // original matrix (unmodified)
-    const SPEX_options option
-) ;
-
-SPEX_info spex_dynamic_to_CSC_mpz
-(
-    SPEX_matrix *A_handle,          // converted CSC matrix
-    // input:
-    const SPEX_matrix B,            // original matrix (not modified)
-    const int64_t nnz,              // number of nonzeros in B
-    const SPEX_options option
-) ;
-
 
 
 /* Purpose: This function collapses a SPEX matrix. Essentially it shrinks the
@@ -641,14 +623,6 @@ SPEX_info spex_cumsum
     int64_t *p,          // vector to store the sum of c
     int64_t *c,          // vector which is summed
     int64_t n            // size of c
-) ;
-
-/* Purpose: perform basic check for a given factorization
- */
-
-SPEX_info spex_factorization_basic_check
-(
-    SPEX_factorization F
 ) ;
 
 

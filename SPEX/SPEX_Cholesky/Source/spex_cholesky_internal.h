@@ -363,10 +363,10 @@ SPEX_info spex_symmetric_symbolic_analysis
 
 /* Purpose: Compute a symmetric factorization A = LDL'.
  * Only appropriate if A is symmetric with a nonzero diagonal F->kind must be
- * SPEX_CHOLESKY_FACTORIZATION or SPEX_LDL_FACTORIZATION. If F->kind is
+ * SPEX_CHOLESKY_FACTORIZATION or SPEX_LDL_FACTORIZATION If F->kind is
  * SPEX_CHOLESKY, A must be SPD, otherwise an error code is returned.  On input
  * A contains the user's matrix, option->algo indicates which factorization
- * algorithm is used; up-looking (default) or left-looking. On output, L
+ * algorithm is used; up-looking (default) or left-looking On output, L
  * contains the L factor of A, rhos contains the pivot elements and S contains
  * the elimination tree lower triangular matrix and rhos contains the pivots'
  * values used in the factorization.

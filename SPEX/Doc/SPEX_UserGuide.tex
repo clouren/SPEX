@@ -36,7 +36,7 @@
 % if update is set to false, then all of the text on updates is hidden
 \usepackage{ifthen}
 \newboolean{update}   
-\setboolean{update}{true}
+\setboolean{update}{false}
 \newcommand{\update}[1]{\ifthenelse{\boolean{update}}{\protect #1}{}}
 \newboolean{qr}   
 \setboolean{qr}{false}
@@ -688,7 +688,7 @@ with \verb|nz| nonzero entries, its components are defined as:
      of entries in \verb|A| is \verb|A->m| $\times$ \verb|A->n|.
 
 \item
- (3) \verb|SPEX_DYNAMIC_CSC|:
+ (3) \verb|SPEX_DYNAMIC_CSC|: Currently unused
  \update{
     A sparse matrix in dynamic CSC
      format with the number of nonzeros in each column changing
@@ -2932,10 +2932,10 @@ Upon successful completion, the function returns \verb|SPEX_OK|, and
 SPEX Update is a software package designed to exactly update
 an available SPEX LU/Cholesky factorization for the sparse matrix $A$ when a low-rank modification is performed on $A$. The low-rank modification could be either column/row replacement or rank-1 update/downdate. Currently, SPEX provides functions for column-replacement LU update and rank-1 Cholesky update/downdate. The theoretical basis for this code is to be submitted as 
 \begin{itemize}
-    \item J. Chen, T. A. Davis, ``Sparse Exact LU
-Update for Column Replacement,'' SIAM Journal on Matrix Analysis and Applications, in preparation.
-    \item J. Chen, T. A. Davis, ``Sparse Exact Rank-1
-Cholesky Update,'' SIAM Journal on Matrix Analysis and Applications, in preparation.
+    \item J. Chen, T. A. Davis, “Sparse Exact LU
+Update for Column Replacement,” SIAM Journal on Matrix Analysis and Applications.
+    \item J. Chen, T. A. Davis, “Sparse Exact Rank-1
+Cholesky Update,” SIAM Journal on Matrix Analysis and Applications.
 \end{itemize}
 SPEX Update is written in ANSI C.
 

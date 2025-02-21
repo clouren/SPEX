@@ -82,7 +82,6 @@ SPEX_info spex_python
 
     SPEX_options option = NULL;
     SPEX_create_default_options(&option);
-    SPEX_preorder order_in = ordering;
     option->order = ordering;
 
     //--------------------------------------------------------------------------

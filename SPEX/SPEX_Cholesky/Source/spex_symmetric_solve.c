@@ -53,7 +53,6 @@ SPEX_info spex_symmetric_solve
 {
 
     SPEX_info info;
-    (*x_handle) = NULL ;
 
     SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);
 
@@ -64,17 +63,10 @@ SPEX_info spex_symmetric_solve
     //--------------------------------------------------------------------------
     // Declare workspace and output
     //--------------------------------------------------------------------------
-
     // x is the permuted final solution vector returned to the user
     SPEX_matrix x = NULL;
     // b2 is the permuted right hand side vector(s)
     SPEX_matrix b2 = NULL;
-
-    //--------------------------------------------------------------------------
-    // Ensure that F is in a non-updatable form
-    //--------------------------------------------------------------------------
-
-    SPEX_CHECK( SPEX_factorization_convert(F, false, option));
 
     //--------------------------------------------------------------------------
     // get b2 = Pinv*b

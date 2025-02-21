@@ -39,53 +39,39 @@ SPEX_info SPEX_matrix_free
     // free any non-shallow components
     //--------------------------------------------------------------------------
 
-    if (A->kind == SPEX_DYNAMIC_CSC)
+    // free the integer pattern
+    if (!(A->p_shallow)) SPEX_FREE (A->p);
+    if (!(A->i_shallow)) SPEX_FREE (A->i);
+    if (!(A->j_shallow)) SPEX_FREE (A->j);
+
+    // free the values
+    if (!(A->x_shallow))
     {
-        if (A->v != NULL)
+        switch (A->type)
         {
-            for (int64_t i = 0; i < A->n; i++)
-            {
-                SPEX_vector_free(&(A->v[i]), option);
-            }
-            SPEX_FREE(A->v);
-        }
-    }
-    else
-    {
-        // free the integer pattern
-        if (!(A->p_shallow)) SPEX_FREE (A->p);
-        if (!(A->i_shallow)) SPEX_FREE (A->i);
-        if (!(A->j_shallow)) SPEX_FREE (A->j);
+            case SPEX_MPZ:
+                spex_free_mpz_array (&(A->x.mpz), A->nzmax) ;
+                break ;
 
-        // free the values
-        if (!(A->x_shallow))
-        {
-            switch (A->type)
-            {
-                case SPEX_MPZ:
-                    spex_free_mpz_array (&(A->x.mpz), A->nzmax) ;
-                    break ;
+            case SPEX_MPQ:
+                spex_free_mpq_array (&(A->x.mpq), A->nzmax) ;
+                break ;
 
-                case SPEX_MPQ:
-                    spex_free_mpq_array (&(A->x.mpq), A->nzmax) ;
-                    break ;
+            case SPEX_MPFR:
+                spex_free_mpfr_array (&(A->x.mpfr), A->nzmax) ;
+                break ;
 
-                case SPEX_MPFR:
-                    spex_free_mpfr_array (&(A->x.mpfr), A->nzmax) ;
-                    break ;
+            case SPEX_INT64:
+                SPEX_FREE (A->x.int64) ;
+                break ;
 
-                case SPEX_INT64:
-                    SPEX_FREE (A->x.int64) ;
-                    break ;
+            case SPEX_FP64:
+                SPEX_FREE (A->x.fp64) ;
+                break ;
 
-                case SPEX_FP64:
-                    SPEX_FREE (A->x.fp64) ;
-                    break ;
-
-                default:
-                    // do nothing
-                    break ;
-            }
+            default:
+                // do nothing
+                break ;
         }
     }
 

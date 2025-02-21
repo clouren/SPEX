@@ -73,7 +73,6 @@ if ( NOT GMP_FOUND )
         PATH_SUFFIXES lib build
     )
 
-
     # check if found
     if ( GMP_LIBRARY MATCHES ".*NOTFOUND" OR GMP_INCLUDE_DIR MATCHES ".*NOTFOUND" )
         set ( FOUND_IT false )

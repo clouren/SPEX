@@ -58,9 +58,6 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     // check inputs
     //--------------------------------------------------------------------------
 
-    SPEX_matrix x = NULL;   // final solution
-    SPEX_matrix b2 = NULL;  // permuted b
-
     SPEX_info info ;
     if (!spex_initialized ( )) return (SPEX_PANIC);
 
@@ -71,17 +68,20 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
         return SPEX_INCORRECT_INPUT;
     }
 
-    (*x_handle) = NULL;
-
-    // convert the factorization F to non-updatable
-    SPEX_CHECK (SPEX_factorization_convert(F, false, option)) ;
-
     // check components of F in debug mode
     ASSERT_MATRIX (F->L,    SPEX_CSC,   SPEX_MPZ);
     ASSERT_MATRIX (F->U,    SPEX_CSC,   SPEX_MPZ);
     ASSERT_MATRIX (F->rhos, SPEX_DENSE, SPEX_MPZ);
 
+    //--------------------------------------------------------------------------
+    // Declare and initialize workspace
+    //--------------------------------------------------------------------------
+
+    (*x_handle) = NULL;
     int64_t n = F->L->n;
+
+    SPEX_matrix x = NULL;   // final solution
+    SPEX_matrix b2 = NULL;  // permuted b
 
     //--------------------------------------------------------------------------
     // b2 (Pinv_perm) = b
@@ -104,13 +104,11 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     //--------------------------------------------------------------------------
     // b2 = U\b2, via back substitution
     //--------------------------------------------------------------------------
-
     SPEX_CHECK(spex_left_lu_back_sub(F->U, b2));
 
     //--------------------------------------------------------------------------
     // x = Q*b2/scale
     //--------------------------------------------------------------------------
-
     // set scale = b->scale * rhos[n-1] / A_scale
     SPEX_MPQ_SET_Z(b2->scale, F->rhos->x.mpz[n-1]);
     SPEX_MPQ_MUL(b2->scale, b2->scale, b->scale);
