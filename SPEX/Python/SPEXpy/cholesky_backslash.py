@@ -33,7 +33,7 @@ def cholesky_backslash( A, b, options=Options('double', 'amd')):
         A.tocsc()
     ## Check symmetry
     tol=1e-8
-    if linalg.norm(A-A.T, np.Inf) > tol:
+    if linalg.norm(A-A.T, np.inf) > tol:
         raise SPEX_error(determine_error(-4))
     # Check input shape
     if A.shape[1]!=b.shape[0]:
