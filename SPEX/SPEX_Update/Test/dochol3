@@ -1,0 +1,12 @@
+#!/bin/sh
+
+./cholupdate lp_sctap2 > Outputs/CholUpdate/lp_sctap2_chol.out
+./cholupdate lp_scsd1 > Outputs/CholUpdate/lp_scsd1_chol.out
+./cholupdate lp_stocfor2 > Outputs/CholUpdate/lp_stocfor2_chol.out
+./cholupdate lp_grow7 > Outputs/CholUpdate/lp_grow7_chol.out
+./cholupdate lp_kb2 > Outputs/CholUpdate/lp_kb2_chol.out
+./cholupdate lp_shell > Outputs/CholUpdate/lp_shell_chol.out
+./cholupdate lp_stair > Outputs/CholUpdate/lp_stair_chol.out
+./cholupdate lp_pds_20 > Outputs/CholUpdate/lp_pds_20_chol.out
+./cholupdate lp_25fv47 > Outputs/CholUpdate/lp_25fv47_chol.out
+./cholupdate lp_osa_07 > Outputs/CholUpdate/lp_osa_07_chol.out

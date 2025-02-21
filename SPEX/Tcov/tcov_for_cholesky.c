@@ -34,7 +34,7 @@
 // BRUTAL: test a method with debug malloc, until it succeeds
 //------------------------------------------------------------------------------
 
-#define NTRIAL_MAX 10000
+#define NTRIAL_MAX 100000
 
 #define BRUTAL(method)                                                      \
 {                                                                           \

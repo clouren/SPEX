@@ -1033,26 +1033,101 @@ SPEX_info SPEX_mpz_get_si
     return (SPEX_OK);
 }
 
+//------------------------------------------------------------------------------
+// SPEX_mpz_swap
+//------------------------------------------------------------------------------
+
+/* Purpose: Safely swap the values x and y efficiently */
+
+SPEX_info SPEX_mpz_swap
+(
+    mpz_t x,
+    mpz_t y
+)
+{
+    SPEX_GMP_WRAPPER_START ;
+    mpz_swap (x, y);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_mul
 //------------------------------------------------------------------------------
 
-/* Purpose: Safely compute a = b*c */
+/* Purpose: Safely compute x = y*z */
 
 SPEX_info SPEX_mpz_mul
 (
-    mpz_t a,
-    const mpz_t b,
-    const mpz_t c
+    mpz_t x,
+    const mpz_t y,
+    const mpz_t z
 )
 {
-    SPEX_GMPZ_WRAPPER_START (a);
-    mpz_mul (a, b, c);
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_mul (x, y, z);
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK);
 }
 
+//------------------------------------------------------------------------------
+// SPEX_mpz_mul_si
+//------------------------------------------------------------------------------
+
+/* Purpose: Safely compute x = y*z */
+
+SPEX_info SPEX_mpz_mul_si
+(
+    mpz_t x,
+    const mpz_t y,
+    const int64_t z
+)
+{
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_mul_si (x, y, (long int) z);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
+
+//------------------------------------------------------------------------------
+// SPEX_mpz_sub
+//------------------------------------------------------------------------------
+
+/* Purpose: Safely compute x = y-z */
+
+SPEX_info SPEX_mpz_sub
+(
+    mpz_t x,
+    const mpz_t y,
+    const mpz_t z
+)
+{
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_sub (x,y,z);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpz_add
+//------------------------------------------------------------------------------
+
+/* Purpose: Safely compute x = y+z */
+
+SPEX_info SPEX_mpz_add
+(
+    mpz_t x,
+    const mpz_t y,
+    const mpz_t z
+)
+{
+    SPEX_GMPZ_WRAPPER_START (x);
+    mpz_add (x,y,z);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_addmul
@@ -1060,7 +1135,7 @@ SPEX_info SPEX_mpz_mul
 
 /* Purpose: Safely set an mpz number += product of two mpz numbers,
  * i.e., x = x + y*z */
-#if 0
+
 SPEX_info SPEX_mpz_addmul
 (
     mpz_t x,
@@ -1070,26 +1145,6 @@ SPEX_info SPEX_mpz_addmul
 {
     SPEX_GMPZ_WRAPPER_START (x);
     mpz_addmul (x, y, z);
-    SPEX_GMP_WRAPPER_FINISH ;
-    return (SPEX_OK);
-}
-#endif
-
-//------------------------------------------------------------------------------
-// SPEX_mpz_sub
-//------------------------------------------------------------------------------
-
-/* Purpose: Safely compute a = b-c */
-
-SPEX_info SPEX_mpz_sub
-(
-    mpz_t a,
-    const mpz_t b,
-    const mpz_t c
-)
-{
-    SPEX_GMPZ_WRAPPER_START (a);
-    mpz_sub (a,b,c);
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK);
 }
@@ -1116,6 +1171,93 @@ SPEX_info SPEX_mpz_submul
     return (SPEX_OK);
 }
 
+//------------------------------------------------------------------------------
+// SPEX_mpz_fdiv_q
+//------------------------------------------------------------------------------
+
+/* Purpose: Safe version of dividing n by d, forming a quotient q and/or
+ * remainder r.
+ * fdiv rounds q down towards -infinity, and r will have the same sign as d.
+ * The f stands for “floor”. That is, q = floor(n/d)
+ */
+
+SPEX_info SPEX_mpz_fdiv_q
+(
+    mpz_t q,
+    const mpz_t n,
+    const mpz_t d
+)
+{
+    SPEX_GMPZ_WRAPPER_START (q);
+    if (mpz_sgn (d) == 0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return (SPEX_PANIC);
+    }
+    mpz_fdiv_q (q, n, d);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
+#ifdef SPEX_DEBUG
+//------------------------------------------------------------------------------
+// SPEX_mpz_fdiv_qr
+//------------------------------------------------------------------------------
+
+/* Purpose: Safe version of dividing n by d, forming a quotient q and/or
+ * remainder r.
+ * fdiv rounds q down towards -infinity, and r will have the same sign as d.
+ * The f stands for “floor”. That is, q = floor(n/d)
+ */
+
+SPEX_info SPEX_mpz_fdiv_qr
+(
+    mpz_t q,
+    mpz_t r,
+    const mpz_t n,
+    const mpz_t d
+)
+{
+    SPEX_GMPZ_WRAPPER_START2 (q, r);
+    if (mpz_sgn (d) == 0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return (SPEX_PANIC);
+    }
+    mpz_fdiv_qr (q, r, n, d);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+#endif
+
+//------------------------------------------------------------------------------
+// SPEX_mpz_cdiv_q
+//------------------------------------------------------------------------------
+
+/* Purpose: Safe version of dividing n by d, forming a quotient q and/or
+ * remainder r.
+ * cdiv rounds q up towards +infinity, and r will have the opposite sign to d.
+ * The c in the name cdiv stands for “ceil”. That is, q = ceil(n/d)
+ */
+
+SPEX_info SPEX_mpz_cdiv_q
+(
+    mpz_t q,
+    const mpz_t n,
+    const mpz_t d
+)
+{
+    SPEX_GMPZ_WRAPPER_START (q);
+    if (mpz_sgn (d) == 0)
+    {
+        SPEX_GMP_WRAPPER_FINISH ;
+        return (SPEX_PANIC);
+    }
+    mpz_cdiv_q (q, n, d);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_cdiv_qr
@@ -1124,7 +1266,7 @@ SPEX_info SPEX_mpz_submul
 /* Purpose: Safe version of dividing n by d, forming a quotient q and/or
  * remainder r.
  * cdiv rounds q up towards +infinity, and r will have the opposite sign to d.
- * The c stands for “ceil”. That is, q = ceil(n/d)
+ * The c in the name cdiv stands for “ceil”. That is, q = ceil(n/d)
  */
 
 SPEX_info SPEX_mpz_cdiv_qr
@@ -1320,6 +1462,25 @@ SPEX_info SPEX_mpz_cmp_ui
     return (SPEX_OK);
 }
 
+//------------------------------------------------------------------------------
+// SPEX_mpz_cmpabs_ui
+//------------------------------------------------------------------------------
+
+/* Purpose: Safely compare the absolute value of a mpz number and a uint64_t
+ * integer r > 0 if x > y, r = 0 if x = y, and r < 0 if x < y */
+SPEX_info SPEX_mpz_cmpabs_ui
+(
+    int *r,
+    const mpz_t x,
+    const uint64_t y
+)
+{
+    SPEX_GMP_WRAPPER_START ;
+    *r = mpz_cmpabs_ui (x, (unsigned long int) y);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_sgn
@@ -1413,6 +1574,23 @@ SPEX_info SPEX_mpq_set_z
 {
     SPEX_GMPQ_WRAPPER_START (x);
     mpq_set_z (x, y);
+    SPEX_GMP_WRAPPER_FINISH ;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
+// SPEX_mpq_canonicalize
+//------------------------------------------------------------------------------
+
+/* Purpose: Safely set an mpq number in canonical form */
+
+SPEX_info SPEX_mpq_canonicalize
+(
+    mpq_t x
+)
+{
+    SPEX_GMPQ_WRAPPER_START (x);
+    mpq_canonicalize (x);
     SPEX_GMP_WRAPPER_FINISH ;
     return (SPEX_OK);
 }

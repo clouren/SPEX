@@ -91,6 +91,10 @@ SPEX_info spex_gmp_failure (int status) ;
 // is use to prevent segmentation faults in case gmp runs out of memory inside
 // a gmp call.
 //------------------------------------------------------------------------------
+//#ifdef SPEX_DEBUG
+SPEX_info SPEX_mpz_fdiv_qr (mpz_t q, mpz_t r, const mpz_t n, const mpz_t d) ;
+#define SPEX_MPZ_FDIV_QR(q,r,n,d)        SPEX_CHECK( SPEX_mpz_fdiv_qr      (q,r,n,d)        )
+//#endif
 
 #define SPEX_MPZ_INIT(x)                 SPEX_CHECK( SPEX_mpz_init         (x)            )
 #define SPEX_MPZ_INIT2(x,size)           SPEX_CHECK( SPEX_mpz_init2        (x,size)       )
@@ -100,10 +104,15 @@ SPEX_info spex_gmp_failure (int status) ;
 #define SPEX_MPZ_SET_D(x,y)              SPEX_CHECK( SPEX_mpz_set_d        (x,y)          )
 #define SPEX_MPZ_GET_D(x,y)              SPEX_CHECK( SPEX_mpz_get_d        (x,y)          )
 #define SPEX_MPZ_GET_SI(x,y)             SPEX_CHECK( SPEX_mpz_get_si       (x,y)          )
-#define SPEX_MPZ_MUL(a,b,c)              SPEX_CHECK( SPEX_mpz_mul          (a,b,c)        )
-#define SPEX_MPZ_ADDMUL(x,y,z)           SPEX_CHECK( SPEX_mpz_addmul       (x,y,z)        )
+#define SPEX_MPZ_SWAP(x,y)               SPEX_CHECK( SPEX_mpz_swap         (x,y)          )
+#define SPEX_MPZ_MUL(x,y,z)              SPEX_CHECK( SPEX_mpz_mul          (x,y,z)        )
+#define SPEX_MPZ_MUL_SI(x,y,z)           SPEX_CHECK( SPEX_mpz_mul_si       (x,y,z)        )
 #define SPEX_MPZ_SUB(x,y,z)              SPEX_CHECK( SPEX_mpz_sub          (x,y,z)        )
+#define SPEX_MPZ_ADD(x,y,z)              SPEX_CHECK( SPEX_mpz_add          (x,y,z)        )
+#define SPEX_MPZ_ADDMUL(x,y,z)           SPEX_CHECK( SPEX_mpz_addmul       (x,y,z)        )
 #define SPEX_MPZ_SUBMUL(x,y,z)           SPEX_CHECK( SPEX_mpz_submul       (x,y,z)        )
+#define SPEX_MPZ_FDIV_Q(q,n,d)           SPEX_CHECK( SPEX_mpz_fdiv_q       (q,n,d)        )
+#define SPEX_MPZ_CDIV_Q(q,n,d)           SPEX_CHECK( SPEX_mpz_cdiv_q       (q,n,d)        )
 #define SPEX_MPZ_CDIV_QR(q,r,n,d)        SPEX_CHECK( SPEX_mpz_cdiv_qr      (q,r,n,d)      )
 #define SPEX_MPZ_DIVEXACT(x,y,z)         SPEX_CHECK( SPEX_mpz_divexact     (x,y,z)        )
 #define SPEX_MPZ_GCD(x,y,z)              SPEX_CHECK( SPEX_mpz_gcd          (x,y,z)        )
@@ -113,11 +122,13 @@ SPEX_info spex_gmp_failure (int status) ;
 #define SPEX_MPZ_CMP(r,x,y)              SPEX_CHECK( SPEX_mpz_cmp          (r,x,y)        )
 #define SPEX_MPZ_CMPABS(r,x,y)           SPEX_CHECK( SPEX_mpz_cmpabs       (r,x,y)        )
 #define SPEX_MPZ_CMP_UI(r,x,y)           SPEX_CHECK( SPEX_mpz_cmp_ui       (r,x,y)        )
+#define SPEX_MPZ_CMPABS_UI(r,x,y)        SPEX_CHECK( SPEX_mpz_cmpabs_ui    (r,x,y)        )
 #define SPEX_MPZ_SGN(sgn,x)              SPEX_CHECK( SPEX_mpz_sgn          (sgn,x)        )
 #define SPEX_MPZ_SIZEINBASE(size,x,base) SPEX_CHECK( SPEX_mpz_sizeinbase   (size,x,base)  )
 #define SPEX_MPQ_INIT(x)                 SPEX_CHECK( SPEX_mpq_init         (x)            )
 #define SPEX_MPQ_SET(x,y)                SPEX_CHECK( SPEX_mpq_set          (x,y)          )
 #define SPEX_MPQ_SET_Z(x,y)              SPEX_CHECK( SPEX_mpq_set_z        (x,y)          )
+#define SPEX_MPQ_CANONICALIZE(x)         SPEX_CHECK( SPEX_mpq_canonicalize (x)            )
 #define SPEX_MPQ_SET_D(x,y)              SPEX_CHECK( SPEX_mpq_set_d        (x,y)          )
 #define SPEX_MPQ_SET_UI(x,y,z)           SPEX_CHECK( SPEX_mpq_set_ui       (x,y,z)        )
 #define SPEX_MPQ_SET_SI(x,y,z)           SPEX_CHECK( SPEX_mpq_set_si       (x,y,z)        )
