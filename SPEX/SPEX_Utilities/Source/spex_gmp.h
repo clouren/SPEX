@@ -62,7 +62,7 @@ int64_t spex_get_gmp_ntrials (void) ;
 // uncomment this to print memory debugging info
 // #define SPEX_GMP_MEMORY_DEBUG
 
-int spex_gmp_initialize (int primary) ;
+SPEX_info spex_gmp_initialize (int primary) ;
 
 void spex_gmp_finalize (int primary) ;
 
