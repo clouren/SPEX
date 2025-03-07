@@ -114,7 +114,9 @@ configure_file ( "Config/SPEX_version.tex.in"
 include_directories ( Include
     SPEX_Backslash/Source SPEX_Cholesky/Source SPEX_LU/Source
     SPEX_Utilities/Source
-    SPEX_Update/Source
+    SPEX_Cholesky_Update/Source
+    SPEX_LU_Update/Source
+    SPEX_Update_Utilities/Source
     ${SUITESPARSE_CONFIG_INCLUDE_DIR}
     ${GMP_INCLUDE_DIR} ${MPFR_INCLUDE_DIR}
     ${AMD_INCLUDE_DIR} ${COLAMD_INCLUDE_DIR} )
