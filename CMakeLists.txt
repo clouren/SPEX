@@ -104,7 +104,7 @@ endif ( )
 
 if ( SUITESPARSE_USE_SYSTEM_SUITESPARSE_CONFIG )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "suitesparse_config" )
-    find_package ( SuiteSparse_config 7.8.2 REQUIRED )
+    find_package ( SuiteSparse_config 7.10.2 REQUIRED )
 else ( )
     if ( NOT "suitesparse_config" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
         message ( STATUS "Adding \"suitesparse_config\" to the list of built targets." )
@@ -119,6 +119,8 @@ if ( CMAKE_VERSION VERSION_LESS 3.24 )
     find_package ( OpenMP COMPONENTS C )
 endif ( )
 
+# BLAS is not required by SPEX
+option ( SUITESPARSE_REQUIRE_BLAS "SPEX does not require the BLAS functions" OFF )
 
 #-------------------------------------------------------------------------------
 # include selected projects

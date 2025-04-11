@@ -79,10 +79,10 @@
 // MATLAB/Octave
 //------------------------------------------------------------------------------
 
-#if defined ( MATLAB_MEX_FILE )
-#include "mex.h"
-#include "matrix.h"
-#endif
+//  #if defined ( MATLAB_MEX_FILE )
+//  #include "mex.h"
+//  #include "matrix.h"
+//  #endif
 
 //------------------------------------------------------------------------------
 // string and token handling macros
@@ -434,19 +434,19 @@ int SuiteSparse_version     // returns SUITESPARSE_VERSION
 
 #define SUITESPARSE_HAS_VERSION_FUNCTION
 
-#define SUITESPARSE_DATE "Aug 20, 2024"
+#define SUITESPARSE_DATE "Apr 10, 2025"
 #define SUITESPARSE_MAIN_VERSION    7
-#define SUITESPARSE_SUB_VERSION     8
+#define SUITESPARSE_SUB_VERSION     10
 #define SUITESPARSE_SUBSUB_VERSION  2
 
 // version format x.y
 #define SUITESPARSE_VER_CODE(main,sub) ((main) * 1000 + (sub))
-#define SUITESPARSE_VERSION SUITESPARSE_VER_CODE(7, 8)
+#define SUITESPARSE_VERSION SUITESPARSE_VER_CODE(7, 10)
 
 // version format x.y.z
 #define SUITESPARSE__VERCODE(main,sub,patch) \
     (((main)*1000ULL + (sub))*1000ULL + (patch))
-#define SUITESPARSE__VERSION SUITESPARSE__VERCODE(7,8,2)
+#define SUITESPARSE__VERSION SUITESPARSE__VERCODE(7,10,2)
 
 //==============================================================================
 // SuiteSparse interface to the BLAS and LAPACK libraries

@@ -2,7 +2,7 @@
 # SuiteSparse/SuiteSparse_config/CMakeLists.txt:  cmake for SuiteSparse_config
 #-------------------------------------------------------------------------------
 
-# SuiteSparse_config, Copyright (c) 2012-2023, Timothy A. Davis.
+# SuiteSparse_config, Copyright (c) 2012-2025, Timothy A. Davis.
 # All Rights Reserved.
 # SPDX-License-Identifier: BSD-3-clause
 
@@ -15,9 +15,9 @@
 cmake_minimum_required ( VERSION 3.22 )
 
 # version of both SuiteSparse and SuiteSparse_config
-set ( SUITESPARSE_DATE "Aug 20, 2024" )
+set ( SUITESPARSE_DATE "Apr 10, 2025" )
 set ( SUITESPARSE_VERSION_MAJOR 7 )
-set ( SUITESPARSE_VERSION_MINOR 8 )
+set ( SUITESPARSE_VERSION_MINOR 10 )
 set ( SUITESPARSE_VERSION_SUB   2 )
 set ( SUITESPARSE_CONFIG_VERSION_MAJOR ${SUITESPARSE_VERSION_MAJOR} CACHE STRING "" FORCE )
 set ( SUITESPARSE_CONFIG_VERSION_MINOR ${SUITESPARSE_VERSION_MINOR} CACHE STRING "" FORCE )
@@ -127,7 +127,20 @@ endif ( )
 # find the BLAS
 #-------------------------------------------------------------------------------
 
-include ( SuiteSparseBLAS )
+# BLAS is not required by SPEX
+option ( SUITESPARSE_REQUIRE_BLAS "SPEX does not require the BLAS functions" OFF )
+
+if ( SUITESPARSE_REQUIRE_BLAS )
+    include ( SuiteSparseBLAS )
+else ( )
+    # It doesn't actually matter which Fortran integer size is selected here.
+    # But we might as well respect any user flags.
+    if ( SUITESPARSE_USE_64BIT_BLAS )
+        include ( SuiteSparseBLAS64 )
+    else ( )
+        include ( SuiteSparseBLAS32 )
+    endif ( )
+endif ( )
 
 #-------------------------------------------------------------------------------
 # configure files
