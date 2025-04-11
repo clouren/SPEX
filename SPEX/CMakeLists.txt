@@ -13,9 +13,9 @@
 
 cmake_minimum_required ( VERSION 3.22 )
 
-set ( SPEX_DATE "FIXME, YEAR" ) # FIXME
+set ( SPEX_DATE "May 30, 2025" ) # FIXME
 set ( SPEX_VERSION_MAJOR 3 CACHE STRING "" FORCE )
-set ( SPEX_VERSION_MINOR 3 CACHE STRING "" FORCE )
+set ( SPEX_VERSION_MINOR 3 CACHE STRING "" FORCE )  # FIXME: v3.3.0 and v3.4.0
 set ( SPEX_VERSION_SUB   0 CACHE STRING "" FORCE )
 
 message ( STATUS "Building SPEX version: v"

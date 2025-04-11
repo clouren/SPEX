@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// SPEX/Tcov/tcov_for_update.c: test coverage for SPEX_Update
+// SPEX/Tcov/tcov_for_update.c: test coverage for update/downdate methods
 // ----------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2023, Chris Lourenco, Jinhao Chen,
@@ -38,11 +38,11 @@
  *                initialized from 0 to MAX_MALLOC_COUNT, break when
  *                malloc_count>0 at the end of inner loop.
  * 4) ./tcov_for_update 0 0
- *                This will use Mats4Tcov/SPEX_Update/mat1.txt as input to
+ *                This will use Mats4Tcov/mat1.txt as input to
  *                obtain L, U, vk and k to perform the test for 1 iteration.
  * 5) ./tcov_for_update 0 0 max_file_index
  *                This will use mat1.txt .... mat[max_file_index].txt in
- *                Mats4Tcov/SPEX_Update as input to obtain L, U, vk, and k.
+ *                Mats4Tcov as input to obtain L, U, vk, and k.
  *                e.g., ./tcov_for_update 0 3 will use mat1.txt mat2.txt and
  *                mat3.txt as input in each iteration.
  * 6) ./tcov_for_update 0 0 max_file_num file1 file2 ... file[max_file_num]
@@ -228,14 +228,14 @@ int main ( int argc, char *argv[])
                     else
                     {
                         mname = mat_name ;
-                        sprintf(mat_name,"Mats4Tcov/SPEX_Update/mat%ld.txt",
+                        sprintf(mat_name,"Mats4Tcov/mat%ld.txt",
                             n+1);
                         puts(mat_name);
                         mat_file = fopen(mat_name, "r");
                     }
-                    // FIXME: verbose output here:
-                    printf ("testing with [%s]\n", mname) ;
-                    fprintf (stderr, "testing with [%s]\n", mname) ;
+
+//                  printf ("testing with [%s]\n", mname) ;
+//                  fprintf (stderr, "testing with [%s]\n", mname) ;
                     if (mat_file == NULL)
                     {
                         fprintf (stderr, "cannot open [%s]\n", mname) ;
@@ -379,10 +379,9 @@ int main ( int argc, char *argv[])
                     MY_PR("+++++++++++++++++++++++++++++++++++++++++++\n\n\n");
                     An = n;
                     Anz = 0;
-                    char *mat_name = "Mats4Tcov/SPEX_Update/mat.txt";
+                    char *mat_name = "Mats4Tcov/mat.txt";
                     mat_file = fopen(mat_name, "w");
-                    // FIXME: verbose output here:
-                    printf ("testing with [%s]\n", mat_name) ;
+//                  printf ("testing with [%s]\n", mat_name) ;
 //                  fprintf (stderr, "testing with [%s]\n", mat_name) ;
                     if (mat_file == NULL)
                     {

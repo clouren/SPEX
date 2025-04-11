@@ -227,36 +227,87 @@ SPEX_ldl_%.c:
 #	- ln -s ../SPEX_Cholesky/Demo/$@
 
 #-------------------------------------------------------------------------------
-# link and compile each .c file in SPEX_Update/Source
+# link and compile each .c file in the update/downdate methods
 
-OBJ_Update = \
+OBJ_Chol_Update = \
+    SPEX_update_cholesky_rank1.o
+
+OBJ_Update_Util = \
     spex_update_backward_sub.o \
-    SPEX_update_cholesky_rank1.o \
+    spex_update_forward_sub.o \
+    spex_update_get_scattered_v.o \
+    spex_update_ipge.o \
+    SPEX_update_solve.o \
+    spex_update_solve_internal.o \
+    SPEX_update_tsolve.o
+
+OBJ_LU_Update = \
     spex_update_cppu.o \
     spex_update_dppu1.o \
     spex_update_dppu2.o \
     spex_update_finalize_and_insert_vk.o \
-    spex_update_forward_sub.o \
-    spex_update_get_scattered_v.o \
     spex_update_insert_new_entry.o \
-    spex_update_ipge.o \
     SPEX_update_lu_colrep.o \
     SPEX_update_matrix_colrep.o \
-    SPEX_update_solve.o \
-    SPEX_update_tsolve.o \
-    spex_update_solve_internal.o \
     spex_update_triangular_solve.o \
     spex_update_verify.o
 
-$(OBJ_Update): ../Include/SPEX.h ../SPEX_Update/Source/spex_update_internal.h
+OBJ_Update = $(OBJ_Update_Util) $(OBJ_Chol_Update) $(OBJ_LU_Update)
+
+$(OBJ_Update): ../Include/SPEX.h ../SPEX_Update_Utilities/Source/spex_update_internal.h
 
 .PRECIOUS: SPEX_update_%.c spex_update_%.c
 
-SPEX_update_%.c:
-	- ln -s ../SPEX_Update/Source/$@
+SPEX_update_cholesky_rank1.c:
+	- ln -s ../SPEX_Cholesky_Rank1/Source/$@
 
-spex_update_%.c:
-	- ln -s ../SPEX_Update/Source/$@
+spex_update_backward_sub.c:
+	- ln -s ../SPEX_Update_Utilities/Source/$@
+
+spex_update_forward_sub.c:
+	- ln -s ../SPEX_Update_Utilities/Source/$@
+
+spex_update_get_scattered_v.c:
+	- ln -s ../SPEX_Update_Utilities/Source/$@
+
+spex_update_ipge.c:
+	- ln -s ../SPEX_Update_Utilities/Source/$@
+
+SPEX_update_solve.c:
+	- ln -s ../SPEX_Update_Utilities/Source/$@
+
+spex_update_solve_internal.c:
+	- ln -s ../SPEX_Update_Utilities/Source/$@
+
+SPEX_update_tsolve.c:
+	- ln -s ../SPEX_Update_Utilities/Source/$@
+
+spex_update_cppu.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+spex_update_dppu1.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+spex_update_dppu2.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+spex_update_finalize_and_insert_vk.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+spex_update_insert_new_entry.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+SPEX_update_lu_colrep.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+SPEX_update_matrix_colrep.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+spex_update_triangular_solve.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
+
+spex_update_verify.c:
+	- ln -s ../SPEX_LU_ColRep/Source/$@
 
 #-------------------------------------------------------------------------------
 
@@ -294,7 +345,7 @@ runtests4llu: all
 	./tcov_for_lu 0 1 1 > lu5.out
 	./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
 
-# only run test for SPEX_Update
+# only run test for update/downdate
 runtests4luu: all
 	- ./tcov_for_update 0 6 > test_for_update1.out
 	- ./tcov_for_update 0 0 26 > test_for_update2.out
@@ -324,7 +375,7 @@ vtests4llu: all
 	$(V) ./tcov_for_lu 0 1 1 > lu5.out
 	$(V) ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
 
-# run test for SPEX_Update with valgrind
+# run test for update/downdate with valgrind
 vtests4luu: all
 	- $(V) ./tcov_for_update 0 6 > test_for_update1.out
 	- $(V) ./tcov_for_update 0 0 25 > test_for_update2.out
@@ -343,7 +394,7 @@ vtests4chol: all
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
 	- $(RM) tcov_for_lu  spex_demo_lu_extended *.out *.a out tcov_for_lu2 tcov_for_other
-	- $(RM) tcov_for_update out Mats4Tcov/SPEX_Update/mat.txt
+	- $(RM) tcov_for_update out Mats4Tcov/mat.txt
 	- $(RM) -r SPEX_*.c spex_*.c *.dSYM
 	- $(RM) -r tcov_for_cholesky 
 

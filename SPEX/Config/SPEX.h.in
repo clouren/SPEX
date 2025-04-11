@@ -2,7 +2,7 @@
 // SPEX/Include/SPEX.h: Include file for SPEX Library
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// SPEX: (c) 2019-2025, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
@@ -95,10 +95,6 @@
 #include <string.h>
 #include <gmp.h>
 #include <mpfr.h>
-// #include <math.h>
-// #include <time.h>
-// #include <inttypes.h>
-// #include <assert.h>
 #include "SuiteSparse_config.h"
 
 //------------------------------------------------------------------------------
@@ -121,8 +117,8 @@
 
 #define SPEX__VERSION SUITESPARSE__VERCODE(@SPEX_VERSION_MAJOR@,@SPEX_VERSION_MINOR@,@SPEX_VERSION_SUB@)
 #if !defined (SUITESPARSE__VERSION) || \
-    (SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,8,2))
-#error "SPEX @SPEX_VERSION_MAJOR@.@SPEX_VERSION_MINOR@.@SPEX_VERSION_SUB@ requires SuiteSparse_config 7.8.2 or later"
+    (SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,10,2))   /* FIXME */
+#error "SPEX @SPEX_VERSION_MAJOR@.@SPEX_VERSION_MINOR@.@SPEX_VERSION_SUB@ requires SuiteSparse_config FIXME or later"
 #endif
 
 #if defined ( __cplusplus )
@@ -263,15 +259,14 @@ SPEX_preorder ;
 // Factorization type codes
 //------------------------------------------------------------------------------
 
-// A code in SPEX_options to tell SPEX which factorization algorithm to use
-// By default, left-looking is used for LU and up-looking is utilized
-// for Cholesky/LDL. If desired, left-looking can be used for all 
-// Cholesky or LDL routines by setting option->algo to SPEX_CHOL_LEFT
-// or SPEX_LDL_LEFT, respectively. 
-// Witin SPEX Backslash, option->algo utilizes the specified algorithm
-// if option->algo is set. Otherwise, if option->algo is left as 
-// default, SPEX Backslash attempts an LDL factorization and, if that
-// fails, an LU factorization is done.
+// SPEX_factorization_algorithm is an enum in SPEX_options to tell SPEX which
+// factorization algorithm to use.  By default, left-looking is used for LU and
+// up-looking is used for Cholesky/LDL. If desired, left-looking can be used
+// for all Cholesky or LDL routines by setting option->algo to SPEX_CHOL_LEFT
+// or SPEX_LDL_LEFT, respectively.  Witin SPEX Backslash, option->algo utilizes
+// the specified algorithm if option->algo is set. Otherwise, if option->algo
+// is left as default, SPEX Backslash attempts an LDL factorization and, if
+// that fails, an LU factorization is done.
 
 typedef enum
 {
@@ -321,6 +316,9 @@ SPEX_info SPEX_create_default_options (SPEX_options *option_handle) ;
 //------------------------------------------------------------------------------
 // SPEX_vector
 //------------------------------------------------------------------------------
+
+// A SPEX_vector is a sparse vector used for dynamic (updatable) SPEX
+// matrices.
 
 typedef struct
 {
@@ -441,15 +439,14 @@ SPEX_type ;
 // (3) SPEX_DYNAMIC_CSC: A sparse matrix in dynamic CSC (compressed sparse
 //     column) format with the number of nonzeros in each column changing
 //     independently and dynamically; only used in the update algorithms.
-//     algorithms. The matrix is
-//     held as an array of n SPEX_vectors, one per column. Each column is held
-//     as a SPEX_vector, containing mpz_t values and its own scale factor.  For
-//     this kind, A->nzmax, A->nz, A->p, A->i, A->x and A->*_shallow are
-//     ignored and pointers p, i and x are remained as NULL pointers. To access
-//     entries in column j, A->v[j]->i[0 ...  A->v[j]->nz-1] give the row
-//     indices of all nonzeros, and the mpz_t values of these entries appear in
-//     the same locations in A->v[j]->x.  A->v[j]->nzmax is the max number of
-//     nonzeros allocated.
+//     algorithms. The matrix is held as an array of n SPEX_vectors, one per
+//     column. Each column is held as a SPEX_vector, containing mpz_t values
+//     and its own scale factor.  For this kind, A->nzmax, A->nz, A->p, A->i,
+//     A->x and A->*_shallow are ignored and pointers p, i and x are remained
+//     as NULL pointers. To access entries in column j, A->v[j]->i[0 ...
+//     A->v[j]->nz-1] give the row indices of all nonzeros, and the mpz_t
+//     values of these entries appear in the same locations in A->v[j]->x.
+//     A->v[j]->nzmax is the max number of nonzeros allocated.
 
 // The SPEX_matrix may contain 'shallow' components, A->p, A->i, A->j, and
 // A->x.  For example, if A->p_shallow is true, then a non-NULL A->p is a
@@ -724,16 +721,14 @@ SPEX_info SPEX_symbolic_analysis_free
 // SPEX_factorization: data structure for factorization
 //------------------------------------------------------------------------------
 
-// FIXME : polish the grammar below and elsewhere
-
 // The SPEX_factorization object holds an LU, Cholesky/LDL, or (a future) QR
 // numerical factorization, in either non-updatable (static) or updatable form.
 
-// All SPEX_update_* functions require and output updatable factorization with
+// All SPEX_update_* functions require an updatable factorization with
 // L (and U if exists) in SPEX_DYNAMIC_CSC MPZ form. All solvers (except
 // SPEX_update_(t)solve) and functions that create factorization return
 // non-updatable factorization with L (and U if exists) in SPEX_CSC MPZ form.
-//
+
 // Aside from that Qinv_perm will be generated for updatable LU factorization,
 // the only difference between non-updatable and updatable factorizations is
 // the way that L (and U if exists) is stored. User can get more details of the
@@ -783,7 +778,7 @@ typedef struct
     SPEX_matrix U;                        // The upper-triangular matrix from LU
                                           // factorization. NULL for Cholesky
                                           // factorization.
-    // FIXME add placeholder for future Q and R here?
+
     SPEX_matrix rhos;                     // A n-by-1 dense matrix for the
                                           // pivot values
 
@@ -792,7 +787,9 @@ typedef struct
     // These are currently used only for LU, Cholesky or LDL factorization.
     // One or more of these permutations could be NULL for some
     // SPEX_factorization_kind. Specifically,
-    // For kind == SPEX_LU_FACTORIZATION, Qinv_perm can be NULL
+    // For kind == SPEX_LU_FACTORIZATION, Qinv_perm can be NULL; it is only
+    // constructed if the LU factorization is to be updated by
+    // SPEX_update_lu_colrep.
     // For kind == SPEX_CHOLESKY_FACTORIZATION, and SPEX_LDL_FACTORIZATION
     // both Q_perm and Qinv_perm are NULL.
     //--------------------------------------------------------------------------
@@ -802,8 +799,6 @@ typedef struct
 
     int64_t *Q_perm;                     // column permutation
     int64_t *Qinv_perm;                  // inverse of column permutation
-
-    // FIXME: add rank here, for QR?
 
 } SPEX_factorization_struct ;
 
@@ -845,7 +840,7 @@ SPEX_info SPEX_factorization_check
 //------------------------------------------------------------------------------
 // Function for performing in-place conversion between updatable and
 // non-updatable factorization. For now, it only works for LU or Cholesky
-// factorization.
+// factorization (FIXME not LDL?).
 //------------------------------------------------------------------------------
 // For LU or Cholesky factorization, if user wishes to perform factorization
 // update, then it must be in updatable format (i.e., F->updatable == true).
@@ -854,6 +849,7 @@ SPEX_info SPEX_factorization_check
 // 1. Both L and U are stored as SPEX_DYNAMIC_CSC. Notably, U in the updatable
 //    factorization is actually the transpose of U (or equivalently, U is stored
 //    by row instead), since U will be updated one row at a time.
+//
 // 2. A = LD^(-1)U, which means L and U are properly permuted. (Recall that
 //    PAQ = LDU or PAP' = LDL' holds for static factorization). That is, for
 //    updatable factorization, the rows of L are in the same order as the rows
@@ -1134,7 +1130,6 @@ SPEX_info SPEX_mpz_submul (mpz_t x, const mpz_t y, const mpz_t z) ;
 SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
 
 
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //-------------------------SPEX Left LU-----------------------------------------
@@ -1142,8 +1137,7 @@ SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
 //------------------------------------------------------------------------------
 
 // This portion of the SPEX library solves a sparse system of linear equations
-// using the SPEX Left LU factorization. This code accompanies the paper
-// (submitted to ACM Transactions on Mathematical Software):
+// using the SPEX Left LU factorization. This code accompanies the paper:
 
 //    "Algorithm 1021: SPEX Left LU, Exactly Solving Sparse Linear Systems via
 //    a Sparse Left-looking Integer-preserving LU Factorization",
@@ -1182,7 +1176,7 @@ SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    This software package solves the linear system Ax = b exactly. The input
+//    The SPEX LU routines solve the linear system Ax = b exactly. The input
 //    matrix and right hand side vectors are stored as either integers, double
 //    precision numbers, multiple precision floating points (through the mpfr
 //    library) or as rational numbers (as a collection of numerators and
@@ -1219,8 +1213,6 @@ SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
 //    precision (i.e., the solution is 10^500 or something), 3) variable
 //    precision floating point using the GMP mpfr_t data type. The associated
 //    precision is user defined.
-
-
 
 //------------------------------------------------------------------------------
 // Primary factorization & solve routines
@@ -1297,7 +1289,6 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //     Sparse Linear Systems," L. Mejia Domenzain, J. Chen, C. Lourenco, 
 //     E. Moreno-Centeno, T. Davis, submitted to ACM TOMS
 
-
 //     The theory associated with this paper is found at:
 
 //    "Exactly Solving Sparse Rational Linear Systems via Roundoff-Error-Free
@@ -1319,8 +1310,6 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //              https://github.com/clouren/spex
 //              www.suitesparse.com
 //
-//
-
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1338,9 +1327,9 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    This software package solves the SPD linear system Ax = b exactly. The
-//    key property of this package is that it can exactly solve any SPD input
-//    system.  The input matrix and right hand side vectors are stored as
+//    The SPEX Cholesky routines solve the SPD linear system Ax = b exactly.
+//    The key property of this package is that it can exactly solve any SPD
+//    input system.  The input matrix and right hand side vectors are stored as
 //    either integers, double precision numbers, multiple precision floating
 //    points (through the mpfr library) or as rational numbers (as a collection
 //    of numerators and denominators using the GMP mpq_t data structure).
@@ -1455,10 +1444,10 @@ SPEX_info SPEX_cholesky_solve
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    This portion of the SPEX library exactly solves a sparse symmetric 
-//    indefinite or negative definite system with nonzero leading principle minors
-//    via an LDL factorization. The approach is very similar to the one for SPEX 
-//    Cholesky and is also described in the paper:
+//    The SPEX LDL routines SPEX library exactly solve a sparse symmetric
+//    indefinite or negative definite system with nonzero leading principle
+//    minors via an LDL factorization. The approach is very similar to the one
+//    for SPEX Cholesky and is also described in the paper:
 
 //    "Algorithm 1xxx: SPEX Cholesky and SPEX Backslash for Exactly Solving
 //     Sparse Linear Systems," L. Mejia Domenzain, J. Chen, C. Lourenco, 
@@ -1484,8 +1473,6 @@ SPEX_info SPEX_cholesky_solve
 //   may be found at:
 //              https://github.com/clouren/spex
 //              www.suitesparse.com
-//
-//
 
 // Perform symbolic analysis prior to factorization
 SPEX_info SPEX_ldl_analyze
@@ -1496,7 +1483,6 @@ SPEX_info SPEX_ldl_analyze
     const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
     const SPEX_options option   // Command options (Default if NULL)
 ) ;
-
 
 // Factorize a given matrix with SPEX LDL. A must be symmetric
 // with nonzero leading principle minors
@@ -1556,10 +1542,13 @@ SPEX_info SPEX_ldl_backslash
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// This portion of SPEX library update a exact Cholesky factorization PAQ =
-// LDL^T exactly when A is changed as A' = A+sigma*w*w^T, or a exact LU
-// factorization PAQ = LDU when A is changed with a single column.  This code
-// accompanies the following papers:
+// The SPEX Cholesky:Rank1 routines in the SPEX library update a exact Cholesky
+// factorization PAQ = LDL^T exactly when A is changed as A' = A+sigma*w*w^T.
+
+// The SPEX LU:ColRep routine update an exact LU factorization PAQ = LDU when A
+// is changed with a single column.
+
+// This code accompanies the following papers:
 
 //    The theory associated with this software can be found in the paper
 //    "Sparse Exact Rank-1 Cholesky Update/Downdate", J. Chen, T. A. Davis, C.
