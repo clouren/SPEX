@@ -36,7 +36,7 @@ SPEX_info SPEX_create_default_options (SPEX_options *option_handle)
     //--------------------------------------------------------------------------
 
     (*option_handle)->pivot       = SPEX_DEFAULT_PIVOT ;
-    (*option_handle)->order       = SPEX_DEFAULT_ORDER ;
+    (*option_handle)->order       = SPEX_DEFAULT_ORDERING ;
     (*option_handle)->print_level = SPEX_DEFAULT_PRINT_LEVEL ;
     (*option_handle)->prec        = SPEX_DEFAULT_PRECISION ;
     (*option_handle)->tol         = SPEX_DEFAULT_TOL ;
