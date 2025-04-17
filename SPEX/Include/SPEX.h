@@ -13,11 +13,12 @@
 #define SPEX_H
 
 
-// SPEX is a collection of functions for the SParse EXact package.
-// Included are several routines for memory management, matrix operations, and
-// wrappers to the GMP library.
+// SPEX (SParse EXact) is a collection of matrix factorizations other functions
+// for computing exact solutions to sparse linear systems, with no round-off
+// error.  Included are several routines for memory management, matrix
+// operations, and wrappers to the GMP library.
 //
-// This is the global include file and should be included in all SPEX_* packages
+// This is the global include file and should be included in all SPEX_* Modules.
 //
 //
 //------------------------------------------------------------------------------
@@ -29,7 +30,6 @@
 //
 //    Christopher Lourenco, Jinhao Chen,
 //    Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis
-//
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -98,7 +98,7 @@
 #include "SuiteSparse_config.h"
 
 //------------------------------------------------------------------------------
-// SPEX Version
+// SPEX Version macros
 //------------------------------------------------------------------------------
 
 // Current version of the code
@@ -130,9 +130,16 @@ extern "C"
 // Error codes
 //------------------------------------------------------------------------------
 
-// Most SPEX functions return a code that indicates if it was successful
-// or not. Otherwise the code returns a pointer to the object that was created
-// or it returns void (in the case that an object was deleted)
+// Nearly all SPEX functions return a SPEX_Info enum value that indicates if it
+// was successful or not.
+
+// The exceptions are the memory management methods: SPEX_calloc, SPEX_malloc,
+// SPEX_free, and SPEX_realloc.  These methods are wrappers for the underlying
+// malloc, calloc, free, and realloc methods used to allocate and manage
+// memory in SPEX, GMP, and MPFR.  These methods return a pointer to the
+// allocated memory, except for SPEX_free which returns nothing.
+
+// All other methods return a SPEX_Info value.
 
 typedef enum
 {
@@ -155,8 +162,10 @@ typedef enum
 SPEX_info ;
 
 //------------------------------------------------------------------------------
-// SPEX Version, continued
+// SPEX Version function
 //------------------------------------------------------------------------------
+
+// See also the SPEX_VERSION macros above.
 
 SPEX_info SPEX_version
 (
@@ -188,9 +197,9 @@ SPEX_info SPEX_version
 // SPEX_TRY macros assist in this effort.
 //
 // SPEX is written in C, and so it cannot rely on the try/catch mechanism of
-// C++.  To accomplish a similar goal, we provide our mechanism.  The SPEX_TRY
-// macro calls a single SPEX method and then takes corrected action based on a
-// user-defined macro SPEX_CATCH.
+// C++.  To accomplish a similar goal, we provide our own mechanism.  The
+// SPEX_TRY macro calls a single SPEX method and then takes corrective action
+// based on a user-defined macro SPEX_CATCH.
 
 #define SPEX_TRY(method)            \
 {                                   \
@@ -224,8 +233,8 @@ SPEX_info SPEX_version
 // for ease of reading
 #define SPEX_DEFAULT 0
 
-// A code in SPEX_options to tell SPEX what type of pivoting to use for pivoting
-// in unsymmetric LU factorization.
+// SPEX_pivot is an enum SPEX_options to tell SPEX what type of pivoting to use
+// for pivoting in unsymmetric LU factorization.
 
 typedef enum
 {
@@ -242,8 +251,8 @@ SPEX_pivot ;
 // Fill-reducing ordering scheme codes
 //------------------------------------------------------------------------------
 
-// A code in SPEX_options to tell SPEX which fill-reducing ordering to used
-// prior to exact factorization
+// SPEX_preorder is an enum code in SPEX_options to tell SPEX which
+// fill-reducing ordering to used prior to exact factorization.
 
 typedef enum
 {
@@ -306,9 +315,8 @@ typedef struct
 // A SPEX_options object is a pointer to a SPEX_options_struct
 typedef SPEX_options_struct *SPEX_options ;
 
-// Purpose: Create SPEX_options object with default parameters
-// upon successful allocation, which are defined in SPEX_util_nternal.h
-// To free it, simply use SPEX_FREE (option).
+// Purpose: Create SPEX_options object with default parameters upon successful
+// allocation.  To free it, simply use SPEX_FREE (&option).
 
 SPEX_info SPEX_create_default_options (SPEX_options *option_handle) ;
 
@@ -599,9 +607,9 @@ SPEX_info SPEX_matrix_free
 
 SPEX_info SPEX_matrix_nnz       // find the # of entries in A
 (
-    int64_t *nnz,               // # of entries in A, -1 if A is NULL
+    int64_t *nnz,               // # of entries in A, -1 if A is invalid
     const SPEX_matrix A,        // matrix to query
-    const SPEX_options option   // command options, currently unused
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -713,7 +721,7 @@ typedef SPEX_symbolic_analysis_struct *SPEX_symbolic_analysis ;
 
 SPEX_info SPEX_symbolic_analysis_free
 (
-    SPEX_symbolic_analysis *S_handle,   // Structure to be deleted
+    SPEX_symbolic_analysis *S_handle,   // symbolic object to be deleted
     const SPEX_options option
 ) ;
 
@@ -811,7 +819,7 @@ typedef SPEX_factorization_struct *SPEX_factorization ;
 
 SPEX_info SPEX_factorization_free
 (
-    SPEX_factorization *F_handle,   // Structure to be deleted
+    SPEX_factorization *F_handle,   // numeric facotorization to be deleted
     const SPEX_options option
 ) ;
 
@@ -886,7 +894,7 @@ SPEX_info SPEX_factorization_convert
     SPEX_factorization F,       // The factorization to be converted
     bool updatable,             // if true: make F updatable
                                 // if false: make non-updatable
-    const SPEX_options option   // Command options
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -986,10 +994,7 @@ SPEX_info SPEX_initialize_expert
 // library, and frees any internal workspace created by SPEX.  It must be
 // called as the last SPEX_* function called.
 
-SPEX_info SPEX_finalize
-(
-    void
-) ;
+SPEX_info SPEX_finalize ( void ) ;
 
 // SPEX is thread-safe but it requires each user thread to call
 // SPEX_thread_initialize when it starts, and SPEX_thread_finalize when it
@@ -1024,7 +1029,7 @@ SPEX_info SPEX_determine_symmetry
 (
     bool *is_symmetric,         // true if matrix is symmetric, false otherwise
     const SPEX_matrix A,        // Input matrix to be checked for symmetry
-    const SPEX_options option   // Command options
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -1077,7 +1082,7 @@ SPEX_info SPEX_gmp_fscanf (FILE *fp, const char *format, ... ) ;
 
 SPEX_info SPEX_mpq_abs (mpq_t x, const mpq_t y) ;
 SPEX_info SPEX_mpq_add (mpq_t x, const mpq_t y, const mpq_t z) ;
-SPEX_info SPEX_mpq_canonicalize (mpq_t x);
+SPEX_info SPEX_mpq_canonicalize (mpq_t x) ;
 SPEX_info SPEX_mpq_clear (mpq_t x) ;
 SPEX_info SPEX_mpq_cmp (int *r, const mpq_t x, const mpq_t y) ;
 SPEX_info SPEX_mpq_cmp_ui (int *r, const mpq_t x,
@@ -1127,7 +1132,7 @@ SPEX_info SPEX_mpz_sgn (int *sgn, const mpz_t x) ;
 SPEX_info SPEX_mpz_sizeinbase (size_t *size, const mpz_t x, int64_t base) ;
 SPEX_info SPEX_mpz_sub (mpz_t x, const mpz_t y, const mpz_t z) ;
 SPEX_info SPEX_mpz_submul (mpz_t x, const mpz_t y, const mpz_t z) ;
-SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
+SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y) ;
 
 
 //------------------------------------------------------------------------------
@@ -1184,7 +1189,7 @@ SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
 //    within the code transform the input into an integral matrix in compressed
 //    column form.
 
-//    This package computes the factorization PAQ = LDU. Note that we store the
+//    This Module computes the factorization PAQ = LDU. Note that we store the
 //    "functional" form of the factorization by only storing L and U. The user
 //    is given some freedom to select the permutation matrices P and Q. The
 //    recommended default settings select Q using the COLAMD column ordering
@@ -1194,7 +1199,7 @@ SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
 //    Alternative strategies allowed to select Q include the AMD column
 //    ordering or no column permutation (Q=I).  For pivots, there are a variety
 //    of potential schemes including traditional partial pivoting, diagonal
-//    pivoting, tolerance pivoting etc. This package does not allow pivoting
+//    pivoting, tolerance pivoting etc. This Module does not allow pivoting
 //    based on sparsity criterion.
 
 //    The factors L and U are computed via integer preserving operations via
@@ -1219,7 +1224,7 @@ SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y);
 //------------------------------------------------------------------------------
 
 // SPEX_lu_backslash solves the linear system Ax = b via LU factorization
-// of A. This is the simplest way to use the SPEX Left LU package. This
+// of A. This is the simplest way to use the SPEX LU Module. This
 // function encompasses both factorization and solve and returns the solution
 // vector in the user desired type.  It can be thought of as an exact version
 // of MATLAB sparse backslash.
@@ -1234,7 +1239,7 @@ SPEX_info SPEX_lu_backslash
                                   // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix A,          // Input matrix
     const SPEX_matrix b,          // Right hand side vector(s)
-    const SPEX_options option     // Command options
+    const SPEX_options option
 ) ;
 
 SPEX_info SPEX_lu_analyze
@@ -1242,7 +1247,7 @@ SPEX_info SPEX_lu_analyze
     SPEX_symbolic_analysis *S_handle,   // symbolic analysis including
                                  // column permutation and nnz of L and U
     const SPEX_matrix A,         // Input matrix
-    const SPEX_options option    // Control parameters, if NULL, use default
+    const SPEX_options option
 ) ;
 
 SPEX_info SPEX_lu_factorize
@@ -1252,7 +1257,7 @@ SPEX_info SPEX_lu_factorize
     // input:
     const SPEX_matrix A,            // matrix to be factored
     const SPEX_symbolic_analysis S, // symbolic analysis
-    const SPEX_options option       // command options
+    const SPEX_options option
 ) ;
 
 // solves the linear system Ax = b via LU factorization.
@@ -1270,7 +1275,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
                             // it is not modified.
     // input:
     const SPEX_matrix b,    // right hand side vector(s)
-    const SPEX_options option // Command options
+    const SPEX_options option
 ) ;
 
 
@@ -1303,7 +1308,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //
 //   SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Cholesky.
 //   The easiest way ensure these dependencies are met is to only access this
-//   package through the SPEX repository.
+//   Module through the SPEX repository.
 //
 //   All of these codes are components of the SPEX software library. This code
 //   may be found at:
@@ -1328,7 +1333,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //------------------------------------------------------------------------------
 
 //    The SPEX Cholesky routines solve the SPD linear system Ax = b exactly.
-//    The key property of this package is that it can exactly solve any SPD
+//    The key property of this Module is that it can exactly solve any SPD
 //    input system.  The input matrix and right hand side vectors are stored as
 //    either integers, double precision numbers, multiple precision floating
 //    points (through the mpfr library) or as rational numbers (as a collection
@@ -1336,7 +1341,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //    Appropriate routines within the code transform the input into an integral
 //    matrix in compressed column form.
 
-//    This package computes the factorization PAP' = LDL'. Note that we store
+//    This Module computes the factorization PAP' = LDL'. Note that we store
 //    the "functional" form of the factorization by only storing the matrix L.
 //    The user is given some freedom to select the permutation matrix P. The
 //    recommended default settings select P using the AMD ordering.
@@ -1381,7 +1386,7 @@ SPEX_info SPEX_cholesky_backslash
     const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
     const SPEX_matrix b,        // Right hand side vector(s). Must be
                                 // SPEX_MPZ and SPEX_DENSE
-    const SPEX_options option   // Command options (Default if NULL)
+    const SPEX_options option
 ) ;
 
 SPEX_info SPEX_cholesky_analyze
@@ -1390,7 +1395,7 @@ SPEX_info SPEX_cholesky_analyze
     SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
     // Input
     const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-    const SPEX_options option   // Command options (Default if NULL)
+    const SPEX_options option
 ) ;
 
 SPEX_info SPEX_cholesky_factorize
@@ -1404,10 +1409,7 @@ SPEX_info SPEX_cholesky_factorize
                                     // elimination tree of A, the column
                                     // pointers of L, and the exact number of
                                     // nonzeros of L.
-    const SPEX_options option       // command options.
-                                    // Notably, option->algo indicates whether
-                                    // SPEX_CHOL_UP (default) or SPEX_CHOL_LEFT
-                                    // is used.
+    const SPEX_options option
 ) ;
 
 // Purpose: After computing the REF Cholesky factorization A = LDL',
@@ -1419,7 +1421,6 @@ SPEX_info SPEX_cholesky_factorize
 //
 // On output x contains the rational solution of the system LDL' x = b
 // x and b be can be single vectors, or matrices.
-
 
 SPEX_info SPEX_cholesky_solve
 (
@@ -1435,7 +1436,7 @@ SPEX_info SPEX_cholesky_solve
                             // it is not modified.
     // input:
     const SPEX_matrix b,        // Right hand side vector
-    const SPEX_options option   // command options
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -1444,30 +1445,29 @@ SPEX_info SPEX_cholesky_solve
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-//    The SPEX LDL routines SPEX library exactly solve a sparse symmetric
-//    indefinite or negative definite system with nonzero leading principle
-//    minors via an LDL factorization. The approach is very similar to the one
-//    for SPEX Cholesky and is also described in the paper:
+//  The SPEX LDL routines SPEX library exactly solve a sparse symmetric
+//  indefinite or negative definite system with nonzero leading principle
+//  minors via an LDL factorization. The approach is very similar to the one
+//  for SPEX Cholesky and is also described in the paper:
 
-//    "Algorithm 1xxx: SPEX Cholesky and SPEX Backslash for Exactly Solving
-//     Sparse Linear Systems," L. Mejia Domenzain, J. Chen, C. Lourenco, 
-//     E. Moreno-Centeno, T. Davis, submitted to ACM TOMS
+//  "Algorithm 1xxx: SPEX Cholesky and SPEX Backslash for Exactly Solving
+//  Sparse Linear Systems," L. Mejia Domenzain, J. Chen, C. Lourenco, E.
+//  Moreno-Centeno, T. Davis, submitted to ACM TOMS
 
-//     The theory associated with this paper is found at:
+//  The theory associated with this paper is found at:
 
-//    "Exactly Solving Sparse Rational Linear Systems via Roundoff-Error-Free
-//    Cholesky Factorizations", C. Lourenco, E. Moreno-Centeno,
-//    SIAM J. Matrix Analysis and Applications.
-//     pp 609-638, vol 43, no 1, 2022.
+//  "Exactly Solving Sparse Rational Linear Systems via Roundoff-Error-Free
+//  Cholesky Factorizations", C. Lourenco, E. Moreno-Centeno, SIAM J. Matrix
+//  Analysis and Applications.  pp 609-638, vol 43, no 1, 2022.
 
-//    To use this code you must first download and install the GMP,
-//    MPFR, AMD, and COLAMD libraries. GMP and MPFR can be found at:
+//  To use this code you must first download and install the GMP, MPFR, AMD,
+//  and COLAMD libraries. GMP and MPFR can be found at:
 //              https://gmplib.org/
 //              http://www.mpfr.org/
 //
-//   SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Cholesky.
-//   The easiest way ensure these dependencies are met is to only access this
-//   package through the SPEX repository.
+//  SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Cholesky.
+//  The easiest way ensure these dependencies are met is to only access this
+//  Module through the SPEX repository.
 //
 //   All of these codes are components of the SPEX software library. This code
 //   may be found at:
@@ -1475,17 +1475,19 @@ SPEX_info SPEX_cholesky_solve
 //              www.suitesparse.com
 
 // Perform symbolic analysis prior to factorization
+
 SPEX_info SPEX_ldl_analyze
 (
     // Output
     SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
     // Input
     const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-    const SPEX_options option   // Command options (Default if NULL)
+    const SPEX_options option
 ) ;
 
 // Factorize a given matrix with SPEX LDL. A must be symmetric
 // with nonzero leading principle minors
+
 SPEX_info SPEX_ldl_factorize
 (
     // Output
@@ -1497,13 +1499,11 @@ SPEX_info SPEX_ldl_factorize
                                     // elimination tree of A, the column
                                     // pointers of L, and the exact number of
                                     // nonzeros of L.
-    const SPEX_options option       // command options.
-                                    // Notably, option->algo indicates whether
-                                    // SPEX_LDL_UP (default) or SPEX_LDL_LEFT
-                                    // is used.
-);
+    const SPEX_options option
+) ;
 
 // Solve the system after factorization
+
 SPEX_info SPEX_ldl_solve
 (
     // Output
@@ -1518,10 +1518,11 @@ SPEX_info SPEX_ldl_solve
                             // it is not modified.
     // input:
     const SPEX_matrix b,        // Right hand side vector
-    const SPEX_options option   // command options
+    const SPEX_options option
 ) ;
 
 // Solve the system Ax = b via LDL factorization
+
 SPEX_info SPEX_ldl_backslash
 (
     // Output
@@ -1533,8 +1534,8 @@ SPEX_info SPEX_ldl_backslash
     const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
     const SPEX_matrix b,        // Right hand side vector(s). Must be
                                 // SPEX_MPZ and SPEX_DENSE
-    const SPEX_options option   // Command options (Default if NULL)
-);
+    const SPEX_options option
+) ;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1598,7 +1599,7 @@ SPEX_info SPEX_update_lu_colrep
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
                             // The rows of vk are in the same order as A.
     int64_t k,              // The column index that vk will be inserted, 0<=k<n
-    const SPEX_options option// Command parameters
+    const SPEX_options option
 ) ;
 
 // This function swaps the k-th column of a given m-by-n matrix A with the
@@ -1612,7 +1613,7 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
                             // the column vector to replace the k-th column of A
                             // vk->scale = A->scale and vk->v[0]->scale = 1.
     int64_t k,              // The column index that vk will be inserted, 0<=k<n
-    const SPEX_options option// Command parameters
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -1630,9 +1631,9 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
 
 // The matrix w is modified during the update. If the updated A is needed,
 // user can compute A = A + sigma*w*w' *BEFORE* using this function (since w
-// will be modified).
+// will be modified by this method).
 
-// todo: describe how to create w n-by-1 matrix for update/downdate.
+// FIXME: describe how to create w n-by-1 matrix for update/downdate.
 
 SPEX_info SPEX_update_cholesky_rank1
 (
@@ -1649,7 +1650,7 @@ SPEX_info SPEX_update_cholesky_rank1
     const int64_t sigma,    // a nonzero scalar that determines whether
                             // this is an update (sigma > 0) or downdate
                             // (sigma < 0).
-    const SPEX_options option // Command options
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -1666,7 +1667,7 @@ SPEX_info SPEX_update_solve // solves Ax = b via LU or Cholesky factorization
     SPEX_factorization F,   // The SPEX LU or Cholesky factorization
     const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_options option // Command options
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -1683,7 +1684,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
     SPEX_factorization F,   // The SPEX LU or Cholesky factorization of A
     const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
-    const SPEX_options option // Command options
+    const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
@@ -1695,7 +1696,6 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
 // SPEX_backslash is a wrapper for the exact routines contained within the
 // SPEX software package.
 
-// SPEX_BACKSLASH: solve Ax=b via sparse integer-preserving factorization.
 // SPEX_backslash: computes the exact solution to the sparse linear system Ax =
 // b. A and b may be stored as either int64, double precision, arbitrary
 // precision floating point (mpfr_t), arbitrary sized integer (mpz_t), or
@@ -1730,7 +1730,7 @@ SPEX_info SPEX_backslash
                                 // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
     const SPEX_matrix A,        // Input matrix
     const SPEX_matrix b,        // Right hand side vector(s)
-    SPEX_options option         // Command options (NULL: means use defaults)
+    const SPEX_options option
 ) ;
 
 #if defined ( __cplusplus )
