@@ -769,10 +769,15 @@ SPEX_info SPEX_symbolic_analysis_free
 
 typedef struct
 {
+
+// FIXME: if Chol rank1 update/downdate occurs, make it LDL
+
     SPEX_factorization_kind kind;         // LU, Cholesky, LDL, QR factorization
 
     bool updatable;                       // flag to denote if the factorization
                                           // is in the updatable format
+
+// FIXME: if updatable, then kind is only LU or LDL.
 
     mpq_t scale_for_A;                    // the scale of the target matrix
 
@@ -847,8 +852,12 @@ SPEX_info SPEX_factorization_check
 
 //------------------------------------------------------------------------------
 // Function for performing in-place conversion between updatable and
-// non-updatable factorization. For now, it only works for LU or Cholesky
+// non-updatable factorization.
+
+// FIXME: fix this:
+// For now, it only works for LU or Cholesky
 // factorization (FIXME not LDL?).
+
 //------------------------------------------------------------------------------
 // For LU or Cholesky factorization, if user wishes to perform factorization
 // update, then it must be in updatable format (i.e., F->updatable == true).
@@ -1635,6 +1644,8 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
 
 // FIXME: describe how to create w n-by-1 matrix for update/downdate.
 
+// FIXME: rename to SPEX_update_ldl_rank1
+
 SPEX_info SPEX_update_cholesky_rank1
 (
     SPEX_factorization F,   // The SPEX Cholesky factorization of A, including
@@ -1732,6 +1743,34 @@ SPEX_info SPEX_backslash
     const SPEX_matrix b,        // Right hand side vector(s)
     const SPEX_options option
 ) ;
+
+// FIXME: add these:
+
+/*
+
+SPEX_info SPEX_solve        // solves the linear system
+(
+    // Output
+    SPEX_matrix *x_handle,  // rational solution to the system
+    // input/output:
+    SPEX_factorization F,   // Any SPEX factorization.
+    // input:
+    const SPEX_matrix b,    // right hand side vector(s)
+    const SPEX_options option
+) ;
+
+SPEX_info SPEX_tsolve       // solves the linear system
+(
+    // Output
+    SPEX_matrix *x_handle,  // rational solution to the system
+    // input/output:
+    SPEX_factorization F,   // Any SPEX factorization.
+    // input:
+    const SPEX_matrix b,    // right hand side vector(s)
+    const SPEX_options option
+) ;
+
+*/
 
 #if defined ( __cplusplus )
 }
