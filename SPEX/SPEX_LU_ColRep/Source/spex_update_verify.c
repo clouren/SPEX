@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_verify: verify if A=LD^(-1)U
+// SPEX_LU_ColRep/spex_update_verify: verify if A=LD^(-1)U
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_LU_ColRep: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -55,7 +55,7 @@ SPEX_info spex_update_verify
     srand(seed);
     for (i = 0; i < n; i++)
     {
-        tmp = i+1;//rand(); //todo:
+        tmp = i+1; // rand(); // FIXME: does this need to be random?
         SPEX_MPZ_SET_SI(b->x.mpz[i], tmp);
     }
 

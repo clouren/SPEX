@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_debug: for debugging purpose
+// SPEX_LU_ColRep/spex_update_debug: for debugging purpose
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_LU_ColRep: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -10,7 +10,6 @@
 
 // Purpose: This function performs direct LU factorization for A, and use
 // this direct factorization as base line to verify if input factorization
-
 
 #define SPEX_FREE_ALL                          \
     SPEX_FREE(opt1);                           \

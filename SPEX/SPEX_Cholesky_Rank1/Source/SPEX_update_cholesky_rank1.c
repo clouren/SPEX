@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/SPEX_update_cholesky_rank1: perform Cholesky rank-1 update
+// SPEX_Cholesky_Rank1/SPEX_update_cholesky_rank1: Cholesky rank-1 update
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_Cholesky_Rank1: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -252,8 +252,9 @@ SPEX_info SPEX_update_cholesky_rank1
                     SPEX_MPZ_MUL(tmpz, w_dense->x[i],
                                             w_dense->x[Pj]);
                     SPEX_MPZ_MUL_SI(tmpz, tmpz, sigma);
-//#if 0
+
 #ifdef SPEX_DEBUG
+                    // FIXME: comment this variation
                     // tmpz /= sd_old[j-1]
                     mpq_t r1, r2;
                     SPEX_mpq_set_null(r1);

@@ -101,3 +101,57 @@
   year={2003},
   publisher={Miller Freeman Inc.}
 }
+
+
+@article{DavisHager99,
+author = {Davis, Timothy A. and Hager, William W.},
+title = {Modifying a Sparse Cholesky Factorization},
+journal = {SIAM Journal on Matrix Analysis and Applications},
+volume = {20},
+number = {3},
+pages = {606-627},
+year = {1999},
+doi = {10.1137/S0895479897321076},
+URL = {https://doi.org/10.1137/S0895479897321076},
+eprint = {https://doi.org/10.1137/S0895479897321076} ,
+abstract = { Given a sparse symmetric positive definite matrix \${\bf AA}^{\sf
+T}\$ and an associated sparse Cholesky factorization \${\bf LDL}^{\sf T}\$ or
+\${\bf LL}^{\sf T}\$, we develop sparse techniques for obtaining the new
+factorization associated with either adding a column to \${\bf A}\$ or deleting
+a column from \${\bf A}\$. Our techniques are based on an analysis and
+manipulation of the underlying graph structure and on ideas of Gill et al.\ [
+Math. Comp., 28 (1974), pp. 505--535] for modifying a dense Cholesky
+factorization. We show that our methods extend to the general case where an
+arbitrary sparse symmetric positive definite matrix is modified. Our methods
+are optimal in the sense that they take time proportional to the number of
+nonzero entries in \${\bf L}\$ and \${\bf D}\$ that change. }
+}
+
+@article{CHOLMOD2008,
+author = {Chen, Yanqing and Davis, Timothy A. and Hager, William W. and Rajamanickam, Sivasankaran},
+title = {Algorithm 887: {CHOLMOD}, Supernodal Sparse {Cholesky} Factorization and Update/Downdate},
+year = {2008},
+issue_date = {October 2008},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {35},
+number = {3},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/1391989.1391995},
+doi = {10.1145/1391989.1391995},
+abstract = {CHOLMOD is a set of routines for factorizing sparse symmetric
+positive definite matrices of the form A or AAT, updating/downdating a sparse
+Cholesky factorization, solving linear systems, updating/downdating the
+solution to the triangular system Lx = b, and many other sparse matrix
+functions for both symmetric and unsymmetric matrices. Its supernodal Cholesky
+factorization relies on LAPACK and the Level-3 BLAS, and obtains a substantial
+fraction of the peak performance of the BLAS. Both real and complex matrices
+are supported. CHOLMOD is written in ANSI/ISO C, with both C and MATLABTM
+interfaces. It appears in MATLAB 7.2 as x = Ab when A is sparse symmetric
+positive definite, as well as in several other sparse matrix functions.},
+journal = {ACM Trans. Math. Softw.},
+month = oct,
+articleno = {22},
+numpages = {14},
+keywords = {sparse matrices, linear equations, Cholesky factorization}
+}

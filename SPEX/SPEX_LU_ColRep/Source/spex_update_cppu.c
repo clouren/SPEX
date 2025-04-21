@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_cppu: perform column permutation pivot update
+// SPEX_LU_ColRep/spex_update_cppu: perform column permutation pivot update
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_LU_ColRep: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

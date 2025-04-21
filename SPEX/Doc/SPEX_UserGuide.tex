@@ -119,10 +119,11 @@ Modules, each in their own subfolder of the SPEX package:
     factorization with column replacement.  Refer to Chapter \ref{ch:Update_LU}
     for further details.
 
-    % FIXME: v3.4.0: (remove for v3.3.0):
+    % FIXME: this is for v3.4.0; remove the following for v3.3.0:
     \item \verb'SPEX_Cholesky_Rank1:' Sparse exact factorization update of a
     Cholesky or LDL factorization after a rank-1 modification
-    (update/downdate).  Refer to Chapter \ref{ch:Update_LDL} for further details.
+    (update/downdate).  Refer to Chapter \ref{ch:Update_LDL} for further
+    details.
 
     \item \verb'SPEX_Update_Utilities:' Solving a linear system after updating
     a factorization.  Refer to Chapter \ref{ch:Update_Util} for further
@@ -174,9 +175,10 @@ Modules, each in their own subfolder of the SPEX package:
 \label{s:util:licensing}
 %-------------------------------------------------------------------------------
 
-\textbf{Copyright:} The copyright of this software is held by Christopher
+\textbf{Copyright:} The copyright of the SPEX Package is held by Christopher
 Lourenco, Jinhao Chen, Lorena Mejia-Domenzain, Erick Moreno-Centeno, and
-Timothy A. Davis.
+Timothy A. Davis.  Some of the Modules are Copyright by a subset of this list
+of authors; refer to each Module for details.
 
 \noindent \textbf{Contact Info:} Chris Lourenco,
 \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}
@@ -384,13 +386,14 @@ The values of \verb|SPEX_info| are listed below.
     -1 & \verb|SPEX_OUT_OF_MEMORY|& Out of memory\\ \hline
     -2 & \verb|SPEX_SINGULAR|& The input matrix $A$ is exactly singular.\\ \hline
     -3 & \verb|SPEX_INCORRECT_INPUT|& One or more input arguments are incorrect.\\ \hline
-    -4 & \verb|SPEX_NOTSPD| & The input matrix is not symmetric positive definite
-        (thus can't use Cholesky) \\ \hline
+    -4 & \verb|SPEX_NOTSPD| & The input matrix is not symmetric positive definite \\
+       &                    & (thus can't use Cholesky) \\ \hline
     -5 & \verb|SPEX_INCORRECT_ALGORITHM| & The algorithm is not compatible with the factorization \\ \hline
     -6 & \verb|SPEX_PANIC| & SPEX environment error \\ \hline
     -7 & \verb|SPEX_ZERODIAG| & Diagonal element is zero thus can't use LDL \\ \hline
     -8 & \verb|SPEX_UNSYMMETRIC| & Input matrix is unsymmetric thus can't use LDL or Cholesky \\ \hline
-%   -9 & \verb|SPEX_INCONSISTENT| & Linear system is inconsistent (for future QR) \\ \hline
+% for future QR:
+%   -9 & \verb|SPEX_INCONSISTENT| & Linear system is inconsistent \\ \hline
 \end{SizedCenteredTabular}
 
 %-------------------------------------------------------------------------------
@@ -1026,7 +1029,9 @@ the factorization structure are accessible to the user application. However,
 they should only be modified by calling SPEX methods.  Changing them directly
 can lead to undefined behavior.
 
-FIXME: for v3.3.0: only LU is updatable, not Cholesky or LDL.
+% FIXME: delete this comment for v3.4.0:
+For version v3.3.0, only the LU factorization is updatable, not Cholesky or
+LDL.  An updatable Cholesky/LDL factorization is planned in the future.
 
 The components of a \verb|SPEX_factorization F| are as follows:
 
@@ -1113,7 +1118,7 @@ a updatable factorization must meet the following conditions.
 
 \end{itemize}
 
-Due to these non-trivial conditions, users cannot simply perform
+Due to these non-trivial conditions, a user application cannot simply perform
 \verb|SPEX_matrix_copy| to obtain \verb|F->L| and/or \verb|F->U| in
 \verb|SPEX_DYNAMIC_CSC SPEX_MPZ| format and claim that it is updatable, and
 vice versa. To correctly convert the factorization, the user application should call
@@ -2288,19 +2293,17 @@ Exactly Solving Sparse Linear Systems via a Sparse Left-looking
 Integer-preserving LU Factorization. ACM Transactions on Mathematical Software
 (TOMS), 48(2), 1-23.
 
-%-------------------------------------------------------------------------------
-% \section{Licensing}
-% \label{s:LeftLU:licensing}
-%-------------------------------------------------------------------------------
+\vspace{0.1in}
 
-\textbf{Copyright:} The copyright of this software is held by  Christopher
+\textbf{Copyright:} The copyright of the SPEX LU Module is held by  Christopher
 Lourenco, Jinhao Chen, Erick Moreno-Centeno, and Timothy A. Davis.
 
 \noindent \textbf{Contact Info:} Contact Chris Lourenco,
-\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
+\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com},
+or Tim Davis, \\
 \href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
 \href{mailto:davis@tamu.edu}{davis@tamu.edu}, or
-\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}\\
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}.
 
 \noindent \textbf{License:} The SPEX LU Module is dual licensed under the
 GNU General Public License version 2 or the GNU Lesser General Public License
@@ -2317,6 +2320,7 @@ Left LU factorization, a user must call analyze, factorize, and solve. The
 functions are explained below.
 
 %-------------------------------------------------------------------------------
+\newpage
 \subsection{\texttt{SPEX\_lu\_analyze}: symbolic analysis for LU factorization}
 \label{ss:spex_lu_analyze}
 %-------------------------------------------------------------------------------
@@ -2388,6 +2392,7 @@ is returned as \verb|NULL|, and an appropriate error code is returned.
 
 
 %-------------------------------------------------------------------------------
+\newpage
 \subsection{\texttt{SPEX\_lu\_solve}: solve the linear system}
 \label{ss:SPEX_Left_LU_solve}
 %-------------------------------------------------------------------------------
@@ -2827,20 +2832,18 @@ Note that, in order to solve a linear system, the matrix $D$ is never
 explicitly computed nor needed; thus this package uses only the matrix $L$. The
 theory associated with this code can be found at \cite{lourenco2022exactly}.
 
-%-------------------------------------------------------------------------------
-% \section{Licensing}
-% \label{s:Chol:licensing}
-%-------------------------------------------------------------------------------
+\vspace{0.1in}
 
-\textbf{Copyright:} The copyright of this software is held by Christopher
-Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, and
-Timothy A. Davis.
+\textbf{Copyright:} The copyright of the SPEX Cholesky/LDL Module is held by
+Christopher Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick
+Moreno-Centeno, and Timothy A. Davis.
 
 \noindent \textbf{Contact Info:} Contact Chris Lourenco,
-\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
+\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com},
+or Tim Davis, \\
 \href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
 \href{mailto:davis@tamu.edu}{davis@tamu.edu}, or
-\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}\\
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}.
 
 \noindent \textbf{License:} This software package is dual licensed under the
 GNU General Public License version 2 or the GNU Lesser General Public License
@@ -3210,7 +3213,7 @@ the appropriate error code is returned.
 \section{Licencing}
 %-------------------------------------------------------------------------------
 
-\textbf{Copyright:} The copyright of this software is held by  Christopher
+\textbf{Copyright:} The copyright of the SPEX QR Module is held by  Christopher
 Lourenco, Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 
 \noindent \textbf{Contact Info:} Contact Chris Lourenco,
@@ -3396,20 +3399,18 @@ acts as either a wrapper to the SPEX LU, Cholesky, and LDL backslash methods,
 or it can determine the appropriate factorization to apply based on the
 structure of the input matrix.
 
-%-------------------------------------------------------------------------------
-% \section{Licensing}
-% \label{s:Backslash:licensing}
-%-------------------------------------------------------------------------------
+\vspace{0.1in}
 
-\textbf{Copyright:} The copyright of this software is held by  Christopher
-Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick Moreno-Centeno, and
-Timothy A. Davis.
+\textbf{Copyright:} The copyright the SPEX Backslash Module is held by
+Christopher Lourenco, Lorena Mejia Domenzain, Jinhao Chen, Erick
+Moreno-Centeno, and Timothy A. Davis.
 
 \noindent \textbf{Contact Info:} Contact Chris Lourenco,
-\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
+\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com},
+or Tim Davis, \\
 \href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
 \href{mailto:davis@tamu.edu}{davis@tamu.edu}, or
-\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}\\
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}.
 
 \noindent \textbf{License:} This software package is dual licensed under the
 GNU General Public License version 2 or the GNU Lesser General Public License
@@ -3476,11 +3477,33 @@ system $A\x=\b$. If an error occurs, \verb|x| is returned as \verb'NULL' in
 \label{s:Update_LU:intro}
 %-------------------------------------------------------------------------------
 
-FIXME: overview of LU update
+The SPEX LU Update Module provides a method for updating an exact SPEX LU
+factorization after a rank-1 change is made to the matrix $A$, by replacing a
+single column of $A$ with a new column.  The theoretical basis for this Module
+is to be submitted as the following paper: J. Chen, T. A. Davis, E.
+Moreno-Centeno, C. Lourenco, ``Sparse Exact LU Update for Column Replacement''
+(in preparation).
 
-FIXME: license
+\vspace{0.1in}
+
+\textbf{Copyright:} The copyright of the SPEX LU Update Module is held by
+Jinhao Chen, Christopher Lourenco, Erick Moreno-Centeno, and Timothy A. Davis.
+
+\noindent \textbf{Contact Info:} Contact Jinhao Chen
+\href{mailto:cjh10644@hotmail.com}{cjh10644@hotmail.com}, or Chris Lourenco, \\
+\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
+\href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
+\href{mailto:davis@tamu.edu}{davis@tamu.edu}, or \\
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}.
+
+\noindent \textbf{License:} This software package is dual licensed under the
+GNU General Public License version 2 or the GNU Lesser General Public License
+version 3. Details of this license are in \verb|SPEX/License/license.txt|. For
+alternative licenses, contact the authors.
+
 
 %-------------------------------------------------------------------------------
+\newpage
 \section{LU Update Functions}
 %-------------------------------------------------------------------------------
 
@@ -3537,7 +3560,7 @@ returned and \verb|F| is undefined on output (since the modification for the
 factorization is done in place during the update process).
 
 This function does not require/use/modify the original matrix $A$. Therefore,
-if the updated matrix $\bar{A}$ is needed, users should call
+if the updated matrix $\bar{A}$ is needed, a user application should call
 \verb|SPEX_update_matrix_colrep| {\bf AFTER} using this function (since
 \verb|vk| is be modified by \verb|SPEX_update_matrix_colrep|).
 
@@ -3548,6 +3571,7 @@ in Section~\ref{ss:SPEX_update_matrix_colrep}.  Which is it?
 
 
 %-------------------------------------------------------------------------------
+\newpage
 \subsection{\texttt{SPEX\_update\_matrix\_colrep}: Swap the columns of a matrix}
 \label{ss:SPEX_update_matrix_colrep}
 %-------------------------------------------------------------------------------
@@ -3568,15 +3592,15 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
 } \end{mdframed}
 
 \verb|SPEX_update_matrix_colrep| serves as a helper function in the
-column-replacement scenario where users wish to obtain the matrix after one of
-its columns is replaced. It should be noted that this does {\bf NOT} update the
-factorization of \verb|A|, and thus users should call
-\verb|SPEX_update_lu_colrep| to update the SPEX LU factorization for column
-replacement.  To be more specific, this function swaps column \verb|k| of the
-matrix \verb|A| with column of \verb|vk| (i.e., swaps \verb|A->v[k]| and
-\verb|vk->v[0]|).  Therefore, both \verb|A| and \verb|vk| are modified by this
-function, which requires users to call this function {\bf BEFORE} using
-\verb|SPEX_update_lu_colrep|.
+column-replacement scenario where the user application needs to obtain the
+matrix after one of its columns is replaced. It should be noted that this does
+{\bf NOT} update the factorization of \verb|A|, and thus a user application
+should call \verb|SPEX_update_lu_colrep| to update the SPEX LU factorization
+for column replacement.  To be more specific, this function swaps column
+\verb|k| of the matrix \verb|A| with column of \verb|vk| (i.e., swaps
+\verb|A->v[k]| and \verb|vk->v[0]|).  Therefore, both \verb|A| and \verb|vk|
+are modified by this function, which requires a user application to call this
+function {\bf BEFORE} using \verb|SPEX_update_lu_colrep|.
 
 FIXME: I'm confused; the above paragraph says the functions should be called in
 the order: \verb|SPEX_update_matrix_colrep| and then
@@ -3601,41 +3625,47 @@ On output, \verb|A->v[k]| and \verb|vk->v[0]| are simply swapped.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FIXME: remove this LDL Update chapter for v3.3.0 [
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{SPEX LDL Update Module}\vspace{-0.75in}
 \label{ch:Update_LDL}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% FIXME: remove the LDL Update chapter for v3.3.0
 
 %-------------------------------------------------------------------------------
 \section{SPEX LDL Update Module Overview}
 \label{s:Update_LDL:intro}
 %-------------------------------------------------------------------------------
 
-SPEX Update is a SPEX Module designed to exactly update an available SPEX LU,
-Cholesky, or LDL factorization for the sparse matrix $A$ when a low-rank
-modification is performed on $A$.  The low-rank modification can be either
-column/row replacement for an LU factorization, or a rank-1 update/downdate for
-a Cholesky or LDL factorization.  The theoretical basis for this code is to be
-submitted as the following papers.
+SPEX LDL Update is a SPEX Module designed to exactly update an SPEX Cholesky or
+LDL factorization for the sparse matrix $A$ when a low-rank modification is
+performed on $A$, as a symmetric rank-1 update/downdate of the form
+$A + \sigma w w^T$.
+The theoretical basis for this Module is to be submitted as the
+following paper: J. Chen, T. A.  Davis, E.  Moreno-Centeno, C. Lourenco,
+``Sparse Exact Rank-1 Cholesky Update,'' (in preparation).
 
-\begin{itemize}
-    \item FIXME, cite TOMS here: J. Chen, T. A. Davis, ``Sparse Exact LU
-Update for Column Replacement,'' in preparation.
-    \item FIXME, cite TOMS here: J. Chen, T. A. Davis, ``Sparse Exact Rank-1
-Cholesky Update,'' in preparation.
-\end{itemize}
+The input to the method is the exact LDL or Cholesky factorization of a
+symmetric sparse matrix $A$, and a single sparse column vector $w$.  On output,
+the factorization is revised to become the factorization of $A + \sigma w w^T$.
+The method is asymptotically far faster than computing the new factorization
+from scratch.  The update/downdate method presented in \cite{DavisHager99} (and
+implemented in CHOLMOD \cite{CHOLMOD2008}) is related but very different than
+the method available here since the prior work only handles the update/downdate
+for floating-point arithmetic, not the exact roundoff-error free methods
+provided by SPEX.
 
-\textbf{Copyright:} The copyright of this software is held by Jinhao Chen,
-Christopher Lourenco, Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy
-A. Davis.
+\vspace{0.1in}
+
+\textbf{Copyright:} The copyright of the SPEX LDL Update Module is held by
+Jinhao Chen, Christopher Lourenco, Erick Moreno-Centeno, and Timothy A. Davis.
 
 \noindent \textbf{Contact Info:} Contact Jinhao Chen
-\href{mailto:cjh10644@hotmail.com}{cjh10644@hotmail.com}, or Chris Lourenco,
+\href{mailto:cjh10644@hotmail.com}{cjh10644@hotmail.com}, or Chris Lourenco, \\
 \href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
 \href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
-\href{mailto:davis@tamu.edu}{davis@tamu.edu}, or
-\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}\\
+\href{mailto:davis@tamu.edu}{davis@tamu.edu}, or \\
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}.
 
 \noindent \textbf{License:} This software package is dual licensed under the
 GNU General Public License version 2 or the GNU Lesser General Public License
@@ -3644,11 +3674,9 @@ alternative licenses, contact the authors.
 
 
 %-------------------------------------------------------------------------------
+\newpage
 \section{SPEX LDL Update Function}
 %-------------------------------------------------------------------------------
-
-SPEX update provides the following functions to perform factorization updates.
-
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{SPEX\_update\_cholesky\_rank1}: rank-1 Cholesky update/downdate}
@@ -3710,6 +3738,9 @@ if the updated matrix $\bar{A}$ is needed, users should implement it by their
 own {\bf BEFORE} using this function (since \verb|w| will be modified by this
 function).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ] FIXME: end of SPEX Cholesky Rank1 chapter for v3.4.0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{SPEX Update Solve Module}\vspace{-0.75in}
@@ -3731,6 +3762,24 @@ solve while keeping the factorization in its updatable form.
 
 Both a normal solve of $A \mathbf{x} = \mathbf{b}$ and the transposed solve of
 $A^T \mathbf{x} = \mathbf{b}$ are provided, using the updatable factorizations.
+
+
+\vspace{0.1in}
+
+\textbf{Copyright:} The copyright of the SPEX Update Solve Module is held by
+Jinhao Chen, Christopher Lourenco, Erick Moreno-Centeno, and Timothy A. Davis.
+
+\noindent \textbf{Contact Info:} Contact Jinhao Chen
+\href{mailto:cjh10644@hotmail.com}{cjh10644@hotmail.com}, or Chris Lourenco, \\
+\href{mailto:chrisjlourenco@gmail.com}{chrisjlourenco@gmail.com}, or Tim Davis,
+\href{mailto:timdavis@aldenmath.com}{timdavis@aldenmath.com},
+\href{mailto:davis@tamu.edu}{davis@tamu.edu}, or \\
+\href{DrTimothyAldenDavis@gmail.com}{DrTimothyAldenDavis@gmail.com}.
+
+\noindent \textbf{License:} This software package is dual licensed under the
+GNU General Public License version 2 or the GNU Lesser General Public License
+version 3. Details of this license are in \verb|SPEX/License/license.txt|. For
+alternative licenses, contact the authors.
 
 
 %-------------------------------------------------------------------------------
@@ -3842,10 +3891,19 @@ compiled.  Refer to Section~\ref{s:util:install} for details.
 Next, install the MATLAB interface of SPEX by navigating to the
 \verb|SPEX/SPEX/MATLAB| folder and typing \verb|spex_mex_install| in the MATLAB
 Command Window.  Doing so installs SPEX and allows the use of four MATLAB
-functions: \verb|spex_lu_backslash.m|, \verb|spex_cholesky_backslash.m|,
-\verb|spex_ldl_backslash.m| and \verb|spex_backslash.m|. Section
-\ref{s:Use:MATLAB:setup} describes the \verb|option| input parameter for each
-method.  The use of each SPEX method is discussed in Section
+functions, each of which computes \verb'x=A\b', but using different
+factorization methods:
+
+\begin{itemize}
+\item \verb|spex_lu_backslash.m|: using an exact LU factorization.
+\item \verb|spex_cholesky_backslash.m|: using an exact Cholesky factorization.
+\item \verb|spex_ldl_backslash.m|: using an exact LDL factorization.
+\item \verb|spex_backslash.m|: using an exact LU, Cholesky, or LDL
+factorization, depending on the matrix.
+\end{itemize}
+
+Section \ref{s:Use:MATLAB:setup} describes the \verb|option| input parameter
+for each method.  The use of each SPEX method is discussed in Section
 \ref{s:Use:MATLAB:factor}.  The \verb|SPEX/SPEX/MATLAB| folder must be added to
 your in your MATLAB path.  You can add the following line to your MATLAB
 \verb'startup.m' script, normally in your \verb'Documents/MATLAB' folder:
@@ -4094,7 +4152,7 @@ output of this function may be seen in the provided \verb|MATLAB/html| folder.
 \chapter{Using SPEX in Python}\vspace{-0.75in}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FIXME: what about Windows?
+FIXME: what about SPEX Python in Windows?
 
 The Python interface of SPEX can be installed by navigating to the Python
 folder and typing \verb'make' (on Linux/Mac).  Doing so allows the use of the
@@ -4164,7 +4222,7 @@ Currently, there are 2 ways to use this function outlined below.
     = \b$ using non-default settings from the \verb|option| object.
 \end{itemize}
 
-If the result \verb|x| is held as a \verb|numpu| double array, in conventional
+If the result \verb|x| is held as a \verb|numpy| double array, in conventional
 floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
@@ -4194,7 +4252,7 @@ Currently, there are 2 ways to use this function outlined below.
     $A \x = \b$ using non-default settings from the \verb|option| object.
 \end{itemize}
 
-If the result \verb|x| is held as a \verb|numpu| double array, in conventional
+If the result \verb|x| is held as a \verb|numpy| double array, in conventional
 floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
@@ -4229,7 +4287,7 @@ below.
     \b$ using non-default settings from the \verb|option| object.
 \end{itemize}
 
-If the result \verb|x| is held as a \verb|numpu| double array, in conventional
+If the result \verb|x| is held as a \verb|numpy| double array, in conventional
 floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 

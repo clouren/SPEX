@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_ipge: perform one iteration of IPGE and perform
-// any skipped scaling process.
-//------------------------------------------------------------------------------
+// SPEX_Update_Utilities/spex_update_ipge: perform one iteration of IPGE and
+// perform any skipped scaling process.
+// ------------------------------------------------------------------------------
 
 // todo: rewrite this function, try to extract common factor
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_Update_Utilities: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

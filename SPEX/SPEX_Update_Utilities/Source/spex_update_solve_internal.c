@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_solve_internal: find the exact solution for Ax=b
-// with the the updatable LU factorization of A.
+// SPEX_Update_Utilities/spex_update_solve_internal: find the exact solution
+// for Ax=b with the the updatable LU factorization of A.
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_Update_Utilities: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 

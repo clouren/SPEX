@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_dppu2: perform diagonal permutation pivot update
+// SPEX_LU_ColRep/spex_update_dppu2: perform diagonal permutation pivot update
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_LU_ColRep: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -314,7 +314,7 @@ SPEX_info spex_update_dppu2
         SPEX_MPZ_SGN(&sgn, Uk_dense_row->x[Qks]);
         if (sgn == 0)
         {
-            // triggered by Tcov/Mats4Tcov/SPEX_Update/mat4.txt, which gives
+            // triggered by Tcov/Mats4Tcov/mat4.txt, which gives
             // the following frame matrix
             // 1 0 0 1
             // 0 1 0 1
@@ -324,7 +324,7 @@ SPEX_info spex_update_dppu2
             // |
             // update this column with [1; 0; 0; 1]
             // run the following in Tcov folder for more details:
-            // ./tcov_test 0 1 Mats4Tcov/SPEX_Update/mat4.txt
+            // ./tcov_test 0 1 Mats4Tcov/mat4.txt
             SPEX_FREE_ALL;
             return SPEX_SINGULAR;
         }

@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// SPEX_Update/spex_update_insert_new_entry: insert an entry vi who has no
+// SPEX_LU_ColRep/spex_update_insert_new_entry: insert an entry vi who has no
 // pending scale to a scaled vector v, all v->x[i] will be scaled and S will be
 // 1 after vi is inserted.
 //------------------------------------------------------------------------------
 
-// SPEX_Update: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
+// SPEX_LU_ColRep: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
