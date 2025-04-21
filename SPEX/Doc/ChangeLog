@@ -1,3 +1,11 @@
+FIXME, 2025: v3.4.0
+
+    * Cholesky update: with rank-1 modifications
+
+FIXME, 2025: v3.3.0
+
+    * LU update: with column replacement
+
 Aug 20, 2024: version 3.2.1
 
     * Python interface: bug fix for string length, and Python Inf

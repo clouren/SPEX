@@ -2,7 +2,7 @@
 // Demo/spex_demo_lu_simple1.c: simple SPEX_LU example with a random matrix
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// SPEX: (c) 2019-2025, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later

@@ -2,7 +2,7 @@
 // SPEX_Cholesky/SPEX_cholesky_factorize: Perform SPEX Chol factorization of A
 //------------------------------------------------------------------------------
 
-// SPEX_Cholesky: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
+// SPEX_Cholesky: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later

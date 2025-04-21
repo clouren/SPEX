@@ -116,17 +116,17 @@ Modules, each in their own subfolder of the SPEX package:
     Refer to Chapter \ref{ch:Backslash} for further details.
 
     \item \verb'SPEX_LU_ColRep:' Sparse exact factorization update of an LU
-    factorization with column replacement.  Refer to Chapter \ref{ch:Update}
+    factorization with column replacement.  Refer to Chapter \ref{ch:Update_LU}
     for further details.
 
-    % FIXME: remove SPEX_Cholesky_Rank1 for v3.3.0:
+    % FIXME: v3.4.0: (remove for v3.3.0):
     \item \verb'SPEX_Cholesky_Rank1:' Sparse exact factorization update of a
     Cholesky or LDL factorization after a rank-1 modification
-    (update/downdate).  Refer to Chapter \ref{ch:Update} for further details.
+    (update/downdate).  Refer to Chapter \ref{ch:Update_LDL} for further details.
 
-    \item \verb'SPEX_Update_Utilities:' Supporting methods for the sparse exact
-    factorization update/downdate.  Refer to Chapter \ref{ch:Update} for
-    further details.
+    \item \verb'SPEX_Update_Utilities:' Solving a linear system after updating
+    a factorization.  Refer to Chapter \ref{ch:Update_Util} for further
+    details.
 
     \qr{
     \item {\tt SPEX\_QR:} Sparse exact QR factorization to solve the linear
@@ -166,6 +166,7 @@ Modules, each in their own subfolder of the SPEX package:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Setting up SPEX}\vspace{-0.75in}
+\label{ch:setup}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %-------------------------------------------------------------------------------
@@ -618,15 +619,17 @@ This option is used slightly differently within each family of algorithms, in
 \verb|SPEX_vector| is a compressed sparse vector data structure
 used for SPEX dynamic CSC matrices.
 
-It is used when calling the update/downdate functions in SPEX to modify to
-construct the vector to modify original matrix A
-% FIXME: revise for v3.3.0:
-(either \verb|w| for $A'=A+\sigma ww^T$ in rank-1 update/downdate or \verb|vk|
-to be swapped with \verb|A->v[k]| in the update for column replacement).
+It is used when calling the factorization update functions in SPEX
+% FIXME: v3.4.0:
+to create \verb|w| for $A'=A+\sigma ww^T$ in a rank-1 update/downdate
+of an LDL factorization,
+%%%
+to construct the vector \verb|vk| to revise an LU factorization, or to modify
+the original matrix A by changing a single column for an LU factorization.
 
-This is \textbf{NOT} intended to be used for building any n-by-1 vector (e.g.,
-the right-hand-side vector $\mathbf{b}$ in $A \mathbf{x}=\mathbf{b}$), which
-should be considered as a n-by-1 \verb|SPEX_matrix|.
+The \verb|SPEX_vector| is not intended to be used for building a vector $\b$ or
+$\x$ when solving a linear system $A \x = \b$.  For those purposes, the vectors
+$\x$ and $\b$ are $n$-by-1 \verb|SPEX_matrix| objects.
 
 The \verb|SPEX_vector| struct contains the following components:
 
@@ -1118,13 +1121,16 @@ vice versa. To correctly convert the factorization, the user application should 
 \verb|F| to either updatable or non-updatable as specified.
 
 A \verb|SPEX_factorization| is constructed by the appropriate factorization
-algorithms (see Sections \ref{ss:spex_left_lu_factorize} and
-\ref{ss:spex_chol_factorize} for further details). To free this data structure,
-the function \verb|SPEX_factorization_free| is used and discussed further in
-section \ref{ss:spex_factorization_free}., and updated by appropriate
-\verb|SPEX_update_*| functions (see sections \ref{ss:SPEX_update_cholesky_rank1}
-and \ref{ss:SPEX_update_lu_colrep} for further details). In addition, SPEX has
-a set of functions to convert, query and destroy a SPEX factorization,
+algorithms
+% FIXME: for v3.3.0
+% (see Chapter~\ref{ch:Update_LU}).
+% FIXME: for v3.4.0:
+(see Chapter~\ref{ch:Update_LU} and Chapter~\ref{ch:Update_LDL}).
+%%%
+To free this data structure, the function \verb|SPEX_factorization_free| is
+used and discussed further in section \ref{ss:spex_factorization_free}, and
+updated by appropriate \verb|SPEX_update_*| functions. In addition, SPEX has a
+set of functions to convert, query and destroy a SPEX factorization,
 \verb|SPEX_factorization|, as shown in the following table.
 
 \begin{SizedCenteredTabular}{lp{2.5in}l} \hline
@@ -2283,8 +2289,8 @@ Integer-preserving LU Factorization. ACM Transactions on Mathematical Software
 (TOMS), 48(2), 1-23.
 
 %-------------------------------------------------------------------------------
-\section{Licensing}
-\label{s:LeftLU:licensing}
+% \section{Licensing}
+% \label{s:LeftLU:licensing}
 %-------------------------------------------------------------------------------
 
 \textbf{Copyright:} The copyright of this software is held by  Christopher
@@ -2415,11 +2421,11 @@ On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined;
 \verb|mpz_t| matrix with same number of rows as \verb|F->L|;  Default settings
 are used if \verb|option| is input as \verb|NULL|. Upon successful completion,
 the function returns \verb|SPEX_OK|, and \verb|x| contains the solution of
-\verb|mpq_t| type with dense format to the linear system $Ax=b$.  \verb|F| is
-mathematically unchanged on output. However, if \verb|F| is updatable on input,
-it is converted to non-updatable. If \verb|F| is already non-updatable, it is
-not modified.  In case of failure, \verb|x| is returned as \verb|NULL| and the
-appropriate error code is returned.
+\verb|mpq_t| type with dense format to the linear system $A \mathbf{x} =
+\mathbf{b}$ \verb|F| is mathematically unchanged on output. However, if
+\verb|F| is updatable on input, it is converted to non-updatable. If \verb|F|
+is already non-updatable, it is not modified.  In case of failure, \verb|x| is
+returned as \verb|NULL| and the appropriate error code is returned.
 
 
 %-------------------------------------------------------------------------------
@@ -2486,15 +2492,16 @@ system for each $b$ vector, and
 \end{enumerate}
 
 Step 1 is discussed in Section \ref{s:Using:init}.  For Step 2, performing
-symbolic analysis and factorizing $A$ and solving the linear $A x =b$ can be
-done in one of two ways. If only the solution vector $x$ is required, SPEX Left LU
-provides a simple interface for this purpose which is discussed in Section
-\ref{s:Using:simple}.  Alternatively, if the $L$ and $U$ factors are required,
-refer to Section \ref{s:Using:expert}.  Finally, step 3 is discussed in Section
-\ref{s:Using:free}. For the remainder of this section, \verb|n| will indicate
-the dimension of $A$ (that is, $A \in \mathbb{Z}^{n \times n}$) and
-\verb|numRHS| will indicate the number of right hand side vectors being solved
-(that is, if \verb|numRHS|$= r$, then $b \in \mathbb{Z}^{n \times r}$).
+symbolic analysis and factorizing $A$ and solving the linear $A \mathbf{x} =
+\mathbf{b}$ can be done in one of two ways. If only the solution vector $x$ is
+required, SPEX Left LU provides a simple interface for this purpose which is
+discussed in Section \ref{s:Using:simple}.  Alternatively, if the $L$ and $U$
+factors are required, refer to Section \ref{s:Using:expert}.  Finally, step 3
+is discussed in Section \ref{s:Using:free}. For the remainder of this section,
+\verb|n| will indicate the dimension of $A$ (that is, $A \in \mathbb{Z}^{n
+\times n}$) and \verb|numRHS| will indicate the number of right hand side
+vectors being solved (that is, if \verb|numRHS|$= r$, then $b \in \mathbb{Z}^{n
+\times r}$).
 
 
 %-------------------------------------------------------------------------------
@@ -2535,9 +2542,10 @@ SPEX function:
 SPEX assumes three specific input options for all functions. These are:
 
 \begin{itemize}
+
 \item \verb|SPEX_matrix A| and \verb|SPEX_matrix b|: \verb|A| contains the
 input coefficient matrix, while \verb|b| contains the right hand side vector(s)
-of the linear system $Ax=b$.
+of the linear system $A \mathbf{x} = \mathbf{b}$.
 
 \item \verb|SPEX_LU_analysis* S|: \verb|S| contains the column permutation used
 for $A$ as well as estimates of the number of nonzeros in $L$ and $U$.
@@ -2604,7 +2612,7 @@ format.
 %-------------------------------------------------------------------------------
 
 After initializing the necessary data structures, SPEX obtains the solution to
-$Ax=b$ using the simple interface of SPEX Left LU,
+$A \mathbf{x} = \mathbf{b}$ using the simple interface of SPEX Left LU,
 \verb|SPEX_Left_LU_backslash|.  The \newline \verb|SPEX_Left_LU_backslash|
 function can return \verb|x| as \verb|double|, \verb|mpq_t|, or \verb|mpfr_t|
 with an associated precision.  See Section \ref{ss:SPEX_Left_LU_backslash} for
@@ -2698,14 +2706,15 @@ function (Section \ref{ss:SPEX_Left_LU_solve}).
 Upon successful completion, this function returns \verb|SPEX_OK|.
 
 In this step, \verb|option->check| can be set to \verb|true| to enable the
-solution check process as discussed in Section \ref{ss:SPEX_Left_LU_solve}.  The
-process can verify that the solution vector x satisfies $Ax=b$ in perfect
-precision intended for debugging.  This step is not needed, since the solution
-returned is guaranteed to be exact.   It appears here simply as debugging tool,
-and as a verification that SPEX is computing its expected result.  This test
-can fail only if it runs out of memory, or if there is a bug in the code (in
-which case, please notify the authors).  Also, note that this process can be
-quite time consuming; thus it is not recommended to be used in general.
+solution check process as discussed in Section \ref{ss:SPEX_Left_LU_solve}.
+The process can verify that the solution vector x satisfies $A \mathbf{x} =
+\mathbf{b}$ in perfect precision intended for debugging.  This step is not
+needed, since the solution returned is guaranteed to be exact.   It appears
+here simply as debugging tool, and as a verification that SPEX is computing its
+expected result.  This test can fail only if it runs out of memory, or if there
+is a bug in the code (in which case, please notify the authors).  Also, note
+that this process can be quite time consuming; thus it is not recommended to be
+used in general.
 
 
 %-------------------------------------------------------------------------------
@@ -2782,7 +2791,7 @@ via the \verb|SPEX_Left_LU_backslash| function, and, the solution is given as a 
 of rational numbers.
 
 \item \verb|spexlu_demo.c|: This example reads in a matrix and right hand side
-vector from a file and solves the linear system $A x = b$
+vector from a file and solves the linear system $A \mathbf{x} = \mathbf{b}$
 using the techniques discussed in Section \ref{s:Using:expert}. This file also
 allows command line arguments (discussed in \verb|README.md|) and can be used
 to replicate the results from \cite{lourenco2019exact}.
@@ -2819,8 +2828,8 @@ explicitly computed nor needed; thus this package uses only the matrix $L$. The
 theory associated with this code can be found at \cite{lourenco2022exactly}.
 
 %-------------------------------------------------------------------------------
-\section{Licensing}
-\label{s:Chol:licensing}
+% \section{Licensing}
+% \label{s:Chol:licensing}
 %-------------------------------------------------------------------------------
 
 \textbf{Copyright:} The copyright of this software is held by Christopher
@@ -3241,15 +3250,15 @@ are explained below.
     \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_qr_analyze| performs symbolic analysis for the roundoff-error-free QR factorization.
-On input, the \verb|SPEX_symbolic_analysis S| that  \verb|S_handle| points to
-is undefined;  \verb|A| must be a matrix of \verb|SPEX_CSC| kind;  and
-\verb|option| contains any parameters (default settings are used if
-\verb|option| is input as \verb|NULL|). On output, \verb|S| contains the row
-and column ordering of \verb|A|, the exact number of nonzeros in $R$, the
-elimination tree of \verb|A|, and the column pointers of $R$. The type of
-ordering can be chosen with \verb|option->order|. It is suggested that COLAMD
-is used.
+\verb|SPEX_qr_analyze| performs symbolic analysis for the roundoff-error-free
+QR factorization.  On input, the \verb|SPEX_symbolic_analysis S| that
+\verb|S_handle| points to is undefined;  \verb|A| must be a matrix of
+\verb|SPEX_CSC| kind;  and \verb|option| contains any parameters (default
+settings are used if \verb|option| is input as \verb|NULL|). On output,
+\verb|S| contains the row and column ordering of \verb|A|, the exact number of
+nonzeros in $R$, the elimination tree of \verb|A|, and the column pointers of
+$R$. The type of ordering can be chosen with \verb|option->order|. It is
+suggested that COLAMD is used.
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{SPEX\_qr\_factorize}: Compute the QR factorization of A}
@@ -3272,17 +3281,18 @@ is used.
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_qr_factorize| performs the roundoff-error-free QR factorization. On input, the
-\verb|SPEX_factorization| \verb|F| that \verb|F_handle| points to is undefined;
-\verb|A| must be a matrix of \verb|SPEX_CSC SPEX_MPZ| format; \verb|S| is
-obtained from \verb|SPEX_qr_analyze| that contains the column/row ordering of
-\verb|A|; and \verb|option| contains any parameters (default settings
-are used if \verb|option| is input as \verb|NULL|). On output, \verb|A|,
-\verb|S|, and \verb|option| are unmodified and \verb|F| contains the roundoff-error-free QR
-factorization of \verb|A|.
+\verb|SPEX_qr_factorize| performs the roundoff-error-free QR factorization. On
+input, the \verb|SPEX_factorization| \verb|F| that \verb|F_handle| points to is
+undefined; \verb|A| must be a matrix of \verb|SPEX_CSC SPEX_MPZ| format;
+\verb|S| is obtained from \verb|SPEX_qr_analyze| that contains the column/row
+ordering of \verb|A|; and \verb|option| contains any parameters (default
+settings are used if \verb|option| is input as \verb|NULL|). On output,
+\verb|A|, \verb|S|, and \verb|option| are unmodified and \verb|F| contains the
+roundoff-error-free QR factorization of \verb|A|.
 
 If error occurs, \verb|F| is returned as \verb|NULL|, and an appropriate error
 code is returned.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{SPEX\_qr\_solve}: solve the linear system}
@@ -3306,17 +3316,19 @@ code is returned.
 } \end{mdframed}
 
 \verb|SPEX_qr_solve| obtains the solution of \verb|mpq_t| type to the linear
-system $Ax=b$ upon a successful factorization.  This function may be called
-after a successful return from \newline \verb|SPEX_qr_factorize|.
+system $A \mathbf{x} = \mathbf{b}$ upon a successful factorization.  This
+function may be called after a successful return from \newline
+\verb|SPEX_qr_factorize|.
 
 On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined;
 \verb|F| must be a valid QR factorization and \verb|b| must be dense
 \verb|mpz_t| with same number of rows as \verb|F->R|. Default settings are used
 if \verb|option| is input as \verb|NULL|. Upon successful completion, the
 function returns \verb|SPEX_OK|, and \verb|x| contains the solution of
-\verb|mpq_t| type with dense format to the linear system $Ax=b$.  In case of
-failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is
-returned.
+\verb|mpq_t| type with dense format to the linear system $A \mathbf{x} =
+\mathbf{b}$.  In case of failure, \verb|x| is returned as \verb|NULL| and the
+appropriate error code is returned.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{SPEX\_qr\_backslash}: solve a linear system using a QR factorization}
@@ -3341,11 +3353,11 @@ returned.
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_qr_backslash| solves the linear system $Ax=b$ and returns the
-solution as a dense matrix of \verb|mpq_t|, \verb|mpfr_t| or \verb|double|
-entries. This function performs symbolic analysis, factorization, and solving
-all in one call.  It can be thought of as an exact version of MATLAB sparse
-backslash for symmetric positive-definite matrices.
+\verb|SPEX_qr_backslash| solves the linear system $A \mathbf{x} = \mathbf{b}$
+and returns the solution as a dense matrix of \verb|mpq_t|, \verb|mpfr_t| or
+\verb|double| entries. This function performs symbolic analysis, factorization,
+and solving all in one call.  It can be thought of as an exact version of
+MATLAB sparse backslash for symmetric positive-definite matrices.
 
 On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined.
 \verb|type| must be one of: \verb|SPEX_MPQ|, \verb|SPEX_MPFR| or
@@ -3356,8 +3368,8 @@ Default settings are used if \verb|option| is input as \verb|NULL|.
 
 Upon successful completion, the function returns \verb|SPEX_OK|, and \verb|x|
 contains the solution of data type specified by \verb|type| to the linear
-system $Ax=b$. In case of failure, \verb|x| is returned as \verb|NULL| and the
-appropriate error code is returned.
+system $A \mathbf{x} = \mathbf{b}$.  In case of failure, \verb|x| is returned
+as \verb|NULL| and the appropriate error code is returned.
 
 %} %CLOSEQR
 \end{comment}
@@ -3385,8 +3397,8 @@ or it can determine the appropriate factorization to apply based on the
 structure of the input matrix.
 
 %-------------------------------------------------------------------------------
-\section{Licensing}
-\label{s:Backslash:licensing}
+% \section{Licensing}
+% \label{s:Backslash:licensing}
 %-------------------------------------------------------------------------------
 
 \textbf{Copyright:} The copyright of this software is held by  Christopher
@@ -3455,20 +3467,154 @@ system $A\x=\b$. If an error occurs, \verb|x| is returned as \verb'NULL' in
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{SPEX Update Module}\vspace{-0.75in}
-\label{ch:Update}
+\chapter{SPEX LU Update Module}\vspace{-0.75in}
+\label{ch:Update_LU}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FIXME: split this into SPEX LU ColRep and Chol rank1 Modules: 2 chapters
+%-------------------------------------------------------------------------------
+\section{SPEX LU Update Module Overview}
+\label{s:Update_LU:intro}
+%-------------------------------------------------------------------------------
+
+FIXME: overview of LU update
+
+FIXME: license
 
 %-------------------------------------------------------------------------------
-\section{SPEX Update Module Overview}
-\label{s:Update:intro}
+\section{LU Update Functions}
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+\subsection{\texttt{SPEX\_update\_lu\_colrep}: Column-replacement LU update}
+\label{ss:SPEX_update_lu_colrep}
+%-------------------------------------------------------------------------------
+
+\begin{mdframed}[userdefinedwidth=\textwidth]
+{\footnotesize
+\begin{verbatim}
+SPEX_info SPEX_update_lu_colrep
+(
+    SPEX_factorization F,   // The SPEX factorization of A, including L, U,
+                            // rhos, P, Pinv, Q and Qinv. The factorization
+                            // will be modified during the update process.
+                            // Therefore, if this function fails for any
+                            // reason, the returned F should be considered as
+                            // undefined.
+    // todo: decide on utilities to help create this n-by-1 matrix:
+    SPEX_matrix vk,         // Pointer to a n-by-1 dynamic_CSC matrix
+                            // which contains the column to be inserted.
+                            // vk->scale = A->scale and vk->v[0]->scale = 1.
+                            // The rows of vk are in the same order as A.
+    int64_t k,              // The column index that vk will be inserted, 0<=k<n
+    const SPEX_options option
+) ;
+\end{verbatim}
+} \end{mdframed}
+
+\verb|SPEX_update_lu_colrep| exactly updates the roundoff-error-free LU
+factorization of a $n$-by-$n$ sparse matrix $A$ when one column of $A$ is
+replaced.  On input \verb|F| contains a valid SPEX LU factorization to be
+updated that consists of \verb|L, U, rhos, P_perm, Pinv_perm| and \verb|Q_perm|
+(and \verb|Qinv_perm| for an updatable \verb|F|); \verb|vk| is a $n$-by-$1$
+\verb|SPEX_DYNAMIC_CSC| matrix that contains the column to be inserted;
+\verb|k| is the index of the column of $A$ to be replaced and thus must be in
+the range of $[0,n-1]$; and option contains parameters (default settings are
+used if \verb|option| is input as \verb|NULL|).
+
+This function requires that the rows of \verb|vk| are in the same permutation
+order as that of $A$ (and \verb|F->L| if \verb|F| is updatable). In addition,
+\verb|vk| and \verb|SPEX_matrix A| that contains $A$ are scaled with same
+factor, i.e., \verb|vk->scale = A->scale|, while \verb|vk->v[0]->scale = 1|.
+Refer to section \ref{ss:SPEX_matrix} for the difference between
+\verb|vk->scale| and \verb|vk->v[0]->scale|.  As for \verb|F|, if it is input
+in a non-updatable format, it is first converted to updatable format.
+
+On success \verb|SPEX_OK| is returned, and  \verb|F| contains the updatable
+roundoff-error-free LU factorization of $\bar{A}$ which is obtained by
+replacing column $k$ of $A$ with \verb|vk|, while \verb|vk| is unmodified.
+Otherwise, if this function fails for any reason, the appropriate error code is
+returned and \verb|F| is undefined on output (since the modification for the
+factorization is done in place during the update process).
+
+This function does not require/use/modify the original matrix $A$. Therefore,
+if the updated matrix $\bar{A}$ is needed, users should call
+\verb|SPEX_update_matrix_colrep| {\bf AFTER} using this function (since
+\verb|vk| is be modified by \verb|SPEX_update_matrix_colrep|).
+
+FIXME: I'm confused; the above paragraph says the functions should be called in
+the order: \verb|SPEX_update_lu_colrep| and then
+\verb|SPEX_update_matrix_colrep|.  But this is inconsisent with the discussion
+in Section~\ref{ss:SPEX_update_matrix_colrep}.  Which is it?
+
+
+%-------------------------------------------------------------------------------
+\subsection{\texttt{SPEX\_update\_matrix\_colrep}: Swap the columns of a matrix}
+\label{ss:SPEX_update_matrix_colrep}
+%-------------------------------------------------------------------------------
+
+\begin{mdframed}[userdefinedwidth=\textwidth]
+{\footnotesize
+\begin{verbatim}
+SPEX_info SPEX_update_matrix_colrep // performs column replacement
+(
+    SPEX_matrix A,          // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
+    SPEX_matrix vk,         // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
+                            // the column vector to replace the k-th column of A
+                            // vk->scale = A->scale and vk->v[0]->scale = 1.
+    int64_t k,              // The column index that vk will be inserted, 0<=k<n
+    const SPEX_options option
+) ;
+\end{verbatim}
+} \end{mdframed}
+
+\verb|SPEX_update_matrix_colrep| serves as a helper function in the
+column-replacement scenario where users wish to obtain the matrix after one of
+its columns is replaced. It should be noted that this does {\bf NOT} update the
+factorization of \verb|A|, and thus users should call
+\verb|SPEX_update_lu_colrep| to update the SPEX LU factorization for column
+replacement.  To be more specific, this function swaps column \verb|k| of the
+matrix \verb|A| with column of \verb|vk| (i.e., swaps \verb|A->v[k]| and
+\verb|vk->v[0]|).  Therefore, both \verb|A| and \verb|vk| are modified by this
+function, which requires users to call this function {\bf BEFORE} using
+\verb|SPEX_update_lu_colrep|.
+
+FIXME: I'm confused; the above paragraph says the functions should be called in
+the order: \verb|SPEX_update_matrix_colrep| and then
+\verb|SPEX_update_lu_colrep|.  But this is inconsisent with the discussion in
+Section~\ref{ss:SPEX_update_lu_colrep}.  Which is it?
+
+On input, \verb|A| and \verb|vk| must be matrices of \verb|SPEX_DYNAMIC_CSC|
+kind with the same number of rows $m$; \verb|k| is the index of the column of
+$A$ to be replaced and thus must be in the range of $[0,m-1]$; and option
+contains parameters (default settings are used if \verb|option| is
+input as \verb|NULL|).
+
+This function requires that the rows of \verb|vk| are in the same order as that
+of \verb|A|. In addition, \verb|vk| and \verb|A|  are scaled with the same
+factor, i.e., \verb|vk->scale = A->scale|, while \verb|vk->v[0]->scale = 1|.
+(Users can refer to section \ref{ss:SPEX_matrix} for the difference between
+\verb|vk->scale| and \verb|vk->v[0]->scale|.) Different from
+\verb|SPEX_update_lu_colrep|, this function does not require \verb|A| to be a
+square matrix, as long as it has the same number of rows as \verb|vk|.
+
+On output, \verb|A->v[k]| and \verb|vk->v[0]| are simply swapped.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{SPEX LDL Update Module}\vspace{-0.75in}
+\label{ch:Update_LDL}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% FIXME: remove the LDL Update chapter for v3.3.0
+
+%-------------------------------------------------------------------------------
+\section{SPEX LDL Update Module Overview}
+\label{s:Update_LDL:intro}
 %-------------------------------------------------------------------------------
 
 SPEX Update is a SPEX Module designed to exactly update an available SPEX LU,
 Cholesky, or LDL factorization for the sparse matrix $A$ when a low-rank
-modification is performed on $A$. The low-rank modification can be either
+modification is performed on $A$.  The low-rank modification can be either
 column/row replacement for an LU factorization, or a rank-1 update/downdate for
 a Cholesky or LDL factorization.  The theoretical basis for this code is to be
 submitted as the following papers.
@@ -3479,12 +3625,6 @@ Update for Column Replacement,'' in preparation.
     \item FIXME, cite TOMS here: J. Chen, T. A. Davis, ``Sparse Exact Rank-1
 Cholesky Update,'' in preparation.
 \end{itemize}
-
-
-%-------------------------------------------------------------------------------
-\section{Licensing}
-\label{s:Update:licensing}
-%-------------------------------------------------------------------------------
 
 \textbf{Copyright:} The copyright of this software is held by Jinhao Chen,
 Christopher Lourenco, Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy
@@ -3504,7 +3644,7 @@ alternative licenses, contact the authors.
 
 
 %-------------------------------------------------------------------------------
-\section{SPEX Factorization Update Functions}
+\section{SPEX LDL Update Function}
 %-------------------------------------------------------------------------------
 
 SPEX update provides the following functions to perform factorization updates.
@@ -3571,85 +3711,26 @@ own {\bf BEFORE} using this function (since \verb|w| will be modified by this
 function).
 
 
-%-------------------------------------------------------------------------------
-\newpage
-\subsection{\texttt{SPEX\_update\_lu\_colrep}: Column-replacement LU update}
-\label{ss:SPEX_update_lu_colrep}
-%-------------------------------------------------------------------------------
-
-\begin{mdframed}[userdefinedwidth=\textwidth]
-{\footnotesize
-\begin{verbatim}
-SPEX_info SPEX_update_lu_colrep
-(
-    SPEX_factorization F,   // The SPEX factorization of A, including L, U,
-                            // rhos, P, Pinv, Q and Qinv. The factorization
-                            // will be modified during the update process.
-                            // Therefore, if this function fails for any
-                            // reason, the returned F should be considered as
-                            // undefined.
-    // todo: decide on utilities to help create this n-by-1 matrix:
-    SPEX_matrix vk,         // Pointer to a n-by-1 dynamic_CSC matrix
-                            // which contains the column to be inserted.
-                            // vk->scale = A->scale and vk->v[0]->scale = 1.
-                            // The rows of vk are in the same order as A.
-    int64_t k,              // The column index that vk will be inserted, 0<=k<n
-    const SPEX_options option
-) ;
-\end{verbatim}
-} \end{mdframed}
-
-\verb|SPEX_update_lu_colrep| exactly updates the roundoff-error-free LU
-factorization of a $n$-by-$n$ sparse matrix $A$ when one column of $A$ is
-replaced.  On input \verb|F| contains a valid SPEX LU factorization to be
-updated that consists of \verb|L, U, rhos, P_perm, Pinv_perm| and \verb|Q_perm|
-(and \verb|Qinv_perm| for an updatable \verb|F|); \verb|vk| is a $n$-by-$1$
-\verb|SPEX_DYNAMIC_CSC| matrix that contains the column to be inserted;
-\verb|k| is the index of the column of $A$ to be replaced and thus must be in
-the range of $[0,n-1]$; and option contains parameters (default settings are
-used if \verb|option| is input as \verb|NULL|).
-
-This function requires that the rows of \verb|vk| are in the same permutation
-order as that of $A$ (and \verb|F->L| if \verb|F| is updatable). In addition,
-\verb|vk| and \verb|SPEX_matrix A| that contains $A$ are scaled with same
-factor, i.e., \verb|vk->scale = A->scale|, while \verb|vk->v[0]->scale = 1|.
-Refer to section \ref{ss:SPEX_matrix} for the difference between
-\verb|vk->scale| and \verb|vk->v[0]->scale|.  As for \verb|F|, if it is input
-in a non-updatable format, it is first converted to updatable format.
-
-On success \verb|SPEX_OK| is returned, and  \verb|F| contains the updatable
-roundoff-error-free LU factorization of $\bar{A}$ which is obtained by
-replacing column $k$ of $A$ with \verb|vk|, while \verb|vk| is unmodified.
-Otherwise, if this function fails for any reason, the appropriate error code is
-returned and \verb|F| is undefined on output (since the modification for the
-factorization is done in place during the update process).
-
-This function does not require/use/modify the original matrix $A$. Therefore,
-if the updated matrix $\bar{A}$ is needed, users should call
-\verb|SPEX_update_matrix_colrep| {\bf AFTER} using this function (since
-\verb|vk| is be modified by \verb|SPEX_update_matrix_colrep|).
-
-FIXME: I'm confused; the above paragraph says the functions should be called in
-the order: \verb|SPEX_update_lu_colrep| and then
-\verb|SPEX_update_matrix_colrep|.  But this is inconsisent with the discussion
-in Section~\ref{ss:SPEX_update_matrix_colrep}.  Which is it?
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{SPEX Update Solve Module}\vspace{-0.75in}
+\label{ch:Update_Util}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %-------------------------------------------------------------------------------
-\section{SPEX Update Solve Routines}
+\section{SPEX Update Solve Module Overview}
+\label{s:Update:solve}
 %-------------------------------------------------------------------------------
 
-When factorization is updated iteratively, it should not be converted back and
-forth between updatable and non-updatable formats. However, this happens when
-users use the default LU/Cholesky solves (i.e., \verb|SPEX_lu_solve| or
-\verb|SPEX_cholesky_solve|) after using either
-\verb|SPEX_update_cholesky_rank1| or \verb|SPEX_update_lu_colrep|, since the
-default LU/Cholesky solves always convert factorization to non-updatable format
-while the SPEX Update functions require and output updatable factorization.  To
-avoid this, the SPEX Update Module provides functions to solve the linear
-equation $Ax=b$ based on the updatable LU/Cholesky factorization of $A$. In
-particular, both a normal solve and a transpose solve using the updatable
-factorizations are provided.
+The SPEX Update Solve functions solve a linear system after the factorization
+has been modified with a low-rank update.  The update methods change the data
+structure into an updatable data format.  The standard solve methods
+(\verb|SPEX_lu_solve|, \verb|SPEX_ldl_solve|, and \verb|SPEX_cholesky_solve|)
+can be used after updating a factorization, but they convert their
+factorizations back into the non-updatable form.  The methods below perform the
+solve while keeping the factorization in its updatable form.
+
+Both a normal solve of $A \mathbf{x} = \mathbf{b}$ and the transposed solve of
+$A^T \mathbf{x} = \mathbf{b}$ are provided, using the updatable factorizations.
 
 
 %-------------------------------------------------------------------------------
@@ -3660,13 +3741,13 @@ factorizations are provided.
 \begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
-SPEX_info SPEX_update_solve // solves Ax = b via LU or Cholesky factorization
+SPEX_info SPEX_update_solve // solves Ax = b
 (
     // Output
     SPEX_matrix *x_handle,  // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    SPEX_factorization F,   // The SPEX LU or Cholesky factorization
+    SPEX_factorization F,   // The SPEX factorization
     const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options option
@@ -3675,18 +3756,31 @@ SPEX_info SPEX_update_solve // solves Ax = b via LU or Cholesky factorization
 } \end{mdframed}
 
 \verb|SPEX_update_solve| obtains the solution of \verb|mpq_t| type to the
-linear system $Ax=b$ upon a valid LU/Cholesky factorization of $A$.
+linear system $A \mathbf{x} = \mathbf{b}$ after a successful
+% FIXME v3.3.0:
+% LU
+% FIXME v3.4.0:
+LU, Cholesky, or LDL
+%%%
+factorization of $A$.
 
 On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined;
-\verb|F| must be a valid LU/Cholesky factorization; \verb|b| must be dense
-\verb|mpz_t| with same number of rows as \verb|F->L|; and default settings are
-used if \verb|option| is input as \verb|NULL|. Upon successful completion, the
-function returns \verb|SPEX_OK|, and the dense \verb|mpq_t| matrix \verb|x|
-contains the solution  to the linear system $Ax=b$. \verb|F| is mathematically
-unchanged on output. However, if \verb|F| is non-updatable on input, it is
-converted to updatable. If \verb|F| is already updatable, it is not modified.
-In case of failure, \verb|x| is returned as \verb|NULL| and the appropriate
-error code is returned.
+\verb|F| must be a valid
+% FIXME v3.3.0:
+% LU
+% v3.4.0:
+LU, Cholesky, or LDL
+%%%
+factorization; \verb|b| must be dense \verb|mpz_t| with same number of rows as
+\verb|F->L|; and default settings are used if \verb|option| is input as
+\verb|NULL|. Upon successful completion, the function returns \verb|SPEX_OK|,
+and the dense \verb|mpq_t| matrix \verb|x| contains the solution  to the linear
+system $A \mathbf{x} = \mathbf{b}$.  \verb|F| is mathematically unchanged on
+output. However, if \verb|F| is non-updatable on input, it is converted to
+updatable. If \verb|F| is already updatable, it is not modified.  In case of
+failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is
+returned.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{SPEX\_update\_tsolve}: Solve transposed linear system with the updatable factorization}
@@ -3702,7 +3796,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
     SPEX_matrix *x_handle,  // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    SPEX_factorization F,   // The SPEX LU or Cholesky factorization of A
+    SPEX_factorization F,   // The SPEX factorization of A
     const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options option
@@ -3711,76 +3805,30 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
 } \end{mdframed}
 
 \verb|SPEX_update_tsolve| obtains the solution of \verb|mpq_t| type to the
-linear system $A^Tx=b$ upon a valid LU/Cholesky factorization of $A$.
+linear system $A^T \mathbf{x} = \mathbf{b}$ after a successful
+% FIXME v3.3.0:
+% LU
+% FIXME v3.4.0:
+LU, Cholesky, or LDL
+%%%
+factorization of $A$.
 
 On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined;
-\verb|F| must be a valid LU/Cholesky factorization; \verb|b| must be dense
-\verb|mpz_t| with same number of rows as \verb|F->L|; and default settings are
-used if \verb|option| is input as \verb|NULL|. Upon successful completion, the
-function returns \verb|SPEX_OK|, and the dense \verb|mpq_t| matrix \verb|x|
-contains the solution   to the linear system $A^Tx=b$. \verb|F| is
-mathematically unchanged on output. However, if \verb|F| is non-updatable on
-input, it is converted to updatable. If \verb|F| is already updatable, it is
-not modified.  In case of failure, \verb|x| is returned as \verb|NULL| and the
-appropriate error code is returned.
-
-
-%-------------------------------------------------------------------------------
-\section {SPEX Update Helper Function}
-%-------------------------------------------------------------------------------
-
-
-%-------------------------------------------------------------------------------
-\subsection{\texttt{SPEX\_update\_matrix\_colrep}: Swap the columns of a matrix}
-\label{ss:SPEX_update_matrix_colrep}
-%-------------------------------------------------------------------------------
-
-\begin{mdframed}[userdefinedwidth=\textwidth]
-{\footnotesize
-\begin{verbatim}
-SPEX_info SPEX_update_matrix_colrep // performs column replacement
-(
-    SPEX_matrix A,          // m-by-n target matrix of SPEX_DYNAMIC_CSC MPZ
-    SPEX_matrix vk,         // m-by-1 SPEX_DYNAMIC_CSC MPZ matrix that contains
-                            // the column vector to replace the k-th column of A
-                            // vk->scale = A->scale and vk->v[0]->scale = 1.
-    int64_t k,              // The column index that vk will be inserted, 0<=k<n
-    const SPEX_options option
-) ;
-\end{verbatim}
-} \end{mdframed}
-
-\verb|SPEX_update_matrix_colrep| serves as a helper function in the
-column-replacement scenario where users wish to obtain the matrix after one of
-its columns is replaced. It should be noted that this does {\bf NOT} update the
-factorization of \verb|A|, and thus users should call
-\verb|SPEX_update_lu_colrep| to update the SPEX LU factorization for column
-replacement.  To be more specific, this function swaps column \verb|k| of the
-matrix \verb|A| with column of \verb|vk| (i.e., swaps \verb|A->v[k]| and
-\verb|vk->v[0]|).  Therefore, both \verb|A| and \verb|vk| are modified by this
-function, which requires users to call this function {\bf BEFORE} using
-\verb|SPEX_update_lu_colrep|.
-
-FIXME: I'm confused; the above paragraph says the functions should be called in
-the order: \verb|SPEX_update_matrix_colrep| and then
-\verb|SPEX_update_lu_colrep|.  But this is inconsisent with the discussion in
-Section~\ref{ss:SPEX_update_lu_colrep}.  Which is it?
-
-On input, \verb|A| and \verb|vk| must be matrices of \verb|SPEX_DYNAMIC_CSC|
-kind with the same number of rows $m$; \verb|k| is the index of the column of
-$A$ to be replaced and thus must be in the range of $[0,m-1]$; and option
-contains parameters (default settings are used if \verb|option| is
-input as \verb|NULL|).
-
-This function requires that the rows of \verb|vk| are in the same order as that
-of \verb|A|. In addition, \verb|vk| and \verb|A|  are scaled with the same
-factor, i.e., \verb|vk->scale = A->scale|, while \verb|vk->v[0]->scale = 1|.
-(Users can refer to section \ref{ss:SPEX_matrix} for the difference between
-\verb|vk->scale| and \verb|vk->v[0]->scale|.) Different from
-\verb|SPEX_update_lu_colrep|, this function does not require \verb|A| to be a
-square matrix, as long as it has the same number of rows as \verb|vk|.
-
-On output, \verb|A->v[k]| and \verb|vk->v[0]| are simply swapped.
+\verb|F| must be a valid
+% FIXME v3.3.0:
+% LU
+% FIXME v3.4.0:
+LU, Cholesky, or LDL
+%%%
+factorization; \verb|b| must be dense \verb|mpz_t| with same number of rows as
+\verb|F->L|; and default settings are used if \verb|option| is input as
+\verb|NULL|. Upon successful completion, the function returns \verb|SPEX_OK|,
+and the dense \verb|mpq_t| matrix \verb|x| contains the solution  to the linear
+system $A^T \mathbf{x} = \mathbf{b}$.  \verb|F| is mathematically unchanged on
+output. However, if \verb|F| is non-updatable on input, it is converted to
+updatable. If \verb|F| is already updatable, it is not modified.  In case of
+failure, \verb|x| is returned as \verb|NULL| and the appropriate error code is
+returned.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3788,7 +3836,7 @@ On output, \verb|A->v[k]| and \verb|vk->v[0]| are simply swapped.
 \label{s:Use:MATLAB}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To install the MATLAB interface for SPEX, the SPEX library itself must be
+To install the MATLAB interface for SPEX, the SPEX library itself must first be
 compiled.  Refer to Section~\ref{s:util:install} for details.
 
 Next, install the MATLAB interface of SPEX by navigating to the
@@ -3798,18 +3846,18 @@ functions: \verb|spex_lu_backslash.m|, \verb|spex_cholesky_backslash.m|,
 \verb|spex_ldl_backslash.m| and \verb|spex_backslash.m|. Section
 \ref{s:Use:MATLAB:setup} describes the \verb|option| input parameter for each
 method.  The use of each SPEX method is discussed in Section
-\ref{s:Use:MATLAB:factor}.  The \verb|SPEX/SPEX/MATLAB| folder must be added
-to your in your MATLAB path.  You can add the following line to your
-MATLAB \verb'startup.m' script, normally in your \verb'Documents/MATLAB'
-folder:
+\ref{s:Use:MATLAB:factor}.  The \verb|SPEX/SPEX/MATLAB| folder must be added to
+your in your MATLAB path.  You can add the following line to your MATLAB
+\verb'startup.m' script, normally in your \verb'Documents/MATLAB' folder:
 
 \begin{verbatim}
-    addpath ('~/SPEX/SPEX/MATLAB')
+    addpath ('/home/me/SPEX/SPEX/MATLAB')
 \end{verbatim}
 
-The above command assumes that the SPEX source code is in your home directory
-on Linux/Mac.  Revise as needed for the actual location of the folder
-containing your copy of the SPEX software package.
+The above command would be revised; it assumes that the SPEX source code is in
+your home directory on Linux/Mac with username \verb|me|.  Revise as needed for
+the actual location of the folder containing your copy of the SPEX software
+package.
 
 
 %-------------------------------------------------------------------------------
@@ -3899,7 +3947,7 @@ where $A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times m}$ and $\b
 \in \mathtt{R}^{n \times m}$.  The final solution vector(s) obtained via this
 function are exact prior to their conversion to double precision.
 
-This function expects as input a matlab matrix $A$ and dense set of right hand
+This function expects as input a MATLAB matrix $A$ and dense set of right hand
 side vectors $\b$. $A$ does not necessarily have to be sparse even though SPEX
 will internally treat it as so. Optionally, \verb|option| struct can be passed
 in.  Currently, there are 2 ways to use this function outlined below.

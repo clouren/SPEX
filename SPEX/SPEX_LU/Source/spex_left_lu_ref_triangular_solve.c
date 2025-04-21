@@ -2,12 +2,11 @@
 // SPEX_LU/spex_left_lu_ref_triangular_solve: sparse REF triangular solve
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,,
+// SPEX_LU: (c) 2019-2025, Christopher Lourenco, Jinhao Chen,,
 // Erick Moreno-Centeno, and Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
-
 
 /*
  * Purpose: This function performs the sparse REF triangular solve. i.e.,

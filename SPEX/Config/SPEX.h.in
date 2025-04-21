@@ -1643,8 +1643,8 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
 // will be modified by this method).
 
 // FIXME: describe how to create w n-by-1 matrix for update/downdate.
-
 // FIXME: rename to SPEX_update_ldl_rank1
+// FIXME: remove for v3.4.0
 
 SPEX_info SPEX_update_cholesky_rank1
 (
@@ -1665,25 +1665,23 @@ SPEX_info SPEX_update_cholesky_rank1
 ) ;
 
 //------------------------------------------------------------------------------
-// Function for solving A*x = b with updatable LU or Cholesky factorization
-// of matrix A
+// Function for solving A*x = b with updatable factorization
 //------------------------------------------------------------------------------
 
-SPEX_info SPEX_update_solve // solves Ax = b via LU or Cholesky factorization
+SPEX_info SPEX_update_solve // solves Ax = b
 (
     // Output
     SPEX_matrix *x_handle,  // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    SPEX_factorization F,   // The SPEX LU or Cholesky factorization
+    SPEX_factorization F,   // The SPEX factorization
     const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options option
 ) ;
 
 //------------------------------------------------------------------------------
-// Function for solving A^T*x = b with updatable LU or Cholesky factorization
-// of matrix A
+// Function for solving A^T*x = b with updatable factorization
 //------------------------------------------------------------------------------
 
 SPEX_info SPEX_update_tsolve // solves A^T*x = b
@@ -1692,7 +1690,7 @@ SPEX_info SPEX_update_tsolve // solves A^T*x = b
     SPEX_matrix *x_handle,  // a m*n dense matrix contains the solution to
                             // the system.
     // input:
-    SPEX_factorization F,   // The SPEX LU or Cholesky factorization of A
+    SPEX_factorization F,   // The SPEX factorization of A
     const SPEX_matrix b,    // a m*n dense matrix contains the right-hand-side
                             // vector
     const SPEX_options option

@@ -2,7 +2,7 @@
 // SPEX/MATLAB/spex_cholesky_mex_soln: Use SPEX Chol within MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
+// SPEX: Copyright (c) 2019-2025, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
@@ -12,7 +12,6 @@
 /* Purpose: The .c file defining the SPEX Chol MATLAB interfacee
  * This function defines: x = spex_cholesky_mex_soln (A, b, option)
  */
-
 
 #include "SPEX_mex.h"
 

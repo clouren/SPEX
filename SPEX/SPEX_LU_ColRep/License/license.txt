@@ -1,6 +1,6 @@
-SPEX Update: Column-Replace and Rank-1 Up/Downdate of Sparse LU & Cholesky Fact.
+SPEX LU Update: Column-Replacement of Sparse LU Factorization
 
-Copyright (c) 2020-2023, Christopher Lourenco, Jinhao Chen,
+Copyright (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 
 Available at:

@@ -1,6 +1,6 @@
 SPEX_Utilities: Utility functions for SParse EXact package
 
-Copyright (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+Copyright (c) 2019-2025, Christopher Lourenco, Jinhao Chen,
 Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 All Rights Reserved.
 

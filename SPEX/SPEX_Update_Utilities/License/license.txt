@@ -1,6 +1,6 @@
-SPEX Update: Column-Replace and Rank-1 Up/Downdate of Sparse LU & Cholesky Fact.
+SPEX Update Utilities: solving Ax=b after a factorization update
 
-Copyright (c) 2020-2023, Christopher Lourenco, Jinhao Chen,
+Copyright (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 
 Available at:

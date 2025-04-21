@@ -1,6 +1,6 @@
 SPEX Backslash:
 
-Copyright (c) 2021-2024, Christopher Lourenco, Jinhao Chen,
+Copyright (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
 Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 
 Available at:

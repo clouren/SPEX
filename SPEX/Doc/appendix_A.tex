@@ -1,4 +1,15 @@
 \documentclass[10pt]{article}
+\textwidth=7in
+\textheight=9in
+\oddsidemargin=0.0in
+\evensidemargin=0.0in
+\marginparwidth=0in
+\marginparsep=0in
+\topmargin=0in
+\headheight=0in
+\headsep=0in
+\topskip=0in
+
 \usepackage{longtable}
 \usepackage{xcolor}
 
@@ -16,12 +27,43 @@
 
 \section{Comprehensive Computational Results} \label{s:ResultsALL}
 
-Tables \ref{supptab:all_large}, \ref{supptab:all_medium}, \ref{supptab:all_small}, and \ref{supptab:all_tiny} present exhaustive computational results for large (those requiring $\geq1$ hour of run time), medium (those requiring between 1 hour and 1 minute of run time), small (those requiring between 1 minute and $0.1$ seconds of run time) and tiny (those requiring less than $0.1$ seconds) instances, respectively. In each table, the first five columns give the name (or index from SJ database), dimension, number of nonzeros, MATLAB estimated condition number, and MATLAB estimated sparse norm in each matrix. Column 6 gives the run time of SPEX Left LU using the selected pivoting scheme tol 0. Lastly, columns 7 and 8 give the relative run time of Wiedemann and Lanczos, respectively. Note that those instances in which these algorithms seg-fault are indicated with {\bf \red SF} and those instances whose solutions were incorrect are indicated with bold red text.
+Tables \ref{supptab:all_large}, \ref{supptab:all_medium},
+\ref{supptab:all_small}, and \ref{supptab:all_tiny} present exhaustive
+computational results for large (those requiring $\geq1$ hour of run time),
+medium (those requiring between 1 hour and 1 minute of run time), small (those
+requiring between 1 minute and $0.1$ seconds of run time) and tiny (those
+requiring less than $0.1$ seconds) instances, respectively. In each table, the
+first five columns give the name (or index from SJ database), dimension, number
+of nonzeros, MATLAB estimated condition number, and MATLAB estimated sparse
+norm in each matrix. Column 6 gives the run time of SPEX Left LU using the
+selected pivoting scheme tol 0. Lastly, columns 7 and 8 give the relative run
+time of Wiedemann and Lanczos, respectively. Note that those instances in which
+these algorithms seg-fault are indicated with {\bf \red SF} and those instances
+whose solutions were incorrect are indicated with bold red text.
+
+FIXME: what is the relative run time? Which divided by which?
+
 
 \begin{longtable}{|l|r|r|r|r|r|r|r|}
 \hline	
-& & & & & & \multicolumn{2}{c|}{Relative Run Time}  \\ \hline
-\multicolumn{1}{|c|}{Matrix Name}	& \multicolumn{1}{c|}{n} & \multicolumn{1}{c|}{nnz} & \multicolumn{1}{c|}{Cond} & \multicolumn{1}{c|}{norm} & \multicolumn{1}{c|}{SPEX time (hr)} & \multicolumn{1}{c|}{Wiedemann} & \multicolumn{1}{c|}{Lanczos}  \\  \hline \endhead
+\multicolumn{1}{|c|}{Matrix} &
+\multicolumn{1}{c|}{n} &
+\multicolumn{1}{c|}{nnz} &
+\multicolumn{1}{c|}{Cond} &
+\multicolumn{1}{c|}{norm} &
+\multicolumn{1}{c|}{SPEX} &
+\multicolumn{1}{c|}{Wiedemann} &
+\multicolumn{1}{c|}{Lanczos}  \\
+\multicolumn{1}{|c|}{Name} &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{time (hr)} &
+\multicolumn{1}{c|}{rel. time} &
+\multicolumn{1}{c|}{rel. time } \\
+\hline
+\endhead
 350	&	6774	&	33744	&	7.68E+13	&	1.26E+06	&	10.40	&	0.01	&	0.01	\\
 367	&	7337	&	156508	&	7.64E+13	&	1.83E+01	&	10.12	&	0.04	&	0.04	\\
 696	&	14454	&	147972	&	4.44E+12	&	5.31E+03	&	9.78	&	{\bf \red SF}	&	{\bf \red SF}	\\
@@ -55,11 +97,27 @@ gen4.pre	&	367	&	9322	&	Inf	&	Inf	&	1.12	&	0.01	&	0.01	\\
 \label{supptab:all_large}
 \end{longtable}
 
-
+\newpage
 \begin{longtable}{|l|r|r|r|r|r|r|r|}
 \hline	
-& & & & & & \multicolumn{2}{c|}{Relative Run Time}  \\ \hline
-\multicolumn{1}{|c|}{Matrix Name}	& \multicolumn{1}{c|}{n} & \multicolumn{1}{c|}{nnz} & \multicolumn{1}{c|}{Cond} & \multicolumn{1}{c|}{Norm}  & \multicolumn{1}{c|}{SPEX time (min)} & \multicolumn{1}{c|}{Wiedemann} & \multicolumn{1}{c|}{Lanczos} \\  \hline \endhead
+\multicolumn{1}{|c|}{Matrix} &
+\multicolumn{1}{c|}{n} &
+\multicolumn{1}{c|}{nnz} &
+\multicolumn{1}{c|}{Cond} &
+\multicolumn{1}{c|}{norm} &
+\multicolumn{1}{c|}{SPEX} &
+\multicolumn{1}{c|}{Wiedemann} &
+\multicolumn{1}{c|}{Lanczos}  \\
+\multicolumn{1}{|c|}{Name} &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{time (min)} &
+\multicolumn{1}{c|}{rel. time} &
+\multicolumn{1}{c|}{rel. time } \\
+\hline
+\endhead
 slptsk	&	2315	&	34430	&	4.35E+185	&	NaN	&	54.85	&	0.19	&	0.19	\\
 gen1	&	329	&	11016	&	Inf	&	Inf	&	44.42	&	0.03	&	0.03	\\
 207	&	1919	&	32399	&	3.73E+18	&	2.92E+00	&	33.82	&	0.04	&	0.04	\\
@@ -105,11 +163,27 @@ scfxm1-2r-256	&	11812	&	44985	&	3.12E+12	&	2.84E+08	&	1.11	&	2.95	&	2.94	\\
 
 
 
-
+\newpage
 \begin{longtable}{|l|r|r|r|r|r|r|r|}
 \hline	
-& & & & & & \multicolumn{2}{c|}{Relative Run Time}  \\ \hline
-\multicolumn{1}{|c|}{Matrix Name}	& \multicolumn{1}{c|}{n} & \multicolumn{1}{c|}{nnz} & \multicolumn{1}{c|}{Cond} & \multicolumn{1}{c|}{Norm} & \multicolumn{1}{c|}{SPEX time (s)} & \multicolumn{1}{c|}{Wiedemann} & \multicolumn{1}{c|}{Lanczos} \\  \hline \endhead
+\multicolumn{1}{|c|}{Matrix} &
+\multicolumn{1}{c|}{n} &
+\multicolumn{1}{c|}{nnz} &
+\multicolumn{1}{c|}{Cond} &
+\multicolumn{1}{c|}{norm} &
+\multicolumn{1}{c|}{SPEX} &
+\multicolumn{1}{c|}{Wiedemann} &
+\multicolumn{1}{c|}{Lanczos}  \\
+\multicolumn{1}{|c|}{Name} &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{time (sec)} &
+\multicolumn{1}{c|}{rel. time} &
+\multicolumn{1}{c|}{rel. time } \\
+\hline
+\endhead
 nemswrld	&	2205	&	13323	&	NaN	&	Inf	&	53.50	&	0.34	&	0.34	\\
 cont4	&	2802	&	11862	&	3.85E+05	&	3.98E+03	&	44.81	&	0.28	&	0.29	\\
 rat5	&	902	&	12026	&	4.19E+06	&	7.48E+05	&	40.77	&	0.10	&	0.10	\\
@@ -266,12 +340,27 @@ model3	&	310	&	1417	&	3.11E+95	&	6.44E+93	&	0.10	&	3.27	&	3.25	\\
 \label{supptab:all_small}
 \end{longtable}
 
-
-
+\newpage
 \begin{longtable}{|l|r|r|r|r|r|r|r|}
 \hline	
-& & & & & & \multicolumn{2}{c|}{Relative Run Time}  \\ \hline
-\multicolumn{1}{|c|}{Matrix Name}	& \multicolumn{1}{c|}{n} & \multicolumn{1}{c|}{nnz} & \multicolumn{1}{c|}{Cond} & \multicolumn{1}{c|}{Norm} & \multicolumn{1}{c|}{SPEX Left LU time (ms)} & \multicolumn{1}{c|}{Wiedemann} & \multicolumn{1}{c|}{Lanczos} \\  \hline \endhead
+\multicolumn{1}{|c|}{Matrix} &
+\multicolumn{1}{c|}{n} &
+\multicolumn{1}{c|}{nnz} &
+\multicolumn{1}{c|}{Cond} &
+\multicolumn{1}{c|}{norm} &
+\multicolumn{1}{c|}{SPEX} &
+\multicolumn{1}{c|}{Wiedemann} &
+\multicolumn{1}{c|}{Lanczos}  \\
+\multicolumn{1}{|c|}{Name} &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{ } &
+\multicolumn{1}{c|}{time (msec)} &
+\multicolumn{1}{c|}{rel. time} &
+\multicolumn{1}{c|}{rel. time } \\
+\hline
+\endhead
 ds	&	647	&	12193	&	1.01E+04	&	2.08E+01	&	9.85	&	2.83	&	2.68	\\
 ch	&	393	&	1304	&	4.36E+110	&	3.12E+106	&	9.21	&	8.74	&	8.84	\\
 nug07	&	450	&	1780	&	5.45E+04	&	5.28E+00	&	8.92	&	0.80	&	0.31	\\

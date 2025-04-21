@@ -2,7 +2,7 @@
 # SPEX/Python/SPEX/spex_connect.py: link SPEX to use in Python
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
+# SPEX: (c) 2022-2025, Christopher Lourenco, Jinhao Chen,
 # Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 # All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later

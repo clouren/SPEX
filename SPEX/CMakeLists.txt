@@ -2,7 +2,7 @@
 # SuiteSparse/SPEX/CMakeLists.txt:  cmake for SPEX
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2019-2024, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# SPEX: (c) 2019-2025, Chris Lourenco (US Naval Academy), Jinhao Chen,
 # Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis, Texas A&M.
 # All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
