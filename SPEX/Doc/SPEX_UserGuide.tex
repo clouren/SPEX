@@ -87,8 +87,6 @@ vector $x$ is \ul{guaranteed} to be exact. SPEX LU is written in ANSI C and is
 accompanied by a MATLAB interface.  It currently consists of the following
 Modules, each in their own subfolder of the SPEX package:
 
-FIXME: I have renamed the sub-packages as Modules, to match CHOLMOD.
-
 \begin{itemize}
 
     \item \verb'SPEX_Utilities:' Utility and auxiliary functions for all SPEX
@@ -3347,7 +3345,7 @@ returned.
 solution as a dense matrix of \verb|mpq_t|, \verb|mpfr_t| or \verb|double|
 entries. This function performs symbolic analysis, factorization, and solving
 all in one call.  It can be thought of as an exact version of MATLAB sparse
-backslash for SPD matrices.
+backslash for symmetric positive-definite matrices.
 
 On input, \verb|SPEX_matrix x| that \verb|x_handle| points to is undefined.
 \verb|type| must be one of: \verb|SPEX_MPQ|, \verb|SPEX_MPFR| or
@@ -3462,7 +3460,6 @@ system $A\x=\b$. If an error occurs, \verb|x| is returned as \verb'NULL' in
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FIXME: split this into SPEX LU ColRep and Chol rank1 Modules: 2 chapters
-
 
 %-------------------------------------------------------------------------------
 \section{SPEX Update Module Overview}
@@ -3791,17 +3788,28 @@ On output, \verb|A->v[k]| and \verb|vk->v[0]| are simply swapped.
 \label{s:Use:MATLAB}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FIXME: Tim is HERE:
+To install the MATLAB interface for SPEX, the SPEX library itself must be
+compiled.  Refer to Section~\ref{s:util:install} for details.
 
-The MATLAB interface of SPEX can be installed by navigating to the
-\verb|MATLAB| folder and typing \verb|spex_mex_install| in the MATLAB Command
-Window.  Doing so installs SPEX and allows the use of four MATLAB functions:
-\verb|spex_lu_backslash.m|, \verb|spex_cholesky_backslash.m|,
+Next, install the MATLAB interface of SPEX by navigating to the
+\verb|SPEX/SPEX/MATLAB| folder and typing \verb|spex_mex_install| in the MATLAB
+Command Window.  Doing so installs SPEX and allows the use of four MATLAB
+functions: \verb|spex_lu_backslash.m|, \verb|spex_cholesky_backslash.m|,
 \verb|spex_ldl_backslash.m| and \verb|spex_backslash.m|. Section
 \ref{s:Use:MATLAB:setup} describes the \verb|option| input parameter for each
 method.  The use of each SPEX method is discussed in Section
-\ref{s:Use:MATLAB:factor}.  The \verb|SPEX/SPEX/MATLAB| folder must be in your
-MATLAB path.
+\ref{s:Use:MATLAB:factor}.  The \verb|SPEX/SPEX/MATLAB| folder must be added
+to your in your MATLAB path.  You can add the following line to your
+MATLAB \verb'startup.m' script, normally in your \verb'Documents/MATLAB'
+folder:
+
+\begin{verbatim}
+    addpath ('~/SPEX/SPEX/MATLAB')
+\end{verbatim}
+
+The above command assumes that the SPEX source code is in your home directory
+on Linux/Mac.  Revise as needed for the actual location of the folder
+containing your copy of the SPEX software package.
 
 
 %-------------------------------------------------------------------------------
@@ -3822,13 +3830,14 @@ factorization method uses one of the following pivoting strategies. This
 parameter only applies to LU factorization:
 
     \begin{itemize}
-    \item \verb|'smallest'|: (default) smallest pivot,
-    \item \verb|'diagonal'|: diagonal pivot if possible, otherwise smallest pivot,
-    \item \verb|'first'|: first nonzero pivot in each column,
-    \item \verb|'tol smallest'|: diagonal pivot with a tolerance (\verb|option.tol|)
-        for the smallest pivot,
-    \item \verb|'tol largest'|: diagonal pivot with a tolerance (\verb|option.tol|)
-        for the largest pivot,
+    \item \verb|'smallest'|: (default) smallest pivot.
+    \item \verb|'diagonal'|: diagonal pivot if possible.
+        otherwise smallest pivot.
+    \item \verb|'first'|: first nonzero pivot in each column.
+    \item \verb|'tol smallest'|: diagonal pivot with a tolerance
+        (\verb|option.tol|) for the smallest pivot.
+    \item \verb|'tol largest'|: diagonal pivot with a tolerance
+        (\verb|option.tol|) for the largest pivot.
     \item \verb|'largest'|: largest pivot.
     \end{itemize}
 
@@ -3837,12 +3846,12 @@ fill-reducing column preordering used.
 
     \begin{itemize}
     \item \verb|'none'|: no column ordering; factorize \verb'A' as-is.
-    \item \verb|'colamd'|: COLAMD ordering (default for LU)
-    \item \verb|'amd'|: AMD ordering (default for Cholesky and LDL)
+    \item \verb|'colamd'|: COLAMD ordering (default for LU).
+    \item \verb|'amd'|: AMD ordering (default for Cholesky and LDL).
     \end{itemize}
 
 \item \verb|option.tol|: This parameter determines the tolerance used if one of
-the threshold pivoting schemes is chosen. The default value is 1 and this
+the threshold pivoting schemes is chosen.  The default value is 1 and this
 parameter can take any value in the range $(0,1]$. This is only valid for LU
 factorization.
 
@@ -3858,8 +3867,8 @@ returned:
             \verb|x| cannot be represented in the specified number of digits.
             To convert this \verb|x| to double, use \verb|x=double(x)|.
         \item \verb|'char'|:  \verb|x| is returned as a cell array of strings,
-            where \verb|x {i} =| \newline \verb|'numerator/denominator'| and both
-            \verb|numerator| and \verb|denominator| are arbitrary-length
+            where \verb|x {i} =| \newline \verb|'numerator/denominator'| and
+            both \verb|numerator| and \verb|denominator| are arbitrary-length
             strings of decimal digits.  The result is always exact, although
             \verb|x| cannot be directly used in MATLAB for numerical
             calculations.  It can be inspected or analyzed using MATLAB string
@@ -3912,7 +3921,8 @@ floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
 The solution \verb|x| may also be returned as a MATLAB \verb|vpa| array, or as
-a cell array of strings; See Section \ref{s:Use:MATLAB:setup} for details.
+a cell array of strings; see Section \ref{s:Use:MATLAB:setup} for details.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{spex\_cholesky\_backslash.m}: solve a linear system via exact Cholesky factorization}
@@ -3922,7 +3932,8 @@ The \verb|spex_cholesky_backslash.m| function solves the linear system $A \x =
 \b$ where $A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times m}$ and
 $\b \in \mathtt{R}^{n \times m}$. The final solution vector(s) obtained via
 this function are exact prior to their conversion to double precision. Note
-that A must be SPD otherwise this function returns an error.
+that A must be symmetric positive-definite otherwise this function returns an
+error.
 
 This function expects as input a matrix $A$ and dense set of right hand side
 vectors $b$. $A$ does not necessarily have to be sparse even though SPEX will
@@ -3946,7 +3957,8 @@ floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
 The solution \verb|x| may also be returned as a MATLAB \verb|vpa| array, or as
-a cell array of strings; See Section \ref{s:Use:MATLAB:setup} for details.
+a cell array of strings; see Section \ref{s:Use:MATLAB:setup} for details.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{spex\_ldl\_backslash.m}: solve a linear system via exact LDL factorization}
@@ -3956,11 +3968,11 @@ The \verb|spex_ldl_backslash.m| function solves the linear system $A \x = \b$
 where $A \in \mathtt{R}^{n \times n}$, $\x \in \mathtt{R}^{n \times m}$ and $\b
 \in \mathtt{R}^{n \times m}$. The final solution vector(s) obtained via this
 function are exact prior to their conversion to double precision. Note that all
-leading principal minors of $A$ must be nonzero.  Otherwise, this function
-returns an error.
+leading principal minors of $A$ must be nonsingular, and $A$ must be symmetric.
+Otherwise, this function returns an error.
 
 This function expects as input a matrix $A$ and dense set of right hand side
-vectors $b$. $A$ does not necessarily have to be sparse even though SPEX will
+vectors $b$.  $A$ does not necessarily have to be sparse even though SPEX will
 internally treat it as so.  Optionally, the \verb|option| struct can be passed
 in.  Currently, there are 2 ways to use this function outlined below.
 
@@ -3981,7 +3993,8 @@ floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
 The solution \verb|x| may also be returned as a MATLAB \verb|vpa| array, or as
-a cell array of strings; See Section \ref{s:Use:MATLAB:setup} for details.
+a cell array of strings; see Section \ref{s:Use:MATLAB:setup} for details.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{spex\_backslash.m}: solve a linear system via an exact factorization}
@@ -4017,7 +4030,8 @@ floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
 The solution \verb|x| may also be returned as a MATLAB \verb|vpa| array, or as
-a cell array of strings; See Section \ref{s:Use:MATLAB:setup} for details.
+a cell array of strings; see Section \ref{s:Use:MATLAB:setup} for details.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{spex\_mex\_demo.m}: example of how to use SPEX in MATLAB}
@@ -4032,11 +4046,13 @@ output of this function may be seen in the provided \verb|MATLAB/html| folder.
 \chapter{Using SPEX in Python}\vspace{-0.75in}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+FIXME: what about Windows?
+
 The Python interface of SPEX can be installed by navigating to the Python
-folder and typing make. Doing so allows the use of the Python SPEX library.
-First, this section describes the \verb|Option| object in Section
-\ref{s:Python:option}. The use of SPEX to solve $A\x=\b$ is discussed in
-Section \ref{s:Python:Funcs}.
+folder and typing \verb'make' (on Linux/Mac).  Doing so allows the use of the
+Python SPEX library.  First, this section describes the \verb|Option| object in
+Section \ref{s:Python:option}. The use of SPEX to solve $A\x=\b$ is discussed
+in Section \ref{s:Python:Funcs}.
 
 
 %-------------------------------------------------------------------------------
@@ -4046,17 +4062,32 @@ Section \ref{s:Python:Funcs}.
 
 The SPEX Python interface includes an object as an optional input parameter
 that modifies behaviour. If this is not provided, default parameter settings
-are used.  \begin{itemize} \item output: This parameter is a string that
-determines how the solution is to be returned \begin{itemize} \item
-\verb|'double'|:  \verb|x| is converted to a 64-bit floating-point approximate
-solution.  This is the default.  \item \verb|'string'|:  \verb|x| is returned
-as an array of strings.  \end{itemize} \item ordering: This parameter is a
-string that controls the fill-reducing column preordering used. By default it
-is initialized as None, if this option is chosen, the solve functions use the
-appropriate default ordering (AMD for Cholesky and COLAMD for Left LU).
-\begin{itemize} \item \verb|'none'|: no column ordering; factorize $A$ as-is.
-\item \verb|'colamd'|: COLAMD ordering \item \verb|'amd'|: AMD ordering
-\end{itemize} \end{itemize}
+are used.
+
+\begin{itemize}
+
+    \item output: This parameter is a string that determines how the solution
+        is to be returned.
+
+        \begin{itemize}
+            \item \verb|'double'|:  \verb|x| is converted to a 64-bit
+            floating-point approximate solution.  This is the default.
+            \item \verb|'string'|:  \verb|x| is returned as an array of
+            strings.
+        \end{itemize}
+
+    \item ordering: This parameter is a string that controls the fill-reducing
+    column preordering used. By default it is initialized as None, if this
+    option is chosen, the solve functions use the appropriate default ordering
+    (AMD for Cholesky and COLAMD for Left LU).
+
+        \begin{itemize}
+        \item \verb|'none'|: no column ordering; factorize $A$ as-is.
+        \item \verb|'colamd'|: COLAMD ordering.
+        \item \verb|'amd'|: AMD ordering
+        \end{itemize}
+
+\end{itemize}
 
 
 %-------------------------------------------------------------------------------
@@ -4082,16 +4113,16 @@ Currently, there are 2 ways to use this function outlined below.
     using default settings. The solution \verb|x| is returned as a \verb|numpy|
     double array.
     \item \verb|x=SPEX.lu_backslash(A,b,options)| returns the solution to $A \x
-    = \b$ using non-default settings from the \verb|option|
-    object.
+    = \b$ using non-default settings from the \verb|option| object.
 \end{itemize}
 
 If the result \verb|x| is held as a \verb|numpu| double array, in conventional
 floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
-The solution \verb|x| may also be returned as a list of strings; See Section
+The solution \verb|x| may also be returned as a list of strings; see Section
 \ref{s:Python:option} for details.
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{cholesky\_backslash}: solves a linear system via exact Cholesky factorization}
@@ -4119,10 +4150,11 @@ If the result \verb|x| is held as a \verb|numpu| double array, in conventional
 floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
-The solution \verb|x| may also be returned as a list of strings; See Section
+The solution \verb|x| may also be returned as a list of strings; see Section
 \ref{s:Python:option} for details.
 
 FIXME: where is ldl for Python? 
+
 
 %-------------------------------------------------------------------------------
 \subsection{\texttt{backslash}: solves a linear system via exact factorization}
@@ -4153,7 +4185,7 @@ If the result \verb|x| is held as a \verb|numpu| double array, in conventional
 floating-point representation (\verb|double|), it is guaranteed to be exact
 only if the exact solution can be held in \verb|double| without modification.
 
-The solution \verb|x| may also be returned as a list of strings; See Section
+The solution \verb|x| may also be returned as a list of strings; see Section
 \ref{s:Python:option} for details.
 
 
