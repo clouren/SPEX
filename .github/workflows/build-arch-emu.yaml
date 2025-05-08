@@ -76,7 +76,7 @@ jobs:
             mpfr-dev
             lapack-dev
             python3
-            util-linux-misc
+            lscpu
             autoconf
             automake
             libtool
