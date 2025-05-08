@@ -117,8 +117,8 @@
 
 #define SPEX__VERSION SUITESPARSE__VERCODE(3,3,0)
 #if !defined (SUITESPARSE__VERSION) || \
-    (SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,10,2))   /* FIXME */
-#error "SPEX 3.3.0 requires SuiteSparse_config FIXME or later"
+    (SUITESPARSE__VERSION < SUITESPARSE__VERCODE(7,11,0))
+#error "SPEX 3.3.0 requires SuiteSparse_config 7.11.0 or later"
 #endif
 
 #if defined ( __cplusplus )
