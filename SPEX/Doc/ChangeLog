@@ -1,10 +1,17 @@
 FIXME, 2025: v3.4.0
 
-    * Cholesky update: with rank-1 modifications
+    * SPEX_Symmetric_Rank1 added: Cholesky/LDL rank-1 update/downdate
 
 FIXME, 2025: v3.3.0
 
-    * LU update: with column replacement
+    * SPEX_LU_ColRep added: LU update with column replacement
+    * code reorg: renamed SPEX_Cholesky folder to SPEX_Symmetric
+
+Feb 20, 2025: version 3.2.3
+
+    * minor updates: FindGMP.cmake and FindMPFR.cmake revised, to use
+        pkg_config if available.  Minor changes to github CI.
+        Fixed np.Inf for python.
 
 Aug 20, 2024: version 3.2.1
 

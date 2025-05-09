@@ -178,7 +178,7 @@ DEMO_SRC = \
     ../Demo/Utilities/spex_demo_tripread.c
 
 #-------------------------------------------------------------------------------
-# link and compile each .c file in SPEX_Cholesky/Source
+# link and compile each .c file in SPEX_Symmetric/Source
 
 OBJ_Cholesky = \
     SPEX_cholesky_analyze.o \
@@ -210,27 +210,27 @@ OBJ_Cholesky = \
     SPEX_ldl_solve.o \
     SPEX_ldl_backslash.o \
 
-$(OBJ_Cholesky): ../Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
+$(OBJ_Cholesky): ../Include/SPEX.h ../SPEX_Symmetric/Source/spex_cholesky_internal.h
 
 .PRECIOUS: SPEX_cholesky_%.c spex_symmetric_%.c SPEX_ldl_%.c
 
 SPEX_cholesky_%.c:
-	- ln -s ../SPEX_Cholesky/Source/$@
+	- ln -s ../SPEX_Symmetric/Source/$@
 
 spex_symmetric_%.c:
-	- ln -s ../SPEX_Cholesky/Source/$@
+	- ln -s ../SPEX_Symmetric/Source/$@
 
 SPEX_ldl_%.c:
-	- ln -s ../SPEX_Cholesky/Source/$@
+	- ln -s ../SPEX_Symmetric/Source/$@
 
 #chol_demos.c:
-#	- ln -s ../SPEX_Cholesky/Demo/$@
+#	- ln -s ../SPEX_Symmetric/Demo/$@
 
 #-------------------------------------------------------------------------------
 # link and compile each .c file in the update/downdate methods
 
 OBJ_Chol_Update = \
-    SPEX_update_cholesky_rank1.o
+    SPEX_update_symmetric_rank1.o
 
 OBJ_Update_Util = \
     spex_update_backward_sub.o \
@@ -258,8 +258,8 @@ $(OBJ_Update): ../Include/SPEX.h ../SPEX_Update_Utilities/Source/spex_update_int
 
 .PRECIOUS: SPEX_update_%.c spex_update_%.c
 
-SPEX_update_cholesky_rank1.c:
-	- ln -s ../SPEX_Cholesky_Rank1/Source/$@
+SPEX_update_symmetric_rank1.c:
+	- ln -s ../SPEX_Symmetric_Rank1/Source/$@
 
 spex_update_backward_sub.c:
 	- ln -s ../SPEX_Update_Utilities/Source/$@
@@ -351,7 +351,7 @@ runtests4luu: all
 	- ./tcov_for_update 0 0 26 > test_for_update2.out
 	- ./tcov_for_update 1 6 > test_for_update3.out
 
-# only run test for SPEX_Cholesky
+# only run test for SPEX_Symmetric
 runtests4chol: all
 	./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
 
@@ -384,7 +384,7 @@ vtests4luu: all
 vtest2: all
 	$(V) ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
 
-# run test for SPEX_Cholesky with valgrind
+# run test for SPEX_Symmetric with valgrind
 vtests4chol: all
 	$(V) ./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
 

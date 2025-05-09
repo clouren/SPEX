@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Demo/spex_demo_cholesky_extended: example of extended call of SPEX_Cholesky
+// Demo/spex_demo_cholesky_extended: example of extended call of SPEX Cholesky
 //------------------------------------------------------------------------------
 
 // SPEX: (c) 2022-2025, Christopher Lourenco, Jinhao Chen,

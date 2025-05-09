@@ -749,7 +749,7 @@ int main ( int argc, char *argv[])
                             option));
                         if (pretend_to_fail) {break;}
 
-                        info = SPEX_update_cholesky_rank1(F, vk, sigma, option);
+                        info = SPEX_update_symmetric_rank1(F, vk, sigma, option);
                     }
 
                     if (info == SPEX_SINGULAR)
@@ -939,9 +939,9 @@ int main ( int argc, char *argv[])
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_update_cholesky_rank1
+                    // fail SPEX_update_symmetric_rank1
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_update_cholesky_rank1(F, vk, 0,
+                    TEST_CHECK_FAILURE(SPEX_update_symmetric_rank1(F, vk, 0,
                         option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 
@@ -1205,9 +1205,9 @@ int main ( int argc, char *argv[])
                     if (pretend_to_fail) {continue;}
 
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    // fail SPEX_update_cholesky_rank1
+                    // fail SPEX_update_symmetric_rank1
                     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-                    TEST_CHECK_FAILURE(SPEX_update_cholesky_rank1(
+                    TEST_CHECK_FAILURE(SPEX_update_symmetric_rank1(
                         NULL, NULL, 1, option), SPEX_INCORRECT_INPUT);
                     if (pretend_to_fail) {continue;}
 

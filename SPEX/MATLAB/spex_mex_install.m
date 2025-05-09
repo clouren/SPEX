@@ -50,8 +50,8 @@ for k = 1:m
     src = [src, tmp];
 end
 
-path = '../SPEX_Cholesky/Source/';
-files = dir('../SPEX_Cholesky/Source/*.c');
+path = '../SPEX_Symmetric/Source/';
+files = dir('../SPEX_Symmetric/Source/*.c');
 m = length(files);
 for k = 1:m
     tmp = [' ', path, files(k).name];

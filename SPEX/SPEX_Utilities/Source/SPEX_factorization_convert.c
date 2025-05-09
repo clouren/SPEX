@@ -10,15 +10,16 @@
 
 //------------------------------------------------------------------------------
 
-// The L and U factorization from SPEX_LU or the L from SPEX_Cholesky are
-// all in SPEX_CSC format, and their columns and rows are permuted to be the
-// same as the permuted matrix A(P,Q), and thus A(P,Q)=LD^(-1)U. However, all
-// Update functions requires A=LD^(-1)U with L and/or U in SPEX_DYNAMIC_CSC
-// format. This is the function to perform the in-place coversion for L and U
-// so that it meet the requirement for Update function and vice versa.  If
-// updatable == false, the returned factorization will be non-updatable with
-// MPZ entries and CSC kind. Otherwise (updatable == true), the returned
-// factorization will be updatable with MPZ entries and DYNAMIC_CSC kind.
+// The L and U factorization from SPEX_LU or the L from SPEX_Symmetric are all
+// in SPEX_CSC format, and their columns and rows are permuted to be the same
+// as the permuted matrix A(P,Q), and thus A(P,Q)=LD^(-1)U. However, all Update
+// functions requires A=LD^(-1)U with L and/or U in SPEX_DYNAMIC_CSC format.
+// This is the function to perform the in-place coversion for L and U so that
+// it meet the requirement for Update function and vice versa.  If
+// make_updatable == false, the returned factorization will be non-updatable
+// with MPZ entries and CSC kind. Otherwise (make_updatable == true), the
+// returned factorization will be updatable with MPZ entries and DYNAMIC_CSC
+// kind.
 //
 // To help understand the process of the conversion, the steps to obtain a deep
 // copy of converted factorization is provided below, which is slightly
@@ -48,8 +49,6 @@
 // The conversion is done in place.  In case of any error, the returned
 // factorization should be considered as undefined.
 
-// FIXME: does this work if L is from SPEX_ldl_factorize?
-
 #define SPEX_FREE_ALL                \
 {                                    \
     SPEX_FREE(rowcount);             \
@@ -71,7 +70,7 @@
 SPEX_info SPEX_factorization_convert
 (
     SPEX_factorization F,       // The factorization to be converted
-    bool updatable,             // if true: make F updatable
+    bool make_updatable,        // if true: make F updatable
                                 // if false: make non-updatable
     const SPEX_options option   // Command options
 )
@@ -84,11 +83,18 @@ SPEX_info SPEX_factorization_convert
     SPEX_info info = spex_factorization_basic_check (F);
     if (info != SPEX_OK) return (info);
 
+/* FIXME: for v3.4.0: */
+    if (!(F->kind == SPEX_LU_FACTORIZATION ||
+          F->kind == SPEX_CHOLESKY_FACTORIZATION ||
+          F->kind == SPEX_LDL_FACTORIZATION)) return (SPEX_INCORRECT_INPUT) ;
+/* FIXME: for v3.3.0: */
+//  if (!(F->kind == SPEX_LU_FACTORIZATION)) return (SPEX_INCORRECT_INPUT) ;
+
     //--------------------------------------------------------------------------
     // quick return
     //--------------------------------------------------------------------------
 
-    if (updatable == F->updatable)
+    if (make_updatable == F->updatable)
     {
         // nothing to do
         return SPEX_OK ;
@@ -105,12 +111,12 @@ SPEX_info SPEX_factorization_convert
     int64_t *rowcount = NULL, *Mp = NULL, *Mi = NULL;
 
     // update the updatable flag
-    F->updatable = updatable;
+    F->updatable = make_updatable;
 
     //--------------------------------------------------------------------------
     // obtain/update Qinv_perm for updatable LU factorization
     //--------------------------------------------------------------------------
-    if (F->kind == SPEX_LU_FACTORIZATION && updatable)
+    if (F->kind == SPEX_LU_FACTORIZATION && make_updatable)
     {
         // Although Qinv_perm is NULL when F is created by factorizing matrix,
         // where F is initially not updatable, Qinv_perm is then created when
@@ -140,31 +146,31 @@ SPEX_info SPEX_factorization_convert
     // The following converts either F->L or F->U between CSC MPZ
     // matrix and DYNAMIC_CSC MPZ matrix.
 
-    // if updatable == true: This function converts F->L from CSC MPZ matrix to
-    // Dynamic_CSC MPZ matrix in an updatable format, which means that rows of
-    // L will be properly permuted with F->P_perm and the first entry of each
-    // column of L will be the corresponding diagonal.  If F is an LU
-    // factorization, then F->U will be also converted from CSC MPZ matrix to
-    // Dynamic_CSC MPZ matrix in an updatable format, which means that U will
-    // be firstly transposed to UT, and then the rows of UT will be properly
-    // permuted  with F->Q_perm, and the first entry of each column of UT will
-    // be the corresponding diagonal.
+    // if make_updatable == true: This function converts F->L from CSC MPZ
+    // matrix to Dynamic_CSC MPZ matrix in an updatable format, which means
+    // that rows of L will be properly permuted with F->P_perm and the first
+    // entry of each column of L will be the corresponding diagonal.  If F is
+    // an LU factorization, then F->U will be also converted from CSC MPZ
+    // matrix to Dynamic_CSC MPZ matrix in an updatable format, which means
+    // that U will be firstly transposed to UT, and then the rows of UT will be
+    // properly permuted  with F->Q_perm, and the first entry of each column of
+    // UT will be the corresponding diagonal.
 
-    // if updatable == false: This function converts F->L from Dynamic_CSC MPZ
-    // matrix to CSC MPZ matrix in a non-updatable format, which means that the
-    // permutation of the rows of L will be reset with F->Pinv_perm.  If F is
-    // an LU factorization, F->U is also converted from Dynamic_CSC MPZ matrix
-    // to CSC MPZ matrix in a non-updatable format, which means that U will be
-    // firstly transposed to UT, and then the permutation of the rows of UT
-    // will be reset with F->Qinv_perm.
+    // if make_updatable == false: This function converts F->L from Dynamic_CSC
+    // MPZ matrix to CSC MPZ matrix in a non-updatable format, which means that
+    // the permutation of the rows of L will be reset with F->Pinv_perm.  If F
+    // is an LU factorization, F->U is also converted from Dynamic_CSC MPZ
+    // matrix to CSC MPZ matrix in a non-updatable format, which means that U
+    // will be firstly transposed to UT, and then the permutation of the rows
+    // of UT will be reset with F->Qinv_perm.
 
     int64_t *perm;
 
-    if (updatable)
+    if (make_updatable)
     {
 
         //----------------------------------------------------------------------
-        // convert a non-updatable LU or Cholesky factorization to updatable
+        // convert non-updatable LU, Cholesky, or LDL factorization to updatable
         //----------------------------------------------------------------------
 
         //----------------------------------------------------------------------
@@ -310,7 +316,7 @@ SPEX_info SPEX_factorization_convert
     {
 
         //----------------------------------------------------------------------
-        // convert a updatable LU or Cholesky factorization to non-updatable
+        // convert updatable LU, Cholesky, or LDL factorization to non-updatable
         //----------------------------------------------------------------------
 
         int sgn;

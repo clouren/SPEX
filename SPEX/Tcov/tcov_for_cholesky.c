@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// SPEX/Tcov/tcov_for_cholesky.c: test coverage for SPEX_Cholesky
+// SPEX/Tcov/tcov_for_cholesky.c: test coverage for SPEX_Symmetric
 // ----------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2025, Christopher Lourenco, Jinhao Chen,

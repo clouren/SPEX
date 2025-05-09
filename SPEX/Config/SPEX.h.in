@@ -157,7 +157,7 @@ typedef enum
     SPEX_ZERODIAG = -7,           // The diagonal element is zero meaning that
                                   // an LDL factorization is not possible
     SPEX_UNSYMMETRIC = -8,        // Matrix is not symmetric
-    SPEX_INCONSISTENT = -9        // for QR factorization (FUTURE)
+    SPEX_INCONSISTENT = -9,       // for QR factorization (FUTURE)
 }
 SPEX_info ;
 
@@ -653,7 +653,7 @@ typedef enum
     SPEX_LU_FACTORIZATION = 0,            // LU factorization
     SPEX_CHOLESKY_FACTORIZATION = 1,      // Cholesky factorization
     SPEX_LDL_FACTORIZATION = 2,           // LDL factorization 
-    SPEX_QR_FACTORIZATION = 3             // QR factorization (FUTURE)    
+    SPEX_QR_FACTORIZATION = 3             // QR factorization (FUTURE)
 }
 SPEX_factorization_kind ;
 
@@ -760,7 +760,7 @@ SPEX_info SPEX_symbolic_analysis_free
 //
 // To update the factorization due to a simple change to original matrix A
 // (e.g., single column replacement or rank-1 update/downdate), user can call
-// the corresponding SPEX_update_lu_colrep or SPEX_update_cholesky_rank1.
+// the corresponding SPEX_update_lu_colrep or SPEX_update_symmetric_rank1.
 
 // To check if the factorization is correct and/or print the factorization, call
 // SPEX_factorization_check.
@@ -770,14 +770,12 @@ SPEX_info SPEX_symbolic_analysis_free
 typedef struct
 {
 
-// FIXME: if Chol rank1 update/downdate occurs, make it LDL
-
     SPEX_factorization_kind kind;         // LU, Cholesky, LDL, QR factorization
 
     bool updatable;                       // flag to denote if the factorization
-                                          // is in the updatable format
-
-// FIXME: if updatable, then kind is only LU or LDL.
+                                          // is in the updatable format.  Only
+                                          // LU, Cholesky, and LDL can be
+                                          // in updatable format.
 
     mpq_t scale_for_A;                    // the scale of the target matrix
 
@@ -854,14 +852,11 @@ SPEX_info SPEX_factorization_check
 // Function for performing in-place conversion between updatable and
 // non-updatable factorization.
 
-// FIXME: fix this:
-// For now, it only works for LU or Cholesky
-// factorization (FIXME not LDL?).
-
 //------------------------------------------------------------------------------
-// For LU or Cholesky factorization, if user wishes to perform factorization
-// update, then it must be in updatable format (i.e., F->updatable == true).
-// This requires all the following conditions to be met.
+// For LU, LDL, or Cholesky factorization, if user wishes to perform
+// factorization update, then it must be in updatable format (i.e.,
+// F->updatable == true).  This requires all the following conditions to be
+// met.
 //
 // 1. Both L and U are stored as SPEX_DYNAMIC_CSC. Notably, U in the updatable
 //    factorization is actually the transpose of U (or equivalently, U is stored
@@ -901,7 +896,7 @@ SPEX_info SPEX_factorization_check
 SPEX_info SPEX_factorization_convert
 (
     SPEX_factorization F,       // The factorization to be converted
-    bool updatable,             // if true: make F updatable
+    bool make_updatable,        // if true: make F updatable
                                 // if false: make non-updatable
     const SPEX_options option
 ) ;
@@ -1315,7 +1310,7 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
 //              https://gmplib.org/
 //              http://www.mpfr.org/
 //
-//   SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Cholesky.
+//   SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Symmetric.
 //   The easiest way ensure these dependencies are met is to only access this
 //   Module through the SPEX repository.
 //
@@ -1450,7 +1445,7 @@ SPEX_info SPEX_cholesky_solve
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//-----------------------Primary SPEX LDL routines-------------------------
+//-----------------------Primary SPEX Symmetric routines------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -1474,7 +1469,7 @@ SPEX_info SPEX_cholesky_solve
 //              https://gmplib.org/
 //              http://www.mpfr.org/
 //
-//  SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Cholesky.
+//  SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Symmetric.
 //  The easiest way ensure these dependencies are met is to only access this
 //  Module through the SPEX repository.
 //
@@ -1626,33 +1621,33 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
 ) ;
 
 //------------------------------------------------------------------------------
-// Rank-1 Cholesky update/downdate
+// Symmetric Rank-1 update/downdate for Cholesky and LDL factorizations
 //------------------------------------------------------------------------------
 
-// This function performs rank-1 Cholesky update/downdate. The input
-// factorization needs to be updatable with L being SPEX_DYNAMIC_CSC MPZ
-// matrix. Otherwise (if F is non-updatable upon input), this function calls
-// SPEX_factorization_convert to make F updatable, which requires that L in the
-// factorization must be non-shallow SPEX_CSC MPZ matrix. The output
-// factorization will always be updatable.  Since the factorization is modified
-// during the update process, the returned F should be considered as undefined
-// if this function fails for any reason.
+// This function performs symmetric rank-1 update/downdate of a Cholesky or LDL
+// factorization. The input factorization needs to be updatable with L being
+// SPEX_DYNAMIC_CSC MPZ matrix. Otherwise (if F is non-updatable upon input),
+// this function calls SPEX_factorization_convert to make F updatable, which
+// requires that L in the factorization must be non-shallow SPEX_CSC MPZ
+// matrix. The output factorization will always be updatable.  Since the
+// factorization is modified during the update process, the returned F should
+// be considered as undefined if this function fails for any reason.
 
 // The matrix w is modified during the update. If the updated A is needed,
 // user can compute A = A + sigma*w*w' *BEFORE* using this function (since w
 // will be modified by this method).
 
-// FIXME: describe how to create w n-by-1 matrix for update/downdate.
-// FIXME: rename to SPEX_update_ldl_rank1
 // FIXME: remove for v3.4.0
+// FIXME: SPEX_NOTSPD if Chol gets neg diagonal, or if if LDL gets zero diag
 
-SPEX_info SPEX_update_cholesky_rank1
+SPEX_info SPEX_update_symmetric_rank1
 (
-    SPEX_factorization F,   // The SPEX Cholesky factorization of A, including
-                            // L, rhos, P and Pinv. This factorization will be
-                            // modified during the update process. Therefore,
-                            // if this function fails for any reason, the
-                            // returned F should be considered as undefined.
+    SPEX_factorization F,   // The SPEX Cholesky or LDL factorization of A,
+                            // including L, rhos, P and Pinv. This
+                            // factorization will be modified during the update
+                            // process. Therefore, if this function fails for
+                            // any reason, the returned F should be considered
+                            // as undefined.
     SPEX_matrix w,          // a n-by-1 dynamic_CSC matrix that contains the
                             // vector to modify the original matrix A, the
                             // resulting A is A+sigma*w*w^T. A->scale = w->scale
@@ -1742,7 +1737,7 @@ SPEX_info SPEX_backslash
     const SPEX_options option
 ) ;
 
-// FIXME: add these:
+// FIXME: add these: SPEX_solve and SPEX_tsolve
 
 /*
 

@@ -102,13 +102,15 @@ Modules, each in their own subfolder of the SPEX package:
     asymptotically efficient. Refer to Chapter \ref{ch:LeftLU} for
     further details.
 
-    \item \verb'SPEX_Cholesky:' Sparse exact left-looking and up-looking
+    \item \verb'SPEX_Symmetric:' Sparse exact left-looking and up-looking
     factorizations to solve the symmetric with nonzero leading principle minors
-    linear system $A \mathbf{x} = \mathbf{b}$. The solution time is
-    proportional to the arithmetic work in the bit-complexity model; this is an
-    asymptotically efficient complexity bound. The methods can perform either a
-    Cholesky or LDL factorization depending on the signs of the diagonal
-    elements. Refer to Chapter \ref{ch:Chol} for further details.
+    linear system $A \mathbf{x} = \mathbf{b}$ (with an LDL factorization), or
+    for symmetric positive definitive matrices (with a Cholesky factorization).
+    The solution time is proportional to the arithmetic work in the
+    bit-complexity model; this is an asymptotically efficient complexity bound.
+    The methods can perform either a Cholesky or LDL factorization depending on
+    the signs of the diagonal elements. Refer to Chapter \ref{ch:Chol} for
+    further details.
 
     \item \verb'SPEX_Backslash:' Routines to exactly solve the system $A
     \mathbf{x} = \mathbf{b}$ using either LU or LDL factorization. This is the
@@ -120,9 +122,9 @@ Modules, each in their own subfolder of the SPEX package:
     for further details.
 
     % FIXME: this is for v3.4.0; remove the following for v3.3.0:
-    \item \verb'SPEX_Cholesky_Rank1:' Sparse exact factorization update of a
+    \item \verb'SPEX_Symmetric_Rank1:' Sparse exact factorization update of a
     Cholesky or LDL factorization after a rank-1 modification
-    (update/downdate).  Refer to Chapter \ref{ch:Update_LDL} for further
+    (update/downdate).  Refer to Chapter \ref{ch:Update_Symmetric} for further
     details.
 
     \item \verb'SPEX_Update_Utilities:' Solving a linear system after updating
@@ -625,7 +627,7 @@ used for SPEX dynamic CSC matrices.
 It is used when calling the factorization update functions in SPEX
 % FIXME: v3.4.0:
 to create \verb|w| for $A'=A+\sigma ww^T$ in a rank-1 update/downdate
-of an LDL factorization,
+of a Cholesky or LDL factorization,
 %%%
 to construct the vector \verb|vk| to revise an LU factorization, or to modify
 the original matrix A by changing a single column for an LU factorization.
@@ -1130,7 +1132,7 @@ algorithms
 % FIXME: for v3.3.0
 % (see Chapter~\ref{ch:Update_LU}).
 % FIXME: for v3.4.0:
-(see Chapter~\ref{ch:Update_LU} and Chapter~\ref{ch:Update_LDL}).
+(see Chapter~\ref{ch:Update_LU} and Chapter~\ref{ch:Update_Symmetric}).
 %%%
 To free this data structure, the function \verb|SPEX_factorization_free| is
 used and discussed further in section \ref{ss:spex_factorization_free}, and
@@ -3625,25 +3627,24 @@ On output, \verb|A->v[k]| and \verb|vk->v[0]| are simply swapped.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FIXME: remove this LDL Update chapter for v3.3.0 [
+% FIXME: remove this Symmetric Update chapter for v3.3.0 [
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{SPEX LDL Update Module}\vspace{-0.75in}
-\label{ch:Update_LDL}
+\chapter{SPEX Symmetric Update Module}\vspace{-0.75in}
+\label{ch:Update_Symmetric}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %-------------------------------------------------------------------------------
-\section{SPEX LDL Update Module Overview}
-\label{s:Update_LDL:intro}
+\section{SPEX Symmetric Update Module Overview}
+\label{s:Update_Symmetric:intro}
 %-------------------------------------------------------------------------------
 
-SPEX LDL Update is a SPEX Module designed to exactly update an SPEX Cholesky or
-LDL factorization for the sparse matrix $A$ when a low-rank modification is
-performed on $A$, as a symmetric rank-1 update/downdate of the form
-$A + \sigma w w^T$.
-The theoretical basis for this Module is to be submitted as the
-following paper: J. Chen, T. A.  Davis, E.  Moreno-Centeno, C. Lourenco,
-``Sparse Exact Rank-1 Cholesky Update,'' (in preparation).
+SPEX Symmetric Update is a SPEX Module designed to exactly update an SPEX
+Cholesky or LDL factorization for the sparse matrix $A$ when a low-rank
+modification is performed on $A$, as a symmetric rank-1 update/downdate of the
+form $A + \sigma w w^T$.  The theoretical basis for this Module is to be
+submitted as the following paper: J. Chen, T. A.  Davis, E.  Moreno-Centeno, C.
+Lourenco, ``Sparse Exact Rank-1 Cholesky Update,'' (in preparation).
 
 The input to the method is the exact LDL or Cholesky factorization of a
 symmetric sparse matrix $A$, and a single sparse column vector $w$.  On output,
@@ -3657,7 +3658,7 @@ provided by SPEX.
 
 \vspace{0.1in}
 
-\textbf{Copyright:} The copyright of the SPEX LDL Update Module is held by
+\textbf{Copyright:} The copyright of the SPEX Symmetric Update Module is held by
 Jinhao Chen, Christopher Lourenco, Erick Moreno-Centeno, and Timothy A. Davis.
 
 \noindent \textbf{Contact Info:} Contact Jinhao Chen
@@ -3675,24 +3676,25 @@ alternative licenses, contact the authors.
 
 %-------------------------------------------------------------------------------
 \newpage
-\section{SPEX LDL Update Function}
+\section{SPEX Symmetric Update Function (LDL or Cholesky)}
 %-------------------------------------------------------------------------------
 
 %-------------------------------------------------------------------------------
-\subsection{\texttt{SPEX\_update\_cholesky\_rank1}: rank-1 Cholesky update/downdate}
-\label{ss:SPEX_update_cholesky_rank1}
+\subsection{\texttt{SPEX\_update\_symmetric\_rank1}: rank-1 Cholesky/LDL update/downdate}
+\label{ss:SPEX_update_symmetric_rank1}
 %-------------------------------------------------------------------------------
 
 \begin{mdframed}[userdefinedwidth=\textwidth]
 {\footnotesize
 \begin{verbatim}
-SPEX_info SPEX_update_cholesky_rank1
+SPEX_info SPEX_update_symmetric_rank1
 (
-    SPEX_factorization F,   // The SPEX Cholesky factorization of A, including
-                            // L, rhos, P and Pinv. This factorization will be
-                            // modified during the update process. Therefore,
-                            // if this function fails for any reason, the
-                            // returned F should be considered as undefined.
+    SPEX_factorization F,   // The SPEX Cholesky or LDL factorization of A,
+                            // including L, rhos, P and Pinv. This
+                            // factorization will be modified during the update
+                            // process. Therefore, if this function fails for
+                            // any reason, the returned F should be considered
+                            // as undefined.
     SPEX_matrix w,          // a n-by-1 dynamic_CSC matrix that contains the
                             // vector to modify the original matrix A, the
                             // resulting A is A+sigma*w*w^T. A->scale = w->scale
@@ -3706,14 +3708,14 @@ SPEX_info SPEX_update_cholesky_rank1
 \end{verbatim}
 } \end{mdframed}
 
-\verb|SPEX_update_cholesky_rank1| performs the rank-1 Cholesky update/downdate
-for a $n$-by-$n$ sparse matrix $A$. On input, \verb|F| contains the valid
-Cholesky factorization to be updated that consists of \verb|L|, \verb|rhos|,
-\verb|P_perm| and \verb|Pinv_perm|; \verb|w| must be a $n$-by-$1$  matrix of
-\verb|SPEX_DYNAMIC_CSC| kind; \verb|sigma| is a nonzero scalar, where
-\verb|sigma > 0| indicates update and \verb|sigma < 0| indicates downdate; and
-\verb|option| contains parameters (default settings are used if \verb|option|
-is input as \verb|NULL|).
+\verb|SPEX_update_symmetric_rank1| performs the rank-1 update/downdate of the
+Cholesky or LDL factorization of a $n$-by-$n$ sparse matrix $A$. On input,
+\verb|F| contains the valid Cholesky or LDL factorization to be updated that
+consists of \verb|L|, \verb|rhos|, \verb|P_perm| and \verb|Pinv_perm|; \verb|w|
+must be a $n$-by-$1$  matrix of \verb|SPEX_DYNAMIC_CSC| kind; \verb|sigma| is a
+nonzero scalar, where \verb|sigma > 0| indicates update and \verb|sigma < 0|
+indicates downdate; and \verb|option| contains parameters (default settings are
+used if \verb|option| is input as \verb|NULL|).
 
 This function requires that the rows of \verb|w| are in the same order as that
 of $A$ (and \verb|F->L| if \verb|F| is updatable). In addition, \verb|w| and
@@ -3733,13 +3735,19 @@ function fails for any reason, the appropriate error code is returned and
 \verb|F| is undefined on output (since the modification for the factorization
 is done in place during the update process).
 
+If any diagonal entry of a Cholesky factorization becomes zero or negative, the
+\verb|SPEX_NOTSPD| error is returned.  If any diagonal entry of an LDL
+factorization becomes zero, the \verb|SPEX_ZERODIAG| error is returned.  In
+both cases, the factorization \verb|F| is undefined on output.  It can be
+safely freed with \verb|SPEX_factorization_free|.
+
 This function does not require/use/modify the original matrix $A$. Therefore,
 if the updated matrix $\bar{A}$ is needed, users should implement it by their
 own {\bf BEFORE} using this function (since \verb|w| will be modified by this
 function).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ] FIXME: end of SPEX Cholesky Rank1 chapter for v3.4.0
+% ] FIXME: end of SPEX Symmetric Rank1 chapter for v3.4.0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3762,7 +3770,6 @@ solve while keeping the factorization in its updatable form.
 
 Both a normal solve of $A \mathbf{x} = \mathbf{b}$ and the transposed solve of
 $A^T \mathbf{x} = \mathbf{b}$ are provided, using the updatable factorizations.
-
 
 \vspace{0.1in}
 
@@ -4259,7 +4266,7 @@ only if the exact solution can be held in \verb|double| without modification.
 The solution \verb|x| may also be returned as a list of strings; see Section
 \ref{s:Python:option} for details.
 
-FIXME: where is ldl for Python? 
+FIXME: where is ldl for Python?
 
 
 %-------------------------------------------------------------------------------

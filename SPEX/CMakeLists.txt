@@ -13,7 +13,7 @@
 
 cmake_minimum_required ( VERSION 3.22 )
 
-set ( SPEX_DATE "May 30, 2025" ) # FIXME
+set ( SPEX_DATE "May FIXME, 2025" )
 set ( SPEX_VERSION_MAJOR 3 CACHE STRING "" FORCE )
 set ( SPEX_VERSION_MINOR 3 CACHE STRING "" FORCE )  # FIXME: v3.3.0 and v3.4.0
 set ( SPEX_VERSION_SUB   0 CACHE STRING "" FORCE )
@@ -112,9 +112,11 @@ configure_file ( "Config/SPEX_version.tex.in"
 #-------------------------------------------------------------------------------
 
 include_directories ( Include
-    SPEX_Backslash/Source SPEX_Cholesky/Source SPEX_LU/Source
+    SPEX_Backslash/Source
+    SPEX_Symmetric/Source
+    SPEX_LU/Source
     SPEX_Utilities/Source
-    SPEX_Cholesky_Update/Source
+    SPEX_Symmetric_Update/Source
     SPEX_LU_Update/Source
     SPEX_Update_Utilities/Source
     ${SUITESPARSE_CONFIG_INCLUDE_DIR}

@@ -170,7 +170,7 @@ jobs:
           cd ${GITHUB_WORKSPACE}/build
           cmake --build .
           echo "::endgroup::"
-          # FIXME: How to run the demos without Makefile?
+          # fixme: How to run the demos without Makefile?
 
       - name: ccache status
         continue-on-error: true

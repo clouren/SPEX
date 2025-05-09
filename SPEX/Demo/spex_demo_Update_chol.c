@@ -113,7 +113,7 @@ int main( int argc, char *argv[] )
     start = SUITESPARSE_TIME;
     // compute the factorization of A = A + sigma*w*w^T by updating F
     int64_t sigma = 1; // sigma > 0 for update and sigma < 0 for downdate
-    SPEX_TRY (SPEX_update_cholesky_rank1(F, w, sigma, option));
+    SPEX_TRY (SPEX_update_symmetric_rank1(F, w, sigma, option));
 
     end = SUITESPARSE_TIME;
 

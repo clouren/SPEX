@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// SPEX/Tcov/tcov_for_lu2.c: test coverage for SPEX_Cholesky
+// SPEX/Tcov/tcov_for_lu2.c: test coverage for SPEX_LU
 // ----------------------------------------------------------------------------
 
 // SPEX: (c) 2019-2025, Christopher Lourenco, Jinhao Chen,
