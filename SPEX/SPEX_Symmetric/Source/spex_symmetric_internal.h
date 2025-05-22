@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// SPEX_Symmetric/spex_cholesky_internal.h: include file for internal use
+// SPEX_Symmetric/spex_symmetric_internal.h: include file for internal use
 //------------------------------------------------------------------------------
 
 // SPEX_Symmetric: (c) 2020-2025, Christopher Lourenco, Jinhao Chen,
@@ -221,9 +221,13 @@ SPEX_info spex_symmetric_left_triangular_solve
 (
     // Output
     int64_t *top_output,     // On output: the beginning of nonzero pattern of
-                             // L(:,k). The nonzero pattern is contained in
-                             // xi[top_output...n-1]
+                             // kth column of L+L'.  The nonzero pattern is
+                             // contained in xi[top_output...n-1]
                              // On input: undefined
+    int64_t *col_top_output, // On output: the beginning of nonozero pattern of
+                             // of kth column L, including the diagonal.
+                             // The nonzero pattern is contained in
+                             // xi [col_top_output...n-1]
     SPEX_matrix x,           // On output: Solution of LD x = A(:,k) ==> kth row
                              // of L but really, the ONLY valid values of x are
                              // those in x[xi] since x is a working vector its
@@ -236,7 +240,7 @@ SPEX_info spex_symmetric_left_triangular_solve
     const SPEX_matrix rhos,  // Partial sequence of pivots
     int64_t *h,              // History vector
     const int64_t *parent,   // Elimination tree
-    int64_t *c               // Column pointers of L but they don't point to the
+    int64_t *cp              // Column pointers of L but they don't point to the
                              // top position of each column of L. Instead they
                              // point to the position on each column where the
                              // next value of L will be grabbed, since at

@@ -20,7 +20,7 @@
     SPEX_FREE(colcount);       \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 #define HEAD(k,j) ( j)
 #define NEXT(J)   (-1)

@@ -20,7 +20,7 @@
     SPEX_FREE_WORKSPACE ;       \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: post order a forest */
 

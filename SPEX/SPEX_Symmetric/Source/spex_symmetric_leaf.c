@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: consider A(i,j), node j in ith row subtree and return lca(jprev,j)
    Used to determine Column counts of Cholesky or LDL factor */

@@ -210,7 +210,7 @@ OBJ_Cholesky = \
     SPEX_ldl_solve.o \
     SPEX_ldl_backslash.o \
 
-$(OBJ_Cholesky): ../Include/SPEX.h ../SPEX_Symmetric/Source/spex_cholesky_internal.h
+$(OBJ_Cholesky): ../Include/SPEX.h ../SPEX_Symmetric/Source/spex_symmetric_internal.h
 
 .PRECIOUS: SPEX_cholesky_%.c spex_symmetric_%.c SPEX_ldl_%.c
 

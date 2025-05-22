@@ -11,7 +11,7 @@
 
 #define SPEX_FREE_ALL ;
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve.
  * for uplooking Cholesky or LDL factorization. i.e., (LD) x = A(1:k-1,k).

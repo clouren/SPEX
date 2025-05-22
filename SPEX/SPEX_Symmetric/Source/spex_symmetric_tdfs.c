@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 
 /* Purpose: Depth-first search and postorder of a tree rooted at node j */

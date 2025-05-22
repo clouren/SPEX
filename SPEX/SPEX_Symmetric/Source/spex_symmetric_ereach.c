@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: This function computes the reach of the kth row of A on the
  * elimination tree of A.  On input, k is the iteration of the algorithm,

@@ -21,7 +21,7 @@
     SPEX_matrix_free(&L, NULL);      \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: This function performs a symbolic left-looking factorization.
  * On input, A is the matrix to be factored, parent contains the elimination

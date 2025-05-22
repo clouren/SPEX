@@ -15,7 +15,7 @@
 }
 
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: Compute a symmetric factorization A = LDL'.
  * Only appropriate if A is symmetric with a nonzero diagonal F->kind must be

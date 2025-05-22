@@ -24,7 +24,7 @@
     SPEX_FREE_WORKSPACE             \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: Perform the up-looking Cholesky or LDL factorization.
  * In order to compute the L matrix, it performs n iterations of a sparse REF

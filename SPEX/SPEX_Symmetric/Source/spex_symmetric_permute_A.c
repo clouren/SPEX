@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 #undef  SPEX_FREE_ALL
 #define SPEX_FREE_ALL { SPEX_matrix_free (&PAP, NULL); }

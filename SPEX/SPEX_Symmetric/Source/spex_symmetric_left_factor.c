@@ -24,7 +24,7 @@
     SPEX_FREE_WORKSPACE             \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: Perform the left-looking Cholesky or LDL factorization.
  * In order to compute the L matrix, it performs n iterations of a sparse REF
@@ -101,7 +101,7 @@ SPEX_info spex_symmetric_left_factor
     SPEX_matrix x = NULL ;
 
     // Declare variables
-    int64_t n = A->n, top, i, lnz = 0, jnew, k;
+    int64_t n = A->n, top, col_top, i, lnz = 0, jnew, k;
     int sgn;
     size_t size;
 
@@ -201,8 +201,8 @@ SPEX_info spex_symmetric_left_factor
     for (k = 0; k < n; k++)
     {
         // LDx = A(:,k)
-        SPEX_CHECK(spex_symmetric_left_triangular_solve(&top, x, xi, L, A, k,
-            rhos, h, S->parent, cp));
+        SPEX_CHECK(spex_symmetric_left_triangular_solve(&top, &col_top, x, xi,
+            L, A, k, rhos, h, S->parent, cp));
 
         // Set the pivot element If this element is less than or equal to zero,
         // either no pivot element exists or the matrix is not SPD.
@@ -236,31 +236,31 @@ SPEX_info spex_symmetric_left_factor
                 return SPEX_ZERODIAG;
             }
         }
+
         //----------------------------------------------------------------------
         // Add the nonzeros to the L matrix
         //----------------------------------------------------------------------
 
-        // FIXME: iterate until px < row_top and assert jnew >= k
-        for (int64_t px = top; px < n; px++)
+        for (int64_t px = col_top; px < n; px++)
         {
             // Index of x[i]
             jnew = xi[px];
-            if (jnew >= k)
-            {
-                // Find the size of x[px]
-                size = mpz_sizeinbase(x->x.mpz[jnew],2);
+            ASSERT (jnew >= k) ;
 
-                // GMP manual: Allocated size should be size+2
-                SPEX_MPZ_INIT2(L->x.mpz[lnz], size+2);
+            // Find the size of x[px]
+            size = mpz_sizeinbase(x->x.mpz[jnew],2);
 
-                // Place the x value of this nonzero in row jnew of L
-                SPEX_MPZ_SET(L->x.mpz[lnz],x->x.mpz[jnew]);
+            // GMP manual: Allocated size should be size+2
+            SPEX_MPZ_INIT2(L->x.mpz[lnz], size+2);
 
-                // Increment lnz
-                lnz += 1;
-            }
+            // Place the x value of this nonzero in row jnew of L
+            SPEX_MPZ_SET(L->x.mpz[lnz],x->x.mpz[jnew]);
+
+            // Increment lnz
+            lnz += 1;
         }
     }
+
     // Finalize L->p
     L->p[n] = S->lnz;
 

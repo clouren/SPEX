@@ -20,7 +20,7 @@
     SPEX_matrix_free(&x, NULL);    \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: solve the system A x = b using the Cholesky or LDL factorization.
  *

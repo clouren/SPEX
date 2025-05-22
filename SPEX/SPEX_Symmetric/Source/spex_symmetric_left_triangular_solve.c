@@ -12,7 +12,7 @@
 
 #define SPEX_FREE_ALL ;
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: This function performs the symmetric sparse REF triangular solve.
  * i.e.,(LD) x = A(:,k).
@@ -69,6 +69,10 @@ SPEX_info spex_symmetric_left_triangular_solve
                              // kth column of L+L'.  The nonzero pattern is
                              // contained in xi[top_output...n-1]
                              // On input: undefined
+    int64_t *col_top_output, // On output: the beginning of nonozero pattern of
+                             // of kth column L, including the diagonal.
+                             // The nonzero pattern is contained in
+                             // xi [col_top_output...n-1]
     SPEX_matrix x,           // On output: Solution of LD x = A(:,k) ==> kth row
                              // of L but really, the ONLY valid values of x are
                              // those in x[xi] since x is a working vector its
@@ -95,6 +99,7 @@ SPEX_info spex_symmetric_left_triangular_solve
     // Input checks. All pointers are checked by the callersm these are here to
     // remind us of the correct formats of each matrix
     ASSERT(top_output != NULL);
+    ASSERT(col_top_output != NULL);
     ASSERT (x != NULL);
     ASSERT (xi != NULL);
     ASSERT (L != NULL);
@@ -239,11 +244,14 @@ SPEX_info spex_symmetric_left_triangular_solve
     // determine where x splits into: (kth row of L ; kth column of L)
     //--------------------------------------------------------------------------
 
-    // get the # of entries in kth row of L
+    // get the # of entries in kth row of L; these were formerly at the
+    // bottom of the xi stack but have moved to the top because of the qsort.
     int64_t num_entries_in_kth_row_of_L = n - row_top ;
 
-    // get total # entries in kth row of L AND the kth column of L
-    int64_t total_number_of_entries = n - top ;
+    // total # entries in kth row of L AND the kth column of L is n-top
+
+    // first entry in the kth column of L appears in xi [col_top]
+    int64_t col_top = top + num_entries_in_kth_row_of_L ;
 
     //--------------------------------------------------------------------------
     // apply left-looking "matrix-vector multiply"
@@ -253,10 +261,8 @@ SPEX_info spex_symmetric_left_triangular_solve
     // consider the history update with the rhos vector.
 
     // for each entry in the kth row of L, that is: L(k,1:k-1)
-    int64_t ii ;
-    for (ii = 0 ; ii < num_entries_in_kth_row_of_L ; ii++)
+    for (p = top ; p < col_top ; p++)
     {
-        p = top + ii ;
         j = xi[p];                              // Current nonzero term
         // If x[j] == 0 no work must be done (this zero is due to numerical
         // cancellation, not a structural/symbolic zero)
@@ -357,10 +363,9 @@ SPEX_info spex_symmetric_left_triangular_solve
     //--------------------------------------------------------------------------
 
     // for each entry in the kth column of L, that is: L(k:n,k)
-    for ( ; ii < total_number_of_entries ; ii++)
+    for (p = col_top ; p < n ; p++)
     {
         /* Finalize x[j] */
-        p = top + ii ;
         j = xi[p];                              // Current nonzero term
         // If x[j] == 0 no work must be done (this zero is due to numerical
         // cancellation, not a structural/symbolic zero)
@@ -403,5 +408,6 @@ SPEX_info spex_symmetric_left_triangular_solve
 
     // Output the beginning of nonzero pattern
     (*top_output) = top;
+    (*col_top_output) = col_top;
     return SPEX_OK;
 }

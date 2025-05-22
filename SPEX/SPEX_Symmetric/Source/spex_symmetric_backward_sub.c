@@ -11,7 +11,7 @@
 
 #define SPEX_FREE_ALL ;
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: This solves the system L'x = b for Cholesky or LDL factorization.
  * On input, x contains the scaled solution of L D x = b and L is the REF

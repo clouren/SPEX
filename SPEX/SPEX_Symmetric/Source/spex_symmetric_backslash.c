@@ -48,7 +48,7 @@
     SPEX_matrix_free(&x, NULL);   \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 SPEX_info spex_symmetric_backslash
 (

@@ -21,7 +21,7 @@
     SPEX_FREE_WORKSPACE              \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: perform the symbolic analysis for the SPEX Cholesky or LDL
  * factorization, that is, computing and postordering the elimination tree,

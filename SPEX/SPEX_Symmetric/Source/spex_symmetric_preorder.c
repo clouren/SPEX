@@ -36,7 +36,7 @@
     SPEX_symbolic_analysis_free(&S, option);    \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 SPEX_info spex_symmetric_preorder
 (

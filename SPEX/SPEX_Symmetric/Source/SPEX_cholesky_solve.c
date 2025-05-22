@@ -10,7 +10,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 /* Purpose: This function solves the linear system LDL' x = b.
  *

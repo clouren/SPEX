@@ -20,7 +20,7 @@
     SPEX_FREE(parent);      \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 
 /* Purpose: Compute the elimination tree of A */

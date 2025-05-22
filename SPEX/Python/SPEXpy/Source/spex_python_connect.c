@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 #include "spex_python_connect.h"
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 #define FREE_WORKSPACE                  \
 {                                       \

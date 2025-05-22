@@ -35,7 +35,7 @@
     SPEX_FREE_WORKSPACE          \
 }
 
-#include "spex_cholesky_internal.h"
+#include "spex_symmetric_internal.h"
 
 SPEX_info spex_symmetric_forward_sub
 (
