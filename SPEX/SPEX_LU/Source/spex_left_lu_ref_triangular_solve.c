@@ -156,11 +156,13 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     // search query the value of the diagonal.
     SPEX_MPZ_SET_UI(x_mpz[col], 0);
 
-    // Reset h[i] = -1 for all i in nonzero pattern xi [top..n-1]
-    for (i = top; i < n; i++)
+    // assert that the history vector has already been reset
+    #ifdef SPEX_DEBUG
+    for (i = 0; i < n; i++)
     {
-        h[xi[i]] = -1;
+        ASSERT (h [i] == -1) ;
     }
+    #endif
 
     // Set x = A(:,q(k))
     for (i = A->p[col]; i < A->p[col + 1]; i++)
@@ -315,6 +317,24 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
             }
         }
     }
+
+    //--------------------------------------------------------------------------
+    // Reset the history vector h for the next use of this function
+    //--------------------------------------------------------------------------
+
+    for (i = top; i < n; i++)
+    {
+        h[xi[i]] = -1;
+    }
+
+    // history vector has now been entirely reset
+    #ifdef SPEX_DEBUG
+    for (i = 0; i < n; i++)
+    {
+        ASSERT (h [i] == -1) ;
+    }
+    #endif
+
     // Output the beginning of nonzero pattern
     (*top_output) = top;
     return SPEX_OK;

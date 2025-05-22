@@ -227,11 +227,13 @@ SPEX_info spex_symmetric_left_triangular_solve
     // Sort the nonzero pattern xi using quicksort
     qsort (&xi[top], n-top, sizeof (int64_t), compar) ;
 
-    // Reset the history vector h
-    for (i = top; i < n; i++)
+    // assert that the history vector has already been reset
+    #ifdef SPEX_DEBUG
+    for (i = 0; i < n; i++)
     {
-        h[xi[i]] = -1;
+        ASSERT (h [i] == -1) ;
     }
+    #endif
 
     //--------------------------------------------------------------------------
     // determine where x splits into: (kth row of L ; kth column of L)
@@ -382,20 +384,22 @@ SPEX_info spex_symmetric_left_triangular_solve
         }
     }
 
-#if 0
+    //--------------------------------------------------------------------------
     // Reset the history vector h for the next use of this function
+    //--------------------------------------------------------------------------
+
     for (i = top; i < n; i++)
     {
         h[xi[i]] = -1;
     }
-    // history vector has been reset
+
+    // history vector has now been entirely reset
     #ifdef SPEX_DEBUG
     for (i = 0; i < n; i++)
     {
         ASSERT (h [i] == -1) ;
     }
     #endif
-#endif
 
     // Output the beginning of nonzero pattern
     (*top_output) = top;

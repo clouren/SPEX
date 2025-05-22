@@ -97,8 +97,10 @@ SPEX_info SPEX_update_lu_colrep
     spex_scattered_vector Lk_dense_col = NULL, Uk_dense_row = NULL,
         vk_dense = NULL;
     mpz_t *sd = rhos->x.mpz;
+#if 0
 #ifdef SPEX_DEBUG
     int64_t input_k = k;
+#endif
 #endif
 
     //--------------------------------------------------------------------------

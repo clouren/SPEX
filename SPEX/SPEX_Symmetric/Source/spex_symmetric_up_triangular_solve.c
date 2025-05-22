@@ -136,11 +136,13 @@ SPEX_info spex_symmetric_up_triangular_solve
     // x[k] to account for this extremely rare case.
     SPEX_MPZ_SET_UI(x->x.mpz[k],0);
 
-    // Reset h[i] = -1 for all i in nonzero pattern
-    for (i = top; i < n; i++)
+    // assert that the history vector has already been reset
+    #ifdef SPEX_DEBUG
+    for (i = 0; i < n; i++)
     {
-        h[xi[i]] = -1;
+        ASSERT (h [i] == -1) ;
     }
+    #endif
 
     // Set x = A(:,k)
     // Note: The if is needed since the columns of A are allowed to be unsorted.
@@ -325,6 +327,25 @@ SPEX_info spex_symmetric_up_triangular_solve
                                            rhos->x.mpz[ h[k]]);
         }
     }
+
+    //--------------------------------------------------------------------------
+    // Reset the history vector h for the next use of this function
+    //--------------------------------------------------------------------------
+
+    h[k] = -1 ;
+    for (i = top; i < n; i++)
+    {
+        h[xi[i]] = -1;
+    }
+
+    // history vector has now been entirely reset
+    #ifdef SPEX_DEBUG
+    for (i = 0; i < n; i++)
+    {
+        ASSERT (h [i] == -1) ;
+    }
+    #endif
+
     // Output the top of the nonzero pattern
     (*top_output) = top;
     return SPEX_OK;

@@ -71,6 +71,7 @@ SPEX_info spex_left_lu_forward_sub
 
         for (i = 0; i < x->m; i++)
         {
+            // hx = h[i][k]
             hx = SPEX_2D(h, i, k, int64);
             // If x[i][k] = 0, can skip operations and continue to next i
             SPEX_MPZ_SGN(&sgn, SPEX_2D(x, i, k, mpz));
@@ -130,6 +131,7 @@ SPEX_info spex_left_lu_forward_sub
                     }
                     else
                     {
+                        // hx = h[jnew][k]
                         hx = SPEX_2D(h, jnew, k, int64);
                         // History update if necessary
                         if (hx < i-1)
@@ -162,7 +164,7 @@ SPEX_info spex_left_lu_forward_sub
                                               SPEX_1D(rhos, i-1, mpz));
                         }
                     }
-                    //h[jnew][k] = i;
+                    // h[jnew][k] = i;
                     SPEX_2D(h, jnew, k, int64) = i;
                 }
             }

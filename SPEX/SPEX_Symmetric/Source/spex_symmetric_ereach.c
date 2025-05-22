@@ -52,7 +52,7 @@ SPEX_info spex_symmetric_ereach
 
     // w must be all >= 0 on input
     #ifdef SPEX_DEBUG
-    for (int64_t i = 0 ; i < n ; i++)
+    for (i = 0 ; i < n ; i++)
     {
         ASSERT (w [i] >= 0) ;
     }
@@ -99,7 +99,7 @@ SPEX_info spex_symmetric_ereach
 
     // w has been restored to the orignal values it had on input
     #ifdef SPEX_DEBUG
-    for (int64_t i = 0 ; i < n ; i++)
+    for (i = 0 ; i < n ; i++)
     {
         ASSERT (w [i] >= 0) ;
     }
