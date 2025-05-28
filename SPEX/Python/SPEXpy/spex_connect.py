@@ -21,7 +21,7 @@ def spex_connect( A, b, order, charOut, algorithm ):
     ##--------------------------------------------------------------------------
     ## Load the library with the "C bridge code"
     ##--------------------------------------------------------------------------
-    lib = ctypes.CDLL('../build/libspexpython.so')
+    lib = ctypes.CDLL('../build/libspexpython.so')  # FIXME .so is just Linux
     c_backslash = lib.spex_python
 
     ##--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ def spex_connect( A, b, order, charOut, algorithm ):
     x_v = (ctypes.c_void_p*n)()
 
     ##--------------------------------------------------------------------------
-    ## Solve Ax=b using REF Sparse Cholesky Factorization
+    ## Solve Ax=b using REF Sparse Cholesky Factorization   FIXME
     ##--------------------------------------------------------------------------
     ok=c_backslash(x_v,
                 A.indptr.astype(np.int64), #without the cast it would be int32 and it would not be compatible with the C method

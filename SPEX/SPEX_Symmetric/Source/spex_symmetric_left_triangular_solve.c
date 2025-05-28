@@ -277,82 +277,91 @@ SPEX_info spex_symmetric_left_triangular_solve
         //------------------------------------------------------------------
         // ----------- Iterate accross nonzeros in Lij ---------------------
 
-        // FIXME: start at position cp[j], not L->p[j]
-        for (m = L->p[j]; m < L->p[j+1]; m++)
+        // cp[j] points to the entry L(k,j), in row k
+
+        for (m = cp[j]; m < L->p[j+1]; m++)
         {
             i = L->i[m];            // i value of Lij
-            if (i >= k)
+            #ifdef SPEX_DEBUG
+            if (m == cp [j])
             {
-                /*************** If lij==0 then no update******************/
-                SPEX_MPZ_SGN(&sgn, L->x.mpz[m]);
-                if (sgn == 0) continue;
+                ASSERT (i == k) ;
+            }
+            else
+            {
+                ASSERT (i > k) ;
+            }
+            #endif
 
-                //----------------------------------------------------------
-                /************* lij is nonzero, x[i] is zero****************/
-                // x[i] = 0 then only perform IPGE update subtraction/div
-                //----------------------------------------------------------
-                SPEX_MPZ_SGN(&sgn, x->x.mpz[i]);
-                if (sgn == 0)
+            /*************** If lij==0 then no update******************/
+            SPEX_MPZ_SGN(&sgn, L->x.mpz[m]);
+            if (sgn == 0) continue;
+
+            //----------------------------------------------------------
+            /************* lij is nonzero, x[i] is zero****************/
+            // x[i] = 0 then only perform IPGE update subtraction/div
+            //----------------------------------------------------------
+            SPEX_MPZ_SGN(&sgn, x->x.mpz[i]);
+            if (sgn == 0)
+            {
+                // No previous pivot (because this entry has never been
+                // updated before)
+                if (j < 1)
                 {
-                    // No previous pivot (because this entry has never been
-                    // updated before)
-                    if (j < 1)
-                    {
-                        SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[m],
-                                        x->x.mpz[j]);// x[i] = 0 - lij*x[j]
-                        h[i] = j;                  // Entry is up to date
-                    }
-                    // Previous pivot exists
-                    else
-                    {
-                        SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[m],
-                                        x->x.mpz[j]);// x[i] = 0 - lij*x[j]
-                        SPEX_MPZ_DIVEXACT(x->x.mpz[i],
-                                x->x.mpz[i],
-                                rhos->x.mpz[j-1]);// x[i] = x[i] / rho[j-1]
-                        h[i] = j;                  // Entry is up to date
-                    }
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[m],
+                                    x->x.mpz[j]);// x[i] = 0 - lij*x[j]
+                    h[i] = j;                  // Entry is up to date
                 }
-
-                //----------------------------------------------------------
-                /************ Both lij and x[i] are nonzero****************/
-                // x[i] != 0 --> History & IPGE update on x[i]
-                //----------------------------------------------------------
+                // Previous pivot exists
                 else
                 {
-                    // No previous pivot in this case
-                    if (j < 1)
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[m],
+                                    x->x.mpz[j]);// x[i] = 0 - lij*x[j]
+                    SPEX_MPZ_DIVEXACT(x->x.mpz[i],
+                            x->x.mpz[i],
+                            rhos->x.mpz[j-1]);// x[i] = x[i] / rho[j-1]
+                    h[i] = j;                  // Entry is up to date
+                }
+            }
+
+            //----------------------------------------------------------
+            /************ Both lij and x[i] are nonzero****************/
+            // x[i] != 0 --> History & IPGE update on x[i]
+            //----------------------------------------------------------
+            else
+            {
+                // No previous pivot in this case
+                if (j < 1)
+                {
+                    SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
+                                rhos->x.mpz[0]); // x[i] = x[i]*rho[0]
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
+                                 x->x.mpz[j]);// x[i] = x[i] - lij*xj
+                    h[i] = j;                 // Entry is now up to date
+                }
+                // There is a previous pivot
+                else
+                {
+                    // History update if necessary
+                    if (h[i] < j - 1)
                     {
                         SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
-                                    rhos->x.mpz[0]); // x[i] = x[i]*rho[0]
-                        SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
-                                     x->x.mpz[j]);// x[i] = x[i] - lij*xj
-                        h[i] = j;                 // Entry is now up to date
-                    }
-                    // There is a previous pivot
-                    else
-                    {
-                        // History update if necessary
-                        if (h[i] < j - 1)
+                            rhos->x.mpz[j-1]);// x[i] = x[i] * rho[j-1]
+                        if (h[i] > -1)
                         {
-                            SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
-                                rhos->x.mpz[j-1]);// x[i] = x[i] * rho[j-1]
-                            if (h[i] > -1)
-                            {
-                                SPEX_MPZ_DIVEXACT(x->x.mpz[i],
-                                            x->x.mpz[i],rhos->x.mpz[h[i]]);
-                                                // x[i] = x[i] / rho[h[i]]
-                            }
+                            SPEX_MPZ_DIVEXACT(x->x.mpz[i],
+                                        x->x.mpz[i],rhos->x.mpz[h[i]]);
+                                            // x[i] = x[i] / rho[h[i]]
                         }
-                        SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
-                                    rhos->x.mpz[j]);// x[i] = x[i] * rho[j]
-                        SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
-                                    x->x.mpz[j]);// x[i] = x[i] - lij*xj
-                        SPEX_MPZ_DIVEXACT(x->x.mpz[i],
-                                x->x.mpz[i],
-                                rhos->x.mpz[j-1]);// x[i] = x[i] / rho[j-1]
-                        h[i] = j;                  // Entry is up to date
                     }
+                    SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
+                                rhos->x.mpz[j]);// x[i] = x[i] * rho[j]
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
+                                x->x.mpz[j]);// x[i] = x[i] - lij*xj
+                    SPEX_MPZ_DIVEXACT(x->x.mpz[i],
+                            x->x.mpz[i],
+                            rhos->x.mpz[j-1]);// x[i] = x[i] / rho[j-1]
+                    h[i] = j;                  // Entry is up to date
                 }
             }
         }
