@@ -40,7 +40,7 @@ def cholesky_backslash( A, b, options=Options('double', 'amd')):
         raise SPEX_error(determine_error(-3))
 
     if options.ordering==None:
-        options.default_chol()
+        options.default_symmetric()
 
     ##--------------------------------------------------------------------------
     ## Call SPEX

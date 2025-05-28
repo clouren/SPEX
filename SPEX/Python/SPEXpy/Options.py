@@ -17,7 +17,7 @@ class Options:
     def default_lu(self):
         self.ordering="colamd"
 
-    def default_chol(self):
+    def default_symmetric(self):
         self.ordering="amd"
 
     def order(self):
@@ -26,7 +26,7 @@ class Options:
             order=0
         elif self.ordering=="colamd": ##colamd is the default ordering for Left LU
             order=1
-        elif self.ordering=="amd": ##amd is the default ordering for Cholesky
+        elif self.ordering=="amd": ##amd is the default ordering for Cholesky or LDL
             order=2
         else:
             raise ValueError("Invalid order options")

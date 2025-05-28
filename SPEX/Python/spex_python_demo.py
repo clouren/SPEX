@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/spex_python_demo.py: demo of 3 backslash functions with different input 
+# SPEX/Python/spex_python_demo.py: demo of 4 backslash functions with different input
 #                           matrices
 #-------------------------------------------------------------------------------
 
@@ -38,9 +38,25 @@ A=csc_matrix((data, (row, col)), shape=(3, 3))
 b=np.ones(3,dtype=np.float64)
 
 # Solve
+print("\nTesting Python Cholesky\n")
 x=SPEX.cholesky_backslash(A,b)
 print(x)
+print("\nCholesky success")
+##-------------------------------------------------------------------------
+## LDL
+##------------------------------------------------------------------------
+# Create A and B
+row = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+col = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2])
+data = np.array([-3, 12, -16, 12, 37, -43, -16, -43, 98],dtype=np.float64)
+A=csc_matrix((data, (row, col)), shape=(3, 3))
+b=np.ones(3,dtype=np.float64)
 
+# Solve
+print("\nTesting Python LDL\n")
+x=SPEX.ldl_backslash(A,b)
+print(x)
+print("\nLDL success")
 
 ##--------------------------------------------------------------------------
 ## Left LU
@@ -56,9 +72,11 @@ A=csc_matrix(S2)
 b=np.ones(n,dtype=np.float64)
 
 # Solve
+print("\nTesting Python LU\n")
 options=Options("string")
 x=SPEX.lu_backslash(A,b,options)
 print(x)
+print("\nLU success")
 
 ##--------------------------------------------------------------------------
 ## Backslash
@@ -67,6 +85,8 @@ print(x)
 # Use the previous matrices
 
 # Solve
+print("\nTesting Python Backslash\n")
 x=SPEX.backslash(A,b)
 print(x)
+print("\nBackslash success\n")
 #SPEX.backslash always returns the output as float64

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# SPEX/Python/SPEXpy/cholesky_backslash.py: solve Ax=b using Cholesky factorization
+# SPEX/Python/SPEXpy/ldl_backslash.py: solve Ax=b using Cholesky factorization
 #-------------------------------------------------------------------------------
 
 # SPEX: (c) 2022-2025, Christopher Lourenco, Jinhao Chen,
@@ -12,11 +12,11 @@
 from .Options import Options
 from .SPEX_error import *
 from .spex_connect import spex_connect
-
+import numpy as np
 import scipy
 from scipy.sparse import isspmatrix, isspmatrix_csc, linalg
 
-def cholesky_backslash( A, b, options=Options('double', 'amd')):
+def ldl_backslash( A, b, options=Options('double', 'amd')):
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical
     ## b is a numpy.array (data must be float64)
     ## options is a dictionary that specifies what tipe the solution should be, this by default is double
@@ -31,14 +31,14 @@ def cholesky_backslash( A, b, options=Options('double', 'amd')):
         A.tocsc()
     ## Check symmetry
     tol=1e-8
-    if linalg.norm(A-A.T, scipy.Inf) > tol:
+    if linalg.norm(A-A.T, np.inf) > tol:
         raise SPEX_error(determine_error(-4))
     # Check input shape
     if A.shape[1]!=b.shape[0]:
         raise SPEX_error(determine_error(-3))
 
     if options.ordering==None:
-        options.default_chol()
+        options.default_symmetric()
 
     ##--------------------------------------------------------------------------
     ## Call SPEX
