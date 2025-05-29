@@ -1737,9 +1737,6 @@ SPEX_info SPEX_backslash
     const SPEX_options option
 ) ;
 
-// FIXME: add these: SPEX_solve and SPEX_tsolve
-
-/*
 
 SPEX_info SPEX_solve        // solves the linear system
 (
@@ -1752,6 +1749,8 @@ SPEX_info SPEX_solve        // solves the linear system
     const SPEX_options option
 ) ;
 
+// FIXME: add SPEX_tsolve
+/*
 SPEX_info SPEX_tsolve       // solves the linear system
 (
     // Output
