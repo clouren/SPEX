@@ -16,7 +16,6 @@
 
 # Import SPEX
 import SPEXpy as SPEX
-from SPEXpy import Options
 
 # Import scientific computing
 import numpy as np
@@ -73,7 +72,7 @@ b=np.ones(n,dtype=np.float64)
 
 # Solve
 print("\nTesting Python LU\n")
-options=Options("string")
+options=SPEX.Options("string")
 x=SPEX.lu_backslash(A,b,options)
 print(x)
 print("\nLU success")

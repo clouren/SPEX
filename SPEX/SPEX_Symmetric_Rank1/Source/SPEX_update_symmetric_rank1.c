@@ -58,8 +58,13 @@ SPEX_info SPEX_update_symmetric_rank1
 )
 {
 
-// FIXME: if Cholesky is updated, and D becomes <=0: ERROR, return SPEX_NOTSPD
-// FIXME: if LDL is updated, and D becomes zero: ERROR, return SPEX_ZERODIAG
+// FIXME: if Cholesky is updated, and D becomes <=0: ERROR, return
+//   D< 0:  SPEX_NOTSPD
+//   D = 0: SPEX_ZERODIAG
+
+// FIXME: if LDL is updated, and D becomes zero: ERROR, return:
+//   D = 0: SPEX_ZERODIAG
+
 // In these 2 cases: the factorization is garbage on output and can only be
 // freed.
 
@@ -70,6 +75,8 @@ SPEX_info SPEX_update_symmetric_rank1
     if (!spex_initialized()) {return SPEX_PANIC;}
 
     SPEX_REQUIRE(w , SPEX_DYNAMIC_CSC, SPEX_MPZ);
+
+    bool is_cholesky = (F->kind == SPEX_CHOLESKY_FACTORIZATION) ;
 
     if (!F || 
         !((F->kind == SPEX_CHOLESKY_FACTORIZATION) ||

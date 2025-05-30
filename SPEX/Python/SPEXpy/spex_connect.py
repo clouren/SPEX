@@ -28,7 +28,7 @@ def spex_connect( A, b, order, charOut, algorithm ):
     elif platform == "darwin": #MAC
         lib = ctypes.CDLL('../build/libspexpython.dylib')
     else: #Windows
-        lib = ctypes.CDLL('../build/libspexpython.DLL') # FIXME Please check this on a windows machine
+        lib = ctypes.CDLL('../build/spexpython.dll')
     c_backslash = lib.spex_python
 
     ##--------------------------------------------------------------------------

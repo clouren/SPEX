@@ -67,17 +67,21 @@ SPEX_info spex_symmetric_left_triangular_solve
     // Output
     int64_t *top_output,     // On output: the beginning of nonzero pattern of
                              // kth column of L+L'.  The nonzero pattern is
-                             // contained in xi[top_output...n-1]
-                             // On input: undefined
+                             // contained in xi[top_output...n-1].  The nonzero
+                             // pattern of the kth row of L is in
+                             // xi [top_output  ... col_top_output-1].
+                             // On input: undefined.
     int64_t *col_top_output, // On output: the beginning of nonozero pattern of
                              // of kth column L, including the diagonal.
                              // The nonzero pattern is contained in
-                             // xi [col_top_output...n-1]
-    SPEX_matrix x,           // On output: Solution of LD x = A(:,k) ==> kth row
-                             // of L but really, the ONLY valid values of x are
-                             // those in x[xi] since x is a working vector its
-                             // other positions are jumbled.
-    int64_t *xi,             // On output: Nonzero pattern vector
+                             // xi [col_top_output...n-1].  The diagonal of L
+                             // is in xi [col_top_output].
+    SPEX_matrix x,           // On output: Solution of LD x = A(:,k).
+                             // The ONLY valid values of x are those in
+                             // x[xi[top_output...n-1]] since x is a working
+                             // vector its values at other positions are
+                             // undefined.
+    int64_t *xi,             // On output: Nonzero pattern vector (see above)
     // Input
     const SPEX_matrix L,     // Partial L matrix
     const SPEX_matrix A,     // Input matrix
