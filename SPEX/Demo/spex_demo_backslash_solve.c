@@ -156,9 +156,19 @@ int main( int argc, char *argv[] )
     SPEX_TRY ( spex_demo_check_solution(A,x_LDL,b,option));
 
     printf("checking SPEX_transpose_solve with LU ...\n");
-    SPEX_TRY (SPEX_lu_tsolve(&x_LU_T, F_LU, b, option));
+    SPEX_TRY (SPEX_tsolve(&x_LU_T, F_LU, b, option));
 
     SPEX_TRY (spex_demo_check_solution(AT, x_LU_T, b, option));
+
+    printf("checking SPEX_transpose solve with Cholesky ...\n");
+    SPEX_TRY (SPEX_tsolve(&x_CHOL_T, F_CHOL, b, option));
+
+    SPEX_TRY (spex_demo_check_solution(AT, x_CHOL_T, b, option));
+
+    printf("checking SPEX_transpose solve with LDL ...\n");
+    SPEX_TRY (SPEX_tsolve(&x_LDL_T, F_LDL, b, option));
+
+    SPEX_TRY (spex_demo_check_solution(AT, x_CHOL_T, b, option));
 
     printf("\nAll SPEX_Solve tests successful!\n");
 
