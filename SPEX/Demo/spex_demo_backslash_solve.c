@@ -26,10 +26,14 @@
     }                                            \
     rhs_file = NULL ;                            \
     SPEX_matrix_free(&A,NULL);                   \
+    SPEX_matrix_free(&AT,NULL);                  \
     SPEX_matrix_free(&b,NULL);                   \
     SPEX_matrix_free(&x_LU,NULL);                \
     SPEX_matrix_free(&x_CHOL,NULL);              \
     SPEX_matrix_free(&x_LDL,NULL);               \
+    SPEX_matrix_free(&x_LU_T,NULL);              \
+    SPEX_matrix_free(&x_CHOL_T,NULL);            \
+    SPEX_matrix_free(&x_LDL_T,NULL);             \
     SPEX_factorization_free(&F_LU,NULL);         \
     SPEX_factorization_free(&F_CHOL,NULL);       \
     SPEX_factorization_free(&F_LDL,NULL);        \
@@ -42,9 +46,9 @@
 
 int main( int argc, char *argv[] )
 {
-
     int64_t n = 0 ;
     SPEX_matrix A = NULL;
+    SPEX_matrix AT = NULL;
     SPEX_matrix b = NULL;
     FILE *mat_file = NULL ;
     FILE *rhs_file = NULL ;
@@ -57,6 +61,9 @@ int main( int argc, char *argv[] )
     SPEX_matrix x_LU = NULL;
     SPEX_matrix x_LDL = NULL;
     SPEX_matrix x_CHOL = NULL;
+    SPEX_matrix x_LU_T = NULL;
+    SPEX_matrix x_LDL_T = NULL;
+    SPEX_matrix x_CHOL_T = NULL;
     SPEX_options option = NULL;
     char *mat_name = NULL, *rhs_name = NULL;
     int64_t rat = 1;
@@ -109,6 +116,9 @@ int main( int argc, char *argv[] )
     fclose(rhs_file);
     rhs_file = NULL ;
 
+    // Create A transpose in order to check the transpose solves
+    SPEX_TRY( SPEX_transpose(&AT, A, option));
+
     //--------------------------------------------------------------------------
     // The demo reads in a SPD matrix. We will attempt an LU, LDL, and Cholesky
     // factorization and the general purpose solve
@@ -135,7 +145,6 @@ int main( int argc, char *argv[] )
 
     SPEX_TRY (SPEX_solve(&x_CHOL, F_CHOL, b, option));
 
-    option->print_level=1;
     SPEX_TRY ( spex_demo_check_solution(A,x_CHOL,b,option));
 
     printf("checking SPEX_solve with LDL ...\n");
@@ -144,8 +153,12 @@ int main( int argc, char *argv[] )
 
     SPEX_TRY (SPEX_solve(&x_LDL, F_LDL, b, option));
 
-    option->print_level=1;
     SPEX_TRY ( spex_demo_check_solution(A,x_LDL,b,option));
+
+    printf("checking SPEX_transpose_solve with LU ...\n");
+    SPEX_TRY (SPEX_lu_tsolve(&x_LU_T, F_LU, b, option));
+
+    SPEX_TRY (spex_demo_check_solution(AT, x_LU_T, b, option));
 
     printf("\nAll SPEX_Solve tests successful!\n");
 

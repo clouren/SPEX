@@ -1282,6 +1282,23 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     const SPEX_options option
 ) ;
 
+// Solve the transposed linear system A'x = b via LU factorization.
+// x and b can be single vectors or matrices
+
+SPEX_info SPEX_lu_tsolve    // solves the linear system A' x = b
+(
+    // Output
+    SPEX_matrix *x_handle,  // rational solution to the system
+    // input/output:
+    SPEX_factorization F,   // The non-updatable LU factorization.
+                            // Mathematically, F is unchanged.  However, if F
+                            // is updatable on input, it is converted to
+                            // non-updatable.  If F is already non-updatable,
+                            // it is not modified.
+    // input:
+    const SPEX_matrix b,    // right hand side vector
+    const SPEX_options option // Command options
+);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

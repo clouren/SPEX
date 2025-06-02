@@ -179,5 +179,43 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     SPEX_matrix x             // solution of system ==> kth column of L and U
 ) ;
 
+/* Purpose: This function performs a sparse transpose roundoff-error-free (REF)
+ * forward substitution, that is x = (U'D) \x. This is a subroutine in solving
+ * the transposed linear system A'x = b. Mathematically, we do not transpose
+ * U directly, instead, since U is stored in CSC format, we can think of it
+ * as being U' stored in compressed row format.
+ * We also assume that x is dense, thus we do not compute the nonzero pattern
+ * and each nonzero in x is iterated across. The system that is solved is
+ * thus U' D x_output = x_input, overwriting the right hand side with the
+ * solution.
+ *
+ * On output, the SPEX matrix x is modified.
+ */
+SPEX_info spex_left_lu_transpose_forward_sub
+(
+    const SPEX_matrix U,    // upper triangular matrix
+    SPEX_matrix x,          // right hand side matrix of size n*numRHS
+    const SPEX_matrix rhos  // sequence of pivots used in factorization
+);
+
+/* Purpose: This function performs sparse transposed REF backward substitution, solving
+ * the system L'x = b. This is a subroutine in the transpose solve A' x = b
+ *
+ * Note that prior to this, x is multiplied by
+ * the determinant of A. Thus a standard substitution can be used.
+ *
+ * L is a sparse mpz matrix, and bx is a dense mpz matrix.
+ *
+ * The input argument bx contains b on input, and it is overwritten on output
+ * by the solution x.
+ */
+
+SPEX_info spex_left_lu_transpose_back_sub  // performs sparse transpose REF backward sub
+(
+    const SPEX_matrix L,    // input lower triangular matrix
+    const SPEX_matrix rhos, // Sequence of pivots
+    SPEX_matrix bx          // right hand side matrix
+);
+
 #endif
 
