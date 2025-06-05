@@ -38,7 +38,7 @@ SPEX_info SPEX_tsolve
                                 // On output: Rational solution (SPEX_MPQ)
                                 // to the system.
     // input/output:
-    SPEX_factorization F,       // The Cholesky or LDL factorization of A
+    SPEX_factorization F,       // The Cholesky, LU or LDL factorization of A
     // input:
     const SPEX_matrix b,        // Right hand side vector
     const SPEX_options option   // command options
