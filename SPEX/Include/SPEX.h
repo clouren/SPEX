@@ -257,10 +257,10 @@ SPEX_pivot ;
 typedef enum
 {
     SPEX_DEFAULT_ORDERING = SPEX_DEFAULT,   // Default: colamd for LU
-                            // AMD for Cholesky
+                                            // AMD for Cholesky and LDL
     SPEX_NO_ORDERING = 1,   // None: A is factorized as-is
     SPEX_COLAMD = 2,        // COLAMD: Default for LU (and QR in the FUTURE)
-    SPEX_AMD = 3            // AMD: Default for Cholesky
+    SPEX_AMD = 3            // AMD: Default for Cholesky and LDL
 }
 SPEX_preorder ;
 
@@ -280,7 +280,7 @@ SPEX_preorder ;
 typedef enum
 {
     SPEX_ALGORITHM_DEFAULT = SPEX_DEFAULT,    // Defaults: Left for LU,
-                         // Up for Chol, UP for LDL
+                                              // Up for Chol, UP for LDL
     SPEX_LU_LEFT = 1,    // Left looking LU factorization
     SPEX_CHOL_LEFT = 2,  // Left looking Cholesky factorization
     SPEX_CHOL_UP = 3,    // Up looking Cholesky factorization
@@ -1162,11 +1162,6 @@ SPEX_info SPEX_mpz_swap (mpz_t x, mpz_t y) ;
 //     T. Davis, SIAM J. Matrix Analysis and Applications. pp 609-638,
 //     vol 40, no 2, 2019.
 
-//    If you use this code, you must first download and install the GMP and
-//    MPFR libraries. GMP and MPFR can be found at:
-//              https://gmplib.org/
-//              http://www.mpfr.org/
-
 //    If you use SPEX Left LU for a publication, we request that you please cite
 //    the above two papers.
 
@@ -1246,6 +1241,9 @@ SPEX_info SPEX_lu_backslash
     const SPEX_options option
 ) ;
 
+// Perform symbolic analysis to obtain the column permutation of A
+// By default COLAMD will be used. The type of ordering can be chosen
+// by changing option->order
 SPEX_info SPEX_lu_analyze
 (
     SPEX_symbolic_analysis *S_handle,   // symbolic analysis including
@@ -1254,6 +1252,9 @@ SPEX_info SPEX_lu_analyze
     const SPEX_options option
 ) ;
 
+// Factorize the matrix A. On completion F contains the LU factorization
+// of the permuted A matrix. By default, will perform smallest pivot
+// selection.
 SPEX_info SPEX_lu_factorize
 (
     // output:
@@ -1308,12 +1309,12 @@ SPEX_info SPEX_lu_tsolve    // solves the linear system A' x = b
 
 // This portion of the SPEX library exactly solves a sparse symmetric positive
 // definite (SPD) system of linear equations using one of two Integer-
-// Preserving Cholesky factorizations. This code accompanies the paper (to be
-// submitted to ACM TOMs)
+// Preserving Cholesky factorizations. This code accompanies the paper
 
-//    "Algorithm 1xxx: SPEX Cholesky and SPEX Backslash for Exactly Solving
+//    "Algorithm 1050: SPEX Cholesky, LDL, and Backslash for Exactly Solving
 //     Sparse Linear Systems," L. Mejia Domenzain, J. Chen, C. Lourenco, 
-//     E. Moreno-Centeno, T. Davis, submitted to ACM TOMS
+//     E. Moreno-Centeno, T. Davis.
+//     pp 129, vol 50, no 4, 2025.
 
 //     The theory associated with this paper is found at:
 
@@ -1321,20 +1322,6 @@ SPEX_info SPEX_lu_tsolve    // solves the linear system A' x = b
 //    Cholesky Factorizations", C. Lourenco, E. Moreno-Centeno,
 //    SIAM J. Matrix Analysis and Applications.
 //     pp 609-638, vol 43, no 1, 2022.
-
-//    To use this code you must first download and install the GMP,
-//    MPFR, AMD, and COLAMD libraries. GMP and MPFR can be found at:
-//              https://gmplib.org/
-//              http://www.mpfr.org/
-//
-//   SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Symmetric.
-//   The easiest way ensure these dependencies are met is to only access this
-//   Module through the SPEX repository.
-//
-//   All of these codes are components of the SPEX software library. This code
-//   may be found at:
-//              https://github.com/clouren/spex
-//              www.suitesparse.com
 //
 
 //------------------------------------------------------------------------------
@@ -1410,6 +1397,8 @@ SPEX_info SPEX_cholesky_backslash
     const SPEX_options option
 ) ;
 
+// Perform symbolic analysis of A to obtain the row and column permutation
+// of A. By default, AMD is used.
 SPEX_info SPEX_cholesky_analyze
 (
     // Output
@@ -1419,6 +1408,7 @@ SPEX_info SPEX_cholesky_analyze
     const SPEX_options option
 ) ;
 
+// Perform Cholesky factorization of permuted matrix A.
 SPEX_info SPEX_cholesky_factorize
 (
     // Output
@@ -1565,7 +1555,7 @@ SPEX_info SPEX_ldl_solve
     const SPEX_options option
 ) ;
 
-// Purpose: After computing the REF LDL factorization A = LDL',
+// After computing the REF LDL factorization A = LDL',
 // this function solves the transposed linear system A' x = b
 //
 // This is just a caller to the original LDL solve...
