@@ -3417,12 +3417,6 @@ if the updated matrix $\bar{A}$ is needed, a user application should call
 \verb|SPEX_update_matrix_colrep| {\bf AFTER} using this function (since
 \verb|vk| is be modified by \verb|SPEX_update_matrix_colrep|).
 
-FIXME: I'm confused; the above paragraph says the functions should be called in
-the order: \verb|SPEX_update_lu_colrep| and then
-\verb|SPEX_update_matrix_colrep|.  But this is inconsisent with the discussion
-in Section~\ref{ss:SPEX_update_matrix_colrep}.  Which is it?
-
-
 %-------------------------------------------------------------------------------
 \newpage
 \subsection{\texttt{SPEX\_update\_matrix\_colrep}: Swap the columns of a matrix}
@@ -3453,12 +3447,7 @@ for column replacement.  To be more specific, this function swaps column
 \verb|k| of the matrix \verb|A| with column of \verb|vk| (i.e., swaps
 \verb|A->v[k]| and \verb|vk->v[0]|).  Therefore, both \verb|A| and \verb|vk|
 are modified by this function, which requires a user application to call this
-function {\bf BEFORE} using \verb|SPEX_update_lu_colrep|.
-
-FIXME: I'm confused; the above paragraph says the functions should be called in
-the order: \verb|SPEX_update_matrix_colrep| and then
-\verb|SPEX_update_lu_colrep|.  But this is inconsisent with the discussion in
-Section~\ref{ss:SPEX_update_lu_colrep}.  Which is it?
+function {\bf AFTER} using \verb|SPEX_update_lu_colrep|.
 
 On input, \verb|A| and \verb|vk| must be matrices of \verb|SPEX_DYNAMIC_CSC|
 kind with the same number of rows $m$; \verb|k| is the index of the column of

@@ -55,7 +55,7 @@ SPEX_info spex_update_verify
     srand(seed);
     for (i = 0; i < n; i++)
     {
-        tmp = i+1; // rand(); // FIXME: does this need to be random?
+        tmp = i+1;
         SPEX_MPZ_SET_SI(b->x.mpz[i], tmp);
     }
 
