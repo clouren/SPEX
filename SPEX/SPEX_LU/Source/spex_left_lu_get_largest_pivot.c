@@ -24,7 +24,8 @@
 
 SPEX_info spex_left_lu_get_largest_pivot
 (
-    int64_t *pivot,         // the index of largest pivot
+    int64_t *pivot,         // the row index of largest pivot
+    int64_t *p_pivot,       // pivot is located in xi [*p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector which indicates whether each row
                             // has been pivotal
@@ -41,15 +42,16 @@ SPEX_info spex_left_lu_get_largest_pivot
     SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
 
     SPEX_info info ;
-    if (!pivs || !xi || !pivot) {return SPEX_INCORRECT_INPUT;}
+    if (!pivs || !xi || !pivot || !p_pivot) {return SPEX_INCORRECT_INPUT;}
 
     //--------------------------------------------------------------------------
     // allocate workspace
     //--------------------------------------------------------------------------
 
-    int64_t i, inew ;
+    int64_t p, i ;
     int r ;
     (*pivot) = -1 ;
+    (*p_pivot) = -1 ;
     mpz_t big ;
     SPEX_mpz_set_null (big);
     SPEX_MPZ_INIT (big);
@@ -58,18 +60,19 @@ SPEX_info spex_left_lu_get_largest_pivot
     // Iterate accross the nonzeros in x
     //--------------------------------------------------------------------------
 
-    for (i = top; i < n; i++)
+    for (p = top; p < n; p++)
     {
         // Location of the ith nonzero
-        inew = xi[i];
-        // inew can be pivotal
-        SPEX_MPZ_CMPABS(&r, big, x->x.mpz[inew]);
-        if (pivs[inew] < 0 && r < 0)
+        i = xi[p];
+        // i can be pivotal
+        SPEX_MPZ_CMPABS(&r, big, x->x.mpz[i]);
+        if (pivs[i] < 0 && r < 0)
         {
             // Current largest pivot location
-            (*pivot) = inew;
+            (*pivot) = i;
+            (*p_pivot) = p ;
             // Current largest pivot value
-            SPEX_MPZ_SET(big, x->x.mpz[inew]);
+            SPEX_MPZ_SET(big, x->x.mpz[i]);
         }
     }
 
