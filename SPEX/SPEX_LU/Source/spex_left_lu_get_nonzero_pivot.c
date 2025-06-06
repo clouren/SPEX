@@ -38,7 +38,7 @@ SPEX_info spex_left_lu_get_nonzero_pivot // find first eligible nonzero pivot
     SPEX_REQUIRE(x, SPEX_DENSE, SPEX_MPZ);
 
     SPEX_info info ;
-    if (!pivs || !xi || !pivot) {return SPEX_INCORRECT_INPUT;}
+    if (!pivs || !xi || !pivot || !p_pivot) {return SPEX_INCORRECT_INPUT;}
 
     //--------------------------------------------------------------------------
     // initializations
