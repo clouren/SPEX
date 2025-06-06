@@ -58,16 +58,6 @@ SPEX_info SPEX_update_symmetric_rank1
 )
 {
 
-// FIXME: if Cholesky is updated, and D becomes <=0: ERROR, return
-//   D< 0:  SPEX_NOTSPD
-//   D = 0: SPEX_ZERODIAG
-
-// FIXME: if LDL is updated, and D becomes zero: ERROR, return:
-//   D = 0: SPEX_ZERODIAG
-
-// In these 2 cases: the factorization is garbage on output and can only be
-// freed.
-
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
@@ -75,8 +65,6 @@ SPEX_info SPEX_update_symmetric_rank1
     if (!spex_initialized()) {return SPEX_PANIC;}
 
     SPEX_REQUIRE(w , SPEX_DYNAMIC_CSC, SPEX_MPZ);
-
-    bool is_cholesky = (F->kind == SPEX_CHOLESKY_FACTORIZATION) ;
 
     if (!F || 
         !((F->kind == SPEX_CHOLESKY_FACTORIZATION) ||
@@ -170,18 +158,18 @@ SPEX_info SPEX_update_symmetric_rank1
                 // perform history update
                 // w[P[j]] = w[P[j]] * sd_new[j-1]/sd_new[h[P[j]]]
                 SPEX_MPZ_MUL(w_dense->x[Pj],
-                                        w_dense->x[Pj], sd[j-1]);
+                             w_dense->x[Pj], sd[j-1]);
                 if (hj > -1)
                 {
                     SPEX_MPZ_DIVEXACT(w_dense->x[Pj],
-                                                 w_dense->x[Pj], sd[hj]);
+                                      w_dense->x[Pj], sd[hj]);
                 }
             }
 
             // tmpq = sigma*w[P[j]]*w[P[j]]/(sd_old[j]*sd_old[j-1])
             SPEX_MPZ_MUL(SPEX_MPQ_NUM(tmpq), w_dense->x[Pj], w_dense->x[Pj]);
             SPEX_MPZ_MUL_SI(SPEX_MPQ_NUM(tmpq),
-                                       SPEX_MPQ_NUM(tmpq), sigma);
+                            SPEX_MPQ_NUM(tmpq), sigma);
             SPEX_MPZ_MUL(SPEX_MPQ_DEN(tmpq), sd0_old, sd1_old);
             SPEX_MPQ_CANONICALIZE(tmpq);
 
@@ -191,12 +179,19 @@ SPEX_info SPEX_update_symmetric_rank1
             if (sgn == 0)
             {
                 SPEX_FREE_ALL;
-                return SPEX_SINGULAR;
+                return SPEX_ZERODIAG;
             }
 
             // update sd_new[j] as sd_old[j]*sd_ratio
             SPEX_MPZ_DIVEXACT(sd[j], sd[j], SPEX_MPQ_DEN(sd_ratio));
             SPEX_MPZ_MUL     (sd[j], sd[j], SPEX_MPQ_NUM(sd_ratio));
+            // check if sd[j] becomes negative
+            SPEX_MPZ_SGN(&sgn, sd[j]);
+            if (sgn < 0 && F->kind == SPEX_CHOLESKY_FACTORIZATION)
+            {
+                SPEX_FREE_ALL;
+                return SPEX_NOTSPD;
+            }
 
             // set L(j,j) = sd_new[j]
             ASSERT(L->v[j]->i[0] == Pj);
@@ -219,21 +214,21 @@ SPEX_info SPEX_update_symmetric_rank1
 
                     // update L(i,j)
                     SPEX_MPZ_MUL     (L->v[j]->x[p],
-                                                 L->v[j]->x[p],
-                                                 SPEX_MPQ_NUM(pending_scale));
+                                      L->v[j]->x[p],
+                                      SPEX_MPQ_NUM(pending_scale));
                     SPEX_MPZ_DIVEXACT(L->v[j]->x[p],
-                                                 L->v[j]->x[p],
-                                                 SPEX_MPQ_DEN(pending_scale));
+                                      L->v[j]->x[p],
+                                      SPEX_MPQ_DEN(pending_scale));
 
                     // perform IPGE to update w using updated L(i,j). Since w[i]
                     // is zero, this could be a fill-in.
                     // w[i] = -L(i,j)*w[P[j]]/sd_new[j-1]
                     SPEX_MPZ_SUBMUL(w_dense->x[i],
-                                               w_dense->x[Pj], L->v[j]->x[p]);
+                                    w_dense->x[Pj], L->v[j]->x[p]);
                     if (j != 0)
                     {
                         SPEX_MPZ_DIVEXACT(w_dense->x[i],
-                                               w_dense->x[i], sd[j-1]);
+                                          w_dense->x[i], sd[j-1]);
                     }
                     // add this entry to nnz pattern of w if this was not in
                     // the nnz pattern. w_dense initially has no explicit zero.
@@ -254,41 +249,61 @@ SPEX_info SPEX_update_symmetric_rank1
                         // perform history update
                         // w[i] = w[i] * sd_new[j-1]/sd_new[h[i]]
                         SPEX_MPZ_MUL(w_dense->x[i],
-                                                w_dense->x[i], sd[j-1]);
+                                     w_dense->x[i], sd[j-1]);
                         if (hi > -1)
                         {
                             SPEX_MPZ_DIVEXACT(w_dense->x[i],
-                                                w_dense->x[i], sd[hi]);
+                                              w_dense->x[i], sd[hi]);
                         }
                     }
 
                     // tmpz = sigma*w[i]*w[P[j]]
                     SPEX_MPZ_MUL(tmpz, w_dense->x[i],
-                                            w_dense->x[Pj]);
+                                 w_dense->x[Pj]);
                     SPEX_MPZ_MUL_SI(tmpz, tmpz, sigma);
 
 #ifdef SPEX_DEBUG
-                    // FIXME: comment this variation
-                    // tmpz /= sd_old[j-1]
+                    // This portion of codes is used to verify the following
+                    // property, which I couldn't find a rigorous proof for,
+                    // but I feel correct.
+                    //  If the sum of two quotients a/b and c/d is known to be
+                    //  integer, can this integer sum be computed as cdiv(a,b)
+                    //  + fdiv(c,d)? Or equivalently, does the remainder (noted
+                    //  as r1 below) of cdiv(a,b) equal to the negative
+                    //  remainder (noted as r2 below) of fdiv(c,d)?
+                    // If this property doesn't hold, we will need to use this
+                    // portion of codes to compute the sum of a/b+c/d instead.
                     mpq_t r1, r2;
                     SPEX_mpq_set_null(r1);
                     SPEX_MPQ_INIT(r1);
                     SPEX_mpq_set_null(r2);
                     SPEX_MPQ_INIT(r2);
+                    // q1 = tmpz/sd_old[j-1] (round down towards -inf)
+                    // r1 = tmpz%sd_old[j-1] = tmpz - q1*sd_old[j-1]
+                    // tmpz = q1
                     SPEX_MPZ_FDIV_QR(tmpz, SPEX_MPQ_NUM(r1),
-                                tmpz, sd0_old);
+                                     tmpz, sd0_old);
+                    // r1 /= sd_old[j-1]
                     SPEX_MPQ_SET_DEN(r1, sd0_old);
                     SPEX_MPQ_CANONICALIZE(r1);
 
+                    // L(i,j) *= MPQ_NUM(sd_ratio)
                     SPEX_MPZ_MUL(L->v[j]->x[p],
-                                            L->v[j]->x[p],
-                                            SPEX_MPQ_NUM(pending_scale));
+                                 L->v[j]->x[p],
+                                 SPEX_MPQ_NUM(pending_scale));
+                    // q2 = L(i,j)/MPQ_DEN(sd_ratio) (round up towards +inf)
+                    // r2 = L(i,j)%MPQ_DEN(sd_ratio)
+                    //    = L(i,j) - q2*MPQ_DEN(sd_ratio)
+                    // L(i,j) = q2
                     SPEX_MPZ_CDIV_QR(L->v[j]->x[p], SPEX_MPQ_NUM(r2),
-                                L->v[j]->x[p], SPEX_MPQ_DEN(pending_scale));
+                                     L->v[j]->x[p], SPEX_MPQ_DEN(pending_scale));
+                    // r2 /= sd_old[j-1]
                     SPEX_MPQ_SET_DEN(r2, SPEX_MPQ_DEN(pending_scale));
                     SPEX_MPQ_CANONICALIZE(r2);
+                    // r2 = -r2
                     SPEX_MPQ_NEG(r2, r2);
                     int result = 0;
+                    // check if r1 == r2
                     SPEX_MPQ_CMP(&result, r1, r2);
                     if (result != 0)
                     {
@@ -304,14 +319,14 @@ SPEX_info SPEX_update_symmetric_rank1
 
                     // L(i,j) *= sd_ratio
                     SPEX_MPZ_MUL(L->v[j]->x[p],
-                                            L->v[j]->x[p],
-                                            SPEX_MPQ_NUM(pending_scale));
+                                 L->v[j]->x[p],
+                                 SPEX_MPQ_NUM(pending_scale));
                     SPEX_MPZ_CDIV_Q(L->v[j]->x[p],
-                                            L->v[j]->x[p],
-                                            SPEX_MPQ_DEN(pending_scale));
+                                    L->v[j]->x[p],
+                                    SPEX_MPQ_DEN(pending_scale));
 #endif
                     SPEX_MPZ_ADD(L->v[j]->x[p],
-                                            L->v[j]->x[p], tmpz);
+                                 L->v[j]->x[p], tmpz);
 
                     // ---------------------------------------------------------
                     // perform IPGE to update w using updated L(i,j).
@@ -328,14 +343,14 @@ SPEX_info SPEX_update_symmetric_rank1
 
                     // w[i] = w[i]*sd_new[j]
                     SPEX_MPZ_MUL(w_dense->x[i],
-                                            w_dense->x[i], sd[j]);
+                                 w_dense->x[i], sd[j]);
                     // w[i] = (w[i]-L(i,j)*w[P[j]])/sd_new[j-1]
                     SPEX_MPZ_SUBMUL(w_dense->x[i],
-                                            w_dense->x[Pj], L->v[j]->x[p]);
+                                    w_dense->x[Pj], L->v[j]->x[p]);
                     if (j != 0)
                     {
                         SPEX_MPZ_DIVEXACT(w_dense->x[i],
-                                            w_dense->x[i],sd[j-1]);
+                                          w_dense->x[i],sd[j-1]);
                     }
                 }
                 h[i] = j;
@@ -371,11 +386,11 @@ SPEX_info SPEX_update_symmetric_rank1
                     {
                         // w[i] = w[i]*sd_new[j-1]/sd_new[h[i]]
                         SPEX_MPZ_MUL(w_dense->x[i],
-                                                w_dense->x[i], sd[j-1]);
+                                     w_dense->x[i], sd[j-1]);
                         if (hi > -1)
                         {
                             SPEX_MPZ_DIVEXACT(w_dense->x[i],
-                                                w_dense->x[i], sd[hi]);
+                                              w_dense->x[i], sd[hi]);
                         }
                     }
 
@@ -388,11 +403,11 @@ SPEX_info SPEX_update_symmetric_rank1
 
                     // L(i,j) = sigma*w[P[j]]*w[i]/sd_old[j-1]
                     SPEX_MPZ_MUL   (L->v[j]->x[Lj_nz],
-                                               w_dense->x[Pj], w_dense->x[i]);
+                                    w_dense->x[Pj], w_dense->x[i]);
                     SPEX_MPZ_MUL_SI(L->v[j]->x[Lj_nz],
-                                               L->v[j]->x[Lj_nz], sigma);
+                                    L->v[j]->x[Lj_nz], sigma);
                     SPEX_MPZ_DIVEXACT(L->v[j]->x[Lj_nz],
-                                               L->v[j]->x[Lj_nz], sd0_old);
+                                      L->v[j]->x[Lj_nz], sd0_old);
                     // insert new entry to L
                     L->v[j]->i[Lj_nz] = i;
                     Lj_nz++;
@@ -400,9 +415,9 @@ SPEX_info SPEX_update_symmetric_rank1
                     // w[i] can be efficiently updated as
                     // w[i] = w[i]*sd_old[j]/sd_old[j-1]
                     SPEX_MPZ_MUL(w_dense->x[i],
-                                            w_dense->x[i], sd1_old);
+                                 w_dense->x[i], sd1_old);
                     SPEX_MPZ_DIVEXACT(w_dense->x[i],
-                                            w_dense->x[i], sd0_old);
+                                      w_dense->x[i], sd0_old);
                     h[i] = j;
                 }
             }
@@ -414,9 +429,6 @@ SPEX_info SPEX_update_symmetric_rank1
             SPEX_MPZ_DIVEXACT(sd[j], sd[j], SPEX_MPQ_DEN(sd_ratio));
             SPEX_MPZ_MUL     (sd[j], sd[j], SPEX_MPQ_NUM(sd_ratio));
         }
-
-        // FIXME: if Chol: check sign of sd [j], return SPEX_NOTSPD if <= 0
-        // FIXME: if LDL: check sign of sd [j], return SPEX_ZERODIAG if == 0
     }
 
     //--------------------------------------------------------------------------
