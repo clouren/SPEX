@@ -78,7 +78,8 @@ void spex_left_lu_dfs // dfs of the graph of the matrix starting at node j
 
 SPEX_info spex_left_lu_get_pivot
 (
-    int64_t *pivot,         // found index of pivot entry
+    int64_t *pivot,         // found row index of pivot entry
+    int64_t *p_pivot,       // pivot is located in xi[p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector indicating which rows have been pivotal
     int64_t n,              // dimension of the problem
@@ -96,12 +97,13 @@ SPEX_info spex_left_lu_get_pivot
 /* Purpose: This function selects the pivot element as the largest in the
  * column. This is activated if the user sets option->pivot = SPEX_LARGEST.
  * NOTE: This pivoting scheme is NOT recommended for SPEX Left LU.  On output
- * the index of the largest pivot is returned.
+ * the row index and location in xi of the largest pivot is returned.
  */
 
 SPEX_info spex_left_lu_get_largest_pivot
 (
-    int64_t *pivot,         // the index of largest pivot
+    int64_t *pivot,         // the row index of largest pivot
+    int64_t *p_pivot,       // pivot is located in xi [*p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector which indicates whether each row
                             // has been pivotal
@@ -112,12 +114,14 @@ SPEX_info spex_left_lu_get_largest_pivot
 
 /* This function obtains the first eligible nonzero pivot.  This is enabled if
  * the user sets option->pivot = SPEX_FIRST_NONZERO.  NOTE: This pivoting
- * scheme is not recommended.  On output, the kth pivot is returned.
+ * scheme is not recommended.
+ * On output, the row index and location in xi of the kth pivot is returned.
  */
 
 SPEX_info spex_left_lu_get_nonzero_pivot // find first eligible nonzero pivot
 (
-    int64_t *pivot,         // the index of first eligible nonzero pivot
+    int64_t *pivot,         // the row index of first eligible nonzero pivot
+    int64_t *p_pivot,       // pivot is located in xi[*p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector indicating which rows are pivotal
     int64_t n,              // size of x
@@ -128,12 +132,13 @@ SPEX_info spex_left_lu_get_nonzero_pivot // find first eligible nonzero pivot
 /* Purpose: This function selects the pivot element as the smallest in the
  * column. This is activated by default or if the user sets option->pivot =
  * SPEX_SMALLEST.  This is a recommended pivoting scheme for SPEX Left LU.
- * On output, the index of kth pivot is returned.
+ * On output, the row index and location in xi of kth pivot is returned.
  */
 
 SPEX_info spex_left_lu_get_smallest_pivot
 (
-    int64_t *pivot,         // the index of smallest pivot
+    int64_t *pivot,         // the row index of smallest pivot
+    int64_t *p_pivot,       // pivot is located in xi[*p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector indicating if each row has been pivotal
     int64_t n,              // dimension of problem

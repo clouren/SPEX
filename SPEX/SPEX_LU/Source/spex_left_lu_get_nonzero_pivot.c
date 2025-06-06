@@ -14,14 +14,15 @@
  * Note: This pivoting scheme is NOT recommended for SPEX Left LU.  It is
  * provided for comparison with other pivoting options.
  *
- * On output, the kth pivot is returned.
+ * On output, the kth pivot row index and location in xi is returned
  */
 
 #include "spex_lu_internal.h"
 
 SPEX_info spex_left_lu_get_nonzero_pivot // find first eligible nonzero pivot
 (
-    int64_t *pivot,         // the index of first eligible nonzero pivot
+    int64_t *pivot,         // the row index of first eligible nonzero pivot
+    int64_t *p_pivot,       // pivot is located in xi[*p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector indicating which rows are pivotal
     int64_t n,              // size of x
@@ -44,21 +45,23 @@ SPEX_info spex_left_lu_get_nonzero_pivot // find first eligible nonzero pivot
     //--------------------------------------------------------------------------
 
     (*pivot) = -1; // used later to check for singular matrix
+    (*p_pivot) = -1;
 
     //--------------------------------------------------------------------------
     // Iterate across the nonzeros in x
     //--------------------------------------------------------------------------
 
-    for (int64_t i = top; i < n; i++)
+    for (int64_t p = top; p < n; p++)
     {
         // inew is the location of the ith nonzero
-        int64_t inew = xi[i];
+        int64_t i = xi[p];
         // check if x[inew] is an eligible pivot
         int sgn ;
-        SPEX_MPZ_SGN (&sgn, x->x.mpz[inew]);
-        if (sgn != 0 && pivs [inew] < 0)
+        SPEX_MPZ_SGN (&sgn, x->x.mpz[i]);
+        if (sgn != 0 && pivs [i] < 0)
         {
-            (*pivot) = inew;
+            (*pivot) = i;
+            (*p_pivot) = p;
             // End the loop
             return SPEX_OK;
         }

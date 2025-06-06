@@ -83,7 +83,7 @@ SPEX_info SPEX_lu_factorize
 
     int64_t n = A->n ;
 
-    int64_t k = 0, top, i, j, col, loc, lnz = 0, unz = 0, pivot, jnew ;
+    int64_t k = 0, top, i, j, col, loc, lnz = 0, unz = 0, pivot, p_pivot, jnew ;
     size_t size ;
 
     // allocate memory space for the factorization
@@ -232,12 +232,29 @@ SPEX_info SPEX_lu_factorize
         //----------------------------------------------------------------------
         // Obtain pivot
         //----------------------------------------------------------------------
-        SPEX_CHECK(spex_left_lu_get_pivot(&pivot, x, pivs, n, top, xi,
+        SPEX_CHECK(spex_left_lu_get_pivot(&pivot, &p_pivot, x, pivs, n, top, xi,
             col, k, F->rhos, F->Pinv_perm, F->P_perm, option));
 
         //----------------------------------------------------------------------
-        // Populate L and U. We iterate across all nonzeros in x
+        // Populate L and U.
         //----------------------------------------------------------------------
+
+        // Populate the first entry of L, we want the pivot element to be
+        // the first term in column k of L
+        F->L->i[lnz] = xi[p_pivot];
+        // xi[p_pivot] must be entry k
+        ASSERT ( F->Pinv_perm[xi[p_pivot]] == k);
+
+        // Find the size in bits of the pivot element
+        SPEX_MPZ_SIZEINBASE(&size, x->x.mpz[ xi[p_pivot]], 2);
+        // GMP manual: Allocated size should be size+2
+        SPEX_MPZ_INIT2(F->L->x.mpz[lnz], size+2);
+        // Place the x value of the pivot element nonzero
+        SPEX_MPZ_SET(F->L->x.mpz[lnz], x->x.mpz[xi[p_pivot]]);
+        // Increment lnz
+        lnz++;
+
+
         for (j = top; j < n; j++)
         {
             jnew = xi[j];
@@ -245,9 +262,9 @@ SPEX_info SPEX_lu_factorize
             loc = F->Pinv_perm[jnew];
 
             //------------------------------------------------------------------
-            // loc <= k are rows above k, thus go to U
+            // loc < k are rows above k, thus go to U
             //------------------------------------------------------------------
-            if (loc <= k)
+            if (loc < k)
             {
                 // Place the i location of the unz nonzero
                 F->U->i[unz] = jnew;
@@ -262,9 +279,9 @@ SPEX_info SPEX_lu_factorize
             }
 
             //------------------------------------------------------------------
-            // loc >= k are rows below k, thus go to L
+            // loc > k are rows below k, thus go to L
             //------------------------------------------------------------------
-            if (loc >= k)
+            if (loc > k)
             {
                 // Place the i location of the lnz nonzero
                 F->L->i[lnz] = jnew;
@@ -278,6 +295,21 @@ SPEX_info SPEX_lu_factorize
                 lnz++;
             }
         }
+
+        // The pivot entry should be the last term in U
+        F->U->i[unz] = xi[p_pivot];
+        // xi[p_pivot] must be entry k
+        ASSERT ( F->Pinv_perm[xi[p_pivot]] == k);
+
+        // Find the size in bits of the pivot element
+        SPEX_MPZ_SIZEINBASE(&size, x->x.mpz[ xi[p_pivot]], 2);
+        // GMP manual: Allocated size should be size+2
+        SPEX_MPZ_INIT2(F->U->x.mpz[unz], size+2);
+        // Place the x value of the pivot element nonzero
+        SPEX_MPZ_SET(F->U->x.mpz[unz], x->x.mpz[xi[p_pivot]]);
+        // Increment unz
+        unz++;
+
     }
 
     // Finalize L->p, U->p

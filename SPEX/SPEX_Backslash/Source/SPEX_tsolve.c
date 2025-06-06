@@ -77,12 +77,12 @@ SPEX_info SPEX_tsolve
         // Cholesky factorization was used. In this case, we utilize
         // the Cholesky forward and back solve
         case SPEX_CHOLESKY_FACTORIZATION:
-            info = SPEX_cholesky_tsolve(&x, F, b, option);
+            info = SPEX_cholesky_solve(&x, F, b, option);
             break ;
 
         // LDL Factorization. Here we use the LDL forward and back solve
         case SPEX_LDL_FACTORIZATION:
-            info = SPEX_ldl_tsolve(&x, F, b, option);
+            info = SPEX_ldl_solve(&x, F, b, option);
             break ;
 
         // QR factorization is requested. Not currently supported, thus

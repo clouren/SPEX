@@ -14,7 +14,7 @@
  * Note: This pivoting scheme is NOT recommended for SPEX Left LU.  It is provided
  * for comparison with other pivoting options.
  *
- * On output, the index of the largest pivot is returned.
+ * On output, the row index and location in xi of the largest pivot is returned.
  */
 
 #define SPEX_FREE_ALL          \

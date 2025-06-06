@@ -32,7 +32,8 @@
 
 SPEX_info spex_left_lu_get_pivot
 (
-    int64_t *pivot,         // found index of pivot entry
+    int64_t *pivot,         // found row index of pivot entry
+    int64_t *p_pivot,       // pivot is located in xi[p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector indicating which rows have been pivotal
     int64_t n,              // dimension of the problem
@@ -77,7 +78,7 @@ SPEX_info spex_left_lu_get_pivot
         // Smallest pivot
         //----------------------------------------------------------------------
 
-        SPEX_CHECK(spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top, xi));
+        SPEX_CHECK(spex_left_lu_get_smallest_pivot(pivot, p_pivot, x, pivs, n, top, xi));
 
     }
     else if (order == SPEX_DIAGONAL)
@@ -92,10 +93,18 @@ SPEX_info spex_left_lu_get_pivot
         if (sgn != 0 && pivs[col] < 0)
         {
             *pivot = col;
+            for (int64_t p = top; p < n; p++)
+            {
+                if (xi[p] == col)
+                {
+                    *p_pivot = col;
+                }
+            }
+
         }
         else
         {
-            SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n,
+            SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, p_pivot, x, pivs, n,
                 top, xi));
         }
 
@@ -107,7 +116,7 @@ SPEX_info spex_left_lu_get_pivot
         // First nonzero
         //----------------------------------------------------------------------
 
-        SPEX_CHECK (spex_left_lu_get_nonzero_pivot(pivot, x, pivs, n, top, xi));
+        SPEX_CHECK (spex_left_lu_get_nonzero_pivot(pivot, p_pivot, x, pivs, n, top, xi));
 
     }
     else if (order == SPEX_TOL_LARGEST)
@@ -117,7 +126,7 @@ SPEX_info spex_left_lu_get_pivot
         // Tolerance with largest pivot
         //----------------------------------------------------------------------
 
-        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, x, pivs, n, top, xi));
+        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, p_pivot, x, pivs, n, top, xi));
 
         //----------------------------------------------------------------------
         // Check x[col] vs largest potential pivot
@@ -140,6 +149,13 @@ SPEX_info spex_left_lu_get_pivot
             if (r >= 0)
             {
                 *pivot = col;
+                for (int64_t p = top; p < n; p++)
+                {
+                    if (xi[p] == col)
+                    {
+                        *p_pivot = col;
+                    }
+                }
             }
         }
 
@@ -151,7 +167,7 @@ SPEX_info spex_left_lu_get_pivot
         // Use the largest potential pivot
         //----------------------------------------------------------------------
 
-        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, x, pivs, n, top, xi));
+        SPEX_CHECK (spex_left_lu_get_largest_pivot(pivot, p_pivot, x, pivs, n, top, xi));
 
     }
     else // if (order == SPEX_TOL_SMALLEST)
@@ -161,7 +177,7 @@ SPEX_info spex_left_lu_get_pivot
         // Tolerance with smallest pivot (default option)
         //----------------------------------------------------------------------
 
-        SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, x, pivs, n, top,
+        SPEX_CHECK (spex_left_lu_get_smallest_pivot(pivot, p_pivot, x, pivs, n, top,
             xi));
 
         //----------------------------------------------------------------------
@@ -187,6 +203,13 @@ SPEX_info spex_left_lu_get_pivot
             if (r >= 0)
             {
                 *pivot = col;
+                for (int64_t p = top; p < n; p++)
+                {
+                    if (xi[p] == col)
+                    {
+                        *p_pivot = col;
+                    }
+                }
             }
         }
     }

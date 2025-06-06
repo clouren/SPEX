@@ -105,7 +105,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(rhos, SPEX_DENSE, SPEX_MPZ);
 
-    int64_t j, jnew, i, inew, p, m, n, col, top ;
+    int64_t j, jnew, i, inew, p, pnz, n, col, top ;
     int sgn ;
     mpz_t *x_mpz = x->x.mpz, *Ax_mpz = A->x.mpz, *Lx_mpz = L->x.mpz,
           *rhos_mpz = rhos->x.mpz;
@@ -138,9 +138,9 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     qsort (&xi[top], n-top, sizeof (int64_t), compare) ;
 
     // Place xi back in original value
-    for (j = top; j < n; j++)
+    for (p = top; p < n; p++)
     {
-        xi[j] = row_perm[xi[j]];
+        xi[p] = row_perm[xi[p]];
     }
 
     // Reset x[i] = 0 for all i in nonzero pattern xi [top..n-1]
@@ -175,10 +175,10 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
     //--------------------------------------------------------------------------
     // Iterate across nonzeros in x
     //--------------------------------------------------------------------------
-    for (p = top; p < n; p++)
+    for (pnz = top; pnz < n; pnz++)
     {
         /* Finalize x[j] */
-        j = xi[p];                         // First nonzero term
+        j = xi[pnz];                       // First nonzero term
         jnew = pinv[j];                    // Location of nonzero term
         // Check if x[j] == 0, if so continue to next nonzero
         SPEX_MPZ_SGN(&sgn, x_mpz[j]);
@@ -208,14 +208,14 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
             //------------------------------------------------------------------
 
             // ----------- Iterate across nonzeros in Lij ---------------------
-            for (m = L->p[jnew]; m < L->p[jnew+1]; m++)
+            for (p = L->p[jnew]; p < L->p[jnew+1]; p++)
             {
-                i = L->i[m];               // i value of Lij
+                i = L->i[p];               // i value of Lij
                 inew = pinv[i];            // i location of Lij
                 if (inew > jnew)
                 {
                     /*************** If lij==0 then no update******************/
-                    SPEX_MPZ_SGN(&sgn, Lx_mpz[m]);
+                    SPEX_MPZ_SGN(&sgn, Lx_mpz[p]);
                     if (sgn == 0) {continue;}
 
                     // lij is nonzero. Check if x[i] is nonzero
@@ -233,7 +233,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                         if (jnew < 1)
                         {
                             // x[i] = 0 - lij*x[j]
-                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[p],
                                 x_mpz[j]);
                             h[i] = jnew;   // Entry is up to date
                         }
@@ -242,7 +242,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                         else
                         {
                             // x[i] = 0 - lij*x[j]
-                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[p],
                                 x_mpz[j]);
 
                             // x[i] = x[i] / rho[j-1]
@@ -265,7 +265,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                             SPEX_MPZ_MUL(x_mpz[i], x_mpz[i], rhos_mpz[0]);
 
                             // x[i] = x[i] - lij*xj
-                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[p],
                                 x_mpz[j]);
                             h[i] = jnew;   // Entry is now up to date
                         }
@@ -288,7 +288,7 @@ SPEX_info spex_left_lu_ref_triangular_solve // sparse REF triangular solve
                             // x[i] = x[i] * rho[j]
                             SPEX_MPZ_MUL(x_mpz[i], x_mpz[i], rhos_mpz[jnew]);
                             // x[i] = x[i] - lij*xj
-                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[m],
+                            SPEX_MPZ_SUBMUL(x_mpz[i], Lx_mpz[p],
                                 x_mpz[j]);
                             // x[i] = x[i] / rho[j-1]
                             SPEX_MPZ_DIVEXACT(x_mpz[i], x_mpz[i],

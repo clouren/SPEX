@@ -53,16 +53,12 @@ SPEX_info spex_left_lu_transpose_back_sub  // performs sparse transpose REF back
         for (int64_t j = L->n-1; j >= 0; j--)
         {
 
-            for (int64_t i = Lp[j]; i < Lp[j+1]; i++)
+            for (int64_t i = Lp[j]+1; i < Lp[j+1]; i++)
             {
-                // Since row indices are not sorted, ensure
-                // that we only use entries that have a row
-                // index greater than j
-                if (Li[i] > j)
-                {
-                    SPEX_MPZ_SUBMUL(SPEX_2D(bx, j, k, mpz),
+                // The row index must be larger than the pivot element
+                ASSERT (Li[i] > j);
+                SPEX_MPZ_SUBMUL(SPEX_2D(bx, j, k, mpz),
                                 Lx[i], SPEX_2D(bx, Li[i], k, mpz));
-                }
             }
             SPEX_MPZ_DIVEXACT(SPEX_2D(bx,j,k,mpz),
                               SPEX_2D(bx,j,k,mpz),

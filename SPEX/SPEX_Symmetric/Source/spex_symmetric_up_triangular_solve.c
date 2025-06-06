@@ -95,7 +95,7 @@ SPEX_info spex_symmetric_up_triangular_solve
     ASSERT(rhos->type == SPEX_MPZ);
     ASSERT(rhos->kind == SPEX_DENSE);
 
-    int64_t j, i, p, m, n = A->n;
+    int64_t i, j, p, pnz, n = A->n;
     int sgn;
     (*top_output) = n ;
     int64_t top = n ;
@@ -160,10 +160,11 @@ SPEX_info spex_symmetric_up_triangular_solve
     // up-looking L matrix is actually lower triangular; thus this is a true
     // triangular solve.
     //--------------------------------------------------------------------------
-    for (p = top; p < n; p++)
+    // Loop through all nonzeros
+    for (pnz = top; pnz < n; pnz++)
     {
-        // Obtain the index of the current nonzero
-        j = xi[p];
+        // x[j] is a nonzero
+        j = xi[pnz];
 
         ASSERT (j >= 0 && j <= k) ;
 
@@ -186,16 +187,16 @@ SPEX_info spex_symmetric_up_triangular_solve
         }
 
         //------------------------------------------------------------------
-        // IPGE updates
+        // IPGE updates. We need to update entries in column j of L
         //------------------------------------------------------------------
         // ----------- Iterate accross nonzeros in Lij ---------------------
-        for (m = L->p[j]+1; m < c[j]; m++)
+        for (p = L->p[j]+1; p < c[j]; p++)
         {
-            i = L->i[m];            // i value of Lij
+            i = L->i[p];            // Row index of x[i,j]
             if (i > j && i < k)     // Update all dependent x[i] excluding x[k]
             {
                     /*************** If lij==0 then no update******************/
-                SPEX_MPZ_SGN(&sgn, L->x.mpz[m]);
+                SPEX_MPZ_SGN(&sgn, L->x.mpz[p]);
                 if (sgn == 0) continue;
 
                 //----------------------------------------------------------
@@ -206,7 +207,7 @@ SPEX_info spex_symmetric_up_triangular_solve
                 if (sgn == 0)
                 {
                     // First, get the correct value of x[i] = 0 - lij * x[j]
-                    SPEX_MPZ_MUL(x->x.mpz[i], L->x.mpz[m],
+                    SPEX_MPZ_MUL(x->x.mpz[i], L->x.mpz[p],
                                                  x->x.mpz[j]);
                     SPEX_MPZ_NEG(x->x.mpz[i],x->x.mpz[i]);
                     // Do a division by the pivot if necessary.
@@ -233,7 +234,7 @@ SPEX_info spex_symmetric_up_triangular_solve
                         SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
                                                 rhos->x.mpz[0]);
                         // x[i] = x[i] - lij x[j]
-                        SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
+                        SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[p],
                                                     x->x.mpz[j]);
                         // Update the history value of x[i]
                         h[i] = j;
@@ -263,7 +264,7 @@ SPEX_info spex_symmetric_up_triangular_solve
                         SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
                                                 rhos->x.mpz[j]);
                         // x[i] = x[i] - lij*xj
-                        SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
+                        SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[p],
                                                     x->x.mpz[j]);
                         // x[i] = x[i] / rho[j-1]
                         SPEX_MPZ_DIVEXACT(x->x.mpz[i],x->x.mpz[i],
@@ -333,9 +334,9 @@ SPEX_info spex_symmetric_up_triangular_solve
     //--------------------------------------------------------------------------
 
     h[k] = -1 ;
-    for (i = top; i < n; i++)
+    for (pnz = top; pnz < n; pnz++)
     {
-        h[xi[i]] = -1;
+        h[xi[pnz]] = -1;
     }
 
     // history vector has now been entirely reset

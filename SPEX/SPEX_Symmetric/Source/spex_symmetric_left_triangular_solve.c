@@ -121,7 +121,7 @@ SPEX_info spex_symmetric_left_triangular_solve
     ASSERT(x->type == SPEX_MPZ);
     ASSERT(x->kind == SPEX_DENSE);
 
-    int64_t j, i, p, m, top, n;
+    int64_t i, j, p, pnz, top, n;
     int sgn;
 
     // row_top is the start of the nonzero pattern obtained after analyzing the
@@ -211,14 +211,14 @@ SPEX_info spex_symmetric_left_triangular_solve
     // Now x[xi] has been zeroed. We obtain the values of any nonzero located in
     // L[k,1:k-1] which already reside in the previously computed kth row of L.
     // This is done by using the column pointer vector and a helper index p.
-    for (i = row_top; i < n; i++)
+    for (pnz = row_top; pnz < n; pnz++)
     {
-        m = xi[i];   // m is the row index of the current nonzero.
-        p = ++cp[m]; // this increases the column pointer of the mth column by
+        i = xi[pnz];  // i is the row index of the current nonzero.
+        p = ++cp[i]; // this increases the column pointer of the mth column by
                      // one; because cp[m] needs to be pointing to the next
                      // place on column m where a value will be taken from
                      // (when we grab another row of L)
-        mpz_set(x->x.mpz[m], L->x.mpz[p]);
+        mpz_set(x->x.mpz[i], L->x.mpz[p]);
     }
 
     //--------------------------------------------------------------------------
@@ -265,9 +265,9 @@ SPEX_info spex_symmetric_left_triangular_solve
     // consider the history update with the rhos vector.
 
     // for each entry in the kth row of L, that is: L(k,1:k-1)
-    for (p = top ; p < col_top ; p++)
+    for (pnz = top ; pnz < col_top ; pnz++)
     {
-        j = xi[p];                              // Current nonzero term
+        j = xi[pnz];                            // Current nonzero term
         // If x[j] == 0 no work must be done (this zero is due to numerical
         // cancellation, not a structural/symbolic zero)
         SPEX_MPZ_SGN(&sgn, x->x.mpz[j]);
@@ -283,11 +283,11 @@ SPEX_info spex_symmetric_left_triangular_solve
 
         // cp[j] points to the entry L(k,j), in row k
 
-        for (m = cp[j]; m < L->p[j+1]; m++)
+        for (p = cp[j]; p < L->p[j+1]; p++)
         {
-            i = L->i[m];            // i value of Lij
+            i = L->i[p];            // i value of Lij
             #ifdef SPEX_DEBUG
-            if (m == cp [j])
+            if (p == cp [j])
             {
                 ASSERT (i == k) ;
             }
@@ -298,7 +298,7 @@ SPEX_info spex_symmetric_left_triangular_solve
             #endif
 
             /*************** If lij==0 then no update******************/
-            SPEX_MPZ_SGN(&sgn, L->x.mpz[m]);
+            SPEX_MPZ_SGN(&sgn, L->x.mpz[p]);
             if (sgn == 0) continue;
 
             //----------------------------------------------------------
@@ -312,14 +312,14 @@ SPEX_info spex_symmetric_left_triangular_solve
                 // updated before)
                 if (j < 1)
                 {
-                    SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[m],
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[p],
                                     x->x.mpz[j]);// x[i] = 0 - lij*x[j]
                     h[i] = j;                  // Entry is up to date
                 }
                 // Previous pivot exists
                 else
                 {
-                    SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[m],
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i],L->x.mpz[p],
                                     x->x.mpz[j]);// x[i] = 0 - lij*x[j]
                     SPEX_MPZ_DIVEXACT(x->x.mpz[i],
                             x->x.mpz[i],
@@ -339,7 +339,7 @@ SPEX_info spex_symmetric_left_triangular_solve
                 {
                     SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
                                 rhos->x.mpz[0]); // x[i] = x[i]*rho[0]
-                    SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[p],
                                  x->x.mpz[j]);// x[i] = x[i] - lij*xj
                     h[i] = j;                 // Entry is now up to date
                 }
@@ -360,7 +360,7 @@ SPEX_info spex_symmetric_left_triangular_solve
                     }
                     SPEX_MPZ_MUL(x->x.mpz[i],x->x.mpz[i],
                                 rhos->x.mpz[j]);// x[i] = x[i] * rho[j]
-                    SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[m],
+                    SPEX_MPZ_SUBMUL(x->x.mpz[i], L->x.mpz[p],
                                 x->x.mpz[j]);// x[i] = x[i] - lij*xj
                     SPEX_MPZ_DIVEXACT(x->x.mpz[i],
                             x->x.mpz[i],

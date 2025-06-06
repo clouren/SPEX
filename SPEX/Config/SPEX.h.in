@@ -1460,28 +1460,6 @@ SPEX_info SPEX_cholesky_solve
     const SPEX_options option
 ) ;
 
-// Purpose: After computing the REF Cholesky factorization A = LDL',
-// this function solves the transposed linear system A' x = b
-//
-// This is just a caller to the original Cholesky solve...
-// If we have LDL' x = b then the transpose solve is also LDL' x = b
-
-SPEX_info SPEX_cholesky_tsolve
-(
-    // Output
-    SPEX_matrix *x_handle,      // On input: undefined.
-                                // On output: Rational solution (SPEX_MPQ)
-                                // to the system.
-    // input/output:
-    SPEX_factorization F,   // The Cholesky factorization.
-                            // Mathematically, F is unchanged.  However, if F
-                            // is updatable on input, it is converted to
-                            // non-updatable.  If F is already non-updatable,
-                            // it is not modified.
-    // input:
-    const SPEX_matrix b,        // Right hand side vector
-    const SPEX_options option
-) ;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1565,28 +1543,6 @@ SPEX_info SPEX_ldl_solve
     const SPEX_options option
 ) ;
 
-// Purpose: After computing the REF LDL factorization A = LDL',
-// this function solves the transposed linear system A' x = b
-//
-// This is just a caller to the original LDL solve...
-// If we have LDL' x = b then the transpose solve is also LDL' x = b
-
-SPEX_info SPEX_ldl_tsolve
-(
-    // Output
-    SPEX_matrix *x_handle,      // On input: undefined.
-                                // On output: Rational solution (SPEX_MPQ)
-                                // to the system.
-    // input/output:
-    SPEX_factorization F,   // The Cholesky factorization.
-                            // Mathematically, F is unchanged.  However, if F
-                            // is updatable on input, it is converted to
-                            // non-updatable.  If F is already non-updatable,
-                            // it is not modified.
-    // input:
-    const SPEX_matrix b,        // Right hand side vector
-    const SPEX_options option
-) ;
 
 // Solve the system Ax = b via LDL factorization
 

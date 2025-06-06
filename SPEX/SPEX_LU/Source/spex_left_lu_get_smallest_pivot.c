@@ -12,7 +12,7 @@
  * column.  This is activated if the user sets option->pivot =
  * SPEX_TOL_SMALLEST or SPEX_SMALLEST.
  *
- * On output, the index of kth pivot is returned.
+ * On output, the row index and location in xi of kth pivot is returned.
  */
 
 #define SPEX_FREE_ALL           \
@@ -22,7 +22,8 @@
 
 SPEX_info spex_left_lu_get_smallest_pivot
 (
-    int64_t *pivot,         // the index of smallest pivot
+    int64_t *pivot,         // the row index of smallest pivot
+    int64_t *p_pivot,       // pivot is located in xi[*p_pivot]
     SPEX_matrix x,          // kth column of L and U
     int64_t *pivs,          // vector indicating if each row has been pivotal
     int64_t n,              // dimension of problem
@@ -43,11 +44,12 @@ SPEX_info spex_left_lu_get_smallest_pivot
     // allocate workspace
     //--------------------------------------------------------------------------
 
-    int64_t i, inew, j, flag ;
+    int64_t p, i, first_nonzero, flag;
     int sgn, r;
     // Flag is non-negative until we have an initial starting value for small
     (*pivot) = -1;
-    j = n;
+    (*p_pivot) = -1;
+    first_nonzero = n;
     flag = top;
     mpz_t small; SPEX_mpz_set_null (small);
     SPEX_MPZ_INIT(small);
@@ -59,18 +61,19 @@ SPEX_info spex_left_lu_get_smallest_pivot
     while (flag > -1 && flag < n)
     {
         // i location of first nonzero
-        inew = xi[flag];
+        i = xi[flag];
 
         //check if inew can be pivotal
-        SPEX_MPZ_SGN(&sgn, x->x.mpz[inew]);
-        if (pivs[inew] < 0 && sgn != 0)
+        SPEX_MPZ_SGN(&sgn, x->x.mpz[i]);
+        if (pivs[i] < 0 && sgn != 0)
         {
             // Current smallest pivot
-            SPEX_MPZ_SET(small, x->x.mpz[inew]);
+            SPEX_MPZ_SET(small, x->x.mpz[i]);
             // Current smallest pivot location
-            *pivot = inew;
+            *pivot = i;
+            *p_pivot = flag;
             // Where to start the search for rest of nonzeros
-            j = flag;
+            first_nonzero = flag;
             // Exit the while loop
             flag = -5;
         }
@@ -82,20 +85,21 @@ SPEX_info spex_left_lu_get_smallest_pivot
     // Iterate across remaining nonzeros
     //--------------------------------------------------------------------------
 
-    for (i = j; i < n; i++)
+    for (p = first_nonzero; p < n; p++)
     {
-        inew = xi[i];
+        i = xi[p];
         // check if inew can be pivotal
-        SPEX_MPZ_CMPABS(&r, small, x->x.mpz[inew]);
-        if (pivs[inew] < 0 && r > 0)
+        SPEX_MPZ_CMPABS(&r, small, x->x.mpz[i]);
+        if (pivs[i] < 0 && r > 0)
         {
-            SPEX_MPZ_SGN(&sgn, x->x.mpz[inew]);
+            SPEX_MPZ_SGN(&sgn, x->x.mpz[i]);
             if (sgn != 0)
             {
                 // Current best pivot location
-                *pivot = inew;
+                *pivot = i;
+                *p_pivot = p;
                 // Current best pivot value
-                SPEX_MPZ_SET(small, x->x.mpz[inew]);
+                SPEX_MPZ_SET(small, x->x.mpz[i]);
             }
         }
     }
