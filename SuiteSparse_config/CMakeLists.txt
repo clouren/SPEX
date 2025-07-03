@@ -15,7 +15,7 @@
 cmake_minimum_required ( VERSION 3.22 )
 
 # version of both SuiteSparse and SuiteSparse_config
-set ( SUITESPARSE_DATE "May FIXME, 2025" )
+set ( SUITESPARSE_DATE "July 25, 2025" )
 set ( SUITESPARSE_VERSION_MAJOR 7 )
 set ( SUITESPARSE_VERSION_MINOR 11 )
 set ( SUITESPARSE_VERSION_SUB   0 )
@@ -279,27 +279,38 @@ if ( BUILD_SHARED_LIBS )
         ARCHIVE DESTINATION ${SUITESPARSE_LIBDIR}
         RUNTIME DESTINATION ${SUITESPARSE_BINDIR}
         PUBLIC_HEADER DESTINATION ${SUITESPARSE_INCLUDEDIR} )
+
+    # create (temporary) export target file during build
+    export ( EXPORT SuiteSparse_configTargets
+        NAMESPACE SuiteSparse::
+        FILE ${CMAKE_CURRENT_BINARY_DIR}/SuiteSparse_configTargets.cmake )
+
+    # install export target and config for find_package
+    install ( EXPORT SuiteSparse_configTargets
+        NAMESPACE SuiteSparse::
+        DESTINATION ${SUITESPARSE_PKGFILEDIR}/cmake/SuiteSparse_config )
 endif ( )
 if ( BUILD_STATIC_LIBS )
     install ( TARGETS SuiteSparseConfig_static
-        EXPORT SuiteSparse_configTargets
+        EXPORT SuiteSparse_configTargets_static
         ARCHIVE DESTINATION ${SUITESPARSE_LIBDIR}
         PUBLIC_HEADER DESTINATION ${SUITESPARSE_INCLUDEDIR} )
+
+    # create (temporary) export target file during build
+    export ( EXPORT SuiteSparse_configTargets_static
+        NAMESPACE SuiteSparse::
+        FILE ${CMAKE_CURRENT_BINARY_DIR}/SuiteSparse_configTargets_static.cmake )
+
+    # install export target and config for find_package
+    install ( EXPORT SuiteSparse_configTargets_static
+        NAMESPACE SuiteSparse::
+        DESTINATION ${SUITESPARSE_PKGFILEDIR}/cmake/SuiteSparse_config )
 endif ( )
+
 install ( FILES
     ${SUITESPARSE_CMAKE_MODULES}
     DESTINATION ${SUITESPARSE_PKGFILEDIR}/cmake/SuiteSparse
     COMPONENT Development )
-
-# create (temporary) export target file during build
-export ( EXPORT SuiteSparse_configTargets
-    NAMESPACE SuiteSparse::
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/SuiteSparse_configTargets.cmake )
-
-# install export target and config for find_package
-install ( EXPORT SuiteSparse_configTargets
-    NAMESPACE SuiteSparse::
-    DESTINATION ${SUITESPARSE_PKGFILEDIR}/cmake/SuiteSparse_config )
 
 configure_package_config_file (
     Config/SuiteSparse_configConfig.cmake.in
@@ -385,3 +396,4 @@ endif ( )
 #-------------------------------------------------------------------------------
 
 include ( SuiteSparseReport )
+message ( STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}" )

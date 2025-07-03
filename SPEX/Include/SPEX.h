@@ -102,7 +102,7 @@
 //------------------------------------------------------------------------------
 
 // Current version of the code
-#define SPEX_DATE "May FIXME, 2025"
+#define SPEX_DATE "July 25, 2025"
 #define SPEX_VERSION_STRING "3.3.0"
 #define SPEX_VERSION_MAJOR 3
 #define SPEX_VERSION_MINOR 3

@@ -2,7 +2,7 @@
 # SPEX/CMakeLists.txt:  root CMake build rules
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2019-2024, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# SPEX: (c) 2019-2025, Chris Lourenco (US Naval Academy), Jinhao Chen,
 # Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis, Texas A&M.
 # All Rights Reserved.
 # Just this particular file is under the Apache-2.0 license; each package has
@@ -84,7 +84,7 @@ include ( SuiteSparsePolicy )
 
 if ( SUITESPARSE_USE_SYSTEM_AMD )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "amd" )
-    find_package ( AMD 3.3.3 REQUIRED )
+    find_package ( AMD 3.3.4 REQUIRED )
 else ( )
     if ( NOT "amd" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
         message ( STATUS "Adding \"amd\" to the list of built targets." )
@@ -94,7 +94,7 @@ endif ( )
 
 if ( SUITESPARSE_USE_SYSTEM_COLAMD )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "colamd" )
-    find_package ( COLAMD 3.3.4 REQUIRED )
+    find_package ( COLAMD 3.3.5 REQUIRED )
 else ( )
     if ( NOT "colamd" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
         message ( STATUS "Adding \"colamd\" to the list of built targets." )
@@ -104,7 +104,7 @@ endif ( )
 
 if ( SUITESPARSE_USE_SYSTEM_SUITESPARSE_CONFIG )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "suitesparse_config" )
-    find_package ( SuiteSparse_config 7.10.2 REQUIRED )
+    find_package ( SuiteSparse_config 7.11.0 REQUIRED )
 else ( )
     if ( NOT "suitesparse_config" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
         message ( STATUS "Adding \"suitesparse_config\" to the list of built targets." )
