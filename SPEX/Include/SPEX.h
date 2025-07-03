@@ -1657,7 +1657,6 @@ SPEX_info SPEX_update_matrix_colrep // performs column replacement
 // will be modified by this method).
 
 // FIXME: remove for v3.4.0
-// FIXME: SPEX_NOTSPD if Chol gets neg diagonal, or if if LDL gets zero diag
 
 SPEX_info SPEX_update_symmetric_rank1
 (
