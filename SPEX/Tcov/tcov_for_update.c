@@ -760,6 +760,7 @@ int main ( int argc, char *argv[])
                     }
                     else if (info != SPEX_SINGULAR && info != SPEX_OK)
                     {
+                        printf ("matrix is not singular: %d\n", info) ;
                         TEST_CHECK(info);
                         if (pretend_to_fail) {break;}
                     }
