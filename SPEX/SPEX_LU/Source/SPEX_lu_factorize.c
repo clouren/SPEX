@@ -242,8 +242,10 @@ SPEX_info SPEX_lu_factorize
         // Populate the first entry of L, we want the pivot element to be
         // the first term in column k of L
         F->L->i[lnz] = xi[p_pivot];
+
         // xi[p_pivot] must be entry k
         ASSERT ( F->Pinv_perm[xi[p_pivot]] == k);
+        ASSERT (xi [p_pivot] == pivot) ;
 
         // Find the size in bits of the pivot element
         SPEX_MPZ_SIZEINBASE(&size, x->x.mpz[ xi[p_pivot]], 2);

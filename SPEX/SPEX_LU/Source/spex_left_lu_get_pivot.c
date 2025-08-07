@@ -61,6 +61,7 @@ SPEX_info spex_left_lu_get_pivot
     SPEX_pivot order = SPEX_OPTION_PIVOT(option);
     // tolerance used if some tol-based pivoting is used
     double tolerance = SPEX_OPTION_TOL(option);
+    (*p_pivot) = -1 ;
 
     //--------------------------------------------------------------------------
     // allocate workspace
@@ -97,7 +98,8 @@ SPEX_info spex_left_lu_get_pivot
             {
                 if (xi[p] == col)
                 {
-                    *p_pivot = col;
+                    *p_pivot = p;
+                    break ;
                 }
             }
 
@@ -131,6 +133,9 @@ SPEX_info spex_left_lu_get_pivot
         //----------------------------------------------------------------------
         // Check x[col] vs largest potential pivot
         //----------------------------------------------------------------------
+
+        // give a preference to the diagonal entry
+
         SPEX_MPZ_SGN(&sgn, x->x.mpz[col]);
         if (sgn != 0 && pivs[col] < 0)
         {
@@ -148,12 +153,14 @@ SPEX_info spex_left_lu_get_pivot
             SPEX_MPQ_CMP(&r, ratio, tol);
             if (r >= 0)
             {
+                // the diagonal entry is chosen instead of the largest entry
                 *pivot = col;
                 for (int64_t p = top; p < n; p++)
                 {
                     if (xi[p] == col)
                     {
-                        *p_pivot = col;
+                        *p_pivot = p;
+                        break ;
                     }
                 }
             }
@@ -183,6 +190,9 @@ SPEX_info spex_left_lu_get_pivot
         //----------------------------------------------------------------------
         // Checking x[col] vs smallest pivot
         //----------------------------------------------------------------------
+
+        // give a preference to the diagonal entry
+
         SPEX_MPZ_SGN(&sgn, x->x.mpz[col]);
         if (sgn != 0 && pivs[col] < 0)
         {
@@ -202,12 +212,14 @@ SPEX_info spex_left_lu_get_pivot
             SPEX_MPQ_CMP(&r, ratio, tol);
             if (r >= 0)
             {
+                // the diagonal entry is chosen instead of the smallest entry
                 *pivot = col;
                 for (int64_t p = top; p < n; p++)
                 {
                     if (xi[p] == col)
                     {
-                        *p_pivot = col;
+                        *p_pivot = p;
+                        break ;
                     }
                 }
             }
@@ -241,6 +253,11 @@ SPEX_info spex_left_lu_get_pivot
     SPEX_MPZ_INIT2(rhos->x.mpz[k], size+2);
     // The kth pivot is x[pivot]
     SPEX_MPZ_SET(rhos->x.mpz[k], x->x.mpz[*pivot]);
+
+    // assert that p_pivot is the position of the pivot in xi [top...n-1]
+    ASSERT (*p_pivot >= top) ;
+    ASSERT (*p_pivot < n) ;
+    ASSERT (*pivot == xi [*p_pivot]) ;
 
     // Free memory
     SPEX_FREE_ALL;
