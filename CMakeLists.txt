@@ -186,7 +186,7 @@ include ( SuiteSparseReport )
 
 # Currently, only LAGraph, Mongoose, and CHOLMOD have ctests.
 
-# fixme: convert more of the existing demos to ctests.
+# Fixme: convert more of the existing demos to ctests.
 
 # Most packages have a ./Tcov folder with a full statement coverage test,
 # but these are not imported into cmake yet.
