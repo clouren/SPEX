@@ -752,15 +752,17 @@ int main ( int argc, char *argv[])
                         info = SPEX_update_symmetric_rank1(F, vk, sigma, option);
                     }
 
-                    if (info == SPEX_SINGULAR)
+                    if ((test_type == 0 && info == SPEX_SINGULAR) ||
+                        (test_type == 1 && (info == SPEX_ZERODIAG ||
+                                            (info == SPEX_NOTSPD &&
+                                             F->kind == SPEX_CHOLESKY_FACTORIZATION))))
                     {
                         printf("This update would cause singularity!!!\n");
                         got_singular_matrix = true;
                         break;
                     }
-                    else if (info != SPEX_SINGULAR && info != SPEX_OK)
+                    else if (info != SPEX_OK)
                     {
-                        printf ("matrix is not singular: %d\n", info) ;
                         TEST_CHECK(info);
                         if (pretend_to_fail) {break;}
                     }
