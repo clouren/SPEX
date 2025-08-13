@@ -199,7 +199,6 @@ SPEX_info SPEX_factorization_convert
             // reallocate space for each column vector Mv[j]
             SPEX_CHECK(SPEX_vector_realloc(Mv[j], Lp[j+1]-Lp[j], option));
             mp = 0;
-            bool found_diag = false;
             for (p = Lp[j]; p < Lp[j+1]; p++)
             {
                 i = L->i[p];
@@ -207,19 +206,7 @@ SPEX_info SPEX_factorization_convert
                 Mv[j]->i[mp] = perm[i];
                 // Mv[j]->x[mp] = L->x[p]
                 SPEX_MPZ_SWAP(Mv[j]->x[mp], L->x.mpz[p]);
-
-                // make sure the first entry is the diagonal
-                if (!found_diag && i == j)
-                {
-                    found_diag = true;
-                    if (mp != 0)
-                    {
-                        SPEX_MPZ_SWAP(Mv[j]->x[0],
-                                                 Mv[j]->x[mp]);
-                        Mv[j]->i[mp] = Mv[j]->i[0];
-                        Mv[j]->i[0] = perm[i];
-                    }
-                }
+                ASSERT ((i == j) == (mp == 0));
 
                 mp++;
             }

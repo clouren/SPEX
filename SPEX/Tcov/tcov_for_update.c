@@ -684,17 +684,11 @@ int main ( int argc, char *argv[])
                         SPEX_FREE(Q_inv);
                         F->Qinv_perm = Q_inv;
 
-                        // permute first vector of L and U to test if the code
+                        // permute first vector of U to test if the code
                         // work for matrix with unsorted indices of nnz list
-                        int64_t Lp = -1, Up = -1, tmp;
-                        for (i = 0; i < An; i++)
-                        {
-                            if (F->L->p[i+1] - F->L->p[i] > 1)
-                            {
-                                Lp = F->L->p[i];
-                                break;
-                            }
-                        }
+                        // Note: non-updatable L now always has pivot as first
+                        //       entry of each column
+                        int64_t Up = -1, tmp;
                         for (i = 1; i < An; i++)
                         {
                             if (F->U->p[i+1] - F->U->p[i] > 1)
@@ -702,15 +696,6 @@ int main ( int argc, char *argv[])
                                 Up = F->U->p[i+1]-1;
                                 break;
                             }
-                        }
-                        if (Lp != -1)
-                        {
-                            tmp = F->L->i[Lp];
-                            F->L->i[Lp] = F->L->i[Lp+1];
-                            F->L->i[Lp+1] = tmp;
-                            TEST_CHECK(SPEX_mpz_swap(F->L->x.mpz[Lp],
-                                F->L->x.mpz[Lp+1]));
-                            if (pretend_to_fail) {continue;}
                         }
                         if (Up != -1)
                         {
