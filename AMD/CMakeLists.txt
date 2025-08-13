@@ -12,7 +12,7 @@
 
 cmake_minimum_required ( VERSION 3.22 )
 
-set ( AMD_DATE "June 1, 2025" )
+set ( AMD_DATE "July 25, 2025" )
 set ( AMD_VERSION_MAJOR 3 CACHE STRING "" FORCE )
 set ( AMD_VERSION_MINOR 3 CACHE STRING "" FORCE )
 set ( AMD_VERSION_SUB   4 CACHE STRING "" FORCE )

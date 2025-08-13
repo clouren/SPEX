@@ -15,9 +15,9 @@
 cmake_minimum_required ( VERSION 3.22 )
 
 # version of both SuiteSparse and SuiteSparse_config
-set ( SUITESPARSE_DATE "July 25, 2025" )
-set ( SUITESPARSE_VERSION_MAJOR 7 )
-set ( SUITESPARSE_VERSION_MINOR 11 )
+set ( SUITESPARSE_DATE "July 25, 2025" )    # FIXME: date for SPEX v3.3.0 and v3.4.0
+set ( SUITESPARSE_VERSION_MAJOR 7 )         # FIXME: version for SPEX v3.3.0 and v3.4.0
+set ( SUITESPARSE_VERSION_MINOR 11 )        # FIXME: version for SPEX v3.3.0 and v3.4.0
 set ( SUITESPARSE_VERSION_SUB   0 )
 set ( SUITESPARSE_CONFIG_VERSION_MAJOR ${SUITESPARSE_VERSION_MAJOR} CACHE STRING "" FORCE )
 set ( SUITESPARSE_CONFIG_VERSION_MINOR ${SUITESPARSE_VERSION_MINOR} CACHE STRING "" FORCE )
@@ -45,27 +45,6 @@ set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 
 include ( SuiteSparsePolicy )
 
-if ( SUITESPARSE_HAS_FORTRAN )
-    include ( FortranCInterface )
-else ( )
-    # No Fortran compiler available or enabled, configuration is not automatic.
-    set ( FortranCInterface_GLOBAL_MACRO  ${SUITESPARSE_C_TO_FORTRAN} )
-    set ( FortranCInterface_GLOBAL__MACRO ${SUITESPARSE_C_TO_FORTRAN} )
-endif ( )
-
-message ( STATUS "C to Fortran calling protocol: ")
-message ( STATUS "    SUITESPARSE_HAS_FORTRAN  : ${SUITESPARSE_HAS_FORTRAN}" )
-message ( STATUS "    FortranCInterface_GLOBAL_MACRO  : ${FortranCInterface_GLOBAL_MACRO}" )
-message ( STATUS "    FortranCInterface_GLOBAL__MACRO : ${FortranCInterface_GLOBAL__MACRO}" )
-
-#-------------------------------------------------------------------------------
-# CUDA warning on Windows with MSVC
-#-------------------------------------------------------------------------------
-
-if ( SUITESPARSE_HAS_CUDA AND MSVC )
-    message ( WARNING "NOTE: CUDA on MSVC has only recently been revised.  It appears to be functional but has not been as rigorously tested as I would like (I have limited resources for testing CUDA on Windows).  If you encounter issues, set the cmake option SUITESPARSE_USE_CUDA to OFF and post an issue on GitHub." )
-endif ( )
-
 #-------------------------------------------------------------------------------
 # find OpenMP
 #-------------------------------------------------------------------------------
@@ -77,9 +56,18 @@ if ( SUITESPARSE_CONFIG_USE_OPENMP )
     else ( )
         find_package ( OpenMP COMPONENTS C GLOBAL )
     endif ( )
+    message ( STATUS "OpenMP C libraries: ${OpenMP_C_LIBRARIES} " )
 else ( )
     # OpenMP has been disabled
     set ( OpenMP_C_FOUND OFF )
+endif ( )
+
+#-------------------------------------------------------------------------------
+# CUDA warning on Windows with MSVC
+#-------------------------------------------------------------------------------
+
+if ( SUITESPARSE_HAS_CUDA AND MSVC )
+    message ( WARNING "NOTE: CUDA on MSVC has only recently been revised.  It appears to be functional but has not been as rigorously tested as I would like (I have limited resources for testing CUDA on Windows).  If you encounter issues, set the cmake option SUITESPARSE_USE_CUDA to OFF and post an issue on GitHub." )
 endif ( )
 
 if ( SUITESPARSE_CONFIG_USE_OPENMP AND OpenMP_C_FOUND )
@@ -141,6 +129,33 @@ else ( )
         include ( SuiteSparseBLAS32 )
     endif ( )
 endif ( )
+
+# BLAS:
+if ( BLAS_FOUND )
+    # SuiteSparse_config does not itself require the BLAS.  It just needs to
+    # know which BLAS is going to be used by the rest of SuiteSparse so it
+    # can configure SuiteSparse_config.h properly.
+    message ( STATUS "BLAS libraries:      ${BLAS_LIBRARIES} ")
+    message ( STATUS "BLAS linker flags:   ${BLAS_LINKER_FLAGS} ")
+    message ( STATUS "BLAS include:        ${BLAS_INCLUDE_DIRS} ")
+endif ( )
+
+#-------------------------------------------------------------------------------
+# Fortran interface
+#-------------------------------------------------------------------------------
+
+if ( SUITESPARSE_HAS_FORTRAN )
+    include ( FortranCInterface )
+else ( )
+    # No Fortran compiler available or enabled, configuration is not automatic.
+    set ( FortranCInterface_GLOBAL_MACRO  ${SUITESPARSE_C_TO_FORTRAN} )
+    set ( FortranCInterface_GLOBAL__MACRO ${SUITESPARSE_C_TO_FORTRAN} )
+endif ( )
+
+message ( STATUS "C to Fortran calling protocol: ")
+message ( STATUS "    SUITESPARSE_HAS_FORTRAN  : ${SUITESPARSE_HAS_FORTRAN}" )
+message ( STATUS "    FortranCInterface_GLOBAL_MACRO  : ${FortranCInterface_GLOBAL_MACRO}" )
+message ( STATUS "    FortranCInterface_GLOBAL__MACRO : ${FortranCInterface_GLOBAL__MACRO}" )
 
 #-------------------------------------------------------------------------------
 # configure files
@@ -252,16 +267,6 @@ else ( )
             list ( APPEND SUITESPARSE_CONFIG_STATIC_LIBS "rt" )
         endif ( )
     endif ( )
-endif ( )
-
-# BLAS:
-if ( BLAS_FOUND )
-    # SuiteSparse_config does not itself require the BLAS.  It just needs to
-    # know which BLAS is going to be used by the rest of SuiteSparse so it
-    # can configure SuiteSparse_config.h properly.
-    message ( STATUS "BLAS libraries:      ${BLAS_LIBRARIES} ")
-    message ( STATUS "BLAS linker flags:   ${BLAS_LINKER_FLAGS} ")
-    message ( STATUS "BLAS include:        ${BLAS_INCLUDE_DIRS} ")
 endif ( )
 
 #-------------------------------------------------------------------------------

@@ -65,7 +65,7 @@
  * Versions 2.3 and earlier of COLAMD do not include a #define'd version number.
  */
 
-#define COLAMD_DATE "June 1, 2025"
+#define COLAMD_DATE "July 25, 2025"
 #define COLAMD_MAIN_VERSION   3
 #define COLAMD_SUB_VERSION    3
 #define COLAMD_SUBSUB_VERSION 5
