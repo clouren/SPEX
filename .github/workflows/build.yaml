@@ -81,7 +81,7 @@ jobs:
         run: lscpu
 
       - name: checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: install dependencies
         env:
@@ -287,7 +287,7 @@ jobs:
           msystem: ${{ matrix.msystem }}
 
       - name: checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: prepare ccache
         # create key with human readable timestamp
