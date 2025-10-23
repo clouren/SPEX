@@ -8,37 +8,25 @@
 
 //------------------------------------------------------------------------------
 
-//(future) TODO:
-/* 
-* python + matlab interface
-* user guide
-* tcov
-* tests with rank deficient (ideally also ill conditioned so we can compare to matlab?)
-* tests with ls probs
-* matrix multiply (to compare with chol for ls probs)
-* add to spex_backslash
-*/
-
-# include "SPEX.h"
-# include "spex_util_internal.h"
-# include "spex_qr_internal.h"
-# include "spex_cholesky_internal.h"
+#include "SPEX.h"
+#include "spex_util_internal.h"
+#include "spex_qr_internal.h"
+#include "spex_cholesky_internal.h"
 #include "spex_demos.h"
 
-#define FREE_WORKSPACE                          \
-    SPEX_matrix_free(&A,  NULL);                \
-    SPEX_FREE(option);                          \
-    SPEX_finalize(); 
-    
+#define FREE_WORKSPACE          \
+    SPEX_matrix_free(&A, NULL); \
+    SPEX_FREE(option);          \
+    SPEX_finalize();
 
-    /*    SPEX_matrix_free(&A2, NULL);                \
-    SPEX_matrix_free(&R2, NULL);                \
-    SPEX_matrix_free(&Q2, NULL);                \*/
+/*    SPEX_matrix_free(&A2, NULL);                \
+SPEX_matrix_free(&R2, NULL);                \
+SPEX_matrix_free(&Q2, NULL);                \*/
 #ifndef ASSERT
 #define ASSERT assert
 #endif
 
-int main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
 
     //--------------------------------------------------------------------------
@@ -62,8 +50,8 @@ int main( int argc, char *argv[] )
         printf("\nExpected usage: ./SPEX_QR_dense SEED M N LOWER UPPER\n");
         printf("\nUsing default settings\n");
         seed = 10;
-        //m = 100;
-        m= 50;
+        // m = 100;
+        m = 50;
         n = 50;
         lower = 1;
         upper = 10;
@@ -71,16 +59,18 @@ int main( int argc, char *argv[] )
     // Acquire input arguments
     else
     {
-        seed = (unsigned int) atoi(argv[1]);
+        seed = (unsigned int)atoi(argv[1]);
         m = atoi(argv[2]);
         n = atoi(argv[3]);
         lower = atoi(argv[4]);
         upper = atoi(argv[5]);
     }
 
-m=5;n=4;seed=14;
-//colamd m<n
-    // Input checks
+    m = 5;
+    n = 4;
+    seed = 14;
+    // colamd m<n
+    //  Input checks
     ASSERT(m >= 0);
     ASSERT(n >= 0);
     ASSERT(lower < upper);
@@ -91,10 +81,10 @@ m=5;n=4;seed=14;
     //--------------------------------------------------------------------------
 
     SPEX_info ok;
-    SPEX_matrix A = NULL ;     // Integer matrix to be factorized
-    SPEX_matrix A2 = NULL;     // Matrix to be randomly generated
+    SPEX_matrix A = NULL;  // Integer matrix to be factorized
+    SPEX_matrix A2 = NULL; // Matrix to be randomly generated
 
-    SPEX_matrix Ainit = NULL;     // Matrix to be randomly generated
+    SPEX_matrix Ainit = NULL; // Matrix to be randomly generated
 
     // Next we define 3 Q R pairs. Each pair is generated via a different dense
     // algorithm
@@ -106,13 +96,13 @@ m=5;n=4;seed=14;
     SPEX_matrix b_new = NULL;
     SPEX_matrix x = NULL;
     SPEX_matrix x2 = NULL;
-    
+
     // SPEX Options
     SPEX_options option = NULL;
     SPEX_create_default_options(&option);
     if (!option)
     {
-        fprintf (stderr, "Error! OUT of MEMORY!\n");
+        fprintf(stderr, "Error! OUT of MEMORY!\n");
         FREE_WORKSPACE;
         return 0;
     }
@@ -120,40 +110,40 @@ m=5;n=4;seed=14;
     //--------------------------------------------------------------------------
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
-/*
-    SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
-    Ainit->nz = m*n;
-    option->print_level = 3;
-    //SPEX_matrix_check(Ainit, option);
+    /*
+        SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
+        Ainit->nz = m*n;
+        option->print_level = 3;
+        //SPEX_matrix_check(Ainit, option);
 
-    // Create A as a copy of Ainit
-    // A is a copy of the Ainit matrix. A is a sparse matrix with mpz_t entries
-    SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, Ainit, option);
+        // Create A as a copy of Ainit
+        // A is a copy of the Ainit matrix. A is a sparse matrix with mpz_t entries
+        SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, Ainit, option);
 
-    // Create A2 as a copy of Ainit
-    // A2 is a copy of the Ainit matrix. A is a dense matrix with mpz_t entries
-    SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, Ainit, option);
-    
-     option->print_level = 3;
-     //SPEX_matrix_check(A, option);
-     
-     SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
-    b2->nz = m;
-    // Make a copy of b
-    SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
+        // Create A2 as a copy of Ainit
+        // A2 is a copy of the Ainit matrix. A is a dense matrix with mpz_t entries
+        SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, Ainit, option);
 
-    //option->print_level = 3;
-    //SPEX_matrix_check(A, option);
-/**/
-    //char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
-    //char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
+         option->print_level = 3;
+         //SPEX_matrix_check(A, option);
+
+         SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
+        b2->nz = m;
+        // Make a copy of b
+        SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
+
+        //option->print_level = 3;
+        //SPEX_matrix_check(A, option);
+    /**/
+    // char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
+    // char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
     char *mat_name = "ExampleMats/494_bus.mat.txt";
     char *rhs_name = "ExampleMats/494_bus.rhs.txt";
-    //char *mat_name = "ExampleMats/smallZeros.mat.txt";
-    //char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
-    // Read in A
-    FILE *mat_file = fopen(mat_name,"r");
-    if( mat_file == NULL )
+    // char *mat_name = "ExampleMats/smallZeros.mat.txt";
+    // char *rhs_name = "ExampleMats/smallZeros.rhs.txt";
+    //  Read in A
+    FILE *mat_file = fopen(mat_name, "r");
+    if (mat_file == NULL)
     {
         perror("Error while opening the mat file");
         FREE_WORKSPACE;
@@ -167,8 +157,8 @@ m=5;n=4;seed=14;
 
     // Read in b. The output of this demo function is b in dense format with
     // mpz_t entries
-    FILE *rhs_file = fopen(rhs_name,"r");
-    if( rhs_file == NULL )
+    FILE *rhs_file = fopen(rhs_name, "r");
+    if (rhs_file == NULL)
     {
         perror("Error while opening the rhs file");
         FREE_WORKSPACE;
@@ -176,14 +166,14 @@ m=5;n=4;seed=14;
     }
     DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
-    
+
     option->print_level = 3;
-    //SPEX_matrix_check(A, option);*/
+    // SPEX_matrix_check(A, option);*/
 
     //--------------------------------------------------------------------------
     // Dense
     //--------------------------------------------------------------------------
-    
+
     /*SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, A, option);
     //option->print_level = 3;
     SPEX_QR_IPGE( A2, &R2, &Q2);
@@ -208,35 +198,34 @@ m=5;n=4;seed=14;
     // Sparse
     //--------------------------------------------------------------------------
 
-
     SPEX_info info;
-    SPEX_matrix rhos = NULL,R3=NULL, rhos2 = NULL;
+    SPEX_matrix rhos = NULL, R3 = NULL, rhos2 = NULL;
     int64_t *h;
-    int64_t j=0, nnz=n*m;
-    int64_t i,pQ, pR;
+    int64_t j = 0, nnz = n * m;
+    int64_t i, pQ, pR;
     int sgn;
     SPEX_symbolic_analysis S = NULL;
-    SPEX_factorization F = NULL ;
+    SPEX_factorization F = NULL;
 
     printf("analysis:\n");
-    //option->print_level = 3;
-    option->order =  SPEX_NO_ORDERING;
-    DEMO_OK (SPEX_qr_analyze(&S, A, option));
-    //SPEX_matrix_check(A, option); 
+    // option->print_level = 3;
+    option->order = SPEX_NO_ORDERING;
+    DEMO_OK(SPEX_qr_analyze(&S, A, option));
+    // SPEX_matrix_check(A, option);
     printf("facts:\n");
-    //option->print_level = 3;
-    DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    //SPEX_matrix_check(F->Q, option);
-    //SPEX_matrix_check(F->R, option);
-    printf("Rank of matrix: %ld, num of cols: %ld\n",F->rank,(F->R->n)); 
-    
+    // option->print_level = 3;
+    DEMO_OK(SPEX_qr_factorize(&F, A, S, option));
+    // SPEX_matrix_check(F->Q, option);
+    // SPEX_matrix_check(F->R, option);
+    printf("Rank of matrix: %ld, num of cols: %ld\n", F->rank, (F->R->n));
+
     printf("solve:\n");
-    DEMO_OK (SPEX_qr_solve(&x, F, b, option));
-    //SPEX_matrix_check(x, option);
-    
-    if(F->rank,(F->R->n)-(F->rank)==0) //TOASK
+    DEMO_OK(SPEX_qr_solve(&x, F, b, option));
+    // SPEX_matrix_check(x, option);
+
+    if (F->rank, (F->R->n) - (F->rank) == 0) // TOASK
     {
-        DEMO_OK(spex_demo_check_solution(A,x,b,option));
+        DEMO_OK(spex_demo_check_solution(A, x, b, option));
     }
     printf("Success!!\n");
 
@@ -245,21 +234,21 @@ m=5;n=4;seed=14;
     //SPEX_qr_backslash(&x,SPEX_FP64,A,b, option);
     */
 
-    //printf("orint x sparse:\n");
-     //SPEX_matrix_check(x, option);
-     
-   /* */
+    // printf("orint x sparse:\n");
+    // SPEX_matrix_check(x, option);
+
+    /* */
     ////
     // Tests
     ////
     /*
     SPEX_info info;
     SPEX_info ok;
-    
+
     char *mat_name, *rhs_name;
     int64_t rat = 1;
-    
-    SPEX_matrix A = NULL ; 
+
+    SPEX_matrix A = NULL ;
     SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL ;
     SPEX_options option = NULL;
@@ -270,7 +259,7 @@ m=5;n=4;seed=14;
         FREE_WORKSPACE;
         return 0;
     }
-    
+
     //DEMO_OK(spex_demo_process_command_line(argc, argv, option,
        // &mat_name, &rhs_name, &rat));
     mat_name = argv[2];
@@ -289,22 +278,22 @@ m=5;n=4;seed=14;
         FREE_WORKSPACE;
         return 0;
     }
-    
+
     DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
-    
+
     int64_t n = A->n, col_sum;
     int sgn;
     option->order =  SPEX_NO_ORDERING;
     DEMO_OK (SPEX_qr_analyze(&S, A, option));
 
     DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
-    
-    
+
+
     printf("%s, ",mat_name);
     printf("%ld,  ",n);
     printf("%ld, ",F->R->nz);
-    
+
    /* for(int64_t i=0;i<n;i++)
     {
         col_sum=0;
@@ -320,20 +309,17 @@ m=5;n=4;seed=14;
         printf(" %ld, ", col_sum);
     }
     printf("\n");*/
-/*
-    printf("%ld,\n ",F->Q->nz);
-    */
+    /*
+        printf("%ld,\n ",F->Q->nz);
+        */
     //--------------------------------------------------------------------------
     // Free Memory
     //--------------------------------------------------------------------------
-    //FREE_WORKSPACE;
-    /*SPEX_factorization_free(&F, NULL);      
-    SPEX_symbolic_analysis_free(&S, NULL);    
-    SPEX_matrix_free(&A,  NULL);              
-    SPEX_matrix_free(&x,  NULL); 
-    SPEX_matrix_free(&b,  NULL);  
-    SPEX_FREE(option);           */              
-    
-
+    // FREE_WORKSPACE;
+    /*SPEX_factorization_free(&F, NULL);
+    SPEX_symbolic_analysis_free(&S, NULL);
+    SPEX_matrix_free(&A,  NULL);
+    SPEX_matrix_free(&x,  NULL);
+    SPEX_matrix_free(&b,  NULL);
+    SPEX_FREE(option);           */
 }
-

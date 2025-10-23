@@ -30,33 +30,33 @@
  *              factorization. If NULL on input, default values are used.
  */
 
-# define SPEX_FREE_WORKSPACE                    \
-    SPEX_factorization_free(&F, option);        \
-    SPEX_symbolic_analysis_free (&S, option);
+#define SPEX_FREE_WORKSPACE              \
+    SPEX_factorization_free(&F, option); \
+    SPEX_symbolic_analysis_free(&S, option);
 
-# define SPEX_FREE_ALL              \
-    SPEX_FREE_WORKSPACE             \
-    SPEX_matrix_free(&x, NULL)     \
+#define SPEX_FREE_ALL   \
+    SPEX_FREE_WORKSPACE \
+    SPEX_matrix_free(&x, NULL)
 
 #include "spex_qr_internal.h"
 
-SPEX_info SPEX_qr_backslash
-(
+SPEX_info SPEX_qr_backslash(
     // Output
-    SPEX_matrix *x_handle,        // Final solution vector
+    SPEX_matrix *x_handle, // Final solution vector
     // Input
-    SPEX_type type,               // Type of output desired. Must be
-                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix A,          // Input matrix
-    const SPEX_matrix b,          // Right hand side vector(s)
-    const SPEX_options option     // Command options
+    SPEX_type type,           // Type of output desired. Must be
+                              // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,      // Input matrix
+    const SPEX_matrix b,      // Right hand side vector(s)
+    const SPEX_options option // Command options
 )
 {
     //-------------------------------------------------------------------------
     // check inputs
     //-------------------------------------------------------------------------
-    SPEX_info info ;
-    if (!spex_initialized ( )) return (SPEX_PANIC);
+    SPEX_info info;
+    if (!spex_initialized())
+        return (SPEX_PANIC);
 
     if (x_handle == NULL)
     {
@@ -69,11 +69,17 @@ SPEX_info SPEX_qr_backslash
         return SPEX_INCORRECT_INPUT;
     }
 
-    SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ);
-    SPEX_REQUIRE (b, SPEX_DENSE, SPEX_MPZ);
+    // A must be the appropriate dimension
+    if (A->n == 0 || A->m == 0 || A->m < A->n)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+
+    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
+    SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);
 
     SPEX_symbolic_analysis S = NULL;
-    SPEX_factorization F = NULL ;
+    SPEX_factorization F = NULL;
     SPEX_matrix x = NULL;
 
     //--------------------------------------------------------------------------
@@ -89,7 +95,7 @@ SPEX_info SPEX_qr_backslash
     //--------------------------------------------------------------------------
     // Solve
     //--------------------------------------------------------------------------
-    SPEX_CHECK (SPEX_qr_solve (&x, F, b, option));
+    SPEX_CHECK(SPEX_qr_solve(&x, F, b, option));
 
     //--------------------------------------------------------------------------
     // Now, x contains the exact solution of the linear system in mpq_t
@@ -98,20 +104,20 @@ SPEX_info SPEX_qr_backslash
 
     if (type == SPEX_MPQ)
     {
-        (*x_handle) = x ;
+        (*x_handle) = x;
     }
     else
     {
-        SPEX_matrix x2 = NULL ;
-        SPEX_CHECK (SPEX_matrix_copy (&x2, SPEX_DENSE, type, x, option));
-        (*x_handle) = x2 ;
-        SPEX_matrix_free (&x, NULL);
+        SPEX_matrix x2 = NULL;
+        SPEX_CHECK(SPEX_matrix_copy(&x2, SPEX_DENSE, type, x, option));
+        (*x_handle) = x2;
+        SPEX_matrix_free(&x, NULL);
     }
 
     //--------------------------------------------------------------------------
     // Free memory
     //--------------------------------------------------------------------------
 
-    SPEX_FREE_WORKSPACE ;
+    SPEX_FREE_WORKSPACE;
     return (SPEX_OK);
 }

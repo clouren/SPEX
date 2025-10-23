@@ -122,8 +122,9 @@ typedef enum
                                   // definite (for a Cholesky factorization)
     SPEX_INCORRECT_ALGORITHM = -5,// The algorithm is not compatible with
                                   // the factorization
-    SPEX_PANIC = -6               // SPEX used without proper initialization,
+    SPEX_PANIC = -6,              // SPEX used without proper initialization,
                                   // or other unrecoverable error
+    SPEX_INCONSISTENT = -9         // the SLE is inconsistent
 }
 SPEX_info ;
 

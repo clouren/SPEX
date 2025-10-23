@@ -29,32 +29,31 @@
 //------------------------------------------------------------------------------
 
 /* Purpose: Matrix preordering for integer-preserving QR factorization. */
-SPEX_info spex_qr_preorder
-(
+SPEX_info spex_qr_preorder(
     // Output
-    SPEX_symbolic_analysis *S_handle,   // Symbolic analysis data structure
-                                        // On input: undefined
-                                        // On output: contains the
-                                        // row/column permutation and its
-                                        // inverse.
+    SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
+                                      // On input: undefined
+                                      // On output: contains the
+                                      // row/column permutation and its
+                                      // inverse.
     // Input
-    const SPEX_matrix A,            // Input matrix
-    const SPEX_options option       // Control parameters (use default if NULL)
+    const SPEX_matrix A,      // Input matrix
+    const SPEX_options option // Control parameters (use default if NULL)
 );
 
-
-/* Purpose: Permute the matrix A and return AQ = AQ */
-SPEX_info spex_qr_permute_A
-(
-    //Output
-    SPEX_matrix* AQ_handle,   // On input: undefined
-                               // On output: contains the permuted matrix
-    //Input
-    const SPEX_matrix A,       // Input matrix
-    const bool numeric,        // True if user wants to permute pattern and
-                               // numbers, false if only pattern
-    const int64_t *Q_perm,     // column permutation
-    const SPEX_options option  // Command options (Default if NULL)    
+/* Purpose: Permute the matrix A and return PAQ'
+(P can be null so it would only return AQ')*/
+SPEX_info spex_qr_permute_A(
+    // Output
+    SPEX_matrix *PAQ_handle, // On input: undefined
+                             // On output: contains the permuted matrix
+    // Input
+    const SPEX_matrix A,      // Input matrix
+    const bool numeric,       // True if user wants to permute pattern and
+                              // numbers, false if only pattern
+    const int64_t *Q_perm,    // column permutation
+    const int64_t *P_perm,    // row permutation
+    const SPEX_options option // Command options (Default if NULL)
 );
 
 //------------------------------------------------------------------------------
@@ -66,26 +65,24 @@ SPEX_info spex_qr_permute_A
 //------------------------------------------------------------------------------
 
 /* Purpose: Compute the column elimination tree of ATA */
-SPEX_info spex_qr_etree
-(
+SPEX_info spex_qr_etree(
     // Output
-    int64_t **tree_handle,      // On output: contains the elimination tree of A
-                                // On input: undefined.
+    int64_t **tree_handle, // On output: contains the elimination tree of A
+                           // On input: undefined.
     // Input
-    const SPEX_matrix A         // Input matrix (must be SPD).
+    const SPEX_matrix A // Input matrix (must be SPD).
 );
 
 /* Purpose: Obtain the column counts for QR factorization */
-SPEX_info spex_qr_counts
-(
+SPEX_info spex_qr_counts(
     // Output
-    int64_t **c_handle,     // On ouptut: column counts
-                            // On input: undefined
-    int64_t *rnz,            // On output: number of nonzeros in R
+    int64_t **c_handle, // On ouptut: column counts
+                        // On input: undefined
+    int64_t *rnz,       // On output: number of nonzeros in R
     // Input
-    const SPEX_matrix A,    // Input matrix
-    const int64_t *parent,  // Elimination tree
-    const int64_t *post     // Post-order of the tree
+    const SPEX_matrix A,   // Input matrix
+    const int64_t *parent, // Elimination tree
+    const int64_t *post    // Post-order of the tree
 );
 
 //------------------------------------------------------------------------------
@@ -95,52 +92,48 @@ SPEX_info spex_qr_counts
 //------------------------------------------------------------------------------
 
 /* Purpose: Obtain the nonzero structure of Q and R for QR factorization */
-SPEX_info spex_qr_nonzero_structure
-(
+SPEX_info spex_qr_nonzero_structure(
     // Output
-    SPEX_matrix *R_handle,        // On output: partial R matrix
-                                  // On input: undefined
-    SPEX_matrix *Q_handle,        // On output: partial R matrix
-                                  // On input: undefined
+    SPEX_matrix *R_handle, // On output: partial R matrix
+                           // On input: undefined
+    SPEX_matrix *Q_handle, // On output: partial R matrix
+                           // On input: undefined
     // Input
-    const SPEX_matrix A,          // Input Matrix
+    const SPEX_matrix A,            // Input Matrix
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
-                                  // number of nonzeros in L, the elimination
-                                  // tree, the row/coluimn permutation and its
-                                  // inverse
-    const SPEX_options option     // Command options
+                                    // number of nonzeros in L, the elimination
+                                    // tree, the row/coluimn permutation and its
+                                    // inverse
+    const SPEX_options option       // Command options
 );
 
 /* Purpose: Perfmorm one interation of IPGS-QR.
- * Computes one row of R and updates n-j columns of Q (finalizing the j+1th 
+ * Computes one row of R and updates n-j columns of Q (finalizing the j+1th
  * column)*/
-SPEX_info spex_qr_ipgs
-(
-    //Input/Output
-    SPEX_matrix R,       // Right triangular matrix
-    SPEX_matrix Q,       // Pair-wise orthogonal matrix
-    SPEX_matrix rhos,    // sequence of pivots
-    int64_t *Qj,         // pointers to elements of the jth column of Q
-    int64_t *h,          // History vector
-    //Output
-    bool *isZeros,       // True if j+1th column of Q is linearly dependent
-    //Input
-    const int64_t j,     // Row of R to compute (col j+1 of Q will be finalized)
-    const SPEX_matrix A, // Matrix to be factored
-    const int64_t *Q_perm,     // Column permutation
-    const SPEX_options option  // Command options
+SPEX_info spex_qr_ipgs(
+    // Input/Output
+    SPEX_matrix R,    // Right triangular matrix
+    SPEX_matrix Q,    // Pair-wise orthogonal matrix
+    SPEX_matrix rhos, // sequence of pivots
+    int64_t *Qj,      // pointers to elements of the jth column of Q
+    int64_t *h,       // History vector
+    // Output
+    bool *isZeros, // True if j+1th column of Q is linearly dependent
+    // Input
+    const int64_t j,          // Row of R to compute (col j+1 of Q will be finalized)
+    const SPEX_matrix A,      // Matrix to be factored
+    const int64_t *Q_perm,    // Column permutation
+    const SPEX_options option // Command options
 );
 
-
-/* Purpose: Perform sparse REF backward substitution for potenitally rank 
+/* Purpose: Perform sparse REF backward substitution for potenitally rank
  * deficient matrices
  * */
-SPEX_info spex_qr_back_sub
-(
-    SPEX_matrix bx,         // right hand side matrix
-    const SPEX_matrix R,    // input upper triangular matrix
-    const int64_t rank,     // rank of right triangular matrix
-    const SPEX_matrix rhos, // sequence of pivots
+SPEX_info spex_qr_back_sub(
+    SPEX_matrix bx,           // right hand side matrix
+    const SPEX_matrix R,      // input upper triangular matrix
+    const int64_t rank,       // rank of right triangular matrix
+    const SPEX_matrix rhos,   // sequence of pivots
     const SPEX_options option // Command options
 );
 

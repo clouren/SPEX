@@ -26,45 +26,44 @@
  *
  */
 
-#define SPEX_FREE_WORKSPACE         \
-{                                   \
-    SPEX_matrix_free(&AQ, NULL);   \
-    SPEX_free(post);                 \
-}
+#define SPEX_FREE_WORKSPACE          \
+    {                                \
+        SPEX_matrix_free(&AQ, NULL); \
+        SPEX_free(post);             \
+    }
 
-#define SPEX_FREE_ALL                               \
-{                                                   \
-    SPEX_FREE_WORKSPACE ;                           \
-    SPEX_symbolic_analysis_free (&S, option);      \
-}
+#define SPEX_FREE_ALL                            \
+    {                                            \
+        SPEX_FREE_WORKSPACE;                     \
+        SPEX_symbolic_analysis_free(&S, option); \
+    }
 
 #include "spex_qr_internal.h"
 
-SPEX_info SPEX_qr_analyze
-(
+SPEX_info SPEX_qr_analyze(
     // Output
     SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
     // Input
-    const SPEX_matrix A,        // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-    const SPEX_options option   // Command options (Default if NULL)
+    const SPEX_matrix A,      // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+    const SPEX_options option // Command options (Default if NULL)
 )
 {
 
     SPEX_info info;
     // SPEX must be initialized
-    if ( !spex_initialized() ) return SPEX_PANIC;
+    if (!spex_initialized())
+        return SPEX_PANIC;
 
     // Check inputs
-    if ( !S_handle || !A)
+    if (!S_handle || !A)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
-    if (A->n > A->m || A->m<=0)
+    if (A->n > A->m || A->m <= 0)
     {
         return SPEX_INCORRECT_INPUT;
     }
-
 
     // Matrix must be CSC
     SPEX_REQUIRE_KIND(A, SPEX_CSC);
@@ -73,37 +72,36 @@ SPEX_info SPEX_qr_analyze
     SPEX_matrix AQ = NULL;
     SPEX_symbolic_analysis S = NULL;
     // Declare local variables for symbolic analysis
-    int64_t n = A->n, m=A->m;
+    int64_t n = A->n, m = A->m;
     int64_t *post = NULL;
 
     //--------------------------------------------------------------------------
     // Preorder: obtain the row/column ordering of ATA (Default is COLAMD)
     //--------------------------------------------------------------------------
-    SPEX_CHECK( spex_qr_preorder(&S, A, option) );
+    SPEX_CHECK(spex_qr_preorder(&S, A, option));
 
     //--------------------------------------------------------------------------
     // Permute matrix A, that is apply the column ordering from the
     // symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
-    SPEX_CHECK( spex_qr_permute_A(&AQ, A, false, S->Q_perm, option) );
-   
+    SPEX_CHECK(spex_qr_permute_A(&AQ, A, true, S->Q_perm, NULL, option));
+
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the column elimination tree of AQ
     //--------------------------------------------------------------------------
     // Obtain elimination tree of ATA
-    SPEX_CHECK( spex_qr_etree(&S->parent, AQ) );
+    SPEX_CHECK(spex_qr_etree(&S->parent, AQ));
     // Postorder the column elimination tree of ATA
-    SPEX_CHECK( spex_cholesky_post(&post, S->parent, n) );
+    SPEX_CHECK(spex_cholesky_post(&post, S->parent, n));
 
     // Get the column counts of R' aka the row counts of R
-    SPEX_CHECK( spex_qr_counts(&(S->cp),&(S->rnz), AQ, S->parent, post) ); 
-
+    SPEX_CHECK(spex_qr_counts(&(S->cp), &(S->rnz), AQ, S->parent, post));
 
     //--------------------------------------------------------------------------
     // Set output, free all workspace and return success
     //--------------------------------------------------------------------------
 
-    (*S_handle) = S ;
-    SPEX_FREE_WORKSPACE ;
+    (*S_handle) = S;
+    SPEX_FREE_WORKSPACE;
     return (SPEX_OK);
 }

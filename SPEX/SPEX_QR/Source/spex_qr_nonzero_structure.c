@@ -9,38 +9,37 @@
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_WORKSPACE         \
-{                                   \
-    SPEX_FREE(w);                   \
-    SPEX_FREE(leftmost);            \
-    SPEX_matrix_free(&QT,NULL);     \
-    SPEX_matrix_free(&R, NULL);      \
-    SPEX_FREE(Qi);                   \
-    SPEX_FREE(Qp);                   \
-}
+#define SPEX_FREE_WORKSPACE          \
+    {                                \
+        SPEX_FREE(w);                \
+        SPEX_FREE(leftmost);         \
+        SPEX_matrix_free(&QT, NULL); \
+        SPEX_matrix_free(&R, NULL);  \
+        SPEX_FREE(Qi);               \
+        SPEX_FREE(Qp);               \
+    }
 
-# define SPEX_FREE_ALL               \
-{                                    \
-    SPEX_FREE_WORKSPACE              \
-    SPEX_matrix_free(&RT, NULL);      \
-    SPEX_matrix_free(&Q,NULL);       \
-}
+#define SPEX_FREE_ALL                \
+    {                                \
+        SPEX_FREE_WORKSPACE          \
+        SPEX_matrix_free(&RT, NULL); \
+        SPEX_matrix_free(&Q, NULL);  \
+    }
 
 #include "spex_qr_internal.h"
-
 
 /* Purpose: This function performs a symbolic sparse triangular solve for
  * each column of R
  * It allocates the memory for the R matrix and determines the full nonzero
  * pattern of R
- * It also obtains the nonzero pattern of Q using the column elimination 
+ * It also obtains the nonzero pattern of Q using the column elimination
  * tree. And fills in the values from A into Q
  *
  * Input arguments of the function:
  *
  * R_handle:    A handle to the R matrix. Null on input.
  *              On output, contains a pointer to the partial RT matrix.
- * 
+ *
  * Q_handle:    A handle to the Q matrix. Null on input.
  *              On output, contains a pointer to the partial Q matrix
  *
@@ -54,27 +53,24 @@
  */
 
 // Sorting function
-static inline int compare (const void * a, const void * b)
+static inline int compare(const void *a, const void *b)
 {
-    return ( *(int64_t*)a - *(int64_t*)b );
+    return (*(int64_t *)a - *(int64_t *)b);
 }
 
-
-SPEX_info spex_qr_nonzero_structure
-(
+SPEX_info spex_qr_nonzero_structure(
     // Output
-    SPEX_matrix *R_handle,        // On output: partial R matrix
-                                  // On input: undefined
-    SPEX_matrix *Q_handle,        // On output: partial Q matrix
-                                  // On input: undefined
+    SPEX_matrix *R_handle, // On output: partial R matrix
+                           // On input: undefined
+    SPEX_matrix *Q_handle, // On output: partial Q matrix
+                           // On input: undefined
     // Input
-    const SPEX_matrix A,          // Input Matrix
+    const SPEX_matrix A,            // Input Matrix
     const SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
-                                  // number of nonzeros in R, the column
-                                  // elimination tree, the row/coluimn permutation
-                                  // and its inverse
-    const SPEX_options option
-)
+                                    // number of nonzeros in R, the column
+                                    // elimination tree, the row/coluimn permutation
+                                    // and its inverse
+    const SPEX_options option)
 {
 
     // All inputs have been checked by the caller, thus asserts are used here
@@ -83,11 +79,11 @@ SPEX_info spex_qr_nonzero_structure
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(A->type == SPEX_MPZ);
 
-    int64_t *w=NULL, *s=NULL, *leftmost=NULL;
-    int64_t *Qi=NULL, *Qp=NULL;
-    int64_t top, k, len, i, p, n = A->n, m=A->m, m2=m, rnz, qnz, j,h,len2, col,q;
-    SPEX_matrix R = NULL, Q=NULL;
-    SPEX_matrix QT= NULL, RT=NULL;
+    int64_t *w = NULL, *s = NULL, *leftmost = NULL;
+    int64_t *Qi = NULL, *Qp = NULL;
+    int64_t top, k, len, i, p, n = A->n, m = A->m, m2 = m, rnz, qnz, j, h, len2, col, q;
+    SPEX_matrix R = NULL, Q = NULL;
+    SPEX_matrix QT = NULL, RT = NULL;
     ASSERT(n >= 0);
 
     //--------------------------------------------------------------------------
@@ -96,183 +92,173 @@ SPEX_info spex_qr_nonzero_structure
 
     // Allocate R
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->rnz,
-        false, true, NULL));
-    if (!R)
+                                    false, true, NULL));
+    if (!R) // TODO tcov memory
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
 
-    Qi = (int64_t*) SPEX_malloc((n*m)* sizeof (int64_t));
-    Qp = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
-    //printf("m %ld n %ld mn %ld\n",m,n,m*n);
-    w = (int64_t*) SPEX_malloc((n+m2)* sizeof (int64_t));
-    leftmost = (int64_t*) SPEX_malloc(m* sizeof (int64_t));
-    s = w + n ;
+    Qi = (int64_t *)SPEX_malloc((n * m) * sizeof(int64_t));
+    Qp = (int64_t *)SPEX_malloc((m + 1) * sizeof(int64_t));
+    w = (int64_t *)SPEX_malloc((n + m2) * sizeof(int64_t));
+    leftmost = (int64_t *)SPEX_malloc(m * sizeof(int64_t));
+    s = w + n;
     if (!w | !leftmost | !Qi | !Qp)
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
-    
-    
 
     R->i[0] = 0;
 
+    for (i = 0; i < m2; i++)
+        w[i] = -1; /* clear w, to mark nodes */
 
-    for (i = 0 ; i < m2 ; i++) w [i] = -1 ; /* clear w, to mark nodes */
-
-    for (i = 0 ; i < m ; i++) leftmost [i] = -1 ;
-    for (k = n-1 ; k >= 0 ; k--)
+    for (i = 0; i < m; i++)
+        leftmost[i] = -1;
+    for (k = n - 1; k >= 0; k--)
     {
-        col = S->Q_perm[k]; 
-        for (p = A->p [col] ; p < A->p [col+1] ; p++)
+        col = S->Q_perm[k];
+        for (p = A->p[col]; p < A->p[col + 1]; p++)
         {
-            leftmost [A->i [p]] = k ;         /* leftmost[i] = min(find(A(i,:)))*/
-        }//
+            leftmost[A->i[p]] = k; /* leftmost[i] = min(find(A(i,:)))*/
+        } //
     }
 
     //--------------------------------------------------------------------------
     // Nonzero pattern of R
     //--------------------------------------------------------------------------
-    rnz = 0 ;
+    rnz = 0;
     for (k = 0; k < n; k++)
     {
-        R->p [k] = rnz ;      
-        w [k] = k ;  
-        top = n ;
-        col =  S->Q_perm[k]; //CHANGE
+        R->p[k] = rnz;
+        w[k] = k;
+        top = n;
+        col = S->Q_perm[k]; // CHANGE
 
-        for (p = A->p [col] ; p < A->p [col+1] ; p++)   /* find R(:,k) pattern */
+        for (p = A->p[col]; p < A->p[col + 1]; p++) /* find R(:,k) pattern */
         {
-            i = leftmost [A->i [p]] ;         /* i = min(find(A(i,q))) */
-            for (len = 0 ; w [i] != k ; i = S->parent [i]) /* traverse up to k */
+            i = leftmost[A->i[p]];                     /* i = min(find(A(i,q))) */
+            for (len = 0; w[i] != k; i = S->parent[i]) /* traverse up to k */
             {
-                s [len++] = i ;
-                w [i] = k ;
+                s[len++] = i;
+                w[i] = k;
             }
-            while (len > 0) s [--top] = s [--len] ; /* push path on stack */
-            
-        } 
+            while (len > 0)
+                s[--top] = s[--len]; /* push path on stack */
+        }
 
-        //order s
-        //qsort(&s[top], n-top, sizeof(int64_t), compare); //TODO check if this is needed, seems like it isn't, but it's staying here in case things start going wrong
-
-        for (p = top ; p < n ; p++) /* for each i in pattern of R(:,k) */
+        for (p = top; p < n; p++) /* for each i in pattern of R(:,k) */
         {
-            i = s [p] ;                     /* R(i,k) is nonzero */
-            R->i [rnz] = i ;                  /* R(i,k) = x(i) */
+            i = s[p];      /* R(i,k) is nonzero */
+            R->i[rnz] = i; /* R(i,k) = x(i) */
             rnz++;
         }
-        R->i [rnz] = k ;                     /* R(k,k) */
+        R->i[rnz] = k; /* R(k,k) */
         rnz++;
     }
     // Finalize R->p
     R->p[n] = rnz;
 
-    R->i = (int64_t *) SPEX_realloc (rnz, S->rnz, sizeof (int64_t), R->i, &info);
+    R->i = (int64_t *)SPEX_realloc(rnz, S->rnz, sizeof(int64_t), R->i, &info);
 
-    SPEX_CHECK(SPEX_transpose(&RT,R,true,NULL));
-    
-    
+    SPEX_CHECK(SPEX_transpose(&RT, R, true, NULL));
+
     //--------------------------------------------------------------------------
     // Nonzero pattern of QT
     //--------------------------------------------------------------------------
-    for (i = 0 ; i < m2 ; i++) w [i] = -1 ; /* clear w, to mark nodes */
-    
-    qnz = 0 ;
-    for (k = 0; k < m; k++) //find Q(k,:) pattern
-    {    
-        Qp [k] = qnz ;  
-        top = n ;
+    for (i = 0; i < m2; i++)
+        w[i] = -1; /* clear w, to mark nodes */
+
+    qnz = 0;
+    for (k = 0; k < m; k++) // find Q(k,:) pattern
+    {
+        Qp[k] = qnz;
+        top = n;
         i = leftmost[k];
 
-        for (len = 0 ; i!=-1 && w [i] != k; i = S->parent [i]) /* traverse up to root*/
+        for (len = 0; i != -1 && w[i] != k; i = S->parent[i]) /* traverse up to root*/
         {
-            s [len++] = i ;
-            w [i] = k ;
+            s[len++] = i;
+            w[i] = k;
         }
-        while (len > 0) s [--top] = s [--len] ; /* push path on stack */
+        while (len > 0)
+            s[--top] = s[--len]; /* push path on stack */
 
- 
-        for (p = top ; p < n ; p++) /* for each i in pattern of Q(:,k) */
+        for (p = top; p < n; p++) /* for each i in pattern of Q(:,k) */
         {
-            i = s [p] ;                     /* Q(i,k) is nonzero */
-            //printf("qnz %ld\n",qnz);
-            Qi [qnz++] = i ;                  /* Q(i,k) = x(i) */
+            i = s[p]; /* Q(i,k) is nonzero */
+            // printf("qnz %ld\n",qnz);
+            Qi[qnz++] = i; /* Q(i,k) = x(i) */
         }
-        
     }
     // Finalize Q->p
-    Qp[m] =  qnz;
-    SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz+1,
-        false, false, NULL));
-    if (!QT)
+    Qp[m] = qnz;
+    SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz + 1,
+                                    false, false, NULL));
+    if (!QT) // TODO tcov memory
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
-    //QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
-    //QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
-    Qi = (int64_t *) SPEX_realloc (qnz, (n*m), sizeof (int64_t), Qi, &info);
-    memcpy(QT->p, Qp, (m+1)*sizeof(int64_t)); 
-    memcpy(QT->i, Qi, (qnz)*sizeof(int64_t));
+    // QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
+    // QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
+    Qi = (int64_t *)SPEX_realloc(qnz, (n * m), sizeof(int64_t), Qi, &info);
+    memcpy(QT->p, Qp, (m + 1) * sizeof(int64_t));
+    memcpy(QT->i, Qi, (qnz) * sizeof(int64_t));
 
-    //QT->p_shallow=false;
-    //QT->i_shallow=false;
+    // QT->p_shallow=false;
+    // QT->i_shallow=false;
 
     // Transpose to obtain the nonzero pattern of Q
     SPEX_CHECK(SPEX_transpose(&Q, QT, false, NULL));
-    Q->nz=qnz; 
+    Q->nz = qnz;
     //--------------------------------------------------------------------------
     // Copy values of A into Q
     //--------------------------------------------------------------------------
-    //first column is exactly the same
+    // first column is exactly the same
     col = S->Q_perm[0];
-    q=0;
-    for(p=A->p[col];p<A->p[col+1];p++)
+    q = 0;
+    for (p = A->p[col]; p < A->p[col + 1]; p++)
     {
-        SPEX_MPZ_SET(Q->x.mpz[q],A->x.mpz[p]);
+        SPEX_MPZ_SET(Q->x.mpz[q], A->x.mpz[p]);
         q++;
     }
-    //For all other columns the logic is similar to that of the dot product
-    for(k=1;k<n;k++) 
+    // For all other columns the logic is similar to that of the dot product
+    for (k = 1; k < n; k++)
     {
-        col = S->Q_perm[k]; 
-        p=A->p[col];
-        q=Q->p[k];
-        while(p < A->p[col+1] && q < Q->p[k+1])
+        col = S->Q_perm[k];
+        p = A->p[col];
+        q = Q->p[k];
+        while (p < A->p[col + 1] && q < Q->p[k + 1])
         {
-            if(A->i[p] < Q->i[q])
-            {
-                p++; //TODO tcov when does this happen??
-            }
-            else if(A->i[p] > Q->i[q])
+            // A->i[p] < Q->i[q] never happens because A has less nonzeros than Q
+            if (A->i[p] > Q->i[q])
             {
                 q++;
             }
             else
             {
-                SPEX_MPZ_SET(Q->x.mpz[q],A->x.mpz[p]);
+                SPEX_MPZ_SET(Q->x.mpz[q], A->x.mpz[p]);
                 p++;
                 q++;
             }
         }
     }
-    
+
     ///--------------------------------------------------------------------------
     // free workspace and return result
     //--------------------------------------------------------------------------
     (*Q_handle) = Q;
-    (*R_handle) = RT; //Return R transpose because of how we store R in factorization
+    (*R_handle) = RT; // Return R transpose because of how we store R in factorization
 
-
-    //SPEX_FREE_WORKSPACE;
-    SPEX_FREE(w);                   
-    SPEX_FREE(leftmost);            
-    SPEX_matrix_free(&QT,NULL);     
-    SPEX_matrix_free(&R, NULL);      
-    SPEX_FREE(Qi);                   
-    SPEX_FREE(Qp);                   
+    // SPEX_FREE_WORKSPACE;
+    SPEX_FREE(w);
+    SPEX_FREE(leftmost);
+    SPEX_matrix_free(&QT, NULL);
+    SPEX_matrix_free(&R, NULL);
+    SPEX_FREE(Qi);
+    SPEX_FREE(Qp);
     return SPEX_OK;
 }

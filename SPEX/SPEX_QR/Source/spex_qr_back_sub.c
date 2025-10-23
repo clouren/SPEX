@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function performs sparse REF backward substitution for 
+/* Purpose: This function performs sparse REF backward substitution for
  * underdetermined SLEs, solving the system Rx = b. Where the last n-rank rows of
  * R are 0.
  *
@@ -19,25 +19,25 @@
  * by the solution x.
  */
 
-# include "spex_qr_internal.h"
+#include "spex_qr_internal.h"
 
-SPEX_info spex_qr_back_sub  // performs sparse REF backward substitution
-(
-    SPEX_matrix bx,         // right hand side matrix
-    const SPEX_matrix R,    // input upper triangular matrix
-    const int64_t rank,     // rank of right triangular matrix
-    const SPEX_matrix rhos, // sequence of pivots
-    const SPEX_options option  // command options
-)
+SPEX_info spex_qr_back_sub // performs sparse REF backward substitution
+    (
+        SPEX_matrix bx,           // right hand side matrix
+        const SPEX_matrix R,      // input upper triangular matrix
+        const int64_t rank,       // rank of right triangular matrix
+        const SPEX_matrix rhos,   // sequence of pivots
+        const SPEX_options option // command options
+    )
 {
 
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
-    SPEX_info info ;
-    SPEX_REQUIRE (R,  SPEX_CSC,   SPEX_MPZ);
-    SPEX_REQUIRE (bx, SPEX_DENSE, SPEX_MPZ);
+    SPEX_info info;
+    SPEX_REQUIRE(R, SPEX_CSC, SPEX_MPZ);
+    SPEX_REQUIRE(bx, SPEX_DENSE, SPEX_MPZ);
 
     //--------------------------------------------------------------------------
 
@@ -45,36 +45,43 @@ SPEX_info spex_qr_back_sub  // performs sparse REF backward substitution
     mpz_t *Rx = R->x.mpz;
     int64_t *Ri = R->i;
     int64_t *Rp = R->p;
-    int64_t n=R->n;
+    int64_t n = R->n;
     int64_t extra;
-
 
     for (int64_t k = 0; k < bx->n; k++)
     {
         // Start at bx[n]
-        for (int64_t j = n-1; j >= 0; j--)
+        for (int64_t j = n - 1; j >= 0; j--)
         {
             // If bx[j] is zero skip this iteration
-            SPEX_MPZ_SGN(&sgn, SPEX_2D( bx, j, k, mpz));
-            if (sgn == 0) {continue;}
+            SPEX_MPZ_SGN(&sgn, SPEX_2D(bx, j, k, mpz));
+            if (sgn == 0)
+            {
+                continue;
+            }
 
             // Obtain bx[j]
-            if(Ri[j]!=j) //TODO there is probably a nicer way of doing this
+            /*if (Ri[j] != j)
             {
-                extra=n-rank;
+                extra = n - rank;
             }
             else
             {
-                extra=0;
-            }
+                extra = 0;
+            }*/
+            // TODO remove commented out code
+            extra = Ri[j] != j ? n - rank : 0;
 
             SPEX_MPZ_DIVEXACT(SPEX_2D(bx, j, k, mpz),
-                                          SPEX_2D(bx, j, k, mpz),
-                                          Rx[Rp[j+1]-1-extra]);
-            for (int64_t i = Rp[j]; i < Rp[j+1]-1-extra; i++)
+                              SPEX_2D(bx, j, k, mpz),
+                              Rx[Rp[j + 1] - 1 - extra]);
+            for (int64_t i = Rp[j]; i < Rp[j + 1] - 1 - extra; i++)
             {
                 SPEX_MPZ_SGN(&sgn, Rx[i]);
-                if (sgn == 0) {continue;}
+                if (sgn == 0)
+                {
+                    continue;
+                }
                 // bx[i] = bx[i] - Rx[i]*bx[j]
                 SPEX_MPZ_SUBMUL(SPEX_2D(bx, Ri[i], k, mpz),
                                 Rx[i], SPEX_2D(bx, j, k, mpz));

@@ -8,8 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-
-/* Purpose: This function performs the sparse R \ Q^T b. First it computes Q^T b 
+/* Purpose: This function performs the sparse R \ Q^T b. First it computes Q^T b
  * then it solves R \ (Q^T b) using backward substitution.
  *
  * Input/output arguments:
@@ -24,27 +23,26 @@
  * option:   command options
  */
 
-#define SPEX_FREE_WORKSPACE        \
-{                                  \
-    SPEX_matrix_free(&b_new, option); \
-    SPEX_free(Qinv_perm);         \
-}
+#define SPEX_FREE_WORKSPACE               \
+    {                                     \
+        SPEX_matrix_free(&b_new, option); \
+        SPEX_free(Qinv_perm);             \
+    }
 
-# define SPEX_FREE_ALL             \
-{                                  \
-    SPEX_FREE_WORKSPACE            \
-    SPEX_matrix_free(&x, option); \
-}
+#define SPEX_FREE_ALL                 \
+    {                                 \
+        SPEX_FREE_WORKSPACE           \
+        SPEX_matrix_free(&x, option); \
+    }
 
-# include "spex_qr_internal.h"
-# include "spex_lu_internal.h"
+#include "spex_qr_internal.h"
+#include "spex_lu_internal.h"
 
-SPEX_info SPEX_qr_solve
-(
+SPEX_info SPEX_qr_solve(
     // Output
-    SPEX_matrix *x_handle,      // On input: undefined.
-                                // On output: Rational solution (SPEX_MPQ)
-                                // to the system.
+    SPEX_matrix *x_handle, // On input: undefined.
+                           // On output: Rational solution (SPEX_MPQ)
+                           // to the system.
     // input
     const SPEX_factorization F, // The QR factorization.
     const SPEX_matrix b,        // Right hand side vector
@@ -61,25 +59,23 @@ SPEX_info SPEX_qr_solve
     }
 
     // Check the inputs
-    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE
-        || F->kind != SPEX_QR_FACTORIZATION)
+    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE || F->kind != SPEX_QR_FACTORIZATION)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
-    SPEX_matrix b_new = NULL, x=NULL;
-    int64_t k, p, i,j,qi,qj;
-    int64_t rank=F->rank; //when matrix is full rank, rank=n
+    SPEX_matrix b_new = NULL, x = NULL;
+    int64_t k, p, i, j, qi, qj;
+    int64_t rank = F->rank; // when matrix is full rank, rank=n
     int64_t index;
-    int64_t *Qinv_perm=NULL;
-    int64_t n=F->Q->n;
+    int64_t *Qinv_perm = NULL;
+    int64_t n = F->Q->n;
     int sgn;
     // b->new has Q->n rows and b->n columns
     SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
-        false, true, NULL));
-    
-    
-    Qinv_perm = (int64_t*) SPEX_malloc ( n*sizeof(int64_t) );
+                                    false, true, NULL));
+
+    Qinv_perm = (int64_t *)SPEX_malloc(n * sizeof(int64_t));
     if (!Qinv_perm)
     {
         SPEX_FREE_ALL;
@@ -87,40 +83,39 @@ SPEX_info SPEX_qr_solve
     }
     for (k = 0; k < n; k++)
     {
-            index = F->Q_perm[k];
-            Qinv_perm[index] = k;
+        index = F->Q_perm[k];
+        Qinv_perm[index] = k;
     }
-
 
     //--------------------------------------------------------------------------
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
     //--------------------------------------------------------------------------
     // Iterate across every RHS vector
-    for (k = 0; k < b->n; k++) //if b is a vector this will only be once
+    for (k = 0; k < b->n; k++) // if b is a vector this will only be once
     {
         // Compute b[j,k]
-        for(j=0;j<F->Q->n;j++)
+        for (j = 0; j < F->Q->n; j++)
         {
-            qj =j;
-            for(p=F->Q->p[qj]; p < F->Q->p[qj+1]; p++)
+            qj = j;
+            for (p = F->Q->p[qj]; p < F->Q->p[qj + 1]; p++)
             {
-                i=F->Q->i[p];
-                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, qj, k, mpz),F->Q->x.mpz[p],
-                                 SPEX_2D(b, i, k, mpz));
+                i = F->Q->i[p];
+                SPEX_MPZ_ADDMUL(SPEX_2D(b_new, qj, k, mpz), F->Q->x.mpz[p],
+                                SPEX_2D(b, i, k, mpz));
             }
-            //F->rhos->x.mpz[F->R->n-1] is the determinant
-            SPEX_MPZ_MUL (SPEX_2D(b_new, qj, k, mpz),SPEX_2D(b_new, qj, k, mpz),
-                          F->rhos->x.mpz[F->rank-1]);
+            // F->rhos->x.mpz[F->R->n-1] is the determinant
+            SPEX_MPZ_MUL(SPEX_2D(b_new, qj, k, mpz), SPEX_2D(b_new, qj, k, mpz),
+                         F->rhos->x.mpz[F->rank - 1]);
         }
     }
 
     // Check for inconsistent system
-    for(k=b->n; k>rank; k--)
+    for (k = b->n; k > rank; k--) // TODO tcov. needs inconsistent system check
     {
-        //n-rank elements at the end of b_new should be 0 for system to be consistent
+        // n-rank elements at the end of b_new should be 0 for system to be consistent
         SPEX_MPZ_SGN(&sgn, b_new->x.mpz[k]);
-        if(sgn!=0)
+        if (sgn != 0)
         {
             SPEX_FREE_ALL;
             return SPEX_INCONSISTENT;
@@ -130,38 +125,37 @@ SPEX_info SPEX_qr_solve
     //--------------------------------------------------------------------------
     // backwards substitution
     //--------------------------------------------------------------------------
-    //Solves Rx=b_new (overwrites b_new into x)
-    SPEX_CHECK (spex_qr_back_sub(b_new,F->R,rank, F->rhos,option));
+    // Solves Rx=b_new (overwrites b_new into x)
+    SPEX_CHECK(spex_qr_back_sub(b_new, F->R, rank, F->rhos, option));
     //--------------------------------------------------------------------------
     // x = Q*b_new/scale
     //--------------------------------------------------------------------------
     // set scale = b->scale * rhos[n-1] / A_scale
-    SPEX_MPQ_SET_Z(b_new->scale, F->rhos->x.mpz[F->rank-1]);
+    SPEX_MPQ_SET_Z(b_new->scale, F->rhos->x.mpz[F->rank - 1]);
     SPEX_MPQ_MUL(b_new->scale, b_new->scale, b->scale);
     SPEX_MPQ_DIV(b_new->scale, b_new->scale, F->scale_for_A);
 
     // allocate space for x as dense MPQ matrix
-    SPEX_CHECK (SPEX_matrix_allocate (&x, SPEX_DENSE, SPEX_MPQ, F->Q->n, b->n,
-        0, false, true, option));
+    SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, F->Q->n, b->n,
+                                    0, false, true, option));
 
     // obtain x from permuted b_new with scale applied
-    for (i = 0 ; i < F->Q->n ; i++)
+    for (i = 0; i < F->Q->n; i++)
     {
         qi = F->Q_perm[i];
-        for (j = 0 ; j < b->n ; j++)
+        for (j = 0; j < b->n; j++)
         {
-            SPEX_MPQ_SET_Z(SPEX_2D(x,  qi, j, mpq),
-                                      SPEX_2D(b_new,  i, j, mpz));
-            SPEX_MPQ_DIV(SPEX_2D(x,  qi, j, mpq),
-                                    SPEX_2D(x,  qi, j, mpq), b_new->scale);
+            SPEX_MPQ_SET_Z(SPEX_2D(x, qi, j, mpq),
+                           SPEX_2D(b_new, i, j, mpz));
+            SPEX_MPQ_DIV(SPEX_2D(x, qi, j, mpq),
+                         SPEX_2D(x, qi, j, mpq), b_new->scale);
         }
     }
 
-    
     //--------------------------------------------------------------------------
     // Return result and free workspace
     //--------------------------------------------------------------------------
-    (*x_handle)=x;
+    (*x_handle) = x;
 
     SPEX_FREE_WORKSPACE;
     return SPEX_OK;

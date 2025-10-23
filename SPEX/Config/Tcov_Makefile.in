@@ -257,7 +257,6 @@ OBJ_QR = \
     spex_qr_ipgs.o \
     spex_qr_nonzero_structure.o \
     spex_qr_permute_A.o \
-    spex_qr_permute_A2.o \
     spex_qr_preorder.o \
     SPEX_qr_solve.o 
     
