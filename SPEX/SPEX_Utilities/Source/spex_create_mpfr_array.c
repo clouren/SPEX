@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_create_mpfr_array: create a dense mpfr array
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -38,12 +38,8 @@ mpfr_t *spex_create_mpfr_array
     {
         if (SPEX_mpfr_init2(x[i], prec) != SPEX_OK)
         {
-            SPEX_MPFR_SET_NULL(x[i]);
-            for (int64_t j = 0; j < i; j++)
-            {
-                SPEX_MPFR_CLEAR( x[j]);
-            }
-            SPEX_FREE(x);
+            SPEX_mpfr_set_null (x[i]);
+            spex_free_mpfr_array (&x, n) ;
             return NULL;
         }
     }

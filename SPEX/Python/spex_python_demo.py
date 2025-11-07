@@ -3,8 +3,8 @@
 #                           matrices
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
-# Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+# SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
+# Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 # All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -16,12 +16,12 @@
 
 # Import SPEX
 import SPEXpy as SPEX
+from SPEXpy import Options
 
 # Import scientific computing
 import numpy as np
 from numpy.random import default_rng
 from scipy.sparse import csc_matrix
-#from scipy.sparse import coo_matrix
 from scipy.sparse import random
 from scipy import stats
 
@@ -84,11 +84,9 @@ print(x)
 ## Backslash
 ##--------------------------------------------------------------------------
 
-# Read in A from file and populate b
-#fname=sys.argv[1]
-#A=utils.spex_matrix_from_file(fname)
-#b=np.ones(A.shape[0],dtype=np.float64)
+# Use the previous matrices
 
 # Solve
-#x=SPEX.backslash(A,b)
-#print(x)
+x=SPEX.backslash(A,b)
+print(x)
+#SPEX.backslash always returns the output as float64

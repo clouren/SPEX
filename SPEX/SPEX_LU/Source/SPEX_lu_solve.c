@@ -2,8 +2,8 @@
 // SPEX_LU/SPEX_lu_solve: exact solution of Ax=b
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX_LU: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,,
+// Erick Moreno-Centeno, and Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -67,10 +67,6 @@ SPEX_info SPEX_lu_solve     // solves the linear system LD^(-1)U x = b
     {
         return SPEX_INCORRECT_INPUT;
     }
-
-    // convert the factorization F to non-updatable
-    info = SPEX_factorization_convert(F, false, option);
-    if (info != SPEX_OK) return info;
 
     // check components of F in debug mode
     ASSERT_MATRIX (F->L,    SPEX_CSC,   SPEX_MPZ);

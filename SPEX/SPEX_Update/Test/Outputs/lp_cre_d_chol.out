@@ -1,8 +1,0 @@
-reading file TestMats/LPnetlib/lp_cre_d/lp_cre_d.mtx
-reading file TestMats/LPnetlib/lp_cre_d/lp_cre_d_b.mtx
-reading file TestMats/LPnetlib/lp_cre_d/lp_cre_d_c.mtx
-reading file TestMats/LPnetlib/lp_cre_d/lp_cre_d_lo.mtx
-reading file TestMats/LPnetlib/lp_cre_d/lp_cre_d_hi.mtx
-m=8926 n=73948 fixed_var=0 nz=246614 real_nnz=246614
-Constructing initial basis...
-Size of triangular part is 6454

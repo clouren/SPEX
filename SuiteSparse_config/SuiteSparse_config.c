@@ -11,8 +11,11 @@
 /* SuiteSparse configuration : memory manager and printf functions.
  */
 
-#define SUITESPARSE_LIBRARY
 #include "SuiteSparse_config.h"
+
+#if defined ( MATLAB_MEX_FILE )
+#include "mex.h"
+#endif
 
 /* -------------------------------------------------------------------------- */
 /* SuiteSparse_config : a static struct */
@@ -496,7 +499,7 @@ void *SuiteSparse_free      /* always returns NULL */
         tic [1] = 0 ;
     }
 
-#else 
+#else
 
     /* ---------------------------------------------------------------------- */
     /* POSIX timer */
@@ -617,7 +620,7 @@ double SuiteSparse_hypot (double x, double y)
             r = x / y ;
             s = y * sqrt (1.0 + r*r) ;
         }
-    } 
+    }
     return (s) ;
 }
 
@@ -760,6 +763,10 @@ const char *SuiteSparse_BLAS_library ( void )
         return ((sizeof (SUITESPARSE_BLAS_INT) == 8) ?
             "OpenBLAS (64-bit integers)" :
             "OpenBLAS (32-bit integers)") ;
+    #elif defined ( BLAS_FLAME )
+        return ((sizeof (SUITESPARSE_BLAS_INT) == 8) ?
+            "FLAME (64-bit integers)" :
+            "FLAME (32-bit integers)") ;
     #elif defined ( BLAS_Generic )
         return ((sizeof (SUITESPARSE_BLAS_INT) == 8) ?
             "Reference BLAS (64-bit integers)" :

@@ -2,8 +2,8 @@
 // SPEX/MATLAB/spex_backslash_mex_soln: Use SPEX Backslash within MATLAB
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022-2023, Chris Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -30,7 +30,6 @@ void mexFunction
 
     SPEX_info status;
     SPEX_MEX_OK(SPEX_initialize_expert(mxMalloc, mxCalloc, mxRealloc, mxFree));
-
     SuiteSparse_config_printf_func_set (mexPrintf);
 
     //--------------------------------------------------------------------------
@@ -179,3 +178,9 @@ void mexFunction
     SPEX_FREE(option);
     SPEX_finalize( );
 }
+
+#if defined ( __clang__ ) && defined ( CLANG_NEEDS_MAIN )
+// when using clang inside MATLAB, it seems to require a "_main" symbol.
+int main (void) { return (0) ; }
+#endif
+

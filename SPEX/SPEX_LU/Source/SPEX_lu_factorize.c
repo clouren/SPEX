@@ -2,8 +2,8 @@
 // SPEX_LU/SPEX_lu_factorize: exact sparse LU factorization
 //------------------------------------------------------------------------------
 
-// SPEX_LU: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
+// SPEX_LU: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,,
+// Erick Moreno-Centeno, and Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
@@ -49,6 +49,13 @@ SPEX_info SPEX_lu_factorize
     //--------------------------------------------------------------------------
 
     if (!spex_initialized ( )) return (SPEX_PANIC);
+    
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_LU_LEFT)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
 
     SPEX_REQUIRE (A, SPEX_CSC, SPEX_MPZ);
     int64_t anz;

@@ -2,8 +2,8 @@
 // SPEX_Utilities/SPEX_initialize: initialize SPEX
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -38,10 +38,11 @@ void spex_set_initialized (bool s)
 
 SPEX_info SPEX_initialize ( void )
 {
-    if (spex_initialized( )) return (SPEX_PANIC);
-
-    // SPEX requires GMP to support bit counts that are 64-bit integers
-    if (sizeof (mp_bitcnt_t) < sizeof (uint64_t)) return (SPEX_PANIC);
+    if (spex_initialized( ))
+    {
+        // SPEX is already initialized
+        return (SPEX_PANIC);
+    }
 
     // tell GMP and MPFR which memory allocation functions to use
     mp_set_memory_functions

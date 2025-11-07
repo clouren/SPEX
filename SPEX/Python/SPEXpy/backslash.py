@@ -2,8 +2,8 @@
 # SPEX/Python/SPEXpy/backslash.py: solve Ax=b
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
-# Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+# SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
+# Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 # All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -36,7 +36,7 @@ def backslash( A, b):#, options=Options('double')):
     ##--------------------------------------------------------------------------
     ## Call SPEX
     ##--------------------------------------------------------------------------
-    x=spex_connect(A,b,0,True,1)
+    x=spex_connect(A,b,0,False,1)
     #x=spex_connect(A,b,0,options.charOut(),1) #1 calls the general backslash
 
     return x

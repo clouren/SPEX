@@ -2,8 +2,8 @@
 // Demo/spex_process_command_line: processes command line for user specified options
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -37,12 +37,12 @@ SPEX_info spex_demo_process_command_line //processes the command line
         {
             if (!argv[++i])
             {
-                printf("\n****ERROR! There must be an argument between 0-2"
-                    "following q\n");
+                printf("\n****ERROR! There must be an argument between 1-3"
+                    "following q\n 1: none, 2: Colamd, 3: AMD");
                 return SPEX_INCORRECT_INPUT;
             }
             option->order = atoi(argv[i]);
-            if (option->order < 0 || option->order > 2)
+            if (option->order < 1 || option->order > 3)
             {
                 printf("\n****ERROR! Invalid column ordering"
                     "\nDefaulting to COLAMD\n\n");
@@ -121,6 +121,18 @@ SPEX_info spex_demo_process_command_line //processes the command line
                 return SPEX_INCORRECT_INPUT;
             }
             *rhs_name = argv[i];
+        }
+        else if ( strcmp(arg, "p") == 0 || strcmp(arg, "pivot") == 0)
+        {
+            if (!argv[++i])
+            {
+                printf("\n****ERROR! Pivoting scheme must be entered\n");
+                printf("Options are: 0: Smallest, 1: Diagonal, 2: First nonzero,\n");
+                printf("3: smallest with tolerance, 4: largest with tolerance, 5: largest");
+                printf("\nDefaulting to smallest");
+                option->pivot = SPEX_SMALLEST;
+            }
+            option->order = atoi(argv[i]);
         }
         else
         {

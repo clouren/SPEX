@@ -2,8 +2,8 @@
 // SPEX_Utilities/spex_colamd: Call COLAMD for matrix ordering
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -70,13 +70,14 @@ SPEX_info spex_colamd
     {
         A2[i] = A->i[i];
     }
-
+    
     // find the colamd ordering
     int64_t stats[COLAMD_STATS];
     int64_t colamd_result = colamd_l (m, n, Alen, A2, perm,
         (double *) NULL, stats);
     if (!colamd_result)
     {
+        printf("fail\n");
         // COLAMD failed: matrix is invalid
         SPEX_FREE_ALL;
         return (SPEX_INCORRECT_INPUT);

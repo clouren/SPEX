@@ -2,8 +2,8 @@
 // SPEX_Backslash/SPEX_backslash.c: Solve a system Ax=b
 //------------------------------------------------------------------------------
 
-// SPEX_Backslash: (c) 2020-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Backslash: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -34,33 +34,34 @@
 #include "spex_util_internal.h"
 #include "SPEX.h"
 
-SPEX_info SPEX_backslash
-(
+SPEX_info SPEX_backslash(
     // Output
-    SPEX_matrix *x_handle,      // On output: Final solution vector(s)
-                                // On input: undefined
+    SPEX_matrix *x_handle, // On output: Final solution vector(s)
+                           // On input: undefined
     // Input
-    const SPEX_type type,       // Type of output desired
-                                // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-    const SPEX_matrix A,        // Input matrix
-    const SPEX_matrix b,        // Right hand side vector(s)
-    SPEX_options option         // Command options (NULL: means use defaults)
+    const SPEX_type type, // Type of output desired
+                          // Must be SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,  // Input matrix
+    const SPEX_matrix b,  // Right hand side vector(s)
+    SPEX_options option   // Command options (NULL: means use defaults)
 )
 {
 
     SPEX_info info;
     // Check inputs
-    if (!spex_initialized()) return SPEX_PANIC;
+    if (!spex_initialized())
+        return SPEX_PANIC;
 
     // Check for NULL pointers
-    if (!x_handle || !A || !b )
+    if (!x_handle || !A || !b)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
+    (*x_handle) = NULL;
+
     // Check for data types and dimension of A and b
-    if (A->type != SPEX_MPZ || A->kind != SPEX_CSC
-        || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
+    if (A->type != SPEX_MPZ || A->kind != SPEX_CSC || b->type != SPEX_MPZ || b->kind != SPEX_DENSE)
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -71,147 +72,69 @@ SPEX_info SPEX_backslash
         return SPEX_INCORRECT_INPUT;
     }
 
-
-    SPEX_options backslash_options = NULL;
-    info = SPEX_create_default_options(&backslash_options);
-    if (info != SPEX_OK)
-    {
-        return SPEX_OUT_OF_MEMORY;
-    }
-
-    if (option != NULL)
-    {
-        // IF the options are not NULL, copy the important parts.
-        // Otherwise do nothing
-        backslash_options->print_level = option->print_level; // print level
-        backslash_options->prec = option->prec;               // MPFR precision
-        backslash_options->round = option->round;             // MPFR rounding
-    }
-
     // Declare output
     SPEX_matrix x = NULL;
 
-    if(A->m==A->n)
+    // get option->algo, or use SPEX_ALGORITHM_DEFAULT if option is NULL:
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    switch (algo)
     {
-        // Attempt a Cholesky factorization of A.
-        // If Cholesky is occuring, we update the option
-        // struct to do AMD and diagonal pivoting
-        backslash_options->order = SPEX_AMD;
-        backslash_options->pivot = SPEX_DIAGONAL;
+    // Left-looking LU factorization is desired. Call lu backslash
+    // with user-specified options
+    case SPEX_LU_LEFT:
+        info = SPEX_lu_backslash(&x, type, A, b, option);
+        break;
 
-        // Try SPEX Cholesky. The output for this function
+    // Some type of Cholesky factorization is desired. Call
+    // Cholesky backslash with user-specified options
+    case SPEX_CHOL_UP:
+    case SPEX_CHOL_LEFT:
+        info = SPEX_cholesky_backslash(&x, type, A, b, option);
+        break;
+
+    // Some type of LDL factorization is desired. Call
+    // LDL backslash with user-specified options
+    case SPEX_LDL_UP:
+    case SPEX_LDL_LEFT:
+        info = SPEX_ldl_backslash(&x, type, A, b, option);
+        break;
+
+    // QR factorization is desired. Call qr backslash
+    // with user-specified options
+    case SPEX_QR_IPGE:
+        info = SPEX_qr_backslash(&x, type, A, b, option);
+        break;
+
+    // Default algorithm is utilized. In this case, SPEX Backslash
+    // attempts to find the appropriate algorithm. First, up-looking
+    // LDL factorization is attempted. If LDL is successful, return x
+    // and exit. If LDL fails, LU factorization is attempted.
+    default:
+    case SPEX_ALGORITHM_DEFAULT:
+
+        // Try SPEX ldl. The output for this function
         // is either:
-        // SPEX_OK:       Cholesky success, x is the exact solution
-        // SPEX_NOTSPD:   Cholesky failed. This means
-        //                A is not SPD. In this case, we try LU
+        // SPEX_OK:          LDL success, x is the exact solution
+        // SPEX_UNSYMMETRIC: Matrix is unsymmetric and not a candidate for LDL
+        // SPEX_ZERODIAG:    A is symmetric but does not have a nonzero diagonal.
+        //                   not a candidate for LDL.
         // Other error code: Some error. Return the error code and exit
-        info = SPEX_cholesky_backslash(&x, type, A, b, backslash_options);
-        if (info == SPEX_OK)
-        {
-            // Cholesky was successful. Set x_handle = x
-            (*x_handle) = x;
+        info = SPEX_ldl_backslash(&x, type, A, b, option);
 
-            // x_handle contains the exact solution of Ax = b and is
-            // stored in the user desired type. Now, we exit and return ok
-            SPEX_FREE(backslash_options);
-            return SPEX_OK;
-        }
-        else if (info == SPEX_NOTSPD)
+        if (info == SPEX_ZERODIAG || info == SPEX_UNSYMMETRIC)
         {
-            // Cholesky factorization failed. Must try
-            // LU factorization now
-
-            // Since LU is occuring, we update the option
-            // struct to do COLAMD and small pivoting
-            backslash_options->order = SPEX_COLAMD;
-            backslash_options->pivot = SPEX_SMALLEST;
+            // ldl factorization failed but matrix is a candidate
+            // for LU factorization.
 
             // The LU factorization can return either:
             // SPEX_OK: LU success, x is the exact solution
             // Other error code: Some error. Return the error
             //                   code and exit
-            info = SPEX_lu_backslash(&x, type, A, b, backslash_options);
-            if (info == SPEX_OK)
-            {
-                // LU success, set x_handle = x
-                (*x_handle) = x;
-
-                // x_handle contains the exact solution of Ax = b and is
-                // stored in the user desired type. Now, we exit and return ok
-                SPEX_FREE(backslash_options);
-                return SPEX_OK;
-            }
-            else if (info == SPEX_SINGULAR)
-            {
-                // Both Cholesky and LU have failed, info contains
-                // the problem, most likely that A is singular
-                // Attempt a QR factorization of A.
-                backslash_options->order = SPEX_COLAMD;
-
-                info = SPEX_qr_backslash(&x, type, A, b, backslash_options);
-                if (info == SPEX_OK)
-                {
-                    // QR was successful. Set x_handle = x
-                    (*x_handle) = x;
-
-                    // x_handle contains the exact solution of Ax = b and is
-                    // stored in the user desired type. Now, we exit and return ok
-                    SPEX_FREE(backslash_options);
-                    return SPEX_OK;
-                }
-                else
-                {
-                    // QR failed
-                    // Note that since QR failed, x_handle is still NULL
-                    // so there is no potential for a memory leak here
-                    SPEX_FREE(backslash_options);
-                    return info;
-                }
-            }
-            else
-            {
-                // Note that, because LU failed, x_handle is still
-                // NULL so there is no potential for a memory leak here
-                SPEX_FREE(backslash_options);
-                return info;
-            }
-        }
-        else
-        {
-            // Cholesky failed, but not due to a SPEX_NOTSPD
-            // error code. Most likely invalid input or out of
-            // memory condition.
-            // Note that since Cholesky failed, x_handle is still NULL
-            // so there is no potential for a memory leak here
-            SPEX_FREE(backslash_options);
-            return info;
+            info = SPEX_lu_backslash(&x, type, A, b, option);
         }
     }
-    else
-    {
-        // Attempt a QR factorization of A.
-        backslash_options->order = SPEX_COLAMD;
-
-        info = SPEX_qr_backslash(&x, type, A, b, backslash_options);
-        if (info == SPEX_OK)
-        {
-            // QR was successful. Set x_handle = x
-            (*x_handle) = x;
-
-            // x_handle contains the exact solution of Ax = b and is
-            // stored in the user desired type. Now, we exit and return ok
-            SPEX_FREE(backslash_options);
-            return SPEX_OK;
-        }
-        else
-        {
-            // QR failed
-            // Note that since QR failed, x_handle is still NULL
-            // so there is no potential for a memory leak here
-            SPEX_FREE(backslash_options);
-            return info;
-        }
-
-    }
-
+    // x contains either the exact solution of the system or is NULL
+    (*x_handle) = x;
+    // returns SPEX_OK if the algorithm is successful or the appropriate error.
+    return info;
 }

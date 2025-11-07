@@ -2,17 +2,19 @@
 // SPEX_Utilities/SPEX_matrix_check: check if a matrix is OK
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-#define SPEX_FREE_ALL    \
-    SPEX_FREE (work);   \
-    SPEX_MPZ_CLEAR(q);   \
-    SPEX_MPZ_CLEAR(r);
+#define SPEX_FREE_ALL       \
+{                           \
+    SPEX_FREE (work);       \
+    SPEX_mpz_clear (q);     \
+    SPEX_mpz_clear (r);     \
+}
 
 #include "spex_util_internal.h"
 
@@ -21,7 +23,7 @@
     lines++ ;                               \
     if (pr == 2 && lines > 30)              \
     {                                       \
-        SPEX_PRINTF ("    ...\n");         \
+        SPEX_PRINTF ("    ...\n");          \
         pr = 1 ;                            \
     }
 
@@ -106,8 +108,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     // check the dimensions
     //--------------------------------------------------------------------------
 
-    if (A->type < SPEX_MPZ || A->type > SPEX_FP64 ||
-        (A->kind == SPEX_DYNAMIC_CSC && A->type != SPEX_MPZ))
+    if (A->type < SPEX_MPZ || A->type > SPEX_FP64)
     //  A->kind < SPEX_CSC || A->kind > SPEX_DENSE // checked in SPEX_matrix_nnz
     {
         SPEX_PR1 ("A has invalid type.\n");
@@ -116,8 +117,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
 
     SPEX_PR2 ("SPEX_matrix: nrows: %"PRId64", ncols: %"PRId64", nz:"
         "%"PRId64", nzmax: %"PRId64", kind: %s, type: %s\n", m, n, nz, nzmax,
-        A->kind < 1 ? "CSC" : A->kind < 2 ? "Triplet" : A->kind < 3 ?
-        "Dense" : "Dynamic CSC",
+        A->kind < 1 ? "CSC" : A->kind < 2 ? "Triplet" :
+        "Dense",
         A->type < 1 ? "MPZ" : A->type < 2 ? "MPQ" : A->type < 3 ?
         "MPFR" : A->type < 4 ? "int64" : "double");
 
@@ -144,8 +145,8 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
     // paranoia:  check prec here: cast to mprf_prec_t, and back, assert
     // equality, if not equal then return SPEX_PANIC
     mpz_t q, r;
-    SPEX_MPZ_SET_NULL(q);
-    SPEX_MPZ_SET_NULL(r);
+    SPEX_mpz_set_null (q);
+    SPEX_mpz_set_null (r);
 
     int64_t lines = 0 ;     // # of lines printed so far
 
@@ -419,7 +420,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
             }
 
             // sort the (i,j) indices
-            qsort (work, nz, 2 * sizeof (int64_t), compar);
+            qsort (work, nz, 2 * sizeof (int64_t), compar) ;
 
             // check for duplicates
             for (p = 1 ; p < nz ; p++)
@@ -531,121 +532,7 @@ SPEX_info SPEX_matrix_check     // returns a SPEX status code
         }
         break;
 
-        //----------------------------------------------------------------------
-        // check a matrix in dynamic CSC format
-        //----------------------------------------------------------------------
-
-        case SPEX_DYNAMIC_CSC:
-        {
-            // This is checked by SPEX_matrix_nnz
-            ASSERT (A->v != NULL);
-
-            // allocate workspace to check for duplicates
-            work = (int64_t *) SPEX_calloc (m, sizeof (int64_t));
-            if (work == NULL)
-            {
-                // out of memory
-                SPEX_PR1 ("out of memory\n");
-                SPEX_FREE_ALL;
-                return (SPEX_OUT_OF_MEMORY);
-            }
-
-            // initialize q and r
-            SPEX_info info;
-            SPEX_MPZ_INIT(q);
-            SPEX_MPZ_INIT(r);
-
-            //------------------------------------------------------------------
-            // check the row indices && print values
-            //------------------------------------------------------------------
-
-            for (j = 0 ; j < n ; j++)  // iterate across columns
-            {
-                // This is checked by SPEX_matrix_nnz
-                ASSERT (A->v[j] != NULL);
-
-                SPEX_PR_LIMIT ;
-                SPEX_PR2 ("column %"PRId64" :\n", j);
-                int64_t marked = j+1 ;
-
-                if (A->v[j]->nzmax > 0 &&
-                    (A->v[j]->i == NULL || A->v[j]->x == NULL))
-                {
-                    // row indices or values not present
-                    SPEX_PR1 ("i or x invalid\n");
-                    SPEX_FREE_ALL;
-                    return (SPEX_INCORRECT_INPUT);
-                }
-
-                for (p = 0 ; p < A->v[j]->nz ; p++)
-                {
-                    i = A->v[j]->i [p] ;
-                    if (i < 0 || i >= m)
-                    {
-                        // row indices out of range
-                        SPEX_PR1 ("index out of range: (%ld,%ld)\n", i, j);
-                        SPEX_FREE_ALL;
-                        return (SPEX_INCORRECT_INPUT);
-                    }
-                    else if (work [i] == marked)
-                    {
-                        // duplicate
-                        SPEX_PR1 ("duplicate index: (%ld,%ld)\n", i, j);
-                        SPEX_FREE_ALL;
-                        return (SPEX_INCORRECT_INPUT);
-                    }
-                    if (pr >= 2)
-                    {
-                        SPEX_PR_LIMIT ;
-                        SPEX_PR2 ("  row %"PRId64" : ", i);
-
-                        // check if each entry will be integer after scale
-                        // applied, report error if not.
-                        int sgn;
-                        SPEX_MPZ_SGN(&sgn, A->v[j]->x[p]);
-                        if (sgn != 0)
-                        {
-                            SPEX_MPZ_MUL(q, A->v[j]->x[p],
-                                SPEX_MPQ_NUM(A->v[j]->scale));
-                            SPEX_MPZ_CDIV_QR(q, r, q,
-                                SPEX_MPQ_DEN(A->v[j]->scale));
-                            SPEX_MPZ_SGN(&sgn, r);
-                            if (sgn != 0)
-                            {
-                                // entry is not integer after scale applied
-                                SPEX_PR1 ("entry not integer: (%ld,%ld)\n",
-                                    i, j);
-                                SPEX_FREE_ALL;
-                                return (SPEX_INCORRECT_INPUT);
-                            }
-                            // use mpfr_asprintf so that we can use SPEX_PR*,
-                            // which employs either printf or mexprintf
-                            status = SPEX_mpfr_asprintf(&buff, "%Zd \n", q);
-                            if (status >= 0)
-                            {
-                                SPEX_PR2("%s", buff);
-                                SPEX_mpfr_free_str (buff);
-                            }
-                            else
-                            {
-                                SPEX_FREE_ALL;
-                                SPEX_PRINTF (" error: %d\n", status);
-                                return (status);
-                            }
-                        }
-                        else
-                        {
-                            // just print 0 as it is
-                            SPEX_PR2("%d \n", 0);
-                        }
-                    }
-                    work [i] = marked ;
-                }
-            }
-
-        }
-        break;
-
+     
     }
 
     //--------------------------------------------------------------------------

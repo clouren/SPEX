@@ -2,8 +2,8 @@
 # SPEX/Python/SPEXpy/cholesky_backslash.py: solve Ax=b using Cholesky factorization
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2022, Chris Lourenco, Jinhao Chen,
-# Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+# SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
+# Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 # All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -15,6 +15,8 @@ from .spex_connect import spex_connect
 
 import scipy
 from scipy.sparse import isspmatrix, isspmatrix_csc, linalg
+
+import numpy as np
 
 def cholesky_backslash( A, b, options=Options('double', 'amd')):
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical
@@ -31,7 +33,7 @@ def cholesky_backslash( A, b, options=Options('double', 'amd')):
         A.tocsc()
     ## Check symmetry
     tol=1e-8
-    if linalg.norm(A-A.T, scipy.Inf) > tol:
+    if linalg.norm(A-A.T, np.inf) > tol:
         raise SPEX_error(determine_error(-4))
     # Check input shape
     if A.shape[1]!=b.shape[0]:

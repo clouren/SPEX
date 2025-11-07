@@ -2,8 +2,8 @@
 // SPEX_Utilities/SPEX_matrix_allocate: allocate a SPEX_matrix
 //------------------------------------------------------------------------------
 
-// SPEX_Utilities: (c) 2019-2023, Christopher Lourenco, Jinhao Chen,
-// Lorena Mejia Domenzain, Timothy A. Davis, and Erick Moreno-Centeno.
+// SPEX_Utilities: (c) 2019-2024, Christopher Lourenco, Jinhao Chen,
+// Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
@@ -24,10 +24,19 @@
 
 #define SPEX_FREE_ALL                       \
 {                                           \
-    SPEX_matrix_free (&A, option);         \
+    SPEX_matrix_free (&A, option);          \
 }
 
 #include "spex_util_internal.h"
+
+#if defined (__GNUC__)
+    #if ( __GNUC__ == 11)
+        // gcc 11 has a bug that triggers a spurious warning for the call
+        // to SPEX_MPQ_INIT (A->scale), from -Wstringop-overflow.  see
+        // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101854
+        #pragma GCC diagnostic ignored "-Wstringop-overflow"
+    #endif
+#endif
 
 SPEX_info SPEX_matrix_allocate
 (
@@ -65,9 +74,8 @@ SPEX_info SPEX_matrix_allocate
     }
     (*A_handle) = NULL ;
     if (m < 0 || n < 0 ||
-        kind  < SPEX_CSC || kind  > SPEX_DYNAMIC_CSC ||
-        type  < SPEX_MPZ || type  > SPEX_FP64 ||
-        (kind == SPEX_DYNAMIC_CSC && type != SPEX_MPZ)) //dynamic must be mpz
+        kind  < SPEX_CSC || kind  > SPEX_DENSE ||
+        type  < SPEX_MPZ || type  > SPEX_FP64) 
     {
         return (SPEX_INCORRECT_INPUT);
     }
@@ -102,29 +110,14 @@ SPEX_info SPEX_matrix_allocate
     A->x_shallow = false ;
 
     // A->scale = 1
-    SPEX_CHECK (spex_create_mpq (A->scale));
+    SPEX_MPQ_INIT (A->scale) ;
     SPEX_MPQ_SET_UI (A->scale, 1, 1);
 
     //--------------------------------------------------------------------------
     // allocate the p, i, j, and x components
     //--------------------------------------------------------------------------
 
-    if (kind == SPEX_DYNAMIC_CSC)
-    {
-        // make sure each A->v[] is initialized as NULL
-        A->v = (SPEX_vector*) SPEX_calloc(n, sizeof(SPEX_vector));
-        if (!(A->v))
-        {
-            SPEX_FREE_ALL;
-            return SPEX_OUT_OF_MEMORY;
-        }
-
-        for (int64_t i = 0; i < n; i++)
-        {
-            SPEX_CHECK(SPEX_vector_allocate(&(A->v[i]), 0, option));
-        }
-    }
-    else if(shallow)
+    if(shallow)
     {
 
         // all components are shallow.  The caller can modify individual
