@@ -140,11 +140,11 @@ SPEX_info spex_test_ldl_backslash(SPEX_matrix A, SPEX_matrix b,
 //------------------------------------------------------------------------------
 
 #undef SPEX_FREE_ALL
-#define SPEX_FREE_ALL \
-    {                 \
-        SPEX_mpz_clear(q1);
-SPEX_mpz_clear(r1);
-}
+#define SPEX_FREE_ALL       \
+    {                       \
+        SPEX_mpz_clear(q1); \
+        SPEX_mpz_clear(r1); \
+    }
 
 SPEX_info spex_test_cdiv_qr(mpz_t n, mpz_t d);
 

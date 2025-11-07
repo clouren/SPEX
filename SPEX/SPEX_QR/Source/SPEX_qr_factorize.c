@@ -90,9 +90,6 @@ SPEX_info SPEX_qr_factorize(
     int64_t rank = n;
     int sgn;
 
-    clock_t start, end;
-    double times;
-
     // Allocate memory for the factorization
     F = (SPEX_factorization)SPEX_calloc(1, sizeof(SPEX_factorization_struct));
     if (F == NULL)

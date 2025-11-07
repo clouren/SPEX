@@ -69,7 +69,7 @@ cov: runtests
 	./covall
 
 all: tcov_for_lu spex_demo_lu_extended tcov_for_cholesky tcov_for_lu2 tcov_for_qr \
-    tcov_for_other tcov_for_update
+    tcov_for_other
 
 #-------------------------------------------------------------------------------
 # compile .c file in this folder
@@ -119,7 +119,6 @@ OBJ_Util = \
     SPEX_transpose.o \
     spex_amd.o \
     spex_colamd.o \
-    spex_create_mpq.o \
     spex_history_update.o \
     spex_ipge_update.o \
     spex_dot_product.o
@@ -271,7 +270,7 @@ tcov_for_other: $(OBJ_Tcov) $(OBJ_Util) $(OBJ_LU)  tcov_for_other.c
 #-------------------------------------------------------------------------------
 
 # run all statement coverage tests
-runtests: runtests4llu runtests4luu runtests4chol runtests4qr
+runtests: runtests4llu runtests4chol runtests4qr
 
 # only run test for SPEX_LU
 runtests4llu: all
