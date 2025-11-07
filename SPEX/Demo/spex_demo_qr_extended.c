@@ -51,12 +51,12 @@ int main(int argc, char *argv[])
 
     // Default options.
     SPEX_options option = NULL;
-    DEMO_OK(SPEX_create_default_options(&option));
+    SPEX_TRY(SPEX_create_default_options(&option));
     option->algo = SPEX_QR_GS;
 
     // Process the command line
-    DEMO_OK(spex_demo_process_command_line(argc, argv, option,
-                                           &mat_name, &rhs_name, &rat));
+    SPEX_TRY(spex_demo_process_command_line(argc, argv, option,
+                                            &mat_name, &rhs_name, &rat));
 
     //--------------------------------------------------------------------------
     // Allocate memory
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
+    SPEX_TRY(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
     n = A->n;
     // For this code, we utilize a vector of all ones as the RHS vector
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
+    SPEX_TRY(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
 
     //--------------------------------------------------------------------------
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     // option->print_level=3;
     // option->order = SPEX_AMD ;
     // option->order = SPEX_NO_ORDERING ;
-    DEMO_OK(SPEX_qr_analyze(&S, A, option));
+    SPEX_TRY(SPEX_qr_analyze(&S, A, option));
     /*for(int i; i<n;i++)
     {
         printf("%ld\n",S->Q_perm[i]);
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     printf("Factorization:\n");
     option->algo = SPEX_QR_GS;
     option->print_level = 3;
-    DEMO_OK(SPEX_qr_factorize(&F, A, S, option));
+    SPEX_TRY(SPEX_qr_factorize(&F, A, S, option));
     // SPEX_matrix_check(F->Q, option);
     // SPEX_matrix_check(F->R, option);
 
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     // Solve linear system
     //--------------------------------------------------------------------------
     printf("Solve:\n");
-    DEMO_OK(SPEX_qr_solve(&x, F, b, option));
+    SPEX_TRY(SPEX_qr_solve(&x, F, b, option));
     // SPEX_matrix_check(x, option);
 
     printf("Success!!\n");
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     if ((F->R->n) - (F->rank) == 0)
     {
         option->print_level = 1;
-        DEMO_OK(spex_demo_check_solution(A, x, b, option)); // works is x is mpq
+        SPEX_TRY(spex_demo_check_solution(A, x, b, option)); // works is x is mpq
     }
 
     //--------------------------------------------------------------------------

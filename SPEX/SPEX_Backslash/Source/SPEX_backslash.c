@@ -101,7 +101,7 @@ SPEX_info SPEX_backslash(
 
     // QR factorization is desired. Call qr backslash
     // with user-specified options
-    case SPEX_QR_IPGE:
+    case SPEX_QR_GS:
         info = SPEX_qr_backslash(&x, type, A, b, option);
         break;
 

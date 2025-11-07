@@ -1040,20 +1040,17 @@ SPEX_info SPEX_mpz_mul(
 
 /* Purpose: Safely set an mpz number += product of two mpz numbers,
  * i.e., x = x + y*z */
-#if 0
-SPEX_info SPEX_mpz_addmul
-(
+
+SPEX_info SPEX_mpz_addmul(
     mpz_t x,
     const mpz_t y,
-    const mpz_t z
-)
+    const mpz_t z)
 {
-    SPEX_GMPZ_WRAPPER_START (x);
-    mpz_addmul (x, y, z);
-    SPEX_GMP_WRAPPER_FINISH ;
+    SPEX_GMPZ_WRAPPER_START(x);
+    mpz_addmul(x, y, z);
+    SPEX_GMP_WRAPPER_FINISH;
     return (SPEX_OK);
 }
-#endif
 
 //------------------------------------------------------------------------------
 // SPEX_mpz_sub

@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
+    SPEX_TRY(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
     n = A->n;
     m = A->m;
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
         FREE_WORKSPACE;
         return 0;
     }
-    DEMO_OK(spex_demo_read_dense(&b, rhs_file, option));
+    SPEX_TRY(spex_demo_read_dense(&b, rhs_file, option));
     fclose(rhs_file);
 
     option->print_level = 3;
@@ -210,22 +210,22 @@ int main(int argc, char *argv[])
     printf("analysis:\n");
     // option->print_level = 3;
     option->order = SPEX_NO_ORDERING;
-    DEMO_OK(SPEX_qr_analyze(&S, A, option));
+    SPEX_TRY(SPEX_qr_analyze(&S, A, option));
     // SPEX_matrix_check(A, option);
     printf("facts:\n");
     // option->print_level = 3;
-    DEMO_OK(SPEX_qr_factorize(&F, A, S, option));
+    SPEX_TRY(SPEX_qr_factorize(&F, A, S, option));
     // SPEX_matrix_check(F->Q, option);
     // SPEX_matrix_check(F->R, option);
     printf("Rank of matrix: %ld, num of cols: %ld\n", F->rank, (F->R->n));
 
     printf("solve:\n");
-    DEMO_OK(SPEX_qr_solve(&x, F, b, option));
+    SPEX_TRY(SPEX_qr_solve(&x, F, b, option));
     // SPEX_matrix_check(x, option);
 
     if (F->rank, (F->R->n) - (F->rank) == 0) // TOASK
     {
-        DEMO_OK(spex_demo_check_solution(A, x, b, option));
+        SPEX_TRY(spex_demo_check_solution(A, x, b, option));
     }
     printf("Success!!\n");
 
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
     SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL ;
     SPEX_options option = NULL;
-    DEMO_OK(SPEX_create_default_options(&option));
+    SPEX_TRY(SPEX_create_default_options(&option));
     if (option == NULL)
     {
         fprintf (stderr, "Error! OUT of MEMORY!\n");
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    //DEMO_OK(spex_demo_process_command_line(argc, argv, option,
+    //SPEX_TRY(spex_demo_process_command_line(argc, argv, option,
        // &mat_name, &rhs_name, &rat));
     mat_name = argv[2];
     //printf("%s\n",mat_name);
@@ -279,15 +279,15 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    DEMO_OK(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
+    SPEX_TRY(spex_demo_tripread(&A, mat_file, SPEX_FP64, option));
     fclose(mat_file);
 
     int64_t n = A->n, col_sum;
     int sgn;
     option->order =  SPEX_NO_ORDERING;
-    DEMO_OK (SPEX_qr_analyze(&S, A, option));
+    SPEX_TRY (SPEX_qr_analyze(&S, A, option));
 
-    DEMO_OK (SPEX_qr_factorize(&F, A, S, option));
+    SPEX_TRY (SPEX_qr_factorize(&F, A, S, option));
 
 
     printf("%s, ",mat_name);

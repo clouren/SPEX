@@ -131,8 +131,8 @@ SPEX_info spex_qr_counts(
             for (p = AT->p[J]; p < AT->p[J + 1]; p++)
             {
                 i = AT->i[p];
-                SPEX_CHECK(spex_cholesky_leaf(&q, i, j, first, maxfirst,
-                                              prevleaf, ancestor, &jleaf));
+                SPEX_CHECK(spex_symmetric_leaf(&q, i, j, first, maxfirst,
+                                               prevleaf, ancestor, &jleaf));
                 if (jleaf >= 1)
                 {
                     delta[j]++; /* A(i,j) is in skeleton */
