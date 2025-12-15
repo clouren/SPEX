@@ -75,6 +75,12 @@ SPEX_info SPEX_qr_backslash(
         return SPEX_INCORRECT_INPUT;
     }
 
+    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_QR_GS)
+    {
+        return SPEX_INCORRECT_ALGORITHM;
+    }
+
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);
 

@@ -74,7 +74,7 @@ SPEX_info SPEX_qr_factorize(
     }
 
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_QR_GS) // TODO add default
+    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_QR_GS)
     {
         return SPEX_INCORRECT_ALGORITHM;
     }

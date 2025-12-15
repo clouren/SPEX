@@ -36,14 +36,15 @@
 
 // The method must return a bool (true if successful, false if failure).
 
-#define NTRIAL_MAX 10000
+#define NTRIAL_MAX 100000 // needs to be at least 149362 (this takes an hour)
 
 #define BRUTAL(method)                                           \
     {                                                            \
         int64_t trial = 0;                                       \
-        SPEX_info info2 = SPEX_OK;                               \
-        for (trial = 0; trial <= NTRIAL_MAX; trial++)            \
+        SPEX_info info2 = SPEX_OUT_OF_MEMORY;                    \
+        while (info2 != SPEX_OK)                                 \
         {                                                        \
+            trial++;                                             \
             malloc_count = trial;                                \
             info2 = (method);                                    \
             if (info2 != SPEX_OUT_OF_MEMORY)                     \
@@ -201,23 +202,15 @@ int main(int argc, char *argv[])
     // test a few small invalid matrices
     //--------------------------------------------------------------------------
 
-    // wrong shape matrix
-    /*printf("QR: error handling for m<n matrix\n");
-    read_test_matrix(&A, "../ExampleMats/test6.mat.txt");
-    create_test_rhs(&b, A->n);
-    ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option), SPEX_INCORRECT_INPUT);
-    OK(SPEX_matrix_free(&A, option));
-    OK(SPEX_matrix_free(&b, option));*/
-    // TODO doesn't fail??
-
-    // TODO test
+    // TODO test, this fails
     //  Inconsistent system of equations
-    /*printf("Inconsistent system of equations");
-    read_test_matrix(&A, "../ExampleMats/srd_test4.mat.txt");
+    printf("Inconsistent system of equations");
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test4.mat.txt"); // TODO return to normal naming this is for vscode debugging
     create_test_rhs(&b, A->n);
+    OK(SPEX_mpz_set_ui(b->x.mpz[0], 5));
     ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option), SPEX_INCONSISTENT);
     OK(SPEX_matrix_free(&A, option));
-    OK(SPEX_matrix_free(&b, option));*/
+    OK(SPEX_matrix_free(&b, option));
 
     //--------------------------------------------------------------------------
     // load the test matrix and create the right-hand-side
@@ -260,6 +253,8 @@ int main(int argc, char *argv[])
     A->m = 0;
     ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option),
         SPEX_INCORRECT_INPUT);
+    ERR(SPEX_qr_analyze(&S, A, option),
+        SPEX_INCORRECT_INPUT);
     A->n = n;
     A->m = m;
 
@@ -286,15 +281,24 @@ int main(int argc, char *argv[])
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
-    // invalid algorithm //TODO
+    // invalid algorithm
     option->algo = 99;
     ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option),
+        SPEX_INCORRECT_ALGORITHM);
+
+    OK(SPEX_qr_analyze(&S, A, option));
+    ERR(SPEX_qr_factorize(&F, A, S, option),
         SPEX_INCORRECT_ALGORITHM);
     option->algo = SPEX_QR_GS;
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_backslash and check the solution
     //--------------------------------------------------------------------------
+
+    option->order = SPEX_COLAMD;
+    option->print_level = 0;
+    printf("QR backslash, malloc testing: ONLY DO AT END this takes over an hour\n");
+    // BRUTAL(spex_test_qr_backslash(A, b, option));
 
     option->order = SPEX_COLAMD;
     option->print_level = 3;

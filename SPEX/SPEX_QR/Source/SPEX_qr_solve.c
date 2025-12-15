@@ -111,7 +111,7 @@ SPEX_info SPEX_qr_solve(
     }
 
     // Check for inconsistent system
-    for (k = b->n; k > rank; k--) // TODO tcov. needs inconsistent system check
+    for (k = rank; k < n; k++) // TODO is this at the end of b_new?? or before the dot product???
     {
         // n-rank elements at the end of b_new should be 0 for system to be consistent
         SPEX_MPZ_SGN(&sgn, b_new->x.mpz[k]);
