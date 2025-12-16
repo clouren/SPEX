@@ -326,6 +326,16 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
 
+    /// symmetric input
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/mesh1e1.mat.txt");
+    create_test_rhs(&b, A->n);
+    option->algo = SPEX_QR_GS;
+    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+
+    OK(SPEX_matrix_free(&x, option));
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&b, option));
+
     //--------------------------------------------------------------------------
     // rank deficient
     //--------------------------------------------------------------------------
@@ -369,10 +379,17 @@ int main(int argc, char *argv[])
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
+    // checks for numerical zero in back sub
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/test8.mat.txt");
+    create_test_rhs(&b, A->n);
+    option->order = SPEX_NO_ORDERING;
+    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+    OK(SPEX_matrix_free(&A, option));
+
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
-    // read_test_matrix (&A, "../ExampleMats/mesh1e1.mat.txt");
+
     read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/LF10.mat.txt");
     create_test_rhs(&b, A->n);
     option->algo = SPEX_QR_GS;
@@ -382,8 +399,8 @@ int main(int argc, char *argv[])
     OK(spex_test_qr_afs(A, b, option));
 
     printf("QR analyze/factorize/solve, with malloc testing:\n");
-    // also check a different RHS, with b(0) = 0
-    OK(SPEX_mpz_set_ui(b->x.mpz[0], 0));
+    // also check a different RHS, with b(n-1) = 0
+    OK(SPEX_mpz_set_ui(b->x.mpz[A->n - 1], 0));
     BRUTAL(spex_test_qr_afs(A, b, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));

@@ -60,16 +60,6 @@ SPEX_info spex_qr_back_sub // performs sparse REF backward substitution
                 continue;
             }
 
-            // Obtain bx[j]
-            /*if (Ri[j] != j)
-            {
-                extra = n - rank;
-            }
-            else
-            {
-                extra = 0;
-            }*/
-            // TODO remove commented out code
             extra = Ri[j] != j ? n - rank : 0;
 
             SPEX_MPZ_DIVEXACT(SPEX_2D(bx, j, k, mpz),
