@@ -87,6 +87,18 @@ SPEX_info SPEX_qr_solve(
         Qinv_perm[index] = k;
     }
 
+    // Check for inconsistent system
+    for (k = rank; k < n; k++) // TODO is this at the end of b_new?? or before the dot product???
+    {
+        // n-rank elements at the end of b_new should be 0 for system to be consistent
+        SPEX_MPZ_SGN(&sgn, b->x.mpz[k]);
+        if (sgn != 0)
+        {
+            SPEX_FREE_ALL;
+            return SPEX_INCONSISTENT;
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
@@ -107,18 +119,6 @@ SPEX_info SPEX_qr_solve(
             // F->rhos->x.mpz[F->R->n-1] is the determinant
             SPEX_MPZ_MUL(SPEX_2D(b_new, qj, k, mpz), SPEX_2D(b_new, qj, k, mpz),
                          F->rhos->x.mpz[F->rank - 1]);
-        }
-    }
-
-    // Check for inconsistent system
-    for (k = rank; k < n; k++) // TODO is this at the end of b_new?? or before the dot product???
-    {
-        // n-rank elements at the end of b_new should be 0 for system to be consistent
-        SPEX_MPZ_SGN(&sgn, b_new->x.mpz[k]);
-        if (sgn != 0)
-        {
-            SPEX_FREE_ALL;
-            return SPEX_INCONSISTENT;
         }
     }
 

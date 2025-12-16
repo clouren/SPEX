@@ -319,6 +319,9 @@ vtest2: all
 vtests4chol: all
 	$(V) ./tcov_for_cholesky ../ExampleMats/mesh1e1.mat.txt ../ExampleMats/mesh1e1.rhs.txt > test_for_cholesky.out
 
+vtests4qr: all
+	- $(V) ./tcov_for_qr ../ExampleMats/LF10.mat.txt ../ExampleMats/LF10.rhs.txt > test_for_qr.out
+
 #-------------------------------------------------------------------------------
 
 # remove all files not in the original distribution, including symbolic links

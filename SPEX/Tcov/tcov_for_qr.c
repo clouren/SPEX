@@ -296,11 +296,6 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------
 
     option->order = SPEX_COLAMD;
-    option->print_level = 0;
-    printf("QR backslash, malloc testing: ONLY DO AT END this takes over an hour\n");
-    // BRUTAL(spex_test_qr_backslash(A, b, option));
-
-    option->order = SPEX_COLAMD;
     option->print_level = 3;
     printf("QR backslash, no malloc testing:\n");
     OK(spex_test_qr_backslash(A, b, option));
@@ -321,6 +316,12 @@ int main(int argc, char *argv[])
     OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
     // NOTE: mpfr solution can't be checked because mpfr->mpz isn't guaranteed
     //       to be exact
+
+    /*option->order = SPEX_COLAMD;
+    option->print_level = 0;
+    printf("QR backslash, malloc testing: ONLY DO AT END this takes over an hour\n");
+    BRUTAL(spex_test_qr_backslash(A, b, option));*/
+
     OK(SPEX_matrix_free(&x, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
@@ -328,14 +329,14 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------
     // rank deficient
     //--------------------------------------------------------------------------
-    read_test_matrix(&A, "../ExampleMats/srd_test1.mat.txt");
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test1.mat.txt");
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
-    read_test_matrix(&A, "../ExampleMats/srd_test2.mat.txt");
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test2.mat.txt");
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
@@ -343,7 +344,7 @@ int main(int argc, char *argv[])
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
-    read_test_matrix(&A, "../ExampleMats/srd_test3.mat.txt");
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test3.mat.txt");
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
@@ -351,7 +352,16 @@ int main(int argc, char *argv[])
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
-    read_test_matrix(&A, "../ExampleMats/srd_test4.mat.txt");
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test4.mat.txt");
+    option->order = SPEX_NO_ORDERING;
+    OK(SPEX_qr_analyze(&S, A, option));
+    OK(SPEX_qr_factorize(&F, A, S, option));
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_symbolic_analysis_free(&S, option));
+    OK(SPEX_factorization_free(&F, option));
+
+    // checks for numerical zero in ipgs
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/test7.mat.txt");
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
@@ -363,7 +373,7 @@ int main(int argc, char *argv[])
     // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
     // read_test_matrix (&A, "../ExampleMats/mesh1e1.mat.txt");
-    read_test_matrix(&A, "../ExampleMats/LF10.mat.txt");
+    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/LF10.mat.txt");
     create_test_rhs(&b, A->n);
     option->algo = SPEX_QR_GS;
     printf("QR analyze/factorize/solve, no malloc testing:\n");
