@@ -1081,6 +1081,17 @@ extern "C"
             const SPEX_options option // Command options
         );
 
+    // TODO write this
+    /*
+    SPEX_info SPEX_lu_rank(
+        // Output
+        int64_t rank,
+        // Input
+        const SPEX_matrix A,
+        const SPEX_options option
+    );
+    */
+
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
     //-------------------------SPEX Cholesky----------------------------------------
@@ -1236,96 +1247,6 @@ extern "C"
         const SPEX_options option // command options
     );
 
-    // SPEX QR
-
-    SPEX_info SPEX_qr_analyze(
-        // Output
-        SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
-        // Input
-        const SPEX_matrix A,      // Input matrix. Must be SPEX_MPZ and SPEX_CSC
-        const SPEX_options option // Command options (Default if NULL)
-    );
-
-    SPEX_info SPEX_qr_factorize(
-        // Output
-        SPEX_factorization *F_handle, // QR factorization struct
-        // Input
-        const SPEX_matrix A,      // Matrix to be factored. Must be SPEX_MPZ
-                                  // and SPEX_CSC
-        SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
-                                  // column elimination tree of A, the column
-                                  // permutation, and number of nonzeros in R
-        const SPEX_options option // command options.
-    );
-
-    SPEX_info SPEX_qr_solve(
-        // Output
-        SPEX_matrix *x_handle, // On input: undefined.
-                               // On output: Rational solution (SPEX_MPQ)
-                               // to the system.
-        // input
-        const SPEX_factorization F, // The QR factorization.
-        const SPEX_matrix b,        // Right hand side vector
-        const SPEX_options option   // command options
-    );
-
-    SPEX_info SPEX_qr_backslash(
-        // Output
-        SPEX_matrix *x_handle, // Final solution vector
-        // Input
-        SPEX_type type,           // Type of output desired. Must be
-                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
-        const SPEX_matrix A,      // Input matrix
-        const SPEX_matrix b,      // Right hand side vector(s)
-        const SPEX_options option // Command options
-    );
-
-    // delete all qr functions after this
-    /* Compute the dot product of two integer vectors x,y and return in z */
-    SPEX_info SPEX_dot(
-        SPEX_matrix x,
-        SPEX_matrix y,
-        mpz_t z);
-
-    /* Purpose: Given a matrix A in m*n and B in m*n, compute the dot product of
-     * A(:,i) and B(:,j). Assumed to be dense. prod = A(:,i) dot B(:,j)
-     */
-    SPEX_info SPEX_dense_mat_dot(
-        SPEX_matrix A,
-        int64_t i,
-        SPEX_matrix B,
-        int64_t j,
-        mpz_t prod);
-
-    /* Perform the IPGE version of SPEX QR (aka Algorithm 1 from workpage)
-     */
-    SPEX_info SPEX_QR_IPGE(
-        SPEX_matrix A,         // Matrix to be factored
-        SPEX_matrix *R_handle, // upper triangular matrix
-        SPEX_matrix *Q_handle  // orthogonal triangular matrix
-    );
-
-    SPEX_info SPEX_Qtb(
-        SPEX_matrix Q,        // Q matrix, want Q'
-        SPEX_matrix b,        // Original RHS Vector
-        SPEX_matrix *b_handle // Null on input. Contains Q'*b on output
-    );
-
-    SPEX_info SPEX_QR_backsolve(
-        SPEX_matrix R,        // Upper triangular matrix
-        SPEX_matrix b,        // Q^T * b
-        SPEX_matrix *x_handle // Solution
-    );
-
-    SPEX_info SPEX_generate_random_matrix(
-        SPEX_matrix *A_handle, // Matrix to be created
-        int64_t m,             // Rows of the matrix
-        int64_t n,             // Columns of the matrix
-        unsigned int seed,     // Random number seed
-        int64_t lower,         // Lower bound for numbers to be generated
-        int64_t upper          // Upper bound for numbers to be generated
-    );
-
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
     //-----------------------Primary SPEX LDL routines-------------------------
@@ -1466,6 +1387,230 @@ extern "C"
         const SPEX_matrix A,  // Input matrix
         const SPEX_matrix b,  // Right hand side vector(s)
         SPEX_options option   // Command options (NULL: means use defaults)
+    );
+
+    // TODO write this
+    /*
+    SPEX_info SPEX_rank(
+        // Output
+        int64_t rank,
+        // Input
+        const SPEX_matrix A,
+        const SPEX_options option
+    );
+    */
+
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+    //-------------------------SPEX QR----------------------------------------------
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+
+    //  This portion of the SPEX library exactly solves rectangular systems of
+    //  equations and exactly calculates the rank of matrices. This code accompanies
+    //  the paper (submitted to ACM TOMs):
+
+    //  "Algorithm 1XXX: SPEX QR for Exactly Revealing Rank and Solving Sparse
+    //   linear systems"
+    //
+    //    To use this code you must first download and install the GMP,
+    //    MPFR, AMD, and COLAMD libraries. GMP and MPFR can be found at:
+    //              https://gmplib.org/
+    //              http://www.mpfr.org/
+    //
+    //   SPEX_Utilities, AMD, and COLAMD are distributed along with SPEX_Cholesky.
+    //   The easiest way ensure these dependencies are met is to only access this
+    //   package through the SPEX repository.
+    //
+    //   All of these codes are components of the SPEX software library. This code
+    //   may be found at:
+    //              https://github.com/clouren/spex
+    //              www.suitesparse.com
+    //
+    //
+
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+    //-------------------------Authors----------------------------------------------
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+
+    //    Lorena Mejia Domenzain
+    //    Christopher Lourenco, Erick Moreno-Centeno, and Timothy A. Davis.
+
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+    //--------------------------Summary---------------------------------------------
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+
+    //   This software can both solve the system Ax = b and calculate the rank of A
+    //   exactly. The input matrix and right hand side vectors are stored as
+    //    either integers, double precision numbers, multiple precision floating
+    //    points (through the mpfr library) or as rational numbers (as a collection
+    //    of numerators and denominators using the GMP mpq_t data structure).
+    //    Appropriate routines within the code transform the input into an integral
+    //    matrix in compressed column form.
+
+    //    This package computes the factorization QDR =  AP. The column ordering P
+    //    is intialized via COLAMD but may be modified during factorization if
+    //    A is rank deficient.
+
+    //    The factors Q and R are computed via integer operations via
+    //    integer preserving gram schmidt orthogonalization.
+
+    //    Once the factorization is computed, SPEX QR offers various functionality
+    //    Specifically:
+    //          (1) SPEX QR can give the rank of A
+    //          (2) If A is square and full rank, the exact solution of Ax = b
+    //              is returned. Note that this is not the primary purpose of
+    //              SPEX QR and it is recommended to use SPEX LU or LDL instead
+    //          (3) If A is rectangular with more rows than columns SPEX QR will
+    //              return the exact least squares solution if A has full column
+    //              rank or a basic solution if A is rank deficient
+    //          (4) If A is rectangular with more columns than rows SPEX QR will
+    //              return the exact minimum norm solution if A has full row rank
+    //              or a basic solution if A is rank deficient.
+    //
+    //    These solution vectors can be output in one of
+    //    three ways: 1) full precision rational arithmetic (as a sequence of
+    //    numerators and denominators) using the GMP mpq_t data type, 2) double
+    //    precision while not exact will produce a solution accurate to machine
+    //    roundoff unless the size of the associated solution exceeds double
+    //    precision (i.e., the solution is 10^500 or something), 3) variable
+    //    precision floating point using the GMP mpfr_t data type. The associated
+    //    precision is user defined.
+
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+    //-----------------------Primary SPEX QR routines-------------------------------
+    //------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+
+    //------------------------------------------------------------------------------
+    // Purpose: Analyze the A matrix and perform a fill-reduced ordering of A
+    //------------------------------------------------------------------------------
+    // TODO We need to decide the behavior of the easy vs hard interface in regards
+    // to short fat matrices. Basically, in the easy interface, we can handle whatever.
+    // In the hard interface, we currently error out if A is short fat.
+    // In order to support short and fat for the hard interface we essentially need
+    // a flag indicating that we have transposed A and need to use a different solve.
+    // But, the factorization that they get from SPEX qr factorize is of A^T and so
+    // if the user is not careful they can easily get confused.
+    // I suggest we remove that option for the hard interface and do the following:
+    //
+    // Hard interface only works if A has m >= n. Otherwise it errors out. This is how
+    // it is now.
+    // Easy interface and spex backslash works regardless of size of A
+
+    SPEX_info SPEX_qr_analyze(
+        // Output
+        SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
+        // Input
+        const SPEX_matrix A,      // Input matrix. Must be SPEX_MPZ and SPEX_CSC
+        const SPEX_options option // Command options (Default if NULL)
+    );
+
+    //------------------------------------------------------------------------------
+    // Purpose: Compute the SPEX QR factorization of A. The factorization is rank
+    // revealing if A is rank deficient.
+    //------------------------------------------------------------------------------
+    SPEX_info SPEX_qr_factorize(
+        // Output
+        SPEX_factorization *F_handle, // QR factorization struct
+        // Input
+        const SPEX_matrix A,      // Matrix to be factored. Must be SPEX_MPZ
+                                  // and SPEX_CSC
+        SPEX_symbolic_analysis S, // Symbolic analysis struct containing the
+                                  // column elimination tree of A, the column
+                                  // permutation, and number of nonzeros in R
+        const SPEX_options option // command options.
+    );
+
+    //------------------------------------------------------------------------------
+    // Purpose: Solve Ax = b by using the REF QR factorization. The appropriate
+    // algorithm (least squares, min two norm, basic solution) is chosen based on
+    // the size and rank of A
+    //------------------------------------------------------------------------------
+    SPEX_info SPEX_qr_solve(
+        // Output
+        SPEX_matrix *x_handle, // On input: undefined.
+                               // On output: Rational solution (SPEX_MPQ)
+                               // to the system.
+        // input
+        const SPEX_factorization F, // The QR factorization.
+        const SPEX_matrix b,        // Right hand side vector
+        const SPEX_options option   // command options
+    );
+
+    //------------------------------------------------------------------------------
+    // Purpose: Solve Ax = b with the SPEX QR factorization. Return the solution in
+    // x in the user defined format.
+    //------------------------------------------------------------------------------
+    SPEX_info SPEX_qr_backslash(
+        // Output
+        SPEX_matrix *x_handle, // Final solution vector
+        // Input
+        SPEX_type type,           // Type of output desired. Must be
+                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+        const SPEX_matrix A,      // Input matrix
+        const SPEX_matrix b,      // Right hand side vector(s)
+        const SPEX_options option // Command options
+    );
+
+    SPEX_info SPEX_qr_rank(
+        // Output
+        int64_t rank,
+        // Input
+        const SPEX_matrix A,
+        const SPEX_options option
+    );
+
+    // TODO Do we actually delete these
+    // delete all qr functions after this
+    /* Compute the dot product of two integer vectors x,y and return in z */
+    SPEX_info SPEX_dot(
+        SPEX_matrix x,
+        SPEX_matrix y,
+        mpz_t z);
+
+    /* Purpose: Given a matrix A in m*n and B in m*n, compute the dot product of
+     * A(:,i) and B(:,j). Assumed to be dense. prod = A(:,i) dot B(:,j)
+     */
+    SPEX_info SPEX_dense_mat_dot(
+        SPEX_matrix A,
+        int64_t i,
+        SPEX_matrix B,
+        int64_t j,
+        mpz_t prod);
+
+    /* Perform the IPGE version of SPEX QR (aka Algorithm 1 from workpage)
+     */
+    SPEX_info SPEX_QR_IPGE(
+        SPEX_matrix A,         // Matrix to be factored
+        SPEX_matrix *R_handle, // upper triangular matrix
+        SPEX_matrix *Q_handle  // orthogonal triangular matrix
+    );
+
+    SPEX_info SPEX_Qtb(
+        SPEX_matrix Q,        // Q matrix, want Q'
+        SPEX_matrix b,        // Original RHS Vector
+        SPEX_matrix *b_handle // Null on input. Contains Q'*b on output
+    );
+
+    SPEX_info SPEX_QR_backsolve(
+        SPEX_matrix R,        // Upper triangular matrix
+        SPEX_matrix b,        // Q^T * b
+        SPEX_matrix *x_handle // Solution
+    );
+
+    SPEX_info SPEX_generate_random_matrix(
+        SPEX_matrix *A_handle, // Matrix to be created
+        int64_t m,             // Rows of the matrix
+        int64_t n,             // Columns of the matrix
+        unsigned int seed,     // Random number seed
+        int64_t lower,         // Lower bound for numbers to be generated
+        int64_t upper          // Upper bound for numbers to be generated
     );
 
 #if defined(__cplusplus)

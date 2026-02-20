@@ -48,6 +48,7 @@ SPEX_info spex_qr_back_sub // performs sparse REF backward substitution
     int64_t n = R->n;
     int64_t extra;
 
+    // Loop through all RHS vectors
     for (int64_t k = 0; k < bx->n; k++)
     {
         // Start at bx[n]
@@ -60,6 +61,7 @@ SPEX_info spex_qr_back_sub // performs sparse REF backward substitution
                 continue;
             }
 
+            // TODO What is this doing? Why is it needed?
             extra = Ri[j] != j ? n - rank : 0;
 
             SPEX_MPZ_DIVEXACT(SPEX_2D(bx, j, k, mpz),

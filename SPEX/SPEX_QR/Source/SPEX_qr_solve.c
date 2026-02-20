@@ -87,6 +87,8 @@ SPEX_info SPEX_qr_solve(
         Qinv_perm[index] = k;
     }
 
+    // TODO I don't understand what this is checking. At this point, b_new has been allocated and
+    // nothing else so the entire vector is all 0
     // Check for inconsistent system
     for (k = rank; k < n; k++) // TODO is this at the end of b_new?? or before the dot product???
     {

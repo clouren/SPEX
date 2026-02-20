@@ -2,14 +2,16 @@
 // SPEX_QR/SPEX_qr_backslash: solve Ax=b, return solution as desired data type
 //------------------------------------------------------------------------------
 
-// SPEX_QR: (c) 2021-2023, Chris Lourenco, Lorena Mejia Domenzain,
+// SPEX_QR: (c) 2021-2026, Chris Lourenco, Lorena Mejia Domenzain,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
 /* Purpose: This code utilizes the SPEX QR factorization to exactly solve
- * the linear system Ax = b.
+ * the linear system Ax = b. It serves as a caller for either
+ * the standard backslash (A x = b when A has more rows than columns)
+ * or the transposed backslash (Ax = b when A has more columns than rows)
  *
  * Input/Output arguments:
  *
@@ -30,13 +32,9 @@
  *              factorization. If NULL on input, default values are used.
  */
 
-#define SPEX_FREE_WORKSPACE              \
-    SPEX_factorization_free(&F, option); \
-    SPEX_symbolic_analysis_free(&S, option);
-
 #define SPEX_FREE_ALL   \
     SPEX_FREE_WORKSPACE \
-    SPEX_matrix_free(&x, NULL)
+    SPEX_matrix_free(&x, NULL);
 
 #include "spex_qr_internal.h"
 
@@ -69,61 +67,38 @@ SPEX_info SPEX_qr_backslash(
         return SPEX_INCORRECT_INPUT;
     }
 
-    // A must be the appropriate dimension
-    if (A->n == 0 || A->m == 0 || A->m < A->n)
+    if (A->n == 0 || A-> m == 0)
     {
         return SPEX_INCORRECT_INPUT;
     }
 
-    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_QR_GS)
-    {
-        return SPEX_INCORRECT_ALGORITHM;
-    }
-
-    SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
-    SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);
-
-    SPEX_symbolic_analysis S = NULL;
-    SPEX_factorization F = NULL;
+    // Declare output
     SPEX_matrix x = NULL;
 
-    //--------------------------------------------------------------------------
-    // Symbolic Analysis
-    //--------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_qr_analyze(&S, A, option));
+    //-------------------------------------------------------------------------
+    // Select the appropriate algorithm based on the size of A
+    //-------------------------------------------------------------------------
 
-    //--------------------------------------------------------------------------
-    // QR Factorization
-    //--------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_qr_factorize(&F, A, S, option));
-
-    //--------------------------------------------------------------------------
-    // Solve
-    //--------------------------------------------------------------------------
-    SPEX_CHECK(SPEX_qr_solve(&x, F, b, option));
-
-    //--------------------------------------------------------------------------
-    // Now, x contains the exact solution of the linear system in mpq_t
-    // precision set the output.
-    //--------------------------------------------------------------------------
-
-    if (type == SPEX_MPQ)
+    if (A->m >= A->n)
     {
-        (*x_handle) = x;
+        // A is a tall skinny matrix. We factorize A directly and use the REF QR
+        // of A to solve Ax = b.
+        // If A has full column rank, the least squares solution is returned.
+        // If A is rank deficient, a basic solution is returned
+
+        info = spex_qr_standard_backslash(&x, type, A, b, option);
     }
     else
     {
-        SPEX_matrix x2 = NULL;
-        SPEX_CHECK(SPEX_matrix_copy(&x2, SPEX_DENSE, type, x, option));
-        (*x_handle) = x2;
-        SPEX_matrix_free(&x, NULL);
+        // A is a short fat matrix. We factorize A^T and use the REF QR
+        // of A^T to solve Ax = b.
+        // If A has full row rank, the minimum norm solution is returned.
+        // If A is rank deficient, a basic solution is returned.
+        info = spex_qr_transpose_backslash(&x, type, A, b, option);
     }
 
-    //--------------------------------------------------------------------------
-    // Free memory
-    //--------------------------------------------------------------------------
-
-    SPEX_FREE_WORKSPACE;
-    return (SPEX_OK);
+    // x contains either the exact solution of the system or is NULL
+    (*x_handle) = x;
+    // returns SPEX_OK if the algorithm is successful or the appropriate error.
+    return info;
 }

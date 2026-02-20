@@ -9,6 +9,8 @@
 
 //------------------------------------------------------------------------------
 
+// TODO Fix all the copyright and SPDX
+
 // This file is not intended to be #include'd in user applications.  Use
 // SPEX.h instead.
 
@@ -135,6 +137,64 @@ SPEX_info spex_qr_back_sub(
     const int64_t rank,       // rank of right triangular matrix
     const SPEX_matrix rhos,   // sequence of pivots
     const SPEX_options option // Command options
+);
+
+// TODO Decide if we want these to be user visible
+/* Purpose: Perform a transposed factorization and solve if A is
+ * rectangular with more columns than rows. This is essentially
+ * a caller for analyze and factorize on A^T and then a different
+ * solve. This is currently not user visible as it is only called
+ * in SPEX_qr_backslash if A is rectangular with more rows than
+ * columns and the factorization itself is not user visible. */
+SPEX_info spex_qr_transpose_backslash(
+    // Output
+    SPEX_matrix *x_handle, // Final solution vector
+    // Input
+    SPEX_type type,           // Type of output desired. Must be
+                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,      // Input matrix
+    const SPEX_matrix b,      // Right hand side vector(s)
+    const SPEX_options option // Command options
+);
+
+/* Purpose: Perform a factorization and solve if A is
+ * rectangular with more rows than columns. This is the
+ * typical use case for SPEX QR and returns either the exact
+ * least squares solution or a basic solution. */
+SPEX_info spex_qr_standard_backslash(
+    // Output
+    SPEX_matrix *x_handle, // Final solution vector
+    // Input
+    SPEX_type type,           // Type of output desired. Must be
+                                  // SPEX_MPQ, SPEX_MPFR, or SPEX_FP64
+    const SPEX_matrix A,      // Input matrix
+    const SPEX_matrix b,      // Right hand side vector(s)
+    const SPEX_options option // Command options
+);
+
+/* Purpose: Solve the rectangular system Ax = b when A has
+ * more columns than rows using the factorization of A^T.
+ * Specifically we have A^T = Q D R thus R^T D Q^T x = b
+ * First the system R^T D y = b is solved via a tranpose solver
+ * Then x is computed as Q D y */
+SPEX_info spex_qr_transpose_solve(
+        // Output
+        SPEX_matrix *x_handle, // On input: undefined.
+                               // On output: Rational solution (SPEX_MPQ)
+                               // to the system.
+        // input
+        const SPEX_factorization F, // The QR factorization.
+        const SPEX_matrix b,        // Right hand side vector
+        const SPEX_options option   // command options
+);
+
+/* Purpose: Solve the system (R'D) x = x */
+SPEX_info spex_qr_transpose_forward_sub
+(
+    const SPEX_matrix R,    // upper triangular matrix
+    const int64_t rank,     // Rank of A which is also number of rows of zeros
+    SPEX_matrix x,          // right hand side matrix of size n*numRHS
+    const SPEX_matrix rhos  // sequence of pivots used in factorization
 );
 
 #endif
