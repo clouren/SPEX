@@ -1081,16 +1081,14 @@ extern "C"
             const SPEX_options option // Command options
         );
 
-    // TODO write this
-    /*
-    SPEX_info SPEX_lu_rank(
+    SPEX_info SPEX_lu_rank
+    (
         // Output
-        int64_t rank,
+        int64_t* rank,
         // Input
         const SPEX_matrix A,
         const SPEX_options option
     );
-    */
 
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------

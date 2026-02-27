@@ -90,8 +90,10 @@ void mexFunction
     // r = rank(A) using SPEX QR or SPEX LU
     //--------------------------------------------------------------------------
 
+    // TODO update me!
     int64_t r;
-    SPEX_MEX_OK (SPEX_qr_rank (&r, A, option));
+    SPEX_MEX_OK( SPEX_lu_rank(&r, A, option));
+    //SPEX_MEX_OK (SPEX_qr_rank (&r, A, option));
 
 
     //--------------------------------------------------------------------------

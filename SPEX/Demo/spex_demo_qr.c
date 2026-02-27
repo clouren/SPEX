@@ -27,6 +27,7 @@ SPEX_matrix_free(&Q2, NULL);                \*/
 #endif
 
 // TODO Modify this demo to also look at short fat systems
+// TODO Modify demo to handle rank deficient cases
 int main(int argc, char *argv[])
 {
 

@@ -29,6 +29,8 @@
  *
  */
 
+// TODO Check this when a is rank deficient
+
 #define SPEX_FREE_ALL           \
     SPEX_matrix_free(&h, NULL);
 
