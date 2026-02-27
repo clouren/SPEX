@@ -1,13 +1,22 @@
 function x = spex_qr_backslash (A,b,option)
 % spex_qr_BACKSLASH: solve Ax=b via sparse integer-preserving QR
 % spex_qr_backslash: computes the exact solution to the sparse linear system Ax =
-% b where A and b are stored as doubles. A must be stored as a sparse matrix and must be of size m by n with m>=n. b
+% b where A and b are stored as doubles. A must be stored as a sparse matrix can be of any size. b
 % must be stored as a dense set of right hand side vectors. b can be either 1
 % or multiple vector(s).  The result x is computed exactly, represented in
 % arbitrary-precision rational values, and then returned to MATLAB as a
 % floating-poing double result.  This final conversion means that x may no
 % longer exactly solve A*x=b, unless this final conversion is able to be
 % done without modification.
+%
+% Note that the type of solution returned depends on the structure of A:
+%   - If A is rectangular with m >= n:
+%       - If A has full column rank x is the least squares solution
+%       - If A is rank deficient x is a basic solution
+%   - If A is rectangular with m < n
+%       - If A has full row rank x is the minimum norm solution
+%       - If A is rank deficient then x is a basic solution
+%
 %
 % x may also be returned as a vpa matrix, or a cell array of strings, with
 % x {i} = 'numerator/denominator', where the numerator and denominator are
@@ -47,42 +56,6 @@ function x = spex_qr_backslash (A,b,option)
 %   option.digits: the number of decimal digits to use for x, if
 %       option.solution is 'vpa'.  Must be in range 2 to 2^29.
 %
-% Example:
-%
-%   % In this first example, x = spex_qr_backslash (A,b) returns an approximate
-%   % solution, not because it was computed incorrectly in spex_qr_backslash.  It
-%   % is computed exactly as a rational result in SPEX_backslash with arbitrary
-%   % precision, but then converted to double precision on output.
-%
-%   load west0479
-%   A = west0479 ;
-%   A = A'*A;
-%   n = size (A, 1) ;
-%   xtrue = rand (n,1) ;
-%   b = A*xtrue ;
-%   x = spex_qr_backslash (A, b) ;
-%   err = norm (x-xtrue)
-%   x = A\b ;
-%   err = norm (x-xtrue)
-%
-%   % In this example, x = spex_qr_backslash (A,b) is returned exactly
-%   % in the MATLAB vector x, because x contains only integers representable
-%   % exactly in double precision.  x = A\b results in floating-point
-%   % roundoff error.
-%
-%   amax = max (abs (A), [ ], 'all') ;
-%   A = floor (2^20 * (A / amax)) + n * speye (n) ;
-%   xtrue = floor (64 * xtrue) ;
-%   b = A*xtrue ;
-%   x = SPEX_backslash (A, b) ;
-%   % error and residual will be exactly zero:
-%   err = norm (x-xtrue)
-%   resid = norm (A*x-b)
-%   x = A\b ;
-%   % error and residual will be nonzero:
-%   err = norm (x-xtrue)
-%   resid = norm (A*x-b)
-%
 % See also vpa, spex_mex_install, spex_mex_test, spex_mex_demo,
 %   spex_lu_backslash
 
@@ -109,12 +82,6 @@ end
 if (~issparse (A))
     A = sparse (A) ;
 end
-
-% Ensure that input appears to be symmetric.
-if ( normest(A-A') > 1e-6)
-    error('inputs must be symmetric')
-end
-
 
 % Preprocessing complete. Now use SPEX QR to solve A*x=b.
 x=spex_qr_mex_soln (A, b, option) ;

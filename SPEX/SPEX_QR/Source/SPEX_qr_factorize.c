@@ -33,8 +33,8 @@
         SPEX_free(h);                    \
         SPEX_free(Qk);                   \
         SPEX_free(ldCols);               \
-        SPEX_matrix_free(&Q, option);    \
-        SPEX_matrix_free(&rhos, option); \
+        SPEX_matrix_free(&RTPi, option);    \
+        SPEX_matrix_free(&RPi, option); \
     }
 
 #define SPEX_FREE_ALL                      \
@@ -82,6 +82,9 @@ SPEX_info SPEX_qr_factorize(
     int64_t n = A->n, m = A->m, k, i, pQ, p, iQ, pR;
     SPEX_factorization F = NULL;
     SPEX_matrix RT = NULL, Q = NULL, rhos = NULL;
+    SPEX_matrix RTPi = NULL;
+    SPEX_matrix RPi = NULL;
+    SPEX_matrix rhosPi = NULL;
     int64_t *h = NULL, *Qk = NULL;
     // Varibles needed to compute the rank of a matrix.
     // assume matrix is full rank. isZeros is true if a column is linearly
@@ -164,7 +167,7 @@ SPEX_info SPEX_qr_factorize(
             }*/
 
             // Set the kth pivot to be equal to the k-1th pivot for computations
-            if (k == 0) // TODO why not just set rho[0]=1??
+            if (k == 0)
             {
                 SPEX_MPZ_SET_UI(rhos->x.mpz[k], 1); // rho[0]=1
             }
@@ -177,7 +180,7 @@ SPEX_info SPEX_qr_factorize(
             for (pQ = Q->p[k + 1]; pQ < Q->p[k + 2]; pQ++)
             {
                 // History update
-                if (h[pQ] < k + 1 && h[pQ] > 0) // TODO +1?? check
+                if (h[pQ] < k + 1 && h[pQ] > 0)
                 {
                     SPEX_CHECK(spex_history_update(Q, rhos, pQ, k - 1, h[pQ],
                                                    h[pQ] - 1, 0, option));
@@ -238,9 +241,7 @@ SPEX_info SPEX_qr_factorize(
         // of the previous columns
         int64_t iLD = n - 1, iLI = 0, index;
 
-        SPEX_matrix RTPi = NULL; // TODO define this uptop and free with workspace
-        SPEX_matrix RPi = NULL;
-        SPEX_matrix rhosPi = NULL;
+
 
         F->rank = rank;
 
@@ -302,9 +303,7 @@ SPEX_info SPEX_qr_factorize(
 
         F->rhos = rhosPi;
 
-        SPEX_matrix_free(&Q, option);
-        SPEX_matrix_free(&RTPi, option);
-        SPEX_matrix_free(&rhos, option);
+
         SPEX_free(Pi_perm);
         SPEX_free(Piinv_perm);
     }
@@ -336,11 +335,7 @@ SPEX_info SPEX_qr_factorize(
     //--------------------------------------------------------------------------
     (*F_handle) = F;
 
-    // SPEX_FREE_WORKSPACE;
+    SPEX_FREE_WORKSPACE;
 
-    SPEX_matrix_free(&(RT), option); // TODO there has to be a nicer way to do this
-    SPEX_free(h);
-    SPEX_free(Qk);
-    SPEX_free(ldCols);
     return SPEX_OK;
 }

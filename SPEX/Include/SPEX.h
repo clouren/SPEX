@@ -892,7 +892,7 @@ extern "C"
 
     SPEX_info SPEX_mpq_abs(mpq_t x, const mpq_t y);
     SPEX_info SPEX_mpq_add(mpq_t x, const mpq_t y, const mpq_t z);
-    SPEX_info SPEX_mpq_canonicalize(mpq_t x);
+    SPEX_info SPEX_mpq_canonicalize(const mpq_t x);
     SPEX_info SPEX_mpq_clear(mpq_t x);
     SPEX_info SPEX_mpq_cmp(int *r, const mpq_t x, const mpq_t y);
     SPEX_info SPEX_mpq_cmp_ui(int *r, const mpq_t x,
@@ -1560,7 +1560,7 @@ extern "C"
 
     SPEX_info SPEX_qr_rank(
         // Output
-        int64_t rank,
+        int64_t *rank,
         // Input
         const SPEX_matrix A,
         const SPEX_options option

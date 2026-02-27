@@ -26,6 +26,7 @@ SPEX_matrix_free(&Q2, NULL);                \*/
 #define ASSERT assert
 #endif
 
+// TODO Modify this demo to also look at short fat systems
 int main(int argc, char *argv[])
 {
 

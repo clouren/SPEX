@@ -42,6 +42,14 @@ for k = 1:m
     src = [src, tmp];
 end
 
+path = '../SPEX_QR/Source/';
+files = dir('../SPEX_QR/Source/*.c');
+m = length(files);
+for k = 1:m
+    tmp = [' ', path, files(k).name];
+    src = [src, tmp];
+end
+
 path = '../SPEX_LU/Source/';
 files = dir('../SPEX_LU/Source/*.c');
 m = length(files);
@@ -106,7 +114,7 @@ else
     mpfr_include = [' -I' mpfr_include ' '] ;
 end
 
-includes = ' -ISource/ -I../Include/ -I../SPEX_Utilities/Source ' ;
+includes = ' -ISource/ -I../Include/ -I../SPEX_Utilities/Source -I../SPEX_Cholesky/Source -I../SPEX_LU/Source' ;
 includes = [includes gmp_include  mpfr_include ] ;
 includes = [includes ' -I../../AMD/Source  -I../../AMD/Include  '] ;
 includes = [includes ' -I../../COLAMD/Source  -I../../COLAMD/Include  '] ;
@@ -122,6 +130,8 @@ m2 = ['mex ', verbose, ' -R2018a ', includes, ' spex_cholesky_mex_soln.c ' , src
 m3 = ['mex ', verbose, ' -R2018a ', includes, ' spex_ldl_mex_soln.c ' , src, ' ', flags, ' ', libs];
 m4 = ['mex ', verbose, ' -R2018a ', includes, ' spex_backslash_mex_soln.c ' , src, ' ', flags, ' ', libs];
 m5 = ['mex ', verbose, ' -R2018a ', includes, ' spex_qr_mex_soln.c ' , src, ' ', flags, ' ', libs];
+m6 = ['mex ', verbose, ' -R2018a ', includes, ' spex_rank_mex.c ' , src, ' ', flags, ' ', libs];
+
 
 
 % Now, we evaluate each one
@@ -149,6 +159,12 @@ if (~isempty (verbose))
 end
 fprintf ('Compiling MATLAB interface to SPEX Backslash (please wait):\n') ;
 eval (m4) ;
+
+fprintf ('Compiling MATLAB interface to SPEX QR (please wait):\n') ;
+eval (m5) ;
+
+fprintf ('Compiling MATLAB interface to SPEX rank (please wait):\n') ;
+eval (m6) ;
 
 if (run_demo)
     % Test SPEX

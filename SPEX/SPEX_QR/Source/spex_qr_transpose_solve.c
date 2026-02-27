@@ -30,7 +30,8 @@
 #define SPEX_FREE_WORKSPACE               \
     {                                     \
         SPEX_matrix_free(&b_new, option); \
-        SPEX_free(Qinv_perm);             \
+        SPEX_matrix_free(&b2, option);    \
+        SPEX_mpq_clear(temp);             \
     }
 
 #define SPEX_FREE_ALL                 \
@@ -73,18 +74,14 @@ SPEX_info spex_qr_transpose_solve(
     // meanign that R^T contains n-rank columns of zeros. So the transpose solve should just loop
     // through columns 0 to n-rank and do the typical forward sub.
 
-
     // Declare x and b_new
     SPEX_matrix x = NULL, b_new = NULL, b2 = NULL;
+    mpq_t temp;
+    SPEX_CHECK( SPEX_mpq_init(temp));
 
-    int64_t *Qinv_perm = NULL;
     int64_t i, j, p, k;
 
     // Permute b_new
-
-    // TODO Check this. We have AT P = Q D R, so A = P R^T D Q^T
-    // Thus, P R^T D Q^T x = b so we have bnew = P^T b. Since here
-    // P is F->Q_perm, I think to match LU/Cholesky here F->Q_perm goes
 
     SPEX_CHECK (spex_permute_dense_matrix (&b_new, b, F->Q_perm, option));
 
@@ -93,39 +90,51 @@ SPEX_info spex_qr_transpose_solve(
 
     // Now we have b_new = (R' D) \ b. The next step is to calculate x
     // x = Q D b_new
+    // Note that D itself is rational with entries D[j,j] = 1/ (rhos[j]*rhos[j-1])
     // We will do a scaling with D first and then do the dot products with Q
+
+    // We need b2 because we now switch from integer to rational
+    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPQ, b->m, b->n, 0,
+                                    false, true, NULL));
 
     // Loop through each RHS vector
     for (k = 0; k < b_new->n; k++)
     {
         // Need to multiply each entry by the associated entry in D
-        // Recall that D[j,j] = rhos[j]*rhos[j-1]
+        // Recall that D[j,j] = 1/rhos[j]*rhos[j-1]
         // In order to avoid an if in the inner loop, we will do b[0]
         // here and then the rest in the for
-        SPEX_CHECK( SPEX_mpz_mul( SPEX_2D(b_new, 0, k, mpz),
-                                  SPEX_2D(b_new, 0, k, mpz), F->rhos->x.mpz[0]));
+        SPEX_CHECK( SPEX_mpq_set_num( SPEX_2D(b2, 0, k, mpq),
+                                      SPEX_2D(b_new, 0, k, mpz)));
+        SPEX_CHECK( SPEX_mpq_set_den( SPEX_2D(b2, 0, k, mpq),
+                                      F->rhos->x.mpz[0]));
+        SPEX_CHECK( SPEX_mpq_canonicalize( SPEX_2D(b2, 0, k, mpq)));
+
         // Only the entries in b_new[0..rank] are nonzero. Loop through
         // what's left
         for (j = 1; j < F->rank; j++)
         {
             // Compute D[j,j] * b_new[j]
-            // First b_new[j] = b_new[j]*rhos[j-1]
-            SPEX_CHECK( SPEX_mpz_mul( SPEX_2D(b_new, j, k, mpz),
-                                      SPEX_2D(b_new, j, k, mpz),
-                                      F->rhos->x.mpz[j-1]));
+            // Start by initializing b2[j] = b_new[j]
+            SPEX_CHECK( SPEX_mpq_set_num( SPEX_2D(b2, j, k, mpq),
+                                      SPEX_2D(b_new, j, k, mpz)));
 
-            SPEX_CHECK( SPEX_mpz_mul( SPEX_2D(b_new, j, k, mpz),
-                                      SPEX_2D(b_new, j, k, mpz),
-                                      F->rhos->x.mpz[j]));
+            // First we need to calculate b2[j] / rhos[j-1]
+            // Since rhos is mpz_t, we first convert it to mpq_t
+            SPEX_CHECK( SPEX_mpq_set_z( temp, F->rhos->x.mpz[j-1]));
+            SPEX_CHECK( SPEX_mpq_div( SPEX_2D(b2, j, k, mpq), SPEX_2D(b2, j, k, mpq), temp));
+
+            // Same process for b2[j] / rhos[j]
+            SPEX_CHECK( SPEX_mpq_set_z( temp, F->rhos->x.mpz[j]));
+            SPEX_CHECK( SPEX_mpq_div( SPEX_2D(b2, j, k, mpq), SPEX_2D(b2, j, k, mpq), temp));
         }
     }
 
-    // Now, b_new = D*b_new
-    // All that's left is to calculate Q*b_new
-    // Now, we have to compute Q*(D b_new).
-
-    // We need b2 for the final multiplication
-    SPEX_CHECK(SPEX_matrix_allocate(&b2, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0,
+    // Now, b2 = D*b_new
+    // b2 is also rational at this point.
+    // All that's left is to calculate Q*b2
+    // We will use x directly. Note that x is of size Q->m by b->n
+    SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, F->Q->m, b->n, 0,
                                     false, true, NULL));
 
     // Loop through each RHS vector
@@ -137,51 +146,31 @@ SPEX_info spex_qr_transpose_solve(
         for (j = 0; j < F->rank; j++)
         {
             // Loop through the nonzeros in each column
-            // b2[i] += Q[i,j]*b_new[i]
+            // b3[i] += Q[i,j]*b2[i]
             for (p = F->Q->p[j]; p < F->Q->p[j+1]; p++)
             {
                 i = F->Q->i[p];
-                SPEX_CHECK( SPEX_mpz_addmul( SPEX_2D(b2, i, k, mpz), SPEX_2D(b_new, i, k, mpz), F->Q->x.mpz[p]));
+                SPEX_CHECK( SPEX_mpq_set_ui(temp, 0, 1));
+                SPEX_CHECK( SPEX_mpq_set_num(temp, F->Q->x.mpz[p]));
+                SPEX_CHECK( SPEX_mpq_mul(temp, temp, SPEX_2D(b2, j, k, mpq)));
+                SPEX_CHECK( SPEX_mpq_add( SPEX_2D(x, i, k, mpq), SPEX_2D(x, i, k, mpq), temp));
             }
         }
     }
-
-    int64_t n = F->Q->n;
-    int sgn;
-
-    Qinv_perm = (int64_t *)SPEX_malloc(n * sizeof(int64_t));
-    if (!Qinv_perm)
-    {
-        SPEX_FREE_ALL;
-        return SPEX_OUT_OF_MEMORY;
-    }
-    for (k = 0; k < n; k++)
-    {
-        int64_t index = F->Q_perm[k];
-        Qinv_perm[index] = k;
-    }
-
     //--------------------------------------------------------------------------
-    // x = b2/scale
+    // x = x/scale
     //--------------------------------------------------------------------------
     // set scale = b->scale / A_scale
-    SPEX_MPQ_SET_Z(b2->scale, b->scale);
-    SPEX_MPQ_DIV(b2->scale, b2->scale, F->scale_for_A);
-
-    // allocate space for x as dense MPQ matrix
-    SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, F->Q->n, b->n,
-                                    0, false, true, option));
+    SPEX_MPQ_SET(temp, b->scale);
+    SPEX_MPQ_DIV(temp, temp, F->scale_for_A);
 
     // obtain x from permuted b2 with scale applied
-    for (i = 0; i < F->Q->n; i++)
+    for (i = 0; i < F->Q->m; i++)
     {
-        int64_t qi = Qinv_perm[i];
         for (j = 0; j < b->n; j++)
         {
-            SPEX_MPQ_SET_Z(SPEX_2D(x, qi, j, mpq),
-                           SPEX_2D(b2, i, j, mpz));
-            SPEX_MPQ_DIV(SPEX_2D(x, qi, j, mpq),
-                         SPEX_2D(x, qi, j, mpq), b2->scale);
+            SPEX_MPQ_DIV(SPEX_2D(x, i, j, mpq),
+                         SPEX_2D(x, i, j, mpq), temp);
         }
     }
 

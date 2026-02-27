@@ -1,23 +1,22 @@
 //------------------------------------------------------------------------------
-// SPEX/MATLAB/SPEX_mex_get_A_and_b.c: convert A&b to SPEX matrices
+// SPEX/MATLAB/SPEX_mex_get_A.c: convert A to SPEX matrices
 //------------------------------------------------------------------------------
 
-// SPEX: (c) 2022-2024, Christopher Lourenco, Jinhao Chen,
+// SPEX: (c) 2022-2026, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
 //------------------------------------------------------------------------------
 
-/* Purpose: This function reads in the A matrix and right hand side vectors. */
+/* Purpose: This function reads in the A matrix */
 
 #include "SPEX_mex.h"
 
-void spex_mex_get_A_and_b
+void spex_mex_get_A
 (
     SPEX_matrix *A_handle,      // Internal SPEX Mat stored in CSC
-    SPEX_matrix *b_handle,      // mpz matrix used internally
-    const mxArray* pargin[],    // The input A matrix and options
+    const mxArray* pargin[],    // The input A matrix
     SPEX_options option
 )
 {
@@ -37,9 +36,9 @@ void spex_mex_get_A_and_b
     //--------------------------------------------------------------------------
 
     SPEX_info status;
-    int64_t nA, mA, nb, mb, Anz, k, j;
+    int64_t nA, mA, Anz, k, j;
     int64_t *Ap, *Ai;
-    double *Ax, *bx;
+    double *Ax;
 
     //--------------------------------------------------------------------------
     // Read in A
@@ -108,64 +107,6 @@ void spex_mex_get_A_and_b
     // free the shallow copy of A
     SPEX_MEX_OK (SPEX_matrix_free (&A_matlab, option));
 
-    //--------------------------------------------------------------------------
-    // Read in b
-    //--------------------------------------------------------------------------
-
-    SPEX_matrix b = NULL;
-    SPEX_matrix b_matlab = NULL;
-
-    bx = mxGetDoubles (pargin[1]);
-    if (!bx)
-    {
-        spex_mex_error (SPEX_INCORRECT_INPUT, "");
-    }
-
-    // Get info about RHS vector (s)
-    nb = mxGetN (pargin[1]);
-    mb = mxGetM (pargin[1]);
-    if (mb != mA)
-    {
-        spex_mex_error (1, "dimension mismatch");
-    }
-
-    int64_t count = 0;
-
-    // check the values of b
-    bool b_has_int64_values = spex_mex_check_for_inf (bx, nb*mb);
-
-    if (b_has_int64_values)
-    {
-
-        // Create b_matlab (which is shallow)
-        SPEX_matrix_allocate(&b_matlab, SPEX_DENSE, SPEX_INT64, mb,
-            nb, mb*nb, true, false, option);
-
-        b_matlab->x.int64 = SPEX_calloc(nb*mb, sizeof(int64_t));
-        for (int64_t j = 0; j < mb*nb; j++)
-        {
-            // typecast b from double to int64
-            b_matlab->x.int64[j] = (int64_t) bx[j];
-        }
-
-    }
-    else
-    {
-
-        // Create b_matlab (which is shallow)
-        SPEX_matrix_allocate(&b_matlab, SPEX_DENSE, SPEX_FP64, mb,
-                nb, mb*nb, true, false, option);
-
-        b_matlab->x.fp64 = bx;
-    }
-
-    // scale b and convert to MPZ
-    SPEX_MEX_OK (SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b_matlab, option));
-
-    // free the shallow copy of b
-    SPEX_MEX_OK (SPEX_matrix_free (&b_matlab, option));
-
     (*A_handle) = A;
-    (*b_handle) = b;
 }
 

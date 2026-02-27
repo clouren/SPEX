@@ -80,7 +80,6 @@ SPEX_info spex_qr_transpose_forward_sub
         // Iterate accross all nonzeros in x. Assume x is dense
         //----------------------------------------------------------------------
 
-        // TODO Double check, but it should be just we look along rows 0:rank
         for (i = 0; i < rank; i++)
         //for (i = 0; i < x->m; i++)
         {
@@ -97,7 +96,22 @@ SPEX_info spex_qr_transpose_forward_sub
             // The first loop iterates through each nonzero in row i of R and performs
             // this submul IPGE update on b[i].
             // Once we have done so, we perform a history update on b[i] to finalize it
-            for (j = R->p[i]; j < R->p[i+1]-1; j++)
+
+            // Find the diagonal element if A is rank deficient. If A has full rank,
+            // the diagonal is located at R->p[i+1]-1 so no extra work is done.
+            int64_t diag_idx = -1;
+            for (int64_t p = R->p[i+1] - 1; p >= R->p[i]; p--)
+            {
+                if (R->i[p] == i)
+                {
+                    diag_idx = p;
+                    break;
+                }
+            }
+
+            // Process only the strict upper triangular part (elements above the diagonal)
+            for (j = R->p[i]; j < diag_idx; j++)
+            //for (j = R->p[i]; j < R->p[i+1]-1; j++)
             {
                 // Column index of R[j]
                 jnew = R->i[j];

@@ -85,7 +85,6 @@ SPEX_info SPEX_qr_analyze(
     // symbolic analysis step to get the permuted matrix AQ.
     //--------------------------------------------------------------------------
     SPEX_CHECK(spex_qr_permute_A(&AQ, A, false, S->Q_perm, NULL, option));
-    // TODO check that I didn't break everything, changed true to false to be like cholesky (and for tcov)
 
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the column elimination tree of AQ

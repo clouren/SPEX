@@ -87,20 +87,6 @@ SPEX_info SPEX_qr_solve(
         Qinv_perm[index] = k;
     }
 
-    // TODO I don't understand what this is checking. At this point, b_new has been allocated and
-    // nothing else so the entire vector is all 0
-    // Check for inconsistent system
-    for (k = rank; k < n; k++) // TODO is this at the end of b_new?? or before the dot product???
-    {
-        // n-rank elements at the end of b_new should be 0 for system to be consistent
-        SPEX_MPZ_SGN(&sgn, b->x.mpz[k]);
-        if (sgn != 0)
-        {
-            SPEX_FREE_ALL;
-            return SPEX_INCONSISTENT;
-        }
-    }
-
     //--------------------------------------------------------------------------
     // Need to compute b_new[i] = R(n,n)* Q'[i,:] dot b[i]
     // This is equivalent to b_new[i] = R(n,n)* Q[:,i] dot b[i]
@@ -124,6 +110,15 @@ SPEX_info SPEX_qr_solve(
         }
     }
 
+    // Force free variables to zero for the basic solution if necessary
+    for (k = 0; k < b->n; k++)
+    {
+        for (i = rank; i < F->Q->n; i++)
+        {
+            SPEX_MPZ_SET_UI(SPEX_2D(b_new, i, k, mpz), 0);
+        }
+    }
+
     //--------------------------------------------------------------------------
     // backwards substitution
     //--------------------------------------------------------------------------
@@ -138,7 +133,7 @@ SPEX_info SPEX_qr_solve(
     SPEX_MPQ_DIV(b_new->scale, b_new->scale, F->scale_for_A);
 
     // allocate space for x as dense MPQ matrix
-    SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, F->Q->n, b->n,
+    SPEX_CHECK(SPEX_matrix_allocate(&x, SPEX_DENSE, SPEX_MPQ, F->R->n, b->n,
                                     0, false, true, option));
 
     // obtain x from permuted b_new with scale applied

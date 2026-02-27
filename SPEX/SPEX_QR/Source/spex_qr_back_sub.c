@@ -12,8 +12,10 @@
  * underdetermined SLEs, solving the system Rx = b. Where the last n-rank rows of
  * R are 0.
  *
- * R is a sparse mpz matrix, and bx is a dense mpz matrix.  The diagonal entry
- * of U must appear as the last entry in each column.
+ * R is a sparse mpz matrix, and bx is a dense mpz matrix.
+ * If A is full rank, the diagonal entry of U will appear as the last entry in
+ * each column. If A is rank deficient, this is not true and the diagonal entry
+ * needs to be searched for.
  *
  * The input argument bx contains b on input, and it is overwritten on output
  * by the solution x.
@@ -52,7 +54,7 @@ SPEX_info spex_qr_back_sub // performs sparse REF backward substitution
     for (int64_t k = 0; k < bx->n; k++)
     {
         // Start at bx[n]
-        for (int64_t j = n - 1; j >= 0; j--)
+        for (int64_t j = rank - 1; j >= 0; j--)
         {
             // If bx[j] is zero skip this iteration
             SPEX_MPZ_SGN(&sgn, SPEX_2D(bx, j, k, mpz));
@@ -61,13 +63,27 @@ SPEX_info spex_qr_back_sub // performs sparse REF backward substitution
                 continue;
             }
 
-            // TODO What is this doing? Why is it needed?
-            extra = Ri[j] != j ? n - rank : 0;
+            // If A is rank deficient, the diagonal entry is not at position
+            // R->p[j+1] so we will search for it instead.
+            // This is still O(1) time if A is full rank because it starts at the
+            // end of the column.
+            int64_t diag_idx = -1;
+            for (int64_t i = Rp[j + 1] - 1; i >= Rp[j]; i--)
+            {
+                if (Ri[i] == j)
+                {
+                    diag_idx = i;
+                    break;
+                }
+            }
 
+            // Divide by the found diagonal element
             SPEX_MPZ_DIVEXACT(SPEX_2D(bx, j, k, mpz),
                               SPEX_2D(bx, j, k, mpz),
-                              Rx[Rp[j + 1] - 1 - extra]);
-            for (int64_t i = Rp[j]; i < Rp[j + 1] - 1 - extra; i++)
+                              Rx[diag_idx]);
+
+            // Back-substitute strictly into the rows ABOVE the diagonal
+            for (int64_t i = Rp[j]; i < diag_idx; i++)
             {
                 SPEX_MPZ_SGN(&sgn, Rx[i]);
                 if (sgn == 0)

@@ -39,7 +39,7 @@
 SPEX_info SPEX_qr_rank
 (
         // Output
-        int64_t rank,
+        int64_t *rank,
         // Input
         const SPEX_matrix A,
         const SPEX_options option
@@ -92,7 +92,7 @@ SPEX_info SPEX_qr_rank
     }
 
     // Set the rank
-    rank = F->rank;
+    (*rank) = F->rank;
 
     //--------------------------------------------------------------------------
     // Free memory and return ok

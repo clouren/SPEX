@@ -1683,6 +1683,21 @@ SPEX_info SPEX_mpq_sgn(
 }
 
 //------------------------------------------------------------------------------
+// SPEX_mpq_canonicalize
+//------------------------------------------------------------------------------
+
+/* Purpose: Compute the GCD of numerator and demoninator and divide. no output */
+
+SPEX_info SPEX_mpq_canonicalize(
+    const mpq_t x)
+{
+    SPEX_GMP_WRAPPER_START;
+    mpq_canonicalize(x);
+    SPEX_GMP_WRAPPER_FINISH;
+    return (SPEX_OK);
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //-------------------------Floating Point (mpfr type) functions-----------------
 //------------------------------------------------------------------------------
