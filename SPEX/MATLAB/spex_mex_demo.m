@@ -16,6 +16,8 @@
 %#ok<*NOPTS>
 %#ok<*NASGU>
 
+% TODO Can we delete this?
+
 %% SPEX vs MATLAB backslash: first example
 % In this first example, x = spex_backslash (A, b) returns an
 % approximate solution, but not because it was computed

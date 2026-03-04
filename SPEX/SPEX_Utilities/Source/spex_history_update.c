@@ -40,13 +40,15 @@ SPEX_info spex_history_update
     ASSERT(A->kind == SPEX_CSC);
     ASSERT(rhos->type == SPEX_MPZ);
     ASSERT(rhos->kind == SPEX_DENSE);
-    
-    
-    //Q(i,j)=rho^()*Q(i,k)/rho^()
-    // Q[pQ] = x[pQ] * rho[i] TODO fix comment
+
+    // A[a] = A[a]*rhos[i]
     SPEX_MPZ_MUL(A->x.mpz[a], A->x.mpz[a], rhos->x.mpz[i]);
     if(j>thres)
     {
+        // If necessary, divide by the previous pivot. This is necessary
+        // if the history of A[a] (j) is larger than the threshold
+        // which in most cases is 0 or 1
+        // A[a] = A[a] / rhos[k]
         SPEX_MPZ_DIVEXACT(A->x.mpz[a], A->x.mpz[a], rhos->x.mpz[k]);
     }
     

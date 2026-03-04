@@ -1,12 +1,12 @@
 function x = spex_qr_backslash (A,b,option)
-% spex_qr_BACKSLASH: solve Ax=b via sparse integer-preserving QR
-% spex_qr_backslash: computes the exact solution to the sparse linear system Ax =
-% b where A and b are stored as doubles. A must be stored as a sparse matrix can be of any size. b
-% must be stored as a dense set of right hand side vectors. b can be either 1
-% or multiple vector(s).  The result x is computed exactly, represented in
-% arbitrary-precision rational values, and then returned to MATLAB as a
-% floating-poing double result.  This final conversion means that x may no
-% longer exactly solve A*x=b, unless this final conversion is able to be
+% spex_qr_backslash: computes the exact solution to the sparse linear 
+% system Ax = b where A and b are stored as double. A must be stored as a
+% sparse matrix and can be of any size. b must be stored as a dense set of
+% right hand side vectors. b can be 1 or multiple right hand side vectors.
+% The result x is computed exactly, represented in arbitrary-precision 
+% rational values, and then returned to MATLAB as a floating-point 
+% double result.  This final conversion means that x may no longer exactly 
+% solve A*x=b, unless this final conversion is able to be
 % done without modification.
 %
 % Note that the type of solution returned depends on the structure of A:
@@ -15,7 +15,7 @@ function x = spex_qr_backslash (A,b,option)
 %       - If A is rank deficient x is a basic solution
 %   - If A is rectangular with m < n
 %       - If A has full row rank x is the minimum norm solution
-%       - If A is rank deficient then x is a basic solution
+%       - If A is rank deficient then TODO
 %
 %
 % x may also be returned as a vpa matrix, or a cell array of strings, with

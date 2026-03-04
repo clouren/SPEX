@@ -29,7 +29,8 @@
  *
  */
 
-// TODO Check this when a is rank deficient
+// TODO This needs to be modified for the case when A is rank deficient. At the moment
+// the solution returned for a rank deficient A pushes all the error to rows n-rank
 
 #define SPEX_FREE_ALL           \
     SPEX_matrix_free(&h, NULL);
@@ -83,7 +84,6 @@ SPEX_info spex_qr_transpose_forward_sub
         //----------------------------------------------------------------------
 
         for (i = 0; i < rank; i++)
-        //for (i = 0; i < x->m; i++)
         {
 
             //------------------------------------------------------------------
@@ -113,7 +113,6 @@ SPEX_info spex_qr_transpose_forward_sub
 
             // Process only the strict upper triangular part (elements above the diagonal)
             for (j = R->p[i]; j < diag_idx; j++)
-            //for (j = R->p[i]; j < R->p[i+1]-1; j++)
             {
                 // Column index of R[j]
                 jnew = R->i[j];

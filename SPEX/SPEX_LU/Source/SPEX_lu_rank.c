@@ -9,22 +9,15 @@
 //------------------------------------------------------------------------------
 
 /* Purpose: This code utilizes the SPEX Left LU factorization to exactly
- * compute the rank of A. A must be square
+ * compute the rank of A. A must be square. If A is rectangular than
+ * QR rank must be used.
  *
  * Input/Output arguments:
  *
- * x_handle:    A pointer to the solution of the linear system. The output is
- *              allowed to be returned in either double precision, mpfr_t, or
- *              rational mpq_t
+ * rank:        A pointer to the rank of A. Undefined on input and contains
+ *              the rank of A on output
  *
- * type:        Data structure of output desired. Must be either SPEX_MPQ,
- *              SPEX_FP64, or SPEX_MPFR
- *
- * A:           User's input matrix. It must be populated prior to calling this
- *              function.
- *
- * b:           Collection of right hand side vectors. Must be populated prior
- *              to factorization.
+ * A:           User's input matrix. It must be populated and square
  *
  * option:      Struct containing various command parameters for the
  *              factorization. If NULL on input, default values are used.
@@ -63,6 +56,8 @@ SPEX_info SPEX_lu_rank
     }
 
     SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ);
+    if (A->m != A->n)
+        return SPEX_INCORRECT_INPUT;
 
     SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL ;

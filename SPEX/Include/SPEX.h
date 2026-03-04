@@ -892,7 +892,7 @@ extern "C"
 
     SPEX_info SPEX_mpq_abs(mpq_t x, const mpq_t y);
     SPEX_info SPEX_mpq_add(mpq_t x, const mpq_t y, const mpq_t z);
-    SPEX_info SPEX_mpq_canonicalize(const mpq_t x);
+    SPEX_info SPEX_mpq_canonicalize(mpq_t x);
     SPEX_info SPEX_mpq_clear(mpq_t x);
     SPEX_info SPEX_mpq_cmp(int *r, const mpq_t x, const mpq_t y);
     SPEX_info SPEX_mpq_cmp_ui(int *r, const mpq_t x,
@@ -1387,16 +1387,14 @@ extern "C"
         SPEX_options option   // Command options (NULL: means use defaults)
     );
 
-    // TODO write this
-    /*
-    SPEX_info SPEX_rank(
+    SPEX_info SPEX_rank
+    (
         // Output
-        int64_t rank,
+        int64_t* rank,                  // rank of A
         // Input
-        const SPEX_matrix A,
-        const SPEX_options option
+        const SPEX_matrix A,            // Input matrix
+        const SPEX_options option       // Command options
     );
-    */
 
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
@@ -1600,15 +1598,6 @@ extern "C"
         SPEX_matrix R,        // Upper triangular matrix
         SPEX_matrix b,        // Q^T * b
         SPEX_matrix *x_handle // Solution
-    );
-
-    SPEX_info SPEX_generate_random_matrix(
-        SPEX_matrix *A_handle, // Matrix to be created
-        int64_t m,             // Rows of the matrix
-        int64_t n,             // Columns of the matrix
-        unsigned int seed,     // Random number seed
-        int64_t lower,         // Lower bound for numbers to be generated
-        int64_t upper          // Upper bound for numbers to be generated
     );
 
 #if defined(__cplusplus)

@@ -112,31 +112,6 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------
     // Generate a random dense matrix
     //--------------------------------------------------------------------------
-    /*
-        SPEX_generate_random_matrix ( &Ainit, m, n, seed, lower, upper);
-        Ainit->nz = m*n;
-        option->print_level = 3;
-        //SPEX_matrix_check(Ainit, option);
-
-        // Create A as a copy of Ainit
-        // A is a copy of the Ainit matrix. A is a sparse matrix with mpz_t entries
-        SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, Ainit, option);
-
-        // Create A2 as a copy of Ainit
-        // A2 is a copy of the Ainit matrix. A is a dense matrix with mpz_t entries
-        SPEX_matrix_copy(&A2, SPEX_DENSE, SPEX_MPZ, Ainit, option);
-
-         option->print_level = 3;
-         //SPEX_matrix_check(A, option);
-
-         SPEX_generate_random_matrix ( &b2, m, 1, seed, lower, upper);
-        b2->nz = m;
-        // Make a copy of b
-        SPEX_matrix_copy(&b, SPEX_DENSE, SPEX_MPZ, b2, option);
-
-        //option->print_level = 3;
-        //SPEX_matrix_check(A, option);
-    /**/
     // char *mat_name = "ExampleMats/smallZerosRD.mat.txt";
     // char *rhs_name = "ExampleMats/smallRankDeficient.rhs.txt";
     char *mat_name = "ExampleMats/494_bus.mat.txt";

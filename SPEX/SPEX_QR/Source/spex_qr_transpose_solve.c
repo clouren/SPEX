@@ -15,6 +15,9 @@
  * This function first solves y = R^T D \b and then calculates x as
  * x = Q D y
  *
+ * If A has full row rank, then x is the minimum norm solution of Ax = b
+ * If A is rank deficient, then x is TODO
+ *
  * Input/output arguments:
  *
  * x_handle: A pointer to the solution vectors. Unitialized on input.
@@ -43,7 +46,12 @@
 #include "spex_qr_internal.h"
 #include "spex_lu_internal.h"
 
-SPEX_info spex_qr_transpose_solve(
+
+// TODO The solution when A is rank deficient doesn't make sense at the moment
+// right now it exactly solves a smaller system and then pushes all the error
+// to rows n-r of x. Need to determine the desired behavior in this case.
+SPEX_info spex_qr_transpose_solve
+(
     // Output
     SPEX_matrix *x_handle, // On input: undefined.
                            // On output: Rational solution (SPEX_MPQ)
@@ -71,7 +79,7 @@ SPEX_info spex_qr_transpose_solve(
 
     // Step 1 is a transpose triangular solve R^T D y = b
     // A can be rank deficient so if A is rank deficient R contains n-rank rows of zeros
-    // meanign that R^T contains n-rank columns of zeros. So the transpose solve should just loop
+    // meaning that R^T contains n-rank columns of zeros. So the transpose solve should just loop
     // through columns 0 to n-rank and do the typical forward sub.
 
     // Declare x and b_new
@@ -81,9 +89,17 @@ SPEX_info spex_qr_transpose_solve(
 
     int64_t i, j, p, k;
 
-    // Permute b_new
+    // Allocate memory for b_new
+    SPEX_CHECK(SPEX_matrix_allocate(&b_new, SPEX_DENSE, SPEX_MPZ, b->m, b->n, 0, false, true, NULL));
 
-    SPEX_CHECK (spex_permute_dense_matrix (&b_new, b, F->Q_perm, option));
+    // Apply P^T to the right-hand side
+    for (k = 0; k < b->n; k++)
+    {
+        for (i = 0; i < b->m; i++)
+        {
+            SPEX_MPZ_SET(SPEX_2D(b_new, i, k, mpz), SPEX_2D(b, F->Q_perm[i], k, mpz));
+        }
+    }
 
     // Transpose forward solve. Set b_new = (R^T D) \ b_new
     SPEX_CHECK( spex_qr_transpose_forward_sub( F->R, F->rank, b_new, F->rhos));

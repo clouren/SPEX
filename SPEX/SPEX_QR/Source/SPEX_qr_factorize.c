@@ -179,12 +179,31 @@ SPEX_info SPEX_qr_factorize(
             // Finalize Q k+1 (it keeps its previous values)
             for (pQ = Q->p[k + 1]; pQ < Q->p[k + 2]; pQ++)
             {
+            // History update
+            // I think this fixes an issue where updates where skipped in the case where
+            // matrix is rank deficient, but an entry hasn't been updated since the
+            // initialization
+            if (h[pQ] < k + 1)
+            {
+                // Entry has been updated before, do a history update
+                if (h[pQ] > 0)
+                {
+                    SPEX_CHECK(spex_history_update(Q, rhos, pQ, k - 1, h[pQ], h[pQ] - 1, 0, option));
+                }
+                // h[pq] = 0 but we are outside of column 1. In this case, we need to bring the entry up
+                // to iteration k+1
+                else if (k > 0)
+                {
+                    SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[k - 1]);
+                }
+            }
+            /*
                 // History update
                 if (h[pQ] < k + 1 && h[pQ] > 0)
                 {
                     SPEX_CHECK(spex_history_update(Q, rhos, pQ, k - 1, h[pQ],
                                                    h[pQ] - 1, 0, option));
-                }
+                }*/
 
                 h[pQ] = k + 1;
 

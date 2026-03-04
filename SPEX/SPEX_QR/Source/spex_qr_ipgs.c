@@ -41,16 +41,6 @@
 
 #include "spex_qr_internal.h"
 
-#define SPEX_FREE_WORKSPACE \
-    {                       \
-        SPEX_FREE(final);   \
-    }
-
-#define SPEX_FREE_ALL       \
-    {                       \
-        SPEX_FREE_WORKSPACE \
-    }
-
 SPEX_info spex_qr_ipgs(
     // Input/Output
     SPEX_matrix R,    // Right triangular matrix
@@ -79,18 +69,10 @@ SPEX_info spex_qr_ipgs(
     // Declare variables
     int64_t p, pQ, pR, iR, top, x, l, prev, iQ, k, i;
     int sgn;
-    int64_t *final = NULL;
 
     size_t size;
 
     *isZeros = true; // start by assuming column of Q is linearly dependent
-
-    final = (int64_t *)SPEX_malloc((m) * sizeof(int64_t));
-    if (!final)
-    {
-        SPEX_FREE_ALL;
-        return SPEX_OUT_OF_MEMORY;
-    }
 
     //--------------------------------------------------------------------------
     // Compute row j of R, store as column
@@ -121,10 +103,12 @@ SPEX_info spex_qr_ipgs(
             prev = Qj[iQ];
 
             // check if column j of Q had a zero element in row iQ
-            if ((j > 0 && prev < Q->p[j - 1]) || (j == 0 && prev == -1))
+            if (prev < Q->p[j])
+            //if ((j > 0 && prev < Q->p[j - 1]) || (j == 0 && prev == -1))
             {
                 continue;
-            } // simbolic zero
+            }
+            // simbolic zero
             SPEX_MPZ_SGN(&sgn, Q->x.mpz[prev]);
             if (sgn == 0)
                 continue; // numeric zero
@@ -164,7 +148,8 @@ SPEX_info spex_qr_ipgs(
         iQ = Q->i[pQ];
         prev = Qj[iQ];
 
-        if ((k > 0 && prev < Q->p[k - 1]) || (k == 0 && prev == -1) || i != k)
+        //if ((k > 0 && prev < Q->p[k - 1]) || (k == 0 && prev == -1) || i != k)
+        if (prev < Q->p[j] || i != k)
         {
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);
             if (k > 1 && h[pQ] > 0)

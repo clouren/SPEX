@@ -28,7 +28,8 @@
  *               Contains column permutation of A
  */
 
-SPEX_info spex_qr_permute_A(
+SPEX_info spex_qr_permute_A
+(
     // Output
     SPEX_matrix *PAQ_handle, // On input: undefined
                              // On output: contains the permuted matrix

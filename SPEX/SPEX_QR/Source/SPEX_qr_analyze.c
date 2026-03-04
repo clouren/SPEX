@@ -40,7 +40,8 @@
 
 #include "spex_qr_internal.h"
 
-SPEX_info SPEX_qr_analyze(
+SPEX_info SPEX_qr_analyze
+(
     // Output
     SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
     // Input

@@ -1689,7 +1689,7 @@ SPEX_info SPEX_mpq_sgn(
 /* Purpose: Compute the GCD of numerator and demoninator and divide. no output */
 
 SPEX_info SPEX_mpq_canonicalize(
-    const mpq_t x)
+    mpq_t x)
 {
     SPEX_GMP_WRAPPER_START;
     mpq_canonicalize(x);

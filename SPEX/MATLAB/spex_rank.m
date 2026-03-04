@@ -1,9 +1,8 @@
 function r = spex_rank (A)
-% spex_rank: compute the exact rank of A
-% A must be stored as a sparse matrix and must be of size m by n
-%
-% If A is square, this function utilizes LU factorization.
-% Otherwise it utilizes QR factorization
+% spex_rank: compute the exact rank of A.
+% A is a sparse matrix of any size. The algorithm computes the exact rank
+% of A via either left-looking LU factorization (if A is square) or exact
+% QR factorization (if A is rectangular).\
 %
 % Usage:
 %
