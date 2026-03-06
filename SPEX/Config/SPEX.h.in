@@ -1483,22 +1483,17 @@ extern "C"
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
 
+    // Importantly, note that, similar to both the LU, Cholesky, and LDL routines,
+    // SPEX QR has both simple and "expert" interfaces. However, note that the
+    // expert interface only works if m >= n (A is a tall thin matrix).
+    // This is because the SPEX QR factorization is also a thin factorization
+    // and thus must operate on A^T when n > m (A is a short wide matrix).
+    // Thus solving a wide Ax = b and computing the rank of a wide A is supported,
+    // but only via SPEX_qr_backslash, SPEX_backslash, and SPEX_rank
+
     //------------------------------------------------------------------------------
     // Purpose: Analyze the A matrix and perform a fill-reduced ordering of A
     //------------------------------------------------------------------------------
-    // TODO We need to decide the behavior of the easy vs hard interface in regards
-    // to short fat matrices. Basically, in the easy interface, we can handle whatever.
-    // In the hard interface, we currently error out if A is short fat.
-    // In order to support short and fat for the hard interface we essentially need
-    // a flag indicating that we have transposed A and need to use a different solve.
-    // But, the factorization that they get from SPEX qr factorize is of A^T and so
-    // if the user is not careful they can easily get confused.
-    // I suggest we remove that option for the hard interface and do the following:
-    //
-    // Hard interface only works if A has m >= n. Otherwise it errors out. This is how
-    // it is now.
-    // Easy interface and spex backslash works regardless of size of A
-
     SPEX_info SPEX_qr_analyze(
         // Output
         SPEX_symbolic_analysis *S_handle, // Symbolic analysis data structure
@@ -1554,50 +1549,17 @@ extern "C"
         const SPEX_options option // Command options
     );
 
+    //------------------------------------------------------------------------------
+    // Purpose: Compute the rank of A using QR factorization. This is called by
+    // SPEX_rank when A is rectangular. It is not suggested to use this function
+    // for a square matrix.
+    //------------------------------------------------------------------------------
     SPEX_info SPEX_qr_rank(
         // Output
         int64_t *rank,
         // Input
         const SPEX_matrix A,
         const SPEX_options option
-    );
-
-    // TODO Do we actually delete these
-    // delete all qr functions after this
-    /* Compute the dot product of two integer vectors x,y and return in z */
-    SPEX_info SPEX_dot(
-        SPEX_matrix x,
-        SPEX_matrix y,
-        mpz_t z);
-
-    /* Purpose: Given a matrix A in m*n and B in m*n, compute the dot product of
-     * A(:,i) and B(:,j). Assumed to be dense. prod = A(:,i) dot B(:,j)
-     */
-    SPEX_info SPEX_dense_mat_dot(
-        SPEX_matrix A,
-        int64_t i,
-        SPEX_matrix B,
-        int64_t j,
-        mpz_t prod);
-
-    /* Perform the IPGE version of SPEX QR (aka Algorithm 1 from workpage)
-     */
-    SPEX_info SPEX_QR_IPGE(
-        SPEX_matrix A,         // Matrix to be factored
-        SPEX_matrix *R_handle, // upper triangular matrix
-        SPEX_matrix *Q_handle  // orthogonal triangular matrix
-    );
-
-    SPEX_info SPEX_Qtb(
-        SPEX_matrix Q,        // Q matrix, want Q'
-        SPEX_matrix b,        // Original RHS Vector
-        SPEX_matrix *b_handle // Null on input. Contains Q'*b on output
-    );
-
-    SPEX_info SPEX_QR_backsolve(
-        SPEX_matrix R,        // Upper triangular matrix
-        SPEX_matrix b,        // Q^T * b
-        SPEX_matrix *x_handle // Solution
     );
 
 #if defined(__cplusplus)

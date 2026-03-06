@@ -2,7 +2,7 @@
 // SPEX_Backslash/SPEX_backslash.c: Solve a system Ax=b
 //------------------------------------------------------------------------------
 
-// SPEX_Backslash: (c) 2020-2024, Christopher Lourenco, Jinhao Chen,
+// SPEX_Backslash: (c) 2020-2026, Christopher Lourenco, Jinhao Chen,
 // Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 // All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
@@ -31,12 +31,11 @@
  *              factorization. If NULL on input, default values are used.
  */
 
-// TODO update me
-
 #include "spex_util_internal.h"
 #include "SPEX.h"
 
-SPEX_info SPEX_backslash(
+SPEX_info SPEX_backslash
+(
     // Output
     SPEX_matrix *x_handle, // On output: Final solution vector(s)
                            // On input: undefined
@@ -108,31 +107,67 @@ SPEX_info SPEX_backslash(
         break;
 
     // Default algorithm is utilized. In this case, SPEX Backslash
-    // attempts to find the appropriate algorithm. First, up-looking
-    // LDL factorization is attempted. If LDL is successful, return x
-    // and exit. If LDL fails, LU factorization is attempted.
+    // attempts to find the appropriate algorithm. The first decision
+    // point is if A is square or rectangular.
+    //
+    // If A is rectangular:
+    //      (1) If A has more rows than columns and is full rank, the
+    //          least squares solution is returned
+    //      (2) If A has more rows than columns and is rank deficient,
+    //          a basic solution is returned
+    //      (3) If A has more columns than rows and is full rank the
+    //          minimum norm solution is returned
+    //      (4) If A has more columns than rows and is rank deficient
+    //          SPEX_SINGULAR is returned. This is a limitation of
+    //          thin QR in general in that it is not an appropriate
+    //          type of factorization for this type of matrix.
+    //
+    // If A is square:
+    //      (1) If A is symmetric with nonzero leading principle minors
+    //          an up-looking LDL factorization is used
+    //      (2) If A is not symmetric and full rank an LU factorization
+    //          is used
+    //      (3) If A is rank deficient, SPEX_SINGULAR is returned.
+    //          In this case, a user could call SPEX_qr_backslash
+    //          if they desire a rank deficient basic solution or
+    //          SPEX_rank if they wish to determine the exact rank of A
     default:
     case SPEX_ALGORITHM_DEFAULT:
 
-        // Try SPEX ldl. The output for this function
-        // is either:
-        // SPEX_OK:          LDL success, x is the exact solution
-        // SPEX_UNSYMMETRIC: Matrix is unsymmetric and not a candidate for LDL
-        // SPEX_ZERODIAG:    A is symmetric but does not have a nonzero diagonal.
-        //                   not a candidate for LDL.
-        // Other error code: Some error. Return the error code and exit
-        info = SPEX_ldl_backslash(&x, type, A, b, option);
-
-        if (info == SPEX_ZERODIAG || info == SPEX_UNSYMMETRIC)
+        // Determine if A is rectangular
+        if (A->m != A->n)
         {
-            // ldl factorization failed but matrix is a candidate
-            // for LU factorization.
 
-            // The LU factorization can return either:
-            // SPEX_OK: LU success, x is the exact solution
-            // Other error code: Some error. Return the error
-            //                   code and exit
-            info = SPEX_lu_backslash(&x, type, A, b, option);
+            // Try SPEX QR. The output of the function is:
+            // SPEX_OK:          Success, A contains exact solution
+            //                   or a basic solution
+            // SPEX_SINGULAR     A is a wide rank deficient matrix
+            // Other error code: Some other error. Return the code and exit
+            info = SPEX_qr_backslash(&x, type, A, b, option);
+        }
+        else
+        {
+            // A is square. We start by trying SPEX LDL
+
+            // The output for this function is either:
+            // SPEX_OK:          LDL success, x is the exact solution
+            // SPEX_UNSYMMETRIC: Matrix is unsymmetric and not a candidate for LDL
+            // SPEX_ZERODIAG:    A is symmetric but does not have a nonzero diagonal.
+            //                   not a candidate for LDL.
+            // Other error code: Some error. Return the error code and exit
+            info = SPEX_ldl_backslash(&x, type, A, b, option);
+
+            if (info == SPEX_ZERODIAG || info == SPEX_UNSYMMETRIC)
+            {
+                // ldl factorization failed but matrix is a candidate
+                // for LU factorization.
+
+                // The LU factorization can return either:
+                // SPEX_OK: LU success, x is the exact solution
+                // Other error code: Some error. Return the error
+                //                   code and exit
+                info = SPEX_lu_backslash(&x, type, A, b, option);
+            }
         }
     }
     // x contains either the exact solution of the system or is NULL

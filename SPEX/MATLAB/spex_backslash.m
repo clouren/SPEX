@@ -24,7 +24,10 @@ function x = spex_backslash(A, b, option)
 %     exact basic solution is returned.
 %   - If A is rectangular with more columns than rows (i.e., A is a wide
 %     matrix) and has full row rank then the exact minimum norm solution is
-%     returned. If A is wide and rank deficient, TODO 
+%     returned. If A is wide and rank deficient, then the fact A is 
+%     singular is reported to the user and no solution is returned.
+%     Importantly, this is a drawback of thin QR factorization in general
+%     when applied to wide matrices.
 %
 % Usage:
 %

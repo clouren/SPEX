@@ -15,7 +15,8 @@ function x = spex_qr_backslash (A,b,option)
 %       - If A is rank deficient x is a basic solution
 %   - If A is rectangular with m < n
 %       - If A has full row rank x is the minimum norm solution
-%       - If A is rank deficient then TODO
+%       - If A is rank deficient then no solution is returned and the
+%       matrix is reported to be singular
 %
 %
 % x may also be returned as a vpa matrix, or a cell array of strings, with

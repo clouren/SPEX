@@ -59,19 +59,15 @@ void mexFunction
 
 
     //--------------------------------------------------------------------------
-    // get the input options
+    // set options
     //--------------------------------------------------------------------------
 
-    // TODO do we want to give them options?
     SPEX_options option = NULL;
     SPEX_create_default_options(&option);
     if (option == NULL)
     {
         spex_mex_error (SPEX_OUT_OF_MEMORY, "");
     }
-
-    //spex_mex_options mexoptions ;
-    //if (nargin > 2) spex_mex_get_matlab_options (option, &mexoptions, pargin [2]);
 
     //--------------------------------------------------------------------------
     // get A

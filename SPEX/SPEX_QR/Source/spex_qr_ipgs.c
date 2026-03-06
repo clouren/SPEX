@@ -133,7 +133,6 @@ SPEX_info spex_qr_ipgs(
     //--------------------------------------------------------------------------
     k = j + 1;
 
-    // start=clock();
     //  Find the necessary element of R
     for (pR = R->p[j]; pR < R->p[j + 1]; pR++)
     {

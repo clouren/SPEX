@@ -13,6 +13,8 @@
  * that is, preordering A, computing the elimination tree, getting the column
  * counts of ATA, setting the column pointers and number of non zeros of R.
  *
+ * A must have m >= n
+ *
  * Input arguments of the function:
  *
  * S:           Symbolic analysis struct for QR factorization.

@@ -1,5 +1,4 @@
 function spex_mex_test
-% TODO Add tests for qr and rank
 %SPEX_MEX_TEST run a set of tests for SPEX matlab interface
 %
 % Usage:  spex_mex_test

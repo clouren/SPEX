@@ -14,7 +14,9 @@
  * that is x = (R'D) \x. This is a subroutine for solving the system Ax=b
  * when A is rectangular and contains more columns than rows.
  *
- * A may be rank deficient, in that case R contains n-rank rows of zeros
+ * A must be full rank. If A is rank deficient, the only caller
+ * spex_qr_transpose_backslash, will not call this function and instead
+ * exit with an appropriate error.
  *
  * Mathematically, we do not transpose R directly, instead, since R is stored
  * in CSC format, we think of R' being stored in compressed row format.
@@ -28,9 +30,6 @@
  * This function is heavily based on the SPEX LU transpose solve
  *
  */
-
-// TODO This needs to be modified for the case when A is rank deficient. At the moment
-// the solution returned for a rank deficient A pushes all the error to rows n-rank
 
 #define SPEX_FREE_ALL           \
     SPEX_matrix_free(&h, NULL);

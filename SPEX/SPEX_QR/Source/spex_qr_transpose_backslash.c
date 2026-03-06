@@ -105,9 +105,19 @@ SPEX_info spex_qr_transpose_backslash(
     SPEX_CHECK(SPEX_qr_analyze(&S, AT, option));
 
     //--------------------------------------------------------------------------
-    // QR Factorization of AT
+    // QR Factorization of AT.
     //--------------------------------------------------------------------------
     SPEX_CHECK(SPEX_qr_factorize(&F, AT, S, option));
+
+    if (F->rank != A->m)
+    {
+        // If A is rank deficient, then an error code is returned and the
+        // function terminates. This is due to a limitation in thin QR itself
+        // in that there is no straightforward way to return a basic or
+        // minimum norm solution for a wide A with rank deficiency
+        SPEX_FREE_ALL;
+        return SPEX_SINGULAR;
+    }
 
     //--------------------------------------------------------------------------
     // Solve
