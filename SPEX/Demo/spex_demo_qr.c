@@ -90,6 +90,8 @@ int main(int argc, char *argv[])
         b1_init->x.int64[i] = (rand() % 1000) + 1;
     }
 
+    A1_init->nz = m1*n1;
+
     count = 0;
     for (int i = 0; i < m2; i++)
     {
@@ -103,12 +105,13 @@ int main(int argc, char *argv[])
         b2_init->x.int64[i] = (rand() % 1000) + 1;
     }
 
+    A2_init->nz = m2*n2;
+
     // Copy initial matrices into A1, A2, b1, b2
     SPEX_matrix_copy(&A1, SPEX_CSC, SPEX_MPZ, A1_init, option);
     SPEX_matrix_copy(&A2, SPEX_CSC, SPEX_MPZ, A2_init, option);
     SPEX_matrix_copy(&b1, SPEX_DENSE, SPEX_MPZ, b1_init, option);
     SPEX_matrix_copy(&b2, SPEX_DENSE, SPEX_MPZ, b2_init, option);
-
 
     // Solve Ax = b
     SPEX_qr_backslash(&x1, SPEX_FP64, A1, b1, option);

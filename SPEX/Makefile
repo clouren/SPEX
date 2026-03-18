@@ -68,6 +68,7 @@ demos:
 	./build/spex_demo_qr_simple 		f ExampleMats/LF10.mat.txt ExampleMats/LF10.rhs.txt
 	./build/spex_demo_qr_extended 		f ExampleMats/smallZeros.mat.txt ExampleMats/smallZeros.rhs.txt
 	./build/spex_demo_qr_cluster 		f ExampleMats/smallZeros.mat.txt ExampleMats/smallZeros.rhs.txt
+	./build/spex_demo_qr
 
 cov:
 	( cd Tcov && $(MAKE) )
