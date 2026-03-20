@@ -135,7 +135,7 @@ SPEX_info spex_qr_nonzero_structure(
         R->p[k] = rnz;
         w[k] = k;
         top = n;
-        col = S->Q_perm[k]; // TODO what needs to change? CHANGE
+        col = S->Q_perm[k];
 
         for (p = A->p[col]; p < A->p[col + 1]; p++) /* find R(:,k) pattern */
         {

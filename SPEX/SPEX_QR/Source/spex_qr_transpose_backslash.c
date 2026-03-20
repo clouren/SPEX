@@ -35,12 +35,12 @@
 
 #define SPEX_FREE_WORKSPACE              \
     SPEX_factorization_free(&F, option); \
-    SPEX_symbolic_analysis_free(&S, option);
+    SPEX_symbolic_analysis_free(&S, option); \
+    SPEX_matrix_free(&AT, NULL);
 
 #define SPEX_FREE_ALL   \
     SPEX_FREE_WORKSPACE \
     SPEX_matrix_free(&x, NULL); \
-    SPEX_matrix_free(&AT, NULL);
 
 #include "spex_qr_internal.h"
 
