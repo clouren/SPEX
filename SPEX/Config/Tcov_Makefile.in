@@ -13,14 +13,26 @@ default: cov
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 
-
+# TODO: Why is SPEX_Backslash not included in the .o parts?
 ################################################################################
+
+# Ask the OS what it is to determine the shared library extension and linker flags
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    EXT = dylib
+    # Mac requires a separate -rpath flag for every single directory
+    RPATH_FLAGS = -Wl,-rpath,$(SUITESPARSE_CONFIG_PATH) -Wl,-rpath,$(AMD_PATH) -Wl,-rpath,$(COLAMD_PATH) -Wl,-rpath,$(GMP_PATH) -Wl,-rpath,$(MPFR_PATH)
+else
+    EXT = so
+    # Linux allows stringing them together with colons
+    RPATH_FLAGS = -Wl,-rpath=$(SUITESPARSE_CONFIG_PATH):$(AMD_PATH):$(COLAMD_PATH):$(GMP_PATH):$(MPFR_PATH)
+endif
 
 # configured by CMake:
 INC = @SPEX_INCS@
-LIBS = ../../SuiteSparse_config/build/libsuitesparseconfig.so \
-    ../../AMD/build/libamd.so \
-    ../../COLAMD/build/libcolamd.so \
+LIBS = ../../SuiteSparse_config/build/libsuitesparseconfig.$(EXT) \
+    ../../AMD/build/libamd.$(EXT) \
+    ../../COLAMD/build/libcolamd.$(EXT) \
     @SPEX_LIBS@
 
 SUITESPARSE_CONFIG_PATH = @SUITESPARSE_CONFIG_PATH@
@@ -36,7 +48,7 @@ MPFR_PATH = @MPFR_PATH@
     JOBS ?= 8
 
     LDFLAGS = --coverage
-    LDFLAGS += -Wl,-rpath=$(SUITESPARSE_CONFIG_PATH):$(AMD_PATH):$(COLAMD_PATH):$(GMP_PATH):$(MPFR_PATH)
+    LDFLAGS += $(RPATH_FLAGS)
 
     # remove object files, but keep compiled libraries via 'make clean'
     CLEAN = *.o *.obj *.ln *.bb *.bbg *.da *.tcov *.gcov gmon.out *.bak *.d \
@@ -82,26 +94,32 @@ $(OBJ_Tcov): tcov_utilities.h
 # link and compile each .c file in SPEX_Utilities/Source
 
 OBJ_Util = \
-    SPEX_version.o \
+    spex_amd.o \
     SPEX_calloc.o \
     spex_cast_array.o \
     spex_cast_matrix.o \
+    spex_colamd.o \
     SPEX_create_default_options.o \
     spex_create_mpfr_array.o \
     spex_create_mpq_array.o \
     spex_create_mpz_array.o \
-    spex_free_mpfr_array.o \
-    spex_free_mpq_array.o \
-    spex_free_mpz_array.o \
     spex_cumsum.o \
+    SPEX_determine_symmetry.o \
+    spex_dot_product.o \
     spex_expand_double_array.o \
     spex_expand_mpfr_array.o \
     spex_expand_mpq_array.o \
+    SPEX_factorization_free.o \
     SPEX_finalize.o \
+    spex_free_mpfr_array.o \
+    spex_free_mpq_array.o \
+    spex_free_mpz_array.o \
     SPEX_free.o \
     SPEX_gmp.o \
+    spex_history_update.o \
     SPEX_initialize.o \
     SPEX_initialize_expert.o \
+    spex_ipge_update.o \
     SPEX_malloc.o \
     SPEX_matrix_allocate.o \
     SPEX_matrix_check.o \
@@ -114,34 +132,19 @@ OBJ_Util = \
     spex_sparse_collapse.o \
     spex_sparse_realloc.o \
     SPEX_symbolic_analysis_free.o \
-    SPEX_factorization_free.o \
-    SPEX_determine_symmetry.o \
+    SPEX_thread_finalize.o \
+    SPEX_thread_initialize.o \
     SPEX_transpose.o \
-    spex_amd.o \
-    spex_colamd.o \
-    spex_history_update.o \
-    spex_ipge_update.o \
-    spex_dot_product.o
+    SPEX_version.o
 
 $(OBJ_Util): ../Include/SPEX.h ../SPEX_Utilities/Source/spex_util_internal.h
-
-.PRECIOUS: SPEX_%.c spex_%.c
-
-SPEX_%.c:
-	- ln -s ../SPEX_Utilities/Source/$@
-
-spex_%.c:
-	- ln -s ../SPEX_Utilities/Source/$@
 
 #-------------------------------------------------------------------------------
 # link and compile each .c file in SPEX_LU/Source
 
 OBJ_LU = \
-    SPEX_lu_analyze.o \
-    SPEX_lu_backslash.o \
     spex_left_lu_back_sub.o \
     spex_left_lu_dfs.o \
-    SPEX_lu_factorize.o \
     spex_left_lu_forward_sub.o \
     spex_left_lu_get_largest_pivot.o \
     spex_left_lu_get_nonzero_pivot.o \
@@ -149,14 +152,21 @@ OBJ_LU = \
     spex_left_lu_get_smallest_pivot.o \
     spex_left_lu_reach.o \
     spex_left_lu_ref_triangular_solve.o \
+    SPEX_lu_analyze.o \
+    SPEX_lu_backslash.o \
+    SPEX_lu_factorize.o \
+    spex_lu_rank_factorize.o \
+    SPEX_lu_rank.o \
     SPEX_lu_solve.o
+
+$(OBJ_LU): ../Include/SPEX.h ../SPEX_LU/Source/spex_lu_internal.h
 
 .PRECIOUS: SPEX_lu_%.c SPEX_lu_%.c spex_left_lu_%.c 
 
 SPEX_lu_%.c:
 	- ln -s ../SPEX_LU/Source/$@
 
-SPEX_lu_%.c:
+spex_lu_%.c:
 	- ln -s ../SPEX_LU/Source/$@
 
 spex_left_lu_%.c:
@@ -170,7 +180,9 @@ DEMO_SRC = \
     ../Demo/Utilities/spex_demo_determine_error.c \
     ../Demo/Utilities/spex_demo_process_command_line.c \
     ../Demo/Utilities/spex_demo_read_dense.c \
-    ../Demo/Utilities/spex_demo_tripread.c
+    ../Demo/Utilities/spex_demo_tripread.c \
+    ../Demo/Utilities/spex_scatter.c \
+    ../Demo/Utilities/spex_sparse_matrix_multiply.c
 
 #-------------------------------------------------------------------------------
 # link and compile each .c file in SPEX_Cholesky/Source
@@ -178,12 +190,19 @@ DEMO_SRC = \
 OBJ_Cholesky = \
     SPEX_cholesky_analyze.o \
     SPEX_cholesky_backslash.o \
+    SPEX_cholesky_factorize.o \
+    SPEX_cholesky_solve.o \
+    SPEX_ldl_analyze.o \
+    SPEX_ldl_backslash.o \
+    SPEX_ldl_factorize.o \
+    SPEX_ldl_solve.o \
     spex_symmetric_analyze.o \
+    spex_symmetric_backslash.o \
     spex_symmetric_backward_sub.o \
     spex_symmetric_counts.o \
     spex_symmetric_ereach.o \
     spex_symmetric_etree.o \
-    SPEX_cholesky_factorize.o \
+    spex_symmetric_factor.o \
     spex_symmetric_forward_sub.o \
     spex_symmetric_leaf.o \
     spex_symmetric_left_factor.o \
@@ -192,18 +211,12 @@ OBJ_Cholesky = \
     spex_symmetric_post.o \
     spex_symmetric_pre_left_factor.o \
     spex_symmetric_preorder.o \
-    SPEX_cholesky_solve.o \
-    spex_symmetric_symbolic_analysis.o \
-    spex_symmetric_backslash.o \
-    spex_symmetric_factor.o \
     spex_symmetric_solve.o \
+    spex_symmetric_symbolic_analysis.o \
     spex_symmetric_tdfs.o \
     spex_symmetric_up_factor.o \
     spex_symmetric_up_triangular_solve.o \
-    SPEX_ldl_analyze.o \
-    SPEX_ldl_factorize.o \
-    SPEX_ldl_solve.o \
-    SPEX_ldl_backslash.o \
+
 
 $(OBJ_Cholesky): ../Include/SPEX.h ../SPEX_Cholesky/Source/spex_cholesky_internal.h
 
@@ -226,8 +239,8 @@ SPEX_ldl_%.c:
 
 OBJ_QR = \
     SPEX_qr_analyze.o \
-    SPEX_qr_backslash.o \
     spex_qr_back_sub.o \
+    SPEX_qr_backslash.o \
     spex_qr_counts.o \
     spex_qr_etree.o \
     SPEX_qr_factorize.o \
@@ -235,8 +248,13 @@ OBJ_QR = \
     spex_qr_nonzero_structure.o \
     spex_qr_permute_A.o \
     spex_qr_preorder.o \
-    SPEX_qr_solve.o 
-    
+    SPEX_qr_rank.o \
+    SPEX_qr_solve.o \
+    spex_qr_standard_backslash.o \
+    spex_qr_transpose_backslash.o \
+    spex_qr_transpose_forward_sub.o \
+    spex_qr_transpose_solve.o
+
 $(OBJ_QR): ../Include/SPEX.h ../SPEX_QR/Source/spex_qr_internal.h
 
 .PRECIOUS: SPEX_qr_%.c spex_qr_%.c 
@@ -246,6 +264,15 @@ SPEX_qr_%.c:
 
 spex_qr_%.c:
 	- ln -s ../SPEX_QR/Source/$@
+
+
+.PRECIOUS: SPEX_%.c spex_%.c
+
+SPEX_%.c:
+	- ln -s ../SPEX_Utilities/Source/$@
+
+spex_%.c:
+	- ln -s ../SPEX_Utilities/Source/$@
 
 #-------------------------------------------------------------------------------
 

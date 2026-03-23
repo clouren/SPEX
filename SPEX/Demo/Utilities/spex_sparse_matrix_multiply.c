@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 
 #include "spex_util_internal.h"
+#include "spex_demos.h"
 
 SPEX_info spex_sparse_matrix_multiply 
 (

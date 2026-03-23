@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
  
 #include "spex_util_internal.h"
+#include "spex_demos.h"
 /* x = x + beta * A(:,j), where x is a dense vector and A(:,j) is sparse */
 SPEX_info spex_scatter 
 (

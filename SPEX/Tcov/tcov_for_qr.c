@@ -70,6 +70,19 @@ void read_test_matrix(SPEX_matrix *A_handle, char *filename)
     fclose(f);
 }
 
+// Helper to instantly build a matrix from a string in memory
+void generate_test_matrix(SPEX_matrix *A_handle, const char *triplets)
+{
+    // tmpfile() creates a temporary file in RAM that auto-deletes when closed
+    FILE *f = tmpfile();
+    fprintf(f, "%s", triplets);
+    rewind(f); // send the reader back to the beginning of the file
+
+    // Read it using your existing tripread function
+    OK(spex_demo_tripread(A_handle, f, SPEX_FP64, NULL));
+    fclose(f);
+}
+
 //------------------------------------------------------------------------------
 // create_test_rhs: create a right-hand-side vector
 //------------------------------------------------------------------------------
@@ -203,14 +216,15 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------
 
     // TODO test, this fails
+    // TODO I think we can delete this one now anyway because we handle this, commenting out for now
     //  Inconsistent system of equations
-    printf("Inconsistent system of equations");
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test4.mat.txt"); // TODO return to normal naming this is for vscode debugging
-    create_test_rhs(&b, A->n);
-    OK(SPEX_mpz_set_ui(b->x.mpz[0], 5));
-    ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option), SPEX_INCONSISTENT);
-    OK(SPEX_matrix_free(&A, option));
-    OK(SPEX_matrix_free(&b, option));
+    //printf("Inconsistent system of equations");
+    //read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test4.mat.txt"); // TODO return to normal naming this is for vscode debugging
+    //create_test_rhs(&b, A->n);
+    //OK(SPEX_mpz_set_ui(b->x.mpz[0], 5));
+    //ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option), SPEX_INCONSISTENT);
+    //OK(SPEX_matrix_free(&A, option));
+    //OK(SPEX_matrix_free(&b, option));
 
     //--------------------------------------------------------------------------
     // load the test matrix and create the right-hand-side
@@ -221,9 +235,9 @@ int main(int argc, char *argv[])
     int64_t m = A->m;
     int64_t anz = -1;
     OK(SPEX_matrix_nnz(&anz, A, option));
-    printf("\nInput matrix: %ld-by-%ld with %ld entries\n", n, m, anz);
+    printf("\nInput matrix: %lld-by-%lld with %lld entries\n", n, m, anz);
     OK((n != m) ? SPEX_PANIC : SPEX_OK);
-    create_test_rhs(&b, A->n);
+    create_test_rhs(&b, A->m);
     option->algo = SPEX_QR_GS;
 
     //--------------------------------------------------------------------------
@@ -327,7 +341,7 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&b, option));
 
     /// symmetric input
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/mesh1e1.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/mesh1e1.mat.txt");
     create_test_rhs(&b, A->n);
     option->algo = SPEX_QR_GS;
     OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
@@ -339,7 +353,75 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------
     // rank deficient
     //--------------------------------------------------------------------------
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test1.mat.txt");
+
+    //--------------------------------------------------------------------------
+    // rank deficient & special cases (Replacing missing local files)
+    //--------------------------------------------------------------------------
+
+    // 1. Structurally Rank Deficient (Empty Column)
+    // 3x3 matrix, but column 1 is completely empty.
+    const char *srd_str =
+        "3 3 2\n"
+        "1 1 1\n"
+        "3 3 1\n";
+    generate_test_matrix(&A, srd_str);
+    OK(SPEX_qr_analyze(&S, A, option));
+    OK(SPEX_qr_factorize(&F, A, S, option));
+
+    // Test SPEX_qr_rank since we are here!
+    int64_t qr_rank;
+    OK(SPEX_qr_rank(&qr_rank, A, option));
+
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_symbolic_analysis_free(&S, option));
+    OK(SPEX_factorization_free(&F, option));
+
+    // 2. Numerical zero in IPGS (Linearly dependent columns)
+    // Col 2 is exactly Col 0 + Col 1, which causes Gram-Schmidt to hit a numerical zero
+    const char *ipgs_zero_str =
+        "3 3 4\n"
+        "1 1 1\n"
+        "2 2 1\n"
+        "1 3 1\n"
+        "2 3 1\n";
+    generate_test_matrix(&A, ipgs_zero_str);
+    option->order = SPEX_NO_ORDERING;
+    OK(SPEX_qr_analyze(&S, A, option));
+    OK(SPEX_qr_factorize(&F, A, S, option));
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_symbolic_analysis_free(&S, option));
+    OK(SPEX_factorization_free(&F, option));
+
+    // 3. Wide Matrix Backslash (m < n)
+    // 2 rows, 3 columns
+    const char *wide_str =
+        "2 3 3\n"
+        "1 1 1\n"
+        "2 2 1\n"
+        "1 3 1\n";
+    generate_test_matrix(&A, wide_str);
+    create_test_rhs(&b, A->m);
+    option->order = SPEX_NO_ORDERING;
+    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&b, option));
+    OK(SPEX_matrix_free(&x, option));
+
+    // 4. Transpose Solver
+    // 3x3 square matrix, testing A^T x = b
+    const char *sq_str =
+        "3 3 3\n"
+        "1 1 1\n"
+        "2 2 1\n"
+        "3 3 1\n";
+    generate_test_matrix(&A, sq_str);
+    create_test_rhs(&b, A->n);
+    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&b, option));
+    OK(SPEX_matrix_free(&x, option));
+
+    /*read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test1.mat.txt");
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
     OK(SPEX_matrix_free(&A, option));
@@ -384,13 +466,13 @@ int main(int argc, char *argv[])
     create_test_rhs(&b, A->n);
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
-    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&A, option));*/
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
 
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/LF10.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/LF10.mat.txt");
     create_test_rhs(&b, A->n);
     option->algo = SPEX_QR_GS;
     printf("QR analyze/factorize/solve, no malloc testing:\n");

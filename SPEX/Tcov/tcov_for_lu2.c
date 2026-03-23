@@ -42,6 +42,19 @@ void read_test_matrix (SPEX_matrix *A_handle, char *filename)
     fclose (f);
 }
 
+// Helper to instantly build a matrix from a string in memory
+void generate_test_matrix(SPEX_matrix *A_handle, const char *triplets)
+{
+    // tmpfile() creates a temporary file in RAM that auto-deletes when closed
+    FILE *f = tmpfile();
+    fprintf(f, "%s", triplets);
+    rewind(f); // send the reader back to the beginning of the file
+
+    // Read it using your existing tripread function
+    OK(spex_demo_tripread(A_handle, f, SPEX_FP64, NULL));
+    fclose(f);
+}
+
 //------------------------------------------------------------------------------
 // create_test_rhs: create a right-hand-side vector
 //------------------------------------------------------------------------------
@@ -108,7 +121,7 @@ int main (int argc, char *argv [])
     // start SPEX
     //--------------------------------------------------------------------------
 
-    SPEX_matrix A = NULL, b = NULL, x = NULL ;
+    SPEX_matrix A = NULL, A2 = NULL, b = NULL, x = NULL ;
     SPEX_symbolic_analysis S = NULL ;
     //SPEX_factorization F = NULL, F2 = NULL ;
     SPEX_options option = NULL ;
@@ -194,10 +207,53 @@ int main (int argc, char *argv [])
     option->algo = 99;
     ERR( SPEX_lu_factorize( &F, A, S, option), SPEX_INCORRECT_ALGORITHM);
     OK (SPEX_symbolic_analysis_free (&S, option));
+    OK (SPEX_matrix_free (&A, option));
+
+    //--------------------------------------------------------------------------
+    // Test SPEX_lu_rank (Full Rank, Rank Deficient, and Error Cases)
+    //--------------------------------------------------------------------------
+    // Reset the algorithm flag after the previous error tests
+    option->algo = SPEX_ALGORITHM_DEFAULT;
+    printf("Testing LU Rank...\n");
+    int64_t lu_rank;
+
+    // 1. Square Full Rank (3x3 Diagonal Matrix)
+    const char *full_rank_str =
+        "3 3 3\n"
+        "1 1 1\n"
+        "2 2 1\n"
+        "3 3 1\n";
+    generate_test_matrix(&A2, full_rank_str);
+    OK(SPEX_lu_rank(&lu_rank, A2, option));
+    OK(SPEX_matrix_free(&A2, option));
+
+    // 2. Square Rank Deficient (3x3, Column 3 is entirely empty)
+    const char *rank_def_str =
+        "3 3 2\n"
+        "1 1 1\n"
+        "2 2 1\n";
+    generate_test_matrix(&A2, rank_def_str);
+    OK(SPEX_lu_rank(&lu_rank, A2, option));
+    OK(SPEX_matrix_free(&A2, option));
+
+    // 3. ERROR CASE: Matrix is not square (A->m != A->n)
+    // 2 rows, 3 columns
+    const char *rect_str =
+        "2 3 2\n"
+        "1 1 1\n"
+        "2 2 1\n";
+    generate_test_matrix(&A2, rect_str);
+    ERR(SPEX_lu_rank(&lu_rank, A2, option), SPEX_INCORRECT_INPUT);
+    OK(SPEX_matrix_free(&A2, option));
+
+    // 5. ERROR CASE: NULL Matrix Input
+    ERR(SPEX_lu_rank(&lu_rank, NULL, option), SPEX_INCORRECT_INPUT);
 
     SPEX_FREE_ALL;
     OK (SPEX_finalize ( )) ;
     SPEX_FREE (option) ;
+
+
 
     printf ("%s: all tests passed\n\n", __FILE__);
     fprintf (stderr, "%s: all tests passed\n\n", __FILE__);

@@ -659,23 +659,6 @@ SPEX_info spex_history_update(
     const SPEX_options option // Command options
 );
 
-SPEX_info spex_scatter(
-    const SPEX_matrix A,
-    int64_t j,
-    mpz_t beta,
-    int64_t *w,
-    SPEX_matrix x,
-    int64_t mark,
-    SPEX_matrix C,
-    int64_t *nz);
-
-SPEX_info spex_sparse_matrix_multiply(
-    // Output
-    SPEX_matrix *C_handle,
-    // Input
-    const SPEX_matrix A,
-    const SPEX_matrix B);
-
 // (void *) pointer to the values of A.  A must be non-NULL with a valid type
 #define SPEX_X(A) \
     ((A->type == SPEX_MPZ) ? (void *)A->x.mpz : ((A->type == SPEX_MPQ) ? (void *)A->x.mpq : ((A->type == SPEX_MPFR) ? (void *)A->x.mpfr : ((A->type == SPEX_INT64) ? (void *)A->x.int64 : (void *)A->x.fp64))))
