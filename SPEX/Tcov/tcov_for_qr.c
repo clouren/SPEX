@@ -212,21 +212,6 @@ int main(int argc, char *argv[])
     OK(SPEX_create_default_options(&option));
 
     //--------------------------------------------------------------------------
-    // test a few small invalid matrices
-    //--------------------------------------------------------------------------
-
-    // TODO test, this fails
-    // TODO I think we can delete this one now anyway because we handle this, commenting out for now
-    //  Inconsistent system of equations
-    //printf("Inconsistent system of equations");
-    //read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test4.mat.txt"); // TODO return to normal naming this is for vscode debugging
-    //create_test_rhs(&b, A->n);
-    //OK(SPEX_mpz_set_ui(b->x.mpz[0], 5));
-    //ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option), SPEX_INCONSISTENT);
-    //OK(SPEX_matrix_free(&A, option));
-    //OK(SPEX_matrix_free(&b, option));
-
-    //--------------------------------------------------------------------------
     // load the test matrix and create the right-hand-side
     //--------------------------------------------------------------------------
 
@@ -372,6 +357,16 @@ int main(int argc, char *argv[])
     int64_t qr_rank;
     OK(SPEX_qr_rank(&qr_rank, A, option));
 
+    // Mangle A and trigger an error for qr_rank
+    A->n = 0;
+    ERR(SPEX_qr_rank(&qr_rank, A, option),SPEX_INCORRECT_INPUT);
+    A->n = 3;
+
+    // Give an incorrect algorithm for qr_rank
+    option->algo = SPEX_LU_LEFT;
+    ERR(SPEX_qr_rank(&qr_rank, A, option), SPEX_INCORRECT_ALGORITHM);
+    option->algo = SPEX_ALGORITHM_DEFAULT;
+
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
@@ -388,7 +383,15 @@ int main(int argc, char *argv[])
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
+
+    // Test the same thing with a right hand side so we
+    // can hit the rank deficient case in solve
+    create_test_rhs(&b, A->m);
+    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+
     OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&x, option));
+    OK(SPEX_matrix_free(&b, option));
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
@@ -403,6 +406,10 @@ int main(int argc, char *argv[])
     create_test_rhs(&b, A->m);
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+
+    // test rank on wide matrices while we are here
+    OK(SPEX_qr_rank(&qr_rank, A, option));
+
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
     OK(SPEX_matrix_free(&x, option));
@@ -421,14 +428,14 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&b, option));
     OK(SPEX_matrix_free(&x, option));
 
-    /*read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test1.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/srd_test1.mat.txt");
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test2.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/srd_test2.mat.txt");
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
@@ -436,7 +443,7 @@ int main(int argc, char *argv[])
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test3.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/srd_test3.mat.txt");
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
@@ -444,7 +451,7 @@ int main(int argc, char *argv[])
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_factorization_free(&F, option));
 
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/srd_test4.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/srd_test4.mat.txt");
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
@@ -453,7 +460,7 @@ int main(int argc, char *argv[])
     OK(SPEX_factorization_free(&F, option));
 
     // checks for numerical zero in ipgs
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/test7.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/test7.mat.txt");
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_qr_factorize(&F, A, S, option));
@@ -462,18 +469,18 @@ int main(int argc, char *argv[])
     OK(SPEX_factorization_free(&F, option));
 
     // checks for numerical zero in back sub
-    read_test_matrix(&A, "/home/lorena/Documents/PersonalGoal/2025/SPEX/SPEX/ExampleMats/test8.mat.txt");
+    read_test_matrix(&A, "../ExampleMats/test8.mat.txt");
     create_test_rhs(&b, A->n);
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
-    OK(SPEX_matrix_free(&A, option));*/
+    OK(SPEX_matrix_free(&A, option));
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
     //--------------------------------------------------------------------------
 
     read_test_matrix(&A, "../ExampleMats/LF10.mat.txt");
-    create_test_rhs(&b, A->n);
+    create_test_rhs(&b, A->m);
     option->algo = SPEX_QR_GS;
     printf("QR analyze/factorize/solve, no malloc testing:\n");
     spex_set_gmp_ntrials(INT64_MAX);
@@ -484,6 +491,51 @@ int main(int argc, char *argv[])
     // also check a different RHS, with b(n-1) = 0
     OK(SPEX_mpz_set_ui(b->x.mpz[A->n - 1], 0));
     BRUTAL(spex_test_qr_afs(A, b, option));
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&b, option));
+
+    // Brutal test of the transpose solver
+    // 8x10 Wide Matrix (8 rows, 10 columns, 12 non-zeros)
+    // 8x10 Wide Matrix (8 rows, 10 columns, 31 non-zeros)
+    const char *wide_8x10_dense_str =
+        "8 10 31\n"
+        "1 1 1\n"
+        "1 5 2\n"
+        "1 9 1\n"
+        "2 2 1\n"
+        "2 3 3\n"
+        "2 8 1\n"
+        "2 10 2\n"
+        "3 1 1\n"
+        "3 3 1\n"
+        "3 4 2\n"
+        "3 9 1\n"
+        "4 2 2\n"
+        "4 4 1\n"
+        "4 7 1\n"
+        "4 10 3\n"
+        "5 3 1\n"
+        "5 5 1\n"
+        "5 6 2\n"
+        "5 8 1\n"
+        "6 4 1\n"
+        "6 6 1\n"
+        "6 9 2\n"
+        "7 1 2\n"
+        "7 5 3\n"
+        "7 7 1\n"
+        "7 10 1\n"
+        "8 2 1\n"
+        "8 6 1\n"
+        "8 8 1\n"
+        "8 9 3\n"
+        "8 10 1\n";
+
+    spex_set_gmp_ntrials(INT64_MAX);
+    malloc_count = INT64_MAX;
+    generate_test_matrix(&A, wide_8x10_dense_str);
+    create_test_rhs(&b, A->m);
+    BRUTAL(spex_test_qr_backslash(A, b, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
 

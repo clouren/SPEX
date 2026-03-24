@@ -52,34 +52,9 @@ SPEX_info spex_qr_standard_backslash(
 )
 {
     //-------------------------------------------------------------------------
-    // check inputs
+    // all inputs are checked by the caller, no need to check here
     //-------------------------------------------------------------------------
     SPEX_info info;
-    if (!spex_initialized())
-        return (SPEX_PANIC);
-
-    if (x_handle == NULL)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-    (*x_handle) = NULL;
-
-    if (type != SPEX_MPQ && type != SPEX_FP64 && type != SPEX_MPFR)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
-    // A must be the appropriate dimension
-    if (A->n == 0 || A->m == 0 || A->m < A->n)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
-
-    SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);
-    if (algo != SPEX_ALGORITHM_DEFAULT && algo != SPEX_QR_GS)
-    {
-        return SPEX_INCORRECT_ALGORITHM;
-    }
 
     SPEX_REQUIRE(A, SPEX_CSC, SPEX_MPZ);
     SPEX_REQUIRE(b, SPEX_DENSE, SPEX_MPZ);

@@ -169,6 +169,20 @@ int main (int argc, char *argv [])
     OK (spex_test_lu_backslash (A, b, option));
     option->print_level = 0 ;
 
+    option->pivot = SPEX_DEFAULT ;
+    option->order = SPEX_NO_ORDERING ;
+    option->print_level = 3 ;
+    printf ("LU backslash, No ordering, no malloc testing:\n");
+    OK (spex_test_lu_backslash (A, b, option));
+    option->print_level = 0 ;
+
+    option->pivot = SPEX_DEFAULT ;
+    option->order = SPEX_DEFAULT ;
+    option->print_level = 3 ;
+    printf ("LU backslash, Default ordering, no malloc testing:\n");
+    OK (spex_test_lu_backslash (A, b, option));
+    option->print_level = 0 ;
+
     option->pivot = SPEX_TOL_SMALLEST ;
     option->tol = 0;
     option->order = SPEX_COLAMD ;
@@ -248,6 +262,12 @@ int main (int argc, char *argv [])
 
     // 5. ERROR CASE: NULL Matrix Input
     ERR(SPEX_lu_rank(&lu_rank, NULL, option), SPEX_INCORRECT_INPUT);
+
+    // 6. ERROR CASE: Wrong algorithm
+    generate_test_matrix(&A2, full_rank_str);
+    option->algo = SPEX_LDL_LEFT;
+    ERR(SPEX_lu_rank(&lu_rank, A2, option), SPEX_INCORRECT_ALGORITHM);
+    OK(SPEX_matrix_free(&A2, option));
 
     SPEX_FREE_ALL;
     OK (SPEX_finalize ( )) ;

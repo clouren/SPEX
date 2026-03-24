@@ -354,7 +354,7 @@ vtests4qr: all
 # remove all files not in the original distribution, including symbolic links
 clean:
 	- $(RM) *.o *.bbg *.da *.gcov *.gcda *gcno
-	- $(RM) tcov_for_lu  spex_demo_lu_extended *.out *.a out tcov_for_lu2 tcov_for_other
+	- $(RM) tcov_for_lu  spex_demo_lu_extended *.out *.a out tcov_for_lu2 tcov_for_other tcov_for_qr
 	- $(RM) -r SPEX_*.c spex_*.c *.dSYM
 	- $(RM) -r tcov_for_cholesky 
 
