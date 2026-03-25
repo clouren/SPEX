@@ -539,6 +539,31 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
 
+    spex_set_gmp_ntrials(INT64_MAX);
+    malloc_count = INT64_MAX;
+
+    // This hits the specific "return SPEX_SINGULAR" in spex_qr_transpose_backslash.c
+    const char *wide_rd_str =
+        "2 3 6\n"
+        "1 1 1\n"
+        "1 2 1\n"
+        "1 3 1\n"
+        "2 1 1\n"
+        "2 2 1\n"
+        "2 3 1\n"; // Col 3 is a duplicate of Col 1
+    generate_test_matrix(&A, wide_rd_str);
+    create_test_rhs(&b, A->m);
+    ERR(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option), SPEX_SINGULAR);
+    // Hit an error in analyze
+    option->order = 99;
+    option->algo = 99;
+    ERR(SPEX_qr_analyze(&S, A, option), SPEX_INCORRECT_INPUT);
+    option->order = SPEX_DEFAULT_ORDERING;
+    ERR(SPEX_qr_analyze(&S, A, option), SPEX_INCORRECT_INPUT);
+    option->algo = SPEX_ALGORITHM_DEFAULT;
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&b, option));
+
     //--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------
@@ -550,9 +575,11 @@ int main(int argc, char *argv[])
     ERR(SPEX_qr_solve(NULL, NULL, NULL, NULL), SPEX_PANIC);
     ERR(SPEX_qr_backslash(NULL, SPEX_MPQ, NULL, NULL, NULL),
         SPEX_PANIC);
+    ERR(SPEX_qr_rank(NULL, NULL, NULL),
+        SPEX_PANIC);
     spex_set_initialized(true);
-    SPEX_FREE_ALL;
 
+    SPEX_FREE_ALL;
     printf("%s: all tests passed\n\n", __FILE__);
     fprintf(stderr, "%s: all tests passed\n\n", __FILE__);
     return 0;

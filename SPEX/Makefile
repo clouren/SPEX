@@ -93,7 +93,7 @@ clean:
 	- $(RM) -rf build/* Config/*.tmp MATLAB/*.o MATLAB/*.mex*
 	- $(RM) Tcov/*.o Tcov/*.bbg Tcov/*.da Tcov/*.gcov Tcov/*.gcda Tcov/*gcno
 	- $(RM) Tcov/tcov_for_lu  Tcov/spex_demo_lu_extended Tcov/*.out Tcov/*.a Tcov/out Tcov/tcov_for_lu2 Tcov/tcov_for_other
-	- $(RM) Tcov/tcov_for_update Tcov/out Tcov/Mats4Tcov/SPEX_Update/mat.txt
+	- $(RM) Tcov/tcov_for_update Tcov/out Tcov/Mats4Tcov/SPEX_Update/mat.txt Tcov/tcov_for_qr
 	- $(RM) -r Tcov/SPEX_*.c Tcov/spex_*.c Tcov/*.dSYM
 	- $(RM) -r Tcov/tcov_for_cholesky
 

@@ -700,6 +700,14 @@ int main(int argc, char *argv[])
     ERR(SPEX_ldl_factorize(&F2, A, S, option), SPEX_PANIC);
     ERR(SPEX_ldl_solve(NULL, NULL, NULL, NULL), SPEX_PANIC);
 
+    // give incorrect algorithm
+    option->order = 99;
+    option->algo = 99;
+    ERR(SPEX_cholesky_analyze(&S, A, option), SPEX_INCORRECT_ALGORITHM);
+    ERR(SPEX_ldl_analyze(&S, A, option), SPEX_INCORRECT_ALGORITHM);
+    option->order = SPEX_DEFAULT_ORDERING;
+    option->algo = SPEX_ALGORITHM_DEFAULT;
+
     spex_set_initialized(true);
     SPEX_FREE_ALL;
     SPEX_finalize();

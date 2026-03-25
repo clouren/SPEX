@@ -239,6 +239,7 @@ int main (int argc, char *argv [])
         "3 3 1\n";
     generate_test_matrix(&A2, full_rank_str);
     OK(SPEX_lu_rank(&lu_rank, A2, option));
+    //BRUTAL(SPEX_lu_rank(&lu_rank, A2, option));
     OK(SPEX_matrix_free(&A2, option));
 
     // 2. Square Rank Deficient (3x3, Column 3 is entirely empty)
@@ -248,6 +249,7 @@ int main (int argc, char *argv [])
         "2 2 1\n";
     generate_test_matrix(&A2, rank_def_str);
     OK(SPEX_lu_rank(&lu_rank, A2, option));
+    //BRUTAL(SPEX_lu_rank(&lu_rank, A2, option));
     OK(SPEX_matrix_free(&A2, option));
 
     // 3. ERROR CASE: Matrix is not square (A->m != A->n)
@@ -268,6 +270,13 @@ int main (int argc, char *argv [])
     option->algo = SPEX_LDL_LEFT;
     ERR(SPEX_lu_rank(&lu_rank, A2, option), SPEX_INCORRECT_ALGORITHM);
     OK(SPEX_matrix_free(&A2, option));
+
+    // Give an incorrect algorithm to LU
+    option->order = 99;
+    option->algo = 99;
+    ERR(SPEX_lu_analyze(&S, A, option), SPEX_INCORRECT_ALGORITHM);
+    option->order = SPEX_DEFAULT_ORDERING;
+    option->algo = SPEX_ALGORITHM_DEFAULT;
 
     SPEX_FREE_ALL;
     OK (SPEX_finalize ( )) ;
