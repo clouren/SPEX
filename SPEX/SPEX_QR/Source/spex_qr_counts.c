@@ -83,14 +83,14 @@ SPEX_info spex_qr_counts(
     colcount = (int64_t *)SPEX_malloc(n * sizeof(int64_t));
     // Create a workspace of size s
     w = (int64_t *)SPEX_malloc(s * sizeof(int64_t));
-    // Transpose matrix A
-    SPEX_CHECK(SPEX_transpose(&AT, A, false, NULL));
-
     if (colcount == NULL || w == NULL) // TODO tcov memory
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
     }
+
+    // Transpose matrix A
+    SPEX_CHECK(SPEX_transpose(&AT, A, false, NULL));
     delta = colcount;
     ancestor = w;
     maxfirst = w + n;

@@ -252,14 +252,23 @@ SPEX_info SPEX_qr_factorize(
         Piinv_perm = (int64_t *)SPEX_malloc(n * sizeof(int64_t));
         F->Q_perm = (int64_t *)SPEX_malloc(n * sizeof(int64_t));
 
-        SPEX_CHECK(SPEX_matrix_allocate(&rhosPi, SPEX_DENSE, SPEX_MPZ, n, 1, n,
-                                        false, true, option));
-
-        if (!(F->Q_perm) || !Piinv_perm || !Pi_perm || !rhosPi)
+        if (!(F->Q_perm) || !Piinv_perm || !Pi_perm)
         {
             // out of memory: free everything and return
+            SPEX_free(Pi_perm);
+            SPEX_free(Piinv_perm);
             SPEX_FREE_ALL;
             return SPEX_OUT_OF_MEMORY;
+        }
+
+        info = SPEX_matrix_allocate(&rhosPi, SPEX_DENSE, SPEX_MPZ, n, 1, n,
+                                        false, true, option);
+        if (info != SPEX_OK)
+        {
+            SPEX_free(Pi_perm);
+            SPEX_free(Piinv_perm);
+            SPEX_FREE_ALL;
+            return info;
         }
 
         // If the k-th column of Q is linearly dependent (ldCols[k]=true), then

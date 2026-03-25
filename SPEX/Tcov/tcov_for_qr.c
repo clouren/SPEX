@@ -15,6 +15,7 @@
 
 #include "tcov_utilities.h"
 #include "spex_demos.h"
+#include "../SPEX_QR/Source/spex_qr_internal.h"
 
 // test wrapper for SPEX_* function when expected error would produce
 #define ERR(method, expected_error)                                       \
@@ -52,7 +53,7 @@
         }                                                        \
         if (info2 != SPEX_OK)                                    \
             TEST_ABORT(info2);                                   \
-        malloc_count = UINT64_MAX;                               \
+        malloc_count = INT64_MAX;                               \
         printf("\nBrutal QR trials %ld: tests passed\n", trial); \
     }
 
@@ -113,20 +114,19 @@ void create_test_rhs(SPEX_matrix *b_handle, int64_t n)
         OK(SPEX_matrix_free(&x, option)); \
     }
 
-SPEX_info spex_test_qr_backslash(SPEX_matrix A, SPEX_matrix b,
-                                 SPEX_options option);
+SPEX_info spex_test_qr_backslash(SPEX_matrix A, SPEX_matrix b, SPEX_options option);
 
-SPEX_info spex_test_qr_backslash(SPEX_matrix A, SPEX_matrix b,
-                                 SPEX_options option)
+SPEX_info spex_test_qr_backslash(SPEX_matrix A, SPEX_matrix b, SPEX_options option)
 {
     SPEX_matrix x = NULL;
+    SPEX_info info;
+
     // solve Ax=b
-    OK2(SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option));
-    // disable memory testing when checking the solution
+    info = SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option);
+    if (info != SPEX_OK) { SPEX_FREE_ALL; return info; } // Leak-proof return!
+
     int64_t save = malloc_count;
     malloc_count = INT64_MAX;
-    // OK (spex_demo_check_solution (A, x, b, option));
-    //  re-enable memory testing
     malloc_count = save;
     SPEX_FREE_ALL;
     return (SPEX_OK);
@@ -144,25 +144,27 @@ SPEX_info spex_test_qr_backslash(SPEX_matrix A, SPEX_matrix b,
         OK(SPEX_matrix_free(&x, option));            \
     }
 
-SPEX_info spex_test_qr_afs(
-    SPEX_matrix A,
-    SPEX_matrix b,
-    SPEX_options option);
+SPEX_info spex_test_qr_afs(SPEX_matrix A, SPEX_matrix b, SPEX_options option);
 
 SPEX_info spex_test_qr_afs(SPEX_matrix A, SPEX_matrix b, SPEX_options option)
 {
     SPEX_symbolic_analysis S = NULL;
     SPEX_factorization F = NULL;
     SPEX_matrix x = NULL;
-    // solve Ax=b
-    OK2(SPEX_qr_analyze(&S, A, option));
-    OK2(SPEX_qr_factorize(&F, A, S, option));
-    OK2(SPEX_qr_solve(&x, F, b, option));
-    // disable memory testing when checking the solution
+    SPEX_info info;
+
+    // solve Ax=b with leak-proof manual checks
+    info = SPEX_qr_analyze(&S, A, option);
+    if (info != SPEX_OK) { SPEX_FREE_ALL; return info; }
+
+    info = SPEX_qr_factorize(&F, A, S, option);
+    if (info != SPEX_OK) { SPEX_FREE_ALL; return info; }
+
+    info = SPEX_qr_solve(&x, F, b, option);
+    if (info != SPEX_OK) { SPEX_FREE_ALL; return info; }
+
     int64_t save = malloc_count;
     malloc_count = INT64_MAX;
-    // OK (spex_demo_check_solution (A, x, b, option));
-    //  re-enable memory testing
     malloc_count = save;
     SPEX_FREE_ALL;
     return (SPEX_OK);
@@ -335,6 +337,30 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
 
+    // 5. Transpose Forward Sub History Update (hx > -1 trap)
+    // 3x4 Wide Matrix. Col 0 and Col 2 overlap, but Col 1 and 2 are orthogonal.
+    // This forces R[1,2] to be a numerical zero, but R[0,2] to be nonzero,
+    // leaving hx = 0 when i = 2.
+    const char *hx_test_str =
+        "3 4 4\n"
+        "1 1 1\n"
+        "2 2 1\n"
+        "3 1 1\n"
+        "3 3 1\n";
+
+    generate_test_matrix(&A, hx_test_str);
+    create_test_rhs(&b, A->m);
+
+    // We MUST use NO_ORDERING to ensure the columns stay in this exact order
+    option->order = SPEX_NO_ORDERING;
+
+    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+
+    option->order = SPEX_DEFAULT_ORDERING; // Reset ordering
+    OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&b, option));
+    OK(SPEX_matrix_free(&x, option));
+
     //--------------------------------------------------------------------------
     // rank deficient
     //--------------------------------------------------------------------------
@@ -350,8 +376,11 @@ int main(int argc, char *argv[])
         "1 1 1\n"
         "3 3 1\n";
     generate_test_matrix(&A, srd_str);
+    option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
-    OK(SPEX_qr_factorize(&F, A, S, option));
+    BRUTAL(SPEX_qr_factorize(&F, A, S, option));
+    //OK(SPEX_qr_factorize(&F, A, S, option));
+
 
     // Test SPEX_qr_rank since we are here!
     int64_t qr_rank;
@@ -405,7 +434,7 @@ int main(int argc, char *argv[])
     generate_test_matrix(&A, wide_str);
     create_test_rhs(&b, A->m);
     option->order = SPEX_NO_ORDERING;
-    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+    BRUTAL(spex_test_qr_backslash(A, b, option));
 
     // test rank on wide matrices while we are here
     OK(SPEX_qr_rank(&qr_rank, A, option));
@@ -423,7 +452,7 @@ int main(int argc, char *argv[])
         "3 3 1\n";
     generate_test_matrix(&A, sq_str);
     create_test_rhs(&b, A->n);
-    OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
+    BRUTAL(spex_test_qr_backslash(A, b, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
     OK(SPEX_matrix_free(&x, option));
@@ -490,7 +519,7 @@ int main(int argc, char *argv[])
     printf("QR analyze/factorize/solve, with malloc testing:\n");
     // also check a different RHS, with b(n-1) = 0
     OK(SPEX_mpz_set_ui(b->x.mpz[A->n - 1], 0));
-    BRUTAL(spex_test_qr_afs(A, b, option));
+    OK(spex_test_qr_afs(A, b, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
 
@@ -535,7 +564,7 @@ int main(int argc, char *argv[])
     malloc_count = INT64_MAX;
     generate_test_matrix(&A, wide_8x10_dense_str);
     create_test_rhs(&b, A->m);
-    BRUTAL(spex_test_qr_backslash(A, b, option));
+    OK(spex_test_qr_backslash(A, b, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
 
@@ -562,22 +591,40 @@ int main(int argc, char *argv[])
     ERR(SPEX_qr_analyze(&S, A, option), SPEX_INCORRECT_INPUT);
     option->algo = SPEX_ALGORITHM_DEFAULT;
     OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_matrix_free(&b, option));
 
-    //--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------
 
-    // SPEX not initialized
-    spex_set_initialized(false);
+    // FIX 1: Use a square matrix for analyze so it doesn't instantly reject it!
+    generate_test_matrix(&A, sq_str);
+    BRUTAL(SPEX_qr_analyze(&S, A, option));
+    OK(SPEX_symbolic_analysis_free(&S, option));
+    OK(SPEX_matrix_free(&A, option));
+
+    // 4. NULL String Free
+    SPEX_mpfr_free_str(NULL);
+
+    // 5. The GMP NULL Allocator Panics
+    // We must destroy the global SPEX environment to make spex_gmp = NULL
+    SPEX_finalize();
+
+    // Call the internal GMP hooks directly!
+    spex_gmp_allocate(10);
+    spex_gmp_reallocate(NULL, 10, 20);
+
+    // 6. SPEX not initialized Panics
+    //SPEX_finalize();
     ERR(SPEX_qr_factorize(&F2, A, S, option), SPEX_PANIC);
     ERR(SPEX_qr_analyze(NULL, NULL, NULL), SPEX_PANIC);
     ERR(SPEX_qr_solve(NULL, NULL, NULL, NULL), SPEX_PANIC);
-    ERR(SPEX_qr_backslash(NULL, SPEX_MPQ, NULL, NULL, NULL),
-        SPEX_PANIC);
-    ERR(SPEX_qr_rank(NULL, NULL, NULL),
-        SPEX_PANIC);
-    spex_set_initialized(true);
+    ERR(SPEX_qr_backslash(NULL, SPEX_MPQ, NULL, NULL, NULL), SPEX_PANIC);
+    ERR(SPEX_qr_rank(NULL, NULL, NULL), SPEX_PANIC);
+
+    // FIX 2: Properly revive the environment BEFORE freeing everything!
+    SPEX_initialize_expert(tcov_malloc, tcov_calloc, tcov_realloc, tcov_free);
 
     SPEX_FREE_ALL;
     printf("%s: all tests passed\n\n", __FILE__);

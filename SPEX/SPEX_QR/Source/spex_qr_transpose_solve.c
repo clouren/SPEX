@@ -60,25 +60,20 @@ SPEX_info spex_qr_transpose_solve
 )
 {
     SPEX_info info;
-    // Check inputs, the number of columns of Q must equal the number of rows of b
-    // Also, both matrices must be mpz and dense
-    // Ensure SPEX is initialized
-    if (!spex_initialized())
-    {
-        return SPEX_PANIC;
-    }
-
-    // Check the inputs
-    if (!x_handle || b->type != SPEX_MPZ || b->kind != SPEX_DENSE || F->kind != SPEX_QR_FACTORIZATION)
-    {
-        return SPEX_INCORRECT_INPUT;
-    }
+    // All inputs are checked by the caller, we can assert what
+    // must be true.
+    ASSERT(spex_initialized());
+    ASSERT(x_handle != NULL);
+    ASSERT(b->type == SPEX_MPZ);
+    ASSERT(b->kind == SPEX_DENSE);
+    ASSERT(F->kind == SPEX_QR_FACTORIZATION);
 
     // Step 1 is a transpose triangular solve R^T D y = b
 
    // Declare x and b_new
     SPEX_matrix x = NULL, b_new = NULL, b2 = NULL;
     mpq_t temp;
+    SPEX_MPQ_SET_NULL(temp);
     SPEX_CHECK( SPEX_mpq_init(temp));
 
     int64_t i, j, p, k;

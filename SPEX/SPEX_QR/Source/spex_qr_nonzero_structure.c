@@ -91,13 +91,15 @@ SPEX_info spex_qr_nonzero_structure(
     //--------------------------------------------------------------------------
 
     // Allocate R
-    SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->rnz,
-                                    false, true, NULL));
-    if (!R) // TODO tcov memory
-    {
-        SPEX_FREE_ALL;
-        return SPEX_OUT_OF_MEMORY;
-    }
+    SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->rnz, false, true, NULL));
+
+    // SPEX_CHECK will automatically terminate if we are out of memory,
+    // no need for these checks.
+    //if (!R) // TODO tcov memory
+    //{
+    //    SPEX_FREE_ALL;
+    //    return SPEX_OUT_OF_MEMORY;
+    //}
 
     Qi = (int64_t *)SPEX_malloc((n * m) * sizeof(int64_t));
     Qp = (int64_t *)SPEX_malloc((m + 1) * sizeof(int64_t));
@@ -197,11 +199,13 @@ SPEX_info spex_qr_nonzero_structure(
     Qp[m] = qnz;
     SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz + 1,
                                     false, false, NULL));
-    if (!QT) // TODO tcov memory
-    {
-        SPEX_FREE_ALL;
-        return SPEX_OUT_OF_MEMORY;
-    }
+    // SPEX_CHECK automatically will free memory if matrix allocate fails
+    // no need to check here
+    //if (!QT) // TODO tcov memory
+    //{
+    //    SPEX_FREE_ALL;
+    //    return SPEX_OUT_OF_MEMORY;
+    //}
     // QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
     // QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
     Qi = (int64_t *)SPEX_realloc(qnz, (n * m), sizeof(int64_t), Qi, &info);
