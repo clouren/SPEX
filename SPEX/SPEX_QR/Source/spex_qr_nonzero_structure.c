@@ -93,13 +93,9 @@ SPEX_info spex_qr_nonzero_structure(
     // Allocate R
     SPEX_CHECK(SPEX_matrix_allocate(&R, SPEX_CSC, SPEX_MPZ, n, n, S->rnz, false, true, NULL));
 
-    // SPEX_CHECK will automatically terminate if we are out of memory,
-    // no need for these checks.
-    //if (!R) // TODO tcov memory
-    //{
-    //    SPEX_FREE_ALL;
-    //    return SPEX_OUT_OF_MEMORY;
-    //}
+    // SPEX Check will automatically terminate if code runs out of memory
+    // Assert here just for fun!
+    ASSERT (R != NULL);
 
     Qi = (int64_t *)SPEX_malloc((n * m) * sizeof(int64_t));
     Qp = (int64_t *)SPEX_malloc((m + 1) * sizeof(int64_t));
@@ -200,20 +196,11 @@ SPEX_info spex_qr_nonzero_structure(
     SPEX_CHECK(SPEX_matrix_allocate(&QT, SPEX_CSC, SPEX_MPZ, n, m, qnz + 1,
                                     false, false, NULL));
     // SPEX_CHECK automatically will free memory if matrix allocate fails
-    // no need to check here
-    //if (!QT) // TODO tcov memory
-    //{
-    //    SPEX_FREE_ALL;
-    //    return SPEX_OUT_OF_MEMORY;
-    //}
-    // QT->i = (int64_t*) SPEX_malloc((qnz)* sizeof (int64_t));
-    // QT->p = (int64_t*) SPEX_malloc((m+1)* sizeof (int64_t));
+    // But again, we assert
+    ASSERT(QT != NULL);
     Qi = (int64_t *)SPEX_realloc(qnz, (n * m), sizeof(int64_t), Qi, &info);
     memcpy(QT->p, Qp, (m + 1) * sizeof(int64_t));
     memcpy(QT->i, Qi, (qnz) * sizeof(int64_t));
-
-    // QT->p_shallow=false;
-    // QT->i_shallow=false;
 
     // Transpose to obtain the nonzero pattern of Q
     SPEX_CHECK(SPEX_transpose(&Q, QT, false, NULL));

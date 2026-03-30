@@ -15,7 +15,6 @@ from .spex_connect import spex_connect
 
 import scipy
 from scipy.sparse import isspmatrix, isspmatrix_csc, linalg
-## TODO Update this python interface, add rank.py, update backslash py
 
 def qr_backslash( A, b, options=Options('double', 'colamd')):
     ## A is a scipy.sparse(data must be float64) #technically it only needs to be numerical

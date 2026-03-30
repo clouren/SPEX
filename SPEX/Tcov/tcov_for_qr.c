@@ -9,8 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-/* This program will exactly solve the sparse linear system Ax = b by performing
- * the SPEX QR factorization.
+/* Test coverage for QR and some additional routines introduced with SPEX QR
  */
 
 #include "tcov_utilities.h"
@@ -105,7 +104,7 @@ void create_test_rhs(SPEX_matrix *b_handle, int64_t n)
 }
 
 //------------------------------------------------------------------------------
-// spex_test_chol_backslash: test SPEX_qr_backslash
+// spex_test_qr_backslash: test SPEX_qr_backslash
 //------------------------------------------------------------------------------
 
 #undef SPEX_FREE_ALL
@@ -133,7 +132,7 @@ SPEX_info spex_test_qr_backslash(SPEX_matrix A, SPEX_matrix b, SPEX_options opti
 }
 
 //------------------------------------------------------------------------------
-// spex_test_chol_afs: test SPEX_qr_[analyze,factorize,solve]
+// spex_test_qr_afs: test SPEX_qr_[analyze,factorize,solve]
 //------------------------------------------------------------------------------
 
 #undef SPEX_FREE_ALL
@@ -318,11 +317,6 @@ int main(int argc, char *argv[])
     // NOTE: mpfr solution can't be checked because mpfr->mpz isn't guaranteed
     //       to be exact
 
-    /*option->order = SPEX_COLAMD;
-    option->print_level = 0;
-    printf("QR backslash, malloc testing: ONLY DO AT END this takes over an hour\n");
-    BRUTAL(spex_test_qr_backslash(A, b, option));*/
-
     OK(SPEX_matrix_free(&x, option));
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
@@ -337,7 +331,7 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&A, option));
     OK(SPEX_matrix_free(&b, option));
 
-    // 5. Transpose Forward Sub History Update (hx > -1 trap)
+    // Transpose Forward Sub History Update (hx > -1 trap)
     // 3x4 Wide Matrix. Col 0 and Col 2 overlap, but Col 1 and 2 are orthogonal.
     // This forces R[1,2] to be a numerical zero, but R[0,2] to be nonzero,
     // leaving hx = 0 when i = 2.
@@ -362,11 +356,7 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&x, option));
 
     //--------------------------------------------------------------------------
-    // rank deficient
-    //--------------------------------------------------------------------------
-
-    //--------------------------------------------------------------------------
-    // rank deficient & special cases (Replacing missing local files)
+    // rank deficient & special cases
     //--------------------------------------------------------------------------
 
     // 1. Structurally Rank Deficient (Empty Column)
@@ -379,8 +369,6 @@ int main(int argc, char *argv[])
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_analyze(&S, A, option));
     BRUTAL(SPEX_qr_factorize(&F, A, S, option));
-    //OK(SPEX_qr_factorize(&F, A, S, option));
-
 
     // Test SPEX_qr_rank since we are here!
     int64_t qr_rank;
@@ -524,7 +512,6 @@ int main(int argc, char *argv[])
     OK(SPEX_matrix_free(&b, option));
 
     // Brutal test of the transpose solver
-    // 8x10 Wide Matrix (8 rows, 10 columns, 12 non-zeros)
     // 8x10 Wide Matrix (8 rows, 10 columns, 31 non-zeros)
     const char *wide_8x10_dense_str =
         "8 10 31\n"
@@ -594,36 +581,34 @@ int main(int argc, char *argv[])
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_matrix_free(&b, option));
 
-//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     // error handling
     //--------------------------------------------------------------------------
 
-    // FIX 1: Use a square matrix for analyze so it doesn't instantly reject it!
     generate_test_matrix(&A, sq_str);
     BRUTAL(SPEX_qr_analyze(&S, A, option));
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_matrix_free(&A, option));
 
-    // 4. NULL String Free
+    // NULL String Free
     SPEX_mpfr_free_str(NULL);
 
-    // 5. The GMP NULL Allocator Panics
+    // The GMP NULL Allocator Panics
     // We must destroy the global SPEX environment to make spex_gmp = NULL
     SPEX_finalize();
 
-    // Call the internal GMP hooks directly!
+    // Call the internal GMP hooks directly
     spex_gmp_allocate(10);
     spex_gmp_reallocate(NULL, 10, 20);
 
-    // 6. SPEX not initialized Panics
-    //SPEX_finalize();
+    // SPEX not initialized Panics
     ERR(SPEX_qr_factorize(&F2, A, S, option), SPEX_PANIC);
     ERR(SPEX_qr_analyze(NULL, NULL, NULL), SPEX_PANIC);
     ERR(SPEX_qr_solve(NULL, NULL, NULL, NULL), SPEX_PANIC);
     ERR(SPEX_qr_backslash(NULL, SPEX_MPQ, NULL, NULL, NULL), SPEX_PANIC);
     ERR(SPEX_qr_rank(NULL, NULL, NULL), SPEX_PANIC);
 
-    // FIX 2: Properly revive the environment BEFORE freeing everything!
+    // Properly revive the environment before freeing everything
     SPEX_initialize_expert(tcov_malloc, tcov_calloc, tcov_realloc, tcov_free);
 
     SPEX_FREE_ALL;

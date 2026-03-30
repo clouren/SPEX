@@ -167,6 +167,10 @@ SPEX_info SPEX_backslash
                 // Other error code: Some error. Return the error
                 //                   code and exit
                 info = SPEX_lu_backslash(&x, type, A, b, option);
+
+                // TODO What behavior do we want in the case that the LU factorization fails?
+                // Right now it's written to essentially terminate if A is rank deficient.
+                // We could make it go to QR and return a basic solution in this case. Do we want that?
             }
         }
     }

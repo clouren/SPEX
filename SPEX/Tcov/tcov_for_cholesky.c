@@ -9,8 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-/* This program will exactly solve the sparse linear system Ax = b by performing
- * the SPEX Cholesky factorization.
+/* Test coverage for Cholesky and LDL routines
  */
 
 #include "tcov_utilities.h"

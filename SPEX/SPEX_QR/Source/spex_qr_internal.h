@@ -139,7 +139,6 @@ SPEX_info spex_qr_back_sub(
     const SPEX_options option // Command options
 );
 
-// TODO Decide if we want these to be user visible
 /* Purpose: Perform a transposed factorization and solve if A is
  * rectangular with more columns than rows. This is essentially
  * a caller for analyze and factorize on A^T and then a different

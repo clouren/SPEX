@@ -83,7 +83,7 @@ SPEX_info spex_qr_counts(
     colcount = (int64_t *)SPEX_malloc(n * sizeof(int64_t));
     // Create a workspace of size s
     w = (int64_t *)SPEX_malloc(s * sizeof(int64_t));
-    if (colcount == NULL || w == NULL) // TODO tcov memory
+    if (colcount == NULL || w == NULL)
     {
         SPEX_FREE_ALL;
         return SPEX_OUT_OF_MEMORY;
@@ -139,7 +139,7 @@ SPEX_info spex_qr_counts(
                 }
                 if (jleaf == 2)
                 {
-                    delta[q]--; /* account for overlap in q */ // TODO tcov, when does this happen??
+                    delta[q]--; /* account for overlap in q */
                 }
             }
         }
