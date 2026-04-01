@@ -58,8 +58,10 @@ SPEX_info SPEX_rank
         return SPEX_INCORRECT_ALGORITHM;
     }
 
+    // A must be CSC and MPZ
     SPEX_REQUIRE (A, SPEX_CSC,   SPEX_MPZ);
 
+    // A must have appropriate dimensions
     if (A->m < 0 || A->n < 0)
     {
         return SPEX_INCORRECT_INPUT;

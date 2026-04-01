@@ -147,7 +147,6 @@ SPEX_info spex_qr_ipgs(
         iQ = Q->i[pQ];
         prev = Qj[iQ];
 
-        //if ((k > 0 && prev < Q->p[k - 1]) || (k == 0 && prev == -1) || i != k)
         if (prev < Q->p[j] || i != k)
         {
             SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[j]);

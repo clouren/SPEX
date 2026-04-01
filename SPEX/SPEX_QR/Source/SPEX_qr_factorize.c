@@ -25,8 +25,6 @@
  * option:      Command options.
  */
 
-#include "spex_qr_internal.h"
-
 #define SPEX_FREE_WORKSPACE              \
     {                                    \
         SPEX_matrix_free(&(RT), option); \
@@ -42,6 +40,8 @@
         SPEX_FREE_WORKSPACE                \
         SPEX_factorization_free(&F, NULL); \
     }
+
+#include "spex_qr_internal.h"
 
 SPEX_info SPEX_qr_factorize(
     // Output
@@ -188,9 +188,8 @@ SPEX_info SPEX_qr_factorize(
                         SPEX_MPZ_MUL(Q->x.mpz[pQ], Q->x.mpz[pQ], rhos->x.mpz[k - 1]);
                     }
                 }
-                // Update the history bslur
+                // Update the history
                 h[pQ] = k + 1;
-
                 iQ = Q->i[pQ];
                 Qk[iQ] = pQ;
 

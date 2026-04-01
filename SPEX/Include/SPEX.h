@@ -94,10 +94,6 @@
 #include <string.h>
 #include <gmp.h>
 #include <mpfr.h>
-// #include <math.h>
-// #include <time.h>
-// #include <inttypes.h>
-// #include <assert.h>
 #include "SuiteSparse_config.h"
 
 //------------------------------------------------------------------------------
@@ -247,10 +243,10 @@ extern "C"
 
     typedef enum
     {
-        SPEX_DEFAULT_ORDERING = SPEX_DEFAULT, // Default: colamd for LU
+        SPEX_DEFAULT_ORDERING = SPEX_DEFAULT, // Default: colamd for LU and QR
                                               // AMD for Cholesky
         SPEX_NO_ORDERING = 1,                 // None: A is factorized as-is
-        SPEX_COLAMD = 2,                      // COLAMD: Default for LU (and QR in the FUTURE)
+        SPEX_COLAMD = 2,                      // COLAMD: Default for LU and QR
         SPEX_AMD = 3                          // AMD: Default for Cholesky
     } SPEX_preorder;
 
@@ -567,7 +563,7 @@ extern "C"
         SPEX_LU_FACTORIZATION = 0,       // LU factorization
         SPEX_CHOLESKY_FACTORIZATION = 1, // Cholesky factorization
         SPEX_LDL_FACTORIZATION = 2,      // LDL factorization
-        SPEX_QR_FACTORIZATION = 3        // QR factorization (FUTURE)
+        SPEX_QR_FACTORIZATION = 3        // QR factorization
     } SPEX_factorization_kind;
 
     //------------------------------------------------------------------------------
@@ -585,7 +581,7 @@ extern "C"
 
     typedef struct
     {
-        SPEX_factorization_kind kind; // LU, Cholesky, LDL (or QR in the FUTURE)
+        SPEX_factorization_kind kind; // LU, Cholesky, LDL, or QR
 
         //--------------------------------------------------------------------------
         // The permutations of the matrix that are found during the symbolic
@@ -594,6 +590,7 @@ extern "C"
         // For kind == SPEX_LU_FACTORIZATION, only Q_perm is not NULL.
         // For kind == SPEX_CHOLESKY_FACTORIZATION, both Q_perm and Qinv_perm are
         // NULL.
+        // For kind == SPEX_QR_FACTORIZATION, P_perm and Pinv_perm are NULL
         //--------------------------------------------------------------------------
         int64_t *P_perm;    // row permutation
         int64_t *Pinv_perm; // inverse of row permutation
@@ -613,7 +610,7 @@ extern "C"
                      // the initial space for L and U; the
                      // space is reallocated as needed.
                      // Available only for SPEX_LU_FACTORIZATION.
-        int64_t rnz;
+        int64_t rnz; // Number of nonzeros in R for QR factorization
 
         //--------------------------------------------------------------------------
         // These are only used in the Cholesky analysis process
@@ -672,12 +669,14 @@ extern "C"
         //--------------------------------------------------------------------------
 
         SPEX_matrix L; // The lower-triangular matrix from LU
-                       // or Cholesky factorization.
+                       // or Cholesky factorization. NULL for QR.
         SPEX_matrix U; // The upper-triangular matrix from LU
-                       // factorization. NULL for Cholesky
+                       // factorization. NULL for Cholesky and QR
                        // factorization.
-        SPEX_matrix Q;
-        SPEX_matrix R;
+        SPEX_matrix Q; // The Q matrix for QR factorization. NULL
+                       // for LU or Cholesky factorization
+        SPEX_matrix R; // The R matrix for QR factorization. NULL
+                       // for LU or Cholesky factorization.
         SPEX_matrix rhos; // A n-by-1 dense matrix for the
                           // pivot values
 
@@ -689,6 +688,7 @@ extern "C"
         // For kind == SPEX_LU_FACTORIZATION, Qinv_perm can be NULL
         // For kind == SPEX_CHOLESKY_FACTORIZATION, and SPEX_LDL_FACTORIZATION
         // both Q_perm and Qinv_perm are NULL.
+        // For kind == SPEX_QR_FACTORIZATION, P_perm and Pinv_perm are NULL
         //--------------------------------------------------------------------------
 
         int64_t *P_perm;    // row permutation
@@ -697,7 +697,8 @@ extern "C"
         int64_t *Q_perm;    // column permutation
         int64_t *Qinv_perm; // inverse of column permutation
 
-        int64_t rank;
+        int64_t rank;       // Rank of A. Automatically computed when performing QR
+                            // factorization
 
     } SPEX_factorization_struct;
 
@@ -708,9 +709,11 @@ extern "C"
     // SPEX_factorization_free frees the SPEX_factorization object.
     //------------------------------------------------------------------------------
 
-    SPEX_info SPEX_factorization_free(
+    SPEX_info SPEX_factorization_free
+    (
         SPEX_factorization *F_handle, // Structure to be deleted
-        const SPEX_options option);
+        const SPEX_options option
+    );
 
     //------------------------------------------------------------------------------
     // Memory management

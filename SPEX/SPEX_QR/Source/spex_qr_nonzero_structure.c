@@ -58,7 +58,8 @@ static inline int compare(const void *a, const void *b)
     return (*(int64_t *)a - *(int64_t *)b);
 }
 
-SPEX_info spex_qr_nonzero_structure(
+SPEX_info spex_qr_nonzero_structure
+(
     // Output
     SPEX_matrix *R_handle, // On output: partial R matrix
                            // On input: undefined
@@ -70,7 +71,8 @@ SPEX_info spex_qr_nonzero_structure(
                                     // number of nonzeros in R, the column
                                     // elimination tree, the row/coluimn permutation
                                     // and its inverse
-    const SPEX_options option)
+    const SPEX_options option
+)
 {
 
     // All inputs have been checked by the caller, thus asserts are used here
@@ -121,7 +123,7 @@ SPEX_info spex_qr_nonzero_structure(
         for (p = A->p[col]; p < A->p[col + 1]; p++)
         {
             leftmost[A->i[p]] = k; /* leftmost[i] = min(find(A(i,:)))*/
-        } //
+        }
     }
 
     //--------------------------------------------------------------------------

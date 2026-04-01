@@ -60,7 +60,6 @@ SPEX_info SPEX_lu_rank
         return SPEX_INCORRECT_INPUT;
 
     SPEX_symbolic_analysis S = NULL;
-    SPEX_factorization F = NULL ;
 
     //--------------------------------------------------------------------------
     // Symbolic Analysis

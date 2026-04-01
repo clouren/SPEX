@@ -63,7 +63,7 @@ SPEX_info spex_lu_rank_factorize
     int64_t n = A->n ;
     int64_t exact_rank = 0;
 
-    int64_t k = 0, top, i, j, col, loc, lnz = 0, unz = 0, pivot, jnew ;
+    int64_t k = 0, top, i, j, col, loc, lnz = 0, pivot, jnew ;
     size_t size ;
 
     // allocate memory space for the factorization

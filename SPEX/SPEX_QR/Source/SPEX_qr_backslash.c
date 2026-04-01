@@ -38,7 +38,8 @@
 
 #include "spex_qr_internal.h"
 
-SPEX_info SPEX_qr_backslash(
+SPEX_info SPEX_qr_backslash
+(
     // Output
     SPEX_matrix *x_handle, // Final solution vector
     // Input
@@ -67,7 +68,7 @@ SPEX_info SPEX_qr_backslash(
         return SPEX_INCORRECT_INPUT;
     }
 
-    if (A->n == 0 || A-> m == 0)
+    if (A->n <= 0 || A-> m <= 0)
     {
         return SPEX_INCORRECT_INPUT;
     }

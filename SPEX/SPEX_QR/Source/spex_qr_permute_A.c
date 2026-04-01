@@ -58,7 +58,6 @@ SPEX_info spex_qr_permute_A
     // Create indices and pinv, the inverse row permutation
     int64_t j, k, t, nz = 0, n = A->n, m = A->m;
     (*PAQ_handle) = NULL;
-    // int64_t *pinv = NULL;
 
     // Allocate memory for PAQ which is a permuted copy of A
     SPEX_matrix PAQ = NULL;
