@@ -290,6 +290,7 @@ int main(int argc, char *argv[])
     ERR(SPEX_qr_factorize(&F, A, S, option),
         SPEX_INCORRECT_ALGORITHM);
     option->algo = SPEX_QR_GS;
+    OK(SPEX_symbolic_analysis_free(&S, option));
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_backslash and check the solution
@@ -491,6 +492,8 @@ int main(int argc, char *argv[])
     option->order = SPEX_NO_ORDERING;
     OK(SPEX_qr_backslash(&x, SPEX_MPFR, A, b, option));
     OK(SPEX_matrix_free(&A, option));
+    OK(SPEX_matrix_free(&b, option));
+    OK(SPEX_matrix_free(&x, option));
 
     //--------------------------------------------------------------------------
     // solve Ax=b with SPEX_qr_[analyze,factorize,solve]; check solution
@@ -614,5 +617,6 @@ int main(int argc, char *argv[])
     SPEX_FREE_ALL;
     printf("%s: all tests passed\n\n", __FILE__);
     fprintf(stderr, "%s: all tests passed\n\n", __FILE__);
+    SPEX_finalize();
     return 0;
 }

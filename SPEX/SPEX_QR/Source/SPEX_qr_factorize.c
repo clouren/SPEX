@@ -31,13 +31,18 @@
         SPEX_free(h);                    \
         SPEX_free(Qk);                   \
         SPEX_free(ldCols);               \
-        SPEX_matrix_free(&RTPi, option);    \
-        SPEX_matrix_free(&RPi, option); \
+        SPEX_matrix_free(&RTPi, option); \
+        SPEX_matrix_free(&RPi, option);  \
+        SPEX_free(Pi_perm);              \
+        SPEX_free(Piinv_perm);           \
     }
 
 #define SPEX_FREE_ALL                      \
     {                                      \
         SPEX_FREE_WORKSPACE                \
+        SPEX_matrix_free(&Q, option);      \
+        SPEX_matrix_free(&rhos, option);   \
+        SPEX_matrix_free(&rhosPi, option); \
         SPEX_factorization_free(&F, NULL); \
     }
 
@@ -86,6 +91,9 @@ SPEX_info SPEX_qr_factorize(
     SPEX_matrix RPi = NULL;
     SPEX_matrix rhosPi = NULL;
     int64_t *h = NULL, *Qk = NULL;
+    int64_t *Pi_perm = NULL;    // Column permutation for rank deficient matrices
+    int64_t *Piinv_perm = NULL; // Inverse row permutation for rank deficient matrices
+
     // Varibles needed to compute the rank of a matrix.
     // assume matrix is full rank. isZeros is true if a column is linearly
     // dependent, ldCols keeps track of linearly dependent columns
@@ -236,8 +244,6 @@ SPEX_info SPEX_qr_factorize(
         // respective matrix. And as such the column permutation of A (Q_perm)
         // will be updated.
 
-        int64_t *Pi_perm;    // Column permutation for rank deficient matrices
-        int64_t *Piinv_perm; // Inverse row permutation for rank deficient matrices
         // Indices for modifying Q_perm (and creating Pi_perm) according to
         // whether a column of Q is linearly dependent or linearly independent
         // of the previous columns
@@ -254,8 +260,6 @@ SPEX_info SPEX_qr_factorize(
         if (!(F->Q_perm) || !Piinv_perm || !Pi_perm)
         {
             // out of memory: free everything and return
-            SPEX_free(Pi_perm);
-            SPEX_free(Piinv_perm);
             SPEX_FREE_ALL;
             return SPEX_OUT_OF_MEMORY;
         }
@@ -264,8 +268,6 @@ SPEX_info SPEX_qr_factorize(
                                         false, true, option);
         if (info != SPEX_OK)
         {
-            SPEX_free(Pi_perm);
-            SPEX_free(Piinv_perm);
             SPEX_FREE_ALL;
             return info;
         }
@@ -313,10 +315,10 @@ SPEX_info SPEX_qr_factorize(
         }
 
         F->rhos = rhosPi;
+        // Free the original workspaces since F now has the permuted copies
+        SPEX_matrix_free(&Q, option);
+        SPEX_matrix_free(&rhos, option);
 
-
-        SPEX_free(Pi_perm);
-        SPEX_free(Piinv_perm);
     }
     else
     {

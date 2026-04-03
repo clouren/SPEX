@@ -145,14 +145,7 @@ int main (int argc, char *argv [])
 
     SPEX_matrix A = NULL, A2 = NULL, b = NULL, x = NULL ;
     SPEX_symbolic_analysis S = NULL ;
-    //SPEX_factorization F = NULL, F2 = NULL ;
     SPEX_options option = NULL ;
-
-    if (argc < 2)
-    {
-        printf ("usage: tcov_for_cholesky matrixfilename\n");
-        TEST_ABORT (SPEX_INCORRECT_INPUT);
-    }
 
     OK (SPEX_initialize_expert (tcov_malloc, tcov_calloc, tcov_realloc,
         tcov_free));
@@ -167,7 +160,7 @@ int main (int argc, char *argv [])
     // load the test matrix and create the right-hand-side
     //--------------------------------------------------------------------------
 
-    read_test_matrix (&A, argv [1]);
+    read_test_matrix (&A, "../ExampleMats/10teams.mat.txt");
     int64_t n = A->n ;
     int64_t m = A->m ;
     int64_t anz = -1 ;

@@ -13,7 +13,6 @@ default: cov
 
 SUITESPARSE ?= $(realpath $(CURDIR)/../..)
 
-# TODO: Why is SPEX_Backslash not included in the .o parts?
 ################################################################################
 
 # Ask the OS what it is to determine the shared library extension and linker flags
@@ -308,7 +307,7 @@ runtests4llu: all
 	./spex_demo_lu_extended f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
 	./tcov_for_lu > test_for_lu.out
 	./tcov_for_lu 0 1 1 > lu5.out
-	./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
+	./tcov_for_lu2 > test_for_lu2.out
 
 
 # only run test for SPEX_Cholesky
@@ -337,10 +336,11 @@ vtests4llu: all
 	$(V) ./spex_demo_lu_extended f ../ExampleMats/10teams.mat.txt ../ExampleMats/10teams.rhs.txt > lu4.out
 	$(V) ./tcov_for_lu > test_for_lu.out
 	$(V) ./tcov_for_lu 0 1 1 > lu5.out
-	$(V) ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
+	$(V) ./tcov_for_lu2 > test_for_lu2.out
+	$(V) ./tcov_for_qr ../ExampleMats/LF10.mat.txt ../ExampleMats/LF10.rhs.txt > test_for_qr.out
 
 vtest2: all
-	$(V) ./tcov_for_lu2 ../ExampleMats/Trefethen_500.mat.txt ../ExampleMats/Trefethen_500.rhs.txt > test_for_lu2.out
+	$(V) ./tcov_for_lu2 > test_for_lu2.out
 
 # run test for SPEX_Cholesky with valgrind
 vtests4chol: all
