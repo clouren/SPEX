@@ -2,7 +2,7 @@
 # SPEX/Tcov/Makefile: compile and run SPEX test coverage
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2019-2024, Chris Lourenco, Jinhao Chen,
+# SPEX: (c) 2019-2026, Chris Lourenco, Jinhao Chen,
 # Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis.
 # All Rights Reserved.
 # SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later

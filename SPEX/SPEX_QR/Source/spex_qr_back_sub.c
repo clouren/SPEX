@@ -2,7 +2,7 @@
 // SPEX_QR/Source/spex_qr_basic_solve.c: Basic solution back solve
 //------------------------------------------------------------------------------
 
-// SPEX_QR: (c) 2021-2023, Chris Lourenco, Lorena Mejia Domenzain,
+// SPEX_QR: (c) 2021-2026, Chris Lourenco, Lorena Mejia Domenzain,
 // Timothy A. Davis, and Erick Moreno-Centeno. All Rights Reserved.
 // SPDX-License-Identifier: GPL-2.0-or-later or LGPL-3.0-or-later
 
