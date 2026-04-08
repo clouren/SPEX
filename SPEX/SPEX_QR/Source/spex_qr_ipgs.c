@@ -8,9 +8,8 @@
 
 //------------------------------------------------------------------------------
 
-/* This function obtains row j of R (using a dot product) and column j+1 pf Q
+/* This function obtains row j of R (using a dot product) and column j+1 of Q
  * (using Integer-preserving Gram-Schmidt).
- *
  *
  * Input/output arguments:
  *
@@ -69,9 +68,7 @@ SPEX_info spex_qr_ipgs(
     // Declare variables
     int64_t p, pQ, pR, iR, top, x, l, prev, iQ, k, i;
     int sgn;
-
     size_t size;
-
     *isZeros = true; // start by assuming column of Q is linearly dependent
 
     //--------------------------------------------------------------------------
@@ -160,7 +157,7 @@ SPEX_info spex_qr_ipgs(
         {
             if (j + 1 > h[pQ] + 1)
             {
-                //"an update of Q(iQ,j+1)" has been skipped because R(j,i) is zero
+                // an update of Q(iQ,j+1) has been skipped because R(j,i) is zero
                 // or Q(iQ,j) is zero
                 SPEX_CHECK(spex_history_update(Q, rhos, pQ, j - 1, h[pQ], h[pQ] - 1, 0, option));
             }

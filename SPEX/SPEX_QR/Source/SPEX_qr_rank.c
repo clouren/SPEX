@@ -73,7 +73,7 @@ SPEX_info SPEX_qr_rank
     // Determine if we need to factorize A or AT
     if (A->n > A->m)
     {
-        // A is short and fat. Factorize AT
+        // A is short and wide. Factorize AT
 
         // Compute AT
         SPEX_CHECK( SPEX_transpose(&AT, A, true, option));

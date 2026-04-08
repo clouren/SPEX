@@ -54,7 +54,8 @@ static void spex_qr_init_ata(
  * function
  */
 
-SPEX_info spex_qr_counts(
+SPEX_info spex_qr_counts
+(
     // Output
     int64_t **c_handle, // On ouptut: column counts
                         // On input: undefined

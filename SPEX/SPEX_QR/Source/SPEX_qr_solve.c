@@ -38,7 +38,8 @@
 #include "spex_qr_internal.h"
 #include "spex_lu_internal.h"
 
-SPEX_info SPEX_qr_solve(
+SPEX_info SPEX_qr_solve
+(
     // Output
     SPEX_matrix *x_handle, // On input: undefined.
                            // On output: Rational solution (SPEX_MPQ)

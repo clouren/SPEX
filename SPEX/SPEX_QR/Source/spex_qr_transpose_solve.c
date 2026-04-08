@@ -68,9 +68,7 @@ SPEX_info spex_qr_transpose_solve
     ASSERT(b->kind == SPEX_DENSE);
     ASSERT(F->kind == SPEX_QR_FACTORIZATION);
 
-    // Step 1 is a transpose triangular solve R^T D y = b
-
-   // Declare x and b_new
+   // Declare matrices and a temporary mpq_t variable
     SPEX_matrix x = NULL, b_new = NULL, b2 = NULL;
     mpq_t temp;
     SPEX_MPQ_SET_NULL(temp);
@@ -117,6 +115,10 @@ SPEX_info spex_qr_transpose_solve
 
         // Only the entries in b_new[0..rank] are nonzero. Loop through
         // what's left
+        // Since A must be full row rank for the solve to work, we could
+        // equivalently change j < b_new->m but we leave it as rank
+        // in case future development directly handles the rank deficient
+        // case
         for (j = 1; j < F->rank; j++)
         {
             // Compute D[j,j] * b_new[j]
@@ -148,6 +150,8 @@ SPEX_info spex_qr_transpose_solve
         // Loop through columns 1:rank of Q
         // If A is rank deficient Q will contain
         // n-rank columns of zeros
+        // Though in order for the transpose solve to work correctly
+        // A must have full row rank
         for (j = 0; j < F->rank; j++)
         {
             // Loop through the nonzeros in each column

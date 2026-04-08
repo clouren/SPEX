@@ -9,8 +9,6 @@
 
 //------------------------------------------------------------------------------
 
-// TODO Fix all the copyright and SPDX
-
 // This file is not intended to be #include'd in user applications.  Use
 // SPEX.h instead.
 

@@ -248,9 +248,6 @@ SPEX_info SPEX_qr_factorize(
         // whether a column of Q is linearly dependent or linearly independent
         // of the previous columns
         int64_t iLD = n - 1, iLI = 0, index;
-
-
-
         F->rank = rank;
 
         Pi_perm = (int64_t *)SPEX_malloc(n * sizeof(int64_t));
@@ -322,6 +319,8 @@ SPEX_info SPEX_qr_factorize(
     }
     else
     {
+        // Q has full rank, no cleanup has to happen here
+
         F->rank = n; // matrix has full rank
 
         // column permutation, to be copied from S->Q_perm

@@ -82,7 +82,7 @@ SPEX_info spex_qr_back_sub // performs sparse REF backward substitution
                               SPEX_2D(bx, j, k, mpz),
                               Rx[diag_idx]);
 
-            // Back-substitute strictly into the rows ABOVE the diagonal
+            // Back-substitute strictly into the rows above the diagonal
             for (int64_t i = Rp[j]; i < diag_idx; i++)
             {
                 SPEX_MPZ_SGN(&sgn, Rx[i]);

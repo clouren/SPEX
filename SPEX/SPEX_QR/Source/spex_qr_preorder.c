@@ -59,7 +59,7 @@ SPEX_info spex_qr_preorder
     ASSERT(A->type == SPEX_MPZ);
     ASSERT(A->kind == SPEX_CSC);
 
-    // m >= n for QR factorization
+    // m >= n for thin QR factorization
     ASSERT(A->n <= A->m);
 
     // Dimension can't be negative

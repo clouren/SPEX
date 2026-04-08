@@ -44,7 +44,8 @@
 
 #include "spex_qr_internal.h"
 
-SPEX_info spex_qr_transpose_backslash(
+SPEX_info spex_qr_transpose_backslash
+(
     // Output
     SPEX_matrix *x_handle, // Final solution vector
     // Input

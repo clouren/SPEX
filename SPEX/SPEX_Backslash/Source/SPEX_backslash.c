@@ -12,6 +12,20 @@
 /* Purpose: Exactly solve sparse linear systems using SPEX Software package,
  * automatically determining the most appropriate factorization method.
  *
+ * The behavior depends on the structure of A.
+ *  1) If A is square and symmetric, an exact LDL factorization is applied
+ *  2) If A is square and not symmetric, or if LDL factorization fails, an
+ *     exact LU factorization is applied.
+ *  3) If A is rectangular, tall, and has full column rank, an exact QR is
+ *     applied and the exact least squares solution is returned.
+ *  4) If A is rectangular, tall, and is rank deficient, an exact QR is applied
+ *     and an exact basic solution is returned
+ *  5) If A is rectangular, wide, and has full row rank, an exact QR is applied
+ *     and the exact minimum norm solution is returned
+ *  6) If A is rectangular, wide, and rank deficient, an error code is returned.
+ *     In this case, thin QR is not an appropriate method to find minimum norm
+ *     solutions.
+ *
  * Input/Output arguments:
  *
  * x_handle:    A pointer to the solution of the linear system.

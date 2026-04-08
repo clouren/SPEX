@@ -246,7 +246,7 @@ SPEX_info spex_qr_nonzero_structure
     (*Q_handle) = Q;
     (*R_handle) = RT; // Return R transpose because of how we store R in factorization
 
-    // SPEX_FREE_WORKSPACE;
+    // Free memory and exit
     SPEX_FREE(w);
     SPEX_FREE(leftmost);
     SPEX_matrix_free(&QT, NULL);

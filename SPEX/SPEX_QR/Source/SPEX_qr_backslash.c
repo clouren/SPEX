@@ -100,7 +100,7 @@ SPEX_info SPEX_qr_backslash
     }
     else
     {
-        // A is a short fat matrix. We factorize A^T and use the REF QR
+        // A is a short wide matrix. We factorize A^T and use the REF QR
         // of A^T to solve Ax = b.
         // If A has full row rank, the minimum norm solution is returned.
         // If A is rank deficient, SPEX_SINGULAR is returned

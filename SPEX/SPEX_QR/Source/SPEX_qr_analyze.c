@@ -19,7 +19,7 @@
  *
  * S:           Symbolic analysis struct for QR factorization.
  *              On input it's NULL
- *              On output it contains the row/column permutation, the elimination
+ *              On output it contains the column permutation, the elimination
  *              tree, and the number of nonzeros in R.
  *
  * A:           User's input matrix (Must be SPEX_MPZ and SPEX_CSC)
@@ -79,7 +79,7 @@ SPEX_info SPEX_qr_analyze
     int64_t *post = NULL;
 
     //--------------------------------------------------------------------------
-    // Preorder: obtain the row/column ordering of ATA (Default is COLAMD)
+    // Preorder: obtain the row/column ordering of A (Default is COLAMD)
     //--------------------------------------------------------------------------
     SPEX_CHECK(spex_qr_preorder(&S, A, option));
 
@@ -92,9 +92,9 @@ SPEX_info SPEX_qr_analyze
     //--------------------------------------------------------------------------
     // Symbolic Analysis: compute the column elimination tree of AQ
     //--------------------------------------------------------------------------
-    // Obtain elimination tree of ATA
+    // Obtain elimination tree of AQ
     SPEX_CHECK(spex_qr_etree(&S->parent, AQ));
-    // Postorder the column elimination tree of ATA
+    // Postorder the column elimination tree of AQ
     SPEX_CHECK(spex_symmetric_post(&post, S->parent, n));
 
     // Get the column counts of R' aka the row counts of R
