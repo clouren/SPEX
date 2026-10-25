@@ -66,7 +66,7 @@ SPEX_info spex_python
         return SPEX_INCORRECT_INPUT;
     }
 
-    if (n == 0 || m == 0 || n != m)
+    if (n == 0 || m == 0)
     {
         return SPEX_INCORRECT_INPUT;
     }
@@ -88,7 +88,7 @@ SPEX_info spex_python
     // Allocate memory, populate in A and b
     //--------------------------------------------------------------------------
 
-    SPEX_matrix_allocate(&A_in, SPEX_CSC, SPEX_FP64, n, n, nz, true, true,
+    SPEX_matrix_allocate(&A_in, SPEX_CSC, SPEX_FP64, m, n, nz, true, true,
         option);
     SPEX_matrix_allocate(&b_in, SPEX_DENSE, SPEX_FP64, n, 1, n, true, true,
         option);
@@ -123,6 +123,9 @@ SPEX_info spex_python
         case 4:
             SPEX_CHECK( SPEX_ldl_backslash(&x, SPEX_MPQ, A, b, option));
             break;
+        case 5:
+            SPEX_CHECK( SPEX_qr_backslash(&x, SPEX_MPQ, A, b, option));
+            break;
         default:
             return SPEX_INCORRECT_INPUT;
     }
@@ -143,7 +146,7 @@ SPEX_info spex_python
             }
             //check string size
             int sizeStr;
-            sizeStr=strlen(s);
+            sizeStr=strlen(s)+1;
             //allocate sol_char[i]
              sol_void[i] = malloc (sizeStr + 1);  // +1 for NULL terminator
             //copy s into sol_char[i]
@@ -167,4 +170,51 @@ SPEX_info spex_python
 
     FREE_WORKSPACE;
     return SPEX_OK;
+}
+
+
+SPEX_info spex_python_rank
+(
+     int64_t *rank_out, // Output: rank of A
+     int64_t *Ap,       // column pointers of A
+     int64_t *Ai,       // row indices of A
+     double *Ax,        // values of A
+     int m,             // rows of A
+     int n,             // columns of A
+     int nz             // number of nonzeros in A
+)
+{
+    SPEX_info info;
+    SPEX_initialize();
+
+    if (!Ap || !Ai || !Ax || !rank_out)
+    {
+        return SPEX_INCORRECT_INPUT;
+    }
+
+    SPEX_matrix A_in = NULL;
+    SPEX_matrix A = NULL;
+    SPEX_options option = NULL;
+    SPEX_create_default_options(&option);
+
+    // Allocate a shallow double CSC matrix pointing to Python's memory
+    SPEX_matrix_allocate(&A_in, SPEX_CSC, SPEX_FP64, m, n, nz, true, true,
+        option);
+    A_in->p=Ap;
+    A_in->i=Ai;
+    A_in->x.fp64=Ax;
+
+    // Copy to exact MPZ matrix
+    SPEX_matrix_copy(&A, SPEX_CSC, SPEX_MPZ, A_in, option);
+
+    // Compute rank based on the algorithm (2 = LU, 5 = QR)
+    info = SPEX_rank(rank_out, A, option);
+
+    // Free memory
+    SPEX_matrix_free(&A, option);
+    SPEX_matrix_free(&A_in, option);
+    SPEX_FREE(option);
+    SPEX_finalize();
+
+    return info;
 }

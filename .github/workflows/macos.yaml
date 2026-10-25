@@ -38,7 +38,7 @@ jobs:
           sysctl machdep
 
       - name: checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: install dependencies
         # Homebrew's Python conflicts with the Python that comes pre-installed
@@ -52,6 +52,7 @@ jobs:
         run: |
           brew update
           brew install --overwrite python@3.10 python@3.11 python@3.12
+          brew uninstall cmake
           brew reinstall gcc
           brew install autoconf automake ccache cmake gmp lapack libomp mpfr openblas
           HOMEBREW_PREFIX=$(brew --prefix)
@@ -66,7 +67,7 @@ jobs:
 
       - name: restore ccache
         # setup the GitHub cache used to maintain the ccache from one job to the next
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: /Users/runner/Library/Caches/ccache
           key: ${{ steps.ccache-prepare.outputs.key }}
@@ -83,6 +84,7 @@ jobs:
           ccache -s
 
       - name: build
+        id: build
         run: |
           IFS=':' read -r -a libs <<< "${BUILD_LIBS}"
           for lib in "${libs[@]}"; do
@@ -95,6 +97,7 @@ jobs:
                   -DCMAKE_CXX_COMPILER_LAUNCHER="ccache" \
                   -DCMAKE_Fortran_COMPILER_LAUNCHER="ccache" \
                   -DBLA_VENDOR="Apple" \
+                  -DSUITESPARSE_USE_FORTRAN=ON \
                   -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/lapack;${HOMEBREW_PREFIX}/opt/openblas;${HOMEBREW_PREFIX}/opt/libomp" \
                   ..
             echo "::endgroup::"
@@ -119,13 +122,15 @@ jobs:
           make demos
 
       - name: ccache status
+        if: always() && (steps.build.outcome != 'skipped')
         continue-on-error: true
         run: ccache -s
 
       - name: save ccache
-        # Save the cache after we are done (successfully) building
+        # Save the cache after we are done building
         # This helps to retain the ccache even if the subsequent steps are failing.
-        uses: actions/cache/save@v4
+        if: always() && (steps.build.outcome != 'skipped')
+        uses: actions/cache/save@v6
         with:
           path: /Users/runner/Library/Caches/ccache
           key: ${{ steps.ccache-prepare.outputs.key }}

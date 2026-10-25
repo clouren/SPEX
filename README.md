@@ -1,6 +1,6 @@
 SPEX is a software package for SParse EXact algebra
 
-Feb 20, 2025
+Oct 23, 2026
 
 Files and folders in this distribution:
 

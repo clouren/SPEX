@@ -9,8 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-/* This program will exactly solve the sparse linear system Ax = b by performing
- * the SPEX Cholesky factorization.
+/* Test coverage for Cholesky and LDL routines
  */
 
 #include "tcov_utilities.h"
@@ -350,16 +349,16 @@ int main (int argc, char *argv [])
     SPEX_matrix T_mpq = NULL, T_mpfr = NULL, T_int = NULL, T_fp = NULL;
     // T = A'
     OK ( SPEX_matrix_copy(&A_mpq, SPEX_CSC, SPEX_MPQ, A, option));
-    OK ( SPEX_transpose(&T_mpq, A_mpq, option) );
+    OK ( SPEX_transpose(&T_mpq, A_mpq, true, option) );
 
     OK ( SPEX_matrix_copy(&A_mpfr, SPEX_CSC, SPEX_MPFR, A, option));
-    OK ( SPEX_transpose(&T_mpfr, A_mpfr, option) );
+    OK ( SPEX_transpose(&T_mpfr, A_mpfr, true, option) );
 
     OK ( SPEX_matrix_copy(&A_int, SPEX_CSC, SPEX_INT64, A, option));
-    OK ( SPEX_transpose(&T_int, A_int, option) );
+    OK ( SPEX_transpose(&T_int, A_int, true, option) );
 
     OK ( SPEX_matrix_copy(&A_fp, SPEX_CSC, SPEX_FP64, A, option));
-    OK ( SPEX_transpose(&T_fp, A_fp, option));
+    OK ( SPEX_transpose(&T_fp, A_fp, true, option));
 
     SPEX_matrix_free(&A_mpq,option);
     SPEX_matrix_free(&A_mpfr,option);
@@ -698,6 +697,14 @@ int main (int argc, char *argv [])
 
     ERR (SPEX_ldl_factorize (&F2, A, S, option), SPEX_PANIC);
     ERR (SPEX_ldl_solve (NULL, NULL, NULL, NULL), SPEX_PANIC);
+
+    // give incorrect algorithm
+    option->order = 99 ;
+    option->algo = 99 ;
+    ERR (SPEX_cholesky_analyze (&S, A, option), SPEX_INCORRECT_ALGORITHM);
+    ERR (SPEX_ldl_analyze (&S, A, option), SPEX_INCORRECT_ALGORITHM);
+    option->order = SPEX_DEFAULT_ORDERING ;
+    option->algo = SPEX_ALGORITHM_DEFAULT ;
 
     spex_set_initialized (true);
     SPEX_FREE_ALL;

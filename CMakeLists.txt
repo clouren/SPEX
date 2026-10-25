@@ -2,16 +2,14 @@
 # SPEX/CMakeLists.txt:  root CMake build rules
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2019-2024, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# SPEX: (c) 2019-2026, Chris Lourenco (US Naval Academy), Jinhao Chen,
 # Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis, Texas A&M.
 # All Rights Reserved.
 # Just this particular file is under the Apache-2.0 license; each package has
 # its own license.
 # SPDX-License-Identifier: Apache-2.0
 
-# This file and most packages in SuiteSparse require cmake 3.22 or later.
-
-cmake_minimum_required ( VERSION 3.22 )
+cmake_minimum_required ( VERSION 3.23 )
 
 project ( "SuiteSparse" )
 
@@ -84,41 +82,61 @@ include ( SuiteSparsePolicy )
 
 if ( SUITESPARSE_USE_SYSTEM_AMD )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "amd" )
-    find_package ( AMD 3.3.3 REQUIRED )
+    find_package ( AMD 3.3.4 REQUIRED )
 else ( )
-    if ( NOT "amd" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
-        message ( STATUS "Adding \"amd\" to the list of built targets." )
-        list ( APPEND SUITESPARSE_ENABLE_PROJECTS "amd" )
+    if ( "spex" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
+        # CHOLMOD, LDL, UMFPACK, and SPEX require AMD.
+        if ( NOT "amd" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
+            message ( STATUS "Adding \"amd\" to the list of built targets." )
+            list ( APPEND SUITESPARSE_ENABLE_PROJECTS "amd" )
+        endif ( )
     endif ( )
 endif ( )
 
 if ( SUITESPARSE_USE_SYSTEM_COLAMD )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "colamd" )
-    find_package ( COLAMD 3.3.4 REQUIRED )
+    find_package ( COLAMD 3.3.5 REQUIRED )
 else ( )
-    if ( NOT "colamd" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
-        message ( STATUS "Adding \"colamd\" to the list of built targets." )
-        list ( APPEND SUITESPARSE_ENABLE_PROJECTS "colamd" )
+    if ( "spex" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
+        # CHOLMOD and SPEX require COLAMD.
+        if ( NOT "colamd" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
+            message ( STATUS "Adding \"colamd\" to the list of built targets." )
+            list ( APPEND SUITESPARSE_ENABLE_PROJECTS "colamd" )
+        endif ( )
     endif ( )
 endif ( )
 
 if ( SUITESPARSE_USE_SYSTEM_SUITESPARSE_CONFIG )
     list ( REMOVE_ITEM SUITESPARSE_ENABLE_PROJECTS "suitesparse_config" )
-    find_package ( SuiteSparse_config 7.8.2 REQUIRED )
+    find_package ( SuiteSparse_config 7.11.0 REQUIRED )
 else ( )
-    if ( NOT "suitesparse_config" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
-        message ( STATUS "Adding \"suitesparse_config\" to the list of built targets." )
-        list ( APPEND SUITESPARSE_ENABLE_PROJECTS "suitesparse_config" )
+    if ( "amd" IN_LIST SUITESPARSE_ENABLE_PROJECTS
+            OR "colamd" IN_LIST SUITESPARSE_ENABLE_PROJECTS
+            OR "spex" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
+        # All but CSparse, GraphBLAS, and LAGraph require SuiteSparse_config.
+        if ( NOT "suitesparse_config" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
+            message ( STATUS "Adding \"suitesparse_config\" to the list of built targets." )
+            list ( APPEND SUITESPARSE_ENABLE_PROJECTS "suitesparse_config" )
+        endif ( )
     endif ( )
 endif ( )
+
 
 if ( CMAKE_VERSION VERSION_LESS 3.24 )
     # work around missing GLOBAL option of find_package in older CMake versions
     # If SuiteSparse is included as a sub-project in other projects, they might
     # need to manually import the OpenMP targets for older CMake versions, too.
-    find_package ( OpenMP COMPONENTS C )
+    if ( "suitesparse_config" IN_LIST SUITESPARSE_ENABLE_PROJECTS)
+        find_package ( OpenMP COMPONENTS C )
+    endif ( )
+    if ( "paru" IN_LIST SUITESPARSE_ENABLE_PROJECTS )
+        find_package ( OpenMP COMPONENTS CXX )
+    endif ( )
 endif ( )
 
+
+# BLAS is only required for some sub-projects
+option ( SUITESPARSE_REQUIRE_BLAS "Must not be set to OFF if any SuiteSparse project requires BLAS functions" ON )
 
 #-------------------------------------------------------------------------------
 # include selected projects
@@ -184,7 +202,7 @@ include ( SuiteSparseReport )
 
 # Currently, only LAGraph, Mongoose, and CHOLMOD have ctests.
 
-# FIXME: convert more of the existing demos to ctests.
+# Fixme: convert more of the existing demos to ctests.
 
 # Most packages have a ./Tcov folder with a full statement coverage test,
 # but these are not imported into cmake yet.

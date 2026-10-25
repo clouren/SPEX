@@ -14,10 +14,10 @@ V =
 # V = valgrind --leak-check=full --show-leak-kinds=all
 
 test:
-	(cd AMD/build                && $(CONFIG) && $(BUILD) && $(V) ./amd_demo && ./amd_demo_static )
-	(cd COLAMD/build             && $(CONFIG) && $(BUILD) && $(V) ./colamd_demo && ./colamd_demo_static )
-	(cd SPEX/build               && $(CONFIG) && $(BUILD) && $(V) ./spex_demo && ./spex_demo_static )
-	(cd SuiteSparse_config/build && $(CONFIG) && $(BUILD) && $(V) ./config_demo && ./config_demo_static )
+	(cd test_AMD/build                && $(CONFIG) && $(BUILD) && $(V) ./amd_demo && ./amd_demo_static )
+	(cd test_COLAMD/build             && $(CONFIG) && $(BUILD) && $(V) ./colamd_demo && ./colamd_demo_static )
+	(cd test_SPEX/build               && $(CONFIG) && $(BUILD) && $(V) ./spex_demo && ./spex_demo_static )
+	(cd test_SuiteSparse_config/build && $(CONFIG) && $(BUILD) && $(V) ./config_demo && ./config_demo_static )
 
 # Remove all files not in the original distribution
 distclean: purge
