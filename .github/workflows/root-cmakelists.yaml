@@ -142,7 +142,7 @@ jobs:
                 -DCMAKE_CXX_COMPILER_LAUNCHER="ccache" \
                 -DCMAKE_Fortran_COMPILER_LAUNCHER="ccache" \
                 -DBLA_VENDOR="OpenBLAS" \
-                "-DSUITESPARSE_ENABLE_PROJECTS=all;csparse" \
+                "-DSUITESPARSE_ENABLE_PROJECTS=all" \
                 -DSUITESPARSE_DEMOS=OFF \
                 -DBUILD_TESTING=OFF \
                 ${{ matrix.cuda == 'with'
