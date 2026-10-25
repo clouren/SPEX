@@ -40,12 +40,12 @@ jobs:
         include:
           - arch: x86
             ccache-max: 64M
-            extra-build-libs: ":GraphBLAS:LAGraph"
-            extra-check-libs: ":GraphBLAS:LAGraph"
+            extra-build-libs: ""
+            extra-check-libs: ""
           - arch: armv7
             ccache-max: 60M
-            extra-build-libs: ":GraphBLAS:LAGraph"
-            extra-check-libs: ":GraphBLAS:LAGraph"
+            extra-build-libs: ""
+            extra-check-libs: ""
           - arch: loongarch64
             ccache-max: 30M
 

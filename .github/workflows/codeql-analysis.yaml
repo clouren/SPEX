@@ -31,15 +31,9 @@ jobs:
         language: ['c-cpp']
         # Learn more...
         # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
-#       group: [other]
-#       GraphBLAS and LAGraph disabled (the runners run out of memory or
-#       disk space)
-#       group: [other, graph]
         include:
           - group: other
             build-libs: SuiteSparse_config:AMD:COLAMD:SPEX
-#         - group: graph
-#           build-libs: GraphBLAS:LAGraph
 
     name: CodeQL (Ubuntu, ${{ matrix.group }})
 
@@ -80,9 +74,6 @@ jobs:
           sudo mv ./libpthread.a /usr/lib/x86_64-linux-gnu/libpthread.a
 
       - name: build
-        # The analysis with factory kernels of the GraphBLAS library is too
-        # extensive for the free GitHub-hosted runners. Disable them to work
-        # around that. That means they aren't scanned.
         run: |
           IFS=':'
           BUILD_LIBS="${{ matrix.build-libs }}"
@@ -133,8 +124,6 @@ jobs:
         include:
           - group: other
             build-libs: SuiteSparse_config:AMD:COLAMD:SPEX
-#         - group: graph
-#           build-libs: GraphBLAS:LAGraph
 
     env:
       CHERE_INVOKING: 1
@@ -184,9 +173,6 @@ jobs:
           # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
       - name: build
-        # The analysis with factory kernels of the GraphBLAS library is too
-        # extensive for the free GitHub-hosted runners. Disable them to work
-        # around that. That means they aren't scanned.
         run: |
           BUILD_LIBS="${{ matrix.build-libs }}"
           IFS=':' read -r -a libs <<< "${BUILD_LIBS}"
