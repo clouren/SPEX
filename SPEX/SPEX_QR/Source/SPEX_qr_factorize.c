@@ -70,13 +70,19 @@ SPEX_info SPEX_qr_factorize
     // Check inputs for NULL
     if (!F_handle || !A || !S)
     {
-        return (SPEX_INCORRECT_INPUT);
+        return SPEX_INCORRECT_INPUT;
     }
 
     // Ensure inputs are in the correct format
     if (A->kind != SPEX_CSC || A->type != SPEX_MPZ || S->kind != SPEX_QR_FACTORIZATION)
     {
-        return (SPEX_INCORRECT_INPUT);
+        return SPEX_INCORRECT_INPUT;
+    }
+
+    // Make sure matrix is appropriate dimension
+    if (A->n <= 0 || A->m <= 0)
+    {
+        return SPEX_INCORRECT_INPUT;
     }
 
     SPEX_factorization_algorithm algo = SPEX_OPTION_ALGORITHM(option);

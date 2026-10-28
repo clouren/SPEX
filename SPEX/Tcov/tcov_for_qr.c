@@ -618,7 +618,13 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------
 
     generate_test_matrix(&A, sq_str);
+    // Brutal Testing on S
     BRUTAL(SPEX_qr_analyze(&S, A, option));
+
+    // Pass in a matrix with n or m = 0
+    A->m = 0;
+    ERR(SPEX_qr_factorize(&F2, A, S, option), SPEX_INCORRECT_INPUT);
+
     OK(SPEX_symbolic_analysis_free(&S, option));
     OK(SPEX_matrix_free(&A, option));
 
