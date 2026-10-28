@@ -226,7 +226,15 @@ SPEX_info SPEX_qr_factorize
         ldCols[k] = true;
         rank--;
         SPEX_MPZ_SET_UI(RT->x.mpz[RT->p[n] - 1], 0);
-        SPEX_MPZ_SET(rhos->x.mpz[n - 1], rhos->x.mpz[n - 2]);
+        // If one passes in a matrix of size 1 by 1
+        if (n > 1)
+        {
+            SPEX_MPZ_SET(rhos->x.mpz[n - 1], rhos->x.mpz[n - 2]);
+        }
+        else
+        {
+            SPEX_MPZ_SET_UI(rhos->x.mpz[n - 1], 1);
+        }
     }
     else
     {

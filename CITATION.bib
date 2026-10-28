@@ -89,3 +89,18 @@ month = {jun},
 keywords = {exact matrix factorization, sparse linear systems, sparse matrix algorithms, exactly solving linear systems, roundoff errors}
 }
 
+
+
+@article{10.1145/3700592,
+author = {Mejia-Domenzain, Lorena and Chen, Jinhao and Lourenco, Christopher and Moreno-Centeno, Erick and Davis, Timothy A.},
+title = {Algorithm 1050: SPEX Cholesky, LDL, and Backslash for exactly solving sparse linear systems},
+year = {2025},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/3700592},
+doi = {10.1145/3700592},
+abstract = {SPEX Cholesky, SPEX LDL, and SPEX Backslash are software packages for exactly solving sparse linear systems, A x = b. SPEX Cholesky, used for symmetric positive definite (SPD) systems, computes an integral Cholesky factorization to solve the system A x = b in time proportional to arithmetic work—to date the only algorithm for SPD linear systems with this property. SPEX LDL extends SPEX Cholesky for symmetric negative definite and symmetric indefinite matrices with exclusively non-zero leading principal minors. SPEX Backslash is a general-purpose exact solver that automatically determines the best ordering and factorization to exactly solve the system A x = b. Computationally, we test the accuracy of MATLAB sparse backslash, the state-of-the-art collection of sparse matrix solvers, revealing it is near perfect for 87% of the tested instances. In addition, we show that SPEX Cholesky outperforms alternate exact solvers in runtime; specifically, SPEX Cholesky outperforms the exact solver Linbox and exact LU factorization on 70% and 92% of tested instances, respectively. Each of SPEX Cholesky, SPEX LDL, and SPEX Backslash is implemented in C and is accompanied by easy-to-use Python and MATLAB interfaces. They are distributed via GitHub, as a component of the SPEX software package, and as component of SuiteSparse.},
+journal = {ACM Trans. Math. Softw.},
+keywords = {exactly solving linear systems, sparse linear systems, sparse matrix algorithms, roundoff errors, exact matrix factorization}
+}
