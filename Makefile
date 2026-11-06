@@ -2,7 +2,7 @@
 # Makefile for SPEX and its dependent packages (AMD, COLAMD, SuiteSparse_config)
 #-------------------------------------------------------------------------------
 
-# SPEX: (c) 2019-2024, Chris Lourenco (US Naval Academy), Jinhao Chen,
+# SPEX: (c) 2019-2026, Chris Lourenco (US Naval Academy), Jinhao Chen,
 # Lorena Mejia Domenzain, Erick Moreno-Centeno, and Timothy A. Davis, Texas A&M.
 # All Rights Reserved.
 # Just this particular file is under the Apache-2.0 license; each package has
